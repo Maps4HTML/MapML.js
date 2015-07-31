@@ -1,0 +1,92 @@
+<link rel="import" href="./bower_components/polymer/polymer.html">
+
+<script src="./bower_components/leaflet/dist/leaflet-src.js"></script>
+<script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/mapml.js"></script>
+<script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/URI.js"></script>
+<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.4/Leaflet.fullscreen.min.js'></script>
+
+<polymer-element name="mapml-map" attributes="lat lon zoom">
+
+<template>
+  <style>
+   :host {
+     display: block;
+     position: relative;
+   }
+
+   #map {
+     position: absolute;
+     top: 0;
+     right: 0;
+     bottom: 0;
+     left: 0;
+   }
+  </style>
+  <link rel="stylesheet" href="./bower_components/leaflet/dist/leaflet.css">
+  <!-- THIS IS HARDCODING. NEED TO DYNAMICALLY LOAD THE CSS FROM THE MAPML RESPONSES,
+  AND FIGURE OUT HOW TO GET POLYMER / THE BROWSER TO LOAD AND APPLY THOSE STYLES 
+  WITHIN THE SHADOW CONTENT (?). -->
+  <link rel="stylesheet" href="http://localhost/mapml/styles/canvec_cantopo_svg.css">
+  <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.4/leaflet.fullscreen.css' rel='stylesheet'>
+  <div id="map"></div>
+  <content></content>
+</template>
+<script>
+Polymer({
+    is: "mapml-map",
+    publish: {
+      lat: {
+        value: 0, 
+        reflect: true 
+      },
+      lon: {
+        value: 0,
+        reflect: true 
+      },
+      zoom: {
+        value: 10, 
+        reflect: true
+      }
+    },
+    attached: function() {
+      console.log(this.localName + '#' + this.id + ' was attached');
+      
+      for (var i = 0,lyrs = [],controls = {},layers = this.querySelectorAll('[src]');i < layers.length;i++) {
+       /* 
+        * Explicitly set the z-index for all layers based on their document order. 
+        * Note that zIndex has no effect on vector layers, as they are managed
+        * separately by Leaflet, and it looks like too much work to change for 
+        * a demo. 
+        *
+        * Set the opacity based on the CSS property calculated for the mapml-layer.
+        */
+        var o = window.getComputedStyle(layers[i]).opacity,
+            layer = M.mapMLLayer(layers[i].getAttribute('src'), {zIndex: i+1, opacity: o}),
+            label = layers[i].getAttribute('label') ? layers[i].getAttribute('label') : "Basemap " + i;
+        controls[label] = layer;
+        lyrs.push(layer);
+      }
+
+      this.map = L.map(this.$.map, {
+        center: new L.LatLng(this.lat, this.lon),
+        zoom: this.zoom,
+        layers: lyrs[0],
+        fullscreenControl: true
+      });
+      var  layerControl = M.mapMlLayerControl(controls).addTo(this.map);
+      this.map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">MapML</a>')
+
+      console.log("map center: "+this.map.getCenter());
+      var west = this.map.getBounds().getWest(),
+          south = this.map.getBounds().getSouth(),
+          east = this.map.getBounds().getEast(),
+          north = this.map.getBounds().getNorth();
+      
+      if (west === east || south === north) {
+        console.log('ERROR: BAD EXTENT');
+      }
+      console.log("map bounds bbox=" + this.map.getBounds().toBBoxString());
+    }
+});
+</script>
+</polymer-element>

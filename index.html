@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="./bower_components/platform/platform.js"></script>
+    <link rel="import" href="mapml-map.html">
+    <style>
+      mapml-map {
+        height: 300px;
+        width: 640px;
+      }
+      .transparency {
+        opacity: 0.2;
+      }
+    </style>
+  </head>
+  <body>
+    <mapml-map zoom="15" lat="45.398043" lon="-75.70683">
+      <mapml-layer label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/"></mapml-layer>
+      <mapml-layer label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/"></mapml-layer>
+      <mapml-layer label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency" ></mapml-layer>
+    </mapml-map>
+  
+    <!-- instead of a custom element, we could upgrade the existing <map> element: -->
+<!--    
+      <map is="mapml-map">
+        <mapml-layer class="basemap" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/"></mapml-layer>
+           Hyperlink <area> elements:
+        <area is="mapml-area" href="" shape="box | circle | poly" coords="projected units" min-zoom max-zoom>
+        ... more areas and layers may follow here 
+      </map>-->
+  </body>
+</html>
