@@ -1,6 +1,6 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
 
-<script src="./bower_components/leaflet/dist/leaflet-src.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet-1.0.0-b1/leaflet.js"></script>
 <script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/mapml.js"></script>
 <script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/URI.js"></script>
 <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.4/Leaflet.fullscreen.min.js'></script>
@@ -22,8 +22,8 @@
      left: 0;
    }
   </style>
-  <link rel="stylesheet" href="./bower_components/leaflet/dist/leaflet.css">
-  <!-- THIS IS HARDCODING. NEED TO DYNAMICALLY LOAD THE CSS FROM THE MAPML RESPONSES,
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-1.0.0-b1/leaflet.css" />
+<!-- THIS IS HARDCODING. NEED TO DYNAMICALLY LOAD THE CSS FROM THE MAPML RESPONSES,
   AND FIGURE OUT HOW TO GET POLYMER / THE BROWSER TO LOAD AND APPLY THOSE STYLES 
   WITHIN THE SHADOW CONTENT (?). -->
   <link rel="stylesheet" href="./styles/canvec_cantopo_svg.css">
