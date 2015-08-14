@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8" />
+    <title>&lt;map&gt; type extension custom element</title>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="mapml-map.html">
     <style>
       map {
@@ -18,12 +21,5 @@
       <layer label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/"></layer>
       <layer label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency" ></layer>
     </map>
-<!--    
-      <map is="mapml-map">
-        <layer class="basemap" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/"></layer>
-           Hyperlink <area> elements:
-        <area is="mapml-area" href="" shape="box | circle | poly" coords="projected units" min-zoom max-zoom>
-        ... more areas and layers may follow here 
-      </map>-->
   </body>
 </html>
