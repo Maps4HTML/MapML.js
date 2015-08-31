@@ -1,6 +1,6 @@
 # &lt;map&gt; Custom Type Extension Element
 
-The &lt;map&gt; Custom Type Extension Element is a [prototype](http://maps4html.github.io/MapML-Map-Custom-Element/) of core mapping functionality suitable for the Web.
+The &lt;map&gt; Custom Type Extension Element is a [prototype implementation](http://maps4html.github.io/MapML-Map-Custom-Element/) of the [HTML-Map-Element specification](http://maps4html.github.io/HTML-Map-Element/).
 
 ## Objective
 
