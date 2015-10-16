@@ -16,10 +16,37 @@
     </style>
   </head>
   <body>
-    <map is="mapml-map" zoom="15" lat="45.398043" lon="-75.70683">
-      <layer label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/"></layer>
-      <layer label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/"></layer>
-      <layer label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency" ></layer>
-    </map>
+    <div>
+      <p>This map has no declared projection, and therefore has the default 'Web Mercator'-based coordinate reference system called 'OSMTILE' in MapML:</p>
+      <pre>
+&lt;map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683">
+  &lt;layer label="Open Street Map" src="http://localhost/mapml/osm/">
+  &lt;layer label="Canada Base Map" src="http://localhost/mapml/cbmt/">
+  &lt;layer label="CanVec+ 031G" src="http://localhost/mapml/canvec/50k/features/" class="transparency">
+&lt;/map>
+      </pre>
+      <p>The "Canada Base Map" layer referenced does not share the OSMTILE projection, and therefore cannot be displayed.  The "CanVec+ 031G" layer has the "WGS84" projection, which is 
+      a kind of 'wildcard' coordinate reference system that can be overlayed on any projected coordinate reference system known to MapML.</p>
+      <map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683">
+        <layer label="Open Street Map" src="http://localhost/mapml/osm/">
+        <layer label="Canada Base Map" src="http://localhost/mapml/cbmt/">
+        <layer label="CanVec+ 031G" src="http://localhost/mapml/canvec/50k/features/" class="transparency">
+      </map>
+      <p>The layers have an inherent projection that is unknown to the client until the URL is fetched.  When that response is parsed, the code enables/disables the layer in the 
+      checkbox based on whether the layer is visible i.e. within the zoom and bounds of the map.</p>
+      <p>This map declares the 'CBMTILE' projection, which is a coordinate reference system in the Lambert Conformal Conic projection in MapML:</p>
+      <pre>
+&lt;map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683" projection="CBMTILE">
+  &lt;layer label="Open Street Map" src="http://localhost/mapml/osm/">
+  &lt;layer label="Canada Base Map" src="http://localhost/mapml/cbmt/">
+  &lt;layer label="CanVec+ 031G" src="http://localhost/mapml/canvec/50k/features/" class="transparency">
+&lt;/map>
+      </pre>
+      <map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683"  projection="CBMTILE">
+        <layer label="Open Street Map" src="http://localhost/mapml/osm/">
+        <layer label="Canada Base Map" src="http://localhost/mapml/cbmt/">
+        <layer label="CanVec+ 031G" src="http://localhost/mapml/canvec/50k/features/" class="transparency">
+      </map>
+    </div>
   </body>
 </html>
