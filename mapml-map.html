@@ -1,6 +1,8 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
 
 <script src="http://cdn.leafletjs.com/leaflet-1.0.0-b1/leaflet.js"></script>
+<script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/lib/proj4-compressed.js"></script>
+<script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/lib/proj4leaflet.js"></script>
 <script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/mapml.js"></script>
 <script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/URI.js"></script>
 <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.4/Leaflet.fullscreen.min.js'></script>
@@ -84,12 +86,19 @@ Polymer({
 
         this.map = L.map(this.$.map, {
           center: new L.LatLng(this.lat, this.lon),
+          projection: this.projection,
+          crs: M[this.projection],
           zoom: this.zoom,
           layers: lyrs[0],
           fullscreenControl: true
         });
         var  layerControl = M.mapMlLayerControl(controls).addTo(this.map);
         this.map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">MapML</a>')
+        // make sure the layer knows about the map, without the map knowing
+        // about the layer (until the layer is added to the map).
+        for (var i = 0;i < lyrs.length;i++) {
+          lyrs[i]._map = this.map;
+        }
 
         console.log("map center: "+this.map.getCenter());
         var west = this.map.getBounds().getWest(),
