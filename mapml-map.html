@@ -1,10 +1,10 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
 
-<script src="http://localhost/leaflet-1.0.0-b1/leaflet-src.js"></script>
-<script src="http://localhost/proj4js/proj4-compressed.js"></script>
-<script src="http://localhost/proj4leaflet/proj4leaflet.js"></script>
-<script src="http://localhost/mapflet/scripts/mapml.js"></script>
-<script src="http://localhost/mapflet/scripts/URI.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet-1.0.0-b1/leaflet.js"></script>
+<script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/lib/proj4-compressed.js"></script>
+<script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/lib/proj4leaflet.js"></script>
+<script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/mapml.js"></script>
+<script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/URI.js"></script>
 <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.4/Leaflet.fullscreen.min.js'></script>
 
 <dom-module id="mapml-map">
@@ -25,10 +25,6 @@
    }
   </style>
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-1.0.0-b1/leaflet.css" />
-  <!-- THIS IS HARDCODING. NEED TO DYNAMICALLY LOAD THE CSS FROM THE MAPML RESPONSES,
-  AND FIGURE OUT HOW TO GET POLYMER / THE BROWSER TO LOAD AND APPLY THOSE STYLES 
-  WITHIN THE SHADOW CONTENT (?). -->
-  <link rel="stylesheet" href="http://geogratis.gc.ca/mapml/styles/canvec_cantopo_svg.css">
   <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.4/leaflet.fullscreen.css' rel='stylesheet'>
 
 <template>
