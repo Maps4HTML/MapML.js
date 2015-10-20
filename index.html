@@ -18,7 +18,7 @@
   <body>
     <div>
       <p>Want to help improve the &lt;map&gt; element? Join the <a href="https://www.w3.org/community/maps4html/">Maps For HTML Community Group</a>, and <a href="mailto:public-maps4html@w3.org">send us your comments</a>.</p>
-      <p>The first below map has no declared projection, and therefore has the default 'Web Mercator'-based coordinate reference system called 'OSMTILE' in MapML:</p>
+      <p>The first map below has no declared projection, and therefore has the default 'Web Mercator'-based coordinate reference system called 'OSMTILE' in MapML:</p>
       <pre>
 &lt;map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683">
   &lt;layer label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/">
@@ -40,7 +40,7 @@
       </map>
       <p>The layers have an inherent projection that is unknown to the client until the URL is fetched.  When the MapML response is parsed, the code enables/disables the layer in the 
       layer control checkbox based on whether the layer shares the projection of the map element, and is visible i.e. within the zoom and bounds of the map.</p>
-      <p>This map declares the 'CBMTILE' projection, which is a coordinate reference system in the Lambert Conformal Conic projection in MapML.  The Open Street Map layer is
+      <p>The next map declares the 'CBMTILE' projection, which is a coordinate reference system in the Lambert Conformal Conic projection in MapML.  The Open Street Map layer is
       in the Web Mercator (OSMTILE) projection, and is therefore disable/unavailable.</p>
       <pre>
 &lt;map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683" projection="CBMTILE">
