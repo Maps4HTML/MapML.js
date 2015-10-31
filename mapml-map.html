@@ -1,18 +1,18 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
 
-<script src="http://cdn.leafletjs.com/leaflet-1.0.0-b1/leaflet.js"></script>
-<script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/lib/proj4-compressed.js"></script>
-<script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/lib/proj4leaflet.js"></script>
-<script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/mapml.js"></script>
-<script src="http://maps4html.github.io/MapML-Leaflet-Client/scripts/URI.js"></script>
-<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.4/Leaflet.fullscreen.min.js'></script>
+<script src="http://localhost/leaflet-1.0.0-b1/leaflet-src.js"></script>
+<script src="http://localhost/mapflet/scripts/lib/proj4-compressed.js"></script>
+<script src="http://localhost/mapflet/scripts/lib/proj4leaflet.js"></script>
+<script src="http://localhost/mapflet/scripts/mapml.js"></script>
+<script src="http://localhost/mapflet/scripts/URI.js"></script>
+
 
 <dom-module id="mapml-map">
   <!-- in polymer 1.0.x, styles must be outside of the <template> element
        https://www.polymer-project.org/1.0/docs/migration.html#local-dom-template -->
   <style>
    :host {
-     display: block;
+     display: inline-block;
      position: relative;
    }
 
@@ -24,8 +24,7 @@
      left: 0;
    }
   </style>
-  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-1.0.0-b1/leaflet.css" />
-  <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.4/leaflet.fullscreen.css' rel='stylesheet'>
+  <link rel="stylesheet" href="http://localhost/leaflet-1.0.0-b1/leaflet.css" />
 
 <template>
   <div id="map"></div>
@@ -57,31 +56,28 @@ Polymer({
         reflectToAttribute: false
       }
     },
-    hostAttributes: {
-        lat: 0,
-        lon: 0,
-        zoom: 0,
-        projection: "OSMTILE"
-    },
     attached: function() {
       /* needs a delay to provide setup time for polymer */
       this.async( function () {
         console.log(this.localName + '#' + this.id + ' was attached');
-
-        for (var i = 0,lyrs = [],controls = {},layers = this.querySelectorAll('[src]');i < layers.length;i++) {
+        this._layers = [];
+        // at this point, Polymer has set up the map-layer elements, if any
+        // so their API can be used to set properties on them that they'll need
+        // the map-layer elements which were children of the map is="mapml-map"
+        // element should still be, based on the content element in the template
+        // above.
+        for (var i = 0,controls = {},lyrs = this.querySelectorAll('map-layer');i < lyrs.length;i++) {
          /* 
           * Explicitly set the z-index for all layers based on their document order. 
           * Note that zIndex has no effect on vector layers, as they are managed
           * separately by Leaflet, and it looks like too much work to change for 
           * a demo. 
           *
-          * Set the opacity based on the CSS property calculated for the mapml-layer.
+          * Set the opacity based on the CSS property calculated for the map-layer.
           */
-          var o = window.getComputedStyle(layers[i]).opacity,
-              layer = M.mapMLLayer(layers[i].getAttribute('src'), {zIndex: i+1, opacity: o}),
-              label = layers[i].getAttribute('label') ? layers[i].getAttribute('label') : "Basemap " + i;
-          controls[label] = layer;
-          lyrs.push(layer);
+          L.setOptions(lyrs[i].layer, {zIndex: i+1, opacity: window.getComputedStyle(lyrs[i]).opacity});
+          controls[lyrs[i].label] = lyrs[i].layer;
+          this._layers.push({layer: lyrs[i].layer, label: lyrs[i].label, checked:lyrs[i].checked, disabled:lyrs[i].disabled});
         }
 
         this.map = L.map(this.$.map, {
@@ -89,16 +85,24 @@ Polymer({
           projection: this.projection,
           crs: M[this.projection],
           zoom: this.zoom,
-          layers: lyrs[0],
-          fullscreenControl: true
+          layers: this._layers.filter(checked).map(layerProp)
         });
-        var  layerControl = M.mapMlLayerControl(controls).addTo(this.map);
-        this.map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">MapML</a>')
+        this._layerControl = M.mapMlLayerControl(controls).addTo(this.map);
+        this._attributionControl =  this.map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">MapML</a>');
         // make sure the layer knows about the map, without the map knowing
         // about the layer (until the layer is added to the map).
-        for (var i = 0;i < lyrs.length;i++) {
-          lyrs[i]._map = this.map;
+        for (var i = 0;i < this._layers.length;i++) {
+          this._layers[i].layer.map = this.map;
         }
+        function checked(element, index, array) {
+            return element.checked;
+        };
+        function disabled(element, index, array) {
+            return element.disabled;
+        };
+        function layerProp(element, index, array) {
+          return element.layer;
+        };
 
         console.log("map center: "+this.map.getCenter());
         var west = this.map.getBounds().getWest(),

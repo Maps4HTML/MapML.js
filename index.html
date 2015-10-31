@@ -5,6 +5,7 @@
     <title>&lt;map&gt; type extension custom element</title>
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="mapml-map.html">
+    <link rel="import" href="map-layer.html">
     <style>
       map {
         height: 350px;
@@ -17,7 +18,8 @@
   </head>
   <body>
     <div>
-      <p>This map has no declared projection, and therefore has the default 'Web Mercator'-based coordinate reference system called 'OSMTILE' in MapML:</p>
+      <p>Want to help improve the &lt;map&gt; element? Join the <a href="https://www.w3.org/community/maps4html/">Maps For HTML Community Group</a>, and <a href="mailto:public-maps4html@w3.org">send us your comments</a>.</p>
+      <p>The first map below has no declared projection, and therefore has the default 'Web Mercator'-based coordinate reference system called 'OSMTILE' in MapML:</p>
       <pre>
 &lt;map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683">
   &lt;layer label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/">
@@ -25,36 +27,42 @@
   &lt;layer label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">
 &lt;/map>
       </pre>
-      <p>The "Canada Base Map" layer referenced does not share the OSMTILE projection, and therefore cannot be displayed.  The "CanVec+ 031G" layer has the "WGS84" projection, which is 
-      a kind of 'wildcard' coordinate reference system that can be overlayed on any projected coordinate reference system known to MapML.</p>
+      <p>Although the "Canada Base Map" layer referenced shares the OSMTILE projection, the service does not serve the zoom level at which the map initially loads, 
+        and therefore it is initially disabled  in the layer control.  Zooming out a few levels should result in the Canada Base Map layer being available/enabled.
+        The "CanVec+ 031G" layer has the "WGS84" projection, which is a kind of 'wildcard' coordinate reference system that can be overlayed on any projected 
+        coordinate reference system known to MapML.  It is initially available/enabled in the layer control because it overlaps the map element's extent and initial zoom level.  
+        If you pan the map (too far) or zoom out a few levels, it too should be disabled automatically. 
+       
+      </p>
       <map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683">
-        <layer label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/">
-        <layer label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/">
-        <layer label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">
+        <map-layer label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/" checked></map-layer>
+        <map-layer label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/"></map-layer>
+        <map-layer label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></map-layer>
       </map>
-      <p>The layers have an inherent projection that is unknown to the client until the URL is fetched.  When that response is parsed, the code enables/disables the layer in the 
-      checkbox based on whether the layer is visible i.e. within the zoom and bounds of the map.</p>
-      <p>This map declares the 'CBMTILE' projection, which is a coordinate reference system in the Lambert Conformal Conic projection in MapML:</p>
+      <p>The layers have an inherent projection that is unknown to the client until the URL is fetched.  When the MapML response is parsed, the code enables/disables the layer in the 
+      layer control checkbox based on whether the layer shares the projection of the map element, and is visible i.e. within the zoom and bounds of the map.</p>
+      <p>The next map declares the 'CBMTILE' projection, which is a coordinate reference system in the Lambert Conformal Conic projection in MapML.  The Open Street Map layer is
+      in the Web Mercator (OSMTILE) projection, and is therefore disable/unavailable.</p>
       <pre>
 &lt;map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683" projection="CBMTILE">
   &lt;layer label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/">
-  &lt;layer label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/">
+  &lt;layer label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmtlcc/">
   &lt;layer label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">
 &lt;/map>
       </pre>
       <map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683"  projection="CBMTILE">
-        <layer label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/">
-        <layer label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmtlcc/">
-        <layer label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">
+        <map-layer label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/" checked></map-layer>
+        <map-layer label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmtlcc/" checked></map-layer>
+        <map-layer label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></map-layer>
       </map>
-      <p>The following Arctic Ocean Base Map uses the 'APSTILE' projection, which is a coordinate reference system in the Polar Stereographic projection in MapML:</p>
+      <p>The following Arctic Ocean Base Map uses the 'APSTILE' projection, which is a coordinate reference system based on the Polar Stereographic projection in MapML:</p>
       <pre>
 &lt;map is="mapml-map" zoom="3" lat="90.0" lon="0.0" projection="APSTILE">
   &lt;layer label="Arctic Ocean Base Map" src="http://geogratis.gc.ca/mapml/arctic/">
 &lt;/map>
       </pre>
       <map is="mapml-map" zoom="3" lat="90.0" lon="0.0" projection="APSTILE">
-        <layer label="Arctic Ocean Base Map" src="http://geogratis.gc.ca/mapml/arctic/">
+        <map-layer label="Arctic Ocean Base Map" src="http://geogratis.gc.ca/mapml/arctic/" checked></map-layer>
       </map>
       <p>The Arctic Ocean Base Map Terms of Use are available from <a href="http://www.arcgis.com/home/item.html?id=305cb48615d743f89fe70ff3a819e59e">ArcGIS.com</a></p>
     </div>
