@@ -92,7 +92,7 @@ Polymer({
         // make sure the layer knows about the map, without the map knowing
         // about the layer (until the layer is added to the map).
         for (var i = 0;i < this._layers.length;i++) {
-          this._layers[i].layer.map = this.map;
+          this._layers[i].layer._map = this.map;
         }
         function checked(element, index, array) {
             return element.checked;

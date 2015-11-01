@@ -22,9 +22,9 @@
       <p>The first map below has no declared projection, and therefore has the default 'Web Mercator'-based coordinate reference system called 'OSMTILE' in MapML:</p>
       <pre>
 &lt;map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683">
-  &lt;layer label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/">
-  &lt;layer label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/">
-  &lt;layer label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">
+  &lt;map-layerlabel="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/">&lt;map-layer>
+  &lt;map-layerlabel="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/">&lt;map-layer>
+  &lt;map-layer label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">&lt;map-layer>
 &lt;/map>
       </pre>
       <p>Although the "Canada Base Map" layer referenced shares the OSMTILE projection, the service does not serve the zoom level at which the map initially loads, 
@@ -45,9 +45,9 @@
       in the Web Mercator (OSMTILE) projection, and is therefore disable/unavailable.</p>
       <pre>
 &lt;map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683" projection="CBMTILE">
-  &lt;layer label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/">
-  &lt;layer label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmtlcc/">
-  &lt;layer label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">
+  &lt;map-layer label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/">&lt;map-layer>
+  &lt;map-layer label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmtlcc/">&lt;map-layer>
+  &lt;map-layer label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">&lt;map-layer>
 &lt;/map>
       </pre>
       <map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683"  projection="CBMTILE">
