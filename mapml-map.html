@@ -1,4 +1,5 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
+<link rel="import" href="map-layer.html">
 
 <script src="scripts/lib/leaflet-src.js"></script>
 <script src="scripts/lib/proj4-compressed.js"></script>
@@ -66,7 +67,7 @@ Polymer({
         // the map-layer elements which were children of the map is="mapml-map"
         // element should still be, based on the content element in the template
         // above.
-        for (var i = 0,controls = {},lyrs = this.querySelectorAll('map-layer');i < lyrs.length;i++) {
+        for (var i = 0,controls = {},lyrs = this.querySelectorAll('source');i < lyrs.length;i++) {
          /* 
           * Explicitly set the z-index for all layers based on their document order. 
           * Note that zIndex has no effect on vector layers, as they are managed
