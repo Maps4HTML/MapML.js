@@ -1,10 +1,10 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
 
-<script src="http://localhost/leaflet-1.0.0-b1/leaflet-src.js"></script>
-<script src="http://localhost/mapflet/scripts/lib/proj4-compressed.js"></script>
-<script src="http://localhost/mapflet/scripts/lib/proj4leaflet.js"></script>
-<script src="http://localhost/mapflet/scripts/mapml.js"></script>
-<script src="http://localhost/mapflet/scripts/URI.js"></script>
+<script src="scripts/lib/leaflet-src.js"></script>
+<script src="scripts/lib/proj4-compressed.js"></script>
+<script src="scripts/lib/proj4leaflet.js"></script>
+<script src="scripts//mapml.js"></script>
+<script src="scripts/URI.js"></script>
 
 
 <dom-module id="mapml-map">
@@ -24,7 +24,7 @@
      left: 0;
    }
   </style>
-  <link rel="stylesheet" href="http://localhost/leaflet-1.0.0-b1/leaflet.css" />
+  <link rel="stylesheet" href="scripts/lib/leaflet.css" />
 
 <template>
   <div id="map"></div>
@@ -75,9 +75,9 @@ Polymer({
           *
           * Set the opacity based on the CSS property calculated for the map-layer.
           */
-          L.setOptions(lyrs[i].layer, {zIndex: i+1, opacity: window.getComputedStyle(lyrs[i]).opacity});
-          controls[lyrs[i].label] = lyrs[i].layer;
-          this._layers.push({layer: lyrs[i].layer, label: lyrs[i].label, checked:lyrs[i].checked, disabled:lyrs[i].disabled});
+          L.setOptions(lyrs[i]._layer, {zIndex: i+1, opacity: window.getComputedStyle(lyrs[i]).opacity});
+          controls[lyrs[i].label] = lyrs[i]._layer;
+          this._layers.push({layer: lyrs[i]._layer, label: lyrs[i].label, checked:lyrs[i].checked, disabled:lyrs[i].disabled});
         }
 
         this.map = L.map(this.$.map, {

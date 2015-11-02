@@ -1,10 +1,10 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
 
-<script src="http://localhost/leaflet-1.0.0-b1/leaflet-src.js"></script>
-<script src="http://localhost/mapflet/scripts/lib/proj4-compressed.js"></script>
-<script src="http://localhost/mapflet/scripts/lib/proj4leaflet.js"></script>
-<script src="http://localhost/mapflet/scripts/mapml.js"></script>
-<script src="http://localhost/mapflet/scripts/URI.js"></script>
+<script src="scripts/lib/leaflet-src.js"></script>
+<script src="scripts/lib/proj4-compressed.js"></script>
+<script src="scripts/lib/proj4leaflet.js"></script>
+<script src="scripts//mapml.js"></script>
+<script src="scripts/URI.js"></script>
 
 <dom-module id="map-layer">
   <!-- in polymer 1.0.x, styles must be outside of the <template> element
@@ -37,15 +37,12 @@ Polymer({
         type: Boolean,
         value: false,
         reflectToAttribute: true
-      },
-      layer: {
-        type: Object
       }
     },
     ready: function() {
         console.log(this.localName + '#' + this.id + ' is ready');
 
-        this.layer = M.mapMLLayer(this.src);
+        this._layer = M.mapMLLayer(this.src);
 
     }
 });
