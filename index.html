@@ -21,9 +21,9 @@
       <p>The first map below has no declared projection, and therefore has the default 'Web Mercator'-based coordinate reference system called 'OSMTILE' in MapML:</p>
       <pre>
 &lt;map zoom="17" lat="45.398043" lon="-75.70683" is="mapml-map">
-  &lt;source src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" is="map-layer">
-  &lt;source src="http://geogratis.gc.ca/mapml/cbmt/" label="Canada Base Map" is="map-layer">
-  &lt;source src="http://geogratis.gc.ca/mapml/canvec/50k/features/"  label="CanVec+ 031G" class="transparency" is="map-layer">
+  &lt;source src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" is="mapml-layer">
+  &lt;source src="http://geogratis.gc.ca/mapml/cbmt/" label="Canada Base Map" is="mapml-layer">
+  &lt;source src="http://geogratis.gc.ca/mapml/canvec/50k/features/"  label="CanVec+ 031G" class="transparency" is="mapml-layer">
 &lt;/map>
       </pre>
       <p>Although the "Canada Base Map" layer referenced shares the OSMTILE projection, the service does not serve the zoom level at which the map initially loads, 
@@ -34,9 +34,9 @@
        
       </p>
       <map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683">
-        <source is="map-layer" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked>
-        <source is="map-layer" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/">
-        <source is="map-layer" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">
+        <source is="mapml-layer" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked>
+        <source is="mapml-layer" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/">
+        <source is="mapml-layer" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">
       </map>
       <p>The layers have an inherent projection that is unknown to the client until the URL is fetched.  When the MapML response is parsed, the code enables/disables the layer in the 
       layer control checkbox based on whether the layer shares the projection of the map element, and is visible i.e. within the zoom and bounds of the map.</p>
@@ -44,24 +44,24 @@
       in the Web Mercator (OSMTILE) projection, and is therefore disable/unavailable.</p>
       <pre>
 &lt;map zoom="17" lat="45.398043" lon="-75.70683" projection="CBMTILE"  is="mapml-map">
-  &lt;source src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" is="map-layer">
-  &lt;source src="http://geogratis.gc.ca/mapml/cbmtlcc/" label="Canada Base Map" is="map-layer">
-  &lt;source src="http://geogratis.gc.ca/mapml/canvec/50k/features/" label="CanVec+ 031G" class="transparency" is="map-layer">
+  &lt;source src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" is="mapml-layer">
+  &lt;source src="http://geogratis.gc.ca/mapml/cbmtlcc/" label="Canada Base Map" is="mapml-layer">
+  &lt;source src="http://geogratis.gc.ca/mapml/canvec/50k/features/" label="CanVec+ 031G" class="transparency" is="mapml-layer">
 &lt;/map>
       </pre>
       <map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683"  projection="CBMTILE">
-        <source is="map-layer" label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/" checked>
-        <source is="map-layer" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmtlcc/" checked>
-        <source is="map-layer" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">
+        <source is="mapml-layer" label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/" checked>
+        <source is="mapml-layer" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmtlcc/" checked>
+        <source is="mapml-layer" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">
       </map>
       <p>The following Arctic Ocean Base Map uses the 'APSTILE' projection, which is a coordinate reference system based on the Polar Stereographic projection in MapML:</p>
       <pre>
 &lt;map zoom="3" lat="90.0" lon="0.0" projection="APSTILE" is="mapml-map">
-  &lt;source src="http://geogratis.gc.ca/mapml/arctic/" label="Arctic Ocean Base Map" is="map-layer">
+  &lt;source src="http://geogratis.gc.ca/mapml/arctic/" label="Arctic Ocean Base Map" is="mapml-layer">
 &lt;/map>
       </pre>
       <map is="mapml-map" zoom="3" lat="90.0" lon="0.0" projection="APSTILE">
-        <source  is="map-layer" label="Arctic Ocean Base Map" src="http://geogratis.gc.ca/mapml/arctic/" checked>
+        <source  is="mapml-layer" label="Arctic Ocean Base Map" src="http://geogratis.gc.ca/mapml/arctic/" checked>
       </map>
       <p>The Arctic Ocean Base Map Terms of Use are available from <a href="http://www.arcgis.com/home/item.html?id=305cb48615d743f89fe70ff3a819e59e">ArcGIS.com</a></p>
     </div>
