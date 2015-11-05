@@ -67,6 +67,23 @@ Polymer({
         reflectToAttribute: true
       }
     },
+    observers: [
+      '_widthChanged(width)','_heightChanged(height)'
+    ],
+    _widthChanged: function(width) {
+        this.style.width = width+"px";
+        this.$.map.style.width = width+"px";
+        if (this.map) {
+            this.map.invalidateSize(false);
+        }
+    },
+    _heightChanged: function(height) {
+        this.style.height = height+"px";
+        this.$.map.style.height = height+"px";
+        if (this.map) {
+            this.map.invalidateSize(false);
+        }
+    },
     attached: function() {
       /* needs a delay to provide setup time for polymer */
       this.async( function () {
