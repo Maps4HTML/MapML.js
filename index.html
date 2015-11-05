@@ -6,9 +6,14 @@
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="mapml-map.html">
     <style>
+      /* map must have a defined height, can be set either by @height or with css properties */
       map {
         height: 350px;
         width: 640px;
+      }
+      .mapclasstest {
+        height: 300px;
+        width: 600px;
       }
       .transparency {
         opacity: 0.2;
@@ -33,7 +38,7 @@
         If you pan the map (too far) or zoom out a few levels, it too should be disabled automatically. 
        
       </p>
-      <map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683">
+      <map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400">
         <source is="mapml-layer" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked>
         <source is="mapml-layer" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/">
         <source is="mapml-layer" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">
@@ -49,7 +54,7 @@
   &lt;source src="http://geogratis.gc.ca/mapml/canvec/50k/features/" label="CanVec+ 031G" class="transparency" is="mapml-layer">
 &lt;/map>
       </pre>
-      <map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683"  projection="CBMTILE">
+      <map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683"  projection="CBMTILE" width="640" height="480">
         <source is="mapml-layer" label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/" checked>
         <source is="mapml-layer" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmtlcc/" checked>
         <source is="mapml-layer" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency">
@@ -60,7 +65,7 @@
   &lt;source src="http://geogratis.gc.ca/mapml/arctic/" label="Arctic Ocean Base Map" is="mapml-layer">
 &lt;/map>
       </pre>
-      <map is="mapml-map" zoom="3" lat="90.0" lon="0.0" projection="APSTILE">
+      <map is="mapml-map" zoom="3" lat="90.0" lon="0.0" projection="APSTILE" >
         <source  is="mapml-layer" label="Arctic Ocean Base Map" src="http://geogratis.gc.ca/mapml/arctic/" checked>
       </map>
       <p>The Arctic Ocean Base Map Terms of Use are available from <a href="http://www.arcgis.com/home/item.html?id=305cb48615d743f89fe70ff3a819e59e">ArcGIS.com</a></p>

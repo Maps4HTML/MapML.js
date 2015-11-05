@@ -17,13 +17,6 @@
      position: relative;
    }
 
-   #map {
-     position: absolute;
-     top: 0;
-     right: 0;
-     bottom: 0;
-     left: 0;
-   }
    #map:focus {
      outline: 2px  double lightskyblue;
    }
@@ -33,8 +26,8 @@
   <link rel="stylesheet" href="scripts/lib/leaflet.css" />
 
 <template>
-  // giving the map div a tabindex allows the map to display its focus.
-  // see the #map:focus selector in styles, above.
+  <!-- giving the map div a tabindex allows the map to display its focus. -->
+  <!-- see the #map:focus selector in styles, above. -->
   <div id="map" tabindex="0"></div>
   <content></content>
 </template>
@@ -62,6 +55,16 @@ Polymer({
         type: String,
         value: "OSMTILE",
         reflectToAttribute: false
+      },
+      width: {
+        type: Number,
+        value: null,
+        reflectToAttribute: true
+      },
+      height: {
+        type: Number,
+        value: null,
+        reflectToAttribute: true
       }
     },
     attached: function() {
@@ -87,7 +90,27 @@ Polymer({
           controls[lyrs[i].label] = lyrs[i]._layer;
           this._layers.push({layer: lyrs[i]._layer, label: lyrs[i].label, checked:lyrs[i].checked, disabled:lyrs[i].disabled});
         }
-
+        
+        // the dimension attributes win, if they're there. A map does not
+        // have an intrinsic size, unlike an image or video, and so must 
+        // hava defined width and height.
+        var s = window.getComputedStyle(this),
+        w = s.width, h=s.height;
+        
+        if (!this.width) {
+          this.$.map.style.width = "100%";
+          this.width = parseInt(w.replace('px',''));
+        } else {
+          this.$.map.style.width = this.width+"px";
+        }
+        
+        if (!this.height) {
+          this.$.map.style.height = h;
+          this.height = parseInt(h.replace('px',''));
+        } else {
+          this.$.map.style.height = this.height+"px";
+        }
+        
         this.map = L.map(this.$.map, {
           center: new L.LatLng(this.lat, this.lon),
           projection: this.projection,
