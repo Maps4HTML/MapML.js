@@ -98,7 +98,7 @@ Polymer({
         w = s.width, h=s.height;
         
         if (!this.width) {
-          this.$.map.style.width = "100%";
+          this.$.map.style.width = w;
           this.width = parseInt(w.replace('px',''));
         } else {
           this.$.map.style.width = this.width+"px";

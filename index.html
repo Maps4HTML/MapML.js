@@ -6,7 +6,7 @@
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="mapml-map.html">
     <style>
-      /* map must have a defined height, can be set either by @height or with css properties */
+      /* map must have a defined height and width, can be set either by @height/@width or with css properties */
       map {
         height: 350px;
         width: 640px;
@@ -25,7 +25,7 @@
       <p>Want to help improve the &lt;map&gt; element? Join the <a href="https://www.w3.org/community/maps4html/">Maps For HTML Community Group</a>, and <a href="mailto:public-maps4html@w3.org">send us your comments</a>.</p>
       <p>The first map below has no declared projection, and therefore has the default 'Web Mercator'-based coordinate reference system called 'OSMTILE' in MapML:</p>
       <pre>
-&lt;map zoom="17" lat="45.398043" lon="-75.70683" is="mapml-map">
+&lt;map zoom="17" lat="45.398043" lon="-75.70683" is="mapml-map" width="700" height="400">
   &lt;source src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" is="mapml-layer">
   &lt;source src="http://geogratis.gc.ca/mapml/cbmt/" label="Canada Base Map" is="mapml-layer">
   &lt;source src="http://geogratis.gc.ca/mapml/canvec/50k/features/"  label="CanVec+ 031G" class="transparency" is="mapml-layer">
@@ -38,6 +38,7 @@
         If you pan the map (too far) or zoom out a few levels, it too should be disabled automatically. 
        
       </p>
+      <!-- the @width / @height attributes take precedence over properties, but currently don't change to reflect updates -->
       <map is="mapml-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400">
         <source is="mapml-layer" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked>
         <source is="mapml-layer" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/">
@@ -48,7 +49,7 @@
       <p>The next map declares the 'CBMTILE' projection, which is a coordinate reference system in the Lambert Conformal Conic projection in MapML.  The Open Street Map layer is
       in the Web Mercator (OSMTILE) projection, and is therefore disable/unavailable.</p>
       <pre>
-&lt;map zoom="17" lat="45.398043" lon="-75.70683" projection="CBMTILE"  is="mapml-map">
+&lt;map zoom="17" lat="45.398043" lon="-75.70683" projection="CBMTILE" width="640" height="480" is="mapml-map">
   &lt;source src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" is="mapml-layer">
   &lt;source src="http://geogratis.gc.ca/mapml/cbmtlcc/" label="Canada Base Map" is="mapml-layer">
   &lt;source src="http://geogratis.gc.ca/mapml/canvec/50k/features/" label="CanVec+ 031G" class="transparency" is="mapml-layer">
