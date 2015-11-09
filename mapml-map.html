@@ -65,6 +65,12 @@ Polymer({
         type: Number,
         value: null,
         reflectToAttribute: true
+      },
+      layers: {
+        type: Object,
+        value: function () {
+          return this.getElementsByTagName('source');
+        }
       }
     },
     observers: [
@@ -92,7 +98,7 @@ Polymer({
         this.lat = location.lat;
         this.lon = location.lng;
     },
-    _onMapMoveEnd: function(e) {
+    _onMapMoveEnd: function() {
         // remember to tell Leaflet event handler that 'this' refers to something other than the map
         // in this case the custom polymer element
         this.lat = this.map.getCenter().lat;
@@ -103,29 +109,26 @@ Polymer({
       /* needs a delay to provide setup time for polymer */
       this.async( function () {
         console.log(this.localName + '#' + this.id + ' was attached');
-        this._layers = [];
         // at this point, Polymer has set up the map-layer elements, if any
         // so their API can be used to set properties on them that they'll need
         // the map-layer elements which were children of the map is="mapml-map"
         // element should still be, based on the content element in the template
         // above.
-        for (var i = 0,controls = {},lyrs = this.querySelectorAll('source');i < lyrs.length;i++) {
+        for (var i = 0,controls = {};i < this.layers.length;i++) {
          /* 
           * Explicitly set the z-index for all layers based on their document order. 
           * Note that zIndex has no effect on vector layers, as they are managed
-          * separately by Leaflet, and it looks like too much work to change for 
-          * a demo. 
+          * separately by Leaflet.
           *
-          * Set the opacity based on the CSS property calculated for the map-layer.
+          * Set the opacity based on the CSS property calculated for the element
           */
-          L.setOptions(lyrs[i]._layer, {zIndex: i+1, opacity: window.getComputedStyle(lyrs[i]).opacity});
-          controls[lyrs[i].label] = lyrs[i]._layer;
-          this._layers.push({layer: lyrs[i]._layer, label: lyrs[i].label, checked:lyrs[i].checked, disabled:lyrs[i].disabled});
+          L.setOptions(this.layers[i]._layer, {zIndex: i+1, opacity: window.getComputedStyle(this.layers[i]).opacity});
+          controls[this.layers[i].label] = this.layers[i]._layer;
         }
         
         // the dimension attributes win, if they're there. A map does not
         // have an intrinsic size, unlike an image or video, and so must 
-        // hava defined width and height.
+        // have a defined width and height.
         var s = window.getComputedStyle(this),
         w = s.width, h=s.height;
         
@@ -147,16 +150,15 @@ Polymer({
           projection: this.projection,
           crs: M[this.projection],
           zoom: this.zoom,
-          layers: this._layers.filter(checked).map(layerProp)
+          layers: [].slice.call(this.layers).filter(checked).map(layerProp)
         });
         // reflect user or script-initiated map movements to lat, lon, zoom attributes
         this.map.on('moveend', this._onMapMoveEnd, this);
         this._layerControl = M.mapMlLayerControl(controls).addTo(this.map);
         this._attributionControl =  this.map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">MapML</a>');
-        // make sure the layer knows about the map, without the map knowing
-        // about the layer (until the layer is added to the map).
-        for (var i = 0;i < this._layers.length;i++) {
-          this._layers[i].layer._map = this.map;
+        // make sure the layer knows about the map it belongs to.
+        for (var i = 0;i < this.layers.length;i++) {
+          this.layers[i]._layer._map = this.map;
         }
         function checked(element, index, array) {
             return element.checked;
@@ -165,7 +167,7 @@ Polymer({
             return element.disabled;
         };
         function layerProp(element, index, array) {
-          return element.layer;
+          return element._layer;
         };
 
         console.log("map center: "+this.map.getCenter());
