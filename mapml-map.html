@@ -4,7 +4,7 @@
 <script src="scripts/lib/leaflet-src.js"></script>
 <script src="scripts/lib/proj4-compressed.js"></script>
 <script src="scripts/lib/proj4leaflet.js"></script>
-<script src="scripts//mapml.js"></script>
+<script src="scripts/mapml.js"></script>
 <script src="scripts/URI.js"></script>
 
 
@@ -84,6 +84,21 @@ Polymer({
             this.map.invalidateSize(false);
         }
     },
+    zoomTo: function(lat, lon, zoom) {
+        zoom = zoom||this.zoom;
+        var location = new L.LatLng(lat,lon);
+        this.map.setView(location, zoom);
+        this.zoom = zoom;
+        this.lat = location.lat;
+        this.lon = location.lng;
+    },
+    _onMapMoveEnd: function(e) {
+        // remember to tell Leaflet event handler that 'this' refers to something other than the map
+        // in this case the custom polymer element
+        this.lat = this.map.getCenter().lat;
+        this.lon = this.map.getCenter().lng;
+        this.zoom = this.map.getZoom();
+    },
     attached: function() {
       /* needs a delay to provide setup time for polymer */
       this.async( function () {
@@ -127,7 +142,6 @@ Polymer({
         } else {
           this.$.map.style.height = this.height+"px";
         }
-        
         this.map = L.map(this.$.map, {
           center: new L.LatLng(this.lat, this.lon),
           projection: this.projection,
@@ -135,6 +149,8 @@ Polymer({
           zoom: this.zoom,
           layers: this._layers.filter(checked).map(layerProp)
         });
+        // reflect user or script-initiated map movements to lat, lon, zoom attributes
+        this.map.on('moveend', this._onMapMoveEnd, this);
         this._layerControl = M.mapMlLayerControl(controls).addTo(this.map);
         this._attributionControl =  this.map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">MapML</a>');
         // make sure the layer knows about the map, without the map knowing
