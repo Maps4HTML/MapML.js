@@ -71,11 +71,26 @@ Polymer({
         value: function () {
           return this.getElementsByTagName('source');
         }
+      },
+      controls: {
+        type: Boolean,
+        reflectToAttribute: true
       }
     },
     observers: [
-      '_widthChanged(width)','_heightChanged(height)'
+      '_widthChanged(width)','_heightChanged(height)','_toggleControls(controls)'
     ],
+    _toggleControls(controls) {
+      if (this.map) {
+        if (controls) {
+          this.map.addControl(this._zoomControl);
+          this.map.addControl(this._layerControl);
+        } else {
+          this._layerControl.remove();
+          this._zoomControl.remove();
+        }
+      }
+    },
     _widthChanged: function(width) {
         this.style.width = width+"px";
         this.$.map.style.width = width+"px";
@@ -114,7 +129,7 @@ Polymer({
         // the map-layer elements which were children of the map is="mapml-map"
         // element should still be, based on the content element in the template
         // above.
-        for (var i = 0,controls = {};i < this.layers.length;i++) {
+        for (var i = 0,legendLayers = {};i < this.layers.length;i++) {
          /* 
           * Explicitly set the z-index for all layers based on their document order. 
           * Note that zIndex has no effect on vector layers, as they are managed
@@ -123,7 +138,7 @@ Polymer({
           * Set the opacity based on the CSS property calculated for the element
           */
           L.setOptions(this.layers[i]._layer, {zIndex: i+1, opacity: window.getComputedStyle(this.layers[i]).opacity});
-          controls[this.layers[i].label] = this.layers[i]._layer;
+          legendLayers[this.layers[i].label] = this.layers[i]._layer;
         }
         
         // the dimension attributes win, if they're there. A map does not
@@ -145,17 +160,31 @@ Polymer({
         } else {
           this.$.map.style.height = this.height+"px";
         }
+        
         this.map = L.map(this.$.map, {
           center: new L.LatLng(this.lat, this.lon),
           projection: this.projection,
           crs: M[this.projection],
           zoom: this.zoom,
+          zoomControl: this.controls,
           layers: [].slice.call(this.layers).filter(checked).map(layerProp)
         });
         // reflect user or script-initiated map movements to lat, lon, zoom attributes
         this.map.on('moveend', this._onMapMoveEnd, this);
-        this._layerControl = M.mapMlLayerControl(controls).addTo(this.map);
-        this._attributionControl =  this.map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">MapML</a>');
+        
+        this._layerControl = M.mapMlLayerControl(legendLayers);
+        // depending on the controls property, add the layer control to the map
+        if (this.controls) {
+          this._layerControl.addTo(this.map);
+          // it is already on the map, get a reference to it for later possible toggle
+          this._zoomControl = this.map.zoomControl;
+        } else {
+          // create it, but because controls is off, don't add it to the map yet
+          this._zoomControl = L.control.zoom();
+        }
+        // the attribution control is not optional
+        this._attributionControl =  this.map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+        
         // make sure the layer knows about the map it belongs to.
         for (var i = 0;i < this.layers.length;i++) {
           this.layers[i]._layer._map = this.map;
