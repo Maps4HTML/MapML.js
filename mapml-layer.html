@@ -29,15 +29,26 @@ Polymer({
         value: 'Layer',
         reflectToAttribute: true
       },
+      // changing checked turns the layer on or off, and reflects that in the
+      // user interface/ layer control.
       checked: {
         type: Boolean,
         reflectToAttribute: true,
         observer: '_toggleChecked'
       },
+      // changing disabled does nothing; it is supposed to be read-only to the api,
+      // and indicates if the layer is visible, i.e. if turned on it would be in
+      // the map extent / zoom bounds of the map and will be updated on zoom/pan
+      // by the map.  If a layer is disabled, it is 'greyed out' in the layer control
+      // and can't be clicked on, although it can still be checked/unchecked via the api.
       disabled: {
         type: Boolean,
         reflectToAttribute: true
       },
+      // hidden allows a layer to be added to the map but not displayed in the
+      // layer control.  Changing hidden removes/adds it to the layer control,
+      // but does not change the status of the layer on the map. It is 'hidden'
+      // from the user interface.
       hidden: {
         type: Boolean,
         reflectToAttribute: true
@@ -54,6 +65,16 @@ Polymer({
             }
           }
           this._apiToggleChecked = true;
+        }
+    },
+    _onMapMoveEnd: function () {
+        var layer = this._layer, map = layer._map;
+        if (map) {
+            var zoomBounds = layer.getZoomBounds(), zoom = map.getZoom(), 
+            withinZoomBounds = (zoomBounds.min <= zoom && zoom <= zoomBounds.max),
+            projectionMatches = layer._projectionMatches(map),
+            visible = projectionMatches && withinZoomBounds && map.getPixelBounds().intersects(layer.getLayerExtentBounds(map));
+            this.disabled = !visible;
         }
     },
     _onLayerChange: function() {

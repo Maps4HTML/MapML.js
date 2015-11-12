@@ -182,17 +182,19 @@ Polymer({
           this._layerControl = M.mapMlLayerControl(legendLayers).addTo(this.map);
           this._zoomControl = L.control.zoom().addTo(this.map);
         }
-        
-        for (var i=0; i < this.layers.length ; i++) {
-          this.layers[i]._layer.on('add remove', this.layers[i]._onLayerChange,  this.layers[i]);
-        }
-        // the attribution control is not optional
-        this._attributionControl =  this.map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
-        
+
         // make sure the layer knows about the map it belongs to.
         for (var i = 0;i < this.layers.length;i++) {
           this.layers[i]._layer._map = this.map;
         }
+        
+        for (var i=0; i < this.layers.length ; i++) {
+          this.layers[i]._layer.on('add remove', this.layers[i]._onLayerChange,  this.layers[i]);
+          this.map.on('moveend', this.layers[i]._onMapMoveEnd,  this.layers[i])
+        }
+        // the attribution control is not optional
+        this._attributionControl =  this.map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+        
         function checked(element, index, array) {
             return element.checked;
         };
