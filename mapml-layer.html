@@ -31,7 +31,8 @@ Polymer({
       },
       checked: {
         type: Boolean,
-        reflectToAttribute: true
+        reflectToAttribute: true,
+        observer: '_toggleChecked'
       },
       disabled: {
         type: Boolean,
@@ -42,38 +43,24 @@ Polymer({
         reflectToAttribute: true
       }
     },
-//    observers: [
-//        '_toggleChecked(checked)'
-//    ],
-    _toggleChecked: function(newValue) {
-//        if (this.parentElement.map) {
-//          if (this.parentElement.map.hasLayer(this._layer)) {
-//            this.parentElement.map.removeLayer(this._layer);
-//            this.checked = newValue;
-//          } else {
-//            this.parentElement.map.addLayer(this._layer);
-//            this.checked = newValue;
-//          }
-//        }
-        return;
+    _apiToggleChecked: true,
+    _toggleChecked: function() {
+        if (this.parentElement.map) {
+          if (this._apiToggleChecked) {
+            if (this.parentElement.map.hasLayer(this._layer)) {
+              this.parentElement.map.removeLayer(this._layer);
+            } else {
+              this.parentElement.map.addLayer(this._layer);
+            }
+          }
+          this._apiToggleChecked = true;
+        }
     },
-    // the onLayerChange method is set (by the map) to fire when the layer is 
-    // added or removed from the map.  We can change the checked property to
-    // reflect whether the layer is on the map or not, but we can't expose
-    // write API to the checked attribute because if you set up an observer to
-    // push that change to the map, because the layer change handler will trigger
-    // the observer, which, in the case where the change was initiated by the user click
-    // on the layer control, will reverse the change already effected by the
-    // layer control.  So an infinite loop is set up and is only cancelled by
-    // some javascript engine magic, I think.  So a solution might be for
-    // the observer to suspend the layer change handler when it does the layer
-    // change and for the layer change handler to suspend the observer when it
-    // changes the value of the property, but so far it does not seem possible
-    // to  suspend the observer.  I have asked on slack and #askpolymer, but
-    // my reading of the documentation and googling the issue reveals that it is
-    // not commonly done.
     _onLayerChange: function() {
        if (this._layer._map) {
+          // can't disable observers, have to set a flag telling it where
+          // the 'event' comes from: either the api or a user click/tap
+          this._apiToggleChecked = false;
           this.checked = this._layer._map.hasLayer(this._layer);
        }
     },

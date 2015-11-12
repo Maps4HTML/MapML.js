@@ -83,11 +83,14 @@ Polymer({
     _toggleControls(controls) {
       if (this.map) {
         if (controls) {
-          this.map.addControl(this._zoomControl);
-          this.map.addControl(this._layerControl);
+          for (var i = 0,legendLayers = {};i < this.layers.length;i++) {
+            legendLayers[this.layers[i].label] = this.layers[i]._layer;
+          }
+          this._zoomControl = L.control.zoom().addTo(this.map);
+          this._layerControl = M.mapMlLayerControl(legendLayers).addTo(this.map);
         } else {
-          this._layerControl.remove();
-          this._zoomControl.remove();
+          this.map.removeControl(this._layerControl);
+          this.map.removeControl(this._zoomControl);
         }
       }
     },
@@ -161,26 +164,23 @@ Polymer({
           this.$.map.style.height = this.height+"px";
         }
         
+        // create the Leaflet map
         this.map = L.map(this.$.map, {
           center: new L.LatLng(this.lat, this.lon),
           projection: this.projection,
           crs: M[this.projection],
           zoom: this.zoom,
-          zoomControl: this.controls,
+          zoomControl: false,
           layers: [].slice.call(this.layers).filter(checked).map(layerProp)
         });
+        
         // reflect user or script-initiated map movements to lat, lon, zoom attributes
         this.map.on('moveend', this._onMapMoveEnd, this);
         
-        this._layerControl = M.mapMlLayerControl(legendLayers);
-        // depending on the controls property, add the layer control to the map
+        // depending on the controls property, add controls to the map
         if (this.controls) {
-          this._layerControl.addTo(this.map);
-          // it is already on the map, get a reference to it for later possible toggle
-          this._zoomControl = this.map.zoomControl;
-        } else {
-          // create it, but because controls is off, don't add it to the map yet
-          this._zoomControl = L.control.zoom();
+          this._layerControl = M.mapMlLayerControl(legendLayers).addTo(this.map);
+          this._zoomControl = L.control.zoom().addTo(this.map);
         }
         
         for (var i=0; i < this.layers.length ; i++) {
