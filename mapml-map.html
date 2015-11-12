@@ -182,6 +182,10 @@ Polymer({
           // create it, but because controls is off, don't add it to the map yet
           this._zoomControl = L.control.zoom();
         }
+        
+        for (var i=0; i < this.layers.length ; i++) {
+          this.layers[i]._layer.on('add remove', this.layers[i]._onLayerChange,  this.layers[i]);
+        }
         // the attribution control is not optional
         this._attributionControl =  this.map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
         
