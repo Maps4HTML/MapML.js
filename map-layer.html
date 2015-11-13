@@ -16,8 +16,14 @@
   </style>
 
 <script>
-Polymer({
+MapLayer = Polymer({
     is: "map-layer",
+    factoryImpl: function(src, label, checked, hidden) {
+      this.src = src;
+      this.label = label||this.label;
+      this.checked = checked||this.checked;
+      this.hidden = hidden||this.hidden;
+    },
     properties: {
       src : {
         type: String,
@@ -26,7 +32,8 @@ Polymer({
       label : {
         type: String,
         value: 'Layer',
-        reflectToAttribute: true
+        reflectToAttribute: true,
+        observer: '_labelChanged'
       },
       // changing checked turns the layer on or off, and reflects that in the
       // user interface/ layer control.
@@ -54,16 +61,23 @@ Polymer({
         observer: '_toggleHidden'
       }
     },
+    _labelChanged: function() {
+        var map = this.parentElement && this.parentElement.map;
+        if (map) {
+          this._toggleHidden(false);
+        }
+    },
     _apiToggleChecked: true,
     _toggleChecked: function() {
-        if (this.parentElement.map) {
+        var map = this.parentElement && this.parentElement.map;
+        if (map) {
           if (this._apiToggleChecked) {
-            if (this.parentElement.map.hasLayer(this._layer)) {
-              this.parentElement.map.removeLayer(this._layer);
+            if (map.hasLayer(this._layer)) {
+              map.removeLayer(this._layer);
             } else {
-              this.parentElement.map.addLayer(this._layer);
+              map.addLayer(this._layer);
             }
-            this.parentElement.map.fire('moveend');
+            map.fire('moveend');
           }
           this._apiToggleChecked = true;
         }
@@ -97,8 +111,8 @@ Polymer({
             map.fire('moveend');
         }
     },
-    ready: function() {
-        console.log(this.localName + '#' + this.id + ' is ready');
+    attached: function() {
+        console.log(this.localName + '#' + this.id + ' is attached');
 
         this._layer = M.mapMLLayer(this.src);
 

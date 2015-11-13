@@ -32,8 +32,20 @@
   <content></content>
 </template>
 <script>
-Polymer({
+  
+WebMap = Polymer({
     is: "web-map",
+    factoryImpl: function(width, height, src, lat, lon, zoom, projection) {
+      this.width = width;
+      this.height = height;
+      this.lat = lat||this.lat;
+      this.lon = lon||this.lon;
+      this.zoom = zoom||this.zoom;
+      this.projection = projection||'OSMTILE';
+      var layer = new MapLayer(src);
+      this.appendChild(layer);
+      layer.checked = true;
+    },
     properties: {
       lat : {
         type: Number,
