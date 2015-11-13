@@ -6,7 +6,7 @@
 <script src="scripts/mapml.js"></script>
 <script src="scripts/URI.js"></script>
 
-<dom-module id="mapml-layer">
+<dom-module id="map-layer">
   <!-- in polymer 1.0.x, styles must be outside of the <template> element
        https://www.polymer-project.org/1.0/docs/migration.html#local-dom-template -->
   <style>
@@ -17,8 +17,7 @@
 
 <script>
 Polymer({
-    is: "mapml-layer",
-    extends: "source",
+    is: "map-layer",
     properties: {
       src : {
         type: String,
