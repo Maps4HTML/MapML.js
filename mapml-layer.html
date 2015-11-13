@@ -51,7 +51,8 @@ Polymer({
       // from the user interface.
       hidden: {
         type: Boolean,
-        reflectToAttribute: true
+        reflectToAttribute: true,
+        observer: '_toggleHidden'
       }
     },
     _apiToggleChecked: true,
@@ -63,6 +64,7 @@ Polymer({
             } else {
               this.parentElement.map.addLayer(this._layer);
             }
+            this.parentElement.map.fire('moveend');
           }
           this._apiToggleChecked = true;
         }
@@ -71,7 +73,7 @@ Polymer({
         var layer = this._layer, map = layer._map;
         if (map) {
             var zoomBounds = layer.getZoomBounds(), zoom = map.getZoom(), 
-            withinZoomBounds = (zoomBounds.min <= zoom && zoom <= zoomBounds.max),
+            withinZoomBounds = (zoomBounds && zoomBounds.min <= zoom && zoom <= zoomBounds.max),
             projectionMatches = layer._projectionMatches(map),
             visible = projectionMatches && withinZoomBounds && map.getPixelBounds().intersects(layer.getLayerExtentBounds(map));
             this.disabled = !visible;
@@ -84,6 +86,17 @@ Polymer({
           this._apiToggleChecked = false;
           this.checked = this._layer._map.hasLayer(this._layer);
        }
+    },
+    _toggleHidden: function(hide) {
+        var map = this.parentElement.map;
+        if (map && this.parentElement.controls) {
+            if (hide) {
+                this.parentElement._layerControl.removeLayer(this._layer);
+            } else {
+                this.parentElement._layerControl.addOverlay(this._layer,this.label);
+            }
+            map.fire('moveend');
+        }
     },
     ready: function() {
         console.log(this.localName + '#' + this.id + ' is ready');

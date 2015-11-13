@@ -84,7 +84,9 @@ Polymer({
       if (this.map) {
         if (controls) {
           for (var i = 0,legendLayers = {};i < this.layers.length;i++) {
-            legendLayers[this.layers[i].label] = this.layers[i]._layer;
+            if (!this.layers[i].hidden) {
+              legendLayers[this.layers[i].label] = this.layers[i]._layer;
+            }
           }
           this._zoomControl = L.control.zoom().addTo(this.map);
           this._layerControl = M.mapMlLayerControl(legendLayers).addTo(this.map);
@@ -141,7 +143,9 @@ Polymer({
           * Set the opacity based on the CSS property calculated for the element
           */
           L.setOptions(this.layers[i]._layer, {zIndex: i+1, opacity: window.getComputedStyle(this.layers[i]).opacity});
-          legendLayers[this.layers[i].label] = this.layers[i]._layer;
+          if (!this.layers[i].hidden) {
+            legendLayers[this.layers[i].label] = this.layers[i]._layer;
+          }
         }
         
         // the dimension attributes win, if they're there. A map does not
@@ -197,9 +201,6 @@ Polymer({
         
         function checked(element, index, array) {
             return element.checked;
-        };
-        function disabled(element, index, array) {
-            return element.disabled;
         };
         function layerProp(element, index, array) {
           return element._layer;
