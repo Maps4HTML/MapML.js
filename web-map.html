@@ -35,16 +35,14 @@
   
 WebMap = Polymer({
     is: "web-map",
-    factoryImpl: function(width, height, src, lat, lon, zoom, projection) {
+    factoryImpl: function(width, height, lat, lon, zoom, projection, controls) {
       this.width = width;
       this.height = height;
       this.lat = lat||this.lat;
       this.lon = lon||this.lon;
       this.zoom = zoom||this.zoom;
       this.projection = projection||'OSMTILE';
-      var layer = new MapLayer(src);
-      this.appendChild(layer);
-      layer.checked = true;
+      this.controls = controls||this.controls;
     },
     properties: {
       lat : {
@@ -92,39 +90,34 @@ WebMap = Polymer({
       '_widthChanged(width)','_heightChanged(height)','_toggleControls(controls)'
     ],
     _toggleControls(controls) {
-      if (this.map) {
+      if (this._map) {
         if (controls) {
-          for (var i = 0,legendLayers = {};i < this.layers.length;i++) {
-            if (!this.layers[i].hidden) {
-              legendLayers[this.layers[i].label] = this.layers[i]._layer;
-            }
-          }
-          this._zoomControl = L.control.zoom().addTo(this.map);
-          this._layerControl = M.mapMlLayerControl(legendLayers).addTo(this.map);
+          this._zoomControl = L.control.zoom().addTo(this._map);
+          this._layerControl = M.mapMlLayerControl(this._getLegendLayers()).addTo(this._map);
         } else {
-          this.map.removeControl(this._layerControl);
-          this.map.removeControl(this._zoomControl);
+          this._map.removeControl(this._layerControl);
+          this._map.removeControl(this._zoomControl);
         }
       }
     },
     _widthChanged: function(width) {
         this.style.width = width+"px";
         this.$.map.style.width = width+"px";
-        if (this.map) {
-            this.map.invalidateSize(false);
+        if (this._map) {
+            this._map.invalidateSize(false);
         }
     },
     _heightChanged: function(height) {
         this.style.height = height+"px";
         this.$.map.style.height = height+"px";
-        if (this.map) {
-            this.map.invalidateSize(false);
+        if (this._map) {
+            this._map.invalidateSize(false);
         }
     },
     zoomTo: function(lat, lon, zoom) {
         zoom = zoom||this.zoom;
         var location = new L.LatLng(lat,lon);
-        this.map.setView(location, zoom);
+        this._map.setView(location, zoom);
         this.zoom = zoom;
         this.lat = location.lat;
         this.lon = location.lng;
@@ -132,19 +125,16 @@ WebMap = Polymer({
     _onMapMoveEnd: function() {
         // remember to tell Leaflet event handler that 'this' refers to something other than the map
         // in this case the custom polymer element
-        this.lat = this.map.getCenter().lat;
-        this.lon = this.map.getCenter().lng;
-        this.zoom = this.map.getZoom();
+        this.lat = this._map.getCenter().lat;
+        this.lon = this._map.getCenter().lng;
+        this.zoom = this._map.getZoom();
     },
-    attached: function() {
-      /* needs a delay to provide setup time for polymer */
-      this.async( function () {
-        console.log(this.localName + '#' + this.id + ' was attached');
-        // at this point, Polymer has set up the map-layer elements, if any
-        // so their API can be used to set properties on them that they'll need
-        // the map-layer elements which were children of the map is="mapml-map"
-        // element should still be, based on the content element in the template
-        // above.
+    _getLegendLayers: function() {
+      // leaflet's layer control needs an associative array of leaflet layers 
+      // with the key values set to the label to be used in the layer control.  
+      // This method iterates over the layer (element) children of the map element, 
+      // and returns such an array. It also sets the zIndex and opacity options
+      // of the leaflet layers to calculated values
         for (var i = 0,legendLayers = {};i < this.layers.length;i++) {
          /* 
           * Explicitly set the z-index for all layers based on their document order. 
@@ -158,6 +148,11 @@ WebMap = Polymer({
             legendLayers[this.layers[i].label] = this.layers[i]._layer;
           }
         }
+        return legendLayers;
+    },
+    attached: function() {
+      this.async( function () {
+        console.log(this.localName + '#' + this.id + ' was attached');
         
         // the dimension attributes win, if they're there. A map does not
         // have an intrinsic size, unlike an image or video, and so must 
@@ -180,7 +175,7 @@ WebMap = Polymer({
         }
         
         // create the Leaflet map
-        this.map = L.map(this.$.map, {
+        this._map = L.map(this.$.map, {
           center: new L.LatLng(this.lat, this.lon),
           projection: this.projection,
           crs: M[this.projection],
@@ -190,25 +185,25 @@ WebMap = Polymer({
         });
         
         // reflect user or script-initiated map movements to lat, lon, zoom attributes
-        this.map.on('moveend', this._onMapMoveEnd, this);
+        this._map.on('moveend', this._onMapMoveEnd, this);
         
         // depending on the controls property, add controls to the map
         if (this.controls) {
-          this._layerControl = M.mapMlLayerControl(legendLayers).addTo(this.map);
-          this._zoomControl = L.control.zoom().addTo(this.map);
+          this._layerControl = M.mapMlLayerControl(this._getLegendLayers()).addTo(this._map);
+          this._zoomControl = L.control.zoom().addTo(this._map);
         }
 
         // make sure the layer knows about the map it belongs to.
         for (var i = 0;i < this.layers.length;i++) {
-          this.layers[i]._layer._map = this.map;
+          this.layers[i]._layer._map = this._map;
         }
         
         for (var i=0; i < this.layers.length ; i++) {
           this.layers[i]._layer.on('add remove', this.layers[i]._onLayerChange,  this.layers[i]);
-          this.map.on('moveend', this.layers[i]._onMapMoveEnd,  this.layers[i])
+          this._map.on('moveend', this.layers[i]._onMapMoveEnd,  this.layers[i])
         }
         // the attribution control is not optional
-        this._attributionControl =  this.map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+        this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
         
         function checked(element, index, array) {
             return element.checked;
@@ -217,16 +212,16 @@ WebMap = Polymer({
           return element._layer;
         };
 
-        console.log("map center: "+this.map.getCenter());
-        var west = this.map.getBounds().getWest(),
-            south = this.map.getBounds().getSouth(),
-            east = this.map.getBounds().getEast(),
-            north = this.map.getBounds().getNorth();
+        console.log("map center: "+this._map.getCenter());
+        var west = this._map.getBounds().getWest(),
+            south = this._map.getBounds().getSouth(),
+            east = this._map.getBounds().getEast(),
+            north = this._map.getBounds().getNorth();
 
         if (west === east || south === north) {
           console.log('ERROR: BAD EXTENT');
         }
-        console.log("map bounds bbox=" + this.map.getBounds().toBBoxString());
+        console.log("map bounds bbox=" + this._map.getBounds().toBBoxString());
       },10);
     }
 });

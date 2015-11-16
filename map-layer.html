@@ -62,14 +62,14 @@ MapLayer = Polymer({
       }
     },
     _labelChanged: function() {
-        var map = this.parentElement && this.parentElement.map;
+        var map = this.parentElement && this.parentElement._map;
         if (map) {
           this._toggleHidden(false);
         }
     },
     _apiToggleChecked: true,
     _toggleChecked: function() {
-        var map = this.parentElement && this.parentElement.map;
+        var map = this.parentElement && this.parentElement._map;
         if (map) {
           if (this._apiToggleChecked) {
             if (map.hasLayer(this._layer)) {
@@ -101,7 +101,7 @@ MapLayer = Polymer({
        }
     },
     _toggleHidden: function(hide) {
-        var map = this.parentElement.map;
+        var map = this.parentElement && this.parentElement._map;
         if (map && this.parentElement.controls) {
             if (hide) {
                 this.parentElement._layerControl.removeLayer(this._layer);
