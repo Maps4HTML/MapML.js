@@ -93,7 +93,16 @@ WebMap = Polymer({
       if (this._map) {
         if (controls) {
           this._zoomControl = L.control.zoom().addTo(this._map);
-          this._layerControl = M.mapMlLayerControl(this._getLegendLayers()).addTo(this._map);
+          this._layerControl = M.mapMlLayerControl().addTo(this._map);
+          for (var i=0;i<this.layers.length;i++) {
+            if (!this.layers[i].hidden) {
+              this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
+              this._map.on('moveend', this.layers[i]._onMapMoveEnd,  this.layers[i]);
+              // update the layer control
+              this._map.fire('moveend');
+              this.layers[i]._layerControl = this._layerControl;
+            }
+          }
         } else {
           this._map.removeControl(this._layerControl);
           this._map.removeControl(this._zoomControl);
@@ -136,14 +145,6 @@ WebMap = Polymer({
       // and returns such an array. It also sets the zIndex and opacity options
       // of the leaflet layers to calculated values
         for (var i = 0,legendLayers = {};i < this.layers.length;i++) {
-         /* 
-          * Explicitly set the z-index for all layers based on their document order. 
-          * Note that zIndex has no effect on vector layers, as they are managed
-          * separately by Leaflet.
-          *
-          * Set the opacity based on the CSS property calculated for the element
-          */
-          L.setOptions(this.layers[i]._layer, {zIndex: i+1, opacity: window.getComputedStyle(this.layers[i]).opacity});
           if (!this.layers[i].hidden) {
             legendLayers[this.layers[i].label] = this.layers[i]._layer;
           }
@@ -180,38 +181,26 @@ WebMap = Polymer({
           projection: this.projection,
           crs: M[this.projection],
           zoom: this.zoom,
-          zoomControl: false,
-          layers: [].slice.call(this.layers).filter(checked).map(layerProp)
+          zoomControl: false
         });
         
         // reflect user or script-initiated map movements to lat, lon, zoom attributes
         this._map.on('moveend', this._onMapMoveEnd, this);
         
-        // depending on the controls property, add controls to the map
+        // optionally add controls to the map
         if (this.controls) {
-          this._layerControl = M.mapMlLayerControl(this._getLegendLayers()).addTo(this._map);
+          this._layerControl = M.mapMlLayerControl().addTo(this._map);
           this._zoomControl = L.control.zoom().addTo(this._map);
-        }
-
-        // make sure the layer knows about the map it belongs to.
-        for (var i = 0;i < this.layers.length;i++) {
-          this.layers[i]._layer._map = this._map;
-        }
-        
-        for (var i=0; i < this.layers.length ; i++) {
-          this.layers[i]._layer.on('add remove', this.layers[i]._onLayerChange,  this.layers[i]);
-          this._map.on('moveend', this.layers[i]._onMapMoveEnd,  this.layers[i])
         }
         // the attribution control is not optional
         this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
         
-        function checked(element, index, array) {
-            return element.checked;
-        };
-        function layerProp(element, index, array) {
-          return element._layer;
-        };
-
+        // make sure the layer knows about the map it belongs to.
+        for (var i = 0;i < this.layers.length;i++) {
+          this.layers[i]._attachedToMap();
+        }
+        
+        // log map dimensions.  If things go wrong with setup, this may be useful
         console.log("map center: "+this._map.getCenter());
         var west = this._map.getBounds().getWest(),
             south = this._map.getBounds().getSouth(),

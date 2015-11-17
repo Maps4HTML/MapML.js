@@ -20,6 +20,10 @@ MapLayer = Polymer({
     is: "map-layer",
     factoryImpl: function(src, label, checked, hidden) {
       this.src = src;
+      // thei factoryImpl function is called *after* ready callback, so we can
+      // rely on the _layer property, we just have to make sure the layer knows
+      // the url to get its data from
+      this._layer.initialize(this.src);
       this.label = label||this.label;
       this.checked = checked||this.checked;
       this.hidden = hidden||this.hidden;
@@ -106,16 +110,63 @@ MapLayer = Polymer({
             if (hide) {
                 this.parentElement._layerControl.removeLayer(this._layer);
             } else {
-                this.parentElement._layerControl.addOverlay(this._layer,this.label);
+                this._layerControl = this.parentElement._layerControl;
+                this._layerControl.addOverlay(this._layer,this.label);
             }
             map.fire('moveend');
         }
     },
+    detached: function() {
+        // if the map-layer node is removed from the dom, the layer should be
+        // removed from the map and the layer control 
+        
+        if (this._layer._map) {
+          this._layer._map.removeLayer(this._layer);
+        }
+        
+        if (this._layerControl && !this.hidden) {
+          this._layerControl.removeLayer(this._layer);
+        }
+    },
+    ready: function() {
+        console.log(this.localName + '#' + this.id + ' is ready');
+        this._layer = M.mapMLLayer(this.src);
+    },
+    _attachedToMap: function() {
+        var i = 0;
+        for (var nodes = this.parentNode.children;i < nodes.length;i++) {
+            if (this.parentNode.children[i] === this) {
+              break;
+            }
+        }
+        L.setOptions(this._layer, {zIndex: i+1, opacity: window.getComputedStyle(this).opacity});
+        // make sure the Leaflet layer knows about the map its on
+        this._layer._map = this.parentElement._map;
+        this._layer.on('add remove', this._onLayerChange,  this);
+        if (this.checked) {
+            this._layer.addTo(this._layer._map);
+        }
+        // if controls option is enabled, insert the layer into the overlays array
+        if (this.parentElement.controls && !this.hidden) {
+          this._layerControl = this.parentElement._layerControl;
+          this._layerControl.addOverlay(this._layer, this.label);
+        }
+        // toggle the this.disabled attribute depending on whether the layer
+        // is: same prj as map, within view/zoom of map
+        this._layer._map.on('moveend', this._onMapMoveEnd,  this);
+        // update the layer control
+        this._layer._map.fire('moveend');
+    },
     attached: function() {
         console.log(this.localName + '#' + this.id + ' is attached');
-
-        this._layer = M.mapMLLayer(this.src);
-
+        if (this.parentElement.nodeName !== 'WEB-MAP') {
+            console.log('ERROR: '+ this.localName + '#' + this.id + ' must be a child of a web-map element');
+            return;
+        }
+        // if the map has been attached, set this layer up wrt Leaflet map
+        if (this.parentElement._map) {
+            this._attachedToMap();
+        }
     }
 });
 </script>
