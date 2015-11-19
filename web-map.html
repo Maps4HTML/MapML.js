@@ -1,5 +1,6 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
 <link rel="import" href="map-layer.html">
+<link rel="import" href="map-area.html">
 
 <script src="scripts/lib/leaflet-src.js"></script>
 <script src="scripts/lib/proj4-compressed.js"></script>
@@ -79,6 +80,12 @@ WebMap = Polymer({
         type: Object,
         value: function () {
           return this.getElementsByTagName('map-layer');
+        }
+      },
+      areas: {
+        type: Object,
+        value: function () {
+          return this.getElementsByTagName('map-area');
         }
       },
       controls: {
@@ -198,6 +205,11 @@ WebMap = Polymer({
         // make sure the layer knows about the map it belongs to.
         for (var i = 0;i < this.layers.length;i++) {
           this.layers[i]._attachedToMap();
+        }
+        
+        // the area elements need the map to convert their coordinates to LatLng
+        for (var i = 0; i < this.areas.length;i++) {
+          this.areas[i]._attachedToMap();
         }
         
         // log map dimensions.  If things go wrong with setup, this may be useful
