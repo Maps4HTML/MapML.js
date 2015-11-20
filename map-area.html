@@ -9,11 +9,11 @@
 <dom-module id="map-area">
   <!-- in polymer 1.0.x, styles must be outside of the <template> element
        https://www.polymer-project.org/1.0/docs/migration.html#local-dom-template -->
-  <style>
-   :host {
-     display: none;
-   }
-  </style>
+<style>
+ :host {
+   display: none;
+ }
+</style>
 <script>
 MapArea = Polymer({
     is: "map-area",
@@ -69,13 +69,12 @@ MapArea = Polymer({
           // compute the style properties to be applied to the feature
           var options = this._styleToPathOptions(window.getComputedStyle(this)),
               points = this.coords ? this._coordsToArray(this.coords): null;
-          if (this.label) {
-            options['title'] = this.label;
-          }
-          options['interactive'] = this.href ? true : false;
           
           if (this.shape === 'marker') {
-            var points = this._coordsToArray(this.coords);
+            if (this.alt) {
+              // Leaflet markers use the options.title as a tooltip
+              options['title'] = this.alt;
+            }
             this._feature = L.marker(map.containerPointToLatLng(points[0]),options).addTo(map);
           } else if (this.shape === 'circle') {
             var pixelRadius = parseInt(this.coords.split(",")[2]), 
@@ -96,13 +95,20 @@ MapArea = Polymer({
             this._feature = L.rectangle(map.getBounds(),options).addTo(map);
           }
           if (this.shape !== 'marker' && this.alt) {
+            // other Leaflet features are implemented via SVG.  SVG displays tooltips
+            // based on the <svg:title> graphics child element.
             var title = L.SVG.create('title'),
                 titleText = document.createTextNode(this.alt);
                 title.appendChild(titleText);
             this._feature._path.appendChild(title);
           }
           if (this.href) {
-              this._feature.on('click', function() {window.open(this.href);}, this);
+              // conditionally act on click on an area link.  If no link it should be an
+              // inert area, but Leaflet doesn't quite support this.  For a full
+              // implementation, we could actually use an image map replete with area
+              // children which would provide the linking / cursor change behaviours
+              // that are familiar to HTML authors versed in image maps.
+              this._feature.on('click', function() {if (this.href) {window.open(this.href);}}, this);
           }
         }
     },
