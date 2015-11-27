@@ -83,7 +83,7 @@ MapArea = Polymer({
                 latLngCenter = map.containerPointToLatLng(points[0]),
                 radiusInMeters = map.distance(latLngCenter, latLngOnCirc);
             this._feature = L.circle(latLngCenter, radiusInMeters, options).addTo(map);
-          } else if (this.shape === 'rect') {
+          } else if (!this.shape || this.shape === 'rect') {
             var bounds = L.latLngBounds(map.containerPointToLatLng(points[0]), map.containerPointToLatLng(points[1]))
             this._feature = L.rectangle(bounds, options).addTo(map);
           } else if (this.shape === 'line') {

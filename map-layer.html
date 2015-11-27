@@ -18,20 +18,11 @@
 <script>
 MapLayer = Polymer({
     is: "map-layer",
-    factoryImpl: function(src, label, checked, hidden) {
-      this.src = src;
-      // thei factoryImpl function is called *after* ready callback, so we can
-      // rely on the _layer property, we just have to make sure the layer knows
-      // the url to get its data from
-      this._layer.initialize(this.src);
-      this.label = label||this.label;
-      this.checked = checked||this.checked;
-      this.hidden = hidden||this.hidden;
-    },
     properties: {
       src : {
         type: String,
-        reflectToAttribute: true
+        reflectToAttribute: true,
+        observer: '_srcChanged'
       },
       label : {
         type: String,
@@ -63,6 +54,12 @@ MapLayer = Polymer({
         type: Boolean,
         reflectToAttribute: true,
         observer: '_toggleHidden'
+      }
+    },
+    _srcChanged: function() {
+      // this should only be invoked after the ready callback
+      if (this._layer) {
+        this._layer.initialize(this.src);
       }
     },
     _labelChanged: function() {
