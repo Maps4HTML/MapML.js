@@ -1,0 +1,35 @@
+<mapml><head><title>A point in Map Markup Language</title>
+<meta http-equiv="Content-Type" content="text/mapml"/>
+<meta charset="utf-8"/>
+<meta name="projection" content="WGS84"/>
+<meta name="zoom" content="15"/>
+<link rel="license" href="foo" title="Foo © Natural Resources Canada"/>
+</head>
+<body>
+<extent units="WGS84" action="marker.mapml" enctype="application/x-www-form-urlencoded">
+<input name="xmin" type="xmin"  min="-75.70864319801332" max="-75.70487201213837"/>
+<input name="ymin" type="ymin"  min="45.396931957344925" max="45.39844997630411"/>
+<input name="xmax" type="xmax"  min="-75.70487201213837" max="-75.70487201213837"/>
+<input name="ymax" type="ymax"  min="45.396931957344925" max="45.39844997630411"/>
+<input name="zoom" type="zoom"  min="15" max="17"/>
+<input name="projection" type="projection" value="WGS84"/>
+</extent>
+<feature id="aPoint">
+<properties>
+<code>1200020</code>
+<accuracy>26</accuracy>
+<valdate>1995</valdate>
+<id>aPoint</id>
+<theme>FO</theme>
+<type>2</type>
+<elevation>61</elevation>
+<altiaccu>5</altiaccu>
+</properties>
+<geometry>
+<Point>
+<coordinates>-75.706646 45.3972513</coordinates>
+</Point>
+</geometry>
+</feature>
+
+</body></mapml>
