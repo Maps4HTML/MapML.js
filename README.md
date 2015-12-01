@@ -1,4 +1,4 @@
-# &lt;map&gt; Custom Element
+# &lt;web-map&gt; Custom Element
 
 The &lt;web-map&gt; Custom Element is a [prototype implementation](http://maps4html.github.io/Map-Custom-Element/) of the [HTML-Map-Element specification](http://maps4html.github.io/HTML-Map-Element/spec/).
 
