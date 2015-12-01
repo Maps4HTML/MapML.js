@@ -578,8 +578,6 @@ M.mapMLTileLayer = function (url, options) {
 
 M.MapML = L.FeatureGroup.extend({
 	initialize: function (mapml, options) {
-//                options.stroke = false;
-//                options.fill = false;
 		L.setOptions(this, options);
 
 		this._layers = {};
@@ -685,7 +683,7 @@ L.extend(M.MapML, {
                         /* can't use L.Icon.Default because L gets the path from
                          * the <script> element for Leaflet, but that is not available
                          * inside a Web Component / Custom Element */
-                        var pathToImages = "http://cdn.leafletjs.com/leaflet-0.7.3/images/";
+                        var pathToImages = "scripts/lib/images/";
                         var opacity = vectorOptions.opacity ? vectorOptions.opacity : null;
 			return pointToLayer ? pointToLayer(mapml, latlng) : 
                                 new L.Marker(latlng, {opacity: opacity, icon: L.icon({

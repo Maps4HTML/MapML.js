@@ -34,12 +34,12 @@
   </head>
   <body>
     <div>
-      <p>Want to help improve the &lt;web-map&gt; element? Join the <a href="https://www.w3.org/community/maps4html/">Maps For HTML Community Group</a>, and <a href="https://discourse.wicg.io/c/web-mapping">send us your comments</a>.</p>
-      <p>The following maps are a few examples of how the web-map custom element works.  Each map is preceded by the markup that creates the map, and each map is annotated to describe and 
+      <p>Want to help improve the <a href="http://maps4html.github.io/HTML-Map-Element/spec/">web-map</a> element? Join the <a href="https://www.w3.org/community/maps4html/">Maps For HTML Community Group</a>, and <a href="https://discourse.wicg.io/c/web-mapping">send us your comments</a>.</p>
+      <p>The following maps are a few examples of how the <a target="_blank" href="http://maps4html.github.io/HTML-Map-Element/spec/">web-map</a> <a target="_blank" href="https://github.com/Maps4HTML/Map-Custom-Element">custom element</a> works.  Each map is preceded by the markup that creates the map, and each map is annotated to describe and 
         point out the effect of the markup.</p>
       
       <pre>
-&lt;web-map zoom="17" lat="45.398043" lon="-75.70683" is="mapml-map" width="700" height="400" controls>
+&lt;web-map zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls>
   &lt;map-layer id="osm" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden>&lt;/map-layer&gt;
   &lt;map-layer id="cbmt" src="http://geogratis.gc.ca/mapml/cbmt/" label="Canada Base Map">&lt;/map-layer&gt;
   &lt;map-layer id="canvec" src="http://geogratis.gc.ca/mapml/canvec/50k/features/"  label="CanVec+ 031G" class="transparency">&lt;/map-layer&gt;
@@ -71,38 +71,41 @@
         <map-area id="poly" href='http://example.com/polygon/' alt="Polygon" coords="392,116,430,100,441,128,405,145" shape="poly" style="fill: pink; stroke: blue; stroke-width: 3px;fill-opacity: 0.4"></map-area>
       </web-map>
       <div>
-        <p>This map illustrates a few of the features of the web-map custom element.  </p>
+        <p>This map illustrates a few of the features of the <a target="_blank" href="http://maps4html.github.io/HTML-Map-Element/spec/">web-map</a> <a target="_blank" href="https://github.com/Maps4HTML/Map-Custom-Element">custom element</a>.  </p>
         <p>First, note
-      that the web-map element has a controls attribute.  This requests the user-agent to present default controls, such as zoom and layer controls to the user.</p>
+          that the <a href="http://maps4html.github.io/HTML-Map-Element/spec/#the-web-map-element">web-map element</a> has a <a href="http://maps4html.github.io/HTML-Map-Element/spec/#attr-web-map-controls">controls</a> attribute.  This requests the user-agent to present default controls, such as zoom and layer controls to the user.</p>
         <p>
-        Also, there is no projection attribute on the web-map element, and as a result, the map
-        has the default projection whose value is implicitly 'OSMTILE'.  Consequently, all the map-layer children of the web-map element must support the OSMTILE projection, otherwise they will 
+          Also, there is no <a href="http://maps4html.github.io/HTML-Map-Element/spec/#attr-web-map-projection">projection attribute</a> on the web-map element, and as a result, the map
+          has the <a href="http://maps4html.github.io/HTML-Map-Element/spec/#projections">default projection</a> whose value is implicitly 'OSMTILE'.  Consequently, all the <a href="http://maps4html.github.io/HTML-Map-Element/spec/#the-map-layer-element">map-layer</a> element children of the web-map element must support the OSMTILE projection, otherwise they will 
         be disabled by the web-map application.  </p>
-        <p>The layers have an inherent projection that is unknown to the client until the URL is fetched.  When the MapML response is parsed, the code enables/disables the layer in the 
+        <p>The layers have an inherent projection that is unknown to the client until the URL is fetched.  When the <a href="http://maps4html.github.io/MapML/spec/">MapML response</a> is parsed, the code enables/disables the layer in the 
       layer control checkbox based on whether the layer shares the projection of the map element, and is visible i.e. within the zoom and bounds of the map.</p>
       
 
-      <p>Next, the first map-layer child of web-map element is the #osm layer, which is declared 'checked' and 'hidden'.  As a result, it is displayed on the map, but not in the controls.</p>
+        <p>Next, the first map-layer child of web-map element is the #osm layer, which is declared <a href="http://maps4html.github.io/HTML-Map-Element/spec/#attr-layer-checked">checked</a> and 
+          <a href="http://maps4html.github.io/HTML-Map-Element/spec/#attr-layer-hidden">hidden</a>.  As a result, it is displayed on the map, but not in the controls.</p>
       
       <p>Although the #cbmt layer shares the OSMTILE projection and it has a 'checked' attribute directing it to be displayed, when the page is loaded the map discovers that the layer 
         resource does not serve the zoom level at which the map initially loads, 
         and therefore it is initially disabled  in the layer control.  Zooming out a few levels should result in the #cbmt layer being enabled/available in the layer control and displayed
-        on the map.  This behaviour also illustrates the 'painters model' in which map-layer elements which are later in document order are drawn on top of earlier map-layer elements</p>
-      <p>The #canvec layer is a vector feature layer in the MapML "WGS84" projection, which provides a linked stylesheet.   
+        on the map.  This behaviour also illustrates the <a target="_blank" href="http://www.w3.org/TR/SVG/render.html#PaintersModel">painters model</a> in which map-layer elements which are later in document order are drawn on top of earlier map-layer elements</p>
+      <p>The #canvec layer is a vector feature layer in the <a href="http://maps4html.github.io/MapML/spec/#projections">MapML "WGS84" projection</a>.  The layer references a linked CSS stylesheet.   
         The WGS84 projection is a kind of 'wildcard' coordinate reference system that can be overlayed on any projected coordinate reference system known to MapML.  
         It is initially available/enabled in the layer control because it overlaps the web-map element's initial extent and zoom level.  
-        If you pan or zoom the map, it too should be enabled / disabled automatically based on the discovered extent.
+        If you pan or zoom the map, it too should be enabled / disabled automatically based on the discovered <a target="_blank" href="http://maps4html.github.io/MapML/spec/#the-extent-element">extent</a>.
       </p>
       
       <p>
-        The map includes a few map-area links, which are similar to the &lt;map&gt; element's area element children.  These elements create a style-able map feature and optionally declare it
-        as a hyperlink.  There are two additional
-        shape attribute values allowed compared to the area element: marker and line.  The marker value designates a point feature to be symbolized.  The intention of the implementation is to 
-        allow such markers to be styled with CSS and represented by svg graphic symbols.  The current custom element implementation uses a fixed familiar place marker icon image.
+        The map includes a few <a href="http://maps4html.github.io/HTML-Map-Element/spec/#the-map-area-element">map-area</a> links, which are similar to the 
+        <a target="_blank" href="http://www.w3.org/TR/html5/embedded-content-0.html#the-map-element">map</a> element's <a href="http://www.w3.org/TR/html5/embedded-content-0.html#the-area-element">area</a> 
+        element children.  These elements create a style-able map feature and optionally declare it as a hyperlink.  There are two additional
+        shape attribute values allowed compared to the area element: <a href="http://maps4html.github.io/HTML-Map-Element/spec/#projection-values">marker and line</a>.  
+        The marker value designates a point feature to be symbolized.  The intention of the implementation is to 
+        allow such markers to be styled with CSS and represented by SVG graphic symbols.  The current custom element implementation uses a fixed familiar place marker icon image.
       </p>
       
-      <p>Finally, the layer control shows a layer called "Marker layer", which is a simple mapml file created by the HTML author within their domain.  This shows the difference between
-      features encoded via MapML and included as layers, versus features encoded in HTML map-area elements and included on the map as links.</p>
+      <p>Finally, the layer control shows a layer called "Marker layer", which is a simple MapML file created by the HTML author within their domain.  This shows the different behaviour between
+      features encoded in MapML and included as layers versus features encoded in HTML map-area elements and included on the map as links.</p>
       
       </div>
       <div style='clear: both'></div>
@@ -125,7 +128,7 @@
         <map-layer id="canvec2" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></map-layer>
       </web-map>
         
-        <p>This map declares the 'CBMTILE' projection, which is a coordinate reference system in the Lambert Conformal Conic projection in MapML.  The Open Street Map layer is
+        <p>This map declares the 'CBMTILE' projection, which is a <a href="http://maps4html.github.io/MapML/spec/#projections">coordinate reference system</a> in the Lambert Conformal Conic projection in MapML.  The Open Street Map layer is
       in the Web Mercator (OSMTILE) projection, and is therefore disabled/unavailable, no matter how much you zoom and pan.</p>
         
         <p>If you zoom in on the Ottawa region displayed in the first map above (the map projected in the default OSMTILE projection), you can see that the #canvec2 layer
@@ -135,7 +138,7 @@
       <br>
       <hr>
       <div>
-      <p>The final example is the Arctic Ocean Base Map, which uses the 'APSTILE' projection, which is a coordinate reference system based on the Polar Stereographic projection in MapML:</p>
+      <p>The final example is the Arctic Ocean Base Map, which uses the 'APSTILE' projection, which is a <a href="http://maps4html.github.io/MapML/spec/#projections">coordinate reference system</a> based on the Polar Stereographic projection in MapML:</p>
       <pre>
 &lt;web-map zoom="3" lat="90.0" lon="0.0" projection="APSTILE">
   &lt;map-layer src="http://geogratis.gc.ca/mapml/arctic/" label="Arctic Ocean Base Map" checked hidden>&lt;/map-layer&gt;
