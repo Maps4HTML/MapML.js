@@ -511,7 +511,26 @@ M.MapMLTileLayer = L.TileLayer.extend({
                 } else {
                   tileContainer = document.createElement('div');
                 }
-                tileContainer.appendChild(tile);
+                // temporary partial fix (a payment on technical debt)
+                // for issue https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/12
+                // except that due to server rotation over urls by the MapML
+                // server, the img tags are piling up still.
+                // for example, a MapML server can serve different urls to the
+                // same image over the course of a few requests because the
+                // servlet uses a url template to generate the urls in a rotation.
+                // if the duplicate detection is only based on the code below,
+                // they still pile up, but its less bad than before... still
+                // working on it.
+                // 
+                var tileExists = false;
+                for (var i=0;i<tileContainer.children.length;i++) {
+                  if (tileContainer.children[i].src === tile.src) {
+                    tileExists = true;
+                  }
+                }
+                if (!tileExists) {
+                    tileContainer.appendChild(tile);
+                }
                 // per L.TileLayer comment:
 		// we prefer top/left over translate3d so that we don't create a HW-accelerated layer from each tile
 		// which is slow, and it also fixes gaps between tiles in Safari
