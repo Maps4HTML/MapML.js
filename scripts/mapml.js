@@ -434,6 +434,7 @@ M.mapMLLayer = function (url, options) {
 	return new M.MapMLLayer(url, options);
 };
 M.MapMLTileLayer = L.TileLayer.extend({
+        // override the function of the same name defined in L.GridLayer
 	getEvents: function () {
 		var events = {
 			viewreset: this._resetAll,
@@ -460,19 +461,51 @@ M.MapMLTileLayer = L.TileLayer.extend({
             if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
                 return;
             }
-            /* this layer is 'owned' by the MapMLLayer, which should have 
-             * retrieved the mapml response by the time this method is called,
-             * storing essential bits of it in the this._el element
-             */
-            var tiles = this._el.getElementsByTagName('tile');
+            var tiles = this._groupTiles(this._el.getElementsByTagName('tile'));
+            /* Need to group / create arrays of tile elements grouped by
+             * row & col values, then pass each array of tile elements to
+             * the _addTile function, so that a MapML server may serve a set
+             * of tile elements for each tile AND so that a MapML server
+             * can rotate URLs for a single image over several servers per the
+             * mechanism described by 
+             * http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Tile_servers
+             * 
+             * Also, it should be possible for a MapML server to serve several
+             * tile elements for a single tile row/col, such that the images
+             * 'stack' to form a composite image.  Such URLs would necessarily
+             * be different, so that should be permitted by the grouping.
+             * */
+            if (!tiles.length) { return; };
             this._addTiles(tiles);
         },
-	_addTiles: function (tiles) {
-		var queue = [];
-		var point;
+        _groupTiles: function (tiles) {
+            var tileArray = [];
+            for (var i=0;i<tiles.length;i++) {
+              var tile = {};
+              tile.row = parseInt(tiles[i].getAttribute('row'));
+              tile.col = parseInt(tiles[i].getAttribute('col'));
+              tile.src = tiles[i].getAttribute('src');
+              tileArray.push(tile);
+            }
+            return groupBy(tileArray, function(item) { return[item.row, item.col]; });
+            function groupBy( array , f ) {
+                var groups = {};
+                array.forEach( function( o ) {
+                  var group = JSON.stringify( f(o) );
+                  groups[group] = groups[group] || [];
+                  groups[group].push( o );  
+                });
+                return Object.keys(groups).map( function( group ) {
+                  return groups[group]; 
+                });
+            };  
+        },
+	_addTiles: function (tiles) { // tiles is an array of arrays, representing tile image URLs grouped by shared row/col
+		var queue = [], group = {};
                 for (var i=0;i<tiles.length;i++) {
-                    point = new L.Point(tiles[i].getAttribute('col'), tiles[i].getAttribute('row'));
-                    if (this._isValidTile(point)) {
+                    group.col = tiles[i][0].col;
+                    group.row = tiles[i][0].row;
+                    if (this._isValidTile(new L.Point(group.col, group.row))) {
                         queue.push(tiles[i]);
                     }
                 }
@@ -495,41 +528,30 @@ M.MapMLTileLayer = L.TileLayer.extend({
 
 		this._level.el.appendChild(fragment);
 	},
-	_addTile: function (tileToLoad, container) {
-                var tilePoint = new L.Point(tileToLoad.getAttribute('col'), tileToLoad.getAttribute('row'));
+	_addTile: function (groupToLoad, container) {
+                // tiles have been grouped by row/col, so all members of the array
+                // share those values.
+                var tilePoint = new L.Point(groupToLoad[0].col, groupToLoad[0].row);
 		var coords = this._getTilePos(tilePoint);
                 coords.z = this._map.getZoom();
                 var key = this._tileCoordsToKey(coords);
                 
-		var tile = this.createTile(tileToLoad);
-		this._initTile(tile);
-                setTimeout(L.bind(this._tileReady, this, coords, null, tile), 0);
+                for (var i=0;i<groupToLoad.length;i++) {
+                    // create an img element for each tile element for this grid cell
+                    var tile = this.createTile(groupToLoad[i].src);
+                    this._initTile(tile);
+                    setTimeout(L.bind(this._tileReady, this, coords, null, tile), 0);
+                    groupToLoad[i].img = tile;
+                }
 
                 var tileContainer;
                 if (this._tiles[key]) {
                   tileContainer = this._tiles[key].el;
                 } else {
                   tileContainer = document.createElement('div');
-                }
-                // temporary partial fix (a payment on technical debt)
-                // for issue https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/12
-                // except that due to server rotation over urls by the MapML
-                // server, the img tags are piling up still.
-                // for example, a MapML server can serve different urls to the
-                // same image over the course of a few requests because the
-                // servlet uses a url template to generate the urls in a rotation.
-                // if the duplicate detection is only based on the code below,
-                // they still pile up, but its less bad than before... still
-                // working on it.
-                // 
-                var tileExists = false;
-                for (var i=0;i<tileContainer.children.length;i++) {
-                  if (tileContainer.children[i].src === tile.src) {
-                    tileExists = true;
-                  }
-                }
-                if (!tileExists) {
-                    tileContainer.appendChild(tile);
+                    for (var i=0;i<groupToLoad.length;i++) {
+                        tileContainer.appendChild(groupToLoad[i].img);
+                    }
                 }
                 // per L.TileLayer comment:
 		// we prefer top/left over translate3d so that we don't create a HW-accelerated layer from each tile
@@ -549,7 +571,7 @@ M.MapMLTileLayer = L.TileLayer.extend({
 			coords: coords
 		});
 	},
-	createTile: function (tileElement) {
+	createTile: function (src) {
 		var tile = document.createElement('img');
 
 		if (this.options.crossOrigin) {
@@ -562,7 +584,7 @@ M.MapMLTileLayer = L.TileLayer.extend({
 		*/
 		tile.alt = '';
 
-		tile.src = tileElement.getAttribute('src');
+		tile.src = src;
                 L.DomUtil.addClass(tile, 'leaflet-tile-loaded');
 
 		return tile;
