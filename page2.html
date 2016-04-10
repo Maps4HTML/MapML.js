@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Demo page 2</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <!-- Leaflet needs this here in order to find the default image icons -->
+    <script src="scripts/lib/leaflet-src.js"></script>
+    <link rel="import" href="web-map.html">
+    <style>web-map {display: block}
+          .transparency {
+        opacity: 0.2;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <web-map zoom="2" lat="67.101360" lon="-91.121469" projection="CBMTILE" width="640" height="480" controls>
+        <map-layer src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked></map-layer>
+        <map-layer src="http://geogratis.gc.ca/mapml/cbmtlcc/" label="Canada Base Map" checked></map-layer>
+        <map-layer src="http://geogratis.gc.ca/mapml/canvec/50k/features/" label="CanVec+ 031G" class="transparency"></map-layer>
+      </web-map>  
+      <a href="page3.html" style="">Next</a>
+  </div>
+    
+  </body>
+</html>

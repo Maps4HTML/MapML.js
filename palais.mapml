@@ -1,0 +1,28 @@
+<mapml><head><title>A point in Map Markup Language</title>
+<meta http-equiv="Content-Type" content="text/mapml"/>
+<meta charset="utf-8"/>
+<meta name="projection" content="WGS84"/>
+<meta name="zoom" content="15"/>
+<link rel="license" href="foo" title="Foo © Natural Resources Canada"/>
+</head>
+<body>
+<extent units="WGS84" action="palais.mapml" enctype="application/x-www-form-urlencoded">
+<input name="xmin" type="xmin"  min="-180" max="180"/>
+<input name="ymin" type="ymin"  min="-80" max="80"/>
+<input name="xmax" type="xmax"  min="-180" max="180"/>
+<input name="ymax" type="ymax"  min="-80" max="80"/>
+<input name="zoom" type="zoom"  min="1" max="18"/>
+<input name="projection" type="projection" value="WGS84"/>
+</extent>
+<feature id="palais">
+<properties>
+<name>Palais des congrès de Montréal</name>
+</properties>
+<geometry>
+<Point>
+<coordinates>-73.5602045 45.5038505</coordinates>
+</Point>
+</geometry>
+</feature>
+
+</body></mapml>
