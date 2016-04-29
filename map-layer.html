@@ -6,7 +6,7 @@
 <script src="scripts/mapml.js"></script>
 <script src="scripts/URI.js"></script>
 
-<dom-module id="map-layer">
+<dom-module id="layer-">
   <!-- in polymer 1.0.x, styles must be outside of the <template> element
        https://www.polymer-project.org/1.0/docs/migration.html#local-dom-template -->
   <style>
@@ -17,7 +17,7 @@
 
 <script>
 MapLayer = Polymer({
-    is: "map-layer",
+    is: "layer-",
     properties: {
       src : {
         type: String,
@@ -156,8 +156,8 @@ MapLayer = Polymer({
     },
     attached: function() {
         console.log(this.localName + '#' + this.id + ' is attached');
-        if (this.parentElement.nodeName !== 'WEB-MAP') {
-            console.log('ERROR: '+ this.localName + '#' + this.id + ' must be a child of a web-map element');
+        if (this.parentElement.nodeName !== 'MAP') {
+            console.log('ERROR: '+ this.localName + '#' + this.id + ' must be a child of a map element');
             return;
         }
         // if the map has been attached, set this layer up wrt Leaflet map

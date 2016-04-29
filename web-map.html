@@ -36,6 +36,7 @@
   
 WebMap = Polymer({
     is: "web-map",
+    extends: "map",
     factoryImpl: function(width, height, lat, lon, zoom, projection, controls) {
       this.width = width;
       this.height = height;
@@ -79,13 +80,13 @@ WebMap = Polymer({
       layers: {
         type: Object,
         value: function () {
-          return this.getElementsByTagName('map-layer');
+          return this.getElementsByTagName('layer-');
         }
       },
       areas: {
         type: Object,
         value: function () {
-          return this.getElementsByTagName('map-area');
+          return this.getElementsByTagName('area');
         }
       },
       controls: {
@@ -96,7 +97,7 @@ WebMap = Polymer({
     observers: [
       '_widthChanged(width)','_heightChanged(height)','_toggleControls(controls)'
     ],
-    _toggleControls(controls) {
+    _toggleControls: function (controls) {
       if (this._map) {
         if (controls) {
           this._zoomControl = L.control.zoom().addTo(this._map);
@@ -217,7 +218,18 @@ WebMap = Polymer({
         for (var i = 0; i < this.areas.length;i++) {
           this.areas[i]._attachedToMap();
         }
-        
+        // this is a hack to undisplay the image if the map processing works
+        if (this.hasAttribute('name')) {
+          var name = this.getAttribute('name');
+          if (name) {
+            var images = document.querySelectorAll('img[usemap]');
+            for (var i=0;i < images.length;i++) {
+                if (images[i].useMap === '#'+name) {
+                  images[i].style.display = 'none';
+                }
+            }
+          }
+        }
         // log map dimensions.  If things go wrong with setup, this may be useful
         console.log("map center: "+this._map.getCenter());
         var west = this._map.getBounds().getWest(),

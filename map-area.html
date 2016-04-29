@@ -3,7 +3,7 @@
 <script src="scripts/lib/leaflet-src.js"></script>
 <script src="scripts/lib/proj4-compressed.js"></script>
 <script src="scripts/lib/proj4leaflet.js"></script>
-<script src="scripts//mapml.js"></script>
+<script src="scripts/mapml.js"></script>
 <script src="scripts/URI.js"></script>
 
 <dom-module id="map-area">
@@ -17,6 +17,7 @@
 <script>
 MapArea = Polymer({
     is: "map-area",
+    extends: "area",
     properties: {
       alt : {
         type: String,
