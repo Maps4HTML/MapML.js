@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <!-- for the purposes of explaining stuff, force IE to compatibility mode -->
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /> 
     <meta charset="utf-8" />
     <title>&lt;map&gt; vs &lt;web-map&gt;</title>
+    <!-- IE has been forced to IE7 compatibility (see above), Web Components aren't run -->
+<!--[if !IE]>-->
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-    <!-- Leaflet needs this here in order to find the default image icons -->
+
     <script src="scripts/lib/leaflet-src.js"></script>
     <link rel="import" href="web-map.html">
+<!--<![endif]-->
     <style>
       /* map must have a defined height and width, can be set either by @height/@width or with css properties */
       map {
@@ -35,7 +40,16 @@
   <body>
     <div>
       <pre>
+&lt;-- You will see the old image map behaviour if: --&gt;
+&lt;-- * you're using an IE browser, this page should force IE7 mode --&gt;
+&lt;-- * in FireFox, if Web Components are enabled, I believe the HTML import for the map custom element won't work --&gt;
+&lt;-- * in any browser if you disable javascript --&gt;
+&lt;-- else the map@is=web-map should have custom behaviour, including zoom, pan, layers, controls etc. --&gt;
+
+&lt;-- The img element is only used for fallback processing, otherwise it is deleted by the custom element on load --&gt;
 &lt;img usemap="#dowslake" src="map1.png" width="700" height="400" alt="Dow's Lake area" />
+
+&lt;-- The map element can be set up by the HTML author to provide the old image map behaviour --&gt;
 &lt;map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls hidden>
   &lt;layer- id="osm" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden>&lt;/layer-&gt;
   &lt;layer- id="canvec" src="http://geogratis.gc.ca/mapml/canvec/50k/features/"  label="CanVec+ 031G" class="transparency">&lt;/layer-&gt;
