@@ -218,17 +218,25 @@ WebMap = Polymer({
         for (var i = 0; i < this.areas.length;i++) {
           this.areas[i]._attachedToMap();
         }
-        // this is a hack to undisplay the image if the map processing works
+        // since this custom element is working so far, we want to move the image if any
+        // is associated to be a 'poster' (i.e. like video@poster), which
+        // we do by moving the node to be in the map div
         if (this.hasAttribute('name')) {
           var name = this.getAttribute('name');
+          var poster;
           if (name) {
             var images = document.querySelectorAll('img[usemap]');
             for (var i=0;i < images.length;i++) {
                 if (images[i].useMap === '#'+name) {
-                  images[i].style.display = 'none';
+                  poster = images[i];
+                  this.$.map.appendChild(poster);
                 }
             }
           }
+        }
+        // undisplay the image if *the first* layer works.  This is not perfect.
+        if (typeof this.layers[0]._layer.error === 'undefined' && this.layers[0]._layer._extent ) {
+          poster.style.display = 'none';
         }
         // log map dimensions.  If things go wrong with setup, this may be useful
         console.log("map center: "+this._map.getCenter());
