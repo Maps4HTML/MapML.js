@@ -234,9 +234,12 @@ WebMap = Polymer({
             }
           }
         }
-        // undisplay the image if *the first* layer works.  This is not perfect.
+        // undisplay the image if *the first* layer works.  This is not perfect, as it
+        // relies on the server to have responded by now.
         if (typeof this.layers[0]._layer.error === 'undefined' && this.layers[0]._layer._extent ) {
-          poster.style.display = 'none';
+          if (poster) {
+            poster.style.display = 'none';
+          }
         }
         // log map dimensions.  If things go wrong with setup, this may be useful
         console.log("map center: "+this._map.getCenter());
