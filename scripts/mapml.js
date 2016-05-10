@@ -1111,7 +1111,7 @@ M.MapMLLayerControl = L.Control.Layers.extend({
             zoomBounds, i, obj, visible, projectionMatches;
         for (i in this._layers) {
             obj = this._layers[i];
-            if (obj.layer) {
+            if (obj.layer._extent) {
 
                 // get the 'bounds' of zoom levels of the layer as described by the server
                 zoomBounds = obj.layer.getZoomBounds();
@@ -1128,7 +1128,8 @@ M.MapMLLayerControl = L.Control.Layers.extend({
                 } else {
                     obj.input.disabled = false;
                     obj.input.style = null;
-                    obj.input.nextElementSibling.style.fontStyle = null;
+                    // ie does not work with null 
+                    obj.input.nextElementSibling.style.fontStyle = '';
                 }
             }
         }
