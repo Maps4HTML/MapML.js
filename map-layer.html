@@ -113,6 +113,15 @@ MapLayer = Polymer({
             map.fire('moveend');
         }
     },
+    // the mapml document associated to this layer can in theory contain one or more
+    // link[@rel=legend] elements with different @type or other attributes;
+    // currently only support a single link, don't care about type, lang etc.
+    // TODO: add support for @type, more than one link.
+    getLegendUrls: function () {
+      if (this._layer && this._layer._legendUrl) {
+          return (new Map()).set('application/octet-stream',this._layer._legendUrl);
+      }
+    },
     detached: function() {
         // if the map-layer node is removed from the dom, the layer should be
         // removed from the map and the layer control 
