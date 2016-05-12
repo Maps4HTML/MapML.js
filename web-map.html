@@ -139,9 +139,9 @@ WebMap = Polymer({
         this.lat = location.lat;
         this.lon = location.lng;
     },
-    _onMapMoveEnd: function() {
-        // remember to tell Leaflet event handler that 'this' refers to something other than the map
-        // in this case the custom polymer element
+    _updateMapCenter: function () {
+        // remember to tell Leaflet event handler that 'this' in here refers to
+        //  something other than the map in this case the custom polymer element
         this.lat = this._map.getCenter().lat;
         this.lon = this._map.getCenter().lng;
         this.zoom = this._map.getZoom();
@@ -198,8 +198,7 @@ WebMap = Polymer({
           fadeAnimation: false
         });
         
-        // reflect user or script-initiated map movements to lat, lon, zoom attributes
-        this._map.on('moveend', this._onMapMoveEnd, this);
+        this._setUpEvents();
         
         // optionally add controls to the map
         if (this.controls) {
@@ -253,6 +252,69 @@ WebMap = Polymer({
         }
         console.log("map bounds bbox=" + this._map.getBounds().toBBoxString());
       },10);
+    },
+    _setUpEvents: function () {
+      this._map.on('preclick', 
+          function (e) {
+              this.fire('preclick',
+                  {lat: e.latlng.lat,     lon: e.latlng.lng, 
+                     x: e.containerPoint.x, y: e.containerPoint.y
+                });
+          }, 
+          this);
+      this._map.on('click', 
+          function (e) {
+              this.fire('click',
+                  {lat: e.latlng.lat,     lon: e.latlng.lng, 
+                     x: e.containerPoint.x, y: e.containerPoint.y
+                });
+          }, 
+          this);
+      this._map.on('dblclick', 
+          function (e) {
+              this.fire('dblclick',
+                  {lat: e.latlng.lat,     lon: e.latlng.lng, 
+                     x: e.containerPoint.x, y: e.containerPoint.y
+                });
+          }, 
+          this);
+      this._map.on('contextmenu', 
+          function (e) {
+              this.fire('contextmenu',
+                  {lat: e.latlng.lat,     lon: e.latlng.lng, 
+                     x: e.containerPoint.x, y: e.containerPoint.y
+                });
+          }, this);      
+      this._map.on('movestart', 
+          function () {
+              this._updateMapCenter();
+              this.fire('movestart', {target: this});
+          }, this);      
+      this._map.on('move', 
+          function () {
+              this._updateMapCenter();
+              this.fire('move', {target: this});
+          }, this);      
+      this._map.on('moveend', 
+          function () {
+              this._updateMapCenter();
+              this.fire('moveend', {target: this});
+          }, this);      
+      this._map.on('zoomstart', 
+          function () {
+              this._updateMapCenter();
+              this.fire('zoomstart', {target: this});
+          }, this);      
+      this._map.on('zoom', 
+          function () {
+              this._updateMapCenter();
+              this.fire('zoom', {target: this});
+          }, this);      
+      this._map.on('zoomend', 
+          function () {
+              this._updateMapCenter();
+              this.fire('zoomend', {target: this});
+          }, this);      
     }
 });
 </script>
