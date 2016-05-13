@@ -146,19 +146,6 @@ WebMap = Polymer({
         this.lon = this._map.getCenter().lng;
         this.zoom = this._map.getZoom();
     },
-    _getLegendLayers: function() {
-      // leaflet's layer control needs an associative array of leaflet layers 
-      // with the key values set to the label to be used in the layer control.  
-      // This method iterates over the layer (element) children of the map element, 
-      // and returns such an array. It also sets the zIndex and opacity options
-      // of the leaflet layers to calculated values
-        for (var i = 0,legendLayers = {};i < this.layers.length;i++) {
-          if (!this.layers[i].hidden) {
-            legendLayers[this.layers[i].label] = this.layers[i]._layer;
-          }
-        }
-        return legendLayers;
-    },
     attached: function() {
       this.async( function () {
         console.log(this.localName + '#' + this.id + ' was attached');
@@ -181,6 +168,25 @@ WebMap = Polymer({
           this.height = parseInt(h.replace('px',''));
         } else {
           this.$.map.style.height = this.height+"px";
+        }
+        if (this.hasAttribute('name')) {
+          var name = this.getAttribute('name');
+          if (name) {
+            var images = document.querySelectorAll('img[usemap]');
+            for (var i=0;i < images.length;i++) {
+                if (images[i].useMap === '#'+name) {
+                  this.poster = images[i];
+                  // firefox has an issue where the attribution control's use of
+                  // _container.innerHTML does not work properly if the engine is throwing
+                  // exceptions because there are no area element children of the image map
+                  // for firefox only, a workaround is to actually remove the image...
+                  if (L.Browser.gecko) {
+                      this.poster.removeAttribute('usemap');
+                  }
+                  this.$.map.appendChild(this.poster);
+                }
+            }
+          }
         }
         
         // create the Leaflet map
@@ -217,27 +223,11 @@ WebMap = Polymer({
         for (var i = 0; i < this.areas.length;i++) {
           this.areas[i]._attachedToMap();
         }
-        // since this custom element is working so far, we want to move the image if any
-        // is associated to be a 'poster' (i.e. like video@poster), which
-        // we do by moving the node to be in the map div
-        if (this.hasAttribute('name')) {
-          var name = this.getAttribute('name');
-          var poster;
-          if (name) {
-            var images = document.querySelectorAll('img[usemap]');
-            for (var i=0;i < images.length;i++) {
-                if (images[i].useMap === '#'+name) {
-                  poster = images[i];
-                  this.$.map.appendChild(poster);
-                }
-            }
-          }
-        }
         // undisplay the image if *the first* layer works.  This is not perfect, as it
         // relies on the server to have responded by now.
         if (typeof this.layers[0]._layer.error === 'undefined' && this.layers[0]._layer._extent ) {
-          if (poster) {
-            poster.style.display = 'none';
+          if (this.poster) {
+            this.poster.style.display = 'none';
           }
         }
         // log map dimensions.  If things go wrong with setup, this may be useful
@@ -273,6 +263,46 @@ WebMap = Polymer({
       this._map.on('dblclick', 
           function (e) {
               this.fire('dblclick',
+                  {lat: e.latlng.lat,     lon: e.latlng.lng, 
+                     x: e.containerPoint.x, y: e.containerPoint.y
+                });
+          }, 
+          this);
+      this._map.on('mousemove', 
+          function (e) {
+              this.fire('mousemove',
+                  {lat: e.latlng.lat,     lon: e.latlng.lng, 
+                     x: e.containerPoint.x, y: e.containerPoint.y
+                });
+          }, 
+          this);
+      this._map.on('mouseover', 
+          function (e) {
+              this.fire('mouseover',
+                  {lat: e.latlng.lat,     lon: e.latlng.lng, 
+                     x: e.containerPoint.x, y: e.containerPoint.y
+                });
+          }, 
+          this);
+      this._map.on('mouseout', 
+          function (e) {
+              this.fire('mouseout',
+                  {lat: e.latlng.lat,     lon: e.latlng.lng, 
+                     x: e.containerPoint.x, y: e.containerPoint.y
+                });
+          }, 
+          this);
+      this._map.on('mousedown', 
+          function (e) {
+              this.fire('mousedown',
+                  {lat: e.latlng.lat,     lon: e.latlng.lng, 
+                     x: e.containerPoint.x, y: e.containerPoint.y
+                });
+          }, 
+          this);
+      this._map.on('mouseup', 
+          function (e) {
+              this.fire('mouseup',
                   {lat: e.latlng.lat,     lon: e.latlng.lng, 
                      x: e.containerPoint.x, y: e.containerPoint.y
                 });
