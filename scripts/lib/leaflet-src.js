@@ -2,6 +2,7 @@
  Leaflet 1.0-dev (46d2d6a), a JS library for interactive maps. http://leafletjs.com
  (c) 2010-2015 Vladimir Agafonkin, (c) 2010-2011 CloudMade
 */
+/*  global define, module, timeoutDefer, requestFn, cancelFn, L, this, orientation, Infinity, wmsParams, Uint8Array, corners, markers */
 (function (window, document, undefined) {
 var L = {
 	version: '1.0-dev'
