@@ -7,25 +7,7 @@
 <script src="scripts/lib/proj4leaflet.js"></script>
 <script src="scripts/mapml.js"></script>
 <script src="scripts/URI.js"></script>
-<script>
-    // when used in a custom element, the leaflet script element is hidden inside
-    // the import's shadow dom.
-    L.Icon.Default.imagePath = (function () {
-            var scripts = document.querySelector('link[rel="import"][href="web-map.html"]').import.querySelectorAll('script'),
-                leafletRe = /[\/^]leaflet[\-\._]?([\w\-\._]*)\.js\??/;
 
-            var i, len, src, path;
-
-            for (i = 0, len = scripts.length; i < len; i++) {
-                    src = scripts[i].src;
-
-                    if (src.match(leafletRe)) {
-                            path = src.split(leafletRe)[0];
-                            return (path ? path + '/' : '') + 'images';
-                    }
-            }
-    }());
-</script>
 <dom-module id="web-map">
   <!-- in polymer 1.0.x, styles must be outside of the <template> element
        https://www.polymer-project.org/1.0/docs/migration.html#local-dom-template -->

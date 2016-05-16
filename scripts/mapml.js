@@ -1178,5 +1178,24 @@ M.mapMlLayerControl = function (layers, options) {
 	return new M.MapMLLayerControl(layers, options);
 };
 
+// when used in a custom element, the leaflet script element is hidden inside
+// the import's shadow dom.
+L.Icon.Default.imagePath = (function () {
+        var imp = document.querySelector('link[rel="import"][href="web-map.html"]'),
+            doc = imp ? imp.import : document,
+            scripts = doc.getElementsByTagName('script'),
+            leafletRe = /[\/^]leaflet[\-\._]?([\w\-\._]*)\.js\??/;
+
+        var i, len, src, path;
+
+        for (i = 0, len = scripts.length; i < len; i++) {
+                src = scripts[i].src;
+
+                if (src.match(leafletRe)) {
+                        path = src.split(leafletRe)[0];
+                        return (path ? path + '/' : '') + 'images';
+                }
+        }
+}());
 
 }(window, document));
