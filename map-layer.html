@@ -91,6 +91,21 @@ MapLayer = Polymer({
           this._apiToggleChecked = true;
         }
     },
+    _onLayerExtentLoad: function (e) {
+        // the mapml document associated to this layer can in theory contain many
+        // link[@rel=legend] elements with different @type or other attributes;
+        // currently only support a single link, don't care about type, lang etc.
+        // TODO: add support for full LayerLegend object, and > one link.
+        if (this._layer._legendUrl) {
+            this.legendLinks = 
+              [{ type: 'application/octet-stream',
+                 href: this._layer._legendUrl,
+                 rel: 'legend',
+                 lang: null,
+                 hreflang: null,
+                 sizes: null }];
+        }
+    },
     _onMapMoveEnd: function () {
         var layer = this._layer, map = layer._map;
         if (map) {
@@ -99,19 +114,6 @@ MapLayer = Polymer({
             projectionMatches = layer._projectionMatches(map),
             visible = projectionMatches && withinZoomBounds && map.getPixelBounds().intersects(layer.getLayerExtentBounds(map));
             this.disabled = !visible;
-    // the mapml document associated to this layer can in theory contain one or more
-    // link[@rel=legend] elements with different @type or other attributes;
-    // currently only support a single link, don't care about type, lang etc.
-    // TODO: add support for full LayerLegend object, and > one link.
-            if (this._layer._legendUrl) {
-                this.legendLinks = 
-                  [{ type: 'application/octet-stream',
-                     href: this._layer._legendUrl,
-                     rel: 'legend',
-                     lang: null,
-                     hreflang: null,
-                     sizes: null }];
-            }
         }
     },
     _onLayerChange: function() {
@@ -149,6 +151,7 @@ MapLayer = Polymer({
     ready: function() {
         console.log(this.localName + '#' + this.id + ' is ready');
         this._layer = M.mapMLLayer(this.src);
+        this._layer.on('extentload', this._onLayerExtentLoad, this);
     },
     _attachedToMap: function() {
         var i = 0;

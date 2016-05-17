@@ -159,9 +159,13 @@ M.MapMLLayer = L.Layer.extend({
     options: {
         maxNext: 10,
         zIndex: 0
-    },    
+    },
+    // initialize is executed before the layer is added to a map
     initialize: function (href, options) {
+        // in the custom element, the attribute is actually 'src'
+        // the _href version is the URL received from layer-@src
         this._href = href;
+        // hit the service to determine what its extent might be
         this._initExtent();
         L.setOptions(this, options);
     },
@@ -206,11 +210,13 @@ M.MapMLLayer = L.Layer.extend({
         map.addLayer(this._tileLayer);
         this._tileLayer._container.appendChild(this._el);
         // if the extent has been initialized and received, update the map,
-        // otherwise wait for 'moveend' to be triggered by the callback
         /* TODO establish the minZoom, maxZoom for the _tileLayer based on
          * info received from mapml server. */
-        if (this._extent)
+        if (this._extent) {
             this._onMoveEnd();
+        } else {
+            this.once('extentload', this._onMoveEnd, this);
+        }
     },
     addTo: function (map) {
         map.addLayer(this);
@@ -307,139 +313,60 @@ M.MapMLLayer = L.Layer.extend({
         if (!this._href) {return;}
         var layer = this;
         var xhr = new XMLHttpRequest();
-        _get(this._href, _processResponse);
+        _get(this._href, _processInitialExtentResponse);
         function _get(url, fCallback  ) {
             xhr.onreadystatechange = function () { 
               if(this.readyState === this.DONE) {
                 if(this.status === 200 && this.callback) {
                   this.callback.apply(this, this.arguments ); 
                   return;
-                } else if (this.status === 406 && 
-                           this.response !== null && 
-                           this.responseXML.querySelector('error')) {
-                     console.error('406');
-                     xhr.abort();
+                } else if (this.status === 400 || 
+                    this.status === 404 || 
+                    this.status === 500 || 
+                    this.status === 406) {
+                    layer.error = true;
+                    layer.fire('extentload', layer, true);
+                    xhr.abort();
                 }
               }};
             xhr.arguments = Array.prototype.slice.call(arguments, 2);
             xhr.onload = fCallback;
             xhr.onerror = function () { 
-              console.error(this.statusText); 
               layer.error = true;
+              layer.fire('extentload', layer, true);
             };
             xhr.open("GET", url);
             xhr.setRequestHeader("Accept",M.mime);
             xhr.overrideMimeType("text/xml");
             xhr.send();
         };
-
-        function _processResponse() {
+        
+        function _processInitialExtentResponse() {
             if (this.responseXML) {
-                var xml = this.responseXML;
-                var serverExtent = xml.getElementsByTagName('extent')[0];
+                var xml = this.responseXML,
+                    serverExtent = xml.getElementsByTagName('extent')[0];
                 if (!serverExtent) {
-                  var metaZoom = xml.querySelectorAll('meta[name=zoom]')[0].getAttribute('content'),
-                          initial,min,max;
-                  if (metaZoom) {
-                    var expressions = metaZoom.split(',');
-                    for (var i=0;i<expressions.length;i++) {
-                      var expr = expressions[i].split('='),
-                              lhs = expr[0],rhs=expr[1];
-                      if (lhs === 'min') {
-                        min = parseInt(rhs);
-                      }
-                      if (lhs === 'max') {
-                        max = parseInt(rhs);
-                      }
-                      if (lhs === 'iniital') {
-                        initial = parseInt(rhs);
-                      }
-                    }
-                    var fakeExtent = xml.createElement('extent'), 
-                            fakeZoom = xml.createElement('input');
-                    fakeZoom.setAttribute('type','zoom');
-                    fakeZoom.setAttribute('min',min);
-                    fakeZoom.setAttribute('max',max);
-                    fakeExtent.appendChild(fakeZoom);
-                    
-                    var metaProjection = xml.querySelector('meta[name=projection]'),projection;
-                    if (!metaProjection) {
-                      projection = 'WGS84';
-                    }
-                    var fakeProjection = xml.createElement('input');
-                    fakeProjection.setAttribute('type','projection');
-                    fakeProjection.setAttribute('value','WGS84');
-                    fakeExtent.appendChild(fakeProjection);
-                    
-                    var metaExtent = xml.querySelector('meta[name=extent]');
-                    if (metaExtent) {
-                      var expressions = metaExtent.getAttribute('content').split(','),xmin,ymin,xmax,ymax;
-                      
-                      for (var i=0;i<expressions.length;i++) {
-                        var expr = expressions[i].split('='),
-                                lhs = expr[0],rhs=expr[1];
-                        if (lhs === 'xmin') {
-                          xmin = parseInt(rhs);
-                        }
-                        if (lhs === 'xmax') {
-                          xmax = parseInt(rhs);
-                        }
-                        if (lhs === 'ymin') {
-                          ymin = parseInt(rhs);
-                        }
-                        if (lhs === 'ymax') {
-                          ymax = parseInt(rhs);
-                        }
-                      }
-                      var xminInput = xml.createElement('input'),
-                          xmaxInput = xml.createElement('input'),
-                          yminInput = xml.createElement('input'),
-                          ymaxInput = xml.createElement('input');
-                      xminInput.setAttribute('type','xmin');
-                      xminInput.setAttribute('min',xmin);
-                      xminInput.setAttribute('max',xmax);
-                      xmaxInput.setAttribute('type','xmax');
-                      xmaxInput.setAttribute('min',xmin);
-                      xmaxInput.setAttribute('max',xmax);
-
-                      yminInput.setAttribute('type','ymin');
-                      yminInput.setAttribute('min',ymin);
-                      yminInput.setAttribute('max',ymax);
-                      ymaxInput.setAttribute('type','ymax');
-                      ymaxInput.setAttribute('min',ymin);
-                      ymaxInput.setAttribute('max',ymax);
-                      
-                      fakeExtent.appendChild(xminInput);
-                      fakeExtent.appendChild(yminInput);
-                      fakeExtent.appendChild(xmaxInput);
-                      fakeExtent.appendChild(ymaxInput);
-                      
-                    }
-                    
                     // manufacture an extent that won't lead to repeated requests to server
-                    serverExtent = fakeExtent;
-                  }
+                    serverExtent = layer._synthesizeExtentFromMetadata(xml);
                 }
-                
-                var licenseLink =  xml.querySelectorAll('link[rel=license]')[0],
-                    licenseTitle = licenseLink.getAttribute('title'),
-                    licenseUrl = licenseLink.getAttribute('href'),
-                    legendLink = xml.querySelectorAll('link[rel=legend]')[0],
-                    attText = '<a href="' + licenseUrl + '" title="'+licenseTitle+'">'+licenseTitle+'</a>';
-                L.setOptions(layer,{projection:serverExtent.querySelectorAll('input[type=projection]')[0].getAttribute('value'), attribution:attText });
-                if (legendLink) {
-                  layer["_legendUrl"] = legendLink.getAttribute('href');
-                }
-                layer["_extent"] = serverExtent;
-                if (layer._map) {
-                    // if the layer is checked in the layer control, force the addition
-                    // of the attribution just received
-                    if (layer._map.hasLayer(layer)) {
-                        layer._map.attributionControl.addAttribution(layer.getAttribution());
+                if (serverExtent) {
+                    layer._parseProjectionAndLinks(xml, serverExtent, layer);
+                    layer["_extent"] = serverExtent;
+                    if (layer._map) {
+                        // if the layer is checked in the layer control, force the addition
+                        // of the attribution just received
+                        if (layer._map.hasLayer(layer)) {
+                            layer._map.attributionControl.addAttribution(layer.getAttribution());
+                        }
+                        layer._map.fire('moveend', layer);
                     }
-                    layer._map.fire('moveend', layer);
+                } else {
+                    layer.error = true;
                 }
+            } else {
+                layer.error = true;
             }
+            layer.fire('extentload', layer, true);
         };
     },
     _getMapML: function(url) {
@@ -450,18 +377,20 @@ M.MapMLLayer = L.Layer.extend({
         this._map.once('movestart', function() {
           xhr.abort();
         });
-        _pull(url, _processResponse);
+        _pull(url, _processMapMLFeedResponse);
         function _pull(url, fCallback) {
             xhr.onreadystatechange = function () { 
               if(this.readyState === this.DONE) {
                 if(this.status === 200 && this.callback) {
                   this.callback.apply(this, this.arguments ); 
                   return;
-                } else if (this.status === 406 && 
-                           this.response !== null && 
-                           this.responseXML.querySelector('error')) {
-                     console.error('406');
-                     xhr.abort();
+                } else if (this.status === 400 || 
+                    this.status === 404 || 
+                    this.status === 500 || 
+                    this.status === 406) {
+                    layer.error = true;
+                    layer.fire('extentload', layer, true);
+                    xhr.abort();
                 }
               }};
             xhr.arguments = Array.prototype.slice.call(arguments, 2);
@@ -475,13 +404,14 @@ M.MapMLLayer = L.Layer.extend({
             xhr.overrideMimeType("text/xml");
             xhr.send();
         };
-        function _processResponse() {
+        function _processMapMLFeedResponse() {
             if (this.responseXML) {
               if (requestCounter === 0) {
                 var serverExtent = this.responseXML.getElementsByTagName('extent')[0];
                   layer["_extent"] = serverExtent;
                   // the serverExtent should be removed if necessary from layer._el before by _initEl
                   layer._el.appendChild(document.importNode(serverExtent,true));
+                  layer._parseProjectionAndLinks(this.responseXML, serverExtent, layer);
               }
               if (this.responseXML.getElementsByTagName('feature').length > 0) {
                   layer._mapml.addData(this.responseXML);
@@ -529,13 +459,12 @@ M.MapMLLayer = L.Layer.extend({
               var next = _parseLink('next',this.responseXML);
               if (next && requestCounter < layer.options.maxNext) {
                   requestCounter++;
-                  _pull(next, _processResponse);
+                  _pull(next, _processMapMLFeedResponse);
               } else {
                   if (layer._el.getElementsByTagName('tile').length > 0) {
-                      // would prefer to fire an event here, not quite sure how
-                      // to do that...
                       layer._tileLayer._onMoveEnd();
                   }
+                  layer.fire('extentload', layer, true);
               }
             }
         };
@@ -550,7 +479,101 @@ M.MapMLLayer = L.Layer.extend({
             return relLink;
         };
     },
+    _synthesizeExtentFromMetadata: function (mapmlResponse) {
+        var metaZoom = mapmlResponse.querySelectorAll('meta[name=zoom]')[0],
+                initial,min,max;
+        if (metaZoom) {
+            var expressions = metaZoom.getAttribute('content').split(',');
+            for (var i=0;i<expressions.length;i++) {
+              var expr = expressions[i].split('='),
+                      lhs = expr[0],rhs=expr[1];
+              if (lhs === 'min') {
+                min = parseInt(rhs);
+              }
+              if (lhs === 'max') {
+                max = parseInt(rhs);
+              }
+              if (lhs === 'iniital') {
+                initial = parseInt(rhs);
+              }
+            }
+            var fakeExtent = mapmlResponse.createElement('extent'), 
+                    fakeZoom = mapmlResponse.createElement('input');
+            fakeZoom.setAttribute('type','zoom');
+            fakeZoom.setAttribute('min',min);
+            fakeZoom.setAttribute('max',max);
+            fakeExtent.appendChild(fakeZoom);
+
+            var metaProjection = mapmlResponse.querySelector('meta[name=projection]'),projection;
+            if (!metaProjection) {
+              projection = 'WGS84';
+            }
+            var fakeProjection = mapmlResponse.createElement('input');
+            fakeProjection.setAttribute('type','projection');
+            fakeProjection.setAttribute('value','WGS84');
+            fakeExtent.appendChild(fakeProjection);
+
+            var metaExtent = mapmlResponse.querySelector('meta[name=extent]');
+            if (metaExtent) {
+                var expressions = metaExtent.getAttribute('content').split(','),xmin,ymin,xmax,ymax;
+
+                for (var i=0;i<expressions.length;i++) {
+                  var expr = expressions[i].split('='),
+                          lhs = expr[0],rhs=expr[1];
+                  if (lhs === 'xmin') {
+                    xmin = parseInt(rhs);
+                  }
+                  if (lhs === 'xmax') {
+                    xmax = parseInt(rhs);
+                  }
+                  if (lhs === 'ymin') {
+                    ymin = parseInt(rhs);
+                  }
+                  if (lhs === 'ymax') {
+                    ymax = parseInt(rhs);
+                  }
+                }
+                var xminInput = mapmlResponse.createElement('input'),
+                    xmaxInput = mapmlResponse.createElement('input'),
+                    yminInput = mapmlResponse.createElement('input'),
+                    ymaxInput = mapmlResponse.createElement('input');
+                xminInput.setAttribute('type','xmin');
+                xminInput.setAttribute('min',xmin);
+                xminInput.setAttribute('max',xmax);
+                xmaxInput.setAttribute('type','xmax');
+                xmaxInput.setAttribute('min',xmin);
+                xmaxInput.setAttribute('max',xmax);
+
+                yminInput.setAttribute('type','ymin');
+                yminInput.setAttribute('min',ymin);
+                yminInput.setAttribute('max',ymax);
+                ymaxInput.setAttribute('type','ymax');
+                ymaxInput.setAttribute('min',ymin);
+                ymaxInput.setAttribute('max',ymax);
+
+                fakeExtent.appendChild(xminInput);
+                fakeExtent.appendChild(yminInput);
+                fakeExtent.appendChild(xmaxInput);
+                fakeExtent.appendChild(ymaxInput);
+            }
+            return fakeExtent;
+        }
+    },
+    _parseProjectionAndLinks: function (xml, serverExtent, layer) {
+        var licenseLink =  xml.querySelectorAll('link[rel=license]')[0],
+            licenseTitle = licenseLink.getAttribute('title'),
+            licenseUrl = licenseLink.getAttribute('href'),
+            legendLink = xml.querySelectorAll('link[rel=legend]')[0],
+            attText = '<a href="' + licenseUrl + '" title="'+licenseTitle+'">'+licenseTitle+'</a>';
+        L.setOptions(layer,{projection:serverExtent.querySelectorAll('input[type=projection]')[0].getAttribute('value'), attribution:attText });
+        if (legendLink) {
+          layer["_legendUrl"] = legendLink.getAttribute('href');
+        }
+    },
     _onMoveEnd: function () {
+        // this can only be done when the layer is on a map, because the url
+        // calculation requires to process the extent of the map through the 
+        // extent form that should have already been received.
         var url =  this._calculateUrl();
         if (url) {
           this.href = url;
@@ -1105,13 +1128,16 @@ M.MapMLLayerControl = L.Control.Layers.extend({
         }
     },
     _onMapMoveEnd: function(e) {
+        this._validateExtents();
+    },
+    _validateExtents: function (e) {
         // get the bounds of the map in Tiled CRS pixel units
         var zoom = this._map.getZoom(),
             bounds = this._map.getPixelBounds(),
             zoomBounds, i, obj, visible, projectionMatches;
         for (i in this._layers) {
             obj = this._layers[i];
-            if (obj.layer._extent) {
+            if (obj.layer._extent || obj.layer.error) {
 
                 // get the 'bounds' of zoom levels of the layer as described by the server
                 zoomBounds = obj.layer.getZoomBounds();
@@ -1131,11 +1157,24 @@ M.MapMLLayerControl = L.Control.Layers.extend({
                     // ie does not work with null 
                     obj.input.nextElementSibling.style.fontStyle = '';
                 }
+                this._setLegendLink(obj,obj.input.nextElementSibling);
             }
         }
     },
     _withinZoomBounds: function(zoom, range) {
         return range.min <= zoom && zoom <= range.max;
+    },
+    _setLegendLink: function (obj, span) {
+        if (obj.layer._legendUrl) {
+            var legendLink = document.createElement('a');
+            legendLink.text = ' ' + obj.name;
+            legendLink.href = obj.layer._legendUrl;
+            legendLink.target = '_blank';
+            span.innerHTML = '';
+            span.appendChild(legendLink);
+        } else {
+            span.innerHTML = ' ' + obj.name;
+        }
     },
     _addItem: function (obj) {
         var label = document.createElement('label'),
@@ -1154,22 +1193,18 @@ M.MapMLLayerControl = L.Control.Layers.extend({
 
         var name = document.createElement('span');
         
-        if (obj.layer._legendUrl) {
-            var legendLink = document.createElement('a');
-            legendLink.text = ' ' + obj.name;
-            legendLink.href = obj.layer._legendUrl;
-            legendLink.target = '_blank';
-            name.appendChild(legendLink);
-        } else {
-            name.innerHTML = ' ' + obj.name;
-        }
-        
-
+        this._setLegendLink(obj, name);
         label.appendChild(input);
         label.appendChild(name);
 
         var container = this._overlaysList;
         container.appendChild(label);
+        // this is necessary because when there are several layers in the
+        // layer control, the response to the last one can be a long time
+        // after the info is first displayed, so we have to go back and
+        // verify the extent and legend for the layer to know whether to
+        // disable it , add the legend link etc.
+        obj.layer.on('extentload', this._validateExtents, this);
 
         return label;
     }
