@@ -366,7 +366,7 @@ M.MapMLLayer = L.Layer.extend({
             } else {
                 layer.error = true;
             }
-            layer.fire('extentload', layer, true);
+            layer.fire('extentload', layer, false);
         };
     },
     _getMapML: function(url) {
@@ -1114,21 +1114,19 @@ M.MapMLLayerControl = L.Control.Layers.extend({
     },
     onAdd: function () {
         this._initLayout();
-        this._map.on('moveend', this._onMapMoveEnd, this);
+        this._map.on('moveend', this._validateExtents, this);
         this._update();
-        this._map.fire('moveend', this);
+        this._validateExtents();
         return this._container;
     },
     onRemove: function (map) {
-        map.off('moveend', this._onMapMoveEnd, this);
+        map.off('moveend', this._validateExtents, this);
         // remove layer-registerd event handlers so that if the control is not
         // on the map it does not generate layer events
         for (var i in this._layers) {
           this._layers[i].layer.off('add remove', this._onLayerChange, this);
+          this._layers[i].layer.off('extentload', this._validateExtents, this);
         }
-    },
-    _onMapMoveEnd: function(e) {
-        this._validateExtents();
     },
     _validateExtents: function (e) {
         // get the bounds of the map in Tiled CRS pixel units
