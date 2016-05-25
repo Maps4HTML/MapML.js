@@ -60,6 +60,27 @@ window.M = M;
     ],
     origin: [-2.8567784109255E7, 3.2567784109255E7]
   });
+    M.BCTILE = new L.Proj.CRS('EPSG:3005',
+  '+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs ',
+  {
+    resolutions: [
+      9783.9400003175,
+      4891.969998835831,
+      2445.9849999470835,
+      1222.9925001058336,
+      611.4962500529168,
+      305.74812489416644,
+      152.8740625,
+      76.4370312632292,
+      38.2185156316146,
+      19.10925781316146,
+      9.554628905257811,
+      4.7773144526289055,
+      2.3886572265790367,
+      1.1943286131572264
+    ],
+    origin: [-1.32393E7, 1.98685E7]
+  });
     M.OSMTILE = L.CRS.EPSG3857;
 }());
 
@@ -346,7 +367,6 @@ M.MapMLLayer = L.Layer.extend({
                 var xml = this.responseXML,
                     serverExtent = xml.getElementsByTagName('extent')[0];
                 if (!serverExtent) {
-                    // manufacture an extent that won't lead to repeated requests to server
                     serverExtent = layer._synthesizeExtentFromMetadata(xml);
                 }
                 if (serverExtent) {
@@ -408,6 +428,9 @@ M.MapMLLayer = L.Layer.extend({
             if (this.responseXML) {
               if (requestCounter === 0) {
                 var serverExtent = this.responseXML.getElementsByTagName('extent')[0];
+                if (!serverExtent) {
+                    serverExtent = layer._synthesizeExtentFromMetadata(this.responseXML);
+                }
                   layer["_extent"] = serverExtent;
                   // the serverExtent should be removed if necessary from layer._el before by _initEl
                   layer._el.appendChild(document.importNode(serverExtent,true));
@@ -556,6 +579,7 @@ M.MapMLLayer = L.Layer.extend({
                 fakeExtent.appendChild(xmaxInput);
                 fakeExtent.appendChild(ymaxInput);
             }
+            fakeExtent.setAttribute("action",mapmlResponse.URL);
             return fakeExtent;
         }
     },

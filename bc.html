@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Province of British Columbia tile caches</title>
+    <meta charset="UTF-8">
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="web-map.html">
+    <style>
+      /* map must have a defined height and width, can be set either by @height/@width or with css properties */
+      web-map {
+        float: left;
+        padding-right: 20px;
+        padding-left: 100px;
+        padding-bottom: 10px;
+        height: 400px;
+        width: 650px;
+      }
+      .hillshade {
+        opacity: 0.3;
+      }
+    </style>
+  </head>
+  <body>
+  <map is="web-map" zoom="12" lat="48.42168226" lon="-123.37612152" width="700" height="400" controls>
+    <layer- label="BC Web Mercator" src="http://geogratis.gc.ca/mapml/en/osmtile/bc/" checked></layer->
+    <layer- label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/"></layer->
+    <layer- label="British Columbia Geological Survey" src="bcgov.mapml"></layer->
+  </map>
+  <map is="web-map" zoom="8" lat="48.45131899883153" lon="-123.38236113068885"  width="700" height="400" controls projection="BCTILE">
+    <layer- label="BC Roads" src="http://geogratis.gc.ca/mapml/en/bctile/png/" checked ></layer->
+    <layer- label="BC Terrain" src="http://geogratis.gc.ca/mapml/en/bctile/jpeg/" class="hillshade"></layer->
+    <area is="map-area" id="marker" href='http://geobc.gov.bc.ca/' alt="GeoBC" coords="354,197" shape="marker">
+  </map>
+    
+  </body>
+</html>
