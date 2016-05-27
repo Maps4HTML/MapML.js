@@ -14,6 +14,11 @@
      display: none;
    }
   </style>
+  
+  <template>
+    <!-- hide any feature, image or tile elements the author includes -->
+    <content></content>
+  </template>
 
 <script>
 MapLayer = Polymer({
@@ -150,10 +155,12 @@ MapLayer = Polymer({
     },
     ready: function() {
         console.log(this.localName + '#' + this.id + ' is ready');
-        this._layer = M.mapMLLayer(this.src);
+        
+        this._layer = M.mapMLLayer(this.src ? this.src : null, this);
         this._layer.on('extentload', this._onLayerExtentLoad, this);
     },
     _attachedToMap: function() {
+        // set i to the index of this layer element in the set of layers
         var i = 0;
         for (var nodes = this.parentNode.children;i < nodes.length;i++) {
             if (this.parentNode.children[i] === this) {

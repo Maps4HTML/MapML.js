@@ -182,18 +182,20 @@ M.MapMLLayer = L.Layer.extend({
         zIndex: 0
     },
     // initialize is executed before the layer is added to a map
-    initialize: function (href, options) {
+    initialize: function (href, content, options) {
         // in the custom element, the attribute is actually 'src'
         // the _href version is the URL received from layer-@src
         this._href = href;
+        this._content = content;
         // hit the service to determine what its extent might be
-        this._initExtent();
+        // or use the extent of the content
+        this._initExtent(content);
         L.setOptions(this, options);
     },
     onAdd: function (map) {
         this._map = map;
-        if (!this._mapml) {
-          this._mapml = M.mapMl(null,{
+        if (!this._mapmlvectors) {
+          this._mapmlvectors = M.mapMlFeatures(null,{
               opacity: this.options.opacity,
               onEachFeature: function(feature, layer) {
                 var type;
@@ -215,7 +217,7 @@ M.MapMLLayer = L.Layer.extend({
               }
             });
         }
-        map.addLayer(this._mapml);
+        map.addLayer(this._mapmlvectors);
         
         if (!this._imageLayer) {
             this._imageLayer = L.layerGroup();
@@ -249,8 +251,8 @@ M.MapMLLayer = L.Layer.extend({
         moveend: this._onMoveEnd};
     },
     onRemove: function (map) {
-        this._mapml.clearLayers();
-        map.removeLayer(this._mapml);
+        this._mapmlvectors.clearLayers();
+        map.removeLayer(this._mapmlvectors);
         map.removeLayer(this._tileLayer);
         map.removeLayer(this._imageLayer);
     },
@@ -331,10 +333,18 @@ M.MapMLLayer = L.Layer.extend({
         }
     },
     _initExtent: function() {
-        if (!this._href) {return;}
+        if (!this._href && !this._content) {return;}
         var layer = this;
-        var xhr = new XMLHttpRequest();
-        _get(this._href, _processInitialExtentResponse);
+        // the this._href (comes from layer@src) should take precedence over 
+        // content of the <layer> element, but if no this._href / src is provided
+        // but there *is* child content of the <layer> element (which is copied/
+        // referred to by this._content), we should use that content.
+        if (this._href) {
+            var xhr = new XMLHttpRequest();
+            _get(this._href, _processInitialExtent);
+        } else if (this._content) {
+            _processInitialExtent(this._content);
+        }
         function _get(url, fCallback  ) {
             xhr.onreadystatechange = function () { 
               if(this.readyState === this.DONE) {
@@ -361,16 +371,15 @@ M.MapMLLayer = L.Layer.extend({
             xhr.overrideMimeType("text/xml");
             xhr.send();
         };
-        
-        function _processInitialExtentResponse() {
-            if (this.responseXML) {
-                var xml = this.responseXML,
-                    serverExtent = xml.getElementsByTagName('extent')[0];
+        function _processInitialExtent(content) {
+            var mapml = this.responseXML || content;
+            if (mapml) {
+                var serverExtent = mapml.getElementsByTagName('extent')[0];
                 if (!serverExtent) {
-                    serverExtent = layer._synthesizeExtentFromMetadata(xml);
+                    serverExtent = layer._synthesizeExtent(mapml);
                 }
                 if (serverExtent) {
-                    layer._parseProjectionAndLinks(xml, serverExtent, layer);
+                    layer._parseProjectionAndLinks(mapml, serverExtent, layer);
                     layer["_extent"] = serverExtent;
                     if (layer._map) {
                         // if the layer is checked in the layer control, force the addition
@@ -391,13 +400,17 @@ M.MapMLLayer = L.Layer.extend({
     },
     _getMapML: function(url) {
         var layer = this;
-        var requestCounter = 0;
-        var xhr = new XMLHttpRequest();
-        // add a listener to terminate pulling the feed 
-        this._map.once('movestart', function() {
-          xhr.abort();
-        });
-        _pull(url, _processMapMLFeedResponse);
+        if (url) {
+            var requestCounter = 0;
+            var xhr = new XMLHttpRequest();
+            // add a listener to terminate pulling the feed 
+            this._map.once('movestart', function() {
+              xhr.abort();
+            });
+            _pull(url, _processMapMLFeedResponse);
+        } else if (this._content) {
+            _processMapMLFeedResponse(this._content);
+        }
         function _pull(url, fCallback) {
             xhr.onreadystatechange = function () { 
               if(this.readyState === this.DONE) {
@@ -424,31 +437,32 @@ M.MapMLLayer = L.Layer.extend({
             xhr.overrideMimeType("text/xml");
             xhr.send();
         };
-        function _processMapMLFeedResponse() {
-            if (this.responseXML) {
+        function _processMapMLFeedResponse(content) {
+            var mapml = this.responseXML || content;
+            if (mapml) {
               if (requestCounter === 0) {
-                var serverExtent = this.responseXML.getElementsByTagName('extent')[0];
+                var serverExtent = mapml.getElementsByTagName('extent')[0];
                 if (!serverExtent) {
-                    serverExtent = layer._synthesizeExtentFromMetadata(this.responseXML);
+                    serverExtent = layer._synthesizeExtent(mapml);
                 }
                   layer["_extent"] = serverExtent;
                   // the serverExtent should be removed if necessary from layer._el before by _initEl
                   layer._el.appendChild(document.importNode(serverExtent,true));
-                  layer._parseProjectionAndLinks(this.responseXML, serverExtent, layer);
+                  layer._parseProjectionAndLinks(mapml, serverExtent, layer);
               }
-              if (this.responseXML.getElementsByTagName('feature').length > 0) {
-                  layer._mapml.addData(this.responseXML);
+              if (mapml.getElementsByTagName('feature').length > 0) {
+                  layer._mapmlvectors.addData(mapml);
               }
-              if (this.responseXML.getElementsByTagName('tile').length > 0) {
+              if (mapml.getElementsByTagName('tile').length > 0) {
                   var tiles = document.createElement("tiles");
-                  var newTiles = this.responseXML.getElementsByTagName('tile');
+                  var newTiles = mapml.getElementsByTagName('tile');
                   for (var i=0;i<newTiles.length;i++) {
                       tiles.appendChild(document.importNode(newTiles[i], true));
                   }
                   layer._el.appendChild(tiles);
               }
-              if (this.responseXML.getElementsByTagName('image').length > 0) {
-                  var images = this.responseXML.getElementsByTagName('image'),
+              if (mapml.getElementsByTagName('image').length > 0) {
+                  var images = mapml.getElementsByTagName('image'),
                       imageOverlays = [],
                       // need a reference to the _imageLayer container element to pass to children
                       // so they can append the img element they create to it.
@@ -479,7 +493,7 @@ M.MapMLLayer = L.Layer.extend({
                     }
                   }
               }
-              var next = _parseLink('next',this.responseXML);
+              var next = _parseLink('next',mapml);
               if (next && requestCounter < layer.options.maxNext) {
                   requestCounter++;
                   _pull(next, _processMapMLFeedResponse);
@@ -502,8 +516,8 @@ M.MapMLLayer = L.Layer.extend({
             return relLink;
         };
     },
-    _synthesizeExtentFromMetadata: function (mapmlResponse) {
-        var metaZoom = mapmlResponse.querySelectorAll('meta[name=zoom]')[0],
+    _synthesizeExtent: function (mapml) {
+        var metaZoom = mapml.querySelectorAll('meta[name=zoom]')[0],
                 initial,min,max;
         if (metaZoom) {
             var expressions = metaZoom.getAttribute('content').split(',');
@@ -520,23 +534,23 @@ M.MapMLLayer = L.Layer.extend({
                 initial = parseInt(rhs);
               }
             }
-            var fakeExtent = mapmlResponse.createElement('extent'), 
-                    fakeZoom = mapmlResponse.createElement('input');
+            var fakeExtent = document.createElement('extent'), 
+                    fakeZoom = document.createElement('input');
             fakeZoom.setAttribute('type','zoom');
             fakeZoom.setAttribute('min',min);
             fakeZoom.setAttribute('max',max);
             fakeExtent.appendChild(fakeZoom);
 
-            var metaProjection = mapmlResponse.querySelector('meta[name=projection]'),projection;
+            var metaProjection = mapml.querySelector('meta[name=projection]'),projection;
             if (!metaProjection) {
               projection = 'WGS84';
             }
-            var fakeProjection = mapmlResponse.createElement('input');
+            var fakeProjection = document.createElement('input');
             fakeProjection.setAttribute('type','projection');
             fakeProjection.setAttribute('value','WGS84');
             fakeExtent.appendChild(fakeProjection);
 
-            var metaExtent = mapmlResponse.querySelector('meta[name=extent]');
+            var metaExtent = mapml.querySelector('meta[name=extent]');
             if (metaExtent) {
                 var expressions = metaExtent.getAttribute('content').split(','),xmin,ymin,xmax,ymax;
 
@@ -544,22 +558,22 @@ M.MapMLLayer = L.Layer.extend({
                   var expr = expressions[i].split('='),
                           lhs = expr[0],rhs=expr[1];
                   if (lhs === 'xmin') {
-                    xmin = parseInt(rhs);
+                    xmin = parseFloat(rhs);
                   }
                   if (lhs === 'xmax') {
-                    xmax = parseInt(rhs);
+                    xmax = parseFloat(rhs);
                   }
                   if (lhs === 'ymin') {
-                    ymin = parseInt(rhs);
+                    ymin = parseFloat(rhs);
                   }
                   if (lhs === 'ymax') {
-                    ymax = parseInt(rhs);
+                    ymax = parseFloat(rhs);
                   }
                 }
-                var xminInput = mapmlResponse.createElement('input'),
-                    xmaxInput = mapmlResponse.createElement('input'),
-                    yminInput = mapmlResponse.createElement('input'),
-                    ymaxInput = mapmlResponse.createElement('input');
+                var xminInput = document.createElement('input'),
+                    xmaxInput = document.createElement('input'),
+                    yminInput = document.createElement('input'),
+                    ymaxInput = document.createElement('input');
                 xminInput.setAttribute('type','xmin');
                 xminInput.setAttribute('min',xmin);
                 xminInput.setAttribute('max',xmax);
@@ -579,17 +593,19 @@ M.MapMLLayer = L.Layer.extend({
                 fakeExtent.appendChild(xmaxInput);
                 fakeExtent.appendChild(ymaxInput);
             }
-            fakeExtent.setAttribute("action",mapmlResponse.URL);
+            fakeExtent.setAttribute("action",mapml.URL?mapml.URL:"synthetic");
             return fakeExtent;
         }
     },
     _parseProjectionAndLinks: function (xml, serverExtent, layer) {
-        var licenseLink =  xml.querySelectorAll('link[rel=license]')[0],
-            licenseTitle = licenseLink.getAttribute('title'),
-            licenseUrl = licenseLink.getAttribute('href'),
-            legendLink = xml.querySelectorAll('link[rel=legend]')[0],
+        var licenseLink =  xml.querySelectorAll('link[rel=license]')[0], licenseTitle, licenseUrl, attText;
+        if (licenseLink) {
+            licenseTitle = licenseLink.getAttribute('title');
+            licenseUrl = licenseLink.getAttribute('href');
             attText = '<a href="' + licenseUrl + '" title="'+licenseTitle+'">'+licenseTitle+'</a>';
+        }
         L.setOptions(layer,{projection:serverExtent.querySelectorAll('input[type=projection]')[0].getAttribute('value'), attribution:attText });
+        var legendLink = xml.querySelectorAll('link[rel=legend]')[0];
         if (legendLink) {
           layer["_legendUrl"] = legendLink.getAttribute('href');
         }
@@ -601,9 +617,11 @@ M.MapMLLayer = L.Layer.extend({
         var url =  this._calculateUrl();
         if (url) {
           this.href = url;
-          this._mapml.clearLayers();
+          this._mapmlvectors.clearLayers();
           this._initEl();
           this._getMapML(url);
+        } else if (this._content && this._mapmlvectors.getLayers().length === 0) {
+          this._getMapML(null);
         }
     },
     _initEl: function () {
@@ -614,8 +632,8 @@ M.MapMLLayer = L.Layer.extend({
     },
     _reset: function() {
         this._initEl();
-        this._mapml.clearLayers();
-        //this._map.removeLayer(this._mapml);
+        this._mapmlvectors.clearLayers();
+        //this._map.removeLayer(this._mapmlvectors);
         return;
     },
     // return the LatLngBounds of the map unprojected such that the whole
@@ -637,7 +655,7 @@ M.MapMLLayer = L.Layer.extend({
         var extent = this._el.getElementsByTagName('extent')[0] || this._extent;
         if (!extent) return this._href;
         var action = extent.getAttribute("action");
-        if (!action) return null;
+        if (!action || action === "synthetic") return null;
         var b,
             projection = extent.querySelectorAll('input[type=projection]')[0],
             projectionValue = projection.getAttribute('value');
@@ -897,7 +915,7 @@ M.mapMLTileLayer = function (url, options) {
  * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.
  */
 
-M.MapML = L.FeatureGroup.extend({
+M.MapMLFeatures = L.FeatureGroup.extend({
 	initialize: function (mapml, options) {
 		L.setOptions(this, options);
 
@@ -909,7 +927,7 @@ M.MapML = L.FeatureGroup.extend({
 	},
 
 	addData: function (mapml) {
-		var features = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.getElementsByTagName("feature") : null,
+		var features = mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === "LAYER-" ? mapml.getElementsByTagName("feature") : null,
 		    i, len, feature;
             
                 var stylesheet = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelector("link[rel=stylesheet]") : null;
@@ -946,7 +964,7 @@ M.MapML = L.FeatureGroup.extend({
 
 		if (options.filter && !options.filter(mapml)) { return; }
 
-		var layer = M.MapML.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options);
+		var layer = M.MapMLFeatures.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options);
 		layer.feature = mapml.getElementsByTagName('properties')[0];
                 
                 layer.options.className = mapml.getAttribute('class') ? mapml.getAttribute('class') : null;
@@ -986,17 +1004,17 @@ M.MapML = L.FeatureGroup.extend({
 	}
 });
 
-L.extend(M.MapML, {
+L.extend(M.MapMLFeatures, {
 	geometryToLayer: function (mapml, pointToLayer, coordsToLatLng, vectorOptions) {
-		var geometry = mapml.tagName === 'feature' ? mapml.getElementsByTagName('geometry')[0] : mapml,
+		var geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
 		    coords = geometry.getElementsByTagName('coordinates'),
 		    layers = [],
 		    latlng, latlngs, i, len;
 
 		coordsToLatLng = coordsToLatLng || this.coordsToLatLng;
 
-		switch (geometry.firstElementChild.tagName) {
-		case 'Point':
+		switch (geometry.firstElementChild.tagName.toUpperCase()) {
+		case 'POINT':
                         var coordinates = [];
                         coords[0].innerHTML.split(/\s+/gi).forEach(parseNumber,coordinates);
 			latlng = coordsToLatLng(coordinates);
@@ -1016,7 +1034,7 @@ L.extend(M.MapML, {
                                     popupAnchor: [1, -34],
                                     shadowSize: [41, 41]})});
 
-		case 'MultiPoint':
+		case 'MULTIPOINT':
                         throw new Error('Not implemented yet');
 //			for (i = 0, len = coords.length; i < len; i++) {
 //				latlng = coordsToLatLng(coords[i]);
@@ -1024,13 +1042,13 @@ L.extend(M.MapML, {
 //			}
 //			return new L.FeatureGroup(layers);
 
-		case 'LineString':
+		case 'LINESTRING':
                         var coordinates = [];
                         coords[0].innerHTML.match(/(\S+ \S+)/gi).forEach(splitCoordinate, coordinates);
 			latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng);
 			return new L.Polyline(latlngs, vectorOptions);
 
-		case 'Polygon':
+		case 'POLYGON':
                         var coordinates = new Array(coords.length);
                         for (var i=0;i<coords.length;i++) {
                           coordinates[i]=[];
@@ -1038,17 +1056,17 @@ L.extend(M.MapML, {
                         }
 			latlngs = this.coordsToLatLngs(coordinates, 1, coordsToLatLng);
 			return new L.Polygon(latlngs, vectorOptions);
-		case 'MultiLineString':
+		case 'MULTILINESTRING':
                         throw new Error('Not implemented yet');
 //			latlngs = this.coordsToLatLngs(coords, 1, coordsToLatLng);
 //			return new L.MultiPolyline(latlngs, vectorOptions);
 
-		case 'MultiPolygon':
+		case 'MULTIPOLYGON':
                         throw new Error('Not implemented yet');
 //			latlngs = this.coordsToLatLngs(coords, 2, coordsToLatLng);
 //			return new L.MultiPolygon(latlngs, vectorOptions);
 
-		case 'GeometryCollection':
+		case 'GEOMETRYCOLLECTION':
                         throw new Error('Not implemented yet');
 //			for (i = 0, len = geometry.geometries.length; i < len; i++) {
 //
@@ -1115,8 +1133,8 @@ L.extend(M.MapML, {
 	}
 });
  
-M.mapMl = function (mapml, options) {
-	return new M.MapML(mapml, options);
+M.mapMlFeatures = function (mapml, options) {
+	return new M.MapMLFeatures(mapml, options);
 };
 
 
