@@ -18,6 +18,33 @@
       required to mark up extent information in order to control the scales at which a layer should be enabled.  We've opted for allowing
       the &lt;meta&gt; element for this purpose; it's as though it was a server-side MapML document with no server smarts (no extent element),
       just manually marked up with the &lt;meta&gt; element.</p>
+      
+      <p>There's lots left to do here, here's my list:</p>
+      <ul>
+        <li>Bug fixes</li>
+        <li>Enable author-supplied CSS</li>
+        <li>Inline georeferenced images</li>
+        <li>Inline tiles?</li>
+        <li>MultiPoint, MultiLineString, MultiPolygon, etc</li>
+        <li>Non-WGS84 feature coordinates</li>
+        <li>LMK</li>
+      </ul>
+      
+      <pre>
+    &lt;map is="web-map" zoom="16" lat="45.399627" lon="-75.706143" width="400" height="300" controls projection="CBMTILE">
+      &lt;layer- label="cbmt_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked HIDDEN></layer->
+      &lt;layer- label="Point" >
+       &lt;!-- in HTML the meta element is void (no closing tag), and since this is 
+             being parsed by the HTML parser, we should be able to get away with 
+             that when including features in "HTML" content -->
+        &lt;meta name="zoom" content="min=14,max=18">
+        &lt;meta name="extent" content="xmin=-76,ymin=45,xmax=-73,ymax=46">
+        &lt;feature>&lt;properties>&lt;name>Canada Centre for Mapping and Earth Observation&lt;/name>&lt;/properties>&lt;geometry>&lt;Point>&lt;coordinates>-75.705961 45.398511&lt;/coordinates>&lt;/Point>&lt;/geometry>&lt;/feature>
+      &lt;/layer->
+      &lt;-- ommitting line and polygon markup for brevity. Note that you get a nasty FOUC (Flash Of Unstyled Content) in IE -->
+      &lt;-- very easy to get carried away with all this GIS-y stuff, so awaiting your comments :-) -->
+    &lt;/map>
+      </pre>
     </div>
     <map is="web-map" zoom="16" lat="45.399627" lon="-75.706143" width="400" height="300" controls projection="CBMTILE">
       <layer- label="cbmt_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked HIDDEN></layer->
