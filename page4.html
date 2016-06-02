@@ -7,7 +7,7 @@
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="web-map.html">
     <style>
-      web-map {
+      map {
         display: block;
       }
       .transparency {
@@ -17,23 +17,23 @@
   </head>
   <body>
     <div>
-      <web-map zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls>
-        <map-layer id="osm" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden></map-layer>
-        <map-layer id="cbmt" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/" checked></map-layer>
-        <map-layer id="canvec" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></map-layer>
+      <map is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls>
+        <layer- id="osm" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden></layer->
+        <layer- id="cbmt" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/" checked></layer->
+        <layer- id="canvec" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></layer->
         <!-- the HTML author can create MapML files and serve them as layers if they prefer -->
-        <map-layer id="marker" label="Marker layer" src="marker.mapml"></map-layer>
+        <layer- id="marker" label="Marker layer" src="marker.mapml"></layer->
         
         <!-- or the HTML author can create map 'area's (links) within the HTML document -->
-<!--        <map-area id="wholemap" href='http://example.com/default/' alt="Default" shape="default" style="fill: salmon; stroke: none; fill-opacity: 0.01"></map-area>-->
-        <map-area id="marker2" href='http://example.com/marker/' alt="Marker" coords="265,185" shape="marker"></map-area>
-        <map-area id="line" href='http://example.com/line/' alt="Line" coords="275,275,540,107" shape="line"></map-area>
+<!--        <area is="map-area"  id="wholemap" href='http://example.com/default/' alt="Default" shape="default" style="fill: salmon; stroke: none; fill-opacity: 0.01"></area>-->
+        <area is="map-area"  id="marker2" href='http://example.com/marker/' alt="Marker" coords="265,185" shape="marker"></area>
+        <area is="map-area"  id="line" href='http://example.com/line/' alt="Line" coords="275,275,540,107" shape="line"></area>
 
-        <map-area id="doughnut" alt="Circle" href='http://example.com/circle/' coords="250,250,25" shape="circle" style="fill: white; stroke: aqua; stroke-width: 5px;fill-opacity: 0.0"></map-area>
-        <map-area id="hole" coords="250,250,7" shape="circle" style="fill: blue; stroke: none;fill-opacity: 0.3;"></map-area>
-        <map-area id="rect" href='http://example.com/rectangle/' alt="Rectangle" coords="345,290,415,320" shape="rect" style="fill: greenyellow; stroke: blue; stroke-width: 3px;fill-opacity: 0.4"></map-area>
-        <map-area id="poly" href='http://example.com/polygon/' alt="Polygon" coords="392,116,430,100,441,128,405,145" shape="poly" style="fill: pink; stroke: blue; stroke-width: 3px;fill-opacity: 0.4"></map-area>
-      </web-map>
+        <area is="map-area"  id="doughnut" alt="Circle" href='http://example.com/circle/' coords="250,250,25" shape="circle" style="fill: white; stroke: aqua; stroke-width: 5px;fill-opacity: 0.0"></area>
+        <area is="map-area"  id="hole" coords="250,250,7" shape="circle" style="fill: blue; stroke: none;fill-opacity: 0.3;"></area>
+        <area is="map-area"  id="rect" href='http://example.com/rectangle/' alt="Rectangle" coords="345,290,415,320" shape="rect" style="fill: greenyellow; stroke: blue; stroke-width: 3px;fill-opacity: 0.4"></area>
+        <area is="map-area"  id="poly" href='http://example.com/polygon/' alt="Polygon" coords="392,116,430,100,441,128,405,145" shape="poly" style="fill: pink; stroke: blue; stroke-width: 3px;fill-opacity: 0.4"></area>
+      </map>
       <a href="index.html" style="">Next</a>
   </div>
     

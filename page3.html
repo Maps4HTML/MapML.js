@@ -7,7 +7,7 @@
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="web-map.html">
     <style>
-      web-map {
+      map {
         display: block;
         height: 350px;
         width: 640px;
@@ -19,10 +19,10 @@
   </head>
   <body>
     <div>
-      <web-map zoom="3" lat="90.0" lon="0.0" projection="APSTILE">
-        <map-layer src="http://geogratis.gc.ca/mapml/arctic/" label="Arctic Ocean Base Map" checked hidden></map-layer>
-        <map-area shape="marker" href='http://example.com/santa/' alt="North Pole" coords="320,175" id="northPole"></map-area>
-      </web-map>
+      <map is="web-map"  zoom="3" lat="90.0" lon="0.0" projection="APSTILE">
+        <layer- src="http://geogratis.gc.ca/mapml/arctic/" label="Arctic Ocean Base Map" checked hidden></layer->
+        <area is="map-area" shape="marker" href='http://example.com/santa/' alt="North Pole" coords="320,175" id="northPole"></area>
+      </map>
       <a href="page4.html" style="">Next</a>
   </div>
     
