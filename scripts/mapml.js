@@ -1,4 +1,4 @@
-/* global L */
+/* global L, Node */
 (function (window, document, undefined) {
   
 var M = {};
@@ -185,11 +185,30 @@ M.MapMLLayer = L.Layer.extend({
     initialize: function (href, content, options) {
         // in the custom element, the attribute is actually 'src'
         // the _href version is the URL received from layer-@src
-        this._href = href;
-        this._content = content;
+        if (href) {
+            this._href = href;
+        }
+        var mapml = content.querySelector('image,feature,tile') ? true : false;
+        if (mapml) {
+            this._content = content;
+        }
         // hit the service to determine what its extent might be
-        // or use the extent of the content
-        this._initExtent(content);
+        // OR use the extent of the content provided
+        this._initExtent(mapml ? content : null);
+        
+        // a default extent can't be correctly set without the map to provide
+        // its bounds , projection, zoom range etc, so if that stuff's not
+        // established by metadata in the content, we should use map properties
+        // to set the extent.
+        if (!this._href && this._content) {
+            this.once('attached', 
+              function () {
+                  if (!this._extent) {
+                      this._extent = this._getMapMLExtent(this._map.getBounds(),[this._map.getMinZoom(),this._map.getMaxZoom()],'WGS84');
+                  }
+              }, this
+            );
+        }
         L.setOptions(this, options);
     },
     onAdd: function (map) {
@@ -213,7 +232,7 @@ M.MapMLLayer = L.Layer.extend({
                 for (var i = 0; i < props.length; i++) {
                     popupContent += props[i].tagName+ " = " + props[i].innerHTML  +"<br>";
                 }  
-                layer.bindPopup(popupContent, {autoPan:false});
+                layer.bindPopup(popupContent, {autoPan:true});
               }
             });
         }
@@ -238,6 +257,9 @@ M.MapMLLayer = L.Layer.extend({
         if (this._extent) {
             this._onMoveEnd();
         } else {
+            // if we get to this point and there is no this._extent, it means
+            // we're waiting for the server to return one -> get content when
+            // that is available.
             this.once('extentload', this._onMoveEnd, this);
         }
     },
@@ -246,9 +268,10 @@ M.MapMLLayer = L.Layer.extend({
         return this;
     },
     getEvents: function () {
-      return {
-        zoom: this._reset, 
-        moveend: this._onMoveEnd};
+        return {
+            zoom: this._reset, 
+            moveend: this._onMoveEnd
+        };
     },
     onRemove: function (map) {
         this._mapmlvectors.clearLayers();
@@ -332,8 +355,8 @@ M.MapMLLayer = L.Layer.extend({
             this._container.style.zIndex = this.options.zIndex;
         }
     },
-    _initExtent: function() {
-        if (!this._href && !this._content) {return;}
+    _initExtent: function(content) {
+        if (!this._href && !content) {return;}
         var layer = this;
         // the this._href (comes from layer@src) should take precedence over 
         // content of the <layer> element, but if no this._href / src is provided
@@ -342,8 +365,10 @@ M.MapMLLayer = L.Layer.extend({
         if (this._href) {
             var xhr = new XMLHttpRequest();
             _get(this._href, _processInitialExtent);
-        } else if (this._content) {
-            _processInitialExtent(this._content);
+        } else if (content) {
+            // may not set this._extent if it can't be done from the content
+            // (eg a single point) and there's no map to provide a default yet
+            _processInitialExtent(content);
         }
         function _get(url, fCallback  ) {
             xhr.onreadystatechange = function () { 
@@ -374,12 +399,12 @@ M.MapMLLayer = L.Layer.extend({
         function _processInitialExtent(content) {
             var mapml = this.responseXML || content;
             if (mapml) {
-                var serverExtent = mapml.getElementsByTagName('extent')[0];
+                var serverExtent = mapml.querySelector('extent');
                 if (!serverExtent) {
                     serverExtent = layer._synthesizeExtent(mapml);
                 }
                 if (serverExtent) {
-                    layer._parseProjectionAndLinks(mapml, serverExtent, layer);
+                    layer._parseLicenseAndLegend(mapml, layer);
                     layer["_extent"] = serverExtent;
                     if (layer._map) {
                         // if the layer is checked in the layer control, force the addition
@@ -441,19 +466,19 @@ M.MapMLLayer = L.Layer.extend({
             var mapml = this.responseXML || content;
             if (mapml) {
               if (requestCounter === 0) {
-                var serverExtent = mapml.getElementsByTagName('extent')[0];
+                var serverExtent = mapml.querySelector('extent');
                 if (!serverExtent) {
                     serverExtent = layer._synthesizeExtent(mapml);
                 }
                   layer["_extent"] = serverExtent;
                   // the serverExtent should be removed if necessary from layer._el before by _initEl
                   layer._el.appendChild(document.importNode(serverExtent,true));
-                  layer._parseProjectionAndLinks(mapml, serverExtent, layer);
+                  layer._parseLicenseAndLegend(mapml, layer);
               }
-              if (mapml.getElementsByTagName('feature').length > 0) {
+              if (mapml.querySelector('feature')) {
                   layer._mapmlvectors.addData(mapml);
               }
-              if (mapml.getElementsByTagName('tile').length > 0) {
+              if (mapml.querySelector('tile')) {
                   var tiles = document.createElement("tiles");
                   var newTiles = mapml.getElementsByTagName('tile');
                   for (var i=0;i<newTiles.length;i++) {
@@ -461,7 +486,7 @@ M.MapMLLayer = L.Layer.extend({
                   }
                   layer._el.appendChild(tiles);
               }
-              if (mapml.getElementsByTagName('image').length > 0) {
+              if (mapml.querySelector('image')) {
                   var images = mapml.getElementsByTagName('image'),
                       imageOverlays = [],
                       // need a reference to the _imageLayer container element to pass to children
@@ -516,96 +541,158 @@ M.MapMLLayer = L.Layer.extend({
             return relLink;
         };
     },
+    _createExtent: function () {
+    
+        var extent = document.createElement('extent'),
+            xminInput = document.createElement('input'),
+            yminInput = document.createElement('input'),
+            xmaxInput = document.createElement('input'),
+            ymaxInput = document.createElement('input'),
+            zoom = document.createElement('input'),
+            projection = document.createElement('input');
+    
+        zoom.setAttribute('type','zoom');
+        zoom.setAttribute('min','0');
+        zoom.setAttribute('max','0');
+        
+        xminInput.setAttribute('type','xmin');
+        xminInput.setAttribute('min','xmin');
+        xminInput.setAttribute('max','xmax');
+        
+        yminInput.setAttribute('type','ymin');
+        yminInput.setAttribute('min','ymin');
+        yminInput.setAttribute('max','ymax');
+        
+        xmaxInput.setAttribute('type','xmax');
+        xmaxInput.setAttribute('min','xmin');
+        xmaxInput.setAttribute('max','xmax');
+
+        ymaxInput.setAttribute('type','ymax');
+        ymaxInput.setAttribute('min','ymin');
+        ymaxInput.setAttribute('max','ymax');
+        
+        projection.setAttribute('type','projection');
+        projection.setAttribute('value','WGS84');
+        
+        extent.appendChild(xminInput);
+        extent.appendChild(yminInput);
+        extent.appendChild(xmaxInput);
+        extent.appendChild(ymaxInput);
+        extent.appendChild(zoom);
+        extent.appendChild(projection);
+        extent.setAttribute('action','synthetic');
+
+        return extent;
+    },
+    _getMapMLExtent: function (bounds, zooms, proj) {
+        
+        var extent = this._createExtent(),
+            zoom = extent.querySelector('input[type=zoom]'),
+            xminInput = extent.querySelector('input[type=xmin]'),
+            yminInput = extent.querySelector('input[type=ymin]'),
+            xmaxInput = extent.querySelector('input[type=xmax]'),
+            ymaxInput = extent.querySelector('input[type=ymax]'),
+            projection = extent.querySelector('input[type=projection]'),
+            zmin = Math.min(zooms[0],zooms[1]),
+            zmax = Math.max(zooms[0],zooms[1]),
+            xmin = bounds._southWest ? bounds.getWest() : bounds.getBottomLeft().x,
+            ymin = bounds._southWest ? bounds.getSouth() : bounds.getTopRight().y,
+            xmax = bounds._southWest ? bounds.getEast() : bounds.getTopRight().x,
+            ymax = bounds._southWest ? bounds.getNorth() : bounds.getBottomLeft().y;
+    
+        zoom.setAttribute('min',zmin);
+        zoom.setAttribute('max',zmax);
+        
+        xminInput.setAttribute('min',xmin);
+        xminInput.setAttribute('max',xmax);
+        
+        yminInput.setAttribute('min',ymin);
+        yminInput.setAttribute('max',ymax);
+        
+        xmaxInput.setAttribute('min',xmin);
+        xmaxInput.setAttribute('max',xmax);
+
+        ymaxInput.setAttribute('min',ymin);
+        ymaxInput.setAttribute('max',ymax);
+        
+        projection.setAttribute('value',bounds._southWest && !proj ? 'WGS84' : proj);
+
+        return extent;
+    },
     _synthesizeExtent: function (mapml) {
         var metaZoom = mapml.querySelectorAll('meta[name=zoom]')[0],
-                initial,min,max;
+            metaExtent = mapml.querySelector('meta[name=extent]'),
+            metaProjection = mapml.querySelector('meta[name=projection]'),
+            proj = metaProjection ? metaProjection.getAttribute('content'): 'WGS84',
+            initial,zmin,zmax,bounds;
         if (metaZoom) {
             var expressions = metaZoom.getAttribute('content').split(',');
             for (var i=0;i<expressions.length;i++) {
               var expr = expressions[i].split('='),
                       lhs = expr[0],rhs=expr[1];
               if (lhs === 'min') {
-                min = parseInt(rhs);
+                zmin = parseInt(rhs);
               }
               if (lhs === 'max') {
-                max = parseInt(rhs);
+                zmax = parseInt(rhs);
               }
               if (lhs === 'iniital') {
                 initial = parseInt(rhs);
               }
             }
-            var fakeExtent = document.createElement('extent'), 
-                    fakeZoom = document.createElement('input');
-            fakeZoom.setAttribute('type','zoom');
-            fakeZoom.setAttribute('min',min);
-            fakeZoom.setAttribute('max',max);
-            fakeExtent.appendChild(fakeZoom);
-
-            var metaProjection = mapml.querySelector('meta[name=projection]'),projection;
-            if (!metaProjection) {
-              projection = 'WGS84';
+        } else {
+            // no zoom metadata, can't build an extent
+            return;
+        }  
+        if (metaExtent) {
+            var expressions = metaExtent.getAttribute('content').split(','),xmin,ymin,xmax,ymax;
+            for (var i=0;i<expressions.length;i++) {
+              var expr = expressions[i].split('='),
+                      lhs = expr[0],rhs=expr[1];
+              if (lhs === 'xmin') {
+                xmin = parseFloat(rhs);
+              }
+              if (lhs === 'xmax') {
+                xmax = parseFloat(rhs);
+              }
+              if (lhs === 'ymin') {
+                ymin = parseFloat(rhs);
+              }
+              if (lhs === 'ymax') {
+                ymax = parseFloat(rhs);
+              }
             }
-            var fakeProjection = document.createElement('input');
-            fakeProjection.setAttribute('type','projection');
-            fakeProjection.setAttribute('value','WGS84');
-            fakeExtent.appendChild(fakeProjection);
-
-            var metaExtent = mapml.querySelector('meta[name=extent]');
-            if (metaExtent) {
-                var expressions = metaExtent.getAttribute('content').split(','),xmin,ymin,xmax,ymax;
-
-                for (var i=0;i<expressions.length;i++) {
-                  var expr = expressions[i].split('='),
-                          lhs = expr[0],rhs=expr[1];
-                  if (lhs === 'xmin') {
-                    xmin = parseFloat(rhs);
-                  }
-                  if (lhs === 'xmax') {
-                    xmax = parseFloat(rhs);
-                  }
-                  if (lhs === 'ymin') {
-                    ymin = parseFloat(rhs);
-                  }
-                  if (lhs === 'ymax') {
-                    ymax = parseFloat(rhs);
-                  }
-                }
-                var xminInput = document.createElement('input'),
-                    xmaxInput = document.createElement('input'),
-                    yminInput = document.createElement('input'),
-                    ymaxInput = document.createElement('input');
-                xminInput.setAttribute('type','xmin');
-                xminInput.setAttribute('min',xmin);
-                xminInput.setAttribute('max',xmax);
-                xmaxInput.setAttribute('type','xmax');
-                xmaxInput.setAttribute('min',xmin);
-                xmaxInput.setAttribute('max',xmax);
-
-                yminInput.setAttribute('type','ymin');
-                yminInput.setAttribute('min',ymin);
-                yminInput.setAttribute('max',ymax);
-                ymaxInput.setAttribute('type','ymax');
-                ymaxInput.setAttribute('min',ymin);
-                ymaxInput.setAttribute('max',ymax);
-
-                fakeExtent.appendChild(xminInput);
-                fakeExtent.appendChild(yminInput);
-                fakeExtent.appendChild(xmaxInput);
-                fakeExtent.appendChild(ymaxInput);
-            }
-            fakeExtent.setAttribute("action",mapml.URL?mapml.URL:"synthetic");
-            return fakeExtent;
+        } else {
+            // maybe parse the extent from actual content, this may be slow?
+            // bail for now, cause we'll use the map extent when we get attached
+            return;
         }
+        if (proj === 'WGS84') {
+            var sw = L.latLng(ymin,xmin), ne = L.latLng(ymax,xmax);
+            bounds = L.latLngBounds(sw,ne);
+        } else {
+            // needs testing
+            bounds = L.bounds([[xmin,ymin],[xmax,ymax]]);
+        }
+        return this._getMapMLExtent(bounds, [zmin,zmax], proj);
     },
-    _parseProjectionAndLinks: function (xml, serverExtent, layer) {
-        var licenseLink =  xml.querySelectorAll('link[rel=license]')[0], licenseTitle, licenseUrl, attText;
+    // a layer must share a projection with the map so that all the layers can
+    // be overlayed in one coordinate space.  WGS84 is a 'wildcard', sort of.
+    getProjection: function () {
+        if (!this._extent || !this._extent.querySelector('input[type=projection]')) return 'WGS84';
+        var projection = this._extent.querySelector('input[type=projection]');
+        if (!projection.getAttribute('value')) return 'WGS84';
+        return projection.getAttribute('value');
+    },
+    _parseLicenseAndLegend: function (xml, layer) {
+        var licenseLink =  xml.querySelector('link[rel=license]'), licenseTitle, licenseUrl, attText;
         if (licenseLink) {
             licenseTitle = licenseLink.getAttribute('title');
             licenseUrl = licenseLink.getAttribute('href');
             attText = '<a href="' + licenseUrl + '" title="'+licenseTitle+'">'+licenseTitle+'</a>';
         }
-        L.setOptions(layer,{projection:serverExtent.querySelectorAll('input[type=projection]')[0].getAttribute('value'), attribution:attText });
-        var legendLink = xml.querySelectorAll('link[rel=legend]')[0];
+        L.setOptions(layer,{attribution:attText});
+        var legendLink = xml.querySelector('link[rel=legend]');
         if (legendLink) {
           layer["_legendUrl"] = legendLink.getAttribute('href');
         }
@@ -616,12 +703,21 @@ M.MapMLLayer = L.Layer.extend({
         // extent form that should have already been received.
         var url =  this._calculateUrl();
         if (url) {
-          this.href = url;
-          this._mapmlvectors.clearLayers();
-          this._initEl();
-          this._getMapML(url);
-        } else if (this._content && this._mapmlvectors.getLayers().length === 0) {
-          this._getMapML(null);
+            this.href = url;
+            this._mapmlvectors.clearLayers();
+            this._initEl();
+            this._getMapML(url);
+        } else if (this._content && !this._mapmlvectors.getLayers().length) {
+            // if the content hasn't been parsed yet, parse it into vectors,
+            // images and tiles, if applicable
+            // 
+            // this shouldn't only be contingent on vectors - could be other stuff
+            // located in this._content that has been parsed, so it should be 
+            // generalized to be: if (this._content && !vectors && !images && !tiles)
+            // tiles could be = Object.keys($0._layer._tileLayer._tiles).length
+            // images = not sure yet. NOT FINISHED.
+            // vectors = this._mapmlvectors.getLayers().length
+            this._getMapML(null);
         }
     },
     _initEl: function () {
@@ -724,7 +820,8 @@ M.MapMLLayer = L.Layer.extend({
     // this takes into account that WGS84 is considered a wildcard match.
     _projectionMatches: function(map) {
         map = map||this._map;
-        if (!map.options.projection || this.options.projection !== 'WGS84' && map.options.projection !== this.options.projection) return false;
+        var projection = this.getProjection();
+        if (!map.options.projection || projection !== 'WGS84' && map.options.projection !== projection) return false;
         return true;
     }
 });

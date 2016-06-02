@@ -156,7 +156,12 @@ MapLayer = Polymer({
     ready: function() {
         console.log(this.localName + '#' + this.id + ' is ready');
         
-        this._layer = M.mapMLLayer(this.src ? this.src : null, this);
+        // the layer might not be attached to a map
+        // so we need a way for non-src based layers to establish what their
+        // zoom range, extent and projection are.  meta elements in content to
+        // allow the author to provide this explicitly are one way, they will
+        // be parsed from the second parameter here
+        this._layer = M.mapMLLayer(this.src, this);
         this._layer.on('extentload', this._onLayerExtentLoad, this);
     },
     _attachedToMap: function() {
@@ -170,6 +175,12 @@ MapLayer = Polymer({
         L.setOptions(this._layer, {zIndex: i+1, opacity: window.getComputedStyle(this).opacity});
         // make sure the Leaflet layer knows about the map its on
         this._layer._map = this.parentElement._map;
+        
+        // make sure local content layer has the chance to set its extent properly
+        // which is important for the layer control and the disabled property
+        if (!this.src && this.getElementsByTagName('feature') ){
+            this._layer.fire('attached');
+        }
         
         if (this.checked) {
             this._layer.addTo(this._layer._map);
