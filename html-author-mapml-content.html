@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>HTML Author-supplied MapML content</title>
+    <link rel='icon' href='MapsForHTML_16x16.png' sizes='16x16'>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="scripts/lib/leaflet-src.js"></script>
+    <link rel="import" href="web-map.html">
+  </head>
+  <body>
+      <map name="canada" is="web-map" zoom="2" lat="67.101360" lon="-91.121469"  projection="CBMTILE" width="640" height="480" controls hidden>
+        <layer- id="cbmtlcc" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked hidden></layer->
+        <layer- id="palais" label="Palais des congres de Montreal" src="palais.mapml" checked></layer->
+      </map>
+  </body>
+</html>

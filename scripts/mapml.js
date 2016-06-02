@@ -199,8 +199,9 @@ M.MapMLLayer = L.Layer.extend({
         // a default extent can't be correctly set without the map to provide
         // its bounds , projection, zoom range etc, so if that stuff's not
         // established by metadata in the content, we should use map properties
-        // to set the extent.
-        if (!this._href && this._content) {
+        // to set the extent, but the map won't be available until the <layer>
+        // element is attached to the <map> element, wait for that to happen.
+        if (!this._extent) {
             this.once('attached', 
               function () {
                   if (!this._extent) {
@@ -401,7 +402,16 @@ M.MapMLLayer = L.Layer.extend({
             if (mapml) {
                 var serverExtent = mapml.querySelector('extent');
                 if (!serverExtent) {
+                    // what's not great here is that _synthesizeExtent will bail
+                    // and thus ignore <meta> elements that the author supplied
+                    // if there isn't a complete set of zoom range, projection
+                    // and extent meta tags
                     serverExtent = layer._synthesizeExtent(mapml);
+                    // the mapml resource does not have a (complete) extent form, save
+                    // its content if any so we don't have to revisit the server, ever.
+                    if (mapml.querySelector('feature,image,tile')) {
+                        layer["_content"] = mapml;
+                    }
                 }
                 if (serverExtent) {
                     layer._parseLicenseAndLegend(mapml, layer);
@@ -412,7 +422,6 @@ M.MapMLLayer = L.Layer.extend({
                         if (layer._map.hasLayer(layer)) {
                             layer._map.attributionControl.addAttribution(layer.getAttribution());
                         }
-                        layer._map.fire('moveend', layer);
                     }
                 } else {
                     layer.error = true;

@@ -178,7 +178,7 @@ MapLayer = Polymer({
         
         // make sure local content layer has the chance to set its extent properly
         // which is important for the layer control and the disabled property
-        if (!this.src && this.getElementsByTagName('feature') ){
+        if (!this._layer._extent){
             this._layer.fire('attached');
         }
         
