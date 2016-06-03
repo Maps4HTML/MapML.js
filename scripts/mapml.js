@@ -422,6 +422,7 @@ M.MapMLLayer = L.Layer.extend({
                         if (layer._map.hasLayer(layer)) {
                             layer._map.attributionControl.addAttribution(layer.getAttribution());
                         }
+                        layer._map.fire('moveend', layer);
                     }
                 } else {
                     layer.error = true;
