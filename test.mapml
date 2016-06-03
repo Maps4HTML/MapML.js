@@ -1,0 +1,21 @@
+<mapml>
+  <head>
+    <title>Map Markup Language meta elements test for HTML author-created content</title>
+    <meta name="zoom" content="min=3,max=18"/>
+    <meta name="extent" content="xmin=-74.19733,ymin=45.41587,xmax=-73.12864,ymax=45.65485"/>
+    <link rel="license" href="example.com" title="Test © Natural Resources Canada"/>
+    <link rel="legend" href="scripts/lib/images/marker-icon.png" title="Palais des congrès de Montréal"/>
+  </head>
+  <body>
+      <feature id="palais" itemscope="itemscope" itemtype="EventVenue">
+        <properties>
+          <name itemprop="name">Palais des congrès de Montréal</name>
+        </properties>
+        <geometry>
+          <Point>
+            <coordinates>-73.5602045 45.5038505</coordinates>
+          </Point>
+        </geometry>
+      </feature>
+  </body>
+</mapml>
