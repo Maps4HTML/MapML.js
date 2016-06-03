@@ -834,8 +834,8 @@ M.MapMLLayer = L.Layer.extend({
         return true;
     }
 });
-M.mapMLLayer = function (url, options) {
-	return new M.MapMLLayer(url, options);
+M.mapMLLayer = function (url, node, options) {
+	return new M.MapMLLayer(url, node ? node : document.createElement('div'), options);
 };
 M.MapMLTileLayer = L.TileLayer.extend({
         // override the function of the same name defined in L.GridLayer
