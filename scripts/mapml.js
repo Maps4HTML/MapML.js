@@ -292,10 +292,9 @@ M.MapMLLayer = L.Layer.extend({
     // retrieve the (projected, scaled) layer extent for the current map zoom level
     getLayerExtentBounds: function(map) {
         
+        if (!this._extent) return;
         var zoom = map.getZoom(), projection = map.options.projection,
             projecting = (projection !== this._extent.querySelector('[type=projection]').getAttribute('value'));
-        
-        if (!this._extent) return;
         
         var xmin,ymin,xmax,ymax,v1,v2,extentZoomValue;
             
@@ -311,7 +310,6 @@ M.MapMLLayer = L.Layer.extend({
         v1 = this._extent.querySelector('[type=ymin]').getAttribute('max');
         v2 = this._extent.querySelector('[type=ymax]').getAttribute('max');
         ymax = Math.max(v1,v2);
-        extentZoomValue = parseInt(this._extent.querySelector('[type=zoom]').getAttribute('value'));
         // WGS84 can be converted to Tiled CRS units
         if (projecting) {
             //project and scale to M[projection] from WGS84
@@ -325,6 +323,7 @@ M.MapMLLayer = L.Layer.extend({
             return L.bounds(corners);
         } else {
             // if the zoom level of the extent does not match that of the map
+            extentZoomValue = parseInt(this._extent.querySelector('[type=zoom]').getAttribute('value'));
             if (extentZoomValue !== zoom) {
                 // convert the extent bounds to corresponding bounds at the current map zoom
                 var p = M[projection];
