@@ -7,6 +7,7 @@
     <link rel="legend" href="scripts/lib/images/marker-icon.png" title="Palais des congrès de Montréal"/>
   </head>
   <body>
+    <!-- this will create a test merge conflict hopefully -->
       <!-- this should be in conflict with an upstream test change -->
       <feature id="palais" itemscope="itemscope" itemtype="EventVenue">
         <properties>
