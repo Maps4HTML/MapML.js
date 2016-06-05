@@ -8,7 +8,7 @@
   </head>
   <body>
     <!-- this will create a test merge conflict hopefully -->
-      <!-- this should be in conflict with an upstream test change -->
+      <!-- this will be in conflict with an upstream test change -->
       <feature id="palais" itemscope="itemscope" itemtype="EventVenue">
         <properties>
           <name itemprop="name">Palais des congrès de Montréal</name>
