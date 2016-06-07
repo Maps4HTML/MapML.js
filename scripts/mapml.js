@@ -201,15 +201,7 @@ M.MapMLLayer = L.Layer.extend({
         // established by metadata in the content, we should use map properties
         // to set the extent, but the map won't be available until the <layer>
         // element is attached to the <map> element, wait for that to happen.
-        if (!this._extent) {
-            this.once('attached', 
-              function () {
-                  if (!this._extent) {
-                      this._extent = this._getMapMLExtent(this._map.getBounds(),[this._map.getMinZoom(),this._map.getMaxZoom()],'WGS84');
-                  }
-              }, this
-            );
-        }
+        this.on('attached', this._validateExtent, this );
         L.setOptions(this, options);
     },
     onAdd: function (map) {
@@ -401,10 +393,6 @@ M.MapMLLayer = L.Layer.extend({
             if (mapml) {
                 var serverExtent = mapml.querySelector('extent');
                 if (!serverExtent) {
-                    // what's not great here is that _synthesizeExtent will bail
-                    // and thus ignore <meta> elements that the author supplied
-                    // if there isn't a complete set of zoom range, projection
-                    // and extent meta tags
                     serverExtent = layer._synthesizeExtent(mapml);
                     // the mapml resource does not have a (complete) extent form, save
                     // its content if any so we don't have to revisit the server, ever.
@@ -412,19 +400,16 @@ M.MapMLLayer = L.Layer.extend({
                         layer["_content"] = mapml;
                     }
                 }
-                if (serverExtent) {
-                    layer._parseLicenseAndLegend(mapml, layer);
-                    layer["_extent"] = serverExtent;
-                    if (layer._map) {
-                        // if the layer is checked in the layer control, force the addition
-                        // of the attribution just received
-                        if (layer._map.hasLayer(layer)) {
-                            layer._map.attributionControl.addAttribution(layer.getAttribution());
-                        }
-                        layer._map.fire('moveend', layer);
+                layer._parseLicenseAndLegend(mapml, layer);
+                layer["_extent"] = serverExtent;
+                if (layer._map) {
+                    layer._validateExtent();
+                    // if the layer is checked in the layer control, force the addition
+                    // of the attribution just received
+                    if (layer._map.hasLayer(layer)) {
+                        layer._map.attributionControl.addAttribution(layer.getAttribution());
                     }
-                } else {
-                    layer.error = true;
+                    layer._map.fire('moveend', layer);
                 }
             } else {
                 layer.error = true;
@@ -565,20 +550,20 @@ M.MapMLLayer = L.Layer.extend({
         zoom.setAttribute('max','0');
         
         xminInput.setAttribute('type','xmin');
-        xminInput.setAttribute('min','xmin');
-        xminInput.setAttribute('max','xmax');
+        xminInput.setAttribute('min','');
+        xminInput.setAttribute('max','');
         
         yminInput.setAttribute('type','ymin');
-        yminInput.setAttribute('min','ymin');
-        yminInput.setAttribute('max','ymax');
+        yminInput.setAttribute('min','');
+        yminInput.setAttribute('max','');
         
         xmaxInput.setAttribute('type','xmax');
-        xmaxInput.setAttribute('min','xmin');
-        xmaxInput.setAttribute('max','xmax');
+        xmaxInput.setAttribute('min','');
+        xmaxInput.setAttribute('max','');
 
         ymaxInput.setAttribute('type','ymax');
-        ymaxInput.setAttribute('min','ymin');
-        ymaxInput.setAttribute('max','ymax');
+        ymaxInput.setAttribute('min','');
+        ymaxInput.setAttribute('max','');
         
         projection.setAttribute('type','projection');
         projection.setAttribute('value','WGS84');
@@ -593,6 +578,54 @@ M.MapMLLayer = L.Layer.extend({
 
         return extent;
     },
+    _validateExtent: function () {
+        var serverExtent = this._extent;
+        if (!serverExtent || !serverExtent.querySelector || !this._map) {
+            return;
+        }
+        if (serverExtent.querySelector('[type=xmin][min=""], [type=xmin][max=""], [type=xmax][min=""], [type=xmax][max=""], [type=ymin][min=""], [type=ymin][max=""]')) {
+            var xmin = serverExtent.querySelector('[type=xmin]'),
+                ymin = serverExtent.querySelector('[type=ymin]'),
+                xmax = serverExtent.querySelector('[type=xmax]'),
+                ymax = serverExtent.querySelector('[type=ymax]'),
+                proj = serverExtent.querySelector('[type=projection][value]'),
+                bounds, projection;
+            if (proj) {
+                projection = proj.getAttribute('value');
+                if (projection && projection === 'WGS84') {
+                    bounds = this._map.getBounds();
+                    xmin.setAttribute('min',bounds.getWest());
+                    xmin.setAttribute('max',bounds.getEast());
+                    ymin.setAttribute('min',bounds.getSouth());
+                    ymin.setAttribute('max',bounds.getNorth());
+                    xmax.setAttribute('min',bounds.getWest());
+                    xmax.setAttribute('max',bounds.getEast());
+                    ymax.setAttribute('min',bounds.getSouth());
+                    ymax.setAttribute('max',bounds.getNorth());
+                } else if (projection) {
+                    // needs testing.  Also, this will likely be
+                    // messing with a server-generated extent.
+                    bounds = this._map.getPixelBounds();
+                    xmin.setAttribute('min',bounds.getBottomLeft().x);
+                    xmin.setAttribute('max',bounds.getTopRight().x);
+                    ymin.setAttribute('min',bounds.getTopRight().y);
+                    ymin.setAttribute('max',bounds.getBottomLeft().y);
+                    xmax.setAttribute('min',bounds.getBottomLeft().x);
+                    xmax.setAttribute('max',bounds.getTopRight().x);
+                    ymax.setAttribute('min',bounds.getTopRight().y);
+                    ymax.setAttribute('max',bounds.getBottomLeft().y);
+                }
+            } else {
+                this.error = true;
+            }
+
+        }
+        if (serverExtent.querySelector('[type=zoom][min=""], [type=zoom][max=""]')) {
+            var zoom = serverExtent.querySelector('[type=zoom]');
+            zoom.setAttribute('min',this._map.getMinZoom());
+            zoom.setAttribute('max',this._map.getMaxZoom());
+        }
+    },
     _getMapMLExtent: function (bounds, zooms, proj) {
         
         var extent = this._createExtent(),
@@ -602,15 +635,15 @@ M.MapMLLayer = L.Layer.extend({
             xmaxInput = extent.querySelector('input[type=xmax]'),
             ymaxInput = extent.querySelector('input[type=ymax]'),
             projection = extent.querySelector('input[type=projection]'),
-            zmin = Math.min(zooms[0],zooms[1]),
-            zmax = Math.max(zooms[0],zooms[1]),
-            xmin = bounds._southWest ? bounds.getWest() : bounds.getBottomLeft().x,
-            ymin = bounds._southWest ? bounds.getSouth() : bounds.getTopRight().y,
-            xmax = bounds._southWest ? bounds.getEast() : bounds.getTopRight().x,
-            ymax = bounds._southWest ? bounds.getNorth() : bounds.getBottomLeft().y;
+            zmin = zooms[0] !== undefined && zooms[1] !== undefined ? Math.min(zooms[0],zooms[1]) : '',
+            zmax = zooms[0] !== undefined && zooms[1] !== undefined ? Math.max(zooms[0],zooms[1]) : '',
+            xmin = bounds ? bounds._southWest ? bounds.getWest() : bounds.getBottomLeft().x : '',
+            ymin = bounds ? bounds._southWest ? bounds.getSouth() : bounds.getTopRight().y : '',
+            xmax = bounds ? bounds._southWest ? bounds.getEast() : bounds.getTopRight().x : '',
+            ymax = bounds ? bounds._southWest ? bounds.getNorth() : bounds.getBottomLeft().y : '';
     
-        zoom.setAttribute('min',zmin);
-        zoom.setAttribute('max',zmax);
+        zoom.setAttribute('min',Number.isNaN(zmin)? '' : zmin);
+        zoom.setAttribute('max',Number.isNaN(zmax)? '' : zmax);
         
         xminInput.setAttribute('min',xmin);
         xminInput.setAttribute('max',xmax);
@@ -624,7 +657,7 @@ M.MapMLLayer = L.Layer.extend({
         ymaxInput.setAttribute('min',ymin);
         ymaxInput.setAttribute('max',ymax);
         
-        projection.setAttribute('value',bounds._southWest && !proj ? 'WGS84' : proj);
+        projection.setAttribute('value',bounds && bounds._southWest && !proj ? 'WGS84' : proj);
 
         return extent;
     },
@@ -632,10 +665,10 @@ M.MapMLLayer = L.Layer.extend({
         var metaZoom = mapml.querySelectorAll('meta[name=zoom]')[0],
             metaExtent = mapml.querySelector('meta[name=extent]'),
             metaProjection = mapml.querySelector('meta[name=projection]'),
-            proj = metaProjection ? metaProjection.getAttribute('content'): 'WGS84',
-            initial,zmin,zmax,bounds;
+            proj = metaProjection ? metaProjection.getAttribute('content'): 'WGS84', bounds;
         if (metaZoom) {
-            var expressions = metaZoom.getAttribute('content').split(',');
+            var expressions = metaZoom.getAttribute('content').split(','),
+                zmin,zmax;
             for (var i=0;i<expressions.length;i++) {
               var expr = expressions[i].split('='),
                       lhs = expr[0],rhs=expr[1];
@@ -645,13 +678,7 @@ M.MapMLLayer = L.Layer.extend({
               if (lhs === 'max') {
                 zmax = parseInt(rhs);
               }
-              if (lhs === 'iniital') {
-                initial = parseInt(rhs);
-              }
             }
-        } else {
-            // no zoom metadata, can't build an extent
-            return;
         }  
         if (metaExtent) {
             var expressions = metaExtent.getAttribute('content').split(','),xmin,ymin,xmax,ymax;
@@ -671,15 +698,11 @@ M.MapMLLayer = L.Layer.extend({
                 ymax = parseFloat(rhs);
               }
             }
-        } else {
-            // maybe parse the extent from actual content, this may be slow?
-            // bail for now, cause we'll use the map extent when we get attached
-            return;
         }
-        if (proj === 'WGS84') {
+        if (xmin && ymin && xmax && ymax && proj === 'WGS84') {
             var sw = L.latLng(ymin,xmin), ne = L.latLng(ymax,xmax);
             bounds = L.latLngBounds(sw,ne);
-        } else {
+        } else if (xmin && ymin && xmax && ymax) {
             // needs testing
             bounds = L.bounds([[xmin,ymin],[xmax,ymax]]);
         }
