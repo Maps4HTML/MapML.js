@@ -192,6 +192,7 @@ M.MapMLLayer = L.Layer.extend({
         if (mapml) {
             this._content = content;
         }
+        this._el = L.DomUtil.create('div', 'mapml-layer')
         // hit the service to determine what its extent might be
         // OR use the extent of the content provided
         this._initExtent(mapml ? content : null);
@@ -239,9 +240,7 @@ M.MapMLLayer = L.Layer.extend({
         if (!this._tileLayer) {
           this._tileLayer = M.mapMLTileLayer(this.href?this.href:this._href, this.options);
         }
-        if (!this._el) {
-            this._el = this._tileLayer._el = L.DomUtil.create('div', 'mapml-layer leaflet-zoom-hide');
-        }
+        this._tileLayer._el = this._el;
         map.addLayer(this._tileLayer);
         this._tileLayer._container.appendChild(this._el);
         // if the extent has been initialized and received, update the map,
@@ -402,6 +401,8 @@ M.MapMLLayer = L.Layer.extend({
                 }
                 layer._parseLicenseAndLegend(mapml, layer);
                 layer["_extent"] = serverExtent;
+                // BUG https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/29
+                //layer._el.appendChild(document.importNode(serverExtent,true));
                 if (layer._map) {
                     layer._validateExtent();
                     // if the layer is checked in the layer control, force the addition
@@ -466,7 +467,8 @@ M.MapMLLayer = L.Layer.extend({
                 }
                   layer["_extent"] = serverExtent;
                   // the serverExtent should be removed if necessary from layer._el before by _initEl
-                  layer._el.appendChild(document.importNode(serverExtent,true));
+                  // BUG https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/29
+                  //layer._el.appendChild(document.importNode(serverExtent,true));
                   layer._parseLicenseAndLegend(mapml, layer);
               }
               if (mapml.querySelector('feature')) {
