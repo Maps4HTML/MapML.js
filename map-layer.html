@@ -72,7 +72,7 @@ MapLayer = Polymer({
     _srcChanged: function() {
       // this should only be invoked after the ready callback
       if (this._layer) {
-        this._layer.initialize(this.src);
+        this._layer.initialize(this.src, this);
       }
     },
     _labelChanged: function() {
