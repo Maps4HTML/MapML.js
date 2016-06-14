@@ -184,7 +184,9 @@ WebMap = Polymer({
             if (L.Browser.gecko) {
                 this.poster.removeAttribute('usemap');
             }
-            Polymer.dom(this.$.map).appendChild(this.poster);
+            if (this.poster) {
+                Polymer.dom(this.$.map).appendChild(this.poster);
+            }
           }
         }
         

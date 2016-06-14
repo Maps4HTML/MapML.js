@@ -166,7 +166,7 @@ MapLayer = Polymer({
         // zoom range, extent and projection are.  meta elements in content to
         // allow the author to provide this explicitly are one way, they will
         // be parsed from the second parameter here
-        this._layer = M.mapMLLayer(this.src, this);
+        this._layer = M.mapMLLayer(this.src ? new URI(this.src).resolve(new URI(this.baseURI)).toString(): null, this);
         this._layer.on('extentload', this._onLayerExtentLoad, this);
     },
     _attachedToMap: function() {

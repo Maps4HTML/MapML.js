@@ -847,9 +847,11 @@ M.MapMLLayer = L.Layer.extend({
         var projectionName = projection.getAttribute('name')?projection.getAttribute('name').trim():'projection';
         var projectionTemplate = projectionName + "={" + projectionName + "}";
         
-        var requestTemplate = bboxTemplate + "&" + zoomTemplate + "&" + projectionTemplate;
+        var requestTemplate = bboxTemplate + "&" + zoomTemplate + "&" + projectionTemplate,
+            base = new URI(this._href);
         action += ((action.search(/\?/g) === -1) ? "?" : "&") + requestTemplate;
-        return L.Util.template(action, values);
+        var rel = new URI(action).resolve(base).toString();
+        return L.Util.template(rel, values);
     },
     // this takes into account that WGS84 is considered a wildcard match.
     _projectionMatches: function(map) {
@@ -1150,10 +1152,7 @@ L.extend(M.MapMLFeatures, {
                         coords[0].innerHTML.split(/\s+/gi).forEach(parseNumber,coordinates);
 			latlng = coordsToLatLng(coordinates);
                         
-                        /* can't use L.Icon.Default because L gets the path from
-                         * the <script> element for Leaflet, but that is not available
-                         * inside a Web Component / Custom Element */
-                        var pathToImages = "scripts/lib/images/";
+                        var pathToImages = L.Icon.Default.imagePath + "/";
                         var opacity = vectorOptions.opacity ? vectorOptions.opacity : null;
 			return pointToLayer ? pointToLayer(mapml, latlng) : 
                                 new L.Marker(latlng, {opacity: opacity, icon: L.icon({
@@ -1387,7 +1386,7 @@ M.mapMlLayerControl = function (layers, options) {
 // when used in a custom element, the leaflet script element is hidden inside
 // the import's shadow dom.
 L.Icon.Default.imagePath = (function () {
-        var imp = document.querySelector('link[rel="import"][href="web-map.html"]'),
+        var imp = document.querySelector('link[rel="import"][href*="web-map.html"]'),
             doc = imp ? imp.import : document,
             scripts = doc.getElementsByTagName('script'),
             leafletRe = /[\/^]leaflet[\-\._]?([\w\-\._]*)\.js\??/;
