@@ -917,15 +917,16 @@ L.Transformation.prototype = {
  */
 
 L.DomUtil = {
-	get: function (id) {
-		return typeof id === 'string' ? document.getElementById(id) : id;
+	get:  function (id) {
+		return typeof id === 'string' ? Polymer.dom(this.$.map).getElementById(id) : id;
 	},
 
 	getStyle: function (el, style) {
 
-		var value = el.style[style] || (el.currentStyle && el.currentStyle[style]);
+		var value = Polymer.dom(el).node.style[style] || (Polymer.dom(el).node.currentStyle && Polymer.dom(el).node.currentStyle[style]);
 
 		if ((!value || value === 'auto') && document.defaultView) {
+                        Polymer.dom.flush();
 			var css = document.defaultView.getComputedStyle(el, null);
 			value = css ? css[style] : null;
 		}
@@ -939,7 +940,7 @@ L.DomUtil = {
 		el.className = className;
 
 		if (container) {
-			container.appendChild(el);
+			Polymer.dom(container).appendChild(el);
 		}
 
 		return el;
@@ -948,38 +949,38 @@ L.DomUtil = {
 	remove: function (el) {
 		var parent = el.parentNode;
 		if (parent) {
-			parent.removeChild(el);
+			Polymer.dom(parent).removeChild(el);
 		}
 	},
 
 	empty: function (el) {
 		while (el.firstChild) {
-			el.removeChild(el.firstChild);
+			Polymer.dom(el).removeChild(Polymer.dom(el).firstChild);
 		}
 	},
 
 	toFront: function (el) {
-		el.parentNode.appendChild(el);
+		Polymer.dom(el).parentNode.appendChild(Polymer.dom(el));
 	},
 
 	toBack: function (el) {
-		var parent = el.parentNode;
-		parent.insertBefore(el, parent.firstChild);
+		var parent = Polymer.dom(el).parentNode;
+		Polymer.dom(parent).insertBefore(el, Polymer.dom(parent).firstChild);
 	},
 
 	hasClass: function (el, name) {
-		if (el.classList !== undefined) {
-			return el.classList.contains(name);
+		if (Polymer.dom(el).classList !== undefined) {
+			return Polymer.dom(el).classList.contains(name);
 		}
 		var className = L.DomUtil.getClass(el);
 		return className.length > 0 && new RegExp('(^|\\s)' + name + '(\\s|$)').test(className);
 	},
 
 	addClass: function (el, name) {
-		if (el.classList !== undefined) {
+		if (Polymer.dom(el).classList !== undefined) {
 			var classes = L.Util.splitWords(name);
 			for (var i = 0, len = classes.length; i < len; i++) {
-				el.classList.add(classes[i]);
+				Polymer.dom(el).classList.add(classes[i]);
 			}
 		} else if (!L.DomUtil.hasClass(el, name)) {
 			var className = L.DomUtil.getClass(el);
@@ -988,32 +989,32 @@ L.DomUtil = {
 	},
 
 	removeClass: function (el, name) {
-		if (el.classList !== undefined) {
-			el.classList.remove(name);
+		if (Polymer.dom(el).classList !== undefined) {
+			Polymer.dom(el).classList.remove(name);
 		} else {
 			L.DomUtil.setClass(el, L.Util.trim((' ' + L.DomUtil.getClass(el) + ' ').replace(' ' + name + ' ', ' ')));
 		}
 	},
 
 	setClass: function (el, name) {
-		if (el.className.baseVal === undefined) {
-			el.className = name;
+		if (Polymer.dom(el).className.baseVal === undefined) {
+			Polymer.dom(el).className = name;
 		} else {
 			// in case of SVG element
-			el.className.baseVal = name;
+			Polymer.dom(el).className.baseVal = name;
 		}
 	},
 
 	getClass: function (el) {
-		return el.className.baseVal === undefined ? el.className : el.className.baseVal;
+		return Polymer.dom(el).className.baseVal === undefined ? Polymer.dom(el).className : Polymer.dom(el).className.baseVal;
 	},
 
 	setOpacity: function (el, value) {
 
-		if ('opacity' in el.style) {
-			el.style.opacity = value;
+		if ('opacity' in Polymer.dom(el).node.style) {
+			Polymer.dom(el).node.style.opacity = value;
 
-		} else if ('filter' in el.style) {
+		} else if ('filter' in Polymer.dom(el).node.style) {
 			L.DomUtil._setOpacityIE(el, value);
 		}
 	},
@@ -1024,7 +1025,7 @@ L.DomUtil = {
 
 		// filters collection throws an error if we try to retrieve a filter that doesn't exist
 		try {
-			filter = el.filters.item(filterName);
+			filter = Polymer.dom(el).filters.item(filterName);
 		} catch (e) {
 			// don't set opacity to 1 if we haven't already set an opacity,
 			// it isn't needed and breaks transparent pngs.
@@ -1037,7 +1038,7 @@ L.DomUtil = {
 			filter.Enabled = (value !== 100);
 			filter.Opacity = value;
 		} else {
-			el.style.filter += ' progid:' + filterName + '(opacity=' + value + ')';
+			Polymer.dom(el).node.style.filter += ' progid =' + filterName + '(opacity=' + value + ')';
 		}
 	},
 
@@ -1056,21 +1057,21 @@ L.DomUtil = {
 	setTransform: function (el, offset, scale) {
 		var pos = offset || new L.Point(0, 0);
 
-		el.style[L.DomUtil.TRANSFORM] =
+		Polymer.dom(el).node.style[L.DomUtil.TRANSFORM] =
 			'translate3d(' + pos.x + 'px,' + pos.y + 'px' + ',0)' + (scale ? ' scale(' + scale + ')' : '');
 	},
 
 	setPosition: function (el, point) { // (HTMLElement, Point[, Boolean])
 
 		/*eslint-disable */
-		el._leaflet_pos = point;
+		Polymer.dom(el)._leaflet_pos = point;
 		/*eslint-enable */
 
 		if (L.Browser.any3d) {
 			L.DomUtil.setTransform(el, point);
 		} else {
-			el.style.left = point.x + 'px';
-			el.style.top = point.y + 'px';
+			Polymer.dom(el).node.style.left = point.x + 'px';
+			Polymer.dom(el).node.style.top = point.y + 'px';
 		}
 	},
 
@@ -1078,7 +1079,7 @@ L.DomUtil = {
 		// this method is only used for elements previously positioned using setPosition,
 		// so it's safe to cache the position for performance
 
-		return el._leaflet_pos;
+		return Polymer.dom(el)._leaflet_pos;
 	}
 };
 
@@ -2862,7 +2863,7 @@ L.GridLayer = L.Layer.extend({
 			this._updateOpacity();
 		}
 
-		this.getPane().appendChild(this._container);
+		Polymer.dom(this.getPane()).appendChild(this._container);
 	},
 
 	_updateLevels: function () {
@@ -3143,7 +3144,7 @@ L.GridLayer = L.Layer.extend({
 				this._addTile(queue[i], fragment);
 			}
 
-			this._level.el.appendChild(fragment);
+			Polymer.dom(this._level.el).appendChild(fragment);
 		}
 	},
 
@@ -3258,7 +3259,7 @@ L.GridLayer = L.Layer.extend({
 			current: true
 		};
 
-		container.appendChild(tile);
+		Polymer.dom(container).appendChild(tile);
 		this.fire('tileloadstart', {
 			tile: tile,
 			coords: coords
@@ -3619,7 +3620,7 @@ L.ImageOverlay = L.Layer.extend({
 			this.addInteractiveTarget(this._image);
 		}
 
-		this.getPane().appendChild(this._image);
+		Polymer.dom(this.getPane()).appendChild(this._image);
 		this._reset();
 	},
 
@@ -4032,10 +4033,10 @@ L.Marker = L.Layer.extend({
 
 
 		if (addIcon) {
-			this.getPane().appendChild(this._icon);
+			Polymer.dom(this.getPane()).appendChild(this._icon);
 		}
 		if (newShadow && addShadow) {
-			this.getPane('shadowPane').appendChild(this._shadow);
+			Polymer.dom(this.getPane('shadowPane')).appendChild(this._shadow);
 		}
 	},
 
@@ -4228,7 +4229,7 @@ L.Popup = L.Layer.extend({
 		}
 
 		clearTimeout(this._removeTimeout);
-		this.getPane().appendChild(this._container);
+		Polymer.dom(this.getPane()).appendChild(this._container);
 		this.update();
 
 		if (map._fadeAnimated) {
@@ -4369,7 +4370,7 @@ L.Popup = L.Layer.extend({
 			while (node.hasChildNodes()) {
 				node.removeChild(node.firstChild);
 			}
-			node.appendChild(content);
+			Polymer.dom(node).appendChild(content);
 		}
 		this.fire('contentupdate');
 	},
@@ -4884,7 +4885,7 @@ L.Renderer = L.Layer.extend({
 			}
 		}
 
-		this.getPane().appendChild(this._container);
+		Polymer.dom(this.getPane()).appendChild(this._container);
 		this._update();
 	},
 
@@ -5853,7 +5854,7 @@ L.SVG = L.Renderer.extend({
 		this._container.setAttribute('pointer-events', 'none');
 
 		this._rootGroup = L.SVG.create('g');
-		this._container.appendChild(this._rootGroup);
+		Polymer.dom(this._container).appendChild(this._rootGroup);
 	},
 
 	_update: function () {
@@ -5894,7 +5895,7 @@ L.SVG = L.Renderer.extend({
 	},
 
 	_addPath: function (layer) {
-		this._rootGroup.appendChild(layer._path);
+		Polymer.dom(this._rootGroup).appendChild(layer._path);
 		layer.addInteractiveTarget(layer._path);
 	},
 
@@ -6055,14 +6056,14 @@ L.SVG.include(!L.Browser.vml ? {} : {
 		container.coordsize = '1 1';
 
 		layer._path = L.SVG.create('path');
-		container.appendChild(layer._path);
+		Polymer.dom(container).appendChild(layer._path);
 
 		this._updateStyle(layer);
 	},
 
 	_addPath: function (layer) {
 		var container = layer._container;
-		this._container.appendChild(container);
+		Polymer.dom(this._container).appendChild(container);
 
 		if (layer.options.interactive) {
 			layer.addInteractiveTarget(container);
@@ -6087,7 +6088,7 @@ L.SVG.include(!L.Browser.vml ? {} : {
 		if (options.stroke) {
 			if (!stroke) {
 				stroke = layer._stroke = L.SVG.create('stroke');
-				container.appendChild(stroke);
+				Polymer.dom(container).appendChild(stroke);
 			}
 			stroke.weight = options.weight + 'px';
 			stroke.color = options.color;
@@ -6111,7 +6112,7 @@ L.SVG.include(!L.Browser.vml ? {} : {
 		if (options.fill) {
 			if (!fill) {
 				fill = layer._fill = L.SVG.create('fill');
-				container.appendChild(fill);
+				Polymer.dom(container).appendChild(fill);
 			}
 			fill.color = options.fillColor || options.color;
 			fill.opacity = options.fillOpacity;
@@ -8286,9 +8287,9 @@ L.Control = L.Class.extend({
 		L.DomUtil.addClass(container, 'leaflet-control');
 
 		if (pos.indexOf('bottom') !== -1) {
-			corner.insertBefore(container, corner.firstChild);
+			Polymer.dom(corner).insertBefore(container, corner.firstChild);
 		} else {
-			corner.appendChild(container);
+			Polymer.dom(corner).appendChild(container);
 		}
 
 		return this;
@@ -8775,7 +8776,7 @@ L.Control.Layers = L.Control.extend({
 		this._separator = L.DomUtil.create('div', className + '-separator', form);
 		this._overlaysList = L.DomUtil.create('div', className + '-overlays', form);
 
-		container.appendChild(form);
+		Polymer.dom(container).appendChild(form);
 	},
 
 	_addLayer: function (layer, name, overlay) {
@@ -8875,12 +8876,12 @@ L.Control.Layers = L.Control.extend({
 		// https://github.com/Leaflet/Leaflet/issues/2771
 		var holder = document.createElement('div');
 
-		label.appendChild(holder);
-		holder.appendChild(input);
-		holder.appendChild(name);
+		Polymer.dom(label).appendChild(holder);
+		Polymer.dom(holder).appendChild(input);
+		Polymer.dom(holder).appendChild(name);
 
 		var container = obj.overlay ? this._overlaysList : this._baseLayersList;
-		container.appendChild(label);
+		Polymer.dom(container).appendChild(label);
 
 		return label;
 	},
@@ -9147,7 +9148,7 @@ L.Map.include(!zoomAnimated ? {} : {
 	_createAnimProxy: function () {
 
 		var proxy = this._proxy = L.DomUtil.create('div', 'leaflet-proxy leaflet-zoom-animated');
-		this._panes.mapPane.appendChild(proxy);
+		Polymer.dom(this._panes.mapPane).appendChild(proxy);
 
 		this.on('zoomanim', function (e) {
 			var prop = L.DomUtil.TRANSFORM,

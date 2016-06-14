@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/BlogPosting">
+  <head>
+    <!-- for the purposes of explaining stuff, force IE to compatibility mode -->
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /> 
+    <meta charset="utf-8" />
+    <title>Progressive Web Maps</title>
+    <link rel='icon' href='../MapsForHTML_16x16.png' sizes='16x16'>
+    <meta name="description" content="The HTML map element needs a community.  The Maps for HTML Community Group wants to adopt it.">
+    <meta name="keywords" content="maps,maps for html,web maps,image maps,html5,Web map demos,Web map examples,progressive web apps,web platform,progressive web maps,polymer,javascript,css3,service workers,offline,mobile">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta itemprop="name" content="Progressive Web Maps">
+    <meta itemprop="description" content="The HTML map element needs a new community.  The Maps for HTML Community Group wants to adopt it.">
+    <meta itemprop="image" content="MapsForHTML.png">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@maps4html">
+    <meta name="twitter:creator" content="@prushforth">
+    <meta name="twitter:title" content="Progressive Web Maps">
+    <meta name="twitter:description" content="The HTML map element needs a new home. The Maps for HTML Community Group wants to adopt it.">
+    <meta name="twitter:image" content="http://maps4html.github.io/Web-Map-Custom-Element/map2.png">
+    <meta name="twitter:image:alt" content="Canada Base Map for Transportation displayed by map custom element">
+    
+    <link rel="author" href="https://twitter.com/prushforth">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300,400,400italic,600,800|Source+Code+Pro" rel="stylesheet">
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+    
+    <!-- IE has been forced to IE7 compatibility (see above), Web Components aren't run -->
+<!--[if !IE]>-->
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+    <link rel="import" href="../web-map.html">
+    <link rel="stylesheet" media="all" href="styles/v2-combined.css?20131111">
+
+<!--<![endif]-->
+    <style>
+      /* map must have a defined height and width, can be set either by @height/@width or with css properties */
+      .article map {
+        height: 400px;
+        width: 700px;
+        max-width: 100%;
+      }
+      .transparency {
+        opacity: 0.2;
+      }
+      area#line {
+        fill: none; 
+        stroke: purple; 
+        stroke-width: 7px;
+        stroke-opacity: 1.0;
+        stroke-linecap: round;
+      }
+    </style>
+  </head>
+  <body  class="article tutorial">
+  <header class="main" id="siteheader">
+    <a href="#sitenav" id="navtoggle">Show navigation</a>
+
+    
+    <a id="toctoggle" href="#toc">Table of Contents</a>
+    
+
+    <nav id="sitenav">
+      <ul>
+        
+        <li id="home_menu"><a href="." class="home">Home</a></li>
+        
+      </ul>
+    </nav>
+
+    
+    <nav class="toc" id="toc">
+      <h1>Table of Contents</h1>
+
+      <ul>
+        <li><a href='#toc-what'>Progressive Web Maps</a></li>
+        <li><a href='#toc-pe-pwa'>Progressive Enhancement and Progressive Web Applications</a></li>
+        <li><a href='#toc-semantics'>Semantics</a></li>
+        <li><a href='#toc-accessibility'>Accessibility</a></li>
+        <li><a href='#toc-conclusion'>Conclusion</a></li>
+        <li><a href='#toc-learn'>Learn More About Maps for HTML</a></li>
+      </ul>
+
+    </nav>
+    
+  </header>    
+    <div class="body-content">
+      <section class="title">
+        <section class="title-text container">
+          <h1>Progressive Web Maps</h1>
+          <h2>Customized Built-in &lt;map&gt; vs. Autonomous Custom &lt;web-map&gt; element</h2>
+          <a href="" class="watermark">Maps for HTML</a>
+        </section>
+      </section>
+      
+      <article class="content-wrapper">
+
+        <section class="container">
+          <div class="article-meta" id="article-meta">
+            <nav class="toc">
+              <h1>Table of Contents</h1>
+
+              <ul>
+                <li><a href='#toc-what'>Progressive Web Maps</a></li>
+                <li><a href='#toc-pe-pwa'>Progressive Enhancement and Progressive Web Applications</a></li>
+                <li><a href='#toc-semantics'>Semantics</a></li>
+                <li><a href='#toc-accessibility'>Accessibility</a></li>
+                <li><a href='#toc-conclusion'>Conclusion</a></li>
+                <li><a href='#toc-learn'>About Maps for HTML</a></li>
+              </ul>
+            </nav>
+
+          </div>
+          <div class="content" id="article-content">
+
+            <section class="byline">
+
+              <div class="byline-content">
+                <section class="author-images">
+                  <a href="https://twitter.com/prushforth">
+                    <img src="https://pbs.twimg.com/profile_images/477555139427848192/O077Dad0_400x400.png" itemprop="photo" alt="Peter Rushforth" title="Peter Rushforth">
+                  </a>
+                </section>
+              </div>
+            <section class="meta">
+              <div class="authors">
+                <strong>By</strong> <a href="https://twitter.com/prushforth">Peter Rushforth</a>
+                
+              </div>
+
+              
+
+              <div class="date">
+                <time pubdate><strong>Published:</strong> 2016</time>
+                
+                <time class="updated"><strong>Updated:</strong> 2016</time>
+                <span><strong>Comments:</strong> <a href="#wicg_thread" class="load-comments" data-wicg-identifier="https://discourse.wicg.io/c/web-mapping">0</a></span>
+              </div>
+
+              <div id="notcompatible" class="hidden">
+                Your browser may not support the functionality in this article.
+              </div>
+            </section>
+            <div class="clear"></div>
+            </section>
+
+          <h2 id="toc-what">Progressive Web Maps</h2>
+          <p>There is a lot of discussion about things 'progressive' these days.  The competition between the Web Platform and the mobile native platforms is heating up.  It is not overloading the term to point out the connection between 'progressive' behaviour and <a href="https://briankardell.wordpress.com/2016/06/02/x-web-days-of-future-past/">extending the Web platform</a>, which is the broader subject category of this post about Web mapping.
+          </p>
+          <p>The narrower topic here is: should we (the Maps for HTML Community Group) create and eventually propose a new element for HTML which has map semantics but is called something else, for example "webmap", or should we create and propose extended image map behaviour for the existing  HTML "map" element.
+          </p>
+          <p>The currently accepted best way to influence the Web Platform (i.e. the set of browsers whose developer teams support the WHATWG / W3C processes) is to: a) have a community and b) build a prototype if possible that demonstrates the idea and c) come prepared.
+          </p>
+          <p>Relative to a), we warmly invite you to join our CG to show your support, or even contribute &#x1f60d;.
+          </p>
+          <p>In order to address b), evolving modern Web standards in the form of Custom Elements give us the opportunity to simulate how a proposed "native" Web platform element might behave, and that fact is long overdue, perhaps explaining why maps are not yet part of the Web platform.  
+          </p>
+          <p>There are two options for new behaviour in declarative HTML: extending the semantics of existing standard markup by with attributes and/or permitted content or defining entirely new elements.  Although the barrier to doing the latter might seem lower at first glance, there is a school of thought which suggests that the former approach provides better value to the Web platform.
+          </p>
+          <p>Custom Elements supports both paths. There are two types: <a href="https://www.w3.org/TR/custom-elements/#autonomous-custom-element">autonomous custom elements</a> with a hyphen in the name e.g. &lt;taco-button>Eat me!&lt;/taco-button>, and <a href="https://www.w3.org/TR/custom-elements/#customized-built-in-element">customized built-in elements</a>, which override the behavior of an existing HTML element by adding the "is" attribute e.g. &lt;button is="tequila-button">Drink me!&lt;/button>.
+          </p>
+          <h3>Show Me The Map!</h3>
+          <pre class="prettyprint">
+          <code>
+&lt;-- You will see the old image map behaviour if: --&gt;
+&lt;-- * you're using an IE browser, this page should force IE7 mode --&gt;
+&lt;-- * in FireFox, if Web Components are enabled, I believe the HTML import for the map custom element won't work --&gt;
+&lt;-- * in any browser if you disable javascript --&gt;
+&lt;-- else the map@is=web-map should have custom behaviour, including zoom, pan, layers, controls etc. --&gt;
+
+&lt;-- The img element is only used for fallback processing, otherwise it is deleted by the custom element on load --&gt;
+&lt;img usemap="#dowslake" src="map1.png" width="700" height="400" alt="Dow's Lake area" />
+
+&lt;-- The map element can be set up by the HTML author to provide the old image map behaviour --&gt;
+&lt;map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls hidden>
+  &lt;layer- id="osm" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden>&lt;/layer-&gt;
+  &lt;layer- id="canvec" src="http://geogratis.gc.ca/mapml/canvec/50k/features/"  label="CanVec+ 031G" class="transparency">&lt;/layer-&gt;
+  &lt;layer- id="marker" label="Marker layer" src="marker.mapml">&lt;/layer-&gt;
+  &lt;area is="map-area"id="marker2" href='http://example.com/marker/' alt="Marker" coords="265,185" shape="marker">
+  <emphasis>The shape=marker keyword is new, if we want a link there in old UAs we have to provide a fallback, using rect</emphasis>
+  &lt;area is="map-area" href='http://example.com/marker/' alt="Marker" coords="255,145,275,190" shape="rect" style="fill: none">
+  &lt;area is="map-area"id="line" href='http://example.com/line/' alt="Line" coords="275,275,540,107" shape="line">
+  &lt;area is="map-area"id="donut" alt="Circle" href='http://example.com/circle/' coords="250,250,25" shape="circle" style="fill: white; stroke: aqua; stroke-width: 5px;fill-opacity: 0.0">
+  &lt;area is="map-area"id="hole" coords="250,250,7" shape="circle" style="fill: blue; stroke: none;fill-opacity: 0.3;">
+  &lt;area is="map-area"id="rect" href='http://example.com/rectangle/' alt="Rectangle" coords="345,290,415,320" shape="rect" style="fill: greenyellow; stroke: blue; stroke-width: 3px;fill-opacity: 0.4">
+  &lt;area is="map-area"id="poly" href='http://example.com/polygon/' alt="Polygon" coords="392,116,430,100,441,128,405,145" shape="poly" style="fill: pink; stroke: blue; stroke-width: 3px;fill-opacity: 0.4">
+&lt;/map>
+      </code>
+      </pre>
+      <!-- the @width / @height attributes take precedence over properties, but currently don't change to reflect updates -->
+      <img usemap="#dowslake" src="../map1.png" width="700" height="400" alt="Dow's Lake area" />
+      <map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" controls hidden>
+        <layer- id="osm" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden></layer->
+        <layer- id="canvec" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></layer->
+        <!-- the HTML author can create MapML files and serve them as layers if they prefer -->
+        <layer- id="marker" label="Marker layer" src="../marker.mapml"></layer->
+        
+        <area is="map-area" id="marker2" href='http://example.com/marker/' alt="Marker" coords="265,185" shape="marker">
+        <area is="map-area" href='http://example.com/marker/' alt="Marker" coords="255,145,275,190" shape="rect" style="fill: none">
+        <area is="map-area" id="line" href='http://example.com/line/' alt="Line" coords="275,275,540,107" shape="line">
+
+        <area is="map-area" id="donut" alt="Circle" href='http://example.com/circle/' coords="250,250,25" shape="circle" style="fill: white; stroke: aqua; stroke-width: 5px;fill-opacity: 0.0">
+        <area is="map-area" id="hole" coords="250,250,7" shape="circle" style="fill: blue; stroke: none;fill-opacity: 0.3;">
+        <area is="map-area" id="rect" href='http://example.com/rectangle/' alt="Rectangle" coords="345,290,415,320" shape="rect" style="fill: greenyellow; stroke: blue; stroke-width: 3px;fill-opacity: 0.4">
+        <area is="map-area" id="poly" href='http://example.com/polygon/' alt="Polygon" coords="392,116,430,100,441,128,405,145" shape="poly" style="fill: pink; stroke: blue; stroke-width: 3px;fill-opacity: 0.4">
+      </map>
+          <p><a href="http://maps4html.github.io/Web-Map-Custom-Element/">Here it is</a>. You can refer to that page as you read along, possibly loading it in different browsers, or reloading without JavaScript etc., to get the idea of what is being discussed.   
+          </p>
+          <p>There are many considerations to both avenues, and we are seeking feedback with this post about what is the best route for web maps.  We are not yet at the proposal stage, but we will get there eventually.  Your feedback now would be greatly appreciated.
+          </p>
+          <h2 id="toc-pe-pwc">Progressive Enhancement and Progressive Web Apps</h2>
+          <p>At its core, a <a href="https://infrequently.org/2015/06/progressive-apps-escaping-tabs-without-losing-our-soul/">Progressive Web App</a> is one that (among other important characteristics) uses <a href="https://en.wikipedia.org/wiki/Progressive_enhancement#Core_principles">progressive enhancement</a> as a means to support offline behaviour with or possibly even without service workers (because there are varying degrees of offline – some domains may be dead while others are available)  (The truth is that I have not had the time to learn about and implement a Service Worker feature for the above page, but I'm pretty sure that it will already enhance progressively with varying degrees of browser technology and connectivity.  If anyone is interested enough to try to implement a SW for that page, that would be very cool, get in touch!).
+          </p>
+          <p>An important question a new element design has to consider is: "What will user agents that don't support or know about this element do when they encounter it"?  I.e. what is the fallback strategy for the element in a user agent that doesn't know about it.            
+          </p>
+          <p>For a new native unknown or 'autonomous' custom element, the answer is that nothing will happen, and the experience the user has will not likely be the desired one.  The user agent will parse the document and find unknown HTML elements, which render their text content, if any.  Possibly script could be used for damage control, or noscript used to suggest upgrading your browser (graceful degradation).
+          </p>
+          <p>For a 'built-in custom' or an extended existing native element, the situation can be simulated today by running the page in an Internet Explorer, which doesn't support Web Components.  If the fallback strategy in the latter (native extended element semantics) case relies on providing a (Custom Element) shim or polyfill, what will the browser do with script turned off/or script errors?  Shutting script off in any browser would seem to simulate the script-turned-off situation today. However, probably more common will be the script-errors case, especially my own!
+          </p>
+          <h2 id="toc-semantics">Semantics</h2>
+          <p>Although cartographic applications are not currently reflected in the HTML map element specification examples, they are definitely part of the heritage and meaning of the element.  According to <a href="https://twitter.com/dckc/status/642045849757872128">Dan Connolly</a>, the original (server side) image maps (img@ismap) began partly in support of the <a href="https://web.archive.org/web/20030212164519/http://www2.parc.com/istl/projects/mapdocs/">original web maps</a> developed by Xerox PARC.  Their subsequent evolution to img@usemap not only solved the problems with server side image maps, it provided a progressive enhancement-type path for HTML authors, by <a href="https://tools.ietf.org/html/rfc1980#section-2.3">design</a>.            
+          </p>
+          <p>The HTML map element described by that RFC does essentially what a (primitive) web map should do: portray a two dimensional space and allow the HTML author to create shaped links in that space.  In other words, it already has the core semantics we need for Web maps.  Clearly it's <a href="https://github.com/whatwg/html/issues/389">not responsive</a>, and it lacks more advanced Web mapping features or behaviour, but it is the kernel of the user experience that one wants with a Web map.  Consider Google Maps, for example.  Apart and aside from the incredible and evolving user experience, what is it? Essentially, it is a two dimensional picture with hyperlinks on it.
+          </p>
+          <p>According to the latest draft of the Custom Elements spec: 
+          </p>
+          <blockquote>"…user agents and other software key off an element's local name in order to identify the element's semantics and behaviour. That is, the concept of customized built-in elements building on top of existing behaviour depends crucially on the extended elements retaining their original local name."
+          </blockquote>
+          <p>A key question you may have is: "What new behaviour should the new map element have?"  There are documents about the use cases that should be supported, and I think they are relevant here. Please, <a href="http://maps4html.github.io/HTML-Map-Element-UseCases-Requirements/">have a glance at them</a>.   Although development is not complete at the time of writing, some key use cases across the different categories of User Experience, HTML Authoring and Map Content Authoring are supported by the evolving prototype.
+          </p>
+          <p>Knowing what the thing is supposed to do may lead to another question: "Is there a good place to start / extend from which already exists in HTML, and could there be an organic extension of that to support these use cases without disrupting existing applications?  
+          </p>
+          <p>This is the <a href="https://www.w3.org/TR/2016/WD-custom-elements-20160226/#dev-advice">advice</a> of Custom Elements' (earlier) designers: </p>
+          <blockquote>The simplest and most robust method to create custom elements that are usable and accessible is to implement custom elements as type extensions. This method provides a custom element with built in semantics and interaction behaviours that developers can use as a foundation.</blockquote>
+          <p>The reason they give that advice is because of the default <a href="https://www.w3.org/TR/2016/WD-custom-elements-20160226/#semantics">semantics</a> of autonomous vs customized built-in elements  .
+          </p>
+          <h2 id="toc-accessibility">Accessibility</h2>
+          
+          <p>One of the main reasons you should favour extending an existing element when creating custom elements is because (in theory, at least) you get accessibility already baked into the element, based on what you're extending. <a href="http://www.brucelawson.co.uk/2014/on-the-accessibility-of-web-components-again/">Bruce Lawson</a> perfectly described the reasoning behind this, way ahead of the curve (as usual).            
+          </p>
+          <p>Then again, Bruce's examples are based on "super-whizzo-fabbo-megalicious UltraShiny" Web Component checkboxes, and here we're talking about plain old semantic HTML image maps, not a user interface thingy.
+          </p>
+          <p><a href="http://html5doctor.com/on-html-belts-and-aria-braces/">Steve Faulkner</a> described the accessibility of built in HTML elements, and why you should increasingly rely on them. I'm not certain how much this applies to the map element, as it has no default role and a 'transparent' content model in HTML5 – perhaps it applies more so to the child <area> element - but it is obvious that progressive Web maps must be accessible, continuing and possibly extending the existing accessible features-as-hyperlinks (&lt;area&gt;) model that can be tabbed to and manipulated with Assistive Technology.  <a href="https://weather.gc.ca/canada_e.html">Some applications of today's HTML map element</a> are designed for accessible cartographic maps that eschew script.  With your input, we can define the appropriate baseline for accessible Web maps for the platform.
+          </p>
+          <h2 id="toc-conclusion">Conclusion</h2>
+          <p>The intended semantics and behaviour of the map custom type extension element continues evolution of Web (platform) maps, albeit 20 years after the last step.  We had to wait for Custom Elements, to come along to make this path possible.</p>
+          <p>The map element has apparently been a little bit neglected by the standards maintainers, no insult intended, perhaps because there are alternative, modern techniques to accomplish the site navigation use cases which seem to have become prominent in the standards developers' minds.  But more likely, it is because the attention and support of the Web mapping / geospatial / open data community who might benefit the most from a more functional HTML map element, has been long diverted – once again possibly waiting for Custom Elements to herald a new era in platform evolution.
+          </p>
+          <p>This is a perfect opportunity to give the map element, and by extension the Web platform itself, continued relevance. Nothing could be better than to initiate and stoke a virtuous feedback cycle https://extensiblewebmanifesto.org/ between the geospatial and Web developer communities at a time when the Web in crisis https://medium.com/@stopsatgreen/the-crisis-facing-the-web-platform-4ab47515ed42#.b9g8ecm28  and geospatial technology is fast receding as a distinct discipline unto itself https://www.google.ca/trends/explore#q=geographic%20information%20systems .
+          </p>
+          <p>Let the Web mapping community have the map element and together let's take on the challenge of the mobile platforms, aided by Progressive Web Maps.  And by "let", I mean help us identify and test all the details that will make the addition of Progressive Web Maps (PWA) a progression in the Web platform itself.
+          </p>
+          </div>
+        </section>
+      </article>
+    </div>
+  </body>
+</html>

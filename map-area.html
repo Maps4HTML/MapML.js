@@ -1,4 +1,5 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
+<link rel="import" href="leaflet-styles.html">
 
 <script src="scripts/lib/leaflet-src.js"></script>
 <script src="scripts/lib/proj4-compressed.js"></script>
@@ -7,9 +8,7 @@
 <script src="scripts/URI.js"></script>
 
 <dom-module id="map-area">
-  <!-- in polymer 1.0.x, styles must be outside of the <template> element
-       https://www.polymer-project.org/1.0/docs/migration.html#local-dom-template -->
-<style>
+<style  include="leaflet-styles">
  :host {
    display: none;
  }
@@ -67,6 +66,8 @@ MapArea = Polymer({
     
         // don't go through this if already done
         if (!this._feature) {
+          // TODO??? SCALE this.coords if the this._map.poster exists because
+          // the img might have been scaled by CSS.
           // compute the style properties to be applied to the feature
           var options = this._styleToPathOptions(window.getComputedStyle(this)),
               points = this.coords ? this._coordsToArray(this.coords): null;
@@ -85,7 +86,7 @@ MapArea = Polymer({
                 radiusInMeters = map.distance(latLngCenter, latLngOnCirc);
             this._feature = L.circle(latLngCenter, radiusInMeters, options).addTo(map);
           } else if (!this.shape || this.shape === 'rect') {
-            var bounds = L.latLngBounds(map.containerPointToLatLng(points[0]), map.containerPointToLatLng(points[1]))
+            var bounds = L.latLngBounds(map.containerPointToLatLng(points[0]), map.containerPointToLatLng(points[1]));
             this._feature = L.rectangle(bounds, options).addTo(map);
           } else if (this.shape === 'line') {
             this._feature = L.polyline(this._pointsToLatLngs(points),options).addTo(map);

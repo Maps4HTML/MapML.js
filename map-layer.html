@@ -1,4 +1,5 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
+<link rel="import" href="leaflet-styles.html">
 
 <script src="scripts/lib/leaflet-src.js"></script>
 <script src="scripts/lib/proj4-compressed.js"></script>
@@ -9,7 +10,7 @@
 <dom-module id="layer-">
   <!-- in polymer 1.0.x, styles must be outside of the <template> element
        https://www.polymer-project.org/1.0/docs/migration.html#local-dom-template -->
-  <style>
+  <style  include="leaflet-styles">
    :host {
      display: none;
    }
@@ -165,7 +166,7 @@ MapLayer = Polymer({
         // zoom range, extent and projection are.  meta elements in content to
         // allow the author to provide this explicitly are one way, they will
         // be parsed from the second parameter here
-        this._layer = M.mapMLLayer(this.src, this);
+        this._layer = M.mapMLLayer(this.src ? new URI(this.src).resolve(new URI(this.baseURI)).toString(): null, this);
         this._layer.on('extentload', this._onLayerExtentLoad, this);
     },
     _attachedToMap: function() {
