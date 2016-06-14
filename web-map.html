@@ -1,7 +1,11 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
 <link rel="import" href="map-layer.html">
 <link rel="import" href="map-area.html">
+<!-- styles scoped to inside a custom element must be in a style module -->
+<link rel="import" href="leaflet-styles.html">
 
+<!-- this is a modified version of leaflet which uses Polymer.dom instead of 
+     regular DOM API calls so as to work with Shadow/Shady DOM custom elements -->
 <script src="scripts/lib/leaflet-src.js"></script>
 <script src="scripts/lib/proj4-compressed.js"></script>
 <script src="scripts/lib/proj4leaflet.js"></script>
@@ -9,23 +13,26 @@
 <script src="scripts/URI.js"></script>
 
 <dom-module id="web-map">
-  <!-- in polymer 1.0.x, styles must be outside of the <template> element
-       https://www.polymer-project.org/1.0/docs/migration.html#local-dom-template -->
-  <style>
-   :host {
-     display: inline-block;
-     position: relative;
-   }
-
-   #map:focus {
-     outline: 2px  double lightskyblue;
-   }
-     
-
-  </style>
-  <link rel="stylesheet" href="scripts/lib/leaflet.css" />
-
 <template>
+  <!-- use the leaflet-styles style module -->
+  <style include="leaflet-styles">
+    /* make sure the map element doesn't get selected and styled by document styles */
+    :host {
+        display: inline-block !important;
+        position: relative !important;
+    }
+    /* try to constrain the map and the leaflet div#map to the size of the container */
+        :host, :host #map {
+         max-width: 100%;
+    }
+    /* this is a hack for shady DOM, as max-width messes with Leaflet tiles */
+    :host img {
+        max-width: none !important;
+    }
+    #map:focus {
+        outline: 2px  double lightskyblue;
+    }
+  </style>
   <!-- giving the map div a tabindex allows the map to display its focus. -->
   <!-- see the #map:focus selector in styles, above. -->
   <div id="map" tabindex="0"></div>
@@ -169,20 +176,15 @@ WebMap = Polymer({
         if (this.hasAttribute('name')) {
           var name = this.getAttribute('name');
           if (name) {
-            var images = document.querySelectorAll('img[usemap]');
-            for (var i=0;i < images.length;i++) {
-                if (images[i].useMap === '#'+name) {
-                  this.poster = images[i];
-                  // firefox has an issue where the attribution control's use of
-                  // _container.innerHTML does not work properly if the engine is throwing
-                  // exceptions because there are no area element children of the image map
-                  // for firefox only, a workaround is to actually remove the image...
-                  if (L.Browser.gecko) {
-                      this.poster.removeAttribute('usemap');
-                  }
-                  this.$.map.appendChild(this.poster);
-                }
+            this.poster = document.querySelector('img[usemap='+'"#'+name+'"]');
+            // firefox has an issue where the attribution control's use of
+            // _container.innerHTML does not work properly if the engine is throwing
+            // exceptions because there are no area element children of the image map
+            // for firefox only, a workaround is to actually remove the image...
+            if (L.Browser.gecko) {
+                this.poster.removeAttribute('usemap');
             }
+            Polymer.dom(this.$.map).appendChild(this.poster);
           }
         }
         

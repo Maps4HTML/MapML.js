@@ -192,7 +192,7 @@ M.MapMLLayer = L.Layer.extend({
         if (mapml) {
             this._content = content;
         }
-        this._el = L.DomUtil.create('div', 'mapml-layer')
+        this._el = L.DomUtil.create('div', 'mapml-layer');
         // hit the service to determine what its extent might be
         // OR use the extent of the content provided
         this._initExtent(mapml ? content : null);
@@ -478,7 +478,7 @@ M.MapMLLayer = L.Layer.extend({
                   var tiles = document.createElement("tiles");
                   var newTiles = mapml.getElementsByTagName('tile');
                   for (var i=0;i<newTiles.length;i++) {
-                      tiles.appendChild(document.importNode(newTiles[i], true));
+                      Polymer.dom(tiles).appendChild(document.importNode(newTiles[i], true));
                   }
                   layer._el.appendChild(tiles);
               }
@@ -570,13 +570,13 @@ M.MapMLLayer = L.Layer.extend({
         projection.setAttribute('type','projection');
         projection.setAttribute('value','WGS84');
         
-        extent.appendChild(xminInput);
-        extent.appendChild(yminInput);
-        extent.appendChild(xmaxInput);
-        extent.appendChild(ymaxInput);
-        extent.appendChild(zoom);
-        extent.appendChild(projection);
         extent.setAttribute('action','synthetic');
+        Polymer.dom(extent).appendChild(xminInput);
+        Polymer.dom(extent).appendChild(yminInput);
+        Polymer.dom(extent).appendChild(xmaxInput);
+        Polymer.dom(extent).appendChild(ymaxInput);
+        Polymer.dom(extent).appendChild(zoom);
+        Polymer.dom(extent).appendChild(projection);
 
         return extent;
     },
@@ -877,7 +877,7 @@ M.MapMLTileLayer = L.TileLayer.extend({
 
 		return events;
 	},
-	_onMoveEnd: function () {
+        _onMoveEnd: function () {
 		if (!this._map) { return; }
 
 		this._update();
@@ -955,7 +955,7 @@ M.MapMLTileLayer = L.TileLayer.extend({
 			this._addTile(queue[i], fragment);
 		}
 
-		this._level.el.appendChild(fragment);
+		Polymer.dom(this._level.el).appendChild(fragment);
 	},
 	_addTile: function (groupToLoad, container) {
                 // tiles have been grouped by row/col, so all members of the array
@@ -979,7 +979,7 @@ M.MapMLTileLayer = L.TileLayer.extend({
                 } else {
                   tileContainer = document.createElement('div');
                     for (var i=0;i<groupToLoad.length;i++) {
-                        tileContainer.appendChild(groupToLoad[i].img);
+                        Polymer.dom(tileContainer).appendChild(groupToLoad[i].img);
                     }
                 }
                 // per L.TileLayer comment:
@@ -994,7 +994,7 @@ M.MapMLTileLayer = L.TileLayer.extend({
 			current: true
 		};
 
-		container.appendChild(tileContainer);
+		Polymer.dom(container).appendChild(tileContainer);
 		this.fire('tileloadstart', {
 			tile: tile,
 			coords: coords
@@ -1365,11 +1365,11 @@ M.MapMLLayerControl = L.Control.Layers.extend({
         var name = document.createElement('span');
         
         this._setLegendLink(obj, name);
-        label.appendChild(input);
-        label.appendChild(name);
+        Polymer.dom(label).appendChild(input);
+        Polymer.dom(label).appendChild(name);
 
         var container = this._overlaysList;
-        container.appendChild(label);
+        Polymer.dom(container).appendChild(label);
         // this is necessary because when there are several layers in the
         // layer control, the response to the last one can be a long time
         // after the info is first displayed, so we have to go back and

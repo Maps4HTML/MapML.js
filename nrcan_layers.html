@@ -10,13 +10,11 @@
     <link rel="import" href="web-map.html">
     <style>
       /* map must have a defined height and width, can be set either by @height/@width or with css properties */
-      web-map {
-        float: left;
-        padding-right: 20px;
-        padding-left: 100px;
-        padding-bottom: 10px;
-        height: 400px;
-        width: 650px;
+      div {
+        max-width: inherit
+      }
+      map {
+        max-width: 100%;
       }
       .mapclasstest {
         height: 300px;
@@ -31,6 +29,7 @@
     </style>
   </head>
   <body>
+    <div>
   <map is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls>
     <layer- label="osm" src="http://geogratis.gc.ca/mapml/osm/" checked></layer->
     <layer- label="cbmt_en" src="http://geogratis.gc.ca/mapml/en/osmtile/cbmt/"></layer->
@@ -39,6 +38,9 @@
     <layer- label="toporama_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/toporama/"></layer->
     <layer- label="geobase_en" src="http://geogratis.gc.ca/mapml/en/osmtile/geobase/"></layer->
     <layer- label="geobase_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/geobase/"></layer->
+    <layer- label="ablands_en" src="http://geogratis.gc.ca/mapml/en/osmtile/geobase/ablnd/"></layer->
+    <layer- label="ablands_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/geobase/ablnd/"></layer->
+    <layer- label="ce_en" src="http://geogratis.gc.ca/mapml/en/osmtile/ce/"></layer->
   </map>
   <map is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls projection="CBMTILE">
     <layer- label="cbmt_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
@@ -49,8 +51,12 @@
     <layer- label="toporama_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/toporama/"></layer->
     <layer- label="geobase_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/geobase/"></layer->
     <layer- label="geobase_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/geobase/"></layer->
+    <layer- label="ablands_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/geobase/ablnd/"></layer->
+    <layer- label="ablands_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/geobase/ablnd/"></layer->
+    <layer- label="ce_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/ce/"></layer->
     <layer- id="fdr" label="Fire Risk forecast" src="http://geogratis.gc.ca/mapml/fdr_current/"   style="opacity: 0.4"></layer->
   </map>
+      </div>
     
   </body>
 </html>
