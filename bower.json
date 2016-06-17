@@ -1,0 +1,32 @@
+{
+  "name": "web-map-custom-element",
+  "description": "The <web-map> Custom Element is a prototype implementation of the HTML-Map-Element specification.",
+  "main": "index.html",
+  "authors": [
+    "Maps for HTML Community"
+  ],
+  "license": "W3C SOFTWARE AND DOCUMENT NOTICE AND LICENSE",
+  "keywords": [
+    "framework",
+    "web",
+    "html5",
+    "javascript",
+    "web",
+    "component",
+    "polyfill"
+  ],
+  "homepage": "https://github.com/Maps4HTML/Web-Map-Custom-Element",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "leaflet": "Maps4HTML/Leaflet#^1.0",
+    "polymer": "^1.5.0",
+    "proj4": "^2.1.4",
+    "Proj4Leaflet": "proj4leaflet#^1.0"
+  }
+}
