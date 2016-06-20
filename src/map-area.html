@@ -1,4 +1,5 @@
 <link rel="import" href="../lib/polymer/polymer.html">
+<link rel="import" href="leaflet-styles.html">
 
 <script src="../lib/leaflet/dist/leaflet-src.js"></script>
 <script src="../lib/proj4/dist/proj4-src.js"></script>
@@ -7,9 +8,7 @@
 <script src="js/URI.js"></script>
 
 <dom-module id="map-area">
-  <!-- in polymer 1.0.x, styles must be outside of the <template> element
-       https://www.polymer-project.org/1.0/docs/migration.html#local-dom-template -->
-<style>
+<style  include="leaflet-styles">
  :host {
    display: none;
  }
@@ -17,6 +16,7 @@
 <script>
 MapArea = Polymer({
     is: "map-area",
+    extends: "area",
     properties: {
       alt : {
         type: String,
@@ -49,11 +49,7 @@ MapArea = Polymer({
         reflectToAttribute: true
       }
     },
-    ready: function() {
-        console.log(this.localName + '#' + this.id + ' is ready');
-    },
     attached: function() {
-        console.log(this.localName + '#' + this.id + ' is attached');
         // if the map has been attached, set this layer up wrt Leaflet map
         if (this.parentElement._map) {
             this._attachedToMap();
@@ -63,13 +59,15 @@ MapArea = Polymer({
         // need the map to convert container points to LatLngs
         this._map = this.parentElement._map;
         var map = this.parentElement._map;
-
+    
         // don't go through this if already done
         if (!this._feature) {
+          // TODO??? SCALE this.coords if the this._map.poster exists because
+          // the img might have been scaled by CSS.
           // compute the style properties to be applied to the feature
           var options = this._styleToPathOptions(window.getComputedStyle(this)),
               points = this.coords ? this._coordsToArray(this.coords): null;
-
+          
           if (this.shape === 'marker') {
             if (this.alt) {
               // Leaflet markers use the options.title as a tooltip
@@ -77,14 +75,14 @@ MapArea = Polymer({
             }
             this._feature = L.marker(map.containerPointToLatLng(points[0]),options).addTo(map);
           } else if (this.shape === 'circle') {
-            var pixelRadius = parseInt(this.coords.split(",")[2]),
+            var pixelRadius = parseInt(this.coords.split(",")[2]), 
                 pointOnCirc = L.point(points[0]).add(L.point(0,pixelRadius)),
                 latLngOnCirc = map.containerPointToLatLng(pointOnCirc),
                 latLngCenter = map.containerPointToLatLng(points[0]),
                 radiusInMeters = map.distance(latLngCenter, latLngOnCirc);
             this._feature = L.circle(latLngCenter, radiusInMeters, options).addTo(map);
           } else if (!this.shape || this.shape === 'rect') {
-            var bounds = L.latLngBounds(map.containerPointToLatLng(points[0]), map.containerPointToLatLng(points[1]))
+            var bounds = L.latLngBounds(map.containerPointToLatLng(points[0]), map.containerPointToLatLng(points[1]));
             this._feature = L.rectangle(bounds, options).addTo(map);
           } else if (this.shape === 'line') {
             this._feature = L.polyline(this._pointsToLatLngs(points),options).addTo(map);
@@ -99,8 +97,8 @@ MapArea = Polymer({
             // based on the <svg:title> graphics child element.
             var title = L.SVG.create('title'),
                 titleText = document.createTextNode(this.alt);
-                title.appendChild(titleText);
-            this._feature._path.appendChild(title);
+                Polymer.dom(title).appendChild(titleText);
+                Polymer.dom(this._feature._path).appendChild(title);
           }
           if (this.href) {
               // conditionally act on click on an area link.  If no link it should be an
