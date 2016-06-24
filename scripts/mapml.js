@@ -192,6 +192,7 @@ M.MapMLLayer = L.Layer.extend({
         if (mapml) {
             this._content = content;
         }
+        this._el = L.DomUtil.create('div', 'mapml-layer');
         // hit the service to determine what its extent might be
         // OR use the extent of the content provided
         this._initExtent(mapml ? content : null);
@@ -201,15 +202,7 @@ M.MapMLLayer = L.Layer.extend({
         // established by metadata in the content, we should use map properties
         // to set the extent, but the map won't be available until the <layer>
         // element is attached to the <map> element, wait for that to happen.
-        if (!this._extent) {
-            this.once('attached', 
-              function () {
-                  if (!this._extent) {
-                      this._extent = this._getMapMLExtent(this._map.getBounds(),[this._map.getMinZoom(),this._map.getMaxZoom()],'WGS84');
-                  }
-              }, this
-            );
-        }
+        this.on('attached', this._validateExtent, this );
         L.setOptions(this, options);
     },
     onAdd: function (map) {
@@ -247,9 +240,7 @@ M.MapMLLayer = L.Layer.extend({
         if (!this._tileLayer) {
           this._tileLayer = M.mapMLTileLayer(this.href?this.href:this._href, this.options);
         }
-        if (!this._el) {
-            this._el = this._tileLayer._el = L.DomUtil.create('div', 'mapml-layer leaflet-zoom-hide');
-        }
+        this._tileLayer._el = this._el;
         map.addLayer(this._tileLayer);
         this._tileLayer._container.appendChild(this._el);
         // if the extent has been initialized and received, update the map,
@@ -401,10 +392,6 @@ M.MapMLLayer = L.Layer.extend({
             if (mapml) {
                 var serverExtent = mapml.querySelector('extent');
                 if (!serverExtent) {
-                    // what's not great here is that _synthesizeExtent will bail
-                    // and thus ignore <meta> elements that the author supplied
-                    // if there isn't a complete set of zoom range, projection
-                    // and extent meta tags
                     serverExtent = layer._synthesizeExtent(mapml);
                     // the mapml resource does not have a (complete) extent form, save
                     // its content if any so we don't have to revisit the server, ever.
@@ -412,19 +399,18 @@ M.MapMLLayer = L.Layer.extend({
                         layer["_content"] = mapml;
                     }
                 }
-                if (serverExtent) {
-                    layer._parseLicenseAndLegend(mapml, layer);
-                    layer["_extent"] = serverExtent;
-                    if (layer._map) {
-                        // if the layer is checked in the layer control, force the addition
-                        // of the attribution just received
-                        if (layer._map.hasLayer(layer)) {
-                            layer._map.attributionControl.addAttribution(layer.getAttribution());
-                        }
-                        layer._map.fire('moveend', layer);
+                layer._parseLicenseAndLegend(mapml, layer);
+                layer["_extent"] = serverExtent;
+                // BUG https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/29
+                //layer._el.appendChild(document.importNode(serverExtent,true));
+                if (layer._map) {
+                    layer._validateExtent();
+                    // if the layer is checked in the layer control, force the addition
+                    // of the attribution just received
+                    if (layer._map.hasLayer(layer)) {
+                        layer._map.attributionControl.addAttribution(layer.getAttribution());
                     }
-                } else {
-                    layer.error = true;
+                    layer._map.fire('moveend', layer);
                 }
             } else {
                 layer.error = true;
@@ -481,7 +467,8 @@ M.MapMLLayer = L.Layer.extend({
                 }
                   layer["_extent"] = serverExtent;
                   // the serverExtent should be removed if necessary from layer._el before by _initEl
-                  layer._el.appendChild(document.importNode(serverExtent,true));
+                  // BUG https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/29
+                  //layer._el.appendChild(document.importNode(serverExtent,true));
                   layer._parseLicenseAndLegend(mapml, layer);
               }
               if (mapml.querySelector('feature')) {
@@ -491,7 +478,7 @@ M.MapMLLayer = L.Layer.extend({
                   var tiles = document.createElement("tiles");
                   var newTiles = mapml.getElementsByTagName('tile');
                   for (var i=0;i<newTiles.length;i++) {
-                      tiles.appendChild(document.importNode(newTiles[i], true));
+                      Polymer.dom(tiles).appendChild(document.importNode(newTiles[i], true));
                   }
                   layer._el.appendChild(tiles);
               }
@@ -565,33 +552,81 @@ M.MapMLLayer = L.Layer.extend({
         zoom.setAttribute('max','0');
         
         xminInput.setAttribute('type','xmin');
-        xminInput.setAttribute('min','xmin');
-        xminInput.setAttribute('max','xmax');
+        xminInput.setAttribute('min','');
+        xminInput.setAttribute('max','');
         
         yminInput.setAttribute('type','ymin');
-        yminInput.setAttribute('min','ymin');
-        yminInput.setAttribute('max','ymax');
+        yminInput.setAttribute('min','');
+        yminInput.setAttribute('max','');
         
         xmaxInput.setAttribute('type','xmax');
-        xmaxInput.setAttribute('min','xmin');
-        xmaxInput.setAttribute('max','xmax');
+        xmaxInput.setAttribute('min','');
+        xmaxInput.setAttribute('max','');
 
         ymaxInput.setAttribute('type','ymax');
-        ymaxInput.setAttribute('min','ymin');
-        ymaxInput.setAttribute('max','ymax');
+        ymaxInput.setAttribute('min','');
+        ymaxInput.setAttribute('max','');
         
         projection.setAttribute('type','projection');
         projection.setAttribute('value','WGS84');
         
-        extent.appendChild(xminInput);
-        extent.appendChild(yminInput);
-        extent.appendChild(xmaxInput);
-        extent.appendChild(ymaxInput);
-        extent.appendChild(zoom);
-        extent.appendChild(projection);
         extent.setAttribute('action','synthetic');
+        Polymer.dom(extent).appendChild(xminInput);
+        Polymer.dom(extent).appendChild(yminInput);
+        Polymer.dom(extent).appendChild(xmaxInput);
+        Polymer.dom(extent).appendChild(ymaxInput);
+        Polymer.dom(extent).appendChild(zoom);
+        Polymer.dom(extent).appendChild(projection);
 
         return extent;
+    },
+    _validateExtent: function () {
+        var serverExtent = this._extent;
+        if (!serverExtent || !serverExtent.querySelector || !this._map) {
+            return;
+        }
+        if (serverExtent.querySelector('[type=xmin][min=""], [type=xmin][max=""], [type=xmax][min=""], [type=xmax][max=""], [type=ymin][min=""], [type=ymin][max=""]')) {
+            var xmin = serverExtent.querySelector('[type=xmin]'),
+                ymin = serverExtent.querySelector('[type=ymin]'),
+                xmax = serverExtent.querySelector('[type=xmax]'),
+                ymax = serverExtent.querySelector('[type=ymax]'),
+                proj = serverExtent.querySelector('[type=projection][value]'),
+                bounds, projection;
+            if (proj) {
+                projection = proj.getAttribute('value');
+                if (projection && projection === 'WGS84') {
+                    bounds = this._map.getBounds();
+                    xmin.setAttribute('min',bounds.getWest());
+                    xmin.setAttribute('max',bounds.getEast());
+                    ymin.setAttribute('min',bounds.getSouth());
+                    ymin.setAttribute('max',bounds.getNorth());
+                    xmax.setAttribute('min',bounds.getWest());
+                    xmax.setAttribute('max',bounds.getEast());
+                    ymax.setAttribute('min',bounds.getSouth());
+                    ymax.setAttribute('max',bounds.getNorth());
+                } else if (projection) {
+                    // needs testing.  Also, this will likely be
+                    // messing with a server-generated extent.
+                    bounds = this._map.getPixelBounds();
+                    xmin.setAttribute('min',bounds.getBottomLeft().x);
+                    xmin.setAttribute('max',bounds.getTopRight().x);
+                    ymin.setAttribute('min',bounds.getTopRight().y);
+                    ymin.setAttribute('max',bounds.getBottomLeft().y);
+                    xmax.setAttribute('min',bounds.getBottomLeft().x);
+                    xmax.setAttribute('max',bounds.getTopRight().x);
+                    ymax.setAttribute('min',bounds.getTopRight().y);
+                    ymax.setAttribute('max',bounds.getBottomLeft().y);
+                }
+            } else {
+                this.error = true;
+            }
+
+        }
+        if (serverExtent.querySelector('[type=zoom][min=""], [type=zoom][max=""]')) {
+            var zoom = serverExtent.querySelector('[type=zoom]');
+            zoom.setAttribute('min',this._map.getMinZoom());
+            zoom.setAttribute('max',this._map.getMaxZoom());
+        }
     },
     _getMapMLExtent: function (bounds, zooms, proj) {
         
@@ -602,15 +637,15 @@ M.MapMLLayer = L.Layer.extend({
             xmaxInput = extent.querySelector('input[type=xmax]'),
             ymaxInput = extent.querySelector('input[type=ymax]'),
             projection = extent.querySelector('input[type=projection]'),
-            zmin = Math.min(zooms[0],zooms[1]),
-            zmax = Math.max(zooms[0],zooms[1]),
-            xmin = bounds._southWest ? bounds.getWest() : bounds.getBottomLeft().x,
-            ymin = bounds._southWest ? bounds.getSouth() : bounds.getTopRight().y,
-            xmax = bounds._southWest ? bounds.getEast() : bounds.getTopRight().x,
-            ymax = bounds._southWest ? bounds.getNorth() : bounds.getBottomLeft().y;
+            zmin = zooms[0] !== undefined && zooms[1] !== undefined ? Math.min(zooms[0],zooms[1]) : '',
+            zmax = zooms[0] !== undefined && zooms[1] !== undefined ? Math.max(zooms[0],zooms[1]) : '',
+            xmin = bounds ? bounds._southWest ? bounds.getWest() : bounds.getBottomLeft().x : '',
+            ymin = bounds ? bounds._southWest ? bounds.getSouth() : bounds.getTopRight().y : '',
+            xmax = bounds ? bounds._southWest ? bounds.getEast() : bounds.getTopRight().x : '',
+            ymax = bounds ? bounds._southWest ? bounds.getNorth() : bounds.getBottomLeft().y : '';
     
-        zoom.setAttribute('min',zmin);
-        zoom.setAttribute('max',zmax);
+        zoom.setAttribute('min',Number.isNaN(zmin)? '' : zmin);
+        zoom.setAttribute('max',Number.isNaN(zmax)? '' : zmax);
         
         xminInput.setAttribute('min',xmin);
         xminInput.setAttribute('max',xmax);
@@ -624,7 +659,7 @@ M.MapMLLayer = L.Layer.extend({
         ymaxInput.setAttribute('min',ymin);
         ymaxInput.setAttribute('max',ymax);
         
-        projection.setAttribute('value',bounds._southWest && !proj ? 'WGS84' : proj);
+        projection.setAttribute('value',bounds && bounds._southWest && !proj ? 'WGS84' : proj);
 
         return extent;
     },
@@ -632,10 +667,10 @@ M.MapMLLayer = L.Layer.extend({
         var metaZoom = mapml.querySelectorAll('meta[name=zoom]')[0],
             metaExtent = mapml.querySelector('meta[name=extent]'),
             metaProjection = mapml.querySelector('meta[name=projection]'),
-            proj = metaProjection ? metaProjection.getAttribute('content'): 'WGS84',
-            initial,zmin,zmax,bounds;
+            proj = metaProjection ? metaProjection.getAttribute('content'): 'WGS84', bounds;
         if (metaZoom) {
-            var expressions = metaZoom.getAttribute('content').split(',');
+            var expressions = metaZoom.getAttribute('content').split(','),
+                zmin,zmax;
             for (var i=0;i<expressions.length;i++) {
               var expr = expressions[i].split('='),
                       lhs = expr[0],rhs=expr[1];
@@ -645,13 +680,7 @@ M.MapMLLayer = L.Layer.extend({
               if (lhs === 'max') {
                 zmax = parseInt(rhs);
               }
-              if (lhs === 'iniital') {
-                initial = parseInt(rhs);
-              }
             }
-        } else {
-            // no zoom metadata, can't build an extent
-            return;
         }  
         if (metaExtent) {
             var expressions = metaExtent.getAttribute('content').split(','),xmin,ymin,xmax,ymax;
@@ -671,15 +700,11 @@ M.MapMLLayer = L.Layer.extend({
                 ymax = parseFloat(rhs);
               }
             }
-        } else {
-            // maybe parse the extent from actual content, this may be slow?
-            // bail for now, cause we'll use the map extent when we get attached
-            return;
         }
-        if (proj === 'WGS84') {
+        if (xmin && ymin && xmax && ymax && proj === 'WGS84') {
             var sw = L.latLng(ymin,xmin), ne = L.latLng(ymax,xmax);
             bounds = L.latLngBounds(sw,ne);
-        } else {
+        } else if (xmin && ymin && xmax && ymax) {
             // needs testing
             bounds = L.bounds([[xmin,ymin],[xmax,ymax]]);
         }
@@ -822,9 +847,11 @@ M.MapMLLayer = L.Layer.extend({
         var projectionName = projection.getAttribute('name')?projection.getAttribute('name').trim():'projection';
         var projectionTemplate = projectionName + "={" + projectionName + "}";
         
-        var requestTemplate = bboxTemplate + "&" + zoomTemplate + "&" + projectionTemplate;
+        var requestTemplate = bboxTemplate + "&" + zoomTemplate + "&" + projectionTemplate,
+            base = new URI(this._href);
         action += ((action.search(/\?/g) === -1) ? "?" : "&") + requestTemplate;
-        return L.Util.template(action, values);
+        var rel = new URI(action).resolve(base).toString();
+        return L.Util.template(rel, values);
     },
     // this takes into account that WGS84 is considered a wildcard match.
     _projectionMatches: function(map) {
@@ -852,7 +879,7 @@ M.MapMLTileLayer = L.TileLayer.extend({
 
 		return events;
 	},
-	_onMoveEnd: function () {
+        _onMoveEnd: function () {
 		if (!this._map) { return; }
 
 		this._update();
@@ -930,7 +957,7 @@ M.MapMLTileLayer = L.TileLayer.extend({
 			this._addTile(queue[i], fragment);
 		}
 
-		this._level.el.appendChild(fragment);
+		Polymer.dom(this._level.el).appendChild(fragment);
 	},
 	_addTile: function (groupToLoad, container) {
                 // tiles have been grouped by row/col, so all members of the array
@@ -954,7 +981,7 @@ M.MapMLTileLayer = L.TileLayer.extend({
                 } else {
                   tileContainer = document.createElement('div');
                     for (var i=0;i<groupToLoad.length;i++) {
-                        tileContainer.appendChild(groupToLoad[i].img);
+                        Polymer.dom(tileContainer).appendChild(groupToLoad[i].img);
                     }
                 }
                 // per L.TileLayer comment:
@@ -969,7 +996,7 @@ M.MapMLTileLayer = L.TileLayer.extend({
 			current: true
 		};
 
-		container.appendChild(tileContainer);
+		Polymer.dom(container).appendChild(tileContainer);
 		this.fire('tileloadstart', {
 			tile: tile,
 			coords: coords
@@ -1125,10 +1152,7 @@ L.extend(M.MapMLFeatures, {
                         coords[0].innerHTML.split(/\s+/gi).forEach(parseNumber,coordinates);
 			latlng = coordsToLatLng(coordinates);
                         
-                        /* can't use L.Icon.Default because L gets the path from
-                         * the <script> element for Leaflet, but that is not available
-                         * inside a Web Component / Custom Element */
-                        var pathToImages = "scripts/lib/images/";
+                        var pathToImages = L.Icon.Default.imagePath + "/";
                         var opacity = vectorOptions.opacity ? vectorOptions.opacity : null;
 			return pointToLayer ? pointToLayer(mapml, latlng) : 
                                 new L.Marker(latlng, {opacity: opacity, icon: L.icon({
@@ -1340,11 +1364,11 @@ M.MapMLLayerControl = L.Control.Layers.extend({
         var name = document.createElement('span');
         
         this._setLegendLink(obj, name);
-        label.appendChild(input);
-        label.appendChild(name);
+        Polymer.dom(label).appendChild(input);
+        Polymer.dom(label).appendChild(name);
 
         var container = this._overlaysList;
-        container.appendChild(label);
+        Polymer.dom(container).appendChild(label);
         // this is necessary because when there are several layers in the
         // layer control, the response to the last one can be a long time
         // after the info is first displayed, so we have to go back and
@@ -1362,7 +1386,7 @@ M.mapMlLayerControl = function (layers, options) {
 // when used in a custom element, the leaflet script element is hidden inside
 // the import's shadow dom.
 L.Icon.Default.imagePath = (function () {
-        var imp = document.querySelector('link[rel="import"][href="web-map.html"]'),
+        var imp = document.querySelector('link[rel="import"][href*="web-map.html"]'),
             doc = imp ? imp.import : document,
             scripts = doc.getElementsByTagName('script'),
             leafletRe = /[\/^]leaflet[\-\._]?([\w\-\._]*)\.js\??/;

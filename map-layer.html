@@ -1,4 +1,5 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
+<link rel="import" href="leaflet-styles.html">
 
 <script src="scripts/lib/leaflet-src.js"></script>
 <script src="scripts/lib/proj4-compressed.js"></script>
@@ -9,7 +10,7 @@
 <dom-module id="layer-">
   <!-- in polymer 1.0.x, styles must be outside of the <template> element
        https://www.polymer-project.org/1.0/docs/migration.html#local-dom-template -->
-  <style>
+  <style  include="leaflet-styles">
    :host {
      display: none;
    }
@@ -72,7 +73,7 @@ MapLayer = Polymer({
     _srcChanged: function() {
       // this should only be invoked after the ready callback
       if (this._layer) {
-        this._layer.initialize(this.src);
+        this._layer.initialize(this.src, this);
       }
     },
     _labelChanged: function() {
@@ -109,6 +110,11 @@ MapLayer = Polymer({
                  lang: null,
                  hreflang: null,
                  sizes: null }];
+        }
+        // make sure local content layer has the chance to set its extent properly
+        // which is important for the layer control and the disabled property
+        if (this._layer._map) {
+            this._layer.fire('attached', this._layer);
         }
     },
     _validateDisabled: function () {
@@ -154,14 +160,13 @@ MapLayer = Polymer({
         }
     },
     ready: function() {
-        console.log(this.localName + '#' + this.id + ' is ready');
         
         // the layer might not be attached to a map
         // so we need a way for non-src based layers to establish what their
         // zoom range, extent and projection are.  meta elements in content to
         // allow the author to provide this explicitly are one way, they will
         // be parsed from the second parameter here
-        this._layer = M.mapMLLayer(this.src, this);
+        this._layer = M.mapMLLayer(this.src ? new URI(this.src).resolve(new URI(this.baseURI)).toString(): null, this);
         this._layer.on('extentload', this._onLayerExtentLoad, this);
     },
     _attachedToMap: function() {
@@ -173,14 +178,10 @@ MapLayer = Polymer({
             }
         }
         L.setOptions(this._layer, {zIndex: i+1, opacity: window.getComputedStyle(this).opacity});
-        // make sure the Leaflet layer knows about the map its on
+        // make sure the Leaflet layer has a reference to the map
         this._layer._map = this.parentElement._map;
-        
-        // make sure local content layer has the chance to set its extent properly
-        // which is important for the layer control and the disabled property
-        if (!this._layer._extent){
-            this._layer.fire('attached');
-        }
+        // notify the layer that it is attached to a map (layer._map)
+        this._layer.fire('attached');
         
         if (this.checked) {
             this._layer.addTo(this._layer._map);
@@ -198,9 +199,14 @@ MapLayer = Polymer({
         // toggle the this.disabled attribute depending on whether the layer
         // is: same prj as map, within view/zoom of map
         this._layer._map.on('moveend', this._validateDisabled,  this);
+        // this is necessary to get the layer control to compare the layer
+        // extents with the map extent & zoom, but it needs to be rethought TODO
+        // for one thing, layers which are checked by the author before 
+        // adding to the map are displayed despite that they are not visible
+        // See issue #26
+        this._layer._map.fire('moveend');
     },
     attached: function() {
-        console.log(this.localName + '#' + this.id + ' is attached');
         if (this.parentElement.nodeName !== 'MAP') {
             console.log('ERROR: '+ this.localName + '#' + this.id + ' must be a child of a map element');
             return;
