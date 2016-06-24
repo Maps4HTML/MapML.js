@@ -1,4 +1,4 @@
-<link rel="import" href="./bower_components/polymer/polymer.html">
+<link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="map-layer.html">
 <link rel="import" href="map-area.html">
 <!-- styles scoped to inside a custom element must be in a style module -->
@@ -6,11 +6,10 @@
 
 <!-- this is a modified version of leaflet which uses Polymer.dom instead of 
      regular DOM API calls so as to work with Shadow/Shady DOM custom elements -->
-<script src="scripts/lib/leaflet-src.js"></script>
-<script src="scripts/lib/proj4-compressed.js"></script>
-<script src="scripts/lib/proj4leaflet.js"></script>
-<script src="scripts/mapml.js"></script>
-<script src="scripts/URI.js"></script>
+<script src="../polymer-leaflet/leaflet.js"></script>
+<script src="../proj4Leaflet/lib/proj4-compressed.js"></script>
+<script src="../proj4Leaflet/src/proj4leaflet.js"></script>
+<script src="../mapml-leaflet-plugin/mapml.min.js"></script>
 
 <dom-module id="web-map">
 <template>
