@@ -1,11 +1,14 @@
-<link rel="import" href="./bower_components/polymer/polymer.html">
+<link rel="import" href="../polymer/polymer.html">
+<!-- styles scoped to inside a custom element must be in a style module -->
 <link rel="import" href="leaflet-styles.html">
 
-<script src="scripts/lib/leaflet-src.js"></script>
-<script src="scripts/lib/proj4-compressed.js"></script>
-<script src="scripts/lib/proj4leaflet.js"></script>
-<script src="scripts/mapml.js"></script>
-<script src="scripts/URI.js"></script>
+<!-- this is a modified version of leaflet which uses Polymer.dom instead of 
+     regular DOM API calls so as to work with Shadow/Shady DOM custom elements -->
+<script src="../polymer-leaflet/leaflet.js"></script>
+<script src="../proj4Leaflet/lib/proj4-compressed.js"></script>
+<script src="../proj4Leaflet/src/proj4leaflet.js"></script>
+<script src="../mapml-leaflet-plugin/mapml.min.js"></script>
+
 
 <dom-module id="map-area">
 <style  include="leaflet-styles">
@@ -49,11 +52,7 @@ MapArea = Polymer({
         reflectToAttribute: true
       }
     },
-    ready: function() {
-        console.log(this.localName + '#' + this.id + ' is ready');
-    },
     attached: function() {
-        console.log(this.localName + '#' + this.id + ' is attached');
         // if the map has been attached, set this layer up wrt Leaflet map
         if (this.parentElement._map) {
             this._attachedToMap();
