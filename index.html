@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>web-map demo</title>
+    <meta charset="UTF-8">
+    <!-- if you want to create a page in your project directory, you will have to
+         adjust the paths to the webcomponents-lite.js polyfill and the web-map.html file
+         based on the location of your html file. -->
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="web-map.html">
+  </head>
+  <body>
+    <div>
+      <map is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls>
+        <layer- label="osm" src="http://geogratis.gc.ca/mapml/osm/" checked></layer->
+        <layer- label="cbmt_en" src="http://geogratis.gc.ca/mapml/en/osmtile/cbmt/"></layer->
+        <layer- label="cbmt_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/cbmt/"></layer->
+        <layer- label="toporama_en" src="http://geogratis.gc.ca/mapml/en/osmtile/toporama/"></layer->
+        <layer- label="toporama_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/toporama/"></layer->
+        <layer- label="geobase_en" src="http://geogratis.gc.ca/mapml/en/osmtile/geobase/"></layer->
+        <layer- label="geobase_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/geobase/"></layer->
+        <layer- label="ablands_en" src="http://geogratis.gc.ca/mapml/en/osmtile/geobase/ablnd/"></layer->
+        <layer- label="ablands_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/geobase/ablnd/"></layer->
+        <layer- label="ce_en" src="http://geogratis.gc.ca/mapml/en/osmtile/ce/"></layer->
+      </map>
+      <map is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls projection="CBMTILE">
+        <layer- label="cbmt_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
+        <layer- label="cbmt_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/cbmt/"></layer->
+        <layer- class="hillshade" label="cbme_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbme/"></layer->
+        <layer- class="hillshade" label="cbce_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/cbce/"></layer->
+        <layer- label="toporama_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/toporama/"></layer->
+        <layer- label="toporama_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/toporama/"></layer->
+        <layer- label="geobase_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/geobase/"></layer->
+        <layer- label="geobase_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/geobase/"></layer->
+        <layer- label="ablands_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/geobase/ablnd/"></layer->
+        <layer- label="ablands_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/geobase/ablnd/"></layer->
+        <layer- label="ce_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/ce/"></layer->
+        <layer- id="fdr" label="Fire Risk forecast" src="http://geogratis.gc.ca/mapml/fdr_current/"   style="opacity: 0.4"></layer->
+      </map>
+    </div>
+  </body>
+</html>
