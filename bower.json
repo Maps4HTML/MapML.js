@@ -1,11 +1,12 @@
 {
   "name": "web-map",
-  "version": "0.1.0",
   "description": "The Built-in <map> Custom Element is a Polymer implementation of the HTML-Map-Element specification.",
   "main": "web-map.html",
   "authors": [
-    "Maps for HTML Community Group"
+    {"name": "Peter Rushforth" ,"email": "peter.rushforth@canada.ca"},
+    {"name": "Maps for HTML Community Group", "email": "public-maps4html@w3.org", "homepage": "https://www.w3.org/community/maps4html/"}
   ],
+  "homepage": "http://maps4html.github.io/Web-Map-Custom-Element/",
   "license": "W3C SOFTWARE AND DOCUMENT NOTICE AND LICENSE",
   "keywords": [
     "framework",
