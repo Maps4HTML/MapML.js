@@ -2,7 +2,7 @@
 <link rel="import" href="map-layer.html">
 <link rel="import" href="map-area.html">
 <!-- styles scoped to inside a custom element must be in a style module -->
-<link rel="import" href="leaflet-styles.html">
+<link rel="import" href="map-styles.html">
 
 <!-- this is a modified version of leaflet which uses Polymer.dom instead of 
      regular DOM API calls so as to work with Shadow/Shady DOM custom elements -->
@@ -14,7 +14,7 @@
 <dom-module id="web-map">
 <template>
   <!-- use the leaflet-styles style module -->
-  <style include="leaflet-styles">
+  <style include="map-styles">
     /* make sure the map element doesn't get selected and styled by document styles */
     :host {
         display: inline-block !important;
