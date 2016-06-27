@@ -2,7 +2,7 @@
   "name": "web-map-custom-element",
   "version": "",
   "description": "",
-  "main": "index.html",
+  "main": "src/demo/index.html",
   "scripts": {
     "test": "grunt test",
     "postinstall": "bower update",
@@ -16,10 +16,11 @@
   "keywords": [
     "web",
     "html5",
-	"web component"
+    "web component",
+    "maps"
   ],
-  "author": "",
-  "license": "",
+  "author": "Maps for HTML Community Group",
+  "license": "W3C Software and Document License",
   "devDependencies": {
     "assemble": "~0.4.12",
     "grunt": "~0.4.5",
