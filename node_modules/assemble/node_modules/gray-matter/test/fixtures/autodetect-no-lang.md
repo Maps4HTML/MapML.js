@@ -1,4 +1,0 @@
----
-user: jonschlinkert
----
-Content
