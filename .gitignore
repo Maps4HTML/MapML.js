@@ -1,4 +1,7 @@
 /nbproject/private/
-nbproject/customs.json
-nbproject/project.properties
-nbproject/project.xml
+/nbproject/customs.json
+/nbproject/project.properties
+/nbproject/project.xml
+/nbproject/
+/src/demo/bower_components/
+/dist/

@@ -1,0 +1,35 @@
+{
+  "name": "web-map",
+  "description": "The Built-in <map> Custom Element is a Web Components implementation of the HTML-Map-Element specification.",
+  "main": "index.html",
+  "authors": [
+    "Maps for HTML Community Group"
+  ],
+  "license": "W3C SOFTWARE AND DOCUMENT NOTICE AND LICENSE",
+  "keywords": [
+    "framework",
+    "web",
+    "html5",
+    "maps",
+    "custom element",
+    "javascript",
+    "web maps",
+    "component",
+    "polyfill"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Maps4HTML/Web-Map-Custom-Element.git"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#^0.3.0",
+    "polymer": "^1.5.0"
+  }
+}
