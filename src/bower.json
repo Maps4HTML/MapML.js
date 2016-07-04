@@ -1,7 +1,7 @@
 {
   "name": "web-map",
-  "description": "The Built-in <map> Custom Element is a Web Components implementation of the HTML-Map-Element specification.",
-  "main": "index.html",
+  "description": "The Built-in <map> Custom Element is a Polymer implementation of the HTML-Map-Element specification.",
+  "main": "web-map.html",
   "authors": [
     "Maps for HTML Community Group"
   ],
@@ -31,5 +31,11 @@
   "dependencies": {
     "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#^0.3.0",
     "polymer": "^1.5.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   }
 }

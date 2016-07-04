@@ -247,7 +247,7 @@ WebMap = Polymer({
         }
         // undisplay the image if *the first* layer works.  This is not perfect, as it
         // relies on the server to have responded by now.
-        if (typeof this.layers[0]._layer.error === 'undefined' && this.layers[0]._layer._extent ) {
+        if (this.layers[0] && typeof this.layers[0]._layer.error === 'undefined' && this.layers[0]._layer._extent ) {
           if (this.poster) {
             this.poster.style.display = 'none';
           }
