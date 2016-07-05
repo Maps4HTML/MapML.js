@@ -17,7 +17,8 @@
     "javascript",
     "web maps",
     "component",
-    "polyfill"
+    "polyfill",
+    "web-components"
   ],
   "repository": {
     "type": "git",
