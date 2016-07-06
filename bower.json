@@ -7,14 +7,15 @@
   ],
   "license": "W3C SOFTWARE AND DOCUMENT NOTICE AND LICENSE",
   "keywords": [
-    "framework",
     "web",
     "html5",
     "maps",
     "custom element",
-    "javascript",
     "web maps",
     "component",
+    "web-components",
+    "polymer",
+    "map",
     "polyfill"
   ],
   "repository": {
