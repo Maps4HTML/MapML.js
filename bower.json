@@ -9,16 +9,16 @@
   "homepage": "http://maps4html.github.io/Web-Map-Custom-Element/",
   "license": "W3C SOFTWARE AND DOCUMENT NOTICE AND LICENSE",
   "keywords": [
-    "framework",
     "web",
     "html5",
     "maps",
     "custom element",
-    "javascript",
     "web maps",
     "component",
-    "polyfill",
-    "web-components"
+    "web-components",
+    "polymer",
+    "map",
+    "polyfill"
   ],
   "repository": {
     "type": "git",
