@@ -32,7 +32,7 @@
     "tests"
   ],
   "dependencies": {
-    "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#0.3.0",
+    "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#^0.3.0",
     "polymer": "^1.5.0"
   }
 }
