@@ -2,20 +2,18 @@
 <link rel="import" href="map-layer.html">
 <link rel="import" href="map-area.html">
 <!-- styles scoped to inside a custom element must be in a style module -->
-<link rel="import" href="leaflet-styles.html">
+<link rel="import" href="map-styles.html">
 
-<!-- this is a modified version of leaflet which uses Polymer.dom instead of 
-     regular DOM API calls so as to work with Shadow/Shady DOM custom elements -->
-<script src="scripts/lib/leaflet-src.js"></script>
-<script src="scripts/lib/proj4-compressed.js"></script>
-<script src="scripts/lib/proj4leaflet.js"></script>
-<script src="scripts/mapml.js"></script>
-<script src="scripts/URI.js"></script>
+<!-- web-map is an HTML &lt;map&gt; customized built-in element -->
+<script src="./bower_components/polymer-leaflet/leaflet-src.js"></script>
+<script src="./bower_components/proj4Leaflet/lib/proj4-compressed.js"></script>
+<script src="./bower_components/proj4Leaflet/src/proj4leaflet.js"></script>
+<script src="./bower_components/mapml-leaflet-plugin/mapml.js"></script>
 
 <dom-module id="web-map">
 <template>
   <!-- use the leaflet-styles style module -->
-  <style include="leaflet-styles">
+  <style include="map-styles">
     /* make sure the map element doesn't get selected and styled by document styles */
     :host {
         display: inline-block !important;
@@ -150,6 +148,28 @@ WebMap = Polymer({
         this.lon = this._map.getCenter().lng;
         this.zoom = this._map.getZoom();
     },
+    ready: function () {
+        // when used in a custom element, the leaflet script element is hidden inside
+        // the import's shadow dom.
+        L.Icon.Default.imagePath = (function () {
+                var imp = document.querySelector('link[rel="import"][href*="web-map.html"]'),
+                    doc = imp ? imp.import : document,
+                    scripts = doc.getElementsByTagName('script'),
+                    leafletRe = /[\/^]leaflet[\-\._]?([\w\-\._]*)\.js\??/;
+
+                var i, len, src, path;
+
+                for (i = 0, len = scripts.length; i < len; i++) {
+                        src = scripts[i].src;
+
+                        if (src.match(leafletRe)) {
+                                path = src.split(leafletRe)[0];
+                                return (path ? path + '/' : '') + 'images';
+                        }
+                }
+        }());
+      
+    },
     attached: function() {
       this.async( function () {
         console.log(this.localName + '#' + this.id + ' was attached');
@@ -181,10 +201,10 @@ WebMap = Polymer({
             // _container.innerHTML does not work properly if the engine is throwing
             // exceptions because there are no area element children of the image map
             // for firefox only, a workaround is to actually remove the image...
-            if (L.Browser.gecko) {
-                this.poster.removeAttribute('usemap');
-            }
             if (this.poster) {
+                if (L.Browser.gecko) {
+                    this.poster.removeAttribute('usemap');
+                }
                 Polymer.dom(this.$.map).appendChild(this.poster);
             }
           }
@@ -226,7 +246,7 @@ WebMap = Polymer({
         }
         // undisplay the image if *the first* layer works.  This is not perfect, as it
         // relies on the server to have responded by now.
-        if (typeof this.layers[0]._layer.error === 'undefined' && this.layers[0]._layer._extent ) {
+        if (this.layers[0] && typeof this.layers[0]._layer.error === 'undefined' && this.layers[0]._layer._extent ) {
           if (this.poster) {
             this.poster.style.display = 'none';
           }
@@ -242,7 +262,7 @@ WebMap = Polymer({
           console.log('ERROR: BAD EXTENT');
         }
         console.log("map bounds bbox=" + this._map.getBounds().toBBoxString());
-      },10);
+      },100);
     },
     _setUpEvents: function () {
       this._map.on('preclick', 
