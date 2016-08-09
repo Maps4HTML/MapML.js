@@ -1,16 +1,15 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
-<link rel="import" href="leaflet-styles.html">
+<link rel="import" href="map-styles.html">
 
-<script src="scripts/lib/leaflet-src.js"></script>
-<script src="scripts/lib/proj4-compressed.js"></script>
-<script src="scripts/lib/proj4leaflet.js"></script>
-<script src="scripts/mapml.js"></script>
-<script src="scripts/URI.js"></script>
+<script src="./bower_components/polymer-leaflet/leaflet-src.js"></script>
+<script src="./bower_components/proj4Leaflet/lib/proj4-compressed.js"></script>
+<script src="./bower_components/proj4Leaflet/src/proj4leaflet.js"></script>
+<script src="./bower_components/mapml-leaflet-plugin/mapml.js"></script>
 
 <dom-module id="layer-">
   <!-- in polymer 1.0.x, styles must be outside of the <template> element
        https://www.polymer-project.org/1.0/docs/migration.html#local-dom-template -->
-  <style  include="leaflet-styles">
+  <style  include="map-styles">
    :host {
      display: none;
    }
@@ -166,20 +165,22 @@ MapLayer = Polymer({
         // zoom range, extent and projection are.  meta elements in content to
         // allow the author to provide this explicitly are one way, they will
         // be parsed from the second parameter here
-        this._layer = M.mapMLLayer(this.src ? new URI(this.src).resolve(new URI(this.baseURI)).toString(): null, this);
+        // IE 11 did not have a value for this.baseURI for some reason
+        var base = this.baseURI ? this.baseURI : document.baseURI;
+        this._layer = M.mapMLLayer(this.src ? new URI(this.src).resolve(new URI(base)).toString(): null, this);
         this._layer.on('extentload', this._onLayerExtentLoad, this);
     },
     _attachedToMap: function() {
         // set i to the index of this layer element in the set of layers
         var i = 0;
-        for (var nodes = this.parentNode.children;i < nodes.length;i++) {
-            if (this.parentNode.children[i] === this) {
+        for (var nodes = Polymer.dom(this).parentNode.children;i < nodes.length;i++) {
+            if (Polymer.dom(this).parentNode.children[i] === this) {
               break;
             }
         }
         L.setOptions(this._layer, {zIndex: i+1, opacity: window.getComputedStyle(this).opacity});
         // make sure the Leaflet layer has a reference to the map
-        this._layer._map = this.parentElement._map;
+        this._layer._map = Polymer.dom(this).parentNode._map;
         // notify the layer that it is attached to a map (layer._map)
         this._layer.fire('attached');
         
@@ -192,8 +193,8 @@ MapLayer = Polymer({
         this._layer.on('add remove', this._onLayerChange,  this);
         
         // if controls option is enabled, insert the layer into the overlays array
-        if (this.parentElement.controls && !this.hidden) {
-          this._layerControl = this.parentElement._layerControl;
+        if (Polymer.dom(this).parentNode.controls && !this.hidden) {
+          this._layerControl = Polymer.dom(this).parentNode._layerControl;
           this._layerControl.addOverlay(this._layer, this.label);
         }
         // toggle the this.disabled attribute depending on whether the layer
@@ -207,12 +208,12 @@ MapLayer = Polymer({
         this._layer._map.fire('moveend');
     },
     attached: function() {
-        if (this.parentElement.nodeName !== 'MAP') {
-            console.log('ERROR: '+ this.localName + '#' + this.id + ' must be a child of a map element');
+        if (Polymer.dom(this).parentNode.nodeName !== 'MAP') {
+            console.log('Info: '+ this.localName + '#' + this.id + ' must be a child of a map element');
             return;
         }
         // if the map has been attached, set this layer up wrt Leaflet map
-        if (this.parentElement._map) {
+        if (Polymer.dom(this).parentNode._map) {
             this._attachedToMap();
         }
     }

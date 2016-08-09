@@ -262,7 +262,7 @@ WebMap = Polymer({
           console.log('ERROR: BAD EXTENT');
         }
         console.log("map bounds bbox=" + this._map.getBounds().toBBoxString());
-      },100);
+      },10);
     },
     _setUpEvents: function () {
       this._map.on('preclick', 
