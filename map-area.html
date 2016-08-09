@@ -1,14 +1,13 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
-<link rel="import" href="leaflet-styles.html">
+<link rel="import" href="map-styles.html">
 
-<script src="scripts/lib/leaflet-src.js"></script>
-<script src="scripts/lib/proj4-compressed.js"></script>
-<script src="scripts/lib/proj4leaflet.js"></script>
-<script src="scripts/mapml.js"></script>
-<script src="scripts/URI.js"></script>
+<script src="./bower_components/polymer-leaflet/leaflet-src.js"></script>
+<script src="./bower_components/proj4Leaflet/lib/proj4-compressed.js"></script>
+<script src="./bower_components/proj4Leaflet/src/proj4leaflet.js"></script>
+<script src="./bower_components/mapml-leaflet-plugin/mapml.js"></script>
 
 <dom-module id="map-area">
-<style  include="leaflet-styles">
+<style  include="map-styles">
  :host {
    display: none;
  }
@@ -49,11 +48,7 @@ MapArea = Polymer({
         reflectToAttribute: true
       }
     },
-    ready: function() {
-        console.log(this.localName + '#' + this.id + ' is ready');
-    },
     attached: function() {
-        console.log(this.localName + '#' + this.id + ' is attached');
         // if the map has been attached, set this layer up wrt Leaflet map
         if (this.parentElement._map) {
             this._attachedToMap();
@@ -101,8 +96,8 @@ MapArea = Polymer({
             // based on the <svg:title> graphics child element.
             var title = L.SVG.create('title'),
                 titleText = document.createTextNode(this.alt);
-                title.appendChild(titleText);
-            this._feature._path.appendChild(title);
+                Polymer.dom(title).appendChild(titleText);
+                Polymer.dom(this._feature._path).appendChild(title);
           }
           if (this.href) {
               // conditionally act on click on an area link.  If no link it should be an
