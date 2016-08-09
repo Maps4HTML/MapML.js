@@ -1,0 +1,45 @@
+{
+  "name": "polymer-leaflet",
+  "description": "Customized Leaflet v1.0.0-beta.1 library supporting the web-map-custom-element component",
+  "main": [
+    "leaflet-src.js",
+    "leaflet.css"
+  ],
+  "authors": [
+    "Vladimir Agafonkin",
+    "Leaflet Contributors",
+    "Peter Rushforth"
+  ],
+  "keywords": [
+    "framework",
+    "web",
+    "html5",
+    "maps",
+    "custom element",
+    "javascript",
+    "web maps",
+    "component",
+    "polyfill"
+  ],
+  "homepage": "https://github.com/Maps4HTML/Polymer-Leaflet",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "^1.5.0"
+  },
+  "version": "0.1.0-Polymer-Leaflet",
+  "_release": "0.1.0-Polymer-Leaflet",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.1.0-Polymer-Leaflet",
+    "commit": "9d45fbfc649beb3f1d0791f3d10c3dd22626e8dd"
+  },
+  "_source": "git://github.com/Maps4HTML/Polymer-Leaflet.git",
+  "_target": "0.1.0-Polymer-Leaflet",
+  "_originalSource": "git://github.com/Maps4HTML/Polymer-Leaflet/"
+}
