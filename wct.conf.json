@@ -2,10 +2,14 @@
   "verbose": true,
   "plugins": {
     "local": {
-      "browsers": ["chrome", "firefox"]
+      "browsers": ["chrome"]
     },
     "sauce": {
       "browsers": [{
+          "browserName": "firefox",
+          "platform": "Windows 10",
+          "version": ""
+        },{
           "browserName": "microsoftedge",
           "platform": "Windows 10",
           "version": ""
