@@ -5,7 +5,7 @@
       "browsers": ["chrome"]
     },
     "sauce": {
-      "browsers": [{
+      "browsers": [{ 
           "browserName": "firefox",
           "platform": "Windows 10",
           "version": ""
