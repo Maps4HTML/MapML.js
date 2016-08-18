@@ -105,7 +105,7 @@ WebMap = Polymer({
       if (this._map) {
         if (controls) {
           this._zoomControl = L.control.zoom().addTo(this._map);
-          this._layerControl = M.mapMlLayerControl().addTo(this._map);
+          this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
           for (var i=0;i<this.layers.length;i++) {
             if (!this.layers[i].hidden) {
               this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
@@ -229,7 +229,7 @@ WebMap = Polymer({
         
         // optionally add controls to the map
         if (this.controls) {
-          this._layerControl = M.mapMlLayerControl().addTo(this._map);
+          this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
           this._zoomControl = L.control.zoom().addTo(this._map);
         }
         // the attribution control is not optional
