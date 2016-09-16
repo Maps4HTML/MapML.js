@@ -174,7 +174,7 @@
 
 &lt;-- The map element can be set up by the HTML author to provide the old image map behaviour --&gt;
 &lt;map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls hidden>
-  &lt;layer- id="osm" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden>&lt;/layer-&gt;
+  &lt;layer- id="osm" src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked hidden>&lt;/layer-&gt;
   &lt;layer- id="canvec" src="http://geogratis.gc.ca/mapml/canvec/50k/features/"  label="CanVec+ 031G" class="transparency">&lt;/layer-&gt;
   &lt;layer- id="marker" label="Marker layer" src="marker.mapml">&lt;/layer-&gt;
   &lt;area is="map-area"id="marker2" href='http://example.com/marker/' alt="Marker" coords="265,185" shape="marker">
@@ -191,7 +191,7 @@
       <!-- the @width / @height attributes take precedence over properties, but currently don't change to reflect updates -->
       <img usemap="#dowslake" src="../map1.png" width="700" height="400" alt="Dow's Lake area" />
       <map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" controls hidden>
-        <layer- id="osm" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden></layer->
+        <layer- id="osm" src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked hidden></layer->
         <layer- id="canvec" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></layer->
         <!-- the HTML author can create MapML files and serve them as layers if they prefer -->
         <layer- id="marker" label="Marker layer" src="../marker.mapml"></layer->
@@ -205,18 +205,19 @@
         <area is="map-area" id="rect" href='http://example.com/rectangle/' alt="Rectangle" coords="345,290,415,320" shape="rect" style="fill: greenyellow; stroke: blue; stroke-width: 3px;fill-opacity: 0.4">
         <area is="map-area" id="poly" href='http://example.com/polygon/' alt="Polygon" coords="392,116,430,100,441,128,405,145" shape="poly" style="fill: pink; stroke: blue; stroke-width: 3px;fill-opacity: 0.4">
       </map>
-          <p><a href="http://maps4html.github.io/Web-Map-Custom-Element/">Here it is</a>. You can refer to that page as you read along, possibly loading it in different browsers, or reloading without JavaScript etc., to get the idea of what is being discussed.   
+          <p>Here it is. You might like to load this page in different browsers, or reload having disabled JavaScript, to get the idea of how it behaves. It is a work in progress, so no promises are made. 
           </p>
-          <p>There are many considerations to both avenues, and we are seeking feedback with this post about what is the best route for web maps.  We are not yet at the proposal stage, but we will get there eventually.  Your feedback now would be greatly appreciated.
+          <p>There are many considerations to both avenues, and we are seeking feedback with this post about what is the best route for web maps.  We are not yet at the proposal stage, but we are making progress.  Your feedback now would be greatly appreciated.
           </p>
-          <h2 id="toc-pe-pwc">Progressive Enhancement and Progressive Web Apps</h2>
-          <p>At its core, a <a href="https://infrequently.org/2015/06/progressive-apps-escaping-tabs-without-losing-our-soul/">Progressive Web App</a> is one that (among other important characteristics) uses <a href="https://en.wikipedia.org/wiki/Progressive_enhancement#Core_principles">progressive enhancement</a> as a means to support offline behaviour with or possibly even without service workers (because there are varying degrees of offline – some domains may be dead while others are available)  (The truth is that I have not had the time to learn about and implement a Service Worker feature for the above page, but I'm pretty sure that it will already enhance progressively with varying degrees of browser technology and connectivity.  If anyone is interested enough to try to implement a SW for that page, that would be very cool, get in touch!).
-          </p>
+          <h2 id="toc-pe-pwc">Progressive Enhancement and Progressive Web Maps</h2>
           <p>An important question a new element design has to consider is: "What will user agents that don't support or know about this element do when they encounter it"?  I.e. what is the fallback strategy for the element in a user agent that doesn't know about it.            
           </p>
-          <p>For a new native unknown or 'autonomous' custom element, the answer is that nothing will happen, and the experience the user has will not likely be the desired one.  The user agent will parse the document and find unknown HTML elements, which render their text content, if any.  Possibly script could be used for damage control, or noscript used to suggest upgrading your browser (graceful degradation).
+          <p>For a new native unknown or 'autonomous' custom element, the answer is that nothing will happen, and the experience the user has will not likely be the desired one.  The user agent will parse the document and find <a href="http://w3c.github.io/webcomponents/spec/custom/#custom-elements-customized-builtin-example">unknown HTML elements</a>, which render their text content, if any.  Possibly script could be used for damage control, for example running the custom element implementation instead of the native implementation, or if script was disabled, a noscript might be used to suggest upgrading your browser (graceful degradation).
           </p>
-          <p>For a 'built-in custom' or an extended existing native element, the situation can be simulated today by running the page in an Internet Explorer, which doesn't support Web Components.  If the fallback strategy in the latter (native extended element semantics) case relies on providing a (Custom Element) shim or polyfill, what will the browser do with script turned off/or script errors?  Shutting script off in any browser would seem to simulate the script-turned-off situation today. However, probably more common will be the script-errors case, especially my own!
+          
+          <p>If we, the Maps for HTML Community Group are successful, we will eventually have built a large set of Web sites which use our custom element, and its API.  Ideally at that stage, browsers will agree that it makes sense for them to implement our element natively.  However, there will be a problem if that element is 'autonomous'.  A new element will have to be minted and marketed, and all that portion of the Web which uses our element would have to be re-written to take advantage of the new reach. I suppose you might consider that a problem of success, but it also represents a barrier to adoption.</p>
+          
+          <p>For a 'built-in custom' or an extended existing native element, the situation can be simulated today by running the page in Internet Explorer 7, which doesn't support Web Components (if you're running an MS browser, this page uses IE directives to force IE 7 mode).  If the fallback strategy in the latter (native extended element semantics) case relies on providing a (Custom Element) shim or polyfill, what will the browser do with script turned off/or script errors?  Shutting script off in any browser would seem to simulate the script-turned-off situation today. However, probably more common will be the script-errors case, especially my own!
           </p>
           <h2 id="toc-semantics">Semantics</h2>
           <p>Although cartographic applications are not currently reflected in the HTML map element specification examples, they are definitely part of the heritage and meaning of the element.  According to <a href="https://twitter.com/dckc/status/642045849757872128">Dan Connolly</a>, the original (server side) image maps (img@ismap) began partly in support of the <a href="https://web.archive.org/web/20030212164519/http://www2.parc.com/istl/projects/mapdocs/">original web maps</a> developed by Xerox PARC.  Their subsequent evolution to img@usemap not only solved the problems with server side image maps, it provided a progressive enhancement-type path for HTML authors, by <a href="https://tools.ietf.org/html/rfc1980#section-2.3">design</a>.            
@@ -247,9 +248,9 @@
           <p>The intended semantics and behaviour of the map custom type extension element continues evolution of Web (platform) maps, albeit 20 years after the last step.  We had to wait for Custom Elements, to come along to make this path possible.</p>
           <p>The map element has apparently been a little bit neglected by the standards maintainers, no insult intended, perhaps because there are alternative, modern techniques to accomplish the site navigation use cases which seem to have become prominent in the standards developers' minds.  But more likely, it is because the attention and support of the Web mapping / geospatial / open data community who might benefit the most from a more functional HTML map element, has been long diverted – once again possibly waiting for Custom Elements to herald a new era in platform evolution.
           </p>
-          <p>This is a perfect opportunity to give the map element, and by extension the Web platform itself, continued relevance. Nothing could be better than to initiate and stoke a virtuous feedback cycle https://extensiblewebmanifesto.org/ between the geospatial and Web developer communities at a time when the Web in crisis https://medium.com/@stopsatgreen/the-crisis-facing-the-web-platform-4ab47515ed42#.b9g8ecm28  and geospatial technology is fast receding as a distinct discipline unto itself https://www.google.ca/trends/explore#q=geographic%20information%20systems .
+          <p>This is a perfect opportunity to give the map element, and by extension the Web platform itself, continued relevance. Nothing could be better than to initiate and stoke a <a href="https://extensiblewebmanifesto.org/ ">virtuous feedback cycle</a> between the geospatial and Web developer communities at a time when the Web in <a href=" https://medium.com/@stopsatgreen/the-crisis-facing-the-web-platform-4ab47515ed42#.b9g8ecm28  ">crisis</a> and geospatial technology is <a href="https://www.google.ca/trends/explore#q=geographic%20information%20systems">slowly disappearing</a> as a distinct discipline unto itself.
           </p>
-          <p>Let the Web mapping community have the map element and together let's take on the challenge of the mobile platforms, aided by Progressive Web Maps.  And by "let", I mean help us identify and test all the details that will make the addition of Progressive Web Maps (PWA) a progression in the Web platform itself.
+          <p>Let the Web mapping community have the map element and together let's take on the challenge of the mobile platforms, aided by Progressive Web Maps.  And by "let", I mean help us identify and test all the details that will make the addition of Progressive Web Maps (PWM) a progression in the Web platform itself.
           </p>
           </div>
         </section>
