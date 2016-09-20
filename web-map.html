@@ -178,18 +178,20 @@ WebMap = Polymer({
         // have an intrinsic size, unlike an image or video, and so must 
         // have a defined width and height.
         var s = window.getComputedStyle(this),
-        w = s.width, h=s.height;
+          wpx = s.width, hpx=s.height, 
+          w = parseInt(wpx.replace('px','')),
+          h = parseInt(hpx.replace('px',''));
         
-        if (!this.width) {
-          this.$.map.style.width = w;
-          this.width = parseInt(w.replace('px',''));
+        if (!this.width || this.width !== w) {
+          this.$.map.style.width = wpx;
+          this.width = w;
         } else {
           this.$.map.style.width = this.width+"px";
         }
         
-        if (!this.height) {
+        if (!this.height || this.height !== h) {
           this.$.map.style.height = h;
-          this.height = parseInt(h.replace('px',''));
+          this.height = h;
         } else {
           this.$.map.style.height = this.height+"px";
         }
