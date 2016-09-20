@@ -54,8 +54,8 @@
       <!-- the @width / @height attributes take precedence over properties, but currently don't change to reflect updates -->
       <img usemap="#dowslake" src="map1.png" width="700" height="400" alt="Dow's Lake area" />
       <map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls hidden>
-        <layer- id="osm" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden></layer->
-        <layer- id="cbmt" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmt/" checked></layer->
+        <layer- id="osm" src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked hidden></layer->
+        <layer- id="cbmt" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/en/osmtile/cbmt/" checked></layer->
         <layer- id="canvec" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></layer->
         <!-- the HTML author can create MapML files and serve them as layers if they prefer -->
         <layer- id="marker" label="Marker layer" src="marker.mapml"></layer->
@@ -124,10 +124,10 @@
       </pre>
       <img usemap="#canada" src="map2.png" width="640" height="480"  alt="Canada" />  
       <map name="canada" is="web-map" zoom="2" lat="67.101360" lon="-91.121469"  projection="CBMTILE" width="640" height="480" controls hidden>
-        <layer- id="osm2" label="Open Street Map" src="http://geogratis.gc.ca/mapml/osm/" checked></layer->
-        <layer- id="cbmtlcc" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/cbmtlcc/" checked></layer->
+        <layer- id="osm2" label="Open Street Map" src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" checked></layer->
+        <layer- id="cbmtlcc" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
         <layer- id="canvec2" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></layer->
-        <layer- id="fdr" label="Fire Risk forecast" src="http://geogratis.gc.ca/mapml/fdr_current/"   style="opacity: 0.4"></layer->
+        <layer- id="fdr" label="Fire Risk forecast" src="http://geogratis.gc.ca/mapml/en/cbmtile/fdi/"   style="opacity: 0.4"></layer->
       </map>
 
         <p>This map declares the 'CBMTILE' projection, which is a <a href="http://maps4html.github.io/MapML/spec/#projections">coordinate reference system</a> in the Lambert Conformal Conic projection in MapML.  The Open Street Map layer is
@@ -149,7 +149,7 @@
       </pre>
       <img usemap="#arctic" src="map3.png" width="640" height="350"  alt="Canada" />  
       <map name="arctic" is="web-map" zoom="3" lat="90.0" lon="0.0" projection="APSTILE" hidden>
-        <layer- label="Arctic Ocean Base Map" src="http://geogratis.gc.ca/mapml/arctic/" checked hidden></layer->
+        <layer- label="Arctic Ocean Base Map" src="http://geogratis.gc.ca/mapml/en/apstile/arctic/" checked hidden></layer->
         <area is="map-area" shape="marker" href='http://example.com/santa/' alt="North Pole" coords="320,175" id="northPole">
       </map>
       <p>This map illustrates a dramatically different projection, as well as a arealink for the North Pole.  Additionally, you can see that
