@@ -4,8 +4,8 @@
     <title>web-map test</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
 
     <link rel="import" href="../web-map.html">
   </head>
@@ -19,7 +19,7 @@
     </test-fixture>
     <test-fixture id="layer">
       <template>
-        <layer- src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden></layer>
+        <layer- src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked hidden></layer>
       </template>
     </test-fixture>
 
@@ -38,6 +38,10 @@
         });
         test('instantiating the element works', function() {
           assert.equal(theMap.is, 'web-map');
+          // because the map element is inside a template, it should not have 
+          // width or height, so it should not create an internal div with a 
+          // leaflet map inside
+          assert.isUndefined(theMap._map,'theMap should not have a _map property');
         });
         
         test('adding a layer to a map works', function() {
