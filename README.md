@@ -1,14 +1,33 @@
 
-# web-map Customized Built-In &lt;map&gt; Element
+# Customized Built-In &lt;map&gt; Element
 
 [![Build Status](https://travis-ci.org/prushforth/Web-Map-Custom-Element.svg?branch=master)](https://travis-ci.org/prushforth/Web-Map-Custom-Element)
 
-The web-map Customized Built-In &lt;map&gt; Element is a [prototype implementation](http://maps4html.github.io/Web-Map-Custom-Element/) of the [HTML-Map-Element specification](http://maps4html.github.io/HTML-Map-Element/spec/).
+##&lt;map is="web-map"&gt;
 
-## Objective
+The Customized Built-In &lt;map&gt; Element is a prototype [implementation](http://maps4html.github.io/Web-Map-Custom-Element/) of the [HTML-Map-Element specification](http://maps4html.github.io/HTML-Map-Element/spec/).
 
-The objective of this web component is to upgrade the &lt;map&gt; HTML element to support modern Web mapping requirements.  As such, it relies on [Map Markup Language](http://maps4html.github.io/mapml/spec/) which delivers map information as hypertext.
-This element depends on the [MapML Leaflet Plugin javascript library](https://github.com/Maps4HTML/MapML-Leaflet-Plugin).
+`map is="web-map"` is a map. The HTML author can add MapML sources by specifying the `&lt;layer- src="..."&gt;` src attribute.
+
+Example:
+<!---
+```
+<custom-element-demo>
+  <template>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="web-map.html">
+    <map is="web-map" projection="OSMTILE" zoom="3" lat="0" lon="0" width="640" height="480" controls>
+          <layer- src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" label="OpenStreetMap" checked></layer->
+    </map>
+  </template>
+</custom-element-demo>
+```
+-->
+```html
+<map is="web-map" projection="OSMTILE" zoom="3" lat="0" lon="0" width="900" height="400" controls>
+    <layer- src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" label="OpenStreetMap" checked></layer->
+</map>
+```
 
 ## Maps4HTML Community Group
 
