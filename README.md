@@ -7,7 +7,7 @@
 
 The Customized Built-In &lt;map&gt; Element is a prototype [implementation](http://maps4html.github.io/Web-Map-Custom-Element/) of the [HTML-Map-Element specification](http://maps4html.github.io/HTML-Map-Element/spec/).
 
-`map is="web-map"` is a map. The HTML author can add MapML sources by specifying the `&lt;layer- src="..."&gt;` src attribute.
+`map is="web-map"` is a map. The HTML author can add MapML sources by specifying the &lt;`layer- src="..."`&gt; src attribute.
 
 Example:
 <!---
