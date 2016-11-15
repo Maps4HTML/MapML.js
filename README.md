@@ -3,11 +3,9 @@
 
 [![Build Status](https://travis-ci.org/prushforth/Web-Map-Custom-Element.svg?branch=master)](https://travis-ci.org/prushforth/Web-Map-Custom-Element)
 
-##&lt;map is="web-map"&gt;
-
 The Customized Built-In &lt;map&gt; Element is a prototype [implementation](http://maps4html.github.io/Web-Map-Custom-Element/) of the [HTML-Map-Element specification](http://maps4html.github.io/HTML-Map-Element/spec/).
 
-`map is="web-map"` is a map. The HTML author can add MapML sources by specifying the &lt;`layer- src="..."`&gt; src attribute.
+The HTML author can add MapML sources/layers by one or more the &lt;`layer- src="..."`&gt; elements as children of &lt;`map`&gt;.  The map provides a default set of controls which are turned on or off with the map@controls boolean attribute.  The @width and @height of the map should be specified either as attributes or via CSS rules.  The initial zoom and location of the map are controlled by the @zoom and @lat, @lon attributes.  The default projection is Web Mercator (OSMTILE).
 
 Example:
 <!---
@@ -22,7 +20,7 @@ Example:
 ```
 -->
 ```html
-<map is="web-map" projection="OSMTILE" zoom="3" lat="0" lon="0" width="800" height="400" controls>
+<map is="web-map" zoom="3" lat="0" lon="0" width="800" height="400" controls>
     <layer- src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" label="OpenStreetMap" checked></layer->
 </map>
 ```
