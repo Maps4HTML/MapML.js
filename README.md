@@ -12,7 +12,7 @@ The Customized Built-In &lt;map&gt; Element is a prototype [implementation](http
 Example:
 <!---
 ```
-<custom-element-demo height="400">
+<custom-element-demo>
   <template>
     <script src="../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="web-map.html">
@@ -23,7 +23,7 @@ Example:
 -->
 ```html
 <map is="web-map" projection="OSMTILE" zoom="3" lat="0" lon="0" width="800" height="400" controls>
-    <layer- src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" label="OpenStreetMap" checked></layer->
+    <layer- src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" label="OpenStreetMap" checked></layer->
 </map>
 ```
 
