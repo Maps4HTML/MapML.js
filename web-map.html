@@ -5,12 +5,12 @@
 <!-- styles scoped to inside a custom element must be in a style module -->
 <link rel="import" href="map-styles.html">
 
-<!-- web-map is an HTML &lt;map&gt; customized built-in element -->
-<script src="./bower_components/polymer-leaflet/leaflet-src.js"></script>
+<script src="./bower_components/polymer-leaflet/leaflet.js"></script>
 <script src="./bower_components/proj4Leaflet/lib/proj4-compressed.js"></script>
 <script src="./bower_components/proj4Leaflet/src/proj4leaflet.js"></script>
 <script src="./bower_components/mapml-leaflet-plugin/mapml.js"></script>
 
+<!-- web-map is an HTML &lt;map&gt; customized built-in element -->
 <dom-module id="web-map">
 <template>
   <!-- use the leaflet-styles style module -->
@@ -170,33 +170,6 @@ WebMap = Polymer({
                         }
                 }
         }());
-      
-    },
-    attached: function() {
-      this.async( function () {
-        console.log(this.localName + '#' + this.id + ' was attached');
-        
-        // the dimension attributes win, if they're there. A map does not
-        // have an intrinsic size, unlike an image or video, and so must 
-        // have a defined width and height.
-        var s = window.getComputedStyle(this),
-          wpx = s.width, hpx=s.height, 
-          w = parseInt(wpx.replace('px','')),
-          h = parseInt(hpx.replace('px',''));
-        
-        if (!this.width || this.width !== w) {
-          this.$.map.style.width = wpx;
-          this.width = w;
-        } else {
-          this.$.map.style.width = this.width+"px";
-        }
-        
-        if (!this.height || this.height !== h) {
-          this.$.map.style.height = h;
-          this.height = h;
-        } else {
-          this.$.map.style.height = this.height+"px";
-        }
         if (this.hasAttribute('name')) {
           var name = this.getAttribute('name');
           if (name) {
@@ -213,8 +186,42 @@ WebMap = Polymer({
             }
           }
         }
+    },
+    detached: function() {
+      this._removeEvents();
+    },
+    attached: function() {
+      this.async( function () {
+        console.log(this.localName + '#' + this.id + ' was attached');
         
-        // create the Leaflet map
+        // the dimension attributes win, if they're there. A map does not
+        // have an intrinsic size, unlike an image or video, and so must 
+        // have a defined width and height.
+        var s = window.getComputedStyle(this),
+          wpx = s.width, hpx=s.height, 
+          w = parseInt(wpx.replace('px','')),
+          h = parseInt(hpx.replace('px',''));
+        
+        if (wpx === "" || hpx === "") {
+           return;
+        }
+        
+        if (!this.width || this.width !== w) {
+          this.$.map.style.width = wpx;
+          this.width = w;
+        } else {
+          this.$.map.style.width = this.width+"px";
+        }
+        
+        if (!this.height || this.height !== h) {
+          this.$.map.style.height = h;
+          this.height = h;
+        } else {
+          this.$.map.style.height = this.height+"px";
+        }
+        
+        // create the Leaflet map if this is the first time attached is called
+        if (typeof this._map === "undefined") {
         this._map = L.map(this.$.map, {
           center: new L.LatLng(this.lat, this.lon),
           projection: this.projection,
@@ -228,8 +235,6 @@ WebMap = Polymer({
           // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24 
           fadeAnimation: false
         });
-        
-        this._setUpEvents();
         
         // optionally add controls to the map
         if (this.controls) {
@@ -266,7 +271,16 @@ WebMap = Polymer({
           console.log('ERROR: BAD EXTENT');
         }
         console.log("map bounds bbox=" + this._map.getBounds().toBBoxString());
+          this._setUpEvents();
+       }
+        
       },10);
+    },
+    _removeEvents: function() {
+      if (this._map) {
+        this._map.off('preclick click dblclick mousemove mouseover mouseout mousedown mouseup contextmenu', false, this);
+        this._map.off('movestart move moveend zoomstart zoom zoomend', false, this);
+      }
     },
     _setUpEvents: function () {
       this._map.on('preclick', 
