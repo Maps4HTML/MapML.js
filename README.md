@@ -5,10 +5,29 @@
 
 The web-map Customized Built-In &lt;map&gt; Element is a [prototype implementation](http://maps4html.github.io/Web-Map-Custom-Element/) of the [HTML-Map-Element specification](http://maps4html.github.io/HTML-Map-Element/spec/).
 
-## Objective
+[![Build Status](https://travis-ci.org/prushforth/Web-Map-Custom-Element.svg?branch=master)](https://travis-ci.org/prushforth/Web-Map-Custom-Element)
 
-The objective of this web component is to upgrade the &lt;map&gt; HTML element to support modern Web mapping requirements.  As such, it relies on [Map Markup Language](http://maps4html.github.io/mapml/spec/) which delivers map information as hypertext.
-This element depends on the [MapML Leaflet Plugin javascript library](https://github.com/Maps4HTML/MapML-Leaflet-Plugin).
+The Customized Built-In &lt;map&gt; Element is a prototype [implementation](http://maps4html.github.io/Web-Map-Custom-Element/) of the [HTML-Map-Element specification](http://maps4html.github.io/HTML-Map-Element/spec/).
+
+The HTML author can add MapML sources/layers by one or more the &lt;`layer- src="..."`&gt; elements as children of &lt;`map`&gt;.  The map provides a default set of controls which are turned on or off with the map@controls boolean attribute.  The @width and @height of the map should be specified either as attributes or via CSS rules.  The initial zoom and location of the map are controlled by the @zoom and @lat, @lon attributes.  The default projection is Web Mercator (OSMTILE).
+
+Example:
+<!---
+```
+<custom-element-demo>
+  <template>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="web-map.html">
+    <next-code-block></next-code-block>
+  </template>
+</custom-element-demo>
+```
+-->
+```html
+<map is="web-map" zoom="3" lat="0" lon="0" width="800" height="400" controls>
+    <layer- src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" label="OpenStreetMap" checked></layer->
+</map>
+```
 
 ## Maps4HTML Community Group
 
