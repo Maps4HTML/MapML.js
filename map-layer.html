@@ -212,7 +212,7 @@ MapLayer = Polymer({
     },
     attached: function() {
         if (Polymer.dom(this).parentNode.nodeName !== 'MAP') {
-            console.log('ERROR: '+ this.localName + '#' + this.id + ' must be a child of a map element');
+            console.log('Info: '+ this.localName + '#' + this.id + ' must be a child of a map element');
             return;
         }
         // if the map has been attached, set this layer up wrt Leaflet map
