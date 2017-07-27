@@ -10,15 +10,16 @@
   "license": "W3C SOFTWARE AND DOCUMENT NOTICE AND LICENSE",
   "keywords": [
     "framework",
-    "web",
-    "html5",
-    "maps",
+    "web-components",
     "custom element",
-    "javascript",
-    "web maps",
     "component",
     "polyfill",
-    "web-components"
+    "polymer",
+    "web map",
+    "web",
+    "maps",
+    "map",
+    "web-map"
   ],
   "repository": {
     "type": "git",
@@ -32,7 +33,13 @@
     "tests"
   ],
   "dependencies": {
-    "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#0.3.0",
+    "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#^0.3.0",
     "polymer": "^1.5.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   }
 }
