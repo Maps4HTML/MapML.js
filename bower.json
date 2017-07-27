@@ -7,7 +7,7 @@
     {"name": "Maps for HTML Community Group", "email": "public-maps4html@w3.org", "homepage": "https://www.w3.org/community/maps4html/"}
   ],
   "homepage": "http://maps4html.github.io/Web-Map-Custom-Element/",
-  "license": "W3C SOFTWARE AND DOCUMENT NOTICE AND LICENSE",
+  "license": "W3C",
   "keywords": [
     "framework",
     "web-components",
