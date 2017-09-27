@@ -157,6 +157,7 @@ MapLayer = Polymer({
         if (this._layerControl && !this.hidden) {
           this._layerControl.removeLayer(this._layer);
         }
+        this._removeEvents();
     },
     ready: function() {
         
@@ -169,6 +170,7 @@ MapLayer = Polymer({
         var base = this.baseURI ? this.baseURI : document.baseURI;
         this._layer = M.mapMLLayer(this.src ? new URI(this.src).resolve(new URI(base)).toString(): null, this);
         this._layer.on('extentload', this._onLayerExtentLoad, this);
+        this._setUpEvents();
     },
     _attachedToMap: function() {
         // set i to the index of this layer element in the set of layers
@@ -216,6 +218,17 @@ MapLayer = Polymer({
         if (Polymer.dom(this).parentNode._map) {
             this._attachedToMap();
         }
+    },
+    _removeEvents: function() {
+      if (this._layer) {
+        this._layer.off('loadstart', false, this);
+      }
+    },
+    _setUpEvents: function () {
+      this._layer.on('loadstart', 
+          function () {
+              this.fire('loadstart', {target: this});
+          }, this);      
     }
 });
 </script>
