@@ -1,5 +1,9 @@
 
-# Customized Built-In &lt;map&gt; Element
+# web-map Customized Built-In &lt;map&gt; Element
+
+[![Build Status](https://travis-ci.org/prushforth/Web-Map-Custom-Element.svg?branch=master)](https://travis-ci.org/prushforth/Web-Map-Custom-Element)
+
+The web-map Customized Built-In &lt;map&gt; Element is a [prototype implementation](http://maps4html.github.io/Web-Map-Custom-Element/) of the [HTML-Map-Element specification](http://maps4html.github.io/HTML-Map-Element/spec/).
 
 [![Build Status](https://travis-ci.org/prushforth/Web-Map-Custom-Element.svg?branch=master)](https://travis-ci.org/prushforth/Web-Map-Custom-Element)
 
