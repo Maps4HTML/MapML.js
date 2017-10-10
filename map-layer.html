@@ -110,6 +110,9 @@ MapLayer = Polymer({
                  hreflang: null,
                  sizes: null }];
         }
+        if (this._layer._title && this.label === "Layer") {
+          this.label = this._layer._title;
+        }
         // make sure local content layer has the chance to set its extent properly
         // which is important for the layer control and the disabled property
         if (this._layer._map) {
@@ -157,6 +160,7 @@ MapLayer = Polymer({
         if (this._layerControl && !this.hidden) {
           this._layerControl.removeLayer(this._layer);
         }
+        this._removeEvents();
     },
     ready: function() {
         
@@ -169,6 +173,7 @@ MapLayer = Polymer({
         var base = this.baseURI ? this.baseURI : document.baseURI;
         this._layer = M.mapMLLayer(this.src ? new URI(this.src).resolve(new URI(base)).toString(): null, this);
         this._layer.on('extentload', this._onLayerExtentLoad, this);
+        this._setUpEvents();
     },
     _attachedToMap: function() {
         // set i to the index of this layer element in the set of layers
@@ -209,13 +214,24 @@ MapLayer = Polymer({
     },
     attached: function() {
         if (Polymer.dom(this).parentNode.nodeName !== 'MAP') {
-            console.log('Info: '+ this.localName + '#' + this.id + ' must be a child of a map element');
+            console.log('ERROR: '+ this.localName + '#' + this.id + ' must be a child of a map element');
             return;
         }
         // if the map has been attached, set this layer up wrt Leaflet map
         if (Polymer.dom(this).parentNode._map) {
             this._attachedToMap();
         }
+    },
+    _removeEvents: function() {
+      if (this._layer) {
+        this._layer.off('loadstart', false, this);
+      }
+    },
+    _setUpEvents: function () {
+      this._layer.on('loadstart', 
+          function () {
+              this.fire('loadstart', {target: this});
+          }, this);      
     }
 });
 </script>
