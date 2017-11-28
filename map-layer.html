@@ -110,6 +110,9 @@ MapLayer = Polymer({
                  hreflang: null,
                  sizes: null }];
         }
+        if (this._layer._title && this.label === "Layer") {
+          this.label = this._layer._title;
+        }
         // make sure local content layer has the chance to set its extent properly
         // which is important for the layer control and the disabled property
         if (this._layer._map) {
@@ -211,7 +214,7 @@ MapLayer = Polymer({
     },
     attached: function() {
         if (Polymer.dom(this).parentNode.nodeName !== 'MAP') {
-            console.log('Info: '+ this.localName + '#' + this.id + ' must be a child of a map element');
+            console.log('ERROR: '+ this.localName + '#' + this.id + ' must be a child of a map element');
             return;
         }
         // if the map has been attached, set this layer up wrt Leaflet map

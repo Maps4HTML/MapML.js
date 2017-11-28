@@ -23,6 +23,7 @@
     /* try to constrain the map and the leaflet div#map to the size of the container */
         :host, :host #map {
          max-width: 100%;
+         min-width: 100%;
     }
     /* this is a hack for shady DOM, as max-width messes with Leaflet tiles */
     :host img {
@@ -231,7 +232,7 @@ WebMap = Polymer({
             // there is a better configuration than that, but at this moment
             // I'm not sure how to approach that issue.  
             // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24 
-            fadeAnimation: false
+            fadeAnimation: true
           });
         
           // optionally add controls to the map
