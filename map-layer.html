@@ -176,14 +176,17 @@ MapLayer = Polymer({
         this._setUpEvents();
     },
     _attachedToMap: function() {
-        // set i to the index of this layer element in the set of layers
-        var i = 0;
+        // set i to the position of this layer element in the set of layers
+        var i = 0, position = 1;
         for (var nodes = Polymer.dom(this).parentNode.children;i < nodes.length;i++) {
-            if (Polymer.dom(this).parentNode.children[i] === this) {
-              break;
+            if (Polymer.dom(this).parentNode.children[i].nodeName === "LAYER-") {
+                if (Polymer.dom(this).parentNode.children[i] === this) {
+                  break;
+                }
+                position++;
             }
         }
-        L.setOptions(this._layer, {zIndex: i+1, opacity: window.getComputedStyle(this).opacity});
+        L.setOptions(this._layer, {zIndex: position, opacity: window.getComputedStyle(this).opacity});
         // make sure the Leaflet layer has a reference to the map
         this._layer._map = Polymer.dom(this).parentNode._map;
         // notify the layer that it is attached to a map (layer._map)

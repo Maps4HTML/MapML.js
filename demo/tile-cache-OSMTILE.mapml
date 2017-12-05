@@ -1,0 +1,24 @@
+<mapml>
+  <head>
+    <title>An OSMTILE tile cache in Map Markup Language</title>
+    <meta http-equiv="Content-Type" content="text/mapml"/>
+    <meta charset="utf-8"/>
+    <meta name="projection" content="OSMTILE"/>
+    <meta name="zoom" content="min=0,max=15"/>
+    <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="Canada Base Map © Natural Resources Canada"/>
+  </head>
+  <body>
+    <extent units="OSMTILE">
+      <input name="z" type="zoom" value="0" min="0" max="15"/>
+      <input name="x" type="location" units="tile" axis="column"/>
+      <input name="y" type="location" units="tile" axis="row"/>
+      <input name="xmin" type="xmin" min="0.0" max="256.0"/>
+      <input name="ymin" type="ymin" min="0.0" max="256.0"/>
+      <input name="xmax" type="xmax" min="0.0" max="256.0"/>
+      <input name="ymax" type="ymax" min="0.0" max="256.0"/>
+      <input name="projection" type="projection" value="OSMTILE"/>
+      <template type="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_CBCT_GEOM_3857/MapServer/tile/{z}/{y}/{x}?m4h=t"/>
+      <template type="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_TXT_3857/MapServer/tile/{z}/{y}/{x}?m4h=t"/>
+    </extent>
+  </body>
+</mapml>
