@@ -23,6 +23,7 @@
     /* try to constrain the map and the leaflet div#map to the size of the container */
         :host, :host #map {
          max-width: 100%;
+         min-width: 100%;
     }
     /* this is a hack for shady DOM, as max-width messes with Leaflet tiles */
     :host img {
@@ -191,7 +192,6 @@ WebMap = Polymer({
     },
     attached: function() {
       this.async( function () {
-        console.log(this.localName + '#' + this.id + ' was attached');
         
         // the dimension attributes win, if they're there. A map does not
         // have an intrinsic size, unlike an image or video, and so must 
@@ -220,7 +220,7 @@ WebMap = Polymer({
         }
         
         // create the Leaflet map if this is the first time attached is called
-        if (typeof this._map === "undefined") {
+        if (!this._map) {
           this._map = L.map(this.$.map, {
             center: new L.LatLng(this.lat, this.lon),
             projection: this.projection,
@@ -232,7 +232,7 @@ WebMap = Polymer({
             // there is a better configuration than that, but at this moment
             // I'm not sure how to approach that issue.  
             // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24 
-            fadeAnimation: false
+            fadeAnimation: true
           });
         
           // optionally add controls to the map
@@ -259,17 +259,6 @@ WebMap = Polymer({
               this.poster.style.display = 'none';
             }
           }
-          // log map dimensions.  If things go wrong with setup, this may be useful
-          console.log("map center: "+this._map.getCenter());
-          var west = this._map.getBounds().getWest(),
-              south = this._map.getBounds().getSouth(),
-              east = this._map.getBounds().getEast(),
-              north = this._map.getBounds().getNorth();
-
-          if (west === east || south === north) {
-            console.log('ERROR: BAD EXTENT');
-          }
-          console.log("map bounds bbox=" + this._map.getBounds().toBBoxString());
           this._setUpEvents();
        }
         

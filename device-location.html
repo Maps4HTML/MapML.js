@@ -64,6 +64,35 @@ Polymer({
             this._map = this.parentNode._map;
         }
     },
+    ready: function() {
+        if (this.centered) {
+            var self = this,
+                options = {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    };
+                function moveTo(position) {
+                    self.lat = position.coords.latitude;
+                    self.lon = position.coords.longitude;
+                    if (self.parentNode.zoomTo && self.parentNode._map) {
+                        // TODO when the zoomTo bug is fixed, remove zoom+1
+                        self.parentNode.zoomTo(self.lat,self.lon,self.parentNode.zoom+1);
+                    }
+                };
+            this._watchID = navigator.geolocation.watchPosition(moveTo,null,options);
+        }
+    },
+//    attached: function() {
+//        this._deleteWatch();
+//        // could have a _watchID from being created without being detached
+//        // i.e. never having been attached before...
+//        if (this.centered) {
+//            // create point on the control layer at the map center...
+//            
+//        }
+//        
+//    },
     _deleteWatch: function() {
         if (this._watchID) {
             navigator.geolocation.clearWatch(this._watchID);
