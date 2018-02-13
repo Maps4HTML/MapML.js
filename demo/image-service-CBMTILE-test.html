@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>&lt;map&gt; type extension custom element</title>
+    <link rel='icon' href='MapsForHTML_16x16.png' sizes='16x16'>
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="../web-map.html">
+    <style>
+      /* map must have a defined height and width, can be set either by @height/@width or with css properties */
+      map {
+        float: left;
+        padding-right: 20px;
+        padding-bottom: 10px;
+        height: 350px;
+        width: 640px;
+      }
+      .mapclasstest {
+        height: 300px;
+        width: 600px;
+      }
+      .transparency {
+        opacity: 0.2;
+      }
+      area#line {
+        fill: none;
+        stroke: purple;
+        stroke-width: 7px;
+        stroke-opacity: 1.0;
+        stroke-linecap: round;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <!-- the @width / @height attributes take precedence over properties, but currently don't change to reflect updates -->
+      <map is="web-map" projection="CBMTILE" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls>
+        <layer- id="cbmt" label="Composite cache+WMS layer" src="image-service-CBMTILE.mapml" checked></layer->
+        <layer- id="forestfires" label="Wildfire risk index" src="tile-cache-CBMTILE.mapml"></layer-> 
+
+      </map>
+    </div>
+  </body>
+</html>
