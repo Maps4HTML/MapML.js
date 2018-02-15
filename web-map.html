@@ -260,6 +260,7 @@ WebMap = Polymer({
             }
           }
           this._setUpEvents();
+          this.fire('load', {target: this});
        }
         
       },10);
