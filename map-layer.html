@@ -141,7 +141,7 @@ MapLayer = Polymer({
                 this.parentElement._layerControl.removeLayer(this._layer);
             } else {
                 this._layerControl = this.parentElement._layerControl;
-                this._layerControl.addOverlay(this._layer,this.label);
+                this._layerControl.addOrUpdateOverlay(this._layer,this.label);
             }
             this._validateDisabled();
         }
@@ -200,7 +200,7 @@ MapLayer = Polymer({
         // if controls option is enabled, insert the layer into the overlays array
         if (Polymer.dom(this).parentNode.controls && !this.hidden) {
           this._layerControl = Polymer.dom(this).parentNode._layerControl;
-          this._layerControl.addOverlay(this._layer, this.label);
+          this._layerControl.addOrUpdateOverlay(this._layer, this.label);
         }
         // toggle the this.disabled attribute depending on whether the layer
         // is: same prj as map, within view/zoom of map
