@@ -2,12 +2,10 @@
 <!-- styles scoped to inside a custom element must be in a style module -->
 <link rel="import" href="map-styles.html">
 
-<!-- this is a modified version of leaflet which uses Polymer.dom instead of 
-     regular DOM API calls so as to work with Shadow/Shady DOM custom elements -->
-<script src="../polymer-leaflet/leaflet-src.js"></script>
-<script src="../proj4Leaflet/lib/proj4-compressed.js"></script>
-<script src="../proj4Leaflet/src/proj4leaflet.js"></script>
-<script src="../mapml-leaflet-plugin/mapml.min.js"></script>
+<script src="./bower_components/polymer-leaflet/leaflet-src.js"></script>
+<script src="./bower_components/proj4/dist/proj4.js"></script>
+<script src="./bower_components/proj4leaflet/src/proj4leaflet.js"></script>
+<script src="./bower_components/mapml-leaflet-plugin/mapml.js"></script>
 
 <dom-module id="map-area">
 <style  include="map-styles">
@@ -64,6 +62,8 @@ MapArea = Polymer({
     
         // don't go through this if already done
         if (!this._feature) {
+          // TODO??? SCALE this.coords if the this._map.poster exists because
+          // the img might have been scaled by CSS.
           // compute the style properties to be applied to the feature
           var options = this._styleToPathOptions(window.getComputedStyle(this)),
               points = this.coords ? this._coordsToArray(this.coords): null;
