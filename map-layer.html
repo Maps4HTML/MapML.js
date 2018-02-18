@@ -2,20 +2,17 @@
 <link rel="import" href="map-styles.html">
 
 <script src="./bower_components/polymer-leaflet/leaflet-src.js"></script>
-<script src="./bower_components/proj4Leaflet/lib/proj4-compressed.js"></script>
-<script src="./bower_components/proj4Leaflet/src/proj4leaflet.js"></script>
+<script src="./bower_components/proj4/dist/proj4.js"></script>
+<script src="./bower_components/proj4leaflet/src/proj4leaflet.js"></script>
 <script src="./bower_components/mapml-leaflet-plugin/mapml.js"></script>
 
 <dom-module id="layer-">
-  <!-- in polymer 1.0.x, styles must be outside of the <template> element
-       https://www.polymer-project.org/1.0/docs/migration.html#local-dom-template -->
-  <style  include="map-styles">
-   :host {
-     display: none;
-   }
-  </style>
-  
   <template>
+    <style  include="map-styles">
+     :host {
+       display: none;
+     }
+    </style>
     <!-- hide any feature, image or tile elements the author includes -->
     <content></content>
   </template>
@@ -144,7 +141,7 @@ MapLayer = Polymer({
                 this.parentElement._layerControl.removeLayer(this._layer);
             } else {
                 this._layerControl = this.parentElement._layerControl;
-                this._layerControl.addOverlay(this._layer,this.label);
+                this._layerControl.addOrUpdateOverlay(this._layer,this.label);
             }
             this._validateDisabled();
         }
@@ -203,7 +200,7 @@ MapLayer = Polymer({
         // if controls option is enabled, insert the layer into the overlays array
         if (Polymer.dom(this).parentNode.controls && !this.hidden) {
           this._layerControl = Polymer.dom(this).parentNode._layerControl;
-          this._layerControl.addOverlay(this._layer, this.label);
+          this._layerControl.addOrUpdateOverlay(this._layer, this.label);
         }
         // toggle the this.disabled attribute depending on whether the layer
         // is: same prj as map, within view/zoom of map
