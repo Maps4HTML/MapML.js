@@ -28,6 +28,8 @@
   ],
   "dependencies": {
     "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#^0.4.0",
+    "polymer-leaflet": "Maps4HTML/Polymer-Leaflet#v0.2.0-Polymer-Leaflet",
+    "proj4leaflet ": "^1.0.0",
     "polymer": "^1.5.0"
   },
   "devDependencies": {
