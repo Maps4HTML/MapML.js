@@ -1,5 +1,5 @@
 
-# Customized Built-In &lt;map&gt; Element
+# web-map Customized Built-In &lt;map&gt; Element
 
 [![Build Status](https://travis-ci.org/prushforth/Web-Map-Custom-Element.svg?branch=master)](https://travis-ci.org/prushforth/Web-Map-Custom-Element) [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/Maps4HTML/Web-Map-Custom-Element)
 
