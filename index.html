@@ -39,9 +39,9 @@
       
       <pre>
 &lt;map is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls hidden>
-  &lt;layer- id="osm" src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked hidden>&lt;/layer-&gt;
-  &lt;layer- id="cbmt" src="http://geogratis.gc.ca/mapml/en/osmtile/cbmt/" label="Canada Base Map">&lt;/layer-&gt;
-  &lt;layer- id="canvec" src="http://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/"  label="CanVec+ 031G" class="transparency">&lt;/layer-&gt;
+  &lt;layer- id="osm" src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked hidden>&lt;/layer-&gt;
+  &lt;layer- id="cbmt" src="https://geogratis.gc.ca/mapml/en/osmtile/cbmt/" label="Canada Base Map">&lt;/layer-&gt;
+  &lt;layer- id="canvec" src="https://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/"  label="CanVec+ 031G" class="transparency">&lt;/layer-&gt;
   &lt;layer- id="marker" label="Marker layer" src="marker.mapml">&lt;/layer-&gt;
   &lt;area is="map-area"id="marker2" href='https://example.com/marker/' alt="Marker" coords="265,185" shape="marker">
   &lt;area is="map-area"id="line" href='https://example.com/line/' alt="Line" coords="275,275,540,107" shape="line">
@@ -54,9 +54,9 @@
       <!-- the @width / @height attributes take precedence over properties, but currently don't change to reflect updates -->
       <img usemap="#dowslake" src="map1.png" width="700" height="400" alt="Dow's Lake area" />
       <map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls hidden>
-        <layer- id="osm" src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked hidden></layer->
-        <layer- id="cbmt" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/en/osmtile/cbmt/" checked></layer->
-        <layer- id="canvec" label="CanVec+ 031G" src="http://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/" class="transparency"></layer->
+        <layer- id="osm" src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked hidden></layer->
+        <layer- id="cbmt" label="Canada Base Map" src="https://geogratis.gc.ca/mapml/en/osmtile/cbmt/" checked></layer->
+        <layer- id="canvec" label="CanVec+ 031G" src="https://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/" class="transparency"></layer->
         <!-- the HTML author can create MapML files and serve them as layers if they prefer -->
         <layer- id="marker" label="Marker layer" src="marker.mapml"></layer->
         
@@ -116,18 +116,18 @@
         
       <pre>
 &lt;map is="web-map" zoom="2" lat="67.101360" lon="-91.121469" projection="CBMTILE" width="640" height="480" controls hidden>
-  &lt;layer- src="hhttp://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked>&lt;/layer-&gt;
-  &lt;layer- src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" label="Canada Base Map" checked>&lt;/layer-&gt;
-  &lt;layer- src="http://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/" label="CanVec+ 031G" class="transparency">&lt;/layer-&gt;
-  &lt;layer- id="fdr" label="Fire Risk forecast" src="http://geogratis.gc.ca/mapml/en/cbmtile/fdi/"  style="opacity: 0.4">&lt;/layer->
+  &lt;layer- src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked>&lt;/layer-&gt;
+  &lt;layer- src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" label="Canada Base Map" checked>&lt;/layer-&gt;
+  &lt;layer- src="https://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/" label="CanVec+ 031G" class="transparency">&lt;/layer-&gt;
+  &lt;layer- id="fdr" label="Fire Risk forecast" src="https://geogratis.gc.ca/mapml/en/cbmtile/fdi/"  style="opacity: 0.4">&lt;/layer->
 &lt;/map>
       </pre>
       <img usemap="#canada" src="map2.png" width="640" height="480"  alt="Canada" />  
       <map name="canada" is="web-map" zoom="2" lat="67.101360" lon="-91.121469"  projection="CBMTILE" width="640" height="480" controls hidden>
-        <layer- id="osm2" label="Open Street Map" src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" checked></layer->
-        <layer- id="cbmtlcc" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
-        <layer- id="canvec2" label="CanVec+ 031G" src="http://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/" class="transparency"></layer->
-        <layer- id="fdr" label="Fire Risk forecast" src="http://geogratis.gc.ca/mapml/en/cbmtile/fdi/"   style="opacity: 0.4"></layer->
+        <layer- id="osm2" label="Open Street Map" src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" checked></layer->
+        <layer- id="cbmtlcc" label="Canada Base Map" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
+        <layer- id="canvec2" label="CanVec+ 031G" src="https://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/" class="transparency"></layer->
+        <layer- id="fdr" label="Fire Risk forecast" src="https://geogratis.gc.ca/mapml/en/cbmtile/fdi/"   style="opacity: 0.4"></layer->
       </map>
         
         <p>This map declares the 'CBMTILE' projection, which is a <a href="https://maps4html.github.io/MapML/spec/#projections">coordinate reference system</a> in the Lambert Conformal Conic projection in MapML.  The Open Street Map layer is
