@@ -2,23 +2,18 @@
 <!-- styles scoped to inside a custom element must be in a style module -->
 <link rel="import" href="map-styles.html">
 
-<!-- this is a modified version of leaflet which uses Polymer.dom instead of 
-     regular DOM API calls so as to work with Shadow/Shady DOM custom elements -->
 <script src="../polymer-leaflet/leaflet-src.js"></script>
-<script src="../proj4Leaflet/lib/proj4-compressed.js"></script>
-<script src="../proj4Leaflet/src/proj4leaflet.js"></script>
+<script src="../proj4/dist/proj4.js"></script>
+<script src="../proj4leaflet/src/proj4leaflet.js"></script>
 <script src="../mapml-leaflet-plugin/mapml.min.js"></script>
 
 <dom-module id="layer-">
-  <!-- in polymer 1.0.x, styles must be outside of the <template> element
-       https://www.polymer-project.org/1.0/docs/migration.html#local-dom-template -->
-  <style  include="map-styles">
-   :host {
-     display: none;
-   }
-  </style>
-  
   <template>
+    <style  include="map-styles">
+     :host {
+       display: none;
+     }
+    </style>
     <!-- hide any feature, image or tile elements the author includes -->
     <content></content>
   </template>
@@ -113,6 +108,9 @@ MapLayer = Polymer({
                  hreflang: null,
                  sizes: null }];
         }
+        if (this._layer._title && this.label === "Layer") {
+          this.label = this._layer._title;
+        }
         // make sure local content layer has the chance to set its extent properly
         // which is important for the layer control and the disabled property
         if (this._layer._map) {
@@ -144,7 +142,7 @@ MapLayer = Polymer({
                 this.parentElement._layerControl.removeLayer(this._layer);
             } else {
                 this._layerControl = this.parentElement._layerControl;
-                this._layerControl.addOverlay(this._layer,this.label);
+                this._layerControl.addOrUpdateOverlay(this._layer,this.label);
             }
             this._validateDisabled();
         }
@@ -160,6 +158,7 @@ MapLayer = Polymer({
         if (this._layerControl && !this.hidden) {
           this._layerControl.removeLayer(this._layer);
         }
+        this._removeEvents();
     },
     ready: function() {
         
@@ -172,16 +171,20 @@ MapLayer = Polymer({
         var base = this.baseURI ? this.baseURI : document.baseURI;
         this._layer = M.mapMLLayer(this.src ? new URI(this.src).resolve(new URI(base)).toString(): null, this);
         this._layer.on('extentload', this._onLayerExtentLoad, this);
+        this._setUpEvents();
     },
     _attachedToMap: function() {
-        // set i to the index of this layer element in the set of layers
-        var i = 0;
+        // set i to the position of this layer element in the set of layers
+        var i = 0, position = 1;
         for (var nodes = Polymer.dom(this).parentNode.children;i < nodes.length;i++) {
-            if (Polymer.dom(this).parentNode.children[i] === this) {
-              break;
+            if (Polymer.dom(this).parentNode.children[i].nodeName === "LAYER-") {
+                if (Polymer.dom(this).parentNode.children[i] === this) {
+                  break;
+                }
+                position++;
             }
         }
-        L.setOptions(this._layer, {zIndex: i+1, opacity: window.getComputedStyle(this).opacity});
+        L.setOptions(this._layer, {zIndex: position, opacity: window.getComputedStyle(this).opacity});
         // make sure the Leaflet layer has a reference to the map
         this._layer._map = Polymer.dom(this).parentNode._map;
         // notify the layer that it is attached to a map (layer._map)
@@ -198,7 +201,7 @@ MapLayer = Polymer({
         // if controls option is enabled, insert the layer into the overlays array
         if (Polymer.dom(this).parentNode.controls && !this.hidden) {
           this._layerControl = Polymer.dom(this).parentNode._layerControl;
-          this._layerControl.addOverlay(this._layer, this.label);
+          this._layerControl.addOrUpdateOverlay(this._layer, this.label);
         }
         // toggle the this.disabled attribute depending on whether the layer
         // is: same prj as map, within view/zoom of map
@@ -219,6 +222,17 @@ MapLayer = Polymer({
         if (Polymer.dom(this).parentNode._map) {
             this._attachedToMap();
         }
+    },
+    _removeEvents: function() {
+      if (this._layer) {
+        this._layer.off('loadstart', false, this);
+      }
+    },
+    _setUpEvents: function () {
+      this._layer.on('loadstart', 
+          function () {
+              this.fire('loadstart', {target: this});
+          }, this);      
     }
 });
 </script>

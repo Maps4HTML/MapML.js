@@ -2,11 +2,9 @@
 <!-- styles scoped to inside a custom element must be in a style module -->
 <link rel="import" href="map-styles.html">
 
-<!-- this is a modified version of leaflet which uses Polymer.dom instead of 
-     regular DOM API calls so as to work with Shadow/Shady DOM custom elements -->
 <script src="../polymer-leaflet/leaflet-src.js"></script>
-<script src="../proj4Leaflet/lib/proj4-compressed.js"></script>
-<script src="../proj4Leaflet/src/proj4leaflet.js"></script>
+<script src="../proj4/dist/proj4.js"></script>
+<script src="../proj4leaflet/src/proj4leaflet.js"></script>
 <script src="../mapml-leaflet-plugin/mapml.min.js"></script>
 
 <dom-module id="map-area">
@@ -69,6 +67,15 @@ MapArea = Polymer({
           // compute the style properties to be applied to the feature
           var options = this._styleToPathOptions(window.getComputedStyle(this)),
               points = this.coords ? this._coordsToArray(this.coords): null;
+          // scale points if the poster exists because responsive areas
+          if (points && this.parentElement.poster) {
+            var worig = this.parentElement.poster.width, 
+                wresp = this.parentElement.width, 
+                wadjstmnt = (worig - wresp)/2;
+            for (var i = 0; i< points.length;i++) {
+              points[i][0] = points[i][0] - wadjstmnt;
+            }
+          }
           
           if (this.shape === 'marker') {
             if (this.alt) {

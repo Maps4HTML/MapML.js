@@ -5,7 +5,7 @@
     <title>&lt;map&gt; type extension custom element</title>
     <link rel='icon' href='MapsForHTML_16x16.png' sizes='16x16'>
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-    <link rel="import" href="web-map.html">
+    <link rel="import" href="bower_components/web-map/web-map.html">
     <style>
       /* map must have a defined height and width, can be set either by @height/@width or with css properties */
       map {
@@ -41,7 +41,7 @@
 &lt;map is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls hidden>
   &lt;layer- id="osm" src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked hidden>&lt;/layer-&gt;
   &lt;layer- id="cbmt" src="http://geogratis.gc.ca/mapml/en/osmtile/cbmt/" label="Canada Base Map">&lt;/layer-&gt;
-  &lt;layer- id="canvec" src="http://geogratis.gc.ca/mapml/canvec/50k/features/"  label="CanVec+ 031G" class="transparency">&lt;/layer-&gt;
+  &lt;layer- id="canvec" src="http://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/"  label="CanVec+ 031G" class="transparency">&lt;/layer-&gt;
   &lt;layer- id="marker" label="Marker layer" src="marker.mapml">&lt;/layer-&gt;
   &lt;area is="map-area"id="marker2" href='http://example.com/marker/' alt="Marker" coords="265,185" shape="marker">
   &lt;area is="map-area"id="line" href='http://example.com/line/' alt="Line" coords="275,275,540,107" shape="line">
@@ -56,7 +56,7 @@
       <map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls hidden>
         <layer- id="osm" src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked hidden></layer->
         <layer- id="cbmt" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/en/osmtile/cbmt/" checked></layer->
-        <layer- id="canvec" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></layer->
+        <layer- id="canvec" label="CanVec+ 031G" src="http://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/" class="transparency"></layer->
         <!-- the HTML author can create MapML files and serve them as layers if they prefer -->
         <layer- id="marker" label="Marker layer" src="marker.mapml"></layer->
         
@@ -118,7 +118,7 @@
 &lt;map is="web-map" zoom="2" lat="67.101360" lon="-91.121469" projection="CBMTILE" width="640" height="480" controls hidden>
   &lt;layer- src="hhttp://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked>&lt;/layer-&gt;
   &lt;layer- src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" label="Canada Base Map" checked>&lt;/layer-&gt;
-  &lt;layer- src="http://geogratis.gc.ca/mapml/canvec/50k/features/" label="CanVec+ 031G" class="transparency">&lt;/layer-&gt;
+  &lt;layer- src="http://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/" label="CanVec+ 031G" class="transparency">&lt;/layer-&gt;
   &lt;layer- id="fdr" label="Fire Risk forecast" src="http://geogratis.gc.ca/mapml/en/cbmtile/fdi/"  style="opacity: 0.4">&lt;/layer->
 &lt;/map>
       </pre>
@@ -126,7 +126,7 @@
       <map name="canada" is="web-map" zoom="2" lat="67.101360" lon="-91.121469"  projection="CBMTILE" width="640" height="480" controls hidden>
         <layer- id="osm2" label="Open Street Map" src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" checked></layer->
         <layer- id="cbmtlcc" label="Canada Base Map" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
-        <layer- id="canvec2" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></layer->
+        <layer- id="canvec2" label="CanVec+ 031G" src="http://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/" class="transparency"></layer->
         <layer- id="fdr" label="Fire Risk forecast" src="http://geogratis.gc.ca/mapml/en/cbmtile/fdi/"   style="opacity: 0.4"></layer->
       </map>
         

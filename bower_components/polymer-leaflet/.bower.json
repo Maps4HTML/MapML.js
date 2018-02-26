@@ -1,6 +1,6 @@
 {
   "name": "polymer-leaflet",
-  "description": "Customized Leaflet v1.0.0-beta.1 library supporting the web-map-custom-element component",
+  "description": "Customized Leaflet v1.3.1 library supporting the web-map-custom-element component",
   "main": [
     "leaflet-src.js",
     "leaflet.css"
@@ -32,14 +32,14 @@
   "dependencies": {
     "polymer": "^1.5.0"
   },
-  "version": "0.1.0-Polymer-Leaflet",
-  "_release": "0.1.0-Polymer-Leaflet",
+  "version": "0.2.0-Polymer-Leaflet",
+  "_release": "0.2.0-Polymer-Leaflet",
   "_resolution": {
     "type": "version",
-    "tag": "0.1.0-Polymer-Leaflet",
-    "commit": "9d45fbfc649beb3f1d0791f3d10c3dd22626e8dd"
+    "tag": "v0.2.0-Polymer-Leaflet",
+    "commit": "1f812d3064b2b1d6ea4849e29cd97c5ee8959fd7"
   },
-  "_source": "git://github.com/Maps4HTML/Polymer-Leaflet.git",
-  "_target": "0.1.0-Polymer-Leaflet",
-  "_originalSource": "git://github.com/Maps4HTML/Polymer-Leaflet/"
+  "_source": "https://github.com/Maps4HTML/Polymer-Leaflet.git",
+  "_target": "v0.2.0-Polymer-Leaflet",
+  "_originalSource": "Maps4HTML/Polymer-Leaflet"
 }

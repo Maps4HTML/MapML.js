@@ -14,18 +14,19 @@
     }
   ],
   "homepage": "http://maps4html.github.io/Web-Map-Custom-Element/",
-  "license": "W3C SOFTWARE AND DOCUMENT NOTICE AND LICENSE",
+  "license": "W3C",
   "keywords": [
-    "web",
-    "html5",
-    "maps",
-    "custom element",
-    "web maps",
-    "component",
+    "framework",
     "web-components",
+    "custom element",
+    "component",
+    "polyfill",
     "polymer",
+    "web map",
+    "web",
+    "maps",
     "map",
-    "polyfill"
+    "web-map"
   ],
   "repository": {
     "type": "git",
@@ -39,18 +40,23 @@
     "tests"
   ],
   "dependencies": {
-    "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#^0.3.0",
+    "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#^0.4.0",
     "polymer": "^1.5.0"
   },
-  "version": "0.1.4",
-  "_release": "0.1.4",
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "version": "0.2.2",
+  "_release": "0.2.2",
   "_resolution": {
     "type": "version",
-    "tag": "0.1.4",
-    "commit": "b245c06e099809bac501712d0f67944873cf5977"
+    "tag": "0.2.2",
+    "commit": "fce06e34f9d3cc71edea3faa29ff487270e3e93d"
   },
   "_source": "https://github.com/Maps4HTML/Web-Map-Custom-Element.git",
-  "_target": "^0.1.4",
-  "_originalSource": "web-map",
-  "_direct": true
+  "_target": "^0.2.0",
+  "_originalSource": "Maps4HTML/Web-Map-Custom-Element"
 }
