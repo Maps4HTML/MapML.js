@@ -1,0 +1,22 @@
+/* this is required by tiles which are actually divs with multiple images in them */
+.leaflet-tile img {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+        
+/* MapML treats images like map layers, so far as fade animation is concerned */
+.leaflet-fade-anim .leaflet-image-layer {
+	will-change: opacity;
+	}
+        
+.leaflet-image-layer {
+        visibility: hidden;
+        }
+.leaflet-image-loaded {
+        visibility: inherit;
+        }
+        
+.mapml-popup-overflow {
+        overflow: auto;
+        }
