@@ -85,12 +85,14 @@ MapLayer = Polymer({
           }
         }
     },
-    _labelChanged: function() {
+    _labelChanged: function(newValue, oldValue) {
         var map = this.parentElement && this.parentElement._map;
         if (map) {
           this._toggleHidden(false);
         }
-        this.fire('labelchanged',{target: this});
+        if (newValue !== oldValue) {
+          this.fire('labelchanged',{target: this});
+        }
     },
     _apiToggleChecked: true,
     _toggleChecked: function() {
@@ -121,7 +123,7 @@ MapLayer = Polymer({
                  hreflang: null,
                  sizes: null }];
         }
-        if (this._layer._title && this.label === "Layer") {
+        if (this._layer._title) {
           this.label = this._layer._title;
         }
         // make sure local content layer has the chance to set its extent properly
@@ -206,7 +208,8 @@ MapLayer = Polymer({
                 position++;
             }
         }
-        L.setOptions(this._layer, {zIndex: position, opacity: window.getComputedStyle(this).opacity});
+        var proj = Polymer.dom(this).parentNode.projection ? Polymer.dom(this).parentNode.projection : "OSMTILE";
+        L.setOptions(this._layer, {zIndex: position, projection: proj, opacity: window.getComputedStyle(this).opacity});
         // make sure the Leaflet layer has a reference to the map
         this._layer._map = Polymer.dom(this).parentNode._map;
         // notify the layer that it is attached to a map (layer._map)
@@ -263,9 +266,13 @@ MapLayer = Polymer({
           }, this);      
       this._layer.on('changestyle',
           function(e) {
-            this.label = e.label;
             this.src = e.src;
             this.fire('changestyle', {target: this});
+          },this);
+      this._layer.on('changeprojection',
+          function(e) {
+            this.src = e.href;
+            this.fire('changeprojection', {target: this});
           },this);
     }
 });
