@@ -6,8 +6,8 @@
 <link rel="import" href="map-styles.html">
 
 <script src="./bower_components/polymer-leaflet/leaflet-src.js"></script>
-<script src="./bower_components/proj4/dist/proj4.js"></script>
-<script src="./bower_components/proj4leaflet/src/proj4leaflet.js"></script>
+<script src="./bower_components/proj4Leaflet/lib/proj4-compressed.js"></script>
+<script src="./bower_components/proj4Leaflet/src/proj4leaflet.js"></script>
 <script src="./bower_components/mapml-leaflet-plugin/mapml.js"></script>
 
 <!-- web-map is an HTML &lt;map&gt; customized built-in element -->
@@ -260,46 +260,17 @@ WebMap = Polymer({
             }
           }
           this._setUpEvents();
-          this.fire('load', {target: this});
        }
         
       },10);
     },
-    _dropHandler: function(event) {
-      event.preventDefault();
-      // create a new <layer-> child of this <map> element
-      Polymer.dom(this).appendChild(new MapLayer(event.dataTransfer.getData("text"), 'Layer', true));
-    },
-    _dragoverHandler: function(event) {
-      function contains(list, value) {
-        for( var i = 0; i < list.length; ++i ) {
-            if(list[i] === value) return true;
-        }
-        return false;
-      }
-      // check if the thing being dragged is a URL
-      var isLink = contains( event.dataTransfer.types, "text/uri-list");
-      if (isLink) {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = "copy";
-      }
-    },
     _removeEvents: function() {
       if (this._map) {
         this._map.off('preclick click dblclick mousemove mouseover mouseout mousedown mouseup contextmenu', false, this);
-        this._map.off('load movestart move moveend zoomstart zoom zoomend', false, this);
-        this.removeEventListener("drop", this._dropHandler, false);
-        this.removeEventListener("dragover", this._dragoverHandler, false);
+        this._map.off('movestart move moveend zoomstart zoom zoomend', false, this);
       }
     },
     _setUpEvents: function () {
-      this.addEventListener("drop", this._dropHandler, false);
-      this.addEventListener("dragover", this._dragoverHandler, false);
-      this._map.on('load',
-          function () {
-              this.fire('load', {target: this});
-          },
-          this);
       this._map.on('preclick', 
           function (e) {
               this.fire('preclick',
