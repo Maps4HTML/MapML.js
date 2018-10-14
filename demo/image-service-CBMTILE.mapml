@@ -1,0 +1,30 @@
+<mapml>
+  <head>
+    <title>A CBMTILE tile cache in Map Markup Language</title>
+    <meta http-equiv="Content-Type" content="text/mapml"/>
+    <meta charset="utf-8"/>
+    <meta name="projection" content="CBMTILE"/>
+    <meta name="zoom" content="min=0,max=17"/>
+    <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="Canada Base Map © Natural Resources Canada"/>
+  </head>
+  <body>
+    <extent units="CBMTILE">
+      <input name="z00m" type="zoom" value="0" min="0" max="17"/>
+      <input name="col"  type="location" units="tilematrix" axis="column"/>
+      <input name="row"  type="location" units="tilematrix" axis="row"/>
+      <input name="w" type="width"/>
+      <input name="h" type="height"/>
+      <input name="xmin" type="location" units="pcrs" position="top-left" axis="easting"/>
+      <input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing"/>
+      <input name="xmax" type="location" units="pcrs" position="top-right" axis="easting"/>
+      <input name="ymax" type="location" units="pcrs" position="top-left" axis="northing"/>
+      <input name="xmn" type="xmin" min="768.0" max="1024.0"/>
+      <input name="ymn" type="ymin" min="768.0" max="1280.0"/>
+      <input name="xmx" type="xmax" min="768.0" max="1024.0"/>
+      <input name="ymx" type="ymax" min="768.0" max="1280.0"/>
+      <input name="p" type="projection" value="CBMTILE"/>
+      <template type="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z00m}/{row}/{col}?m4h=t"/>
+      <template type="image" tref="http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&amp;REQUEST=GetMap&amp;FORMAT=image/jpeg&amp;TRANSPARENT=FALSE&amp;STYLES=&amp;VERSION=1.3.0&amp;LAYERS=WMS-Toporama&amp;WIDTH={w}&amp;HEIGHT={h}&amp;CRS=EPSG:3978&amp;BBOX={xmin},{ymin},{xmax},{ymax}&amp;m4h=t"/>
+    </extent>
+  </body>
+</mapml>
