@@ -27,6 +27,6 @@
     "tests"
   ],
   "dependencies": {
-    "web-map": "Maps4HTML/Web-Map-Custom-Element#^0.2.0"
+    "web-map": "Maps4HTML/Web-Map-Custom-Element#^0.3.0"
   }
 }

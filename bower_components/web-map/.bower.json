@@ -1,28 +1,15 @@
 {
   "name": "web-map",
-  "description": "The Built-in <map> Custom Element is a Polymer implementation of the HTML-Map-Element specification.",
+  "description": "web-map Customized Built-In HTML <map> element Polymer implementation of the HTML-Map-Element specification.",
   "main": "web-map.html",
   "authors": [
-    {
-      "name": "Peter Rushforth",
-      "email": "peter.rushforth@canada.ca"
-    },
-    {
-      "name": "Maps for HTML Community Group",
-      "email": "public-maps4html@w3.org",
-      "homepage": "https://www.w3.org/community/maps4html/"
-    }
+    "Maps for HTML Community Group"
   ],
   "homepage": "http://maps4html.github.io/Web-Map-Custom-Element/",
   "license": "W3C",
   "keywords": [
-    "framework",
     "web-components",
-    "custom element",
-    "component",
-    "polyfill",
     "polymer",
-    "web map",
     "web",
     "maps",
     "map",
@@ -40,7 +27,7 @@
     "tests"
   ],
   "dependencies": {
-    "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#^0.4.0",
+    "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#^0.5.0",
     "polymer": "^1.5.0"
   },
   "devDependencies": {
@@ -49,14 +36,14 @@
     "web-component-tester": "^4.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   },
-  "version": "0.2.2",
-  "_release": "0.2.2",
+  "version": "0.3.0",
+  "_release": "0.3.0",
   "_resolution": {
     "type": "version",
-    "tag": "0.2.2",
-    "commit": "fce06e34f9d3cc71edea3faa29ff487270e3e93d"
+    "tag": "0.3.0",
+    "commit": "39ed7a606ad1c16cf7dc80df3852086d88cdaf1c"
   },
   "_source": "https://github.com/Maps4HTML/Web-Map-Custom-Element.git",
-  "_target": "^0.2.0",
+  "_target": "^0.3.0",
   "_originalSource": "Maps4HTML/Web-Map-Custom-Element"
 }

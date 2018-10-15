@@ -26,7 +26,8 @@ var projs = [
   'vandg',
   'aeqd',
   'ortho',
-  'qsc'
+  'qsc',
+  'robin'
 ];
 module.exports = function(grunt) {
   grunt.initConfig({
@@ -74,7 +75,7 @@ module.exports = function(grunt) {
       options: {
         report: 'gzip',
         mangle:{
-          except: ['proj4','Projection','Point']
+          reserved: ['proj4','Projection','Point']
         },
       },
       all: {

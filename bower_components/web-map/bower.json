@@ -1,21 +1,15 @@
 {
   "name": "web-map",
-  "description": "The Built-in <map> Custom Element is a Polymer implementation of the HTML-Map-Element specification.",
+  "description": "web-map Customized Built-In HTML <map> element Polymer implementation of the HTML-Map-Element specification.",
   "main": "web-map.html",
   "authors": [
-    {"name": "Peter Rushforth" ,"email": "peter.rushforth@canada.ca"},
-    {"name": "Maps for HTML Community Group", "email": "public-maps4html@w3.org", "homepage": "https://www.w3.org/community/maps4html/"}
+    "Maps for HTML Community Group"
   ],
   "homepage": "http://maps4html.github.io/Web-Map-Custom-Element/",
   "license": "W3C",
   "keywords": [
-    "framework",
     "web-components",
-    "custom element",
-    "component",
-    "polyfill",
     "polymer",
-    "web map",
     "web",
     "maps",
     "map",
@@ -33,7 +27,7 @@
     "tests"
   ],
   "dependencies": {
-    "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#^0.4.0",
+    "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#^0.5.0",
     "polymer": "^1.5.0"
   },
   "devDependencies": {

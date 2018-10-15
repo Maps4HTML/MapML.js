@@ -1,6 +1,6 @@
 {
   "name": "mapml-leaflet-plugin",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "JavaScript support library for the web-map custom element",
   "main": "mapml.js",
   "authors": [
@@ -23,21 +23,23 @@
     "**/.*",
     "node_modules",
     "bower_components",
+    "dist",
+    "nbproject",
     "test",
     "tests"
   ],
   "dependencies": {
-    "polymer-leaflet": "Maps4HTML/Polymer-Leaflet#v0.2.0-Polymer-Leaflet",
+    "polymer-leaflet": "Maps4HTML/Polymer-Leaflet#v0.2.1-Polymer-Leaflet",
     "proj4leaflet ": "^1.0.0",
     "polymer": "^1.5.0"
   },
-  "_release": "0.4.0",
+  "_release": "0.5.0",
   "_resolution": {
     "type": "version",
-    "tag": "0.4.0",
-    "commit": "0ec7c2e8fe714ffbc1fa047b0136878a7b7154c6"
+    "tag": "0.5.0",
+    "commit": "54a16f7daa82bb11a88f2700863e6a6135f405ea"
   },
   "_source": "https://github.com/Maps4HTML/MapML-Leaflet-Plugin.git",
-  "_target": "^0.4.0",
+  "_target": "^0.5.0",
   "_originalSource": "Maps4HTML/MapML-Leaflet-Plugin"
 }

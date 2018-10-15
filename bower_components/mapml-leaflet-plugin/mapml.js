@@ -38,163 +38,6 @@
  * publicity pertaining to the work without specific, written prior permission. 
  * Title to copyright in this work will at all times remain with copyright holders.
  */
-;/*
- * Copyright © 2007 Dominic Mitchell
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * Neither the name of the Dominic Mitchell nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-/*
- * An URI datatype.  Based upon examples in RFC3986.
- *
- * TODO %-escaping
- * TODO split apart authority
- * TODO split apart query_string (on demand, anyway)
- *
- * @(#) $Id$
- */
- 
-// Constructor for the URI object.  Parse a string into its components.
-function URI(str) {
-    if (!str) str = "";
-    // Based on the regex in RFC2396 Appendix B.
-    var parser = /^(?:([^:\/?\#]+):)?(?:\/\/([^\/?\#]*))?([^?\#]*)(?:\?([^\#]*))?(?:\#(.*))?/;
-    var result = str.match(parser);
-    this.scheme    = result[1] || null;
-    this.authority = result[2] || null;
-    this.path      = result[3] || null;
-    this.query     = result[4] || null;
-    this.fragment  = result[5] || null;
-}
-
-// Restore the URI to it's stringy glory.
-URI.prototype.toString = function () {
-    var str = "";
-    if (this.scheme) {
-        str += this.scheme + ":";
-    }
-    if (this.authority) {
-        str += "//" + this.authority;
-    }
-    if (this.path) {
-        str += this.path;
-    }
-    if (this.query) {
-        str += "?" + this.query;
-    }
-    if (this.fragment) {
-        str += "#" + this.fragment;
-    }
-    return str;
-};
-
-// Introduce a new scope to define some private helper functions.
-(function () {
-    // RFC3986 §5.2.3 (Merge Paths)
-    function merge(base, rel_path) {
-        var dirname = /^(.*)\//;
-        if (base.authority && !base.path) {
-            return "/" + rel_path;
-        }
-        else {
-            return base.path.match(dirname)[0] + rel_path;
-        }
-    }
-
-    // Match two path segments, where the second is ".." and the first must
-    // not be "..".
-    var DoubleDot = /\/((?!\.\.\/)[^\/]*)\/\.\.\//;
-
-    function remove_dot_segments(path) {
-        if (!path) return "";
-        // Remove any single dots
-        var newpath = path.replace(/\/\.\//g, '/');
-        // Remove any trailing single dots.
-        newpath = newpath.replace(/\/\.$/, '/');
-        // Remove any double dots and the path previous.  NB: We can't use
-        // the "g", modifier because we are changing the string that we're
-        // matching over.
-        while (newpath.match(DoubleDot)) {
-            newpath = newpath.replace(DoubleDot, '/');
-        }
-        // Remove any trailing double dots.
-        newpath = newpath.replace(/\/([^\/]*)\/\.\.$/, '/');
-        // If there are any remaining double dot bits, then they're wrong
-        // and must be nuked.  Again, we can't use the g modifier.
-        while (newpath.match(/\/\.\.\//)) {
-            newpath = newpath.replace(/\/\.\.\//, '/');
-        }
-        return newpath;
-    }
-
-    // RFC3986 §5.2.2. Transform References;
-    URI.prototype.resolve = function (base) {
-        var target = new URI();
-        if (this.scheme) {
-            target.scheme    = this.scheme;
-            target.authority = this.authority;
-            target.path      = remove_dot_segments(this.path);
-            target.query     = this.query;
-        }
-        else {
-            if (this.authority) {
-                target.authority = this.authority;
-                target.path      = remove_dot_segments(this.path);
-                target.query     = this.query;
-            }        
-            else {
-                // XXX Original spec says "if defined and empty"…;
-                if (!this.path) {
-                    target.path = base.path;
-                    if (this.query) {
-                        target.query = this.query;
-                    }
-                    else {
-                        target.query = base.query;
-                    }
-                }
-                else {
-                    if (this.path.charAt(0) === '/') {
-                        target.path = remove_dot_segments(this.path);
-                    } else {
-                        target.path = merge(base, this.path);
-                        target.path = remove_dot_segments(target.path);
-                    }
-                    target.query = this.query;
-                }
-                target.authority = base.authority;
-            }
-            target.scheme = base.scheme;
-        }
-
-        target.fragment = this.fragment;
-
-        return target;
-    };
-})();
 ;/* 
  * Copyright 2015-2016 Canada Centre for Mapping and Earth Observation, 
  * Earth Sciences Sector, Natural Resources Canada.
@@ -246,6 +89,8 @@ window.M = M;
     M.CBMTILE = new L.Proj.CRS('EPSG:3978',
   '+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs',
   {
+    origin: [-34655800, 39310000],
+    bounds: L.bounds([[-7786476.885838887,-5153821.09213678],[7148753.233541353,7928343.534071138]]),
     resolutions: [
       38364.660062653464, 
       22489.62831258996, 
@@ -273,12 +118,13 @@ window.M = M;
       0.18520870375074083,
       0.11112522225044451,
       0.066145965625264591
-    ],
-    origin: [-34655800, 39310000]
+    ]
   });
     M.APSTILE = new L.Proj.CRS('EPSG:5936',
   '+proj=stere +lat_0=90 +lat_ts=50 +lon_0=-150 +k=0.994 +x_0=2000000 +y_0=2000000 +datum=WGS84 +units=m +no_defs',
   {
+    origin: [-2.8567784109255E7, 3.2567784109255E7],
+    bounds: L.bounds([[-28567784.109254867,-28567784.109254755],[32567784.109255023,32567784.10925506]]),
     resolutions: [
       238810.813354,
       119405.406677,
@@ -300,13 +146,104 @@ window.M = M;
       1.82198191331174,
       0.910990956788164,
       0.45549547826179
-    ],
-    origin: [-2.8567784109255E7, 3.2567784109255E7]
+    ]
   });
     M.OSMTILE = L.CRS.EPSG3857;
     L.setOptions(M.OSMTILE,
       { 
-        origin: [-20037508.342787, 20037508.342787],
+        origin: [M.OSMTILE.projection.bounds.min.x, M.OSMTILE.projection.bounds.max.y],
+        bounds: M.OSMTILE.projection.bounds,
+        axes: {
+          tcrs: {
+            x: {
+              name: "x",
+              min: 0, 
+              max: function (zoom) {
+                return M.OSMTILE.getProjectedBounds(zoom).max.x;
+              }
+            },
+            y: {
+              name: "y",
+              min:0, 
+              max: function (zoom) {
+                return M.OSMTILE.getProjectedBounds(zoom).max.y;
+              }
+            },
+            z: {
+              name: "z", // zoom
+              min: 0,
+              get max() {
+                return M.OSMTILE.options.resolutions.length;
+              }
+            }
+          },
+          pcrs: {
+            easting: {
+              name: "easting",
+              get min () { 
+                return M.OSMTILE.options.bounds.min.x;
+              },
+              get max() {
+                return M.OSMTILE.options.bounds.max.x;
+              }}, 
+            northing: {
+              name: "northing", 
+              get min () { 
+                return M.OSMTILE.options.bounds.min.y; 
+              },
+              get max() { 
+                return M.OSMTILE.options.bounds.max.y; 
+              }}
+          }, 
+          gcrs: {
+            longitude: {
+              name: "longitude",
+              get min() {
+                // TODO should unproject bounds to be DRY
+                return M.OSMTILE.unproject(M.OSMTILE.projection.bounds.min).lng;
+              },
+              get max() {
+                // TODO sTODO should unproject bounds to be DRY
+                return M.OSMTILE.unproject(M.OSMTILE.projection.bounds.max).lng;
+              }
+            }, 
+            latitude: {
+              name: "latitude",
+              get min() {
+                // TODO TODO should unproject bounds to be DRY
+                return M.OSMTILE.unproject(M.OSMTILE.projection.bounds.min).lat;
+              },
+              get max() {
+                // TODO TODO should unproject bounds to be DRY
+                return M.OSMTILE.unproject(M.OSMTILE.projection.bounds.max).lat;
+              }
+            }
+          },
+          map: {
+            i: {
+              name: "i"
+            },
+            j: {
+              name: "j"
+            }
+          },
+          tilematrix: {
+            column: {
+              name: "column",
+              min: 0, // for other tcrs might not be 0 e.g. CBMTILE
+              max: function (zoom) {
+                return M.OSMTILE.getProjectedBounds(zoom).max.x / 256;
+              }
+            },
+            row: {
+              name: "row",
+              min: 0,
+              max: function (zoom) {
+                return M.OSMTILE.getProjectedBounds(zoom).max.y / 256;
+              }
+            }
+          }
+        },
         resolutions: [
           156543.0339,
           78271.51695,
@@ -336,7 +273,63 @@ window.M = M;
         ]
       });
 }());
+M.getBounds = function (extent) {
+      // TODO re-think the whole use of service bounds for disabling layers.
+      // bounds for the extent are used to 'disable' the layer in the layer control
+      // when the map extent does not intersect the calculated or default bounds 
+      // assigned to the layer or the map zoom does not fall in the zoom range
+      // of the service
+      var units = (extent.hasAttribute("units") && extent.getAttribute("units") !== "") ? extent.getAttribute("units").toUpperCase() : "OSMTILE",
+          crs = M[units],
+          // need to decide what to do when zoom doesn't exist/ is empty
+          zoom = extent.querySelector("input[type=zoom]") ? extent.querySelector("input[type=zoom]").getAttribute("value"): null;
+      if (!zoom) { console.log("No zoom found"); return; }
+      if (crs === undefined) { console.log("No matching TCRS found for: "+units); return; }
+      return crs.options.bounds;
+      
+      // for each pair of input[@type=location][@units][@axis is one of orthogonal-axes-corresponding-to-@units-cs] 
+      // x,easting,longitude,column
+      // y,northing,latitude,row
 
+//      var minXselector = 'input[type=location i][axis=x i][min],input[type=location i][axis=easting i][min],input[type=location i][axis=longitude i][min],input[type=location i][axis=column i][min]',
+//          minYselector = 'input[type=location i][axis=y i][min],input[type=location i][axis=northing i][min],input[type=location i][axis=latitude i][min],input[type=location i][axis=row i][min]',
+//          maxXselector = 'input[type=location i][axis=x i][max],input[type=location i][axis=easting i][max],input[type=location i][axis=longitude i][max],input[type=location i][axis=column i][max]',
+//          maxYselector = 'input[type=location i][axis=y i][max],input[type=location i][axis=northing i][max],input[type=location i][axis=latitude i][max],input[type=location i][axis=row i][max]';
+//
+//
+//
+//      var inputs = extent.querySelectorAll('minXselector');
+//      if (inputs) {
+//        for (var i=0;i<inputs.length;i++) {
+//          var axis = inputs[i].getAttribute("axis").toLowerCase(), yinputs;
+//          switch (axis) {
+//            case 'x':
+//              yinputs = extent.querySelectorAll('input[type=location i][axis=y i][min]');
+//              // use the minimum y value from yinputs@min >= crs.options.axes.tcrs.y.min as y value
+//              // use inputs[i]@min > crs.options.axes.tcrs.x.min ? inputs[i]@min : crs.options.axes.tcrs.x.min as x value
+//              // create a  L.point from the x,y above
+//              break;
+//            case 'easting':
+//              yinputs = extent.querySelectorAll('input[type=location i][axis=northing i][min]');
+//              // use the minimum y value from yinputs@min >= crs.options.axes.pcrs.northing.min as y value
+//              // use inputs[i]@min > crs.options.axes.pcrs.easting.min ? inputs[i]@min : crs.options.axes.pcrs.easting.min as x value
+//              // create a point from the easting, northing above
+//              // transform the pcrs to a tcrs point at the current zoom
+//              break;
+//            case 'longitude':
+//              yinputs = extent.querySelectorAll('input[type=location i][axis=latitude i][min]');
+//              // use the minimum y value from yinputs@min >= crs.options.axes.gcrs.latitude.min as y value
+//              // use inputs[i]@min > crs.options.axes.gcrs.longitude.min ? inputs[i]@min : crs.options.axes.gcrs.longitude.min as x value
+//              // create a point from the lat, long above
+//              // project to a pcrs point, if there is a pcrs (i.e. not a WGS84 extent)
+//              // 
+//            case 'column':
+//            default:
+//          }
+//        }
+//      }
+//      return L.bounds([[0,0],[0,0]]);
+};
 M.Util = {
   coordsToArray: function(containerPoints) {
     // returns an array of arrays of coordinate pairs coordsToArray("1,2,3,4") -> [[1,2],[3,4]]
@@ -363,7 +356,7 @@ M.MapMLLayer = L.Layer.extend({
         if (href) {
             this._href = href;
         }
-        var mapml = content.querySelector('image,feature,tile') ? true : false;
+        var mapml = content.querySelector('image,feature,tile,extent') ? true : false;
         if (mapml) {
             this._content = content;
         }
@@ -374,7 +367,7 @@ M.MapMLLayer = L.Layer.extend({
         
         // this layer 'owns' a mapmlTileLayer, which is a subclass of L.GridLayer
         // it 'passes' what tiles to load via the content of this._mapmlTileContainer
-        this._mapmlTileContainer = L.DomUtil.create('div', 'mapml-tile-container');
+        this._mapmlTileContainer = L.DomUtil.create('div', 'mapml-tile-container', this._container);
         // hit the service to determine what its extent might be
         // OR use the extent of the content provided
         this._initCount = 0;
@@ -398,6 +391,14 @@ M.MapMLLayer = L.Layer.extend({
         if (this._container && this.options.zIndex !== undefined && this.options.zIndex !== null) {
             this._container.style.zIndex = this.options.zIndex;
         }
+    },
+    _changeOpacity: function(e) {
+      if (e && e.target && e.target.value >=0 && e.target.value <= 1.0) {
+        this.changeOpacity(e.target.value);
+      }
+    },
+    changeOpacity: function(opacity) {
+        this._container.style.opacity = opacity;
     },
     _detectImagePath: function (container) {
       // this relies on the CSS style leaflet-default-icon-path containing a 
@@ -423,7 +424,7 @@ M.MapMLLayer = L.Layer.extend({
     onAdd: function (map) {
         this._map = map;
         if (!this._mapmlvectors) {
-          this._mapmlvectors = M.mapMlFeatures(null, {
+          this._mapmlvectors = M.mapMlFeatures(this._content, {
               // pass the vector layer a renderer of its own, otherwise leaflet
               // puts everything into the overlayPane
               renderer: L.svg(),
@@ -433,23 +434,10 @@ M.MapMLLayer = L.Layer.extend({
               opacity: this.options.opacity,
               imagePath: this._detectImagePath(this._map.getContainer()),
               onEachFeature: function(properties, geometry) {
-                var type;
-                if (geometry instanceof L.Polygon) {
-                  type = "Polygon";
-                } else if (geometry instanceof L.Polyline) {
-                  type = "LineString";
-                } else if (geometry instanceof L.Marker) {
-                  type = "Point";
-                } else {
-                  type = "Unknown";
-                }
-                var popupContent = "<p>Type: " +  type + "</p>";
-                for (var i=0;i<properties.childNodes.length;i++) {
-                  if (properties.childNodes[i].nodeType === Node.ELEMENT_NODE) {
-                      popupContent += properties.childNodes[i].tagName+ " = " + properties.childNodes[i].textContent +"<br>";
-                  }
-                }
-                geometry.bindPopup(popupContent, {autoPan:false});
+                // need to parse as HTML to preserve semantics and styles
+                var c = document.createElement('div');
+                c.insertAdjacentHTML('afterbegin', properties.innerHTML);
+                geometry.bindPopup(c, {autoPan:false});
               }
             });
         }
@@ -473,13 +461,12 @@ M.MapMLLayer = L.Layer.extend({
          * info received from mapml server. */
         if (this._extent) {
             if (this._templateVars) {
-              this._templatedLayer = M.templatedLayer(this._templateVars, {pane: this._container}).addTo(map);
+              this._templatedLayer = M.templatedLayer(this._templateVars, {pane: this._container,imagePath: this._detectImagePath(this._map.getContainer())}).addTo(map);
             }
-            this._onMoveEnd();
         } else {
             this.once('extentload', function() {
                 if (this._templateVars) {
-                  this._templatedLayer = M.templatedLayer(this._templateVars, {pane: this._container}).addTo(map);
+                  this._templatedLayer = M.templatedLayer(this._templateVars, {pane: this._container,imagePath: this._detectImagePath(this._map.getContainer())}).addTo(map);
                 }
               }, this);
             // if we get to this point and there is no this._extent, it means
@@ -500,11 +487,17 @@ M.MapMLLayer = L.Layer.extend({
             zoomanim: this._onZoomAnim
         };
     },
+    redraw: function() {
+      // for now, only redraw templated layers.
+        if (this._templatedLayer) {
+          this._templatedLayer.redraw();
+        }
+    },
     _onZoomAnim: function(e) {
       var toZoom = e.zoom,
           zoom = this._extent.querySelector("input[type=zoom]"),
-          min = parseInt(zoom.getAttribute("min")),
-          max = parseInt(zoom.getAttribute("max")),
+          min = zoom && zoom.hasAttribute("min") ? parseInt(zoom.getAttribute("min")) : this._map.getMinZoom(),
+          max =  zoom && zoom.hasAttribute("max") ? parseInt(zoom.getAttribute("max")) : this._map.getMaxZoom(),
           canZoom = (toZoom < min && this._extent.zoomout) || (toZoom > max && this._extent.zoomin);
       if (!this._extent.hasAttribute('action') && !(min <= toZoom && toZoom <= max)){
         if (this._extent.zoomin && toZoom > max) {
@@ -527,7 +520,6 @@ M.MapMLLayer = L.Layer.extend({
     },
     onRemove: function (map) {
         L.DomUtil.remove(this._container);      
-        this._mapmlvectors.clearLayers();
         map.removeLayer(this._mapmlvectors);
         map.removeLayer(this._tileLayer);
         map.removeLayer(this._imageLayer);
@@ -536,25 +528,147 @@ M.MapMLLayer = L.Layer.extend({
         }
     },
     getZoomBounds: function () {
-        if (!this._extent) return;
+        var ext = this._extent;
+        var zoom = ext ? ext.querySelector('[type=zoom]') : undefined,
+            min = zoom && zoom.hasAttribute('min') ? zoom.getAttribute('min') : this._map.getMinZoom(),
+            max = zoom && zoom.hasAttribute('max') ? zoom.getAttribute('max') : this._map.getMaxZoom();
         var bounds = {};
-        var v1 = this._extent.querySelector('[type=zoom]').getAttribute('min'),
-            v2 = this._extent.querySelector('[type=zoom]').getAttribute('max');
-        bounds.min = Math.min(v1,v2);
-        bounds.max = Math.max(v1,v2);
+        bounds.min = Math.min(min,max);
+        bounds.max = Math.max(min,max);
         return bounds;
+    },
+    _transformDeprectatedInput: function (i) {
+      var type = i.getAttribute("type").toLowerCase();
+      if (type === "xmin" || type === "ymin" || type === "xmax" || type === "ymax") {
+        i.setAttribute("type", "location");
+        i.setAttribute("units","tcrs");
+        switch (type) {
+          case "xmin":
+            i.setAttribute("axis","x");
+            i.setAttribute("position","top-left");
+            break;
+          case "ymin":
+            i.setAttribute("axis","y");
+            i.setAttribute("position","top-left");
+            break;
+          case "xmax":
+            i.setAttribute("axis","x");
+            i.setAttribute("position","bottom-right");
+            break;
+          case "ymax":
+            i.setAttribute("axis","y");
+            i.setAttribute("position","bottom-right");
+            break;
+        }
+      } 
+    },
+    _setUpInputVars: function(inputs) {
+      // process the inputs and create an object named "extent"
+      // with member properties as follows:
+      // {width: {name: 'widthvarname'}, // value supplied by map if necessary
+      //  height: {name: 'heightvarname'}, // value supplied by map if necessary
+      //  left: {name: 'leftvarname', axis: 'leftaxisname'}, // axis name drives (coordinate system of) the value supplied by the map
+      //  right: {name: 'rightvarname', axis: 'rightaxisname'}, // axis name (coordinate system of) drives the value supplied by the map
+      //  top: {name: 'topvarname', axis: 'topaxisname'}, // axis name drives (coordinate system of) the value supplied by the map
+      //  bottom: {name: 'bottomvarname', axis: 'bottomaxisname'} // axis name drives (coordinate system of) the value supplied by the map
+      //  zoom: {name: 'zoomvarname'}
+      //  hidden: [{name: name, value: value}]}
+
+      var extentVarNames = {extent:{}};
+      extentVarNames.extent.hidden = [];
+      for (var i=0;i<inputs.length;i++) {
+        // this can be removed when the spec removes the deprecated inputs...
+        this._transformDeprectatedInput(inputs[i]);
+        var type = inputs[i].getAttribute("type"), 
+            units = inputs[i].getAttribute("units"), 
+            axis = inputs[i].getAttribute("axis"), 
+            name = inputs[i].getAttribute("name"), 
+            position = inputs[i].getAttribute("position"),
+            value = inputs[i].getAttribute("value");
+        if (type === "width") {
+              extentVarNames.extent.width = {name: name};
+        } else if ( type === "height") {
+              extentVarNames.extent.height = {name: name};
+        } else if (type === "zoom") {
+              extentVarNames.extent.zoom = {name: name};
+        } else if (type === "location" && (units === "pcrs" || units ==="gcrs" || units === "tcrs")) {
+          //<input name="..." units="pcrs" type="location" position="top|bottom-left|right" axis="northing|easting"/>
+          switch (axis) {
+            case ('easting'):
+              if (position) {
+                  if (position.match(/.*?-left/i)) {
+                    extentVarNames.extent.left = { name: name, axis: axis};
+                  } else if (position.match(/.*?-right/i)) {
+                    extentVarNames.extent.right = { name: name, axis: axis};
+                  }
+              }
+              break;
+            case ('northing'):
+              if (position) {
+                if (position.match(/top-.*?/i)) {
+                  extentVarNames.extent.top = { name: name, axis: axis};
+                } else if (position.match(/bottom-.*?/i)) {
+                  extentVarNames.extent.bottom = { name: name, axis: axis};
+                }
+              }
+              break;
+            case ('x'):
+              if (position) {
+                  if (position.match(/.*?-left/i)) {
+                    extentVarNames.extent.left = { name: name, axis: axis};
+                  } else if (position.match(/.*?-right/i)) {
+                    extentVarNames.extent.right = { name: name, axis: axis};
+                  }
+              }
+              break;
+            case ('y'):
+              if (position) {
+                if (position.match(/top-.*?/i)) {
+                  extentVarNames.extent.top = { name: name, axis: axis};
+                } else if (position.match(/bottom-.*?/i)) {
+                  extentVarNames.extent.bottom = { name: name, axis: axis};
+                }
+              }
+              break;
+            case ('longitude'):
+              if (position) {
+                  if (position.match(/.*?-left/i)) {
+                    extentVarNames.extent.left = { name: name, axis: axis};
+                  } else if (position.match(/.*?-right/i)) {
+                    extentVarNames.extent.right = { name: name, axis: axis};
+                  }
+              }
+              break;
+            case ('latitude'):
+              if (position) {
+                if (position.match(/top-.*?/i)) {
+                  extentVarNames.extent.top = { name: name, axis: axis};
+                } else if (position.match(/bottom-.*?/i)) {
+                  extentVarNames.extent.bottom = { name: name, axis: axis};
+                }
+              }
+              break;
+          }
+          // projection is deprecated, make it hidden
+        } else if (type === "hidden" || type === "projection") {
+            extentVarNames.extent.hidden.push({name: name, value: value});
+        }
+      }
+      return extentVarNames;
     },
     // retrieve the (projected, scaled) layer extent for the current map zoom level
     getLayerExtentBounds: function(map) {
         
         if (!this._extent) return;
         var zoom = map.getZoom(), projection = map.options.projection,
-            ep = this._extent.querySelector('[type=projection]') ? this._extent.querySelector('[type=projection]').getAttribute('value') : this._extent.getAttribute("units"),
+            ep = this._extent.getAttribute("units"),
             projecting = (projection !== ep),
             p;
         
         var xmin,ymin,xmax,ymax,v1,v2,extentZoomValue;
-            
+        
+        // todo: create an array of min values, converted to tcrs units
+        // take the Math.min of all of them.
         v1 = this._extent.querySelector('[type=xmin]').getAttribute('min');
         v2 = this._extent.querySelector('[type=xmax]').getAttribute('min');
         xmin = Math.min(v1,v2);
@@ -596,6 +710,92 @@ M.MapMLLayer = L.Layer.extend({
     getAttribution: function () {
         return this.options.attribution;
     },
+    getLayerUserControlsHTML: function () {
+      var label = document.createElement('label'),
+        input = document.createElement('input'),
+        name = document.createElement('span'),
+        details = document.createElement('details'),
+        summary = document.createElement('summary'),
+        opacity = document.createElement('input'),
+        opacityControl = document.createElement('details'),
+        opacityControlSummary = document.createElement('summary');
+
+        input.defaultChecked = this._map ? true: false;
+        input.type = 'checkbox';
+        input.className = 'leaflet-control-layers-selector';
+        name.draggable = true;
+
+        if (this._legendUrl) {
+          var legendLink = document.createElement('a');
+          legendLink.text = ' ' + this._title;
+          legendLink.href = this._legendUrl;
+          legendLink.target = '_blank';
+          name.appendChild(legendLink);
+        } else {
+          name.innerHTML = ' ' + this._title;
+        }
+        
+        opacityControlSummary.innerText = 'opacity';
+        opacityControl.appendChild(opacityControlSummary);
+        opacityControl.appendChild(opacity);
+        L.DomUtil.addClass(details, 'mapml-control-layers');
+        L.DomUtil.addClass(opacityControl,'mapml-control-layers');
+        opacity.setAttribute('type','range');
+        opacity.setAttribute('min', '0');
+        opacity.setAttribute('max','1.0');
+        opacity.setAttribute('value', '1.0');
+        opacity.setAttribute('step','0.1');
+
+        L.DomEvent.on(opacity,'change', this._changeOpacity, this);
+        L.DomEvent.on(name,'dragstart', function(event) {
+            // will have to figure out how to drag and drop a whole element
+            // with its contents in the case where the <layer->content</layer-> 
+            // has no src but does have inline content.  
+            // Should be do-able, I think.
+            if (this._href) {
+              event.dataTransfer.setData("text/uri-list",this._href);
+              // Why use a second .setData("text/plain"...) ? This is very important:
+              // See https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Recommended_drag_types#link
+              event.dataTransfer.setData("text/plain", this._href); 
+            }
+          }, this);
+
+        Polymer.dom(details).appendChild(summary);
+        Polymer.dom(label).appendChild(details);
+        Polymer.dom(summary).appendChild(input);
+        Polymer.dom(summary).appendChild(name);
+        Polymer.dom(details).appendChild(opacityControl);
+
+        if (this._styles) {
+          Polymer.dom(details).appendChild(this._styles);
+        }
+        if (this._userInputs) {
+          var frag = document.createDocumentFragment();
+          var templates = this._templateVars;
+          if (templates) {
+            for (var i=0;i<templates.length;i++) {
+              var template = templates[i];
+              for (var j=0;j<template.values.length;j++) {
+                var mapmlInput = template.values[j],
+                    id = '#'+mapmlInput.getAttribute('id');
+                // don't add it again if it is referenced > once
+                if (mapmlInput.tagName.toLowerCase() === 'select' && !frag.querySelector(id)) {
+                  // generate a <details><summary></summary><input...></details>
+                  var selectdetails = document.createElement('details'),
+                      selectsummary = document.createElement('summary');
+                      selectsummary.innerText = mapmlInput.getAttribute('name');
+                      L.DomUtil.addClass(selectdetails, 'mapml-control-layers');
+                      selectdetails.appendChild(selectsummary);
+                      selectdetails.appendChild(mapmlInput.htmlselect);
+                  frag.appendChild(selectdetails);
+                }
+              }
+            }
+          }
+          Polymer.dom(details).appendChild(frag);
+        }
+        return label;
+    },
     _initExtent: function(content) {
         if (!this._href && !content) {return;}
         var layer = this;
@@ -605,6 +805,7 @@ M.MapMLLayer = L.Layer.extend({
         // referred to by this._content), we should use that content.
         if (this._href) {
             var xhr = new XMLHttpRequest();
+//            xhr.withCredentials = true;
             _get(this._href, _processInitialExtent);
         } else if (content) {
             // may not set this._extent if it can't be done from the content
@@ -635,8 +836,13 @@ M.MapMLLayer = L.Layer.extend({
         }
         function _processInitialExtent(content) {
             var mapml = this.responseXML || content;
-            if (mapml) {
-                var serverExtent = mapml.querySelector('extent');
+            if (this.readyState === this.DONE && mapml) {
+                var serverExtent = mapml.querySelector('extent'),
+                    projectionMatch = serverExtent && serverExtent.hasAttribute('units') && 
+                    serverExtent.getAttribute('units').toUpperCase() === layer.options.projection,
+                    selectedAlternate = !projectionMatch && mapml.querySelector('head link[rel=alternate][projection='+layer.options.projection+']'),
+                    base = (new URI(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : null || this.responseURL)).resolve(new URI(this.responseURL));
+                
                 if (!serverExtent) {
                     serverExtent = layer._synthesizeExtent(mapml);
                     // the mapml resource does not have a (complete) extent form, save
@@ -644,22 +850,62 @@ M.MapMLLayer = L.Layer.extend({
                     if (mapml.querySelector('feature,image,tile')) {
                         layer._content = mapml;
                     }
-                } else if (!serverExtent.hasAttribute("action") && serverExtent.querySelector('template') && serverExtent.hasAttribute("units") && serverExtent.getAttribute("units") !== "WGS84") {
+                } else if (!projectionMatch && selectedAlternate && selectedAlternate.hasAttribute('href')) {
+                     
+                    layer.fire('changeprojection', {href:  new URI(selectedAlternate.getAttribute('href')).resolve(base).toString()}, false);
+                    return;
+                } else if (!serverExtent.hasAttribute("action") && 
+                        serverExtent.querySelector('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]') &&
+                        serverExtent.hasAttribute("units")) {
                   layer._templateVars = [];
                   // set up the URL template and associated inputs (which yield variable values when processed)
-                  var tlist = serverExtent.querySelectorAll('template'),
+                  var tlist = serverExtent.querySelectorAll('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]'),
                       varNamesRe = (new RegExp('(?:\{)(.*?)(?:\})','g'));
                   for (var i=0;i< tlist.length;i++) {
                     var t = tlist[i],
                         template = t.getAttribute('tref'), v,
+                        title = t.hasAttribute('title') ? t.getAttribute('title') : 'Query this layer',
                         vcount=template.match(varNamesRe),
-                        ttype = (!t.hasAttribute('type') || t.getAttribute('type').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('type').toLowerCase(),
+                        ttype = (!t.hasAttribute('rel') || t.getAttribute('rel').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('rel').toLowerCase(),
                         inputs = [];
                     while ((v = varNamesRe.exec(template)) !== null) {
                       var varName = v[1],
-                      inp = serverExtent.querySelector('input[name='+varName+']');
+                      inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
                       if (inp) {
                         inputs.push(inp);
+                        if (inp.hasAttribute('shard')) {
+                          var id = inp.getAttribute('list');
+                          inp.servers = [];
+                          var servers = serverExtent.querySelectorAll('datalist#'+id + ' > option');
+                          if (servers.length === 0 && inp.hasAttribute('value')) {
+                            servers = inp.getAttribute('value').split('');
+                          }
+                          for (var s=0;s < servers.length;s++) {
+                            if (servers[s].getAttribute) {
+                              inp.servers.push(servers[s].getAttribute('value'));
+                            } else {
+                              inp.servers.push(servers[s]);
+                            }
+                          }
+                        } else if (inp.tagName.toLowerCase() === 'select') {
+                          // use a throwaway div to parse the input from MapML into HTML
+                          var div =document.createElement("div");
+                          div.insertAdjacentHTML("afterbegin",inp.outerHTML);
+                          // parse
+                          inp.htmlselect = div.querySelector("select");
+                          // this goes into the layer control, so add a listener
+                          L.DomEvent.on(inp.htmlselect, 'change', layer.redraw, layer);
+                          if (!layer._userInputs) {
+                            layer._userInputs = [];
+                          }
+                          layer._userInputs.push(inp.htmlselect);
+                        }
+                        // TODO: if this is an input@type=location 
+                        // get the TCRS min,max attribute values at the identified zoom level 
+                        // save this information as properties of the serverExtent,
+                        // perhaps as a bounds object so that it can be easily used
+                        // later by the layer control to determine when to enable
+                        // disable the layer for drawing.
                       } else {
                         console.log('input with name='+varName+' not found for template variable of same name');
                         // no match found, template won't be used
@@ -668,16 +914,16 @@ M.MapMLLayer = L.Layer.extend({
                     }
                     if (template && vcount.length === inputs.length) {
                       // template has a matching input for every variable reference {varref}
-                      layer._templateVars.push({template:template, type: ttype, values: inputs});
+                      layer._templateVars.push({template:template, title:title, type: ttype, values: inputs});
                     }
                   }
                 }
                 layer._parseLicenseAndLegend(mapml, layer);
                 layer._extent = serverExtent;
                 
+                
                 var zoomin = mapml.querySelector('link[rel=zoomin]'),
-                    zoomout = mapml.querySelector('link[rel=zoomout]'),
-                    base = (new URI(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : null || this.responseURL)).resolve(new URI(this.responseURL));
+                    zoomout = mapml.querySelector('link[rel=zoomout]');
                 delete layer._extent.zoomin;
                 delete layer._extent.zoomout;
                 if (zoomin) {
@@ -689,9 +935,41 @@ M.MapMLLayer = L.Layer.extend({
                 if (layer._templatedLayer) {
                   layer._templatedLayer.reset(layer._templateVars);
                 }
+                var styleLinks = mapml.querySelectorAll('link[rel=style],link[rel="self style"],link[rel="style self"]');
+                if (styleLinks.length > 1) {
+                  var stylesControl = document.createElement('details'),
+                  stylesControlSummary = document.createElement('summary');
+                  stylesControlSummary.innerText = 'style';
+                  stylesControl.appendChild(stylesControlSummary);
+                  var changeStyle = function (e) {
+                      layer.fire('changestyle', {src: e.target.getAttribute("data-href")}, false);
+                  };
+
+                  for (var j=0;j<styleLinks.length;j++) {
+                    var styleOption = document.createElement('span'),
+                    styleOptionInput = styleOption.appendChild(document.createElement('input'));
+                    styleOptionInput.setAttribute("type", "radio");
+                    styleOptionInput.setAttribute("id", "rad"+j);
+                    styleOptionInput.setAttribute("name", "styles");
+                    styleOptionInput.setAttribute("value", styleLinks[j].getAttribute('title'));
+                    styleOptionInput.setAttribute("data-href", new URI(styleLinks[j].getAttribute('href')).resolve(base).toString());
+                    var styleOptionLabel = styleOption.appendChild(document.createElement('label'));
+                    styleOptionLabel.setAttribute("for", "rad"+j);
+                    styleOptionLabel.innerText = styleLinks[j].getAttribute('title');
+                    if (styleLinks[j].getAttribute("rel") === "style self" || styleLinks[j].getAttribute("rel") === "self style") {
+                      styleOptionInput.checked = true;
+                    }
+                    stylesControl.appendChild(styleOption);
+                    L.DomUtil.addClass(stylesControl,'mapml-control-layers');
+                    L.DomEvent.on(styleOptionInput,'click', changeStyle, layer);
+                  }
+                  layer._styles = stylesControl;
+                }
                 
                 if (mapml.querySelector('title')) {
-                  layer._title = mapml.querySelector('title').textContent;
+                  layer._title = mapml.querySelector('title').textContent.trim();
+                } else if (mapml.hasAttribute('label')) {
+                  layer._title = mapml.getAttribute('label').trim();
                 }
                 if (layer._map) {
                     layer._validateExtent();
@@ -713,6 +991,7 @@ M.MapMLLayer = L.Layer.extend({
         if (url) {
             var requestCounter = 0;
             var xhr = new XMLHttpRequest();
+//            xhr.withCredentials = true;
             // add a listener to terminate pulling the feed 
             this._map.once('movestart', function() {
               xhr.abort();
@@ -751,16 +1030,18 @@ M.MapMLLayer = L.Layer.extend({
                 var serverExtent = mapml.querySelector('extent');
                 if (!serverExtent) {
                     serverExtent = layer._synthesizeExtent(mapml);
-                } else if (!serverExtent.hasAttribute("action") && serverExtent.querySelector('template') && serverExtent.hasAttribute("units") && serverExtent.getAttribute("units") !== "WGS84") {
+                } else if (!serverExtent.hasAttribute("action") && 
+                        serverExtent.querySelector('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]') &&
+                        serverExtent.hasAttribute("units")) {
                   layer._templateVars = [];
                   // set up the URL template and associated inputs (which yield variable values when processed)
-                  var tlist = serverExtent.querySelectorAll('template'),
+                  var tlist = serverExtent.querySelectorAll('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]'),
                       varNamesRe = (new RegExp('(?:\{)(.*?)(?:\})','g'));
                   for (i=0;i< tlist.length;i++) {
                     var t = tlist[i],
                         template = t.getAttribute('tref'), v,
                         vcount=template.match(varNamesRe),
-                        ttype = (!t.hasAttribute('type') || t.getAttribute('type').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('type').toLowerCase(),
+                        ttype = (!t.hasAttribute('rel') || t.getAttribute('rel').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('rel').toLowerCase(),
                         inputs = [];
                     while ((v = varNamesRe.exec(template)) !== null) {
                       var varName = v[1],
@@ -827,16 +1108,17 @@ M.MapMLLayer = L.Layer.extend({
                           size = map.getSize();
                           imageOverlays[i] = M.imageOverlay(src,location,size,/* angle */0,container);
                   }
-                  var layersToRemove = layer._imageLayer.getLayers();
-                  var last=imageOverlays.length-1; 
+                  var layersToRemove = layer._imageLayer.getLayers(),
+                      last = imageOverlays.length-1,
+                      removeLayers = function () {
+                      for (var ic = 0;ic < layersToRemove.length;ic++) {
+                        layer._imageLayer.removeLayer(layersToRemove[ic]);
+                      }
+                  };
                   for (i=0;i < imageOverlays.length;i++) {
                     layer._imageLayer.addLayer(imageOverlays[i]);
                     if (i === last) {
-                      imageOverlays[i].on('load', function(e) {
-                        for (var i = 0;i < layersToRemove.length;i++) {
-                          layer._imageLayer.removeLayer(layersToRemove[i]);
-                        }
-                      });
+                      imageOverlays[i].on('load', removeLayers);
                     }
                   }
               }
@@ -907,6 +1189,7 @@ M.MapMLLayer = L.Layer.extend({
         return extent;
     },
     _validateExtent: function () {
+      // TODO: change so that the _extent bounds are set based on inputs
         var serverExtent = this._extent;
         if (!serverExtent || !serverExtent.querySelector || !this._map) {
             return;
@@ -1041,6 +1324,7 @@ M.MapMLLayer = L.Layer.extend({
     // a layer must share a projection with the map so that all the layers can
     // be overlayed in one coordinate space.  WGS84 is a 'wildcard', sort of.
     getProjection: function () {
+      // TODO review logic because input[type=projection] is deprecated
         if (!this._extent || !this._extent.querySelector('input[type=projection]')) return 'WGS84';
         var projection = this._extent.querySelector('input[type=projection]');
         if (!projection.getAttribute('value')) return 'WGS84';
@@ -1091,6 +1375,7 @@ M.MapMLLayer = L.Layer.extend({
     },
     _reset: function() {
         this._initEl();
+        L.empty(this._container);
         this._mapmlvectors.clearLayers();
         //this._map.removeLayer(this._mapmlvectors);
         return;
@@ -1114,6 +1399,7 @@ M.MapMLLayer = L.Layer.extend({
         if (!this._mapmlTileContainer && !this._extent) return this._href;
         var extent = this._extent;
         if (!extent) return this._href;
+        // action SHOULD HAVE BEEN resolved against any base ALREADY
         var action = extent.getAttribute("action"),
                 base = new URI(this._href);
         // establish the range of zoom values for the extent
@@ -1141,57 +1427,34 @@ M.MapMLLayer = L.Layer.extend({
         }
         
         if (!action || action === "synthetic") return null;
-        var b,
-            projection = extent.querySelectorAll('input[type=projection]')[0],
-            projectionValue = projection.getAttribute('value');
+        var b,projectionValue = extent.getAttribute('units');
         
         // if the mapml extent being processed is WGS84, we need to speak in those units
         if (projectionValue === 'WGS84') {
-            b = this._getUnprojectedMapLatLngBounds();
+          b = this._getUnprojectedMapLatLngBounds();
         } else {
-            // otherwise, use the bounds of the map
-            b = this._map.getPixelBounds();
+          // otherwise, use the bounds of the map
+          b = this._map.getPixelBounds();
+        }
+        var varnames = this._setUpInputVars(extent.querySelectorAll('input'));
+        
+        var queryParams = "";
+        values[varnames.extent.zoom.name] = mapZoom;
+        queryParams += varnames.extent.zoom.name+"={"+varnames.extent.zoom.name+"}&";
+        values[varnames.extent.left.name] = b.min?b.min.x:b.getWest();
+        queryParams += varnames.extent.left.name+"={"+varnames.extent.left.name+"}&";
+        values[varnames.extent.bottom.name] = b.max?b.max.y:b.getSouth();
+        queryParams += varnames.extent.bottom.name+"={"+varnames.extent.bottom.name+"}&";
+        values[varnames.extent.right.name] = b.max?b.max.x:b.getEast();
+        queryParams += varnames.extent.right.name+"={"+varnames.extent.right.name+"}&";
+        values[varnames.extent.top.name] = b.min?b.min.y:b.getNorth();
+        queryParams += varnames.extent.top.name+"={"+varnames.extent.top.name+"}"+(varnames.extent.hidden.length>0?"&":"");
+        for (var i=0;i<varnames.extent.hidden.length;i++) {
+          values[varnames.extent.hidden[i].name] = varnames.extent.hidden[i].value;
+          queryParams += varnames.extent.hidden[i].name+"={"+varnames.extent.hidden[i].name+"}"+(i<varnames.extent.hidden.length-1?"&":"");
         }
         
-        // retrieve the required extent inputs by type
-        var xmin = extent.querySelectorAll("input[type=xmin]")[0],
-            ymin = extent.querySelectorAll("input[type=ymin]")[0],
-            xmax = extent.querySelectorAll("input[type=xmax]")[0],
-            ymax = extent.querySelectorAll("input[type=ymax]")[0];
-        
-        // if even one of them doesn't exist, we're snookered
-        if (!xmin|| !ymin || !xmax || !ymax ) return  null;
-        
-        // use the @name as the name of the variable to transmit, or the @type value by default
-        var xminName = (xmin.getAttribute('name')?xmin.getAttribute('name').trim():'xmin');
-        var yminName = (ymin.getAttribute('name')?ymin.getAttribute('name').trim():'ymin');
-        var xmaxName = (xmax.getAttribute('name')?xmax.getAttribute('name').trim():'xmax');
-        var ymaxName = (ymax.getAttribute('name')?ymax.getAttribute('name').trim():'ymax');
-        
-        // generate a URI template for the extent request using the variable names above
-        var bboxTemplate = "";
-        bboxTemplate += xminName + "={" + xminName + "}" + "&";
-        bboxTemplate += yminName + "={" + yminName + "}" + "&";
-        bboxTemplate += xmaxName + "={" + xmaxName + "}" + "&";
-        bboxTemplate += ymaxName + "={" + ymaxName + "}";
-        
-        // establish the range of zoom values for the extent
-        if (!projection) return null;
-
-        var zoomName = zoom.getAttribute('name')?zoom.getAttribute('name').trim():'zoom';
-        var zoomTemplate = zoomName + "={" + zoomName + "}";
-
-        values.xmin = b.min?b.min.x:b.getWest();
-        values.ymin = b.min?b.min.y:b.getSouth();
-        values.xmax = b.max?b.max.x:b.getEast();
-        values.ymax = b.max?b.max.y:b.getNorth();
-        values.projection = projectionValue;
-        
-        var projectionName = projection.getAttribute('name')?projection.getAttribute('name').trim():'projection';
-        var projectionTemplate = projectionName + "={" + projectionName + "}";
-        
-        var requestTemplate = bboxTemplate + "&" + zoomTemplate + "&" + projectionTemplate;
-        action += ((action.search(/\?/g) === -1) ? "?" : "&") + requestTemplate;
+        action += "?"+queryParams;
         var rel = new URI(action).resolve(base).toString();
         return L.Util.template(rel, values);
     },
@@ -1328,6 +1591,9 @@ M.TemplatedImageLayer =  L.Layer.extend({
         this.setZIndex(this.options.zIndex);
         this._onMoveEnd();
     },
+    redraw: function() {
+        this._onMoveEnd();
+    },
     _onMoveEnd: function() {
       
       var map = this._map,
@@ -1337,10 +1603,10 @@ M.TemplatedImageLayer =  L.Layer.extend({
         overlayToRemove = this._imageOverlay;
         this._imageOverlay = M.imageOverlay(src,loc,size,0,this._container);
           
-      if (overlayToRemove) {
-        this._imageOverlay.on('load', function () {map.removeLayer(overlayToRemove);});
-      }
       this._imageOverlay.addTo(map);
+      if (overlayToRemove) {
+        this._imageOverlay.on('load error', function () {map.removeLayer(overlayToRemove);});
+      }
     },
     setZIndex: function (zIndex) {
         this.options.zIndex = zIndex;
@@ -1363,6 +1629,12 @@ M.TemplatedImageLayer =  L.Layer.extend({
         obj[this.options.extent.left] = this._TCRSToPCRS(this._map.getPixelBounds().min, this._map.getZoom()).x;
         obj[this.options.extent.top] = this._TCRSToPCRS(this._map.getPixelBounds().min, this._map.getZoom()).y;
         obj[this.options.extent.right] = this._TCRSToPCRS(this._map.getPixelBounds().max,this._map.getZoom()).x;
+        // hidden and other variables that may be associated
+        for (var v in this.options.extent) {
+            if (["width","height","left","right","top","bottom"].indexOf(v) < 0) {
+                obj[v] = this.options.extent[v];
+              }
+        }
         return L.Util.template(this._template.template, obj);
     },
     _TCRSToPCRS: function(coords, zoom) {
@@ -1391,7 +1663,7 @@ M.TemplatedImageLayer =  L.Layer.extend({
             axis = inputs[i].getAttribute("axis"), 
             name = inputs[i].getAttribute("name"), 
             position = inputs[i].getAttribute("position"),
-            value = inputs[i].getAttribute("value");
+            select = (inputs[i].tagName.toLowerCase() === "select");
         if (type === "width") {
               extentVarNames.extent.width = name;
         } else if ( type === "height") {
@@ -1418,9 +1690,18 @@ M.TemplatedImageLayer =  L.Layer.extend({
               }
               break;
           }
-        } else if (type === "hidden") {
-           extentVarNames.extent[name] = value;
-           // <input name="foo" type="hidden" value="bar"/>
+        } else if (select) {
+            /*jshint -W104 */
+          const parsedselect = inputs[i].htmlselect;
+          extentVarNames.extent[name] = function() {
+              return parsedselect.value;
+          };
+        } else {
+            /*jshint -W104 */
+            const input = inputs[i];
+            extentVarNames.extent[name] = function() {
+                return input.getAttribute("value");
+            };
         }
       }
       return extentVarNames;
@@ -1429,8 +1710,241 @@ M.TemplatedImageLayer =  L.Layer.extend({
 M.templatedImageLayer = function(template, options) {
     return new M.TemplatedImageLayer(template, options);
 };
+M.TemplatedFeaturesLayer =  L.Layer.extend({
+  // this and M.ImageLayer could be merged or inherit from a common parent
+    initialize: function(template, options) {
+        this._template = template;
+        this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
+        L.DomUtil.addClass(this._container, 'mapml-features-container');
+        L.setOptions(this, L.extend(options,this._setUpFeaturesTemplateVars(template)));
+    },
+    getEvents: function () {
+        var events = {
+            moveend: this._onMoveEnd
+        };
+        return events;
+    },
+    onAdd: function () {
+      var mapml, headers = new Headers({'Accept': 'text/mapml'});
+          var parser = new DOMParser(),
+          opacity = this.options.opacity,
+          container = this._container,
+          map = this._map;
+      if (!this._features) {
+        this._features = M.mapMlFeatures( null, {
+          // pass the vector layer a renderer of its own, otherwise leaflet
+          // puts everything into the overlayPane
+          renderer: L.svg(),
+          // pass the vector layer the container for the parent into which
+          // it will append its own container for rendering into
+          pane: container,
+          opacity: opacity,
+          imagePath: this.options.imagePath,
+          onEachFeature: function(properties, geometry) {
+            // need to parse as HTML to preserve semantics and styles
+            var c = document.createElement('div');
+            c.insertAdjacentHTML('afterbegin', properties.innerHTML);
+            geometry.bindPopup(c, {autoPan:false});
+          }
+        });
+      }
+      // this was tricky...recursion alwasy breaks my brain
+      var features = this._features,
+          _pullFeatureFeed = function (url, limit) {
+            return (fetch (url,{redirect: 'follow',headers: headers})
+                    .then( function (response) {return response.text();})
+                    .then( function (text) {
+              mapml = parser.parseFromString(text,"application/xml");
+              var base = new URI(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : url);
+              url = mapml.querySelector('link[rel=next]')? mapml.querySelector('link[rel=next]').getAttribute('href') : null;
+              url =  url ? new URI(url).resolve(base).toString(): null;
+              features.addData(mapml);
+              if (url && --limit) {
+                return _pullFeatureFeed(url, limit);
+              }
+            }));
+          };
+      _pullFeatureFeed(this._getfeaturesUrl(), 10)
+        .then(function() { 
+              map.addLayer(features);
+        })
+        .catch(function (error) { console.log(error);});
+    },
+    _onMoveEnd: function() {
+      this._features.clearLayers();
+      // TODO add preference with a bit less weight than that for text/mapml; 0.8 for application/geo+json; 0.6
+      var mapml, headers = new Headers({'Accept': 'text/mapml;q=0.9,application/geo+json;q=0.8'}),
+          parser = new DOMParser(),
+          features = this._features,
+          map = this._map,
+          MAX_PAGES = 10,
+        _pullFeatureFeed = function (url, limit) {
+          return (fetch (url,{redirect: 'follow',headers: headers})
+                  .then( function (response) {return response.text();})
+                  .then( function (text) {
+                    //TODO wrap this puppy in a try/catch/finally to parse application/geo+json if necessary
+              mapml = parser.parseFromString(text,"application/xml");
+              var base = new URI(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : url);
+              url = mapml.querySelector('link[rel=next]')? mapml.querySelector('link[rel=next]').getAttribute('href') : null;
+              url =  url ? new URI(url).resolve(base).toString(): null;
+              // TODO if the xml parser barfed but the response is application/geo+json, use the parent addData method
+            features.addData(mapml);
+            if (url && --limit) {
+              return _pullFeatureFeed(url, limit);
+            }
+          }));
+        };
+      _pullFeatureFeed(this._getfeaturesUrl(), MAX_PAGES)
+        .then(function() { 
+          map.addLayer(features);
+        })
+        .catch(function (error) { console.log(error);});
+    },
+    setZIndex: function (zIndex) {
+        this.options.zIndex = zIndex;
+        this._updateZIndex();
+        return this;
+    },
+    _updateZIndex: function () {
+        if (this._container && this.options.zIndex !== undefined && this.options.zIndex !== null) {
+            this._container.style.zIndex = this.options.zIndex;
+        }
+    },
+    onRemove: function () {
+      this._map.removeLayer(this._features);
+    },
+    _getfeaturesUrl: function() {
+        var pxBounds = this._map.getPixelBounds(),
+            topLeft = pxBounds.getTopLeft(),
+            topRight = pxBounds.getTopRight(),
+            bottomRight = pxBounds.getBottomRight(),
+            bottomLeft = pxBounds.getBottomLeft(),
+            bounds = this._map.getBounds();
+            bounds.extend(this._map.unproject(bottomLeft))
+                  .extend(this._map.unproject(bottomRight))
+                  .extend(this._map.unproject(topLeft))
+                  .extend(this._map.unproject(topRight));
+        var obj = {};
+        // assumes gcrs at this moment
+        obj[this.options.feature.zoom.name] = this._map.getZoom();
+        obj[this.options.feature.bottom.name] = bounds.getSouth();
+        obj[this.options.feature.left.name] = bounds.getWest();
+        obj[this.options.feature.top.name] = bounds.getNorth();
+        obj[this.options.feature.right.name] = bounds.getEast();
+        // hidden and other variables that may be associated
+        for (var v in this.options.feature) {
+            if (["width","height","left","right","top","bottom","zoom"].indexOf(v) < 0) {
+                obj[v] = this.options.feature[v];
+              }
+        }
+        return L.Util.template(this._template.template, obj);
+    },
+    _setUpFeaturesTemplateVars: function(template) {
+      // process the inputs and create an object named "extent"
+      // with member properties as follows:
+      // {width: {name: 'widthvarname'}, // value supplied by map if necessary
+      //  height: {name: 'heightvarname'}, // value supplied by map if necessary
+      //  left: {name: 'leftvarname', axis: 'leftaxisname'}, // axis name drives (coordinate system of) the value supplied by the map
+      //  right: {name: 'rightvarname', axis: 'rightaxisname'}, // axis name (coordinate system of) drives the value supplied by the map
+      //  top: {name: 'topvarname', axis: 'topaxisname'}, // axis name drives (coordinate system of) the value supplied by the map
+      //  bottom: {name: 'bottomvarname', axis: 'bottomaxisname'} // axis name drives (coordinate system of) the value supplied by the map
+      //  zoom: {name: 'zoomvarname'}
+      //  hidden: [{name: name, value: value}]}
+
+      var featuresVarNames = {feature:{}},
+          inputs = template.values;
+      featuresVarNames.feature.hidden = [];
+      for (var i=0;i<inputs.length;i++) {
+        // this can be removed when the spec removes the deprecated inputs...
+        var type = inputs[i].getAttribute("type"), 
+            units = inputs[i].getAttribute("units"), 
+            axis = inputs[i].getAttribute("axis"), 
+            name = inputs[i].getAttribute("name"), 
+            position = inputs[i].getAttribute("position"),
+            value = inputs[i].getAttribute("value"),
+            select = (inputs[i].tagName.toLowerCase() === "select");
+        if (type === "width") {
+              featuresVarNames.feature.width = {name: name};
+        } else if ( type === "height") {
+              featuresVarNames.feature.height = {name: name};
+        } else if (type === "zoom") {
+              featuresVarNames.feature.zoom = {name: name};
+        } else if (type === "location" && (units === "pcrs" || units ==="gcrs" || units === "tcrs")) {
+          //<input name="..." units="pcrs" type="location" position="top|bottom-left|right" axis="northing|easting"/>
+          switch (axis) {
+            case ('easting'):
+              if (position) {
+                  if (position.match(/.*?-left/i)) {
+                    featuresVarNames.feature.left = { name: name, axis: axis};
+                  } else if (position.match(/.*?-right/i)) {
+                    featuresVarNames.feature.right = { name: name, axis: axis};
+                  }
+              }
+              break;
+            case ('northing'):
+              if (position) {
+                if (position.match(/top-.*?/i)) {
+                  featuresVarNames.feature.top = { name: name, axis: axis};
+                } else if (position.match(/bottom-.*?/i)) {
+                  featuresVarNames.feature.bottom = { name: name, axis: axis};
+                }
+              }
+              break;
+            case ('x'):
+              if (position) {
+                  if (position.match(/.*?-left/i)) {
+                    featuresVarNames.feature.left = { name: name, axis: axis};
+                  } else if (position.match(/.*?-right/i)) {
+                    featuresVarNames.feature.right = { name: name, axis: axis};
+                  }
+              }
+              break;
+            case ('y'):
+              if (position) {
+                if (position.match(/top-.*?/i)) {
+                  featuresVarNames.feature.top = { name: name, axis: axis};
+                } else if (position.match(/bottom-.*?/i)) {
+                  featuresVarNames.feature.bottom = { name: name, axis: axis};
+                }
+              }
+              break;
+            case ('longitude'):
+              if (position) {
+                  if (position.match(/.*?-left/i)) {
+                    featuresVarNames.feature.left = { name: name, axis: axis};
+                  } else if (position.match(/.*?-right/i)) {
+                    featuresVarNames.feature.right = { name: name, axis: axis};
+                  }
+              }
+              break;
+            case ('latitude'):
+              if (position) {
+                if (position.match(/top-.*?/i)) {
+                  featuresVarNames.feature.top = { name: name, axis: axis};
+                } else if (position.match(/bottom-.*?/i)) {
+                  featuresVarNames.feature.bottom = { name: name, axis: axis};
+                }
+              }
+              break;
+          }
+         } else if (select) {
+            /*jshint -W104 */
+          const parsedselect = inputs[i].htmlselect;
+          featuresVarNames.feature[name] = function() {
+              return parsedselect.value;
+          };
+         // projection is deprecated, make it hidden
+        } else if (type === "hidden" || type === "projection") {
+            featuresVarNames.feature.hidden.push({name: name, value: value});
+        }
+      }
+      return featuresVarNames;
+    }
+});
+M.templatedFeaturesLayer = function(template, options) {
+    return new M.TemplatedFeaturesLayer(template, options);
+};
 M.TemplatedLayer = L.Layer.extend({
-  
   initialize: function(templates, options) {
     this._templates =  templates;
     L.setOptions(this, options);
@@ -1443,6 +1957,8 @@ M.TemplatedLayer = L.Layer.extend({
             L.Util.extend(options, {errorTileUrl: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==", zIndex: i, pane: this._container}));
       } else if (templates[i].type === 'image') {
           this._templates[i].layer = M.templatedImageLayer(templates[i], L.Util.extend(options, {zIndex: i, pane: this._container}));
+      } else if (templates[i].type === 'features') {
+          this._templates[i].layer = M.templatedFeaturesLayer(templates[i], L.Util.extend(options, {zIndex: i, pane: this._container}));
       } else if (templates[i].type === 'query') {
           // add template to array of queryies to be added to map and processed
           // on click/tap events
@@ -1454,9 +1970,17 @@ M.TemplatedLayer = L.Layer.extend({
     }
   },
   getEvents: function() {
-        return {
-            zoomstart: this._onZoomStart
-        };
+      return {
+          zoomstart: this._onZoomStart
+      };
+  },
+  redraw: function() {
+    this.closePopup();
+    for (var i=0;i<this._templates.length;i++) {
+      if (this._templates[i].type === 'tile' || this._templates[i].type === 'image' || this._templates[i].type === 'features') {
+          this._templates[i].layer.redraw();
+      }
+    }
   },
   _onZoomStart: function() {
       this.closePopup();
@@ -1475,6 +1999,7 @@ M.TemplatedLayer = L.Layer.extend({
       //  x: 'xvarname' x being the tcrs x axis
       //  y: 'yvarname' y being the tcrs y axis
       //  z: 'zvarname' zoom
+      //  title: link title
 
       var queryVarNames = {query:{}},
           inputs = template.values;
@@ -1485,11 +2010,22 @@ M.TemplatedLayer = L.Layer.extend({
             axis = inputs[i].getAttribute("axis"), 
             name = inputs[i].getAttribute("name"), 
             position = inputs[i].getAttribute("position"),
-            value = inputs[i].getAttribute("value");
+            select = (inputs[i].tagName.toLowerCase() === "select");
         if (type === "width") {
               queryVarNames.query.width = name;
         } else if ( type === "height") {
               queryVarNames.query.height = name;
+        } else if (type === "location" && units === "tilematrix") {
+          switch (axis) {
+            case("column"):
+              queryVarNames.query.col = name;
+              break;
+            case("row"):
+              queryVarNames.query.row = name;
+              break;
+            default:
+              // unsuportted axis value
+          }
         } else if (type === "location" && units === "pcrs") {
           //<input name="..." units="pcrs" type="location" position="top|bottom-left|right" axis="northing|easting"/>
           switch (axis) {
@@ -1516,7 +2052,7 @@ M.TemplatedLayer = L.Layer.extend({
               }
               break;
           }
-        } else if (type === "location" && units === "map") {
+        } else if (type === "location" && units === "map" || units === "tile") {
           // <input name="..." type="location" units="map" axis="i|j"/>
           if (axis === "i") {
             queryVarNames.query.i = name;
@@ -1532,15 +2068,26 @@ M.TemplatedLayer = L.Layer.extend({
         } else if (type === "zoom") {
           //<input name="..." type="zoom" value="0" min="0" max="17"/>
            queryVarNames.query.zoom = name;
-        } else if (type === "hidden") {
-           queryVarNames.query[name] = value;
-           // <input name="foo" type="hidden" value="bar"/>
+        } else if (select) {
+            /*jshint -W104 */
+          const parsedselect = inputs[i].htmlselect;
+          queryVarNames.query[name] = function() {
+              return parsedselect.value;
+          };
+        } else {
+            /*jshint -W104 */
+            const input = inputs[i];
+           queryVarNames.query[name] = function () {
+              return input.getAttribute("value");
+           };
         }
       }
+      queryVarNames.query.title = template.title;
       return queryVarNames;
   },
   reset: function (templates) {
     if (!templates) {return;}
+    if (!this._map) {return;}
     var addToMap = this._map && this._map.hasLayer(this),
         old_templates = this._templates;
     delete this._queries;
@@ -1553,6 +2100,8 @@ M.TemplatedLayer = L.Layer.extend({
             L.Util.extend(this.options, {errorTileUrl: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==", zIndex: i, pane: this._container}));
       } else if (templates[i].type === 'image') {
           this._templates[i].layer = M.templatedImageLayer(templates[i], L.Util.extend(this.options, {zIndex: i, pane: this._container}));
+      } else if (templates[i].type === 'features') {
+          this._templates[i].layer = M.templatedFeaturesLayer(templates[i], L.Util.extend(this.options, {zIndex: i, pane: this._container}));
       } else if (templates[i].type === 'query') {
           if (!this._queries) {
             this._queries = [];
@@ -1606,43 +2155,53 @@ M.TemplatedLayer = L.Layer.extend({
             return crs.transformation.untransform(c,crs.scale(zoom));
           };
           
-      // the containerPoint is relative to the map container, with 0,0 at the upper left      
-      obj[template.query.i] = e.containerPoint.x.toFixed();
-      obj[template.query.j] = e.containerPoint.y.toFixed();
+          
+      var tcrsClickLoc = map.getPixelOrigin().add(e.layerPoint),
+          tileMatrixClickLoc = tcrsClickLoc.divideBy(256).floor();
+
+      obj[template.query.i] = tcrsClickLoc.x.toFixed() - (tileMatrixClickLoc.x * 256);
+      obj[template.query.j] = tcrsClickLoc.y.toFixed() - (tileMatrixClickLoc.y * 256);
+      
+      obj[template.query.col] = tileMatrixClickLoc.x;
+      obj[template.query.row] = tileMatrixClickLoc.y;
 
       // whereas the layerPoint is calculated relative to the origin plus / minus any
       // pan movements so is equal to containerPoint at first before any pans, but
       // changes as the map pans. 
-      obj[template.query.x] = map.getPixelOrigin().add(e.layerPoint).x.toFixed();
-      obj[template.query.y] = map.getPixelOrigin().add(e.layerPoint).y.toFixed();
+      obj[template.query.x] = tcrsClickLoc.x.toFixed();
+      obj[template.query.y] = tcrsClickLoc.y.toFixed();
       obj[template.query.easting] =  tcrs2pcrs(map.getPixelOrigin().add(e.layerPoint)).x;
       obj[template.query.northing] = tcrs2pcrs(map.getPixelOrigin().add(e.layerPoint)).y;
       obj[template.query.zoom] = zoom;
-      obj[template.query.width] = map.getSize().x;
-      obj[template.query.height] = map.getSize().y;
-
       obj[template.query.width] = map.getSize().x;
       obj[template.query.height] = map.getSize().y;
       obj[template.query.bottom] = tcrs2pcrs(bounds.max).y;
       obj[template.query.left] = tcrs2pcrs(bounds.min).x;
       obj[template.query.top] = tcrs2pcrs(bounds.min).y;
       obj[template.query.right] = tcrs2pcrs(bounds.max).x;
-      
-      fetch(L.Util.template(template.template, obj),{redirect: 'follow'}).then(
-          function(response) {
-            if (response.status !== 200) {
-              console.log('Looks like there was a problem. Status Code: ' +
-                response.status);
-            }
-
-             //Examine the text in the response
-            return response.text();
+      // add hidden or other variables that may be present into the values to
+      // be processed by L.Util.template below.
+      for (var v in template.query) {
+          if (["i","j","row","col","x","y","easting","northing","width","height","zoom","left","right","top","bottom"].indexOf(v) < 0) {
+              obj[v] = template.query[v];
           }
-        ).then(function(data) {
-              popup.setContent(data);
-        }).catch(function(err) {
-          console.log('Fetch Error :-S', err);
-        });
+      }
+      popup.setContent('<a target="_blank" href="'+L.Util.template(template.template, obj)+'">'+template.query.title+'</a>');
+//      fetch(L.Util.template(template.template, obj),{redirect: 'follow'}).then(
+//          function(response) {
+//            if (response.status !== 200) {
+//              console.log('Looks like there was a problem. Status Code: ' +
+//                response.status);
+//            }
+//
+//             //Examine the text in the response
+//            return response.text();
+//          }
+//        ).then(function(data) {
+//              popup.setContent(data);
+//        }).catch(function(err) {
+//          console.log('Fetch Error :-S', err);
+//        });
       
       popup.setLatLng(e.latlng).openOn(map);
     }
@@ -1715,13 +2274,13 @@ M.TemplatedTileLayer = L.TileLayer.extend({
         obj[this.options.tile.right] = this._tileMatrixToPCRSPosition(coords, 'top-right').x;
         obj[this.options.tile.top] = this._tileMatrixToPCRSPosition(coords, 'top-left').y;
         obj[this.options.tile.bottom] = this._tileMatrixToPCRSPosition(coords, 'bottom-left').y;
+        obj[this.options.tile.server] = this._getSubdomain(coords);
         for (var v in this.options.tile) {
-            if (v !== "row" && v !== "col" && v !== "zoom" && v !== "left" && v !== "right" && v !== "top" && v !== "bottom") {
-              obj[v] = this.options.tile[v];
+            if (["row","col","zoom","left","right","top","bottom"].indexOf(v) < 0) {
+                obj[v] = this.options.tile[v];
             }
         }
         obj.r = this.options.detectRetina && L.Browser.retina && this.options.maxZoom > 0 ? '@2x' : '';
-        obj.s = this._getSubdomain(coords);  // this is hard-coded, should add an input@type for this?
         return L.Util.template(this._url, obj);
     },
     _tileMatrixToPCRSPosition: function (coords, pos) {
@@ -1809,7 +2368,8 @@ M.TemplatedTileLayer = L.TileLayer.extend({
             axis = inputs[i].getAttribute("axis"), 
             name = inputs[i].getAttribute("name"), 
             position = inputs[i].getAttribute("position"),
-            value = inputs[i].getAttribute("value");
+            shard = (type === "hidden" && inputs[i].hasAttribute("shard")),
+            select = (inputs[i].tagName.toLowerCase() === "select");
         if (type === "location" && units === "tilematrix") {
           switch (axis) {
             case("column"):
@@ -1842,9 +2402,22 @@ M.TemplatedTileLayer = L.TileLayer.extend({
         } else if (type === "zoom") {
           //<input name="..." type="zoom" value="0" min="0" max="17"/>
            tileVarNames.tile.zoom = name;
-        } else if (type === "hidden") {
-           tileVarNames.tile[name] = value;
-           // <input name="foo" type="hidden" value="bar"/>
+        } else if (shard) {
+          tileVarNames.tile.server = name;
+          tileVarNames.subdomains = inputs[i].servers.slice();
+        } else if (select) {
+            /*jshint -W104 */
+          const parsedselect = inputs[i].htmlselect;
+          tileVarNames.tile[name] = function() {
+              return parsedselect.value;
+          };
+        } else {
+           // needs to be a const otherwise it gets overwritten
+          /*jshint -W104 */
+          const input = inputs[i];
+          tileVarNames.tile[name] = function () {
+              return input.getAttribute("value");
+          };
         }
       }
       return tileVarNames;
@@ -2150,211 +2723,219 @@ M.MapMLFeatures = L.FeatureGroup.extend({
 
       this._layers = {};
 
-          if (mapml) {
-                  this.addData(mapml);
-          }
+      if (mapml) {
+        this.addData(mapml);
+      }
     },
 
     addData: function (mapml) {
-		var features = mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === "LAYER-" ? mapml.getElementsByTagName("feature") : null,
-		    i, len, feature;
-            
-                var stylesheet = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelector("link[rel=stylesheet]") : null;
-                if (stylesheet) {
-                  
-                    var baseEl = mapml.querySelector('base'),
-                          base = new URI(baseEl?baseEl.getAttribute('href'):mapml.baseURI),
-                          link = new URI(stylesheet.getAttribute('href'));
-                          stylesheet = link.resolve(base).toString();
-                }
-                if (stylesheet) {
-                  if (!document.head.querySelector("link[href='"+stylesheet+"']")) {
-                    var linkElm = document.createElementNS("http://www.w3.org/1999/xhtml", "link");
-                    linkElm.setAttribute("href", stylesheet);
-                    linkElm.setAttribute("type", "text/css");
-                    linkElm.setAttribute("rel", "stylesheet");
-                    document.head.appendChild(linkElm);
-                  }
-                }
+      var features = mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === "LAYER-" ? mapml.getElementsByTagName("feature") : null,
+          i, len, feature;
 
-		if (features) {
-			for (i = 0, len = features.length; i < len; i++) {
-				// Only add this if geometry is set and not null
-				feature = features[i];
-                                var geometriesExist = feature.getElementsByTagName("geometry").length && feature.getElementsByTagName("coordinates").length;
-				if (geometriesExist) {
-					this.addData(feature);
-				}
-			}
-			return this;
-		}
+      var linkedStylesheets = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelectorAll("link[rel=stylesheet]") : null;
+      if (linkedStylesheets) {
+        for (i=0;i < linkedStylesheets.length;i++) {
 
-		var options = this.options;
+          var baseEl = mapml.querySelector('base'),
+              stylesheet = linkedStylesheets[i],
+            base = new URI(baseEl?baseEl.getAttribute('href'):mapml.baseURI),
+            link = new URI(stylesheet.getAttribute('href'));
+            stylesheet = link.resolve(base).toString();
+          if (stylesheet) {
+            if (!document.head.querySelector("link[href='"+stylesheet+"']")) {
+              var linkElm = document.createElementNS("http://www.w3.org/1999/xhtml", "link");
+              linkElm.setAttribute("href", stylesheet);
+              linkElm.setAttribute("type", "text/css");
+              linkElm.setAttribute("rel", "stylesheet");
+              document.head.appendChild(linkElm);
+            }
+          }
+        }
+      }
+      var inlineStyleSheets = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelectorAll("style") : null;
+      if (inlineStyleSheets) {
+        for (i=0;i<inlineStyleSheets.length;i++) {
+          document.head.insertAdjacentHTML('beforeend',inlineStyleSheets[i].outerHTML);
+        }
+      }
 
-		if (options.filter && !options.filter(mapml)) { return; }
+      if (features) {
+       for (i = 0, len = features.length; i < len; i++) {
+        // Only add this if geometry is set and not null
+        feature = features[i];
+        var geometriesExist = feature.getElementsByTagName("geometry").length && feature.getElementsByTagName("coordinates").length;
+        if (geometriesExist) {
+         this.addData(feature);
+        }
+       }
+       return this;
+      }
 
-		var layer = M.MapMLFeatures.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options);
-		layer.properties = mapml.getElementsByTagName('properties')[0];
-                
-                layer.options.className = mapml.getAttribute('class') ? mapml.getAttribute('class') : null;
-		layer.defaultOptions = layer.options;
-		this.resetStyle(layer);
+      var options = this.options;
 
-		if (options.onEachFeature) {
-			options.onEachFeature(layer.properties, layer);
-		}
+      if (options.filter && !options.filter(mapml)) { return; }
 
-		return this.addLayer(layer);
-	},
+      var layer = M.MapMLFeatures.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options);
+      if (layer) {
+        layer.properties = mapml.getElementsByTagName('properties')[0];
+
+        layer.options.className = mapml.getAttribute('class') ? mapml.getAttribute('class') : null;
+        layer.defaultOptions = layer.options;
+        this.resetStyle(layer);
+
+        if (options.onEachFeature) {
+         options.onEachFeature(layer.properties, layer);
+        }
+        return this.addLayer(layer);
+      }
+    },
         
-	resetStyle: function (layer) {
-		var style = this.options.style;
-		if (style) {
-			// reset any custom styles
-			L.Util.extend(layer.options, layer.defaultOptions);
+    resetStyle: function (layer) {
+      var style = this.options.style;
+      if (style) {
+       // reset any custom styles
+       L.Util.extend(layer.options, layer.defaultOptions);
+       this._setLayerStyle(layer, style);
+      }
+    },
 
-			this._setLayerStyle(layer, style);
-		}
-	},
+    setStyle: function (style) {
+      this.eachLayer(function (layer) {
+        this._setLayerStyle(layer, style);
+      }, this);
+    },
 
-	setStyle: function (style) {
-		this.eachLayer(function (layer) {
-			this._setLayerStyle(layer, style);
-		}, this);
-	},
-
-	_setLayerStyle: function (layer, style) {
-		if (typeof style === 'function') {
-			style = style(layer.feature);
-		}
-		if (layer.setStyle) {
-			layer.setStyle(style);
-		}
-	}
+    _setLayerStyle: function (layer, style) {
+      if (typeof style === 'function') {
+        style = style(layer.feature);
+      }
+      if (layer.setStyle) {
+        layer.setStyle(style);
+      }
+    }
 });
 L.extend(M.MapMLFeatures, {
-	geometryToLayer: function (mapml, pointToLayer, coordsToLatLng, vectorOptions) {
-		var geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
-		    coords = geometry.getElementsByTagName('coordinates'),
-		    layers = [],
-		    latlng, latlngs, i, coordinates;
+	 geometryToLayer: function (mapml, pointToLayer, coordsToLatLng, vectorOptions) {
+    var geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
+        latlng, latlngs, coordinates;
 
-		coordsToLatLng = coordsToLatLng || this.coordsToLatLng;
+    coordsToLatLng = coordsToLatLng || this.coordsToLatLng;
 
-		switch (geometry.firstElementChild.tagName.toUpperCase()) {
-		case 'POINT':
-                        coordinates = [];
-                        coords[0].textContent.split(/\s+/gi).forEach(parseNumber,coordinates);
-			latlng = coordsToLatLng(coordinates);
-                        
-                        var opacity = vectorOptions.opacity ? vectorOptions.opacity : null;
-			return pointToLayer ? pointToLayer(mapml, latlng) : 
-                                new L.Marker(latlng, {opacity: opacity, icon: L.icon({
-                                    iconUrl: vectorOptions.imagePath+"marker-icon.png",
-                                    iconRetinaUrl: vectorOptions.imagePath+"marker-icon-2x.png",
-                                    shadowUrl: vectorOptions.imagePath+"marker-shadow.png",
-                                    iconSize: [25, 41],
-                                    iconAnchor: [12, 41],
-                                    popupAnchor: [1, -34],
-                                    shadowSize: [41, 41]})});
+    switch (geometry.firstElementChild.tagName.toUpperCase()) {
+      case 'POINT':
+        coordinates = [];
+        geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(parseNumber,coordinates);
+        latlng = coordsToLatLng(coordinates);
 
-		case 'MULTIPOINT':
-                        throw new Error('Not implemented yet');
-//			for (i = 0, len = coords.length; i < len; i++) {
-//				latlng = coordsToLatLng(coords[i]);
-//				layers.push(pointToLayer ? pointToLayer(mapml, latlng) : new L.Marker(latlng));
-//			}
-//			return new L.FeatureGroup(layers);
+        var opacity = vectorOptions.opacity ? vectorOptions.opacity : null;
+        return pointToLayer ? pointToLayer(mapml, latlng) : 
+                                    new L.Marker(latlng, {opacity: opacity, icon: L.icon({
+                                        iconUrl: vectorOptions.imagePath+"marker-icon.png",
+                                        iconRetinaUrl: vectorOptions.imagePath+"marker-icon-2x.png",
+                                        shadowUrl: vectorOptions.imagePath+"marker-shadow.png",
+                                        iconSize: [25, 41],
+                                        iconAnchor: [12, 41],
+                                        popupAnchor: [1, -34],
+                                        shadowSize: [41, 41]})});
 
-		case 'LINESTRING':
-                        coordinates = [];
-                        coords[0].textContent.match(/(\S+ \S+)/gi).forEach(splitCoordinate, coordinates);
-			latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng);
-			return new L.Polyline(latlngs, vectorOptions);
+      case 'MULTIPOINT':
+        console.log('MULTIPOINT Not implemented yet');
+        break;
+      case 'LINESTRING':
+        coordinates = [];
+        geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(splitCoordinate, coordinates);
+        latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng);
+        return new L.Polyline(latlngs, vectorOptions);
+      case 'MULTILINESTRING':
+        console.log('MULTILINESTRING Not implemented yet');
+        break;
+      case 'POLYGON':
+        var rings = geometry.getElementsByTagName('coordinates');
+        latlngs = this.coordsToLatLngs(coordinatesToArray(rings), 1, coordsToLatLng);
+        return new L.Polygon(latlngs, vectorOptions);
+      case 'MULTIPOLYGON':
+        var members = geometry.getElementsByTagName('polygon'),
+            polygons = new Array(members.length);
+        for (var member=0;member<members.length;member++) {
+          polygons[member] = coordinatesToArray(members[member].querySelectorAll('coordinates'));
+        }
+        latlngs = this.coordsToLatLngs(polygons, 2, coordsToLatLng);
+        return new L.Polygon(latlngs, vectorOptions);
+      case 'GEOMETRYCOLLECTION':
+        console.log('GEOMETRYCOLLECTION Not implemented yet');
+        break;
+    //			for (i = 0, len = geometry.geometries.length; i < len; i++) {
+    //
+    //				layers.push(this.geometryToLayer({
+    //					geometry: geometry.geometries[i],
+    //					type: 'Feature',
+    //					properties: geojson.properties
+    //				}, pointToLayer, coordsToLatLng, vectorOptions));
+    //			}
+    //			return new L.FeatureGroup(layers);
 
-		case 'POLYGON':
-                        coordinates = new Array(coords.length);
-                        for (i=0;i<coords.length;i++) {
-                          coordinates[i]=[];
-                          coords[i].textContent.match(/(\S+ \S+)/gi).forEach(splitCoordinate, coordinates[i]);
-                        }
-			latlngs = this.coordsToLatLngs(coordinates, 1, coordsToLatLng);
-			return new L.Polygon(latlngs, vectorOptions);
-		case 'MULTILINESTRING':
-                        throw new Error('Not implemented yet');
-//			latlngs = this.coordsToLatLngs(coords, 1, coordsToLatLng);
-//			return new L.MultiPolyline(latlngs, vectorOptions);
+      default:
+        console.log('Invalid GeoJSON object.');
+        break;
+    }
+    function coordinatesToArray(coordinates) {
+      var a = new Array(coordinates.length);
+      for (var i=0;i<a.length;i++) {
+        a[i]=[];
+        coordinates[i].textContent.match(/(\S+\s+\S+)/gim).forEach(splitCoordinate, a[i]);
+      }
+      return a;
+    }
 
-		case 'MULTIPOLYGON':
-                        throw new Error('Not implemented yet');
-//			latlngs = this.coordsToLatLngs(coords, 2, coordsToLatLng);
-//			return new L.MultiPolygon(latlngs, vectorOptions);
+    function splitCoordinate(element, index, array) {
+      var a = [];
+      element.split(/\s+/gim).forEach(parseNumber,a);
+      this.push(a);
+    }
 
-		case 'GEOMETRYCOLLECTION':
-                        throw new Error('Not implemented yet');
-//			for (i = 0, len = geometry.geometries.length; i < len; i++) {
-//
-//				layers.push(this.geometryToLayer({
-//					geometry: geometry.geometries[i],
-//					type: 'Feature',
-//					properties: geojson.properties
-//				}, pointToLayer, coordsToLatLng, vectorOptions));
-//			}
-//			return new L.FeatureGroup(layers);
-
-		default:
-			throw new Error('Invalid GeoJSON object.');
-		}
-
-                function splitCoordinate(element, index, array) {
-                  var a = [];
-                  element.split(/\s+/gi).forEach(parseNumber,a);
-                  this.push(a);
-                }
-
-                function parseNumber(element, index, array) {
-                  this.push(parseFloat(element));
-                }
-        },
+    function parseNumber(element, index, array) {
+      this.push(parseFloat(element));
+    }
+  },
         
 
-	coordsToLatLng: function (coords) { // (Array[, Boolean]) -> LatLng
-		return new L.LatLng(coords[1], coords[0], coords[2]);
-	},
+  coordsToLatLng: function (coords) { // (Array[, Boolean]) -> LatLng
+   return new L.LatLng(coords[1], coords[0], coords[2]);
+  },
 
-	coordsToLatLngs: function (coords, levelsDeep, coordsToLatLng) { // (Array[, Number, Function]) -> Array
-		var latlng, i, len,
-		    latlngs = [];
+  coordsToLatLngs: function (coords, levelsDeep, coordsToLatLng) { // (Array[, Number, Function]) -> Array
+    var latlng, i, len,
+        latlngs = [];
 
-		for (i = 0, len = coords.length; i < len; i++) {
-			latlng = levelsDeep ?
-			        this.coordsToLatLngs(coords[i], levelsDeep - 1, coordsToLatLng) :
-			        (coordsToLatLng || this.coordsToLatLng)(coords[i]);
+    for (i = 0, len = coords.length; i < len; i++) {
+     latlng = levelsDeep ?
+             this.coordsToLatLngs(coords[i], levelsDeep - 1, coordsToLatLng) :
+             (coordsToLatLng || this.coordsToLatLng)(coords[i]);
 
-			latlngs.push(latlng);
-		}
+     latlngs.push(latlng);
+    }
 
-		return latlngs;
-	},
+    return latlngs;
+  },
 
-	latLngToCoords: function (latlng) {
-		var coords = [latlng.lng, latlng.lat];
+  latLngToCoords: function (latlng) {
+    var coords = [latlng.lng, latlng.lat];
 
-		if (latlng.alt !== undefined) {
-			coords.push(latlng.alt);
-		}
-		return coords;
-	},
+    if (latlng.alt !== undefined) {
+     coords.push(latlng.alt);
+    }
+    return coords;
+  },
 
-	latLngsToCoords: function (latLngs) {
-		var coords = [];
+  latLngsToCoords: function (latLngs) {
+    var coords = [];
 
-		for (var i = 0, len = latLngs.length; i < len; i++) {
-			coords.push(L.MapML.latLngToCoords(latLngs[i]));
-		}
+    for (var i = 0, len = latLngs.length; i < len; i++) {
+      coords.push(L.MapML.latLngToCoords(latLngs[i]));
+    }
 
-		return coords;
-	}
+    return coords;
+  }
 });
 M.mapMlFeatures = function (mapml, options) {
 	return new M.MapMLFeatures(mapml, options);
@@ -2362,7 +2943,11 @@ M.mapMlFeatures = function (mapml, options) {
 M.MapMLLayerControl = L.Control.Layers.extend({
     /* removes 'base' layers as a concept */
     options: {
-      autoZIndex: false
+      autoZIndex: false,
+      sortLayers: true,
+      sortFunction: function (layerA, layerB) {
+        return layerA.options.zIndex < layerB.options.zIndex ? -1 : (layerA.options.zIndex > layerB.options.zIndex ? 1 : 0);
+      }
     },
     initialize: function (overlays, options) {
         L.setOptions(this, options);
@@ -2375,7 +2960,7 @@ M.MapMLLayerControl = L.Control.Layers.extend({
         this._handlingClick = false;
 
         for (var i in overlays) {
-                this._addLayer(overlays[i], i, true);
+            this._addLayer(overlays[i], i, true);
         }
     },
     onAdd: function () {
@@ -2395,18 +2980,19 @@ M.MapMLLayerControl = L.Control.Layers.extend({
         }
     },
     addOrUpdateOverlay: function (layer, name) {
-     var alreadyThere = false;
-     for (var i=0;i<this._layers.length;i++) {
-       if (this._layers[i].layer === layer) {
-         alreadyThere = true;
-         this._layers[i].name = name;
-         break;
-       }
-     }
-     if (!alreadyThere) {
-       this._addLayer(layer, name, true);
-     }
-     return (this._map) ? this._update() : this;
+      var alreadyThere = false;
+      for (var i=0;i<this._layers.length;i++) {
+        if (this._layers[i].layer === layer) {
+          alreadyThere = true;
+          this._layers[i].name = name;
+          // replace the controls with updated controls if necessary.
+          break;
+        }
+      }
+      if (!alreadyThere) {
+        this.addOverlay(layer, name);
+      }
+      return (this._map) ? this._update() : this;
     },
     _validateExtents: function (e) {
         // get the bounds of the map in Tiled CRS pixel units
@@ -2420,7 +3006,9 @@ M.MapMLLayerControl = L.Control.Layers.extend({
                 // get the 'bounds' of zoom levels of the layer as described by the server
                 zoomBounds = obj.layer.getZoomBounds();
                 projectionMatches = obj.layer._projectionMatches(this._map);
-                visible = projectionMatches && this._withinZoomBounds(zoom, zoomBounds) && bounds.intersects(obj.layer.getLayerExtentBounds(this._map)) ;
+                //the bounds intersecting the layer extent bounds is used to
+                // disable/enable the layer in the layer control
+                visible = projectionMatches && this._withinZoomBounds(zoom, zoomBounds); // && bounds.intersects(obj.layer.getLayerExtentBounds(this._map)) ;
                 if (!visible) {
                     obj.input.disabled = true;
                     if (!projectionMatches) {
@@ -2435,60 +3023,31 @@ M.MapMLLayerControl = L.Control.Layers.extend({
                     // ie does not work with null 
                     obj.input.nextElementSibling.style.fontStyle = '';
                 }
-                this._setLegendLink(obj,obj.input.nextElementSibling);
             }
         }
     },
     _withinZoomBounds: function(zoom, range) {
         return range.min <= zoom && zoom <= range.max;
     },
-    _setLegendLink: function (obj, span) {
-        if (obj.layer._legendUrl) {
-            var legendLink = document.createElement('a');
-            legendLink.text = ' ' + obj.name;
-            legendLink.href = obj.layer._legendUrl;
-            legendLink.target = '_blank';
-            span.innerHTML = '';
-            span.appendChild(legendLink);
-        } else {
-            span.innerHTML = ' ' + obj.name;
-        }
-    },
     _addItem: function (obj) {
-        var label = document.createElement('label'),
-            input,
-            checked = this._map.hasLayer(obj.layer);
+      var layercontrols  =  obj.layer.getLayerUserControlsHTML();
+      // the input is required by Leaflet...
+      obj.input = layercontrols.querySelector('input');
 
-        input = document.createElement('input');
-        input.type = 'checkbox';
-        input.className = 'leaflet-control-layers-selector';
-        input.defaultChecked = checked;
-        obj.input = input;
+      this._layerControlInputs.push(obj.input);
+    		obj.input.layerId = L.stamp(obj.layer);
 
-        this._layerControlInputs.push(input);
-        input.layerId = L.stamp(obj.layer);
+      L.DomEvent.on(obj.input, 'click', this._onInputClick, this);
 
-        L.DomEvent.on(input, 'click', this._onInputClick, this);
-
-        var name = document.createElement('span');
-        
-        this._setLegendLink(obj, name);
-        var holder = document.createElement('div');
-        
-        Polymer.dom(label).appendChild(holder);
-        Polymer.dom(holder).appendChild(input);
-        Polymer.dom(holder).appendChild(name);
-
-        var container = this._overlaysList;
-        Polymer.dom(container).appendChild(label);
-        // this is necessary because when there are several layers in the
-        // layer control, the response to the last one can be a long time
-        // after the info is first displayed, so we have to go back and
-        // verify the extent and legend for the layer to know whether to
-        // disable it , add the legend link etc.
-        obj.layer.on('extentload', this._validateExtents, this);
-
-        return label;
+      // this is necessary because when there are several layers in the
+      // layer control, the response to the last one can be a long time
+      // after the info is first displayed, so we have to go back and
+      // verify the extent and legend for the layer to know whether to
+      // disable it , add the legend link etc.
+      obj.layer.on('extentload', this._validateExtents, this);
+      
+      Polymer.dom(this._overlaysList).appendChild(layercontrols);
+      return layercontrols;
     }
 });
 M.mapMlLayerControl = function (layers, options) {
@@ -2497,3 +3056,160 @@ M.mapMlLayerControl = function (layers, options) {
 
 
 }(window, document));
+;/*
+ * Copyright © 2007 Dominic Mitchell
+ * 
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * Neither the name of the Dominic Mitchell nor the names of its contributors
+ * may be used to endorse or promote products derived from this software
+ * without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+/*
+ * An URI datatype.  Based upon examples in RFC3986.
+ *
+ * TODO %-escaping
+ * TODO split apart authority
+ * TODO split apart query_string (on demand, anyway)
+ *
+ * @(#) $Id$
+ */
+ 
+// Constructor for the URI object.  Parse a string into its components.
+function URI(str) {
+    if (!str) str = "";
+    // Based on the regex in RFC2396 Appendix B.
+    var parser = /^(?:([^:\/?\#]+):)?(?:\/\/([^\/?\#]*))?([^?\#]*)(?:\?([^\#]*))?(?:\#(.*))?/;
+    var result = str.match(parser);
+    this.scheme    = result[1] || null;
+    this.authority = result[2] || null;
+    this.path      = result[3] || null;
+    this.query     = result[4] || null;
+    this.fragment  = result[5] || null;
+}
+
+// Restore the URI to it's stringy glory.
+URI.prototype.toString = function () {
+    var str = "";
+    if (this.scheme) {
+        str += this.scheme + ":";
+    }
+    if (this.authority) {
+        str += "//" + this.authority;
+    }
+    if (this.path) {
+        str += this.path;
+    }
+    if (this.query) {
+        str += "?" + this.query;
+    }
+    if (this.fragment) {
+        str += "#" + this.fragment;
+    }
+    return str;
+};
+
+// Introduce a new scope to define some private helper functions.
+(function () {
+    // RFC3986 §5.2.3 (Merge Paths)
+    function merge(base, rel_path) {
+        var dirname = /^(.*)\//;
+        if (base.authority && !base.path) {
+            return "/" + rel_path;
+        }
+        else {
+            return base.path.match(dirname)[0] + rel_path;
+        }
+    }
+
+    // Match two path segments, where the second is ".." and the first must
+    // not be "..".
+    var DoubleDot = /\/((?!\.\.\/)[^\/]*)\/\.\.\//;
+
+    function remove_dot_segments(path) {
+        if (!path) return "";
+        // Remove any single dots
+        var newpath = path.replace(/\/\.\//g, '/');
+        // Remove any trailing single dots.
+        newpath = newpath.replace(/\/\.$/, '/');
+        // Remove any double dots and the path previous.  NB: We can't use
+        // the "g", modifier because we are changing the string that we're
+        // matching over.
+        while (newpath.match(DoubleDot)) {
+            newpath = newpath.replace(DoubleDot, '/');
+        }
+        // Remove any trailing double dots.
+        newpath = newpath.replace(/\/([^\/]*)\/\.\.$/, '/');
+        // If there are any remaining double dot bits, then they're wrong
+        // and must be nuked.  Again, we can't use the g modifier.
+        while (newpath.match(/\/\.\.\//)) {
+            newpath = newpath.replace(/\/\.\.\//, '/');
+        }
+        return newpath;
+    }
+
+    // RFC3986 §5.2.2. Transform References;
+    URI.prototype.resolve = function (base) {
+        var target = new URI();
+        if (this.scheme) {
+            target.scheme    = this.scheme;
+            target.authority = this.authority;
+            target.path      = remove_dot_segments(this.path);
+            target.query     = this.query;
+        }
+        else {
+            if (this.authority) {
+                target.authority = this.authority;
+                target.path      = remove_dot_segments(this.path);
+                target.query     = this.query;
+            }        
+            else {
+                // XXX Original spec says "if defined and empty"…;
+                if (!this.path) {
+                    target.path = base.path;
+                    if (this.query) {
+                        target.query = this.query;
+                    }
+                    else {
+                        target.query = base.query;
+                    }
+                }
+                else {
+                    if (this.path.charAt(0) === '/') {
+                        target.path = remove_dot_segments(this.path);
+                    } else {
+                        target.path = merge(base, this.path);
+                        target.path = remove_dot_segments(target.path);
+                    }
+                    target.query = this.query;
+                }
+                target.authority = base.authority;
+            }
+            target.scheme = base.scheme;
+        }
+
+        target.fragment = this.fragment;
+
+        return target;
+    };
+})();

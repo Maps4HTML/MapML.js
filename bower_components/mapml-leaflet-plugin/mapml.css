@@ -1,22 +1,47 @@
 /* this is required by tiles which are actually divs with multiple images in them */
 .leaflet-tile img {
-	position: absolute;
-	left: 0;
-	top: 0;
+        position: absolute;
+        left: 0;
+        top: 0;
 	}
-        
 /* MapML treats images like map layers, so far as fade animation is concerned */
 .leaflet-fade-anim .leaflet-image-layer {
-	will-change: opacity;
+        will-change: opacity;
 	}
         
 .leaflet-image-layer {
         visibility: hidden;
-        }
+}
 .leaflet-image-loaded {
         visibility: inherit;
-        }
-        
+}
 .mapml-popup-overflow {
-        overflow: auto;
-        }
+        overflow: hidden;
+}
+/* this is to indent the nested details in the layer control */
+/* details/summary is in progress 2018-03-02 on ms-edge so gonna rely on that...
+   https://wpdev.uservoice.com/forums/257854-microsoft-edge-developer/suggestions/6261266-details-summary-elements */
+.leaflet-control-layers details.mapml-control-layers > details.mapml-control-layers {
+        margin-left: 1em;
+}
+.leaflet-control-layers details.mapml-control-layers > * {
+        margin-left: 0;
+        margin-right: 0;
+}
+.leaflet-control-layers details.mapml-control-layers > select,
+.leaflet-control-layers details.mapml-control-layers > span{
+        margin-left: 1em;
+}
+.leaflet-control-layers details.mapml-control-layers > input {
+        margin-left: 1em;
+        width: 90%
+}
+.leaflet-control-layers details.mapml-control-layers > details.mapml-control-layers > span {
+    display: block;
+}
+.leaflet-control-layers details.mapml-control-layers > details.mapml-control-layers > span > label {
+    display: inline;
+}
+.leaflet-popup.mapml-popup-overflow th {
+  position: relative;
+}

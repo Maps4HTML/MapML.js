@@ -32,14 +32,14 @@
   "dependencies": {
     "polymer": "^1.5.0"
   },
-  "version": "0.2.0-Polymer-Leaflet",
-  "_release": "0.2.0-Polymer-Leaflet",
+  "version": "0.2.1-Polymer-Leaflet",
+  "_release": "0.2.1-Polymer-Leaflet",
   "_resolution": {
     "type": "version",
-    "tag": "v0.2.0-Polymer-Leaflet",
-    "commit": "1f812d3064b2b1d6ea4849e29cd97c5ee8959fd7"
+    "tag": "v0.2.1-Polymer-Leaflet",
+    "commit": "88e875922f31a171715d62e7605eb0b1162979e9"
   },
   "_source": "https://github.com/Maps4HTML/Polymer-Leaflet.git",
-  "_target": "v0.2.0-Polymer-Leaflet",
+  "_target": "v0.2.1-Polymer-Leaflet",
   "_originalSource": "Maps4HTML/Polymer-Leaflet"
 }
