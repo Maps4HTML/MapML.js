@@ -82,7 +82,7 @@ MapArea = Polymer({
               options['title'] = this.alt;
             }
             // hack
-            L.Icon.Default.prototype.options.imagePath = M.MapMLLayer.prototype._detectImagePath(map._container);
+            L.Icon.Default.prototype.options.imagePath = M.detectImagePath(map._container);
             this._feature = L.marker(map.containerPointToLatLng(points[0]),options).addTo(map);
           } else if (this.shape === 'circle') {
             var pixelRadius = parseInt(this.coords.split(",")[2]), 
