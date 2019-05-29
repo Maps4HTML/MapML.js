@@ -224,6 +224,8 @@ WebMap = Polymer({
           this._map = L.map(this.$.map, {
             center: new L.LatLng(this.lat, this.lon),
             projection: this.projection,
+            query: true,
+            mapEl: this,
             crs: M[this.projection],
             zoom: this.zoom,
             zoomControl: false,
