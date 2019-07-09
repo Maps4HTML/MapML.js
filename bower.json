@@ -2,6 +2,7 @@
   "name": "web-map",
   "description": "web-map Customized Built-In HTML <map> element Polymer implementation of the HTML-Map-Element specification.",
   "main": "web-map.html",
+  "version": "0.6.0",
   "authors": [
     "Maps for HTML Community Group"
   ],
@@ -27,7 +28,7 @@
     "tests"
   ],
   "dependencies": {
-    "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#^0.5.0",
+    "mapml-leaflet-plugin": "Maps4HTML/MapML-Leaflet-Plugin#^0.6.0",
     "polymer": "^1.5.0"
   },
   "devDependencies": {
