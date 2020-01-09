@@ -24,7 +24,11 @@
     "url": "https://github.com/Maps4HTML/Web-Map-Custom-Element/issues"
   },
   "license": "W3C",
-  "contributors": [],
+  "contributors": [{ 
+    "name" : "Maps for HTML community",
+    "email" : "public-maps4html@w3.org",
+    "url" : "https://github.com/Maps4HTML/Web-Map-Custom-Element/graphs/contributors"
+    }],
   "dependencies": {},
   "devDependencies": {
     "leaflet": "~1.6.0",
