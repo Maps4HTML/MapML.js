@@ -71,7 +71,14 @@ module.exports = function(grunt) {
             cwd: 'src',
             flatten: true,
             filter: 'isFile', 
-            src: ['*.js','*.css'], 
+            src: ['*.js','*.css','*.md','index.html','package.json'], 
+            dest: 'dist/'
+          },
+          {
+            expand: true,
+            flatten: true,
+            filter: 'isFile', 
+            src: ['*.md','index.html','package.json'], 
             dest: 'dist/'
           }
         ],
@@ -81,13 +88,17 @@ module.exports = function(grunt) {
           process: function (content, srcpath) {
             var wndoh;
             if (srcpath.includes('leaflet-src.js')) {
-              console.log('processing: ', srcpath);
+              console.log('MODIFYING: ', srcpath);
               wndoh = /\}\(this\, \(function \(exports\) \{ \'use strict\'\;/gi;
               return content.replace(wndoh,"}(window, (function (exports) { 'use strict';");
             } else if (srcpath.includes('proj4-src.js')) {
-              console.log('processing: ', srcpath);
+              console.log('MODIFYING: ', srcpath);
               wndoh = /\}\(this\, \(function \(\) \{ \'use strict\'\;/gi;
               return content.replace(wndoh, "}(window, (function () { 'use strict';");
+            } else if (srcpath.includes('index.html')) {
+              console.log('MODIFYING: ', srcpath);
+              var pathToModuleRE =  /dist\/web-map\.js/gi;
+              return content.replace(pathToModuleRE,"web-map.js");
             } else {
               return content;
             }
