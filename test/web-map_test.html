@@ -4,14 +4,11 @@
     <title>web-map test</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../bower_components/web-component-tester/browser.js"></script>
-
-    <link rel="import" href="../web-map.html">
+    <script type="module" src="../dist/web-map.js"></script>
   </head>
   <body>
 
-    <test-fixture id="empty">
+<!--    <test-fixture id="empty">
       <template>
         <map is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls>
         </map>
@@ -21,9 +18,9 @@
       <template>
         <layer- src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked hidden></layer>
       </template>
-    </test-fixture>
+    </test-fixture>-->
 
-    <script>
+<!--    <script>
       suite('web-map', function() {
         
         var theMap,aLayer;
@@ -55,6 +52,6 @@
         
 
       });
-    </script>
+    </script>-->
   </body>
 </html>
