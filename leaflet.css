@@ -1,57 +1,5 @@
-<!DOCTYPE html>
-<dom-module id="map-styles">
-  <template>
-    <style>
-/* required styles  copied from leaflet.css and mapml.css for use in web-map and related
-   custom elements */
-/* this is required by tiles which are actually divs with multiple images in them */
-.leaflet-tile img {
-        position: absolute;
-        left: 0;
-        top: 0;
-	}
-        
-/* MapML treats images like map layers, so far as fade animation is concerned */
-.leaflet-fade-anim .leaflet-image-layer {
-        will-change: opacity;
-	}
-        
-.leaflet-image-layer {
-        visibility: hidden;
-}
-.leaflet-image-loaded {
-        visibility: inherit;
-}
-.mapml-popup-overflow {
-        overflow: hidden;
-}
-/* this is to indent the nested details in the layer control */
-/* details/summary is in progress 2018-03-02 on ms-edge so gonna rely on that...
-   https://wpdev.uservoice.com/forums/257854-microsoft-edge-developer/suggestions/6261266-details-summary-elements */
-.leaflet-control-layers details.mapml-control-layers > details.mapml-control-layers {
-        margin-left: 1em;
-}
-.leaflet-control-layers details.mapml-control-layers > * {
-        margin-left: 0;
-        margin-right: 0;
-}
-.leaflet-control-layers details.mapml-control-layers > select,
-.leaflet-control-layers details.mapml-control-layers > span{
-        margin-left: 1em;
-}
-.leaflet-control-layers details.mapml-control-layers > input {
-        margin-left: 1em;
-        width: 90%
-}
-.leaflet-control-layers details.mapml-control-layers > details.mapml-control-layers > span {
-    display: block;
-}
-.leaflet-control-layers details.mapml-control-layers > details.mapml-control-layers > span > label {
-    display: inline;
-}
-.leaflet-popup.mapml-popup-overflow th {
-  position: relative;
-}
+/* required styles */
+
 .leaflet-pane,
 .leaflet-tile,
 .leaflet-marker-icon,
@@ -77,6 +25,10 @@
 	        user-select: none;
 	  -webkit-user-drag: none;
 	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
 /* Safari renders non-retina tile on retina better with this, but Chrome is worse */
 .leaflet-safari .leaflet-tile {
 	image-rendering: -webkit-optimize-contrast;
@@ -97,7 +49,8 @@
 .leaflet-container .leaflet-marker-pane img,
 .leaflet-container .leaflet-shadow-pane img,
 .leaflet-container .leaflet-tile-pane img,
-.leaflet-container img.leaflet-image-layer {
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
 	max-width: none !important;
 	max-height: none !important;
 	}
@@ -220,7 +173,6 @@
 	opacity: 0;
 	-webkit-transition: opacity 0.2s linear;
 	   -moz-transition: opacity 0.2s linear;
-	     -o-transition: opacity 0.2s linear;
 	        transition: opacity 0.2s linear;
 	}
 .leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
@@ -237,14 +189,12 @@
 .leaflet-zoom-anim .leaflet-zoom-animated {
 	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
 	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
-	     -o-transition:      -o-transform 0.25s cubic-bezier(0,0,0.25,1);
 	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
 	}
 .leaflet-zoom-anim .leaflet-tile,
 .leaflet-pan-anim .leaflet-tile {
 	-webkit-transition: none;
 	   -moz-transition: none;
-	     -o-transition: none;
 	        transition: none;
 	}
 
@@ -261,6 +211,7 @@
 .leaflet-grab {
 	cursor: -webkit-grab;
 	cursor:    -moz-grab;
+	cursor:         grab;
 	}
 .leaflet-crosshair,
 .leaflet-crosshair .leaflet-interactive {
@@ -276,6 +227,7 @@
 	cursor: move;
 	cursor: -webkit-grabbing;
 	cursor:    -moz-grabbing;
+	cursor:         grabbing;
 	}
 
 /* marker & overlays interactivity */
@@ -289,7 +241,8 @@
 
 .leaflet-marker-icon.leaflet-interactive,
 .leaflet-image-layer.leaflet-interactive,
-.leaflet-pane > svg path.leaflet-interactive {
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
 	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
 	pointer-events: auto;
 	}
@@ -442,7 +395,8 @@
 /* Default icon URLs */
 .leaflet-default-icon-path {
 	background-image: url(images/marker-icon.png);
- }
+	}
+
 
 /* attribution and scale controls */
 
@@ -545,7 +499,6 @@
 	-webkit-transform: rotate(45deg);
 	   -moz-transform: rotate(45deg);
 	    -ms-transform: rotate(45deg);
-	     -o-transform: rotate(45deg);
 	        transform: rotate(45deg);
 	}
 .leaflet-popup-content-wrapper,
@@ -685,7 +638,3 @@
 	margin-left: -12px;
 	border-right-color: #fff;
 	}
-
-    </style>
-  </template>
-</dom-module>
