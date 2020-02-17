@@ -1279,7 +1279,7 @@ M.MapMLLayer = L.Layer.extend({
                     selectedAlternate = !projectionMatch && mapml.querySelector('head link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 
-      (new URL(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : null || this.responseURL, this.responseURL)).href;
+      (new URL(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : mapml.baseURI || this.responseURL, this.responseURL)).href;
                 
                 if (!serverExtent) {
                     serverExtent = layer._synthesizeExtent(mapml);
@@ -1521,7 +1521,7 @@ M.MapMLLayer = L.Layer.extend({
                 layer._parseLicenseAndLegend(mapml, layer);
                 var zoomin = mapml.querySelector('link[rel=zoomin]'),
                     zoomout = mapml.querySelector('link[rel=zoomout]'),
-                    base = (new URL(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : null || this.responseURL, this.responseURL)).href;
+                    base = (new URL(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : mapml.baseURI || this.responseURL, this.responseURL)).href;
                 delete layer._extent.zoomin;
                 delete layer._extent.zoomout;
                 if (zoomin) {
