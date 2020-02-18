@@ -1864,7 +1864,7 @@ M.MapMLLayer = L.Layer.extend({
         if (!extent) return this._href;
         // action SHOULD HAVE BEEN resolved against any base ALREADY
         var action = extent.getAttribute("action"),
-                base = (new URL(this._href)).href;
+                base = (new URL(this._href ? this._href : this._content ? this._content.baseURI : document.baseURI)).href;
         // establish the range of zoom values for the extent
         var zoom = extent.querySelectorAll("input[type=zoom]")[0];
         if ( !zoom ) return null;
@@ -3660,7 +3660,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
           }
         }
       }
-      var inlineStyleSheets = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelectorAll("style") : null;
+      var inlineStyleSheets = mapml.nodeType === Node.DOCUMENT_NODE || Node.ELEMENT_NODE ? mapml.querySelectorAll("style") : null;
       if (inlineStyleSheets) {
         for (i=0;i<inlineStyleSheets.length;i++) {
           document.head.insertAdjacentHTML('beforeend',inlineStyleSheets[i].outerHTML);
@@ -3682,6 +3682,10 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       var options = this.options;
 
       if (options.filter && !options.filter(mapml)) { return; }
+      
+      if (mapml.classList.length) {
+        options.className = mapml.classList.value
+      }
 
       var layer = M.MapMLFeatures.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options);
       if (layer) {
