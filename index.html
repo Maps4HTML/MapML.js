@@ -198,14 +198,14 @@
     <pre class="code-example">
 &lt;map is="web-map" zoom="3" lat="90.0" lon="0.0" projection="APSTILE" width="640" height="480"&gt;
   &lt;layer- src="https://geogratis.gc.ca/mapml/en/apstile/arctic/" label="Arctic Ocean Base Map" checked hidden>&lt;/layer-&gt;
-  &lt;area id="northPole" is="map-area" shape="marker" href="https://example.com/santa/" alt="North Pole" coords="320,175"&gt;
+  &lt;area id="northPole" is="map-area" shape="marker" href="https://example.com/santa/" alt="North Pole" coords="320,240"&gt;
 &lt;/map&gt;
     </pre>
 
     <img usemap="#arctic" src="map3.png" width="640" height="350" alt="Arctic" />
     <map name="arctic" is="web-map" zoom="3" lat="90.0" lon="0.0" projection="APSTILE" width="640" height="480">
         <layer- src="https://geogratis.gc.ca/mapml/en/apstile/arctic/" label="Arctic Ocean Base Map" checked hidden></layer->
-        <area id="northPole" is="map-area" shape="marker" href="https://example.com/santa/" alt="North Pole" coords="320,175">
+        <area id="northPole" is="map-area" shape="marker" href="https://example.com/santa/" alt="North Pole" coords="320,240">
     </map>
 
     <p>This map illustrates the dramatically different projection <code>APSTILE</code>, with an <code>&lt;area&gt;</code> link for the North Pole. The lack of a <code>controls</code> attribute on the map element results in a clean map that looks like an image but behaves like a map.</p>
