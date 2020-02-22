@@ -3,6 +3,7 @@ import './proj4-src.js';        // modified version of proj4; could be stripped 
 import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use. 
 import './mapml.js';       // refactored URI usage, replaced with URL standard
 import { MapLayer } from './layer.js';
+import { MapArea } from './map-area.js'
 
 export class WebMap extends HTMLMapElement {
   static get observedAttributes() {
@@ -60,6 +61,9 @@ export class WebMap extends HTMLMapElement {
   get layers() {
     return this.getElementsByTagName('layer-');
   }
+  get areas() {
+    return this.getElementsByTagName('area');
+  }
   constructor() {
     // Always call super first in constructor
     super();
@@ -83,34 +87,33 @@ export class WebMap extends HTMLMapElement {
     this.appendChild(rootDiv);
   }
   connectedCallback() {
-//    console.log('Custom map element added to page.');
     if (this.isConnected) {
 
       // the dimension attributes win, if they're there. A map does not
       // have an intrinsic size, unlike an image or video, and so must 
       // have a defined width and height.
-//      var s = window.getComputedStyle(this),
-//        wpx = s.width, hpx=s.height, 
-//        w = parseInt(wpx.replace('px','')),
-//        h = parseInt(hpx.replace('px',''));
-//
-//      if (wpx === "" || hpx === "") {
-//         return;
-//      }
-//
-//      if (!this.width || this.width !== w) {
-//        this._container.style.width = wpx;
-//        this.width = w;
-//      } else {
-//        this._container.style.width = this.width+"px";
-//      }
-//
-//      if (!this.height || this.height !== h) {
-//        this._container.style.height = h;
-//        this.height = h;
-//      } else {
-//        this._container.style.height = this.height+"px";
-//      }
+      var s = window.getComputedStyle(this),
+        wpx = s.width, hpx=s.height, 
+        w = parseInt(wpx.replace('px','')),
+        h = parseInt(hpx.replace('px',''));
+
+      if (wpx === "" || hpx === "") {
+         return;
+      }
+
+      if (!this.width || this.width !== w) {
+        this._container.style.width = wpx;
+        this.width = w;
+      } else {
+        this._container.style.width = this.width+"px";
+      }
+
+      if (!this.height || this.height !== h) {
+        this._container.style.height = h;
+        this.height = h;
+      } else {
+        this._container.style.height = this.height+"px";
+      }
       // create the Leaflet map if this is the first time attached is called
       if (!this._map) {
         this._map = L.map(this._container, {
@@ -137,7 +140,28 @@ export class WebMap extends HTMLMapElement {
           this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
           this._zoomControl = L.control.zoom().addTo(this._map);
         }
+        if (this.hasAttribute('name')) {
+          var name = this.getAttribute('name');
+          if (name) {
+            this.poster = document.querySelector('img[usemap='+'"#'+name+'"]');
+            // firefox has an issue where the attribution control's use of
+            // _container.innerHTML does not work properly if the engine is throwing
+            // exceptions because there are no area element children of the image map
+            // for firefox only, a workaround is to actually remove the image...
+            if (this.poster) {
+              if (L.Browser.gecko) {
+                  this.poster.removeAttribute('usemap');
+              }
+              //this.appendChild(this.poster);
+            }
+          }
+        }
 
+        // undisplay the img in the image map, because it's not needed now
+        // gives a slight fouc, not optimal
+        if (this.poster) {
+          this.poster.style.display = 'none';
+        }
         this._setUpEvents();
         // this.fire('load', {target: this});
       }
@@ -396,3 +420,4 @@ export class WebMap extends HTMLMapElement {
 // need to provide options { extends: ... }  for custom built-in elements
 window.customElements.define('web-map', WebMap,  { extends: 'map' });
 window.customElements.define('layer-', MapLayer);
+window.customElements.define('map-area', MapArea, {extends: 'area'});
