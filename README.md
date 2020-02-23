@@ -24,5 +24,6 @@ Example:
 ## Maps for HTML Community Group
 
 MapML and the &lt;map&gt; custom element are being developed by the W3C [Maps for HTML Community Group](http://www.w3.org/community/maps4html/).
+Membership in the group is encouraged, however you do not have to join to use the information found here.
 If you wish to contribute, please join the Maps For HTML Community Group,
 and help us make the Web a map-friendly platform for everyone, everywhere!
