@@ -1362,7 +1362,7 @@ M.MapMLLayer = L.Layer.extend({
                         inputs.push(zoomInput);
                       }
                       // template has a matching input for every variable reference {varref}
-                      layer._templateVars.push({template:template, title:title, rel: trel, type: ttype, values: inputs});
+                      layer._templateVars.push({template:decodeURI(new URL(template, base)), title:title, rel: trel, type: ttype, values: inputs});
                     }
                   }
                 }

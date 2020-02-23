@@ -216,7 +216,7 @@ export class MapLayer extends HTMLElement {
     // move any layer- child style elements into the shadow root of the map,
     // so that styles specified for the layer will apply to how those things
     // are implemented, currently by a Leaflet map div.
-    var inline_styles = this.querySelectorAll('style');
+    var inline_styles = this.querySelectorAll('style,link[rel=stylesheet]');
     for(var i=0;i< inline_styles.length;i++) {
       this.parentNode._container.insertAdjacentElement('beforebegin',inline_styles[i]);
     }
