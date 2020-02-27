@@ -79,9 +79,9 @@ export class WebMap extends HTMLMapElement {
     let tmpl = document.createElement('template');
     tmpl.innerHTML = 
     `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">` +
-    `<link rel="stylesheet" href="${new URL("leaflet.fullscreen.css", import.meta.url).href}">` +
-    `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">`;
-
+    `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
+    `<link rel="stylesheet" href="${new URL("leaflet.fullscreen.css", import.meta.url).href}">`;
+    
     const rootDiv = document.createElement('div');
     // without this you have to omit the doctype, which is bad because
     // it triggers quirks mode.
@@ -150,7 +150,7 @@ export class WebMap extends HTMLMapElement {
           this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
           this._zoomControl = L.control.zoom().addTo(this._map);
           if (this.allow) {
-            this._fullScreenControl = new L.Control.Fullscreen().addTo(this._map);
+            this._fullScreenControl = L.control.fullscreen().addTo(this._map);
           }
         }
         if (this.hasAttribute('name')) {
@@ -349,6 +349,9 @@ export class WebMap extends HTMLMapElement {
       if (controls && !this._layerControl) {
         this._zoomControl = L.control.zoom().addTo(this._map);
         this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
+        if (this.allow) {
+          this._fullScreenControl = L.control.fullscreen().addTo(this._map);
+        }
         for (var i=0;i<this.layers.length;i++) {
           if (!this.layers[i].hidden) {
             this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
@@ -359,8 +362,11 @@ export class WebMap extends HTMLMapElement {
       } else if (this._layerControl) {
         this._map.removeControl(this._layerControl);
         this._map.removeControl(this._zoomControl);
+        this._map.removeControl(this._fullScreenControl);
         delete this._layerControl;
-        delete this._zoomControl;      }
+        delete this._zoomControl;
+        delete this._layerControl;
+      }
     }
   }
   _widthChanged(width) {

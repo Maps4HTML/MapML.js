@@ -103,6 +103,10 @@ module.exports = function(grunt) {
               console.log('MODIFYING: ', srcpath);
               wndoh = /\}\(this\, \(function \(\) \{ \'use strict\'\;/gi;
               return content.replace(wndoh, "}(window, (function () { 'use strict';");
+            } else if (srcpath.includes('Leaflet.fullscreen.js')) {
+              console.log('MODIFYING: ', srcpath);
+              wndoh = /fullscreenElement [\=\!]\=\= this\.getContainer\(\) \&\&/gi;
+              return content.replace(wndoh, "");
             } else if (srcpath.includes('index.html')) {
               console.log('MODIFYING: ', srcpath);
               var pathToModuleRE =  /dist\/web-map\.js/gi;
