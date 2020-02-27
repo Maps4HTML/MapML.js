@@ -26,12 +26,12 @@ export class WebMap extends HTMLMapElement {
       this.removeAttribute('controls');
     this._toggleControls(hasControls);
   }
-  get allow() {
-    return this.hasAttribute('allow') ? this.getAttribute("allow") : "";
+  get controlslist() {
+    return this.hasAttribute('controlslist') ? this.getAttribute("controlslist") : "";
   }
-  set allow(val) {
-    if (val) {
-      this.setAttribute("allow", val);
+  set controlslist(val) {
+    if (val.toLowerCase() === "nofullscreen") {
+      this.setAttribute("controlslist", "nofullscreen");
     }
   }
   get lat() {
@@ -149,7 +149,7 @@ export class WebMap extends HTMLMapElement {
         if (this.controls) {
           this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
           this._zoomControl = L.control.zoom().addTo(this._map);
-          if (this.allow) {
+          if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
             this._fullScreenControl = L.control.fullscreen().addTo(this._map);
           }
         }
@@ -349,7 +349,7 @@ export class WebMap extends HTMLMapElement {
       if (controls && !this._layerControl) {
         this._zoomControl = L.control.zoom().addTo(this._map);
         this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
-        if (this.allow) {
+        if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
           this._fullScreenControl = L.control.fullscreen().addTo(this._map);
         }
         for (var i=0;i<this.layers.length;i++) {
@@ -362,10 +362,12 @@ export class WebMap extends HTMLMapElement {
       } else if (this._layerControl) {
         this._map.removeControl(this._layerControl);
         this._map.removeControl(this._zoomControl);
-        this._map.removeControl(this._fullScreenControl);
+        if (this._fullScreenControl) {
+          this._map.removeControl(this._fullScreenControl);
+          delete this._fullScreenControl;
+        }
         delete this._layerControl;
         delete this._zoomControl;
-        delete this._layerControl;
       }
     }
   }

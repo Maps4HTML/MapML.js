@@ -2,6 +2,7 @@ import './leaflet-src.js';  // a (very slightly) modified version of Leaflet for
 import './proj4-src.js';        // modified version of proj4; could be stripped down for mapml
 import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use. 
 import './mapml.js';       // refactored URI usage, replaced with URL standard
+import './Leaflet.fullscreen.js';
 import { MapLayer } from './layer.js';       
 
 export class GeoMap extends HTMLElement {
@@ -23,6 +24,14 @@ export class GeoMap extends HTMLElement {
     else
       this.removeAttribute('controls');
     this._toggleControls(hasControls);
+  }
+  get controlslist() {
+    return this.hasAttribute('controlslist') ? this.getAttribute("controlslist") : "";
+  }
+  set controlslist(val) {
+    if (val.toLowerCase() === "nofullscreen") {
+      this.setAttribute("controlslist", "nofullscreen");
+    }
   }
   get lat() {
     return this.hasAttribute("lat") ? this.getAttribute("lat") : "0";
@@ -52,12 +61,10 @@ export class GeoMap extends HTMLElement {
     return this.hasAttribute("zoom") ? this.getAttribute("zoom") : 0;
   }
   set zoom(val) {
-    if (val) {
       var parsedVal = parseInt(val,10);
       if (!isNaN(parsedVal) && (parsedVal >= 0 && parsedVal <= 25)) {
         this.setAttribute('zoom', parsedVal);
       }
-    }
   }
   get layers() {
     return this.getElementsByTagName('layer-');
@@ -68,7 +75,8 @@ export class GeoMap extends HTMLElement {
     let tmpl = document.createElement('template');
     tmpl.innerHTML = 
     `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">` +
-    `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">`;
+    `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
+    `<link rel="stylesheet" href="${new URL("leaflet.fullscreen.css", import.meta.url).href}">`;
     let shadowRoot = this.attachShadow({mode: 'open'});
     this._container = document.createElement('div');
     // you have to include this otherwise you have to use quirks mode,
@@ -79,7 +87,6 @@ export class GeoMap extends HTMLElement {
     
   }
   connectedCallback() {
-//    console.log('Custom map element added to page.');
     if (this.isConnected) {
 
       // the dimension attributes win, if they're there. A map does not
@@ -107,7 +114,6 @@ export class GeoMap extends HTMLElement {
       } else {
         this._container.style.height = this.height+"px";
       }
-
       // create the Leaflet map if this is the first time attached is called
       if (!this._map) {
         this._map = L.map(this._container, {
@@ -133,6 +139,9 @@ export class GeoMap extends HTMLElement {
         if (this.controls) {
           this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
           this._zoomControl = L.control.zoom().addTo(this._map);
+          if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
+            this._fullScreenControl = L.control.fullscreen().addTo(this._map);
+          }
         }
 
         this._setUpEvents();
@@ -169,7 +178,11 @@ export class GeoMap extends HTMLElement {
   _dropHandler(event) {
     event.preventDefault();
     // create a new <layer-> child of this <map> element
-    this.appendChild(new MapLayer(event.dataTransfer.getData("text"), 'Layer', true));
+    let l = new MapLayer();
+    l.src = event.dataTransfer.getData("text");
+    l.label = 'Layer';
+    l.checked = 'true';
+    this.appendChild(l);
   }
   _dragoverHandler(event) {
     function contains(list, value) {
@@ -305,6 +318,9 @@ export class GeoMap extends HTMLElement {
       if (controls && !this._layerControl) {
         this._zoomControl = L.control.zoom().addTo(this._map);
         this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
+        if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
+          this._fullScreenControl = L.control.fullscreen().addTo(this._map);
+        }
         for (var i=0;i<this.layers.length;i++) {
           if (!this.layers[i].hidden) {
             this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
@@ -315,8 +331,13 @@ export class GeoMap extends HTMLElement {
       } else if (this._layerControl) {
         this._map.removeControl(this._layerControl);
         this._map.removeControl(this._zoomControl);
+        if (this._fullScreenControl) {
+          this._map.removeControl(this._fullScreenControl);
+          delete this._fullScreenControl;
+        }
         delete this._layerControl;
-        delete this._zoomControl;      }
+        delete this._zoomControl;
+      }
     }
   }
   _widthChanged(width) {
@@ -386,7 +407,6 @@ export class GeoMap extends HTMLElement {
     }
   }
 }
-
 // need to provide options { extends: ... }  for custom built-in elements
 window.customElements.define('geo-map', GeoMap);
 window.customElements.define('layer-', MapLayer);
