@@ -2,6 +2,7 @@ import './leaflet-src.js';  // a lightly modified version of Leaflet for use as 
 import './proj4-src.js';        // modified version of proj4; could be stripped down for mapml
 import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use. 
 import './mapml.js';       // refactored URI usage, replaced with URL standard
+import './Leaflet.fullscreen.js';
 import { MapLayer } from './layer.js';
 import { MapArea } from './map-area.js'
 
@@ -24,6 +25,14 @@ export class WebMap extends HTMLMapElement {
     else
       this.removeAttribute('controls');
     this._toggleControls(hasControls);
+  }
+  get allow() {
+    return this.hasAttribute('allow') ? this.getAttribute("allow") : "";
+  }
+  set allow(val) {
+    if (val) {
+      this.setAttribute("allow", val);
+    }
   }
   get lat() {
     return this.hasAttribute("lat") ? this.getAttribute("lat") : "0";
@@ -70,6 +79,7 @@ export class WebMap extends HTMLMapElement {
     let tmpl = document.createElement('template');
     tmpl.innerHTML = 
     `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">` +
+    `<link rel="stylesheet" href="${new URL("leaflet.fullscreen.css", import.meta.url).href}">` +
     `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">`;
 
     const rootDiv = document.createElement('div');
@@ -139,6 +149,9 @@ export class WebMap extends HTMLMapElement {
         if (this.controls) {
           this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
           this._zoomControl = L.control.zoom().addTo(this._map);
+          if (this.allow) {
+            this._fullScreenControl = new L.Control.Fullscreen().addTo(this._map);
+          }
         }
         if (this.hasAttribute('name')) {
           var name = this.getAttribute('name');

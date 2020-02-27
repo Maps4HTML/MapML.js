@@ -68,6 +68,14 @@ module.exports = function(grunt) {
           },
           {
             expand: true,
+            cwd: 'node_modules/@runette/leaflet-fullscreen/dist/',
+            flatten: true,
+            filter: 'isFile', 
+            src: ['Leaflet.fullscreen.js','leaflet.fullscreen.css','../fullscreen.svg'], 
+            dest: 'dist/'
+          },
+          {
+            expand: true,
             cwd: 'src',
             flatten: true,
             filter: 'isFile', 
