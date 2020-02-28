@@ -1147,8 +1147,9 @@ M.MapMLLayer = L.Layer.extend({
         return this.options.attribution;
     },
     getLayerUserControlsHTML: function () {
-      var label = document.createElement('label'),
+      var fieldset = document.createElement('fieldset'),
         input = document.createElement('input'),
+        label = document.createElement('label'),
         name = document.createElement('span'),
         details = document.createElement('details'),
         summary = document.createElement('summary'),
@@ -1170,8 +1171,13 @@ M.MapMLLayer = L.Layer.extend({
         } else {
           name.innerHTML = ' ' + this._title;
         }
-        
-        opacityControlSummary.innerText = 'opacity';
+        label.appendChild(input);
+        label.appendChild(name);
+        opacityControlSummaryLabel = document.createElement('label');
+        opacityControlSummaryLabel.innerText = 'opacity';
+        opacity.id = ""
+        opacityControlSummaryLabel.setAttribute('for', opacity.id)
+        opacityControlSummary.appendChild(opacityControlSummaryLabel);
         opacityControl.appendChild(opacityControlSummary);
         opacityControl.appendChild(opacity);
         L.DomUtil.addClass(details, 'mapml-control-layers');
@@ -1196,10 +1202,9 @@ M.MapMLLayer = L.Layer.extend({
             }
           }, this);
 
+        fieldset.appendChild(details)
         details.appendChild(summary);
-        label.appendChild(details);
-        summary.appendChild(input);
-        summary.appendChild(name);
+        summary.appendChild(label);
         details.appendChild(opacityControl);
 
         if (this._styles) {
@@ -1217,20 +1222,22 @@ M.MapMLLayer = L.Layer.extend({
                 // don't add it again if it is referenced > once
                 if (mapmlInput.tagName.toLowerCase() === 'select' && !frag.querySelector(id)) {
                   // generate a <details><summary></summary><input...></details>
-                  var selectdetails = document.createElement('details'),
+                  var userfieldset = document.createElement('fieldset'),
+                      selectdetails = document.createElement('details'),
                       selectsummary = document.createElement('summary');
                       selectsummary.innerText = mapmlInput.getAttribute('name');
                       L.DomUtil.addClass(selectdetails, 'mapml-control-layers');
                       selectdetails.appendChild(selectsummary);
                       selectdetails.appendChild(mapmlInput.htmlselect);
-                  frag.appendChild(selectdetails);
+                      userfieldset.appendChild(selectdetails);
+                  frag.appendChild(userfieldset);
                 }
               }
             }
           }
           details.appendChild(frag);
         }
-        return label;
+        return fieldset;
     },
     _initExtent: function(content) {
         if (!this._href && !content) {return;}

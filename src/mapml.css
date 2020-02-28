@@ -15,6 +15,13 @@
 .leaflet-image-loaded {
         visibility: inherit;
 }
+.leaflet-control-layers fieldset {
+    border: none;
+}
+/* override a setting in leaflet.css */
+.leaflet-control-layers label {
+    display: inline;
+}
 /* this is to indent the nested details in the layer control */
 /* details/summary is in progress 2018-03-02 on ms-edge so gonna rely on that...
    https://wpdev.uservoice.com/forums/257854-microsoft-edge-developer/suggestions/6261266-details-summary-elements */

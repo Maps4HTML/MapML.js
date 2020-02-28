@@ -78,8 +78,8 @@ export class WebMap extends HTMLMapElement {
     super();
     let tmpl = document.createElement('template');
     tmpl.innerHTML = 
-    `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">` +
     `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
+    `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">` +
     `<link rel="stylesheet" href="${new URL("leaflet.fullscreen.css", import.meta.url).href}">`;
     
     const rootDiv = document.createElement('div');
