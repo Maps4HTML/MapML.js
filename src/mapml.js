@@ -1155,7 +1155,8 @@ M.MapMLLayer = L.Layer.extend({
         summary = document.createElement('summary'),
         opacity = document.createElement('input'),
         opacityControl = document.createElement('details'),
-        opacityControlSummary = document.createElement('summary');
+        opacityControlSummary = document.createElement('summary'),
+        opacityControlSummaryLabel = document.createElement('label');
 
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
@@ -1173,9 +1174,8 @@ M.MapMLLayer = L.Layer.extend({
         }
         label.appendChild(input);
         label.appendChild(name);
-        opacityControlSummaryLabel = document.createElement('label');
         opacityControlSummaryLabel.innerText = 'opacity';
-        opacity.id = ""
+        opacity.id = "o" + L.stamp(opacity);
         opacityControlSummaryLabel.setAttribute('for', opacity.id)
         opacityControlSummary.appendChild(opacityControlSummaryLabel);
         opacityControl.appendChild(opacityControlSummary);
@@ -1224,9 +1224,12 @@ M.MapMLLayer = L.Layer.extend({
                   // generate a <details><summary></summary><input...></details>
                   var userfieldset = document.createElement('fieldset'),
                       selectdetails = document.createElement('details'),
-                      selectsummary = document.createElement('summary');
-                      selectsummary.innerText = mapmlInput.getAttribute('name');
+                      selectsummary = document.createElement('summary'),
+                      selectSummaryLabel = document.createElement('label');
+                      selectSummaryLabel.innerText = mapmlInput.getAttribute('name');
+                      selectSummaryLabel.setAttribute('for', mapmlInput.getAttribute('id'));
                       L.DomUtil.addClass(selectdetails, 'mapml-control-layers');
+                      selectsummary.appendChild(selectSummaryLabel);
                       selectdetails.appendChild(selectsummary);
                       selectdetails.appendChild(mapmlInput.htmlselect);
                       userfieldset.appendChild(selectdetails);
