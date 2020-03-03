@@ -5,7 +5,7 @@ import './mapml.js';       // refactored URI usage, replaced with URL standard
 import './Leaflet.fullscreen.js';
 import { MapLayer } from './layer.js';       
 
-export class GeoMap extends HTMLElement {
+export class MmApp extends HTMLElement {
   static get observedAttributes() {
     return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls'];
   }
@@ -389,24 +389,8 @@ export class GeoMap extends HTMLElement {
         }
       }
     }());
-    if (this.hasAttribute('name')) {
-      var name = this.getAttribute('name');
-      if (name) {
-        this.poster = document.querySelector('img[usemap='+'"#'+name+'"]');
-        // firefox has an issue where the attribution control's use of
-        // _container.innerHTML does not work properly if the engine is throwing
-        // exceptions because there are no area element children of the image map
-        // for firefox only, a workaround is to actually remove the image...
-        if (this.poster) {
-          if (L.Browser.gecko) {
-            this.poster.removeAttribute('usemap');
-          }
-          this._container.appendChild(this.poster);
-        }
-      }
-    }
   }
 }
 // need to provide options { extends: ... }  for custom built-in elements
-window.customElements.define('geo-map', GeoMap);
+window.customElements.define('mm-app', MmApp);
 window.customElements.define('layer-', MapLayer);
