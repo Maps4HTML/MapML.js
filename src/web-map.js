@@ -2,6 +2,7 @@ import './leaflet-src.js';  // a lightly modified version of Leaflet for use as 
 import './proj4-src.js';        // modified version of proj4; could be stripped down for mapml
 import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use. 
 import './mapml.js';       // refactored URI usage, replaced with URL standard
+import './Leaflet.fullscreen.js';
 import { MapLayer } from './layer.js';
 import { MapArea } from './map-area.js'
 
@@ -24,6 +25,14 @@ export class WebMap extends HTMLMapElement {
     else
       this.removeAttribute('controls');
     this._toggleControls(hasControls);
+  }
+  get controlslist() {
+    return this.hasAttribute('controlslist') ? this.getAttribute("controlslist") : "";
+  }
+  set controlslist(val) {
+    if (val.toLowerCase() === "nofullscreen") {
+      this.setAttribute("controlslist", "nofullscreen");
+    }
   }
   get lat() {
     return this.hasAttribute("lat") ? this.getAttribute("lat") : "0";
@@ -67,11 +76,13 @@ export class WebMap extends HTMLMapElement {
   constructor() {
     // Always call super first in constructor
     super();
+    this.style.display = "block";
     let tmpl = document.createElement('template');
     tmpl.innerHTML = 
+    `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
     `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">` +
-    `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">`;
-
+    `<link rel="stylesheet" href="${new URL("leaflet.fullscreen.css", import.meta.url).href}">`;
+    
     const rootDiv = document.createElement('div');
     // without this you have to omit the doctype, which is bad because
     // it triggers quirks mode.
@@ -139,6 +150,9 @@ export class WebMap extends HTMLMapElement {
         if (this.controls) {
           this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
           this._zoomControl = L.control.zoom().addTo(this._map);
+          if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
+            this._fullScreenControl = L.control.fullscreen().addTo(this._map);
+          }
         }
         if (this.hasAttribute('name')) {
           var name = this.getAttribute('name');
@@ -336,6 +350,9 @@ export class WebMap extends HTMLMapElement {
       if (controls && !this._layerControl) {
         this._zoomControl = L.control.zoom().addTo(this._map);
         this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
+        if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
+          this._fullScreenControl = L.control.fullscreen().addTo(this._map);
+        }
         for (var i=0;i<this.layers.length;i++) {
           if (!this.layers[i].hidden) {
             this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
@@ -346,8 +363,13 @@ export class WebMap extends HTMLMapElement {
       } else if (this._layerControl) {
         this._map.removeControl(this._layerControl);
         this._map.removeControl(this._zoomControl);
+        if (this._fullScreenControl) {
+          this._map.removeControl(this._fullScreenControl);
+          delete this._fullScreenControl;
+        }
         delete this._layerControl;
-        delete this._zoomControl;      }
+        delete this._zoomControl;
+      }
     }
   }
   _widthChanged(width) {
