@@ -5,7 +5,7 @@ import './mapml.js';       // refactored URI usage, replaced with URL standard
 import './Leaflet.fullscreen.js';
 import { MapLayer } from './layer.js';       
 
-export class MmApp extends HTMLElement {
+export class MmMapp extends HTMLElement {
   static get observedAttributes() {
     return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls'];
   }
@@ -395,5 +395,5 @@ export class MmApp extends HTMLElement {
   }
 }
 // need to provide options { extends: ... }  for custom built-in elements
-window.customElements.define('mm-app', MmApp);
+window.customElements.define('mm-mapp', MmMapp);
 window.customElements.define('layer-', MapLayer);
