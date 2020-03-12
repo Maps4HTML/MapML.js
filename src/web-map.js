@@ -76,6 +76,7 @@ export class WebMap extends HTMLMapElement {
   constructor() {
     // Always call super first in constructor
     super();
+    this.style.display = "block";
     let tmpl = document.createElement('template');
     tmpl.innerHTML = 
     `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +

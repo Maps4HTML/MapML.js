@@ -72,6 +72,9 @@ export class MmApp extends HTMLElement {
   constructor() {
     // Always call super first in constructor
     super();
+    // SUPER IMPORTANT TO SET THIS UP FIRST SO THAT LEAFLET ISN'T WORKING WITH
+    // A HEIGHT=0 BOX BY DEFAULT.
+    this.style.display = "block";
     let tmpl = document.createElement('template');
     tmpl.innerHTML = 
     `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
@@ -81,7 +84,7 @@ export class MmApp extends HTMLElement {
     this._container = document.createElement('div');
     // you have to include this otherwise you have to use quirks mode,
     // (by omitting the doctype), which is bad.
-    this._container.style.height = "100vh";
+    this._container.style.height = "100%";
     shadowRoot.appendChild(tmpl.content.cloneNode(true));
     shadowRoot.appendChild(this._container);
     
