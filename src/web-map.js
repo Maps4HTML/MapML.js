@@ -1,6 +1,6 @@
 import './leaflet-src.js';  // a lightly modified version of Leaflet for use as browser module
 import './proj4-src.js';        // modified version of proj4; could be stripped down for mapml
-import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use. 
+import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use.
 import './mapml.js';       // refactored URI usage, replaced with URL standard
 import './Leaflet.fullscreen.js';
 import { MapLayer } from './layer.js';
@@ -10,7 +10,7 @@ export class WebMap extends HTMLMapElement {
   static get observedAttributes() {
     return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls'];
   }
-  // see comments below regarding attributeChangedCallback vs. getter/setter 
+  // see comments below regarding attributeChangedCallback vs. getter/setter
   // usage.  Effectively, the user of the element must use the property, not
   // the getAttribute/setAttribute/removeAttribute DOM API, because the latter
   // calls don't result in the getter/setter being called (so you have to use
@@ -78,11 +78,11 @@ export class WebMap extends HTMLMapElement {
     super();
     this.style.display = "block";
     let tmpl = document.createElement('template');
-    tmpl.innerHTML = 
+    tmpl.innerHTML =
     `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
-    `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">` +
-    `<link rel="stylesheet" href="${new URL("leaflet.fullscreen.css", import.meta.url).href}">`;
-    
+    `<link rel="stylesheet" href="${new URL("leaflet.fullscreen.css", import.meta.url).href}">` +
+    `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`;
+
     const rootDiv = document.createElement('div');
     // without this you have to omit the doctype, which is bad because
     // it triggers quirks mode.
@@ -101,10 +101,10 @@ export class WebMap extends HTMLMapElement {
     if (this.isConnected) {
 
       // the dimension attributes win, if they're there. A map does not
-      // have an intrinsic size, unlike an image or video, and so must 
+      // have an intrinsic size, unlike an image or video, and so must
       // have a defined width and height.
       var s = window.getComputedStyle(this),
-        wpx = s.width, hpx=s.height, 
+        wpx = s.width, hpx=s.height,
         w = parseInt(wpx.replace('px','')),
         h = parseInt(hpx.replace('px',''));
 
@@ -138,8 +138,8 @@ export class WebMap extends HTMLMapElement {
           // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
           // the mapml response is received the screen tends to flash.  I'm sure
           // there is a better configuration than that, but at this moment
-          // I'm not sure how to approach that issue.  
-          // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24 
+          // I'm not sure how to approach that issue.
+          // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
           fadeAnimation: true
         });
 
@@ -245,105 +245,105 @@ export class WebMap extends HTMLMapElement {
       function () {
         this.dispatchEvent(new CustomEvent('load', {detail: {target: this}}));
       }, this);
-    this._map.on('preclick', 
+    this._map.on('preclick',
       function (e) {
-        this.dispatchEvent(new CustomEvent('preclick', {detail: 
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+        this.dispatchEvent(new CustomEvent('preclick', {detail:
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('click', 
+    this._map.on('click',
       function (e) {
         this.dispatchEvent(new CustomEvent('click', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('dblclick', 
+    this._map.on('dblclick',
       function (e) {
         this.dispatchEvent(new CustomEvent('dblclick', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('mousemove', 
+    this._map.on('mousemove',
       function (e) {
         this.dispatchEvent(new CustomEvent('mousemove', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('mouseover', 
+    this._map.on('mouseover',
       function (e) {
         this.dispatchEvent(new CustomEvent('mouseover', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('mouseout', 
+    this._map.on('mouseout',
       function (e) {
         this.dispatchEvent(new CustomEvent('mouseout', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('mousedown', 
+    this._map.on('mousedown',
       function (e) {
         this.dispatchEvent(new CustomEvent('mousedown', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       },this);
-    this._map.on('mouseup', 
+    this._map.on('mouseup',
       function (e) {
         this.dispatchEvent(new CustomEvent('mouseup', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('contextmenu', 
+    this._map.on('contextmenu',
       function (e) {
         this.dispatchEvent(new CustomEvent('contextmenu', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
-      }, this);      
-    this._map.on('movestart', 
+      }, this);
+    this._map.on('movestart',
       function () {
         this._updateMapCenter();
-        this.dispatchEvent(new CustomEvent('movestart', {detail: 
+        this.dispatchEvent(new CustomEvent('movestart', {detail:
           {target: this}}));
-      }, this);      
-    this._map.on('move', 
+      }, this);
+    this._map.on('move',
       function () {
         this._updateMapCenter();
-        this.dispatchEvent(new CustomEvent('move', {detail: 
+        this.dispatchEvent(new CustomEvent('move', {detail:
           {target: this}}));
-      }, this);      
-    this._map.on('moveend', 
+      }, this);
+    this._map.on('moveend',
       function () {
         this._updateMapCenter();
-        this.dispatchEvent(new CustomEvent('moveend', {detail: 
+        this.dispatchEvent(new CustomEvent('moveend', {detail:
           {target: this}}));
-      }, this);      
-    this._map.on('zoomstart', 
+      }, this);
+    this._map.on('zoomstart',
       function () {
         this._updateMapCenter();
-        this.dispatchEvent(new CustomEvent('zoomstart', {detail: 
+        this.dispatchEvent(new CustomEvent('zoomstart', {detail:
           {target: this}}));
-      }, this);      
-    this._map.on('zoom', 
+      }, this);
+    this._map.on('zoom',
       function () {
         this._updateMapCenter();
-        this.dispatchEvent(new CustomEvent('zoom', {detail: 
+        this.dispatchEvent(new CustomEvent('zoom', {detail:
           {target: this}}));
-      }, this);      
-    this._map.on('zoomend', 
+      }, this);
+    this._map.on('zoomend',
       function () {
         this._updateMapCenter();
-        this.dispatchEvent(new CustomEvent('zoomend', {detail: 
+        this.dispatchEvent(new CustomEvent('zoomend', {detail:
           {target: this}}));
-      }, this);      
+      }, this);
   }
   _toggleControls(controls) {
     if (this._map) {
