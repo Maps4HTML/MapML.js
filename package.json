@@ -12,7 +12,6 @@
     "map layer"
   ],
   "main": "web-map.js",
-  "type": "module",
   "module": "web-map.js",
   "author": "Maps for HTML Community Group",
   "repository": {
@@ -37,7 +36,7 @@
     "proj4": "2.6.0",
     "proj4leaflet": "1.0.1",
     "@runette/leaflet-fullscreen": "1.0.4",
-    "grunt": "1.0.3",
+    "grunt": "1.1.0",
     "grunt-contrib-clean": "^2.0.0",
     "grunt-html": "~9.3.0",
     "grunt-contrib-uglify-es": "~3.3.0",
