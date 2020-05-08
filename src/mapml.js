@@ -794,10 +794,12 @@ M.MapMLLayer = L.Layer.extend({
         if (href) {
             this._href = href;
         }
-        this._layerEl = content;
-        var mapml = content.querySelector('image,feature,tile,extent') ? true : false;
-        if (mapml) {
-            this._content = content;
+        if (content) {
+          this._layerEl = content;
+          var mapml = content.querySelector('image,feature,tile,extent') ? true : false;
+          if (!href && mapml) {
+              this._content = content;
+          }
         }
         this._container = L.DomUtil.create('div', 'leaflet-layer');
         L.DomUtil.addClass(this._container,'mapml-layer');
@@ -1945,7 +1947,8 @@ M.MapMLLayer = L.Layer.extend({
     }
 });
 M.mapMLLayer = function (url, node, options) {
-	return new M.MapMLLayer(url, node ? node : document.createElement('div'), options);
+  if (!url && !node) return null;
+	return new M.MapMLLayer(url, node, options);
 };
 M.ImageOverlay = L.ImageOverlay.extend({
 	initialize: function (url, location, size, angle, container, options) { // (String, Point, Point, Number, Element, Object)

@@ -1,9 +1,9 @@
 
 # Customized built-in &lt;map&gt; element
 
-[![Build Status](https://travis-ci.org/prushforth/Web-Map-Custom-Element.svg?branch=master)](https://travis-ci.org/prushforth/Web-Map-Custom-Element)
+[![Build Status](https://travis-ci.org/Maps4HTML/Web-Map-Custom-Element.svg?branch=master)](https://travis-ci.org/prushforth/Web-Map-Custom-Element)
 
-The customized built-in `<map>` element is a prototype [implementation](http://maps4html.github.io/Web-Map-Custom-Element/)
+The customized built-in `<map>` element is a prototype [implementation](https://travis-ci.org/github/Maps4HTML/Web-Map-Custom-Element)
 of the [HTML-Map-Element specification](http://maps4html.github.io/HTML-Map-Element/spec/).
 
 The HTML author can add <span title="Map Markup Language">[MapML](https://maps4html.org/MapML/spec/)</span>
