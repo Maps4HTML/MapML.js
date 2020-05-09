@@ -19,7 +19,7 @@ module.exports = function(config) {
       'dist/proj4-src.js',
       'dist/proj4leaflet.js',
       'src/mapml.js',
-      'test/layerTests.js'
+      'test/tcrsTests.js'
     ],
 
 
@@ -59,7 +59,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['ChromeHeadless','FirefoxHeadless'],
+    browsers: ['Chrome'],
 
 
     // Continuous Integration mode
