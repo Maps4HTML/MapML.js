@@ -21,7 +21,7 @@ describe('ChromeTest', function() {
     // 1 | setWindowSize | 1024x768 | 
     await driver.manage().window().setRect({ width: 1024, height: 768 })
     // 2 | open | /geoserver/mapml/topp:states/osmtile/ | 
-    await driver.get("http://localhost:8383/Web-Map-Custom-Element/index.html")
+    await driver.get("http://localhost:63342/Web-Map-Custom-Element/index.html")
     // 3 | click | linkText=+ | 
     // 
     // zoom in
