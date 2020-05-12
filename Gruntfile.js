@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -13,12 +13,12 @@ module.exports = function(grunt) {
     },
     uglify: {
       options: {
-       banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
       },
       dist: {
         files: {
           'dist/mapml.min.js': ['<%= concat.dist.dest %>']
-         /* ,'dist/leaflet.js': ['bower_components/polymer-leaflet/leaflet-src.js'] */
+          /* ,'dist/leaflet.js': ['bower_components/polymer-leaflet/leaflet-src.js'] */
         }
       }
     },
@@ -39,54 +39,54 @@ module.exports = function(grunt) {
       files: ['<%= jshint.files %>'],
       tasks: ['jshint']
     },
-    copy : {
-    	 main : {
+    copy: {
+      main: {
         files: [
           {
             expand: true,
             cwd: 'node_modules/leaflet/dist/',
             flatten: true,
-            filter: 'isFile', 
-            src: ['leaflet.css','leaflet-src.js'], 
+            filter: 'isFile',
+            src: ['leaflet.css', 'leaflet-src.js'],
             dest: 'dist/'
           },
           {
             expand: true,
             cwd: 'node_modules/proj4/dist/',
             flatten: true,
-            filter: 'isFile', 
-            src: ['proj4-src.js'], 
+            filter: 'isFile',
+            src: ['proj4-src.js'],
             dest: 'dist/'
           },
           {
             expand: true,
             cwd: 'node_modules/proj4leaflet/src/',
             flatten: true,
-            filter: 'isFile', 
-            src: ['proj4leaflet.js'], 
+            filter: 'isFile',
+            src: ['proj4leaflet.js'],
             dest: 'dist/'
           },
           {
             expand: true,
             cwd: 'node_modules/@runette/leaflet-fullscreen/dist/',
             flatten: true,
-            filter: 'isFile', 
-            src: ['Leaflet.fullscreen.js','leaflet.fullscreen.css'], 
+            filter: 'isFile',
+            src: ['Leaflet.fullscreen.js', 'leaflet.fullscreen.css'],
             dest: 'dist/'
           },
           {
             expand: true,
             cwd: 'src',
             flatten: true,
-            filter: 'isFile', 
-            src: ['*.js','*.css','*.md','index.html','package.json'], 
+            filter: 'isFile',
+            src: ['*.js', '*.css', '*.md', 'index.html', 'package.json'],
             dest: 'dist/'
           },
           {
             expand: true,
             flatten: true,
-            filter: 'isFile', 
-            src: ['*.md','index.html','package.json'], 
+            filter: 'isFile',
+            src: ['*.md', 'index.html', 'package.json'],
             dest: 'dist/'
           }
         ],
@@ -98,7 +98,7 @@ module.exports = function(grunt) {
             if (srcpath.includes('leaflet-src.js')) {
               console.log('MODIFYING: ', srcpath);
               wndoh = /\}\(this\, \(function \(exports\) \{ \'use strict\'\;/gi;
-              return content.replace(wndoh,"}(window, (function (exports) { 'use strict';");
+              return content.replace(wndoh, "}(window, (function (exports) { 'use strict';");
             } else if (srcpath.includes('proj4-src.js')) {
               console.log('MODIFYING: ', srcpath);
               wndoh = /\}\(this\, \(function \(\) \{ \'use strict\'\;/gi;
@@ -109,15 +109,15 @@ module.exports = function(grunt) {
               return content.replace(wndoh, "");
             } else if (srcpath.includes('index.html')) {
               console.log('MODIFYING: ', srcpath);
-              var pathToModuleRE =  /dist\/web-map\.js/gi;
-              return content.replace(pathToModuleRE,"web-map.js");
+              var pathToModuleRE = /dist\/web-map\.js/gi;
+              return content.replace(pathToModuleRE, "web-map.js");
             } else {
               return content;
             }
           }
         }
       },
-      images: { 
+      images: {
         // if you pass images through the process function, it corrupts them,
         // so you have to do this in a separate grunt 'target' ('main' being the
         // default one, I believe).
@@ -126,8 +126,8 @@ module.exports = function(grunt) {
             expand: true,
             cwd: 'node_modules/leaflet/dist/images/',
             flatten: true,
-            filter: 'isFile', 
-            src: ['layers.png','layers-2x.png','marker-icon.png','marker-icon-2x.png','marker-shadow.png'], 
+            filter: 'isFile',
+            src: ['layers.png', 'layers-2x.png', 'marker-icon.png', 'marker-icon-2x.png', 'marker-shadow.png'],
             dest: 'dist/images/'
           }
         ]
@@ -138,7 +138,7 @@ module.exports = function(grunt) {
     },
     karma: {
       unit: {
-        configFile: 'test/karma.conf.js'
+        configFile: 'test/karma.conf.js',
       }
     }
   });
@@ -151,7 +151,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-karma');
-/* grunt.loadNpmTasks('grunt-processhtml'); */
+  /* grunt.loadNpmTasks('grunt-processhtml'); */
 
 
   grunt.registerTask('test', ['jshint']);
