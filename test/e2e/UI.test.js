@@ -18,7 +18,7 @@ describe('Playwright UI Drag&Drop Test', () => {
         await browser.close()
     })
 
-    it('drag and drop of zoom-in button', async () => {
+    test('drag and drop of zoom-in button', async () => {
         const dataTransfer = await page.evaluateHandle(() => new DataTransfer());
         await page.dispatchEvent('.leaflet-control-zoom-in', 'dragstart', { dataTransfer });
         await page.dispatchEvent('.leaflet-top.leaflet-right', 'drop', { dataTransfer });
@@ -27,7 +27,7 @@ describe('Playwright UI Drag&Drop Test', () => {
         expect(vars.length).toBe(1);
     })
 
-    it('drag and drop of layers', async () => {
+    test('drag and drop of layers', async () => {
         const dataTransfer = await page.evaluateHandle(() => new DataTransfer());
         await page.hover(".leaflet-top.leaflet-right");
         await page.dispatchEvent("[draggable='true']", 'dragstart', { dataTransfer });
@@ -40,7 +40,7 @@ describe('Playwright UI Drag&Drop Test', () => {
     //adding layer in html can add any type of layer the user wants,
     //but how should that layer get treated by the map element,
     //should it be ignored or shown as undefined
-    it('HTML - add additional MapML Layer', async () => {
+    test('HTML - add additional MapML Layer', async () => {
         const { document } = new JSDOM(`
         <!doctype html>
             <html>
@@ -68,7 +68,7 @@ describe('Playwright UI Drag&Drop Test', () => {
         expect(vars.length).toBe(2);
 
     })
-    it('HTML - add additional non-MapML Layer', async () => {
+    test('HTML - add additional non-MapML Layer', async () => {
         const { document } = new JSDOM(`
         <!doctype html>
             <html>
