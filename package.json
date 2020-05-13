@@ -37,12 +37,19 @@
     "test": "jest"
   },
   "jest": {
-    "preset": "jest-playwright-preset"
+    "preset": "jest-playwright-preset",
+    "globals": {
+      "PATH": "http://localhost:30001"
+    },
+    "testMatch": [
+      "**/test/**/*.spec.js"
+    ]
   },
   "devDependencies": {
     "@runette/leaflet-fullscreen": "1.0.4",
     "chai": "^4.2.0",
     "dom-to-playwright": "^0.1.1",
+    "express": "^4.17.1",
     "grunt": "1.1.0",
     "grunt-contrib-clean": "^2.0.0",
     "grunt-contrib-concat": "~1.0.0",
@@ -59,7 +66,8 @@
     "mocha": "^7.1.2",
     "playwright": "^1.0.1",
     "proj4": "2.6.0",
-    "proj4leaflet": "1.0.1"
+    "proj4leaflet": "1.0.1",
+    "path": "^0.12.7"
   },
   "dependencies": {}
 }

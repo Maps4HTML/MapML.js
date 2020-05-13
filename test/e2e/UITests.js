@@ -1,11 +1,9 @@
 const playwright = require('playwright')
 const chai = require('chai')
-const BASE_URL = 'http://localhost:52330/index.html'
 const { JSDOM } = require('jsdom');
 const domToPlaywright = require('dom-to-playwright').default;
 
 let page, browser, context
-
 
 describe('Playwright UI Drag&Drop Test', () => {
 
@@ -13,7 +11,7 @@ describe('Playwright UI Drag&Drop Test', () => {
         browser = await playwright['chromium'].launch({ headless: false })
         context = await browser.newContext()
         page = await context.newPage()
-        await page.goto(BASE_URL)
+        await page.goto(PATH)
     })
 
     afterEach(async function () {
