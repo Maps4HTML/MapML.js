@@ -1,5 +1,4 @@
 const playwright = require('playwright')
-const chai = require('chai')
 const { JSDOM } = require('jsdom');
 const domToPlaywright = require('dom-to-playwright').default;
 
@@ -25,7 +24,7 @@ describe('Playwright UI Drag&Drop Test', () => {
         await page.dispatchEvent('.leaflet-top.leaflet-right', 'drop', { dataTransfer });
         await page.hover(".leaflet-top.leaflet-right");
         let vars = await page.$$("[draggable='true']");
-        chai.expect(vars.length).to.be.equal(1);
+        expect(vars.length).toBe(1);
     })
 
     it('drag and drop of layers', async () => {
@@ -35,7 +34,7 @@ describe('Playwright UI Drag&Drop Test', () => {
         await page.dispatchEvent('.leaflet-top.leaflet-right', 'drop', { dataTransfer });
         await page.hover(".leaflet-top.leaflet-right");
         let vars = await page.$$("[draggable='true']");
-        chai.expect(vars.length).to.be.equal(2);
+        expect(vars.length).toBe(2);
     })
 
     //adding layer in html can add any type of layer the user wants,
@@ -66,7 +65,7 @@ describe('Playwright UI Drag&Drop Test', () => {
         await update(document);
         await page.hover(".leaflet-top.leaflet-right");
         let vars = await page.$$("[draggable='true']");
-        chai.expect(vars.length).to.be.equal(2);
+        expect(vars.length).toBe(2);
 
     })
     it('HTML - add additional non-MapML Layer', async () => {
@@ -94,7 +93,7 @@ describe('Playwright UI Drag&Drop Test', () => {
         await update(document);
         await page.hover(".leaflet-top.leaflet-right");
         let vars = await page.$$("[draggable='true']");
-        chai.expect(vars.length).to.be.equal(1);
+        expect(vars.length).toBe(1);
 
     })
 
