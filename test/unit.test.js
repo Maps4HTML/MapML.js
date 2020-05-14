@@ -1,6 +1,4 @@
-
-
-const M = '../marker.mapml'
+/* global assert, M */
 
 describe('MapMLLayer Tests', function () {
     /*

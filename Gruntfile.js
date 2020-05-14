@@ -143,6 +143,8 @@ module.exports = function (grunt) {
     }
   });
 
+
+
   /*grunt.loadNpmTasks('grunt-html');*/
   grunt.loadNpmTasks('grunt-contrib-uglify-es');
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -151,10 +153,13 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-jest');
   /* grunt.loadNpmTasks('grunt-processhtml'); */
 
 
   grunt.registerTask('test', ['jshint']);
+  grunt.registerTask('karmaa', ['karma'])
+
 
   grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'concat', 'uglify']);
 
