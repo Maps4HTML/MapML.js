@@ -32,7 +32,8 @@
   ],
   "scripts": {
     "test": "jest --detectOpenHandles",
-    "test:karma": "grunt karmaa"
+    "test:watch": "jest --detectOpenHandles --watch",
+    "test:coverage": "jest --detectOpenHandles --coverage"
   },
   "devDependencies": {
     "@runette/leaflet-fullscreen": "1.0.4",

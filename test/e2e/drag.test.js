@@ -7,7 +7,7 @@ let page, browser, context
 describe('Playwright UI Drag&Drop Test', () => {
 
     beforeEach(async () => {
-        browser = await playwright['chromium'].launch({ headless: false })
+        browser = await playwright['chromium'].launch({ headless: true })
         context = await browser.newContext()
         page = await context.newPage()
         await page.goto(PATH)

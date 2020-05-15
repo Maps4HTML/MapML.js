@@ -7,4 +7,4 @@ install:
  - npm install -g grunt-cli
  - grunt clean copy
 script:
-- grunt karma
+- npm test
