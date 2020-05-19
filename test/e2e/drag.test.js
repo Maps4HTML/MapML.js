@@ -1,47 +1,58 @@
-const playwright = require('playwright')
-const { JSDOM } = require('jsdom');
-const domToPlaywright = require('dom-to-playwright').default;
+const playwright = require("playwright");
+const { JSDOM } = require("jsdom");
+const domToPlaywright = require("dom-to-playwright").default;
 
-let page, browser, context
+let page, browser, context;
 
-describe('Playwright UI Drag&Drop Test', () => {
+describe("Playwright UI Drag&Drop Test", () => {
+	beforeEach(async () => {
+		browser = await playwright["chromium"].launch({ headless: false });
+		context = await browser.newContext();
+		page = await context.newPage();
+		await page.goto(PATH);
+	});
 
-    beforeEach(async () => {
-        browser = await playwright['chromium'].launch({ headless: true })
-        context = await browser.newContext()
-        page = await context.newPage()
-        await page.goto(PATH)
-    })
+	afterEach(async function () {
+		//await page.screenshot({ path: `${this.currentTest.title.replace(/\s+/g, '_')}.png` })
+		await browser.close();
+	});
 
-    afterEach(async function () {
-        //await page.screenshot({ path: `${this.currentTest.title.replace(/\s+/g, '_')}.png` })
-        await browser.close()
-    })
+	test("drag and drop of zoom-in button", async () => {
+		const dataTransfer = await page.evaluateHandle(
+			() => new DataTransfer()
+		);
+		await page.dispatchEvent(".leaflet-control-zoom-in", "dragstart", {
+			dataTransfer,
+		});
+		await page.dispatchEvent(".leaflet-top.leaflet-right", "drop", {
+			dataTransfer,
+		});
+		await page.hover(".leaflet-top.leaflet-right");
+		let vars = await page.$$("[draggable='true']");
+		expect(vars.length).toBe(1);
+	});
 
-    test('drag and drop of zoom-in button', async () => {
-        const dataTransfer = await page.evaluateHandle(() => new DataTransfer());
-        await page.dispatchEvent('.leaflet-control-zoom-in', 'dragstart', { dataTransfer });
-        await page.dispatchEvent('.leaflet-top.leaflet-right', 'drop', { dataTransfer });
-        await page.hover(".leaflet-top.leaflet-right");
-        let vars = await page.$$("[draggable='true']");
-        expect(vars.length).toBe(1);
-    })
+	test("drag and drop of layers", async () => {
+		const dataTransfer = await page.evaluateHandle(
+			() => new DataTransfer()
+		);
+		await page.hover(".leaflet-top.leaflet-right");
+		await page.dispatchEvent("[draggable='true']", "dragstart", {
+			dataTransfer,
+		});
+		await page.dispatchEvent(".leaflet-top.leaflet-right", "drop", {
+			dataTransfer,
+		});
+		await page.hover(".leaflet-top.leaflet-right");
+		let vars = await page.$$("[draggable='true']");
+		expect(vars.length).toBe(2);
+	});
 
-    test('drag and drop of layers', async () => {
-        const dataTransfer = await page.evaluateHandle(() => new DataTransfer());
-        await page.hover(".leaflet-top.leaflet-right");
-        await page.dispatchEvent("[draggable='true']", 'dragstart', { dataTransfer });
-        await page.dispatchEvent('.leaflet-top.leaflet-right', 'drop', { dataTransfer });
-        await page.hover(".leaflet-top.leaflet-right");
-        let vars = await page.$$("[draggable='true']");
-        expect(vars.length).toBe(2);
-    })
-
-    //adding layer in html can add any type of layer the user wants,
-    //but how should that layer get treated by the map element,
-    //should it be ignored or shown as undefined
-    test('HTML - add additional MapML Layer', async () => {
-        const { document } = new JSDOM(`
+	//adding layer in html can add any type of layer the user wants,
+	//but how should that layer get treated by the map element,
+	//should it be ignored or shown as undefined
+	test("HTML - add additional MapML Layer", async () => {
+		const { document } = new JSDOM(`
         <!doctype html>
             <html>
             <head>
@@ -60,16 +71,15 @@ describe('Playwright UI Drag&Drop Test', () => {
             </body>
             </html>
         `).window;
-        const { select, update } = await domToPlaywright(page, document);
+		const { select, update } = await domToPlaywright(page, document);
 
-        await update(document);
-        await page.hover(".leaflet-top.leaflet-right");
-        let vars = await page.$$("[draggable='true']");
-        expect(vars.length).toBe(2);
-
-    })
-    test('HTML - add additional non-MapML Layer', async () => {
-        const { document } = new JSDOM(`
+		await update(document);
+		await page.hover(".leaflet-top.leaflet-right");
+		let vars = await page.$$("[draggable='true']");
+		expect(vars.length).toBe(2);
+	});
+	test("HTML - add additional non-MapML Layer", async () => {
+		const { document } = new JSDOM(`
         <!doctype html>
             <html>
             <head>
@@ -88,16 +98,11 @@ describe('Playwright UI Drag&Drop Test', () => {
             </body>
             </html>
         `).window;
-        const { select, update } = await domToPlaywright(page, document);
+		const { select, update } = await domToPlaywright(page, document);
 
-        await update(document);
-        await page.hover(".leaflet-top.leaflet-right");
-        let vars = await page.$$("[draggable='true']");
-        expect(vars.length).toBe(1);
-
-    })
-
-
-})
-
-//nodeTestingServer.stop();
+		await update(document);
+		await page.hover(".leaflet-top.leaflet-right");
+		let vars = await page.$$("[draggable='true']");
+		expect(vars.length).toBe(1);
+	});
+});
