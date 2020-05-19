@@ -144,6 +144,16 @@ export class MapLayer extends HTMLElement {
     if (this._layerControl) {
       this._layerControl.addOrUpdateOverlay(this._layer, this.label);
     }
+    if (!this._layer.error) {
+      // re-use 'loadedmetadata' event from HTMLMediaElement inteface, applied
+      // to MapML extent as metadata
+      // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/loadedmetadata_event
+      this.dispatchEvent(new CustomEvent('loadedmetadata', {detail: 
+                {target: this}}));
+    } else {
+      this.dispatchEvent(new CustomEvent('error', {detail: 
+                {target: this}}));
+    }
   }
   _validateDisabled() {
     var layer = this._layer, map = layer._map;

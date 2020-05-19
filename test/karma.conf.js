@@ -19,7 +19,7 @@ module.exports = function(config) {
       'dist/proj4-src.js',
       'dist/proj4leaflet.js',
       'src/mapml.js',
-      'test/layerTests.js'
+      'test/tcrsTests.js'
     ],
 
 
