@@ -180,12 +180,20 @@ export class MmMapp extends HTMLElement {
   }
   _dropHandler(event) {
     event.preventDefault();
-    // create a new <layer-> child of this <map> element
-    let l = new MapLayer();
-    l.src = event.dataTransfer.getData("text");
-    l.label = 'Layer';
-    l.checked = 'true';
-    this.appendChild(l);
+    // create a new <layer-> child of this <mm-mapp> element
+      let l = new MapLayer();
+      l.src = event.dataTransfer.getData("text");
+      l.label = 'Layer';
+      l.checked = 'true';
+      this.appendChild(l);
+      l.addEventListener("error", function () {
+        if (l.parentElement) {
+          // should invoke lifecyle callbacks automatically by removing it from DOM
+          l.parentElement.removeChild(l);
+        }
+        // garbage collect it
+        l = null;
+      });
   }
   _dragoverHandler(event) {
     function contains(list, value) {

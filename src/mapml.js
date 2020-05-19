@@ -1284,7 +1284,7 @@ M.MapMLLayer = L.Layer.extend({
         }
         function _processInitialExtent(content) {
             var mapml = this.responseXML || content;
-            if (this.readyState === this.DONE && mapml) {
+            if (this.readyState === this.DONE && mapml.querySelector) {
                 var serverExtent = mapml.querySelector('extent'),
                     projectionMatch = serverExtent && serverExtent.hasAttribute('units') && 
                     serverExtent.getAttribute('units').toUpperCase() === layer.options.mapprojection,
@@ -1485,7 +1485,7 @@ M.MapMLLayer = L.Layer.extend({
         function _processMapMLFeedResponse(content) {
             var mapml = this.responseXML || content,
                 i;
-            if (mapml) {
+            if (mapml.querySelector) {
               if (requestCounter === 0) {
                 var serverExtent = mapml.querySelector('extent');
                 if (!serverExtent) {
