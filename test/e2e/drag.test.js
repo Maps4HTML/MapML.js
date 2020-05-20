@@ -14,7 +14,7 @@ describe("Playwright UI Drag&Drop Test", () => {
 
 	afterEach(async function () {
 		//await page.screenshot({ path: `${this.currentTest.title.replace(/\s+/g, '_')}.png` })
-		await browser.close();
+		//await browser.close();
 	});
 
 	test("drag and drop of zoom-in button", async () => {
@@ -24,7 +24,20 @@ describe("Playwright UI Drag&Drop Test", () => {
 		await page.dispatchEvent(".leaflet-control-zoom-in", "dragstart", {
 			dataTransfer,
 		});
-		await page.dispatchEvent(".leaflet-top.leaflet-right", "drop", {
+		/*try {
+			await (() => {
+				var start = new Date().getTime();
+				var end = start;
+				while (end < start + 5000) {
+					end = new Date().getTime();
+				}
+				return true;
+			})();
+		} catch (e) {
+			console.log(e);
+		}*/
+
+		await page.dispatchEvent("xpath=//html/body/map", "drop", {
 			dataTransfer,
 		});
 		await page.hover(".leaflet-top.leaflet-right");

@@ -3,7 +3,7 @@ describe("MapMLLayer Constructor Tests", () => {
 		test("(null content, null options) should return a MapMLLayer object", () => {
 			var url = "https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/";
 			var ml = M.mapMLLayer(url);
-			expect(ml._content).toBeUndefined();
+			expect(ml._content).toBeFalsy();
 			expect(ml._container).toBeTruthy();
 			expect(
 				ml._container.classList.contains("leaflet-layer")
@@ -40,13 +40,13 @@ describe("MapMLLayer Constructor Tests", () => {
 			expect(
 				ml._imageContainer.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._href).toBeUndefined();
+			expect(ml._href).toBeFalsy();
 			expect(ml.options.zIndex).toBe(0);
 		});
 		test("url should return a MapMLLayer object", () => {
 			var url = "https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/";
 			var ml = M.mapMLLayer(url, content);
-			expect(ml._content).toBeUndefined();
+			expect(ml._content).toBeFalsy();
 			expect(ml._layerEl).toBeTruthy();
 			expect(ml._layerEl).toBe(content);
 			expect(
@@ -78,7 +78,7 @@ describe("MapMLLayer Constructor Tests", () => {
 		test("url value should return a url-based MapMLLayer object", () => {
 			var url = "https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/";
 			var ml = M.mapMLLayer(url, content);
-			expect(ml._content).toBeUndefined();
+			expect(ml._content).toBeFalsy();
 			expect(ml._layerEl).toBeTruthy();
 			expect(ml._layerEl).toBe(content);
 			expect(
@@ -104,7 +104,7 @@ describe("MapMLLayer Constructor Tests", () => {
 			expect(
 				ml._imageContainer.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._href).toBeUndefined();
+			expect(ml._href).toBeFalsy();
 			expect(ml.options.zIndex).toBe(0);
 		});
 	});
@@ -113,7 +113,7 @@ describe("MapMLLayer Constructor Tests", () => {
 			var url = "https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/";
 			var empty = document.createElement("bar");
 			var ml = M.mapMLLayer(url, empty);
-			expect(ml._content).toBeUndefined();
+			expect(ml._content).toBeFalsy();
 			expect(ml._layerEl).toBeTruthy();
 			expect(ml._layerEl).toBe(empty);
 			expect(
@@ -131,7 +131,7 @@ describe("MapMLLayer Constructor Tests", () => {
 	describe("M.mapMLLayer(null, null, options) factory function ", () => {
 		test("null url, null content, any object params should NOT return a MapMLLayer object", () => {
 			var ml = M.mapMLLayer(null, null, {});
-			expect(ml).toBeNull();
+			expect(ml).toBeFalsy();
 		});
 	});
 });
