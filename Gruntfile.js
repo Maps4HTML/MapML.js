@@ -135,11 +135,6 @@ module.exports = function(grunt) {
     },
     clean: {
       dist: ['dist']
-    },
-    karma: {
-      unit: {
-        configFile: 'test/karma.conf.js'
-      }
     }
   });
 
@@ -150,7 +145,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-karma');
+
 /* grunt.loadNpmTasks('grunt-processhtml'); */
 
 
