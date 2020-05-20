@@ -1,5 +1,5 @@
 module.exports = {
 	displayName: "UNIT Testing",
-	testMatch: ["**/test/unit/*.test.js"],
+	testMatch: ["**/test/*.test.js"],
 	setupFiles: ["./test/setup.js"],
 };

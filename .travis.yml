@@ -1,10 +1,10 @@
 language: node_js
 node_js:
-  - node
+    - node
 dist: trusty
 install:
- - npm install
- - npm install -g grunt-cli
- - grunt clean copy
+    - npm install
+    - npm install -g grunt-cli
+    - grunt clean copy
 script:
-- npm test
+    - npm test

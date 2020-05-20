@@ -1,10 +1,14 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const path = require('path');
+const path = require("path");
 const port = 30001;
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, '../dist')));
-console.log("Running on localhost:" + port + " using directory test/public and dist");
+//loads in the src first
+app.use(express.static(path.join(__dirname, "../src")));
+//then loads in the index file
+app.use(express.static(path.join(__dirname, "e2e")));
+//lastly loads the dist, but the original src files have priority
+app.use(express.static(path.join(__dirname, "../dist")));
+console.log("Running on localhost:" + port);
 
 app.listen(port);
