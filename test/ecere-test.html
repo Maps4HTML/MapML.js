@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ecere-test.html</title>
+        <meta charset="UTF-8">
+            <script type="module" src="../dist/web-map.js"></script>
+         <style>
+           html {height: 100%} body,map {height: inherit} * {margin: 0;padding: 0;}
+        </style>
+    </head>
+    <body>
+        <map is="web-map" projection="WGS84" zoom="2" lat="0" lon="0" controls>
+
+            <layer- label="Blue Marble NG" checked>
+                <!-- can't use this file because the base value lacks a trailing slash
+                src="http://maps.ecere.com/geoapi/collections/BMNG%202004/?f=mapml" 
+                -->
+                <extent units="WGS84">
+                 <input name="zoomLevel" type="zoom" min="0" max="8"/>
+                 <input name="row" type="location" axis="row" units="tilematrix"/>
+                 <input name="col" type="location" axis="column" units="tilematrix"/>
+                 <link rel='tile' type='image/png' title='Tiles for BMNG 2004 (as PNG)' 
+                       tref='http://maps.ecere.com/geoapi/collections/BMNG%202004/tiles/WorldCRS84Quad/{zoomLevel}/{row}/{col}.png'/>
+              </extent>
+            </layer->
+
+    <!--          <layer- src="http://maps.ecere.com/geoapi/collections/NaturalEarth/physical/bathymetry/ne_10m_bathymetry_H_3000?f=mapml" label="foo" checked></layer->-->
+    <!--          <layer- src="http://maps.ecere.com/geoapi/collections/NaturalEarth/physical/ne_10m_coastline?f=mapml" label="foo" checked></layer->-->
+    <!--          <layer- src="http://maps.ecere.com/geoapi/collections/NaturalEarth/physical/ne_10m_rivers_europe?f=mapml" label="foo" checked></layer->-->
+    <!--          <layer- src="http://maps.ecere.com/geoapi/collections/NaturalEarth/physical/ne_10m_playas?f=mapml" label="foo" checked></layer->-->
+            <layer- label="Countries" checked>
+                <link rel="stylesheet" href="ecere-test.css">
+                <extent units="WGS84">
+                    <input name="zoomLevel" type="zoom" min="0" max="6"/>
+                    <input name="lon" type="location" units="gcrs" axis="longitude" />
+                    <input name="lat" type="location" units="gcrs" axis="latitude" />
+                    <input rel="pixel" name="maxLon" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-180" max="180"/>
+                    <input rel="pixel" name="maxLat" type="location" units="gcrs" axis="latitude" position="top-left" min="-90" max="90.0002058236639"/>
+
+                    <input name="row" type="location" axis="row" units="tilematrix"/>
+                    <input name="col" type="location" axis="column" units="tilematrix"/>
+
+                    <link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)' 
+                    tref='http://maps.ecere.com/geoapi/collections/NaturalEarth/cultural/ne_10m_admin_0_countries/tiles/CRS84Quad2L0Tiles/{zoomLevel}/{row}/{col}.mapml'/>
+
+                    <link rel='query' type='text/mapml' title='ne_10m_admin_0_countries (as MapML)'
+                    tref='http://maps.ecere.com/geoapi/collections/NaturalEarth/cultural/ne_10m_admin_0_countries/items.mapml?tilingScheme=CRS84Quad2L0Tiles&amp;zoomLevel={zoomLevel}&amp;bbox={lon},{lat},{lon},{lat}'/>
+                </extent>
+            </layer->
+        </map>
+    </body>
+</html>
