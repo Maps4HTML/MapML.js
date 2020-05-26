@@ -884,6 +884,7 @@ M.MapMLLayer = L.Layer.extend({
           {pane: this._container,
            _leafletLayer: this});
         }
+        // what is _mapmlTileContainer for and why have two copies of it.
         this._tileLayer._mapmlTileContainer = this._mapmlTileContainer;
         map.addLayer(this._tileLayer);       
         this._tileLayer._container.appendChild(this._mapmlTileContainer);
@@ -908,10 +909,6 @@ M.MapMLLayer = L.Layer.extend({
                   }).addTo(map);
                 }
               }, this);
-            // if we get to this point and there is no this._extent, it means
-            // we're waiting for the server to return one -> get content when
-            // that is available.
-            this.once('extentload', this._onMoveEnd, this);
         }
         this.setZIndex(this.options.zIndex);
         this.getPane().appendChild(this._container);
@@ -921,10 +918,7 @@ M.MapMLLayer = L.Layer.extend({
         return this;
     },
     getEvents: function () {
-        return {
-            moveend: this._onMoveEnd,
-            zoomanim: this._onZoomAnim
-        };
+        return {zoomanim: this._onZoomAnim};
     },
     redraw: function() {
       // for now, only redraw templated layers.
@@ -1447,174 +1441,6 @@ M.MapMLLayer = L.Layer.extend({
             layer.fire('extentload', layer, false);
         }
     },
-    _getMapML: function(url) {
-        var layer = this;
-        if (url) {
-            var requestCounter = 0;
-            var xhr = new XMLHttpRequest();
-//            xhr.withCredentials = true;
-            // add a listener to terminate pulling the feed 
-            this._map.once('movestart', function() {
-              xhr.abort();
-            });
-            _pull(url, _processMapMLFeedResponse);
-        } else if (this._content) {
-            _processMapMLFeedResponse.call(this, this._content);
-        }
-        function _pull(url, fCallback) {
-            xhr.onreadystatechange = function () { 
-              if(this.readyState === this.DONE) {
-                if (this.status === 400 || 
-                    this.status === 404 || 
-                    this.status === 500 || 
-                    this.status === 406) {
-                    layer.error = true;
-                    layer.fire('extentload', layer, true);
-                    xhr.abort();
-                }
-              }};
-            xhr.onload = fCallback;
-            xhr.onerror = function () { 
-              console.error(this.statusText); 
-              layer.error = true;
-            };
-            xhr.open("GET", url);
-            xhr.setRequestHeader("Accept",M.mime+";projection="+layer.options.mapprojection+";zoom="+layer.zoom);
-            xhr.overrideMimeType("text/xml");
-            xhr.send();
-        }
-        function _processMapMLFeedResponse(content) {
-            var mapml = this.responseXML || content,
-                i;
-            if (mapml.querySelector) {
-              if (requestCounter === 0) {
-                var serverExtent = mapml.querySelector('extent');
-                if (!serverExtent) {
-                    serverExtent = layer._synthesizeExtent(mapml);
-                } else if (!serverExtent.hasAttribute("action") && 
-                        serverExtent.querySelector('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]') &&
-                        serverExtent.hasAttribute("units")) {
-                  layer._templateVars = [];
-                  // set up the URL template and associated inputs (which yield variable values when processed)
-                  var tlist = serverExtent.querySelectorAll('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]'),
-                      varNamesRe = (new RegExp('(?:\{)(.*?)(?:\})','g')),
-                      zoomInput = serverExtent.querySelector('input[type="zoom" i]'),
-                      includesZoom = false;
-                  for (i=0;i< tlist.length;i++) {
-                    var t = tlist[i],
-                        template = t.getAttribute('tref'), v,
-                        vcount=template.match(varNamesRe),
-                        trel = (!t.hasAttribute('rel') || t.getAttribute('rel').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('rel').toLowerCase(),
-                        ttype = (!t.hasAttribute('type')? 'image/*':t.getAttribute('type').toLowerCase()),
-                        inputs = [];
-                    while ((v = varNamesRe.exec(template)) !== null) {
-                      var varName = v[1],
-                      inp = serverExtent.querySelector('input[name='+varName+']');
-                      if (inp) {
-                        inputs.push(inp);
-                        includesZoom = inp.hasAttribute("type") && inp.getAttribute("type").toLowerCase() === "zoom";
-
-                      } else {
-                        console.log('input with name='+varName+' not found for template variable of same name');
-                        // no match found, template won't be used
-                        break;
-                      }
-                    }
-                    if (template && vcount.length === inputs.length) {
-                      // template has a matching input for every variable reference {varref}
-                      if(!includesZoom && zoomInput) {
-                        // except zoom 
-                        inputs.push(zoomInput);
-                      }
-                      layer._templateVars.push({template:template, rel: trel, type: ttype, values: inputs});
-                    }
-                  }
-                }
-                layer._extent = serverExtent;
-                layer._parseLicenseAndLegend(mapml, layer);
-                var zoomin = mapml.querySelector('link[rel=zoomin]'),
-                    zoomout = mapml.querySelector('link[rel=zoomout]'),
-                    base = (new URL(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : mapml.baseURI || this.responseURL, this.responseURL)).href;
-                delete layer._extent.zoomin;
-                delete layer._extent.zoomout;
-                if (zoomin) {
-                    layer._extent.zoomin = (new URL(zoomin.getAttribute('href'), base)).href;
-                }
-                if (zoomout) {
-                    layer._extent.zoomout = (new URL(zoomout.getAttribute('href'), base)).href;
-                }
-                
-              }
-              if (mapml.querySelector('feature')) {
-                  layer._mapmlvectors.addData(mapml);
-              }
-              if (mapml.querySelector('tile')) {
-                  var tiles = document.createElement("tiles"),
-                    zoom = mapml.querySelector('meta[name=zoom][content]') || mapml.querySelector('input[type=zoom][value]');
-                  tiles.setAttribute("zoom", zoom.getAttribute('content') || zoom.getAttribute('value'));
-                  var newTiles = mapml.getElementsByTagName('tile');
-                  for (i=0;i<newTiles.length;i++) {
-                      tiles.appendChild(document.importNode(newTiles[i], true));
-                  }
-                  layer._mapmlTileContainer.appendChild(tiles);
-              }
-              if (mapml.querySelector('image')) {
-                  var images = mapml.getElementsByTagName('image'),
-                      imageOverlays = [],
-                      // need a reference to the _imageLayer container element to pass to children
-                      // so they can append the img element they create to it.
-                      container = layer._imageContainer;
-                  for (i=0;i<images.length;i++) {
-                      var image = images[i],
-                          src = image.getAttribute('src'),
-                          map = layer._map,
-                          // TODO when the image location is returned by the MapML
-                          // document image element, use that location instead
-                          // of map.getPixelBounds().min.  Also, read and use the
-                          // angle of the image from the mapml//image element
-                          // Currently, map.getPixelBounds() usage assumes that
-                          // the returned image fills the extent of the mapml document
-                          location = map.getPixelBounds().min.subtract(map.getPixelOrigin()),
-                          size = map.getSize();
-                          imageOverlays[i] = M.imageOverlay(src,location,size,/* angle */0,container);
-                  }
-                  var layersToRemove = layer._imageLayer.getLayers(),
-                      last = imageOverlays.length-1,
-                      removeLayers = function () {
-                      for (var ic = 0;ic < layersToRemove.length;ic++) {
-                        layer._imageLayer.removeLayer(layersToRemove[ic]);
-                      }
-                  };
-                  for (i=0;i < imageOverlays.length;i++) {
-                    layer._imageLayer.addLayer(imageOverlays[i]);
-                    if (i === last) {
-                      imageOverlays[i].on('load', removeLayers);
-                    }
-                  }
-              }
-              var next = _parseLink('next',mapml);
-              if (next && requestCounter < layer.options.maxNext) {
-                  requestCounter++;
-                  _pull(next, _processMapMLFeedResponse);
-              } else {
-                  if (layer._mapmlTileContainer.getElementsByTagName('tile').length > 0) {
-                    layer._tileLayer._onMapMLProcessed();
-                  }
-                  layer.fire('extentload', layer, true);
-              }
-            }
-        }
-        function _parseLink(rel, xml) {
-            // depends on js-uri http://code.google.com/p/js-uri/ 
-            // would be greate to depend on the URL standard and not a library
-            var baseEl = xml.querySelector('base'), 
-                base =  baseEl ? baseEl.getAttribute('href'):null,
-                baseUri = (new URL(base||xml.baseURI)).href,
-                link = xml.querySelector('link[rel='+rel+']'),
-                relLink = link?(new URL(link.getAttribute('href'),baseUri)).href:null;
-            return relLink;
-        }
-    },
     _createExtent: function () {
     
         var extent = document.createElement('extent'),
@@ -1817,30 +1643,6 @@ M.MapMLLayer = L.Layer.extend({
         var legendLink = xml.querySelector('link[rel=legend]');
         if (legendLink) {
           layer._legendUrl = legendLink.getAttribute('href');
-        }
-    },
-    _onMoveEnd: function () {
-        // this can only be done when the layer is on a map, because the url
-        // calculation requires to process the extent of the map through the 
-        // extent form that should have already been received.
-        var url =  this._calculateUrl();
-        if (url) {
-            this.href = url;
-            this.fire('loadstart');
-            this._mapmlvectors.clearLayers();
-            this._initEl();
-            this._getMapML(url);
-        } else if (this._content && !this._mapmlvectors.getLayers().length) {
-            // if the content hasn't been parsed yet, parse it into vectors,
-            // images and tiles, if applicable
-            // 
-            // this shouldn't only be contingent on vectors - could be other stuff
-            // located in this._content that has been parsed, so it should be 
-            // generalized to be: if (this._content && !vectors && !images && !tiles)
-            // tiles could be = Object.keys($0._layer._tileLayer._tiles).length
-            // images = not sure yet. NOT FINISHED.
-            // vectors = this._mapmlvectors.getLayers().length
-            this._getMapML(null);
         }
     },
     _initEl: function () {
