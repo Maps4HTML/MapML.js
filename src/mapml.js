@@ -38,7 +38,7 @@
  * publicity pertaining to the work without specific, written prior permission. 
  * Title to copyright in this work will at all times remain with copyright holders.
  */
-;/* 
+/* 
  * Copyright 2015-2016 Canada Centre for Mapping and Earth Observation, 
  * Earth Sciences Sector, Natural Resources Canada.
  * 
@@ -791,12 +791,13 @@ M.MapMLLayer = L.Layer.extend({
     initialize: function (href, content, options) {
         // in the custom element, the attribute is actually 'src'
         // the _href version is the URL received from layer-@src
+        var mapml;
         if (href) {
             this._href = href;
         }
         if (content) {
           this._layerEl = content;
-          var mapml = content.querySelector('image,feature,tile,extent') ? true : false;
+          mapml = content.querySelector('image,feature,tile,extent') ? true : false;
           if (!href && mapml) {
               this._content = content;
           }
@@ -1178,7 +1179,7 @@ M.MapMLLayer = L.Layer.extend({
         label.appendChild(name);
         opacityControlSummaryLabel.innerText = 'opacity';
         opacity.id = "o" + L.stamp(opacity);
-        opacityControlSummaryLabel.setAttribute('for', opacity.id)
+        opacityControlSummaryLabel.setAttribute('for', opacity.id);
         opacityControlSummary.appendChild(opacityControlSummaryLabel);
         opacityControl.appendChild(opacityControlSummary);
         opacityControl.appendChild(opacity);
@@ -1204,7 +1205,7 @@ M.MapMLLayer = L.Layer.extend({
             }
           }, this);
 
-        fieldset.appendChild(details)
+        fieldset.appendChild(details);
         details.appendChild(summary);
         summary.appendChild(label);
         details.appendChild(opacityControl);
@@ -3660,7 +3661,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
 
           var baseEl = mapml.querySelector('base'),
               stylesheet = linkedStylesheets[i],
-            base = (new URL(baseEl?baseEl.getAttribute('href'):mapml.baseURI)).href,
+            base = (new URL(baseEl?baseEl.getAttribute('href'):mapml.baseURI)).href;
             stylesheet = (new URL(stylesheet.getAttribute('href'),base)).href;
           if (stylesheet) {
             if (!document.head.querySelector("link[href='"+stylesheet+"']")) {
@@ -3697,7 +3698,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       if (options.filter && !options.filter(mapml)) { return; }
       
       if (mapml.classList.length) {
-        options.className = mapml.classList.value
+        options.className = mapml.classList.value;
       }
 
       var layer = M.MapMLFeatures.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options);

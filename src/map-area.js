@@ -155,23 +155,23 @@ export class MapArea extends HTMLAreaElement {
   _styleToPathOptions(style) {
     var options = {};
     if(style.stroke !== 'none') {
-      options['stroke'] = true;
-      options['color'] = style.stroke;
-      options['opacity'] = style.strokeOpacity;
-      options['weight'] = parseInt(style.strokeWidth);
-      options['dashArray'] = style.strokeDasharray;
-      options['lineCap'] = style.strokeLinecap;
-      options['lineJoin'] = style.strokeLinejoin;
+      options.stroke = true;
+      options.color = style.stroke;
+      options.opacity = style.strokeOpacity;
+      options.weight = parseInt(style.strokeWidth);
+      options.dashArray = style.strokeDasharray;
+      options.lineCap = style.strokeLinecap;
+      options.lineJoin = style.strokeLinejoin;
     } else {
-      options['stroke'] = false;
+      options.stroke = false;
     }
     if (style.fill !== 'none') {
-      options['fill'] = true;
-      options['fillColor'] = style.fill;
-      options['fillOpacity'] = style.fillOpacity;
-      options['fillRule'] = style.fillRule;
+      options.fill = true;
+      options.fillColor = style.fill;
+      options.fillOpacity = style.fillOpacity;
+      options.fillRule = style.fillRule;
     } else {
-      options['fill'] = false;
+      options.fill = false;
     }
     return options;
   }
