@@ -1321,7 +1321,7 @@ M.MapMLLayer = L.Layer.extend({
                       inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
                       if (inp) {
                         inputs.push(inp);
-                        includesZoom = inp.hasAttribute("type") && inp.getAttribute("type").toLowerCase() === "zoom";
+                        includesZoom = includesZoom || inp.hasAttribute("type") && inp.getAttribute("type").toLowerCase() === "zoom";
                         if (inp.hasAttribute('shard')) {
                           var id = inp.getAttribute('list');
                           inp.servers = [];
