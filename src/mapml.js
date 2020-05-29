@@ -932,7 +932,7 @@ M.MapMLLayer = L.Layer.extend({
           min = zoom && zoom.hasAttribute("min") ? parseInt(zoom.getAttribute("min")) : this._map.getMinZoom(),
           max =  zoom && zoom.hasAttribute("max") ? parseInt(zoom.getAttribute("max")) : this._map.getMaxZoom(),
           canZoom = (toZoom < min && this._extent.zoomout) || (toZoom > max && this._extent.zoomin);
-      if (!this._extent.hasAttribute('action') && !(min <= toZoom && toZoom <= max)){
+      if (!(min <= toZoom && toZoom <= max)){
         if (this._extent.zoomin && toZoom > max) {
           // this._href is the 'original' url from which this layer came
           // since we are following a zoom link we will be getting a new
@@ -1299,8 +1299,7 @@ M.MapMLLayer = L.Layer.extend({
                      
                     layer.fire('changeprojection', {href:  (new URL(selectedAlternate.getAttribute('href'), base)).href}, false);
                     return;
-                } else if (!serverExtent.hasAttribute("action") && 
-                        serverExtent.querySelector('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]') &&
+                } else if (serverExtent.querySelector('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]') &&
                         serverExtent.hasAttribute("units")) {
                   layer._templateVars = [];
                   // set up the URL template and associated inputs (which yield variable values when processed)
@@ -1484,7 +1483,6 @@ M.MapMLLayer = L.Layer.extend({
         projection.setAttribute('type','projection');
         projection.setAttribute('value','WGS84');
         
-        extent.setAttribute('action','synthetic');
         extent.appendChild(xminInput);
         extent.appendChild(yminInput);
         extent.appendChild(xmaxInput);
