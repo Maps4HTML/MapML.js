@@ -3388,36 +3388,22 @@ M.MapMLFeatures = L.FeatureGroup.extend({
     addData: function (mapml) {
       var features = mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === "LAYER-" ? mapml.getElementsByTagName("feature") : null,
           i, len, feature;
-      function sr(e) { 
-        if (e.parentNode.nodeType === Node.ELEMENT_NODE) {
-          return sr(e.parentElement);
-        } else {
-          return e.parentNode;
-        }
-      };
-      // in theory, you should be able to retrieve the shadowRoot now, EXCEPT
-      // it fails when the mapml being processed is inline, because the layer._container
-      // hasn't yet been added to the shadowRoot.
 
       var linkedStylesheets = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelectorAll("link[rel=stylesheet],style") : null;
       if (linkedStylesheets) {
-        // this will FAIL if the linkedStylesheet <link> is in the content body
-        // of the <layer->....<link>....</layer->, because the layer._container
-        // hasn't been added to the shadowRoot at this point in time.
-        // ON THE OTHER HAND, if the link is in a mapml document retrieved
-        // by the layer by XHR/Fetch, it should work because the layer has
-        // already been added to the shadowRoot
-        var sroot = sr(this._container);
-        for (i=0;i < linkedStylesheets.length;i++) {
+        for (i=linkedStylesheets.length-1;i >= 0;i--) {
 
+          // need to resolve URLs in mapml documents against appropriate base URL
+          // so that relative embedded URLs resolve properly against either the
+          // base element or the URL of the document if no base is specified
+          const stylesheet = linkedStylesheets[i];
           var baseEl = mapml.querySelector('base'),
-              stylesheet = linkedStylesheets[i],
-            base = (new URL(baseEl?baseEl.getAttribute('href'):mapml.baseURI)).href;
-            stylesheet = (new URL(stylesheet.getAttribute('href'),base)).href;
-          if (stylesheet) {
-            if (!sroot.querySelector("link[href='"+stylesheet+"']")) {
-              var linkElm = document.createElementNS("http://www.w3.org/1999/xhtml", "link");
-              linkElm.setAttribute("href", stylesheet);
+            base = (new URL(baseEl?baseEl.getAttribute('href'):mapml.baseURI)).href,
+            href = stylesheet.nodeName.toUpperCase() === "LINK" ?(new URL(stylesheet.getAttribute('href'),base)).href: null;
+          if (href) {
+            if (!this._container.querySelector("link[href='"+href+"']")) {
+              const linkElm = document.createElementNS("http://www.w3.org/1999/xhtml", "link");
+              linkElm.setAttribute("href", href);
               linkElm.setAttribute("type", "text/css");
               linkElm.setAttribute("rel", "stylesheet");
               // if this layer is created via inline content, i.e. by this means:
@@ -3431,37 +3417,32 @@ M.MapMLFeatures = L.FeatureGroup.extend({
               //                             remote inline styles">
               //      </extent>
               // </layer->
-              // we should prepend the links (or inline styles)  into the shadow 
-              // root copied from within the templated features mapml document, 
+              // we should prepend the links (or inline styles)  into the layer 
+              // _container copied from within the templated features mapml document, 
               // because we want to allow the html author to be able to override 
               // them, which they may have done by providing the <style> element
               // above (so we want the links from the remote mapml documents
               // loaded via the features templated link above to be inserted
               // into the shadow root *before* the styles or links that the
               // html author has created.
-              sroot.prepend(linkElm);
+              this._container.prepend(linkElm);
+              // this never fires. Why?
+              this.once('moveend',
+                function() {
+                  linkElm.remove();
+                },this);
             }
+          } else { /* style element */
+            // serialize from the XML, parse into the host document as HTML
+            this._container.insertAdjacentHTML('afterbegin',stylesheet.outerHTML);
+              // this never fires. Why?
+            this.once('moveend', function() {
+              stylesheet.remove();
+            },this);
           }
         }
       }
       
-      // re-evaluating this code.  The order of <link> and <style> elements
-      // matters, so they should be selected together and copied to the shadow
-      // root.  This should only be done ONCE, because otherwise we could
-      // copy the same <style> element multiple times (if every 'page' of mapml
-      // content has a <style> element, then it will get copied multiple times
-      // because theres no practical way to avoid the copying by detecting if the
-      // same <style> has already been copied in a previous 'page' of data
-      // the obvious solution is to not support paged data in my opinion, so 
-      // we could safely copy all <link>, <style> elements from the mapml
-      // document into the shadowRoot
-      var inlineStyleSheets = mapml.nodeType === Node.DOCUMENT_NODE || Node.ELEMENT_NODE ? mapml.querySelectorAll("style") : null;
-      if (inlineStyleSheets) {
-        for (i=0;i<inlineStyleSheets.length;i++) {
-          document.head.insertAdjacentHTML('beforeend',inlineStyleSheets[i].outerHTML);
-        }
-      }
-
       if (features) {
        for (i = 0, len = features.length; i < len; i++) {
         // Only add this if geometry is set and not null

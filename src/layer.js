@@ -227,8 +227,8 @@ export class MapLayer extends HTMLElement {
     // so that styles specified for the layer will apply to how those things
     // are implemented, currently by a Leaflet map div.
     var inline_styles = this.querySelectorAll('style,link[rel=stylesheet]');
-    for(i=0;i< inline_styles.length;i++) {
-      this.parentNode._container.insertAdjacentElement('beforebegin',inline_styles[i]);
+    for(i=inline_styles.length-1;i >= 0;i--) {
+      this._layer._container.insertAdjacentElement('afterbegin',inline_styles[i]);
     }
     
     // add the handler which toggles the 'checked' property based on the
