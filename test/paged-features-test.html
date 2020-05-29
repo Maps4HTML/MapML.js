@@ -12,12 +12,20 @@
     <map is="web-map" projection="CBMTILE" zoom="18" lat="45.5052040" lon="-75.2202344" controls >
       <layer- label='CBMT' src='https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/?z=18' checked></layer->
       <layer- label="CanVec+ Features" checked>
+      <!-- these styles should be copied into the container for the MapMLLayer, so
+           that they are 'garbage collected' when the layer is garbage collected -->        
+        <link rel="stylesheet" >
+        <style></style>
         <extent units="CBMTILE">
           <input name="z" type="zoom" min="16" max="18"/>
           <input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74"/>
           <input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46"/>
           <input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74"/>
-          <input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46"/>      
+          <input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46"/>
+          <!-- if there are styles or linked styles in the retrieved mapml doc, they should
+          be copied into the container for this templatedlayer. The objective
+          is to have them garbage collected when pan/zoom, so that the next view's
+          styles will have their own independent styles as required -->
           <link rel="features" tref="https://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/?zoom={z}&amp;xmin={xmin}&amp;ymin={ymin}&amp;xmax={xmax}&amp;ymax={ymax}&amp;projection=WGS84&amp;entry-type=full&amp;max-results=100"/>
         </extent>
       </layer->
