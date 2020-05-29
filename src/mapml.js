@@ -1390,6 +1390,16 @@ M.MapMLLayer = L.Layer.extend({
                 if (layer._templatedLayer) {
                   layer._templatedLayer.reset(layer._templateVars);
                 }
+                if (mapml.querySelector('tile')) {
+                  var tiles = document.createElement("tiles"),
+                    zoom = mapml.querySelector('meta[name=zoom][content]') || mapml.querySelector('input[type=zoom][value]');
+                  tiles.setAttribute("zoom", zoom.getAttribute('content') || zoom.getAttribute('value'));
+                  var newTiles = mapml.getElementsByTagName('tile');
+                  for (i=0;i<newTiles.length;i++) {
+                      tiles.appendChild(document.importNode(newTiles[i], true));
+                  }
+                  layer._mapmlTileContainer.appendChild(tiles);
+                }
                 var styleLinks = mapml.querySelectorAll('link[rel=style],link[rel="self style"],link[rel="style self"]');
                 if (styleLinks.length > 1) {
                   var stylesControl = document.createElement('details'),
@@ -1645,19 +1655,6 @@ M.MapMLLayer = L.Layer.extend({
           layer._legendUrl = legendLink.getAttribute('href');
         }
     },
-    _initEl: function () {
-        if (!this._mapmlTileContainer) {return;}
-        var container = this._mapmlTileContainer;
-        while (container.firstChild)
-            container.removeChild(container.firstChild);
-    },
-    _reset: function() {
-        this._initEl();
-        L.empty(this._container);
-        this._mapmlvectors.clearLayers();
-        //this._map.removeLayer(this._mapmlvectors);
-        return;
-    },
     // return the LatLngBounds of the map unprojected such that the whole
     // map is covered, not just a band defined by the projected map bounds.
     _getUnprojectedMapLatLngBounds: function(map) {
@@ -1670,71 +1667,6 @@ M.MapMLLayer = L.Layer.extend({
           ne = map.unproject(bounds.getTopRight()),
           se = map.unproject(origin.add(map.getSize()));
         return L.latLngBounds(sw,ne).extend(se).extend(nw);
-    },
-    _calculateUrl: function() {
-        
-        if (!this._map) return null;
-        if (!this._mapmlTileContainer && !this._extent) return this._href;
-        var extent = this._extent;
-        if (!extent) return this._href;
-        // action SHOULD HAVE BEEN resolved against any base ALREADY
-        var action = extent.getAttribute("action"),
-                base = (new URL(this._href ? this._href : this._content ? this._content.baseURI : document.baseURI)).href;
-        // establish the range of zoom values for the extent
-        var zoom = extent.querySelectorAll("input[type=zoom]")[0];
-        if ( !zoom ) return null;
-        var min = parseInt(zoom.getAttribute("min")),
-            max = parseInt(zoom.getAttribute("max")),
-            values = {}, // the values object will contain the values for the URI template
-            mapZoom = this._map.getZoom();
-        // check that the zoom of the map is in the range of the zoom of the service
-        if ( min <= mapZoom && mapZoom <= max) {
-          values.zoom = mapZoom;
-        } else if (!action){
-          if (extent.zoomin && mapZoom > max) {
-            this._href = extent.zoomin;
-            this.href = extent.zoomin;
-            return this.href;
-          } else if (extent.zoomout && mapZoom < min) {
-            this._href = extent.zoomout;
-            this.href = extent.zoomout;
-            return this.href;
-          }
-        } else {
-          return null;
-        }
-        
-        if (!action || action === "synthetic") return null;
-        var b,projectionValue = extent.getAttribute('units');
-        
-        // if the mapml extent being processed is WGS84, we need to speak in those units
-        if (projectionValue === 'WGS84') {
-          b = this._getUnprojectedMapLatLngBounds();
-        } else {
-          // otherwise, use the bounds of the map
-          b = this._map.getPixelBounds();
-        }
-        var varnames = this._setUpInputVars(extent.querySelectorAll('input'));
-        
-        var queryParams = "";
-        values[varnames.extent.zoom.name] = mapZoom;
-        queryParams += varnames.extent.zoom.name+"={"+varnames.extent.zoom.name+"}&";
-        values[varnames.extent.left.name] = b.min?b.min.x:b.getWest();
-        queryParams += varnames.extent.left.name+"={"+varnames.extent.left.name+"}&";
-        values[varnames.extent.bottom.name] = b.max?b.max.y:b.getSouth();
-        queryParams += varnames.extent.bottom.name+"={"+varnames.extent.bottom.name+"}&";
-        values[varnames.extent.right.name] = b.max?b.max.x:b.getEast();
-        queryParams += varnames.extent.right.name+"={"+varnames.extent.right.name+"}&";
-        values[varnames.extent.top.name] = b.min?b.min.y:b.getNorth();
-        queryParams += varnames.extent.top.name+"={"+varnames.extent.top.name+"}"+(varnames.extent.hidden.length>0?"&":"");
-        for (var i=0;i<varnames.extent.hidden.length;i++) {
-          values[varnames.extent.hidden[i].name] = varnames.extent.hidden[i].value;
-          queryParams += varnames.extent.hidden[i].name+"={"+varnames.extent.hidden[i].name+"}"+(i<varnames.extent.hidden.length-1?"&":"");
-        }
-        
-        action += "?"+queryParams;
-        var rel = (new URL(action, base)).href;
-        return L.Util.template(rel, values);
     },
     // this takes into account that WGS84 is considered a wildcard match.
     _projectionMatches: function(map) {
