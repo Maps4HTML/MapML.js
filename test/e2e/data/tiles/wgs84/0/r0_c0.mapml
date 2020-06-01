@@ -4,6 +4,11 @@
 
       <meta charset="utf-8"/>
       <meta content="text/mapml" http-equiv="Content-Type"/>
+      <style>
+         .refStyle{
+            color:black;
+         }
+      </style>
    </head>
    <body>
       <feature id="fclass.2" class="fclass">
