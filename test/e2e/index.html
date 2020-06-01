@@ -25,19 +25,7 @@
 <body>
 	<map is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
 		<layer- label="CBMT" src="data/cmbt.mapml" checked></layer->
-		<layer- label="CanVec+ Features" checked>
-			<extent units="CBMTILE">
-				<input name="z" type="zoom" min="2" max="18" />
-				<input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76"
-					max="-74" />
-				<input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45"
-					max="46" />
-				<input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76"
-					max="-74" />
-				<input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" />
-				<link rel="features" tref="data/21010.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
-			</extent>
-		</layer->
+
 	</map>
 </body>
 

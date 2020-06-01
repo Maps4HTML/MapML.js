@@ -11,7 +11,6 @@ describe("Playwright Style Parsed and Implemented Test", () => {
     context = await browser.newContext();
     page = await context.newPage();
     await page.goto(PATH + "styleOrder.html");
-    jest.setTimeout(10000);
   });
 
   afterEach(async function () {
@@ -36,14 +35,6 @@ describe("Playwright Style Parsed and Implemented Test", () => {
   //check the order of referenced CSS style tag/link addition
   test("Referenced CSS order", async () => {
     //has to wait since it takes awhile to load in large Canvec layer
-    function wait(ms) {
-      var start = new Date().getTime();
-      var end = start;
-      while (end < start + ms) {
-        end = new Date().getTime();
-      }
-    }
-    await wait(3000);
     const firstStyle = await page.$eval(
       "css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link",
       (styleE) => styleE.outerHTML
