@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>vector-tile-test.html</title>
+        <meta charset="UTF-8">
+            <script type="module" src="../dist/web-map.js"></script>
+         <style>
+           html {height: 100%} body,map {height: inherit} * {margin: 0;padding: 0;}
+        </style>
+    </head>
+    <body>
+        <map is="web-map" projection="WGS84" zoom="0" lat="0" lon="0" controls>
+
+            <layer- label="Inline Countries" checked>
+                <link rel="stylesheet" href="vector-tile-test.css">
+                <extent units="WGS84">
+                    <input name="zoomLevel" type="zoom" min="0" max="2"/>
+
+                    <input name="row" type="location" axis="row" units="tilematrix"/>
+                    <input name="col" type="location" axis="column" units="tilematrix"/>
+
+                    <link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)' 
+                    tref='./e2e/data/tiles/wgs84/{zoomLevel}/r{row}_c{col}.mapml'/>
+
+                </extent>
+            </layer->
+            <layer- label="src-based Countries" src="vector-tile-test.mapml" ></layer->
+        </map>
+    </body>
+</html>

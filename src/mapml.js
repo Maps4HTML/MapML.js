@@ -1394,8 +1394,8 @@ M.MapMLLayer = L.Layer.extend({
                     zoom = mapml.querySelector('meta[name=zoom][content]') || mapml.querySelector('input[type=zoom][value]');
                   tiles.setAttribute("zoom", zoom.getAttribute('content') || zoom.getAttribute('value'));
                   var newTiles = mapml.getElementsByTagName('tile');
-                  for (i=0;i<newTiles.length;i++) {
-                      tiles.appendChild(document.importNode(newTiles[i], true));
+                  for (var nt=0;nt<newTiles.length;nt++) {
+                      tiles.appendChild(document.importNode(newTiles[nt], true));
                   }
                   layer._mapmlTileContainer.appendChild(tiles);
                 }
@@ -2760,30 +2760,13 @@ M.TemplatedTileLayer = L.TileLayer.extend({
               return Promise.reject(response);
             }
           }).then(function(response) {
-            var contenttype = response.headers.get("Content-Type");
-            if ( contenttype.startsWith("text/mapml")) {
-              return handleMapMLResponse(response);
-            } else {
-              return handleOtherResponse(response);
-            }
+            return response.text();
+          }).then(text => {
+            var parser = new DOMParser();
+                return parser.parseFromString(text, "application/xml");
           }).then(mapml => {
             this._drawTile(mapml, coords, tile);
           }).catch(function(err) {});
-      function handleMapMLResponse(response) {
-          return response.text().then(text => {
-              var parser = new DOMParser();
-                  return parser.parseFromString(text, "application/xml");
-          });
-      }
-      function handleOtherResponse(response) {
-          return response.text().then(text => {
-              var c = document.createElement('iframe');
-              c.csp = "script-src 'none'";
-              c.style = "border: none";
-              c.srcdoc = text;
-              tile.appendChild(c);
-          });
-      }
     },
     getTileUrl: function (coords) {
         if (coords.z >= this._template.tilematrix.bounds.length || 
