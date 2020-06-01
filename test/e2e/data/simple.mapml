@@ -1,0 +1,157 @@
+<mapml>
+    <head>
+        <title>Natural Resources Canada's CanVec+ 031G - Map Markup Language</title>
+        <meta http-equiv="Content-Type" content="text/mapml;projection=WGS84;zoom=18"/>
+        <base href="https://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/"/>
+        <link rel="stylesheet" href="../../../styles/canvec_cantopo_svg.css" type="text/css"/>
+        <link rel="stylesheet" href="../../../styles/canvec_feature_properties.css" type="text/css"/>
+        <link rel="license" href="http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="CanVec+ © Natural Resources Canada"/>
+    </head>
+    <body>
+        <extent units="WGS84" action="https://geogratis.gc.ca/api/beta/vectors/canvec/50k/features/" method="get" enctype="application/x-www-form-urlencoded">
+            <input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" value="-75.24393818458802" min="-76" max="-74"/>
+            <input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" value="45.49036599598696" min="45" max="46"/>
+            <input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" value="-75.19651669951512" min="-76" max="-74"/>
+            <input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" value="45.52004423539676" min="45" max="46"/>
+            <input name="projection" type="hidden" value="WGS84"/>
+            <input name="entry-type" type="hidden" value="full"/>
+            <input type="zoom" name="zoom" value="18" min="15" max="18"/>
+        </extent>
+        <feature id="2b2f2f36a8e045efbde149594543b5a5" itemscope="itemscope" itemtype="http://nrcan.gc.ca/canvec/features/" class="unpaved_multiple_lane">
+            <properties>
+                <div class="table-container" aria-labelledby="caption-2b2f2f36a8e045efbde149594543b5a5">
+                    <table>
+                        <caption id="caption-2b2f2f36a8e045efbde149594543b5a5">Feature Properties</caption>
+                        <tbody>
+                            <tr>
+                                <th role="columnheader" scope="col">Property name</th>
+                                <th role="columnheader" scope="col">Property value</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">code</th>
+                                <td itemprop="code">1760011</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">accuracy</th>
+                                <td itemprop="accuracy">5</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">valdate</th>
+                                <td itemprop="valdate">20000601</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">id</th>
+                                <td itemprop="id">2b2f2f36a8e045efbde149594543b5a5</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">theme</th>
+                                <td itemprop="theme">TR</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">codeprov</th>
+                                <td itemprop="codeprov">ON</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">roadclass</th>
+                                <td itemprop="roadclass">5</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">closingper</th>
+                                <td itemprop="closingper">-1</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">juriroad</th>
+                                <td itemprop="juriroad">?</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">speedrestr</th>
+                                <td itemprop="speedrestr">-1</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">trafficdir</th>
+                                <td itemprop="trafficdir">-1</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">roadsegid</th>
+                                <td itemprop="roadsegid">0.0</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">exitno</th>
+                                <td itemprop="exitno">-</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">nolanes</th>
+                                <td itemprop="nolanes">2</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">pavsurf</th>
+                                <td itemprop="pavsurf">0.0</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">unpavsurf</th>
+                                <td itemprop="unpavsurf">-1</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">strucid</th>
+                                <td itemprop="strucid">-</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">structype</th>
+                                <td itemprop="structype">0</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">strunameen</th>
+                                <td itemprop="strunameen">-</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">strunamefr</th>
+                                <td itemprop="strunamefr">-</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">r_hnumf</th>
+                                <td itemprop="r_hnumf">-1</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">l_hnumf</th>
+                                <td itemprop="l_hnumf">-1</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">r_hnuml</th>
+                                <td itemprop="r_hnuml">-1</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">l_hnuml</th>
+                                <td itemprop="l_hnuml">-1</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">pavstatus</th>
+                                <td itemprop="pavstatus">2</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">r_adddirfg</th>
+                                <td itemprop="r_adddirfg">0.0</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">l_adddirfg</th>
+                                <td itemprop="l_adddirfg">0.0</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">r_placenam</th>
+                                <td itemprop="r_placenam">?</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">l_placenam</th>
+                                <td itemprop="l_placenam">?</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </properties>
+            <geometry>
+                <LineString>
+                    <coordinates>-75.2159141 45.5089726 -75.2156584 45.5090631 -75.214686 45.5091909</coordinates>
+                </LineString>
+            </geometry>
+        </feature>
+    </body>
+</mapml>

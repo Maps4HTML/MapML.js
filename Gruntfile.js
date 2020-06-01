@@ -32,7 +32,9 @@ module.exports = function(grunt) {
           document: true
         },
         // ensure that jshint keeps processing after an error
-        force: true
+        force: true,
+        esversion: 6
+        
       }
     },
     watch: {
