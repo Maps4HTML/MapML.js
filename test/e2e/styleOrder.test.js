@@ -72,7 +72,6 @@ describe("Playwright Style Parsed and Implemented Test", () => {
   });
 
   test("Inline CSS added inorder for vector tile", async () => {
-    //ask how the inline styles are added to affect an entire layer
     const foundStyleLink = await page.$(
       "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > link"
     );
