@@ -12,7 +12,7 @@
             <input name="z" type="zoom" value="17" min="0" max="17"/>
             <input name="y" type="location" units="tilematrix" axis="row" min="29750" max="34475" />
             <input name="x" type="location" units="tilematrix" axis="column" min="26484" max="32463" />
-            <link rel="tile" tref="{z}/c{y}_r{x}.jpg" />
+            <link rel="tile" tref="{z}/c{x}_r{y}.png" />
         </extent>
     </body>
 </mapml>

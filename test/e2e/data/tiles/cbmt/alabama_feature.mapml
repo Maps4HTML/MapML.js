@@ -10,8 +10,6 @@
         <link rel="license" href="http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="CanVec+ © Natural Resources Canada"/>
     </head>
     <body>
-        <!--<link rel="next" href="./?start-index=928960&amp;max-results=100&amp;entry-type=full&amp;xmin=-75.25519354020373&amp;ymin=45.48798029851399&amp;xmax=-75.18527267946583&amp;ymax=45.52240295445265&amp;projection=WGS84&amp;zoom=18" type="text/mapml"/>
-        -->
         <extent></extent>
         <feature class="all  _50-100">
             <properties>
