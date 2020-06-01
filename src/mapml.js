@@ -1399,6 +1399,10 @@ M.MapMLLayer = L.Layer.extend({
                   }
                   layer._mapmlTileContainer.appendChild(tiles);
                 }
+                var ss = mapml.querySelectorAll('link[rel=stylesheet],style');
+                if (ss) {
+                  layer._stylesheets = layer._parseLinkedStylesheets(ss, base);
+                }
                 var styleLinks = mapml.querySelectorAll('link[rel=style],link[rel="self style"],link[rel="style self"]');
                 if (styleLinks.length > 1) {
                   var stylesControl = document.createElement('details'),
@@ -1449,6 +1453,26 @@ M.MapMLLayer = L.Layer.extend({
             }
             layer.fire('extentload', layer, false);
         }
+    },
+    _parseLinkedStylesheets: function(stylesheets, base) {
+      if (!stylesheets) return;
+      var ss = [];
+      for (var i=0;i<stylesheets.length;i++) {
+        if (stylesheets[i].nodeName.toUpperCase() === "LINK" ) {
+          var href = stylesheets[i].hasAttribute('href') ? new URL(stylesheets[i].getAttribute('href'),base).href: null;
+          if (href) {
+            var linkElm = document.createElement("link");
+            linkElm.setAttribute("href", href);
+            linkElm.setAttribute("rel", "stylesheet");
+            ss.push(linkElm);
+          }  
+        } else { // <style>
+            var styleElm = document.createElement('style');
+            styleElm.textContent = stylesheets[i].textContent;
+            ss.push(styleElm);
+        }
+      }
+      return ss;
     },
     _createExtent: function () {
     
@@ -2744,6 +2768,16 @@ M.TemplatedTileLayer = L.TileLayer.extend({
 
       this._container = L.DomUtil.create('div', 'leaflet-layer', this.options.pane);
       L.DomUtil.addClass(this._container,'mapml-templated-tile-container');
+      var stylesheets = this.options._leafletLayer && this.options._leafletLayer._stylesheets;
+      if (stylesheets) {
+        // insert <link> or <style> elements after the begining  of the container
+        // element, in document order as copied from original mapml document
+        // note the code below assumes hrefs have been resolved and elements
+        // re-parsed from xml and serialized as html elements ready for insertion
+        for (var i=stylesheets.length-1;i >= 0;i--) {
+          this._container.insertAdjacentElement('afterbegin',stylesheets[i]);
+        }
+      }
       this._updateZIndex();
 
       if (this.options.opacity < 1) {
