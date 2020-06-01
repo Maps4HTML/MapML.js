@@ -1,0 +1,325 @@
+<mapml>
+   <head>
+      <title>ne_10m_admin_0_countries</title>
+      <base href="http://maps.ecere.com/geoapi/collections/NaturalEarth/cultural/ne_10m_admin_0_countries"/>
+      <meta charset="utf-8"/>
+      <meta content="text/mapml" http-equiv="Content-Type"/>
+   </head>
+   <body>
+      <extent units="WGS84">
+         <input name="zoomLevel" type="zoom" value="1" min="0" max="6"/>
+         <input name="minLon" type="location" value="-180" units="gcrs" axis="longitude" position="top-left" min="-180" max="180"/>
+         <input name="minLat" type="location" value="-45" units="gcrs" axis="latitude" position="bottom-right" min="-90" max="90.0002058236639"/>
+         <input name="maxLon" type="location" value="-135" units="gcrs" axis="longitude" position="bottom-right" min="-180" max="180"/>
+         <input name="maxLat" type="location" value="0" units="gcrs" axis="latitude" position="top-left" min="-90" max="90.0002058236639"/>
+
+         <link rel='features' type='text/mapml' title='ne_10m_admin_0_countries (as MapML)' tref='./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}'/>
+      </extent>
+      <feature id="fclass.6" class="fclass">
+         <geometry>
+            <multipolygon>
+               <polygon>
+                  <coordinates>-179.8976835744369 -16.6823841787218 <span class='noline'>-180 -16.7867606665446 -180 -16.9639260208753</span> -179.8207745834096 -16.778520417506 -179.8976835744369 -16.6823841787218</coordinates>
+               </polygon>
+               <polygon>
+                  <coordinates>-180 -16.5409265702252 -179.9244643838125 -16.5086522614906 -179.9230910089727 -16.4379234572423 <span class='noline'>-180 -16.4901117011536 -180 -16.5409265702252</span></coordinates>
+               </polygon>
+               <polygon>
+                  <coordinates>-180 -16.1694286760667 -179.9553653177074 -16.1529481779894 -179.9423182567295 -16.1213605566746 <span class='noline'>-180 -16.1488280534701 -180 -16.1694286760667</span></coordinates>
+               </polygon>
+            </multipolygon>
+         </geometry>
+         <properties>
+            <table>
+               <thead>
+                  <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
+               </thead>
+               <tbody>
+                  <tr><th scope="row">scalerank</th><td itemprop="scalerank">1</td></tr>
+                  <tr><th scope="row">featurecla</th><td itemprop="featurecla">Admin-0 country</td></tr>
+                  <tr><th scope="row">labelrank</th><td itemprop="labelrank">6</td></tr>
+                  <tr><th scope="row">sovereignt</th><td itemprop="sovereignt">Fiji</td></tr>
+                  <tr><th scope="row">sov_a3</th><td itemprop="sov_a3">FJI</td></tr>
+                  <tr><th scope="row">adm0_dif</th><td itemprop="adm0_dif">0</td></tr>
+                  <tr><th scope="row">level</th><td itemprop="level">2</td></tr>
+                  <tr><th scope="row">type</th><td itemprop="type">Sovereign country</td></tr>
+                  <tr><th scope="row">admin</th><td itemprop="admin">Fiji</td></tr>
+                  <tr><th scope="row">adm0_a3</th><td itemprop="adm0_a3">FJI</td></tr>
+                  <tr><th scope="row">geou_dif</th><td itemprop="geou_dif">0</td></tr>
+                  <tr><th scope="row">geounit</th><td itemprop="geounit">Fiji</td></tr>
+                  <tr><th scope="row">gu_a3</th><td itemprop="gu_a3">FJI</td></tr>
+                  <tr><th scope="row">su_dif</th><td itemprop="su_dif">0</td></tr>
+                  <tr><th scope="row">subunit</th><td itemprop="subunit">Fiji</td></tr>
+                  <tr><th scope="row">su_a3</th><td itemprop="su_a3">FJI</td></tr>
+                  <tr><th scope="row">brk_diff</th><td itemprop="brk_diff">0</td></tr>
+                  <tr><th scope="row">name</th><td itemprop="name">Fiji</td></tr>
+                  <tr><th scope="row">name_long</th><td itemprop="name_long">Fiji</td></tr>
+                  <tr><th scope="row">brk_a3</th><td itemprop="brk_a3">FJI</td></tr>
+                  <tr><th scope="row">brk_name</th><td itemprop="brk_name">Fiji</td></tr>
+                  <tr><th scope="row">abbrev</th><td itemprop="abbrev">Fiji</td></tr>
+                  <tr><th scope="row">postal</th><td itemprop="postal">FJ</td></tr>
+                  <tr><th scope="row">formal_en</th><td itemprop="formal_en">Republic of Fiji</td></tr>
+                  <tr><th scope="row">name_sort</th><td itemprop="name_sort">Fiji</td></tr>
+                  <tr><th scope="row">mapcolor7</th><td itemprop="mapcolor7">5</td></tr>
+                  <tr><th scope="row">mapcolor8</th><td itemprop="mapcolor8">1</td></tr>
+                  <tr><th scope="row">mapcolor9</th><td itemprop="mapcolor9">2</td></tr>
+                  <tr><th scope="row">mapcolor13</th><td itemprop="mapcolor13">2</td></tr>
+                  <tr><th scope="row">pop_est</th><td itemprop="pop_est">944720</td></tr>
+                  <tr><th scope="row">gdp_md_est</th><td itemprop="gdp_md_est">3579</td></tr>
+                  <tr><th scope="row">pop_year</th><td itemprop="pop_year">-99</td></tr>
+                  <tr><th scope="row">lastcensus</th><td itemprop="lastcensus">2007</td></tr>
+                  <tr><th scope="row">gdp_year</th><td itemprop="gdp_year">-99</td></tr>
+                  <tr><th scope="row">economy</th><td itemprop="economy">6. Developing region</td></tr>
+                  <tr><th scope="row">income_grp</th><td itemprop="income_grp">4. Lower middle income</td></tr>
+                  <tr><th scope="row">wikipedia</th><td itemprop="wikipedia">-99</td></tr>
+                  <tr><th scope="row">iso_a2</th><td itemprop="iso_a2">FJ</td></tr>
+                  <tr><th scope="row">iso_a3</th><td itemprop="iso_a3">FJI</td></tr>
+                  <tr><th scope="row">iso_n3</th><td itemprop="iso_n3">242</td></tr>
+                  <tr><th scope="row">un_a3</th><td itemprop="un_a3">242</td></tr>
+                  <tr><th scope="row">wb_a2</th><td itemprop="wb_a2">FJ</td></tr>
+                  <tr><th scope="row">wb_a3</th><td itemprop="wb_a3">FJI</td></tr>
+                  <tr><th scope="row">woe_id</th><td itemprop="woe_id">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_is</th><td itemprop="adm0_a3_is">FJI</td></tr>
+                  <tr><th scope="row">adm0_a3_us</th><td itemprop="adm0_a3_us">FJI</td></tr>
+                  <tr><th scope="row">adm0_a3_un</th><td itemprop="adm0_a3_un">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_wb</th><td itemprop="adm0_a3_wb">-99</td></tr>
+                  <tr><th scope="row">continent</th><td itemprop="continent">Oceania</td></tr>
+                  <tr><th scope="row">region_un</th><td itemprop="region_un">Oceania</td></tr>
+                  <tr><th scope="row">subregion</th><td itemprop="subregion">Melanesia</td></tr>
+                  <tr><th scope="row">region_wb</th><td itemprop="region_wb">East Asia &amp; Pacific</td></tr>
+                  <tr><th scope="row">name_len</th><td itemprop="name_len">4</td></tr>
+                  <tr><th scope="row">long_len</th><td itemprop="long_len">4</td></tr>
+                  <tr><th scope="row">abbrev_len</th><td itemprop="abbrev_len">4</td></tr>
+                  <tr><th scope="row">tiny</th><td itemprop="tiny">-99</td></tr>
+                  <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
+               </tbody>
+            </table>
+         </properties>
+      </feature>
+      <feature id="fclass.9" class="fclass">
+         <geometry>
+            <polygon>
+               <coordinates>-176.5905969602637 -44.1176066654459 -176.3447628639443 -44.0406976744186 -176.5775498992859 -43.766022706464 -176.564502838308 -43.9569218091925 -176.5905969602637 -44.1176066654459</coordinates>
+            </polygon>
+         </geometry>
+         <properties>
+            <table>
+               <thead>
+                  <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
+               </thead>
+               <tbody>
+                  <tr><th scope="row">scalerank</th><td itemprop="scalerank">0</td></tr>
+                  <tr><th scope="row">featurecla</th><td itemprop="featurecla">Admin-0 country</td></tr>
+                  <tr><th scope="row">labelrank</th><td itemprop="labelrank">2</td></tr>
+                  <tr><th scope="row">sovereignt</th><td itemprop="sovereignt">New Zealand</td></tr>
+                  <tr><th scope="row">sov_a3</th><td itemprop="sov_a3">NZ1</td></tr>
+                  <tr><th scope="row">adm0_dif</th><td itemprop="adm0_dif">1</td></tr>
+                  <tr><th scope="row">level</th><td itemprop="level">2</td></tr>
+                  <tr><th scope="row">type</th><td itemprop="type">Country</td></tr>
+                  <tr><th scope="row">admin</th><td itemprop="admin">New Zealand</td></tr>
+                  <tr><th scope="row">adm0_a3</th><td itemprop="adm0_a3">NZL</td></tr>
+                  <tr><th scope="row">geou_dif</th><td itemprop="geou_dif">0</td></tr>
+                  <tr><th scope="row">geounit</th><td itemprop="geounit">New Zealand</td></tr>
+                  <tr><th scope="row">gu_a3</th><td itemprop="gu_a3">NZL</td></tr>
+                  <tr><th scope="row">su_dif</th><td itemprop="su_dif">0</td></tr>
+                  <tr><th scope="row">subunit</th><td itemprop="subunit">New Zealand</td></tr>
+                  <tr><th scope="row">su_a3</th><td itemprop="su_a3">NZL</td></tr>
+                  <tr><th scope="row">brk_diff</th><td itemprop="brk_diff">0</td></tr>
+                  <tr><th scope="row">name</th><td itemprop="name">New Zealand</td></tr>
+                  <tr><th scope="row">name_long</th><td itemprop="name_long">New Zealand</td></tr>
+                  <tr><th scope="row">brk_a3</th><td itemprop="brk_a3">NZL</td></tr>
+                  <tr><th scope="row">brk_name</th><td itemprop="brk_name">New Zealand</td></tr>
+                  <tr><th scope="row">abbrev</th><td itemprop="abbrev">N.Z.</td></tr>
+                  <tr><th scope="row">postal</th><td itemprop="postal">NZ</td></tr>
+                  <tr><th scope="row">formal_en</th><td itemprop="formal_en">New Zealand</td></tr>
+                  <tr><th scope="row">name_sort</th><td itemprop="name_sort">New Zealand</td></tr>
+                  <tr><th scope="row">mapcolor7</th><td itemprop="mapcolor7">3</td></tr>
+                  <tr><th scope="row">mapcolor8</th><td itemprop="mapcolor8">3</td></tr>
+                  <tr><th scope="row">mapcolor9</th><td itemprop="mapcolor9">4</td></tr>
+                  <tr><th scope="row">mapcolor13</th><td itemprop="mapcolor13">4</td></tr>
+                  <tr><th scope="row">pop_est</th><td itemprop="pop_est">4213418</td></tr>
+                  <tr><th scope="row">gdp_md_est</th><td itemprop="gdp_md_est">116700</td></tr>
+                  <tr><th scope="row">pop_year</th><td itemprop="pop_year">-99</td></tr>
+                  <tr><th scope="row">lastcensus</th><td itemprop="lastcensus">2006</td></tr>
+                  <tr><th scope="row">gdp_year</th><td itemprop="gdp_year">-99</td></tr>
+                  <tr><th scope="row">economy</th><td itemprop="economy">2. Developed region: nonG7</td></tr>
+                  <tr><th scope="row">income_grp</th><td itemprop="income_grp">1. High income: OECD</td></tr>
+                  <tr><th scope="row">wikipedia</th><td itemprop="wikipedia">-99</td></tr>
+                  <tr><th scope="row">iso_a2</th><td itemprop="iso_a2">NZ</td></tr>
+                  <tr><th scope="row">iso_a3</th><td itemprop="iso_a3">NZL</td></tr>
+                  <tr><th scope="row">iso_n3</th><td itemprop="iso_n3">554</td></tr>
+                  <tr><th scope="row">un_a3</th><td itemprop="un_a3">554</td></tr>
+                  <tr><th scope="row">wb_a2</th><td itemprop="wb_a2">NZ</td></tr>
+                  <tr><th scope="row">wb_a3</th><td itemprop="wb_a3">NZL</td></tr>
+                  <tr><th scope="row">woe_id</th><td itemprop="woe_id">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_is</th><td itemprop="adm0_a3_is">NZL</td></tr>
+                  <tr><th scope="row">adm0_a3_us</th><td itemprop="adm0_a3_us">NZL</td></tr>
+                  <tr><th scope="row">adm0_a3_un</th><td itemprop="adm0_a3_un">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_wb</th><td itemprop="adm0_a3_wb">-99</td></tr>
+                  <tr><th scope="row">continent</th><td itemprop="continent">Oceania</td></tr>
+                  <tr><th scope="row">region_un</th><td itemprop="region_un">Oceania</td></tr>
+                  <tr><th scope="row">subregion</th><td itemprop="subregion">Australia and New Zealand</td></tr>
+                  <tr><th scope="row">region_wb</th><td itemprop="region_wb">East Asia &amp; Pacific</td></tr>
+                  <tr><th scope="row">name_len</th><td itemprop="name_len">11</td></tr>
+                  <tr><th scope="row">long_len</th><td itemprop="long_len">11</td></tr>
+                  <tr><th scope="row">abbrev_len</th><td itemprop="abbrev_len">4</td></tr>
+                  <tr><th scope="row">tiny</th><td itemprop="tiny">-99</td></tr>
+                  <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
+               </tbody>
+            </table>
+         </properties>
+      </feature>
+      <feature id="fclass.11" class="fclass">
+         <geometry>
+            <polygon>
+               <coordinates>-149.6202618568028 -17.5235762680828 -149.5818073612891 -17.746062992126 -149.3359732649698 -17.7357626808277 -149.3572605749863 -17.5077824574254 -149.6202618568028 -17.5235762680828</coordinates>
+            </polygon>
+         </geometry>
+         <properties>
+            <table>
+               <thead>
+                  <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
+               </thead>
+               <tbody>
+                  <tr><th scope="row">scalerank</th><td itemprop="scalerank">3</td></tr>
+                  <tr><th scope="row">featurecla</th><td itemprop="featurecla">Admin-0 country</td></tr>
+                  <tr><th scope="row">labelrank</th><td itemprop="labelrank">4</td></tr>
+                  <tr><th scope="row">sovereignt</th><td itemprop="sovereignt">France</td></tr>
+                  <tr><th scope="row">sov_a3</th><td itemprop="sov_a3">FR1</td></tr>
+                  <tr><th scope="row">adm0_dif</th><td itemprop="adm0_dif">1</td></tr>
+                  <tr><th scope="row">level</th><td itemprop="level">2</td></tr>
+                  <tr><th scope="row">type</th><td itemprop="type">Dependency</td></tr>
+                  <tr><th scope="row">admin</th><td itemprop="admin">French Polynesia</td></tr>
+                  <tr><th scope="row">adm0_a3</th><td itemprop="adm0_a3">PYF</td></tr>
+                  <tr><th scope="row">geou_dif</th><td itemprop="geou_dif">0</td></tr>
+                  <tr><th scope="row">geounit</th><td itemprop="geounit">French Polynesia</td></tr>
+                  <tr><th scope="row">gu_a3</th><td itemprop="gu_a3">PYF</td></tr>
+                  <tr><th scope="row">su_dif</th><td itemprop="su_dif">0</td></tr>
+                  <tr><th scope="row">subunit</th><td itemprop="subunit">French Polynesia</td></tr>
+                  <tr><th scope="row">su_a3</th><td itemprop="su_a3">PYF</td></tr>
+                  <tr><th scope="row">brk_diff</th><td itemprop="brk_diff">0</td></tr>
+                  <tr><th scope="row">name</th><td itemprop="name">Fr. Polynesia</td></tr>
+                  <tr><th scope="row">name_long</th><td itemprop="name_long">French Polynesia</td></tr>
+                  <tr><th scope="row">brk_a3</th><td itemprop="brk_a3">PYF</td></tr>
+                  <tr><th scope="row">brk_name</th><td itemprop="brk_name">Fr. Polynesia</td></tr>
+                  <tr><th scope="row">abbrev</th><td itemprop="abbrev">Fr. Poly.</td></tr>
+                  <tr><th scope="row">postal</th><td itemprop="postal">PF</td></tr>
+                  <tr><th scope="row">formal_en</th><td itemprop="formal_en">French Polynesia</td></tr>
+                  <tr><th scope="row">note_adm0</th><td itemprop="note_adm0">Fr.</td></tr>
+                  <tr><th scope="row">name_sort</th><td itemprop="name_sort">French Polynesia</td></tr>
+                  <tr><th scope="row">mapcolor7</th><td itemprop="mapcolor7">7</td></tr>
+                  <tr><th scope="row">mapcolor8</th><td itemprop="mapcolor8">5</td></tr>
+                  <tr><th scope="row">mapcolor9</th><td itemprop="mapcolor9">9</td></tr>
+                  <tr><th scope="row">mapcolor13</th><td itemprop="mapcolor13">11</td></tr>
+                  <tr><th scope="row">pop_est</th><td itemprop="pop_est">287032</td></tr>
+                  <tr><th scope="row">gdp_md_est</th><td itemprop="gdp_md_est">4718</td></tr>
+                  <tr><th scope="row">pop_year</th><td itemprop="pop_year">-99</td></tr>
+                  <tr><th scope="row">lastcensus</th><td itemprop="lastcensus">2007</td></tr>
+                  <tr><th scope="row">gdp_year</th><td itemprop="gdp_year">-99</td></tr>
+                  <tr><th scope="row">economy</th><td itemprop="economy">6. Developing region</td></tr>
+                  <tr><th scope="row">income_grp</th><td itemprop="income_grp">2. High income: nonOECD</td></tr>
+                  <tr><th scope="row">wikipedia</th><td itemprop="wikipedia">-99</td></tr>
+                  <tr><th scope="row">iso_a2</th><td itemprop="iso_a2">PF</td></tr>
+                  <tr><th scope="row">iso_a3</th><td itemprop="iso_a3">PYF</td></tr>
+                  <tr><th scope="row">iso_n3</th><td itemprop="iso_n3">258</td></tr>
+                  <tr><th scope="row">un_a3</th><td itemprop="un_a3">258</td></tr>
+                  <tr><th scope="row">wb_a2</th><td itemprop="wb_a2">PF</td></tr>
+                  <tr><th scope="row">wb_a3</th><td itemprop="wb_a3">PYF</td></tr>
+                  <tr><th scope="row">woe_id</th><td itemprop="woe_id">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_is</th><td itemprop="adm0_a3_is">PYF</td></tr>
+                  <tr><th scope="row">adm0_a3_us</th><td itemprop="adm0_a3_us">PYF</td></tr>
+                  <tr><th scope="row">adm0_a3_un</th><td itemprop="adm0_a3_un">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_wb</th><td itemprop="adm0_a3_wb">-99</td></tr>
+                  <tr><th scope="row">continent</th><td itemprop="continent">Oceania</td></tr>
+                  <tr><th scope="row">region_un</th><td itemprop="region_un">Oceania</td></tr>
+                  <tr><th scope="row">subregion</th><td itemprop="subregion">Polynesia</td></tr>
+                  <tr><th scope="row">region_wb</th><td itemprop="region_wb">East Asia &amp; Pacific</td></tr>
+                  <tr><th scope="row">name_len</th><td itemprop="name_len">13</td></tr>
+                  <tr><th scope="row">long_len</th><td itemprop="long_len">16</td></tr>
+                  <tr><th scope="row">abbrev_len</th><td itemprop="abbrev_len">9</td></tr>
+                  <tr><th scope="row">tiny</th><td itemprop="tiny">2</td></tr>
+                  <tr><th scope="row">homepart</th><td itemprop="homepart">-99</td></tr>
+               </tbody>
+            </table>
+         </properties>
+      </feature>
+      <feature id="fclass.15" class="fclass">
+         <geometry>
+            <multipolygon>
+               <polygon>
+                  <coordinates>-171.3937465665629 -14.0461911737777 -171.6910822193737 -13.8504852591101 -172.0419794909357 -13.832631386193 -171.9190624427761 -14.0249038637612 -171.3937465665629 -14.0461911737777</coordinates>
+               </polygon>
+               <polygon>
+                  <coordinates>-172.2184581578465 -13.7742629555027 -172.1834370994323 -13.6101446621498 -172.3042940853323 -13.4693737410731 -172.7726149056949 -13.5284288591833 -172.5267808093756 -13.8058505768174 -172.2184581578465 -13.7742629555027</coordinates>
+               </polygon>
+            </multipolygon>
+         </geometry>
+         <properties>
+            <table>
+               <thead>
+                  <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
+               </thead>
+               <tbody>
+                  <tr><th scope="row">scalerank</th><td itemprop="scalerank">3</td></tr>
+                  <tr><th scope="row">featurecla</th><td itemprop="featurecla">Admin-0 country</td></tr>
+                  <tr><th scope="row">labelrank</th><td itemprop="labelrank">4</td></tr>
+                  <tr><th scope="row">sovereignt</th><td itemprop="sovereignt">Samoa</td></tr>
+                  <tr><th scope="row">sov_a3</th><td itemprop="sov_a3">WSM</td></tr>
+                  <tr><th scope="row">adm0_dif</th><td itemprop="adm0_dif">0</td></tr>
+                  <tr><th scope="row">level</th><td itemprop="level">2</td></tr>
+                  <tr><th scope="row">type</th><td itemprop="type">Sovereign country</td></tr>
+                  <tr><th scope="row">admin</th><td itemprop="admin">Samoa</td></tr>
+                  <tr><th scope="row">adm0_a3</th><td itemprop="adm0_a3">WSM</td></tr>
+                  <tr><th scope="row">geou_dif</th><td itemprop="geou_dif">0</td></tr>
+                  <tr><th scope="row">geounit</th><td itemprop="geounit">Samoa</td></tr>
+                  <tr><th scope="row">gu_a3</th><td itemprop="gu_a3">WSM</td></tr>
+                  <tr><th scope="row">su_dif</th><td itemprop="su_dif">0</td></tr>
+                  <tr><th scope="row">subunit</th><td itemprop="subunit">Samoa</td></tr>
+                  <tr><th scope="row">su_a3</th><td itemprop="su_a3">WSM</td></tr>
+                  <tr><th scope="row">brk_diff</th><td itemprop="brk_diff">0</td></tr>
+                  <tr><th scope="row">name</th><td itemprop="name">Samoa</td></tr>
+                  <tr><th scope="row">name_long</th><td itemprop="name_long">Samoa</td></tr>
+                  <tr><th scope="row">brk_a3</th><td itemprop="brk_a3">WSM</td></tr>
+                  <tr><th scope="row">brk_name</th><td itemprop="brk_name">Samoa</td></tr>
+                  <tr><th scope="row">abbrev</th><td itemprop="abbrev">Samoa</td></tr>
+                  <tr><th scope="row">postal</th><td itemprop="postal">WS</td></tr>
+                  <tr><th scope="row">formal_en</th><td itemprop="formal_en">Independent State of Samoa</td></tr>
+                  <tr><th scope="row">name_sort</th><td itemprop="name_sort">Samoa</td></tr>
+                  <tr><th scope="row">mapcolor7</th><td itemprop="mapcolor7">3</td></tr>
+                  <tr><th scope="row">mapcolor8</th><td itemprop="mapcolor8">3</td></tr>
+                  <tr><th scope="row">mapcolor9</th><td itemprop="mapcolor9">4</td></tr>
+                  <tr><th scope="row">mapcolor13</th><td itemprop="mapcolor13">6</td></tr>
+                  <tr><th scope="row">pop_est</th><td itemprop="pop_est">219998</td></tr>
+                  <tr><th scope="row">gdp_md_est</th><td itemprop="gdp_md_est">1049</td></tr>
+                  <tr><th scope="row">pop_year</th><td itemprop="pop_year">-99</td></tr>
+                  <tr><th scope="row">lastcensus</th><td itemprop="lastcensus">2006</td></tr>
+                  <tr><th scope="row">gdp_year</th><td itemprop="gdp_year">-99</td></tr>
+                  <tr><th scope="row">economy</th><td itemprop="economy">7. Least developed region</td></tr>
+                  <tr><th scope="row">income_grp</th><td itemprop="income_grp">4. Lower middle income</td></tr>
+                  <tr><th scope="row">wikipedia</th><td itemprop="wikipedia">-99</td></tr>
+                  <tr><th scope="row">iso_a2</th><td itemprop="iso_a2">WS</td></tr>
+                  <tr><th scope="row">iso_a3</th><td itemprop="iso_a3">WSM</td></tr>
+                  <tr><th scope="row">iso_n3</th><td itemprop="iso_n3">882</td></tr>
+                  <tr><th scope="row">un_a3</th><td itemprop="un_a3">882</td></tr>
+                  <tr><th scope="row">wb_a2</th><td itemprop="wb_a2">WS</td></tr>
+                  <tr><th scope="row">wb_a3</th><td itemprop="wb_a3">WSM</td></tr>
+                  <tr><th scope="row">woe_id</th><td itemprop="woe_id">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_is</th><td itemprop="adm0_a3_is">WSM</td></tr>
+                  <tr><th scope="row">adm0_a3_us</th><td itemprop="adm0_a3_us">WSM</td></tr>
+                  <tr><th scope="row">adm0_a3_un</th><td itemprop="adm0_a3_un">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_wb</th><td itemprop="adm0_a3_wb">-99</td></tr>
+                  <tr><th scope="row">continent</th><td itemprop="continent">Oceania</td></tr>
+                  <tr><th scope="row">region_un</th><td itemprop="region_un">Oceania</td></tr>
+                  <tr><th scope="row">subregion</th><td itemprop="subregion">Polynesia</td></tr>
+                  <tr><th scope="row">region_wb</th><td itemprop="region_wb">East Asia &amp; Pacific</td></tr>
+                  <tr><th scope="row">name_len</th><td itemprop="name_len">5</td></tr>
+                  <tr><th scope="row">long_len</th><td itemprop="long_len">5</td></tr>
+                  <tr><th scope="row">abbrev_len</th><td itemprop="abbrev_len">5</td></tr>
+                  <tr><th scope="row">tiny</th><td itemprop="tiny">-99</td></tr>
+                  <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
+               </tbody>
+            </table>
+         </properties>
+      </feature>
+   </body>
+</mapml>

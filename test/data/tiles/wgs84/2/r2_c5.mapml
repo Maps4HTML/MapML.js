@@ -1,0 +1,249 @@
+<mapml>
+   <head>
+      <title>ne_10m_admin_0_countries</title>
+      <base href="http://maps.ecere.com/geoapi/collections/NaturalEarth/cultural/ne_10m_admin_0_countries"/>
+      <meta charset="utf-8"/>
+      <meta content="text/mapml" http-equiv="Content-Type"/>
+   </head>
+   <body>
+      <extent units="WGS84">
+         <input name="zoomLevel" type="zoom" value="1" min="0" max="6"/>
+         <input name="minLon" type="location" value="45" units="gcrs" axis="longitude" position="top-left" min="-180" max="180"/>
+         <input name="minLat" type="location" value="-45" units="gcrs" axis="latitude" position="bottom-right" min="-90" max="90.0002058236639"/>
+         <input name="maxLon" type="location" value="90" units="gcrs" axis="longitude" position="bottom-right" min="-180" max="180"/>
+         <input name="maxLat" type="location" value="0" units="gcrs" axis="latitude" position="top-left" min="-90" max="90.0002058236639"/>
+
+         <link rel='features' type='text/mapml' title='ne_10m_admin_0_countries (as MapML)' tref='./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}'/>
+      </extent>
+      <feature id="fclass.21" class="fclass">
+         <geometry>
+            <multipolygon>
+               <polygon>
+                  <coordinates>55.318851858634 -20.9013916865043 55.2282091192089 -21.0332356711225 55.3106116095953 -21.2303149606299 55.5591924555942 -21.3614722578282 55.8036531770738 -21.3580388207288 55.8331807361289 -21.1623329060612 55.6766160043948 -20.9048251236037 55.318851858634 -20.9013916865043</coordinates>
+               </polygon>
+               <polygon>
+                  <coordinates>45.1304706097784 -12.9811389855338 45.2341604101813 -12.7751327595678 45.0700421168284 -12.6831166453031 45.1304706097784 -12.9811389855338</coordinates>
+               </polygon>
+            </multipolygon>
+         </geometry>
+         <properties>
+            <table>
+               <thead>
+                  <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
+               </thead>
+               <tbody>
+                  <tr><th scope="row">scalerank</th><td itemprop="scalerank">0</td></tr>
+                  <tr><th scope="row">featurecla</th><td itemprop="featurecla">Admin-0 country</td></tr>
+                  <tr><th scope="row">labelrank</th><td itemprop="labelrank">2</td></tr>
+                  <tr><th scope="row">sovereignt</th><td itemprop="sovereignt">France</td></tr>
+                  <tr><th scope="row">sov_a3</th><td itemprop="sov_a3">FR1</td></tr>
+                  <tr><th scope="row">adm0_dif</th><td itemprop="adm0_dif">1</td></tr>
+                  <tr><th scope="row">level</th><td itemprop="level">2</td></tr>
+                  <tr><th scope="row">type</th><td itemprop="type">Country</td></tr>
+                  <tr><th scope="row">admin</th><td itemprop="admin">France</td></tr>
+                  <tr><th scope="row">adm0_a3</th><td itemprop="adm0_a3">FRA</td></tr>
+                  <tr><th scope="row">geou_dif</th><td itemprop="geou_dif">0</td></tr>
+                  <tr><th scope="row">geounit</th><td itemprop="geounit">France</td></tr>
+                  <tr><th scope="row">gu_a3</th><td itemprop="gu_a3">FRA</td></tr>
+                  <tr><th scope="row">su_dif</th><td itemprop="su_dif">0</td></tr>
+                  <tr><th scope="row">subunit</th><td itemprop="subunit">France</td></tr>
+                  <tr><th scope="row">su_a3</th><td itemprop="su_a3">FRA</td></tr>
+                  <tr><th scope="row">brk_diff</th><td itemprop="brk_diff">0</td></tr>
+                  <tr><th scope="row">name</th><td itemprop="name">France</td></tr>
+                  <tr><th scope="row">name_long</th><td itemprop="name_long">France</td></tr>
+                  <tr><th scope="row">brk_a3</th><td itemprop="brk_a3">FRA</td></tr>
+                  <tr><th scope="row">brk_name</th><td itemprop="brk_name">France</td></tr>
+                  <tr><th scope="row">abbrev</th><td itemprop="abbrev">Fr.</td></tr>
+                  <tr><th scope="row">postal</th><td itemprop="postal">F</td></tr>
+                  <tr><th scope="row">formal_en</th><td itemprop="formal_en">French Republic</td></tr>
+                  <tr><th scope="row">name_sort</th><td itemprop="name_sort">France</td></tr>
+                  <tr><th scope="row">mapcolor7</th><td itemprop="mapcolor7">7</td></tr>
+                  <tr><th scope="row">mapcolor8</th><td itemprop="mapcolor8">5</td></tr>
+                  <tr><th scope="row">mapcolor9</th><td itemprop="mapcolor9">9</td></tr>
+                  <tr><th scope="row">mapcolor13</th><td itemprop="mapcolor13">11</td></tr>
+                  <tr><th scope="row">pop_est</th><td itemprop="pop_est">64057792</td></tr>
+                  <tr><th scope="row">gdp_md_est</th><td itemprop="gdp_md_est">2128000</td></tr>
+                  <tr><th scope="row">pop_year</th><td itemprop="pop_year">-99</td></tr>
+                  <tr><th scope="row">lastcensus</th><td itemprop="lastcensus">-99</td></tr>
+                  <tr><th scope="row">gdp_year</th><td itemprop="gdp_year">-99</td></tr>
+                  <tr><th scope="row">economy</th><td itemprop="economy">1. Developed region: G7</td></tr>
+                  <tr><th scope="row">income_grp</th><td itemprop="income_grp">1. High income: OECD</td></tr>
+                  <tr><th scope="row">wikipedia</th><td itemprop="wikipedia">-99</td></tr>
+                  <tr><th scope="row">iso_a2</th><td itemprop="iso_a2">FR</td></tr>
+                  <tr><th scope="row">iso_a3</th><td itemprop="iso_a3">FRA</td></tr>
+                  <tr><th scope="row">iso_n3</th><td itemprop="iso_n3">250</td></tr>
+                  <tr><th scope="row">un_a3</th><td itemprop="un_a3">250</td></tr>
+                  <tr><th scope="row">wb_a2</th><td itemprop="wb_a2">FR</td></tr>
+                  <tr><th scope="row">wb_a3</th><td itemprop="wb_a3">FRA</td></tr>
+                  <tr><th scope="row">woe_id</th><td itemprop="woe_id">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_is</th><td itemprop="adm0_a3_is">FRA</td></tr>
+                  <tr><th scope="row">adm0_a3_us</th><td itemprop="adm0_a3_us">FRA</td></tr>
+                  <tr><th scope="row">adm0_a3_un</th><td itemprop="adm0_a3_un">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_wb</th><td itemprop="adm0_a3_wb">-99</td></tr>
+                  <tr><th scope="row">continent</th><td itemprop="continent">Europe</td></tr>
+                  <tr><th scope="row">region_un</th><td itemprop="region_un">Europe</td></tr>
+                  <tr><th scope="row">subregion</th><td itemprop="subregion">Western Europe</td></tr>
+                  <tr><th scope="row">region_wb</th><td itemprop="region_wb">Europe &amp; Central Asia</td></tr>
+                  <tr><th scope="row">name_len</th><td itemprop="name_len">6</td></tr>
+                  <tr><th scope="row">long_len</th><td itemprop="long_len">6</td></tr>
+                  <tr><th scope="row">abbrev_len</th><td itemprop="abbrev_len">3</td></tr>
+                  <tr><th scope="row">tiny</th><td itemprop="tiny">-99</td></tr>
+                  <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
+               </tbody>
+            </table>
+         </properties>
+      </feature>
+      <feature id="fclass.41" class="fclass">
+         <geometry>
+            <multipolygon>
+               <polygon>
+                  <coordinates>50.0526460355246 -16.6411829335287 49.8459531221388 -16.9453854605384 49.8370261856803 -17.093023255814 50.0526460355246 -16.6411829335287</coordinates>
+               </polygon>
+               <polygon>
+                  <coordinates>48.8179820545688 -13.1383904046878 48.7774674967955 -13.4110053103827 48.556354147592 -13.4542666178356 48.2082036257096 -13.7969236403589 48.1017670756272 -13.5311756088628 47.9088079106391 -13.5881706647134 47.8806537264237 -13.8676524446072 48.030351583959 -14.1704815967771 47.7989379234572 -14.2302234023073 47.697308185314 -14.3936550082402 47.7776506134408 -14.5873008606482 47.4260666544589 -15.1579381065739 47.4741347738509 -14.6449826039187 47.2598882988464 -14.9169108221937 47.0422083867424 -15.1840322285296 47.2145669291339 -15.4216260758103 46.9646127082952 -15.5095220655558 47.050448635781 -15.3302966489654 46.9543123969969 -15.1847189159495 46.2628181651712 -15.6914942318257 45.9950100714155 -15.7903772202893 45.6571598608313 -15.7835103460905 45.611151803699 -15.9586156381615 45.3227430873466 -16.0265976927303 45.2684947811756 -15.9297747665263 45.0817158029665 -16.064365500824 <span class='noline'>45 -16.1199871818348 45 -16.1556949276689 45 -16.2429042299945 45 -16.367194652994 45 -16.4592107672587 45 -16.6556033693463 45 -17.2234938655924 45 -17.7179088079106 45 -18.4457974729903 45 -19.3453579930416 45 -19.4813221021791 45 -19.5211499725325 45 -19.566471342245 45 -19.983977293536 45 -20.0814869071599 45 -20.1851767075627 45 -20.9007049990844 45 -21.072376854056 45 -21.6066196667277 45 -21.7782915216993 45 -23.3411920893609 45 -23.6199871818348 45 -24.2991210401025 45 -25.2989379234572 45 -25.3380791063908 45 -25.469923091009</span> 45.1565647317341 -25.5873466398096 45.5575901849478 -25.5701794543124 45.7738967222121 -25.4081212232192 46.3101995971434 -25.1629738143197 46.7077916132576 -25.1842611243362 47.1156839406702 -24.9301867789782 47.5421168284197 -23.8747482146127 47.8181651712141 -22.9772477568211 47.9122413477385 -22.4265244460721 48.2020234389306 -21.7961453946164 48.4265702252335 -21.1005310382714 48.6312030763596 -20.3582219373741 48.792574620033 -20.0128181651712 48.8598699871818 -19.6845815784655 49.3432979307819 -18.4197033510346 49.5163431605933 -17.7343893059879 49.4291338582677 -17.3065830433986 49.5911920893609 -16.8966306537264 49.8239791247024 -16.8410089727156 49.7154825123604 -16.7503662332906 49.8473264969786 -16.5024720747116 49.8548800585973 -16.1968961728621 49.6735945797473 -16.0835927485808 49.7340230726973 -15.9146676432888 49.6255264603553 -15.4902948177989 49.8844076176524 -15.4339864493682 50.1913568943417 -16.003937007874 50.4172770554843 -15.6331258011353 50.5189067936275 -15.2568210950375 50.2421717634133 -14.8180278337301 50.1879234572423 -14.2666178355613 50.1274949642923 -13.7502288958066 49.9056949276689 -12.9481779893792 49.5925654642007 -12.6384819630104 49.5252700970518 -12.350759934078 49.1956601355063 -12.1955685771837 49.3714521149973 -12.1866416407251 49.2890496246109 -11.9305072331075 49.1393517670756 -12.0884453396814 49.1956601355063 -12.1955685771837 48.8955777330159 -12.4331624244644 48.7273393151437 -12.4036348654093 48.8797839223585 -12.598654092657 48.961499725325 -12.8541018128548 48.8179820545688 -13.1383904046878</coordinates>
+                  <coordinates>46.2628181651712 -15.6914942318257 46.4269364585241 -15.8913202710126 46.2772386009888 -15.9290880791064 46.2628181651712 -15.6914942318257</coordinates>
+               </polygon>
+            </multipolygon>
+         </geometry>
+         <properties>
+            <table>
+               <thead>
+                  <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
+               </thead>
+               <tbody>
+                  <tr><th scope="row">scalerank</th><td itemprop="scalerank">0</td></tr>
+                  <tr><th scope="row">featurecla</th><td itemprop="featurecla">Admin-0 country</td></tr>
+                  <tr><th scope="row">labelrank</th><td itemprop="labelrank">3</td></tr>
+                  <tr><th scope="row">sovereignt</th><td itemprop="sovereignt">Madagascar</td></tr>
+                  <tr><th scope="row">sov_a3</th><td itemprop="sov_a3">MDG</td></tr>
+                  <tr><th scope="row">adm0_dif</th><td itemprop="adm0_dif">0</td></tr>
+                  <tr><th scope="row">level</th><td itemprop="level">2</td></tr>
+                  <tr><th scope="row">type</th><td itemprop="type">Sovereign country</td></tr>
+                  <tr><th scope="row">admin</th><td itemprop="admin">Madagascar</td></tr>
+                  <tr><th scope="row">adm0_a3</th><td itemprop="adm0_a3">MDG</td></tr>
+                  <tr><th scope="row">geou_dif</th><td itemprop="geou_dif">0</td></tr>
+                  <tr><th scope="row">geounit</th><td itemprop="geounit">Madagascar</td></tr>
+                  <tr><th scope="row">gu_a3</th><td itemprop="gu_a3">MDG</td></tr>
+                  <tr><th scope="row">su_dif</th><td itemprop="su_dif">0</td></tr>
+                  <tr><th scope="row">subunit</th><td itemprop="subunit">Madagascar</td></tr>
+                  <tr><th scope="row">su_a3</th><td itemprop="su_a3">MDG</td></tr>
+                  <tr><th scope="row">brk_diff</th><td itemprop="brk_diff">0</td></tr>
+                  <tr><th scope="row">name</th><td itemprop="name">Madagascar</td></tr>
+                  <tr><th scope="row">name_long</th><td itemprop="name_long">Madagascar</td></tr>
+                  <tr><th scope="row">brk_a3</th><td itemprop="brk_a3">MDG</td></tr>
+                  <tr><th scope="row">brk_name</th><td itemprop="brk_name">Madagascar</td></tr>
+                  <tr><th scope="row">abbrev</th><td itemprop="abbrev">Mad.</td></tr>
+                  <tr><th scope="row">postal</th><td itemprop="postal">MG</td></tr>
+                  <tr><th scope="row">formal_en</th><td itemprop="formal_en">Republic of Madagascar</td></tr>
+                  <tr><th scope="row">name_sort</th><td itemprop="name_sort">Madagascar</td></tr>
+                  <tr><th scope="row">mapcolor7</th><td itemprop="mapcolor7">6</td></tr>
+                  <tr><th scope="row">mapcolor8</th><td itemprop="mapcolor8">5</td></tr>
+                  <tr><th scope="row">mapcolor9</th><td itemprop="mapcolor9">2</td></tr>
+                  <tr><th scope="row">mapcolor13</th><td itemprop="mapcolor13">3</td></tr>
+                  <tr><th scope="row">pop_est</th><td itemprop="pop_est">20653556</td></tr>
+                  <tr><th scope="row">gdp_md_est</th><td itemprop="gdp_md_est">20130</td></tr>
+                  <tr><th scope="row">pop_year</th><td itemprop="pop_year">-99</td></tr>
+                  <tr><th scope="row">lastcensus</th><td itemprop="lastcensus">1993</td></tr>
+                  <tr><th scope="row">gdp_year</th><td itemprop="gdp_year">-99</td></tr>
+                  <tr><th scope="row">economy</th><td itemprop="economy">7. Least developed region</td></tr>
+                  <tr><th scope="row">income_grp</th><td itemprop="income_grp">5. Low income</td></tr>
+                  <tr><th scope="row">wikipedia</th><td itemprop="wikipedia">-99</td></tr>
+                  <tr><th scope="row">iso_a2</th><td itemprop="iso_a2">MG</td></tr>
+                  <tr><th scope="row">iso_a3</th><td itemprop="iso_a3">MDG</td></tr>
+                  <tr><th scope="row">iso_n3</th><td itemprop="iso_n3">450</td></tr>
+                  <tr><th scope="row">un_a3</th><td itemprop="un_a3">450</td></tr>
+                  <tr><th scope="row">wb_a2</th><td itemprop="wb_a2">MG</td></tr>
+                  <tr><th scope="row">wb_a3</th><td itemprop="wb_a3">MDG</td></tr>
+                  <tr><th scope="row">woe_id</th><td itemprop="woe_id">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_is</th><td itemprop="adm0_a3_is">MDG</td></tr>
+                  <tr><th scope="row">adm0_a3_us</th><td itemprop="adm0_a3_us">MDG</td></tr>
+                  <tr><th scope="row">adm0_a3_un</th><td itemprop="adm0_a3_un">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_wb</th><td itemprop="adm0_a3_wb">-99</td></tr>
+                  <tr><th scope="row">continent</th><td itemprop="continent">Africa</td></tr>
+                  <tr><th scope="row">region_un</th><td itemprop="region_un">Africa</td></tr>
+                  <tr><th scope="row">subregion</th><td itemprop="subregion">Eastern Africa</td></tr>
+                  <tr><th scope="row">region_wb</th><td itemprop="region_wb">Sub-Saharan Africa</td></tr>
+                  <tr><th scope="row">name_len</th><td itemprop="name_len">10</td></tr>
+                  <tr><th scope="row">long_len</th><td itemprop="long_len">10</td></tr>
+                  <tr><th scope="row">abbrev_len</th><td itemprop="abbrev_len">4</td></tr>
+                  <tr><th scope="row">tiny</th><td itemprop="tiny">-99</td></tr>
+                  <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
+               </tbody>
+            </table>
+         </properties>
+      </feature>
+      <feature id="fclass.44" class="fclass">
+         <geometry>
+            <polygon>
+               <coordinates>57.7950466947445 -20.2201977659769 57.6707562717451 -19.9997711041934 57.5492125984252 -19.9997711041934 57.3857809924922 -20.2373649514741 57.3562534334371 -20.4962461087713 57.671442959165 -20.4983061710309 57.7950466947445 -20.2201977659769</coordinates>
+            </polygon>
+         </geometry>
+         <properties>
+            <table>
+               <thead>
+                  <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
+               </thead>
+               <tbody>
+                  <tr><th scope="row">scalerank</th><td itemprop="scalerank">3</td></tr>
+                  <tr><th scope="row">featurecla</th><td itemprop="featurecla">Admin-0 country</td></tr>
+                  <tr><th scope="row">labelrank</th><td itemprop="labelrank">5</td></tr>
+                  <tr><th scope="row">sovereignt</th><td itemprop="sovereignt">Mauritius</td></tr>
+                  <tr><th scope="row">sov_a3</th><td itemprop="sov_a3">MUS</td></tr>
+                  <tr><th scope="row">adm0_dif</th><td itemprop="adm0_dif">0</td></tr>
+                  <tr><th scope="row">level</th><td itemprop="level">2</td></tr>
+                  <tr><th scope="row">type</th><td itemprop="type">Sovereign country</td></tr>
+                  <tr><th scope="row">admin</th><td itemprop="admin">Mauritius</td></tr>
+                  <tr><th scope="row">adm0_a3</th><td itemprop="adm0_a3">MUS</td></tr>
+                  <tr><th scope="row">geou_dif</th><td itemprop="geou_dif">0</td></tr>
+                  <tr><th scope="row">geounit</th><td itemprop="geounit">Mauritius</td></tr>
+                  <tr><th scope="row">gu_a3</th><td itemprop="gu_a3">MUS</td></tr>
+                  <tr><th scope="row">su_dif</th><td itemprop="su_dif">0</td></tr>
+                  <tr><th scope="row">subunit</th><td itemprop="subunit">Mauritius</td></tr>
+                  <tr><th scope="row">su_a3</th><td itemprop="su_a3">MUS</td></tr>
+                  <tr><th scope="row">brk_diff</th><td itemprop="brk_diff">0</td></tr>
+                  <tr><th scope="row">name</th><td itemprop="name">Mauritius</td></tr>
+                  <tr><th scope="row">name_long</th><td itemprop="name_long">Mauritius</td></tr>
+                  <tr><th scope="row">brk_a3</th><td itemprop="brk_a3">MUS</td></tr>
+                  <tr><th scope="row">brk_name</th><td itemprop="brk_name">Mauritius</td></tr>
+                  <tr><th scope="row">abbrev</th><td itemprop="abbrev">Mus.</td></tr>
+                  <tr><th scope="row">postal</th><td itemprop="postal">MU</td></tr>
+                  <tr><th scope="row">formal_en</th><td itemprop="formal_en">Republic of Mauritius</td></tr>
+                  <tr><th scope="row">name_sort</th><td itemprop="name_sort">Mauritius</td></tr>
+                  <tr><th scope="row">mapcolor7</th><td itemprop="mapcolor7">1</td></tr>
+                  <tr><th scope="row">mapcolor8</th><td itemprop="mapcolor8">3</td></tr>
+                  <tr><th scope="row">mapcolor9</th><td itemprop="mapcolor9">5</td></tr>
+                  <tr><th scope="row">mapcolor13</th><td itemprop="mapcolor13">7</td></tr>
+                  <tr><th scope="row">pop_est</th><td itemprop="pop_est">1284264</td></tr>
+                  <tr><th scope="row">gdp_md_est</th><td itemprop="gdp_md_est">15270</td></tr>
+                  <tr><th scope="row">pop_year</th><td itemprop="pop_year">-99</td></tr>
+                  <tr><th scope="row">lastcensus</th><td itemprop="lastcensus">2011</td></tr>
+                  <tr><th scope="row">gdp_year</th><td itemprop="gdp_year">-99</td></tr>
+                  <tr><th scope="row">economy</th><td itemprop="economy">6. Developing region</td></tr>
+                  <tr><th scope="row">income_grp</th><td itemprop="income_grp">3. Upper middle income</td></tr>
+                  <tr><th scope="row">wikipedia</th><td itemprop="wikipedia">-99</td></tr>
+                  <tr><th scope="row">iso_a2</th><td itemprop="iso_a2">MU</td></tr>
+                  <tr><th scope="row">iso_a3</th><td itemprop="iso_a3">MUS</td></tr>
+                  <tr><th scope="row">iso_n3</th><td itemprop="iso_n3">480</td></tr>
+                  <tr><th scope="row">un_a3</th><td itemprop="un_a3">480</td></tr>
+                  <tr><th scope="row">wb_a2</th><td itemprop="wb_a2">MU</td></tr>
+                  <tr><th scope="row">wb_a3</th><td itemprop="wb_a3">MUS</td></tr>
+                  <tr><th scope="row">woe_id</th><td itemprop="woe_id">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_is</th><td itemprop="adm0_a3_is">MUS</td></tr>
+                  <tr><th scope="row">adm0_a3_us</th><td itemprop="adm0_a3_us">MUS</td></tr>
+                  <tr><th scope="row">adm0_a3_un</th><td itemprop="adm0_a3_un">-99</td></tr>
+                  <tr><th scope="row">adm0_a3_wb</th><td itemprop="adm0_a3_wb">-99</td></tr>
+                  <tr><th scope="row">continent</th><td itemprop="continent">Seven seas (open ocean)</td></tr>
+                  <tr><th scope="row">region_un</th><td itemprop="region_un">Africa</td></tr>
+                  <tr><th scope="row">subregion</th><td itemprop="subregion">Eastern Africa</td></tr>
+                  <tr><th scope="row">region_wb</th><td itemprop="region_wb">Sub-Saharan Africa</td></tr>
+                  <tr><th scope="row">name_len</th><td itemprop="name_len">9</td></tr>
+                  <tr><th scope="row">long_len</th><td itemprop="long_len">9</td></tr>
+                  <tr><th scope="row">abbrev_len</th><td itemprop="abbrev_len">4</td></tr>
+                  <tr><th scope="row">tiny</th><td itemprop="tiny">2</td></tr>
+                  <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
+               </tbody>
+            </table>
+         </properties>
+      </feature>
+   </body>
+</mapml>
