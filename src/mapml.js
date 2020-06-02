@@ -605,9 +605,39 @@ M.Util = {
       pairs.push([parseInt(coords[i-1]),parseInt(coords[i])]);
     }
     return pairs;
+  },
+  parseStylesheetAsHTML: function(mapml, base, container) {
+      if (!mapml || !mapml.querySelector('link[rel=stylesheet],style')) return;
+      var ss = [];
+      var stylesheets = mapml.querySelectorAll('link[rel=stylesheet],style');
+      for (var i=0;i<stylesheets.length;i++) {
+        if (stylesheets[i].nodeName.toUpperCase() === "LINK" ) {
+          var href = stylesheets[i].hasAttribute('href') ? new URL(stylesheets[i].getAttribute('href'),base).href: null;
+          if (href) {
+            if (!container.querySelector("link[href='"+href+"']")) {
+              var linkElm = document.createElement("link");
+              linkElm.setAttribute("href", href);
+              linkElm.setAttribute("rel", "stylesheet");
+              ss.push(linkElm);
+            }
+          }  
+        } else { // <style>
+            var styleElm = document.createElement('style');
+            styleElm.textContent = stylesheets[i].textContent;
+            ss.push(styleElm);
+        }
+      }
+      // insert <link> or <style> elements after the begining  of the container
+      // element, in document order as copied from original mapml document
+      // note the code below assumes hrefs have been resolved and elements
+      // re-parsed from xml and serialized as html elements ready for insertion
+      for (var s=ss.length-1;s >= 0;s--) {
+        container.insertAdjacentElement('afterbegin',ss[s]);
+      }
   }
 };
 M.coordsToArray = M.Util.coordsToArray;
+M.parseStylesheetAsHTML = M.Util.parseStylesheetAsHTML;
 M.QueryHandler = L.Handler.extend({
     addHooks: function() {
         // get a reference to the actual <map> element, so we can 
@@ -1399,7 +1429,7 @@ M.MapMLLayer = L.Layer.extend({
                   }
                   layer._mapmlTileContainer.appendChild(tiles);
                 }
-                layer._parseLinkedStylesheets(mapml, base, layer._container);
+                M.parseStylesheetAsHTML(mapml, base, layer._container);
                 var styleLinks = mapml.querySelectorAll('link[rel=style],link[rel="self style"],link[rel="style self"]');
                 if (styleLinks.length > 1) {
                   var stylesControl = document.createElement('details'),
@@ -1450,33 +1480,6 @@ M.MapMLLayer = L.Layer.extend({
             }
             layer.fire('extentload', layer, false);
         }
-    },
-    _parseLinkedStylesheets: function(mapml, base, container) {
-      if (!mapml || !mapml.querySelector('link[rel=stylesheet],style')) return;
-      var ss = [];
-      var stylesheets = mapml.querySelectorAll('link[rel=stylesheet],style');
-      for (var i=0;i<stylesheets.length;i++) {
-        if (stylesheets[i].nodeName.toUpperCase() === "LINK" ) {
-          var href = stylesheets[i].hasAttribute('href') ? new URL(stylesheets[i].getAttribute('href'),base).href: null;
-          if (href) {
-            var linkElm = document.createElement("link");
-            linkElm.setAttribute("href", href);
-            linkElm.setAttribute("rel", "stylesheet");
-            ss.push(linkElm);
-          }  
-        } else { // <style>
-            var styleElm = document.createElement('style');
-            styleElm.textContent = stylesheets[i].textContent;
-            ss.push(styleElm);
-        }
-      }
-      // insert <link> or <style> elements after the begining  of the container
-      // element, in document order as copied from original mapml document
-      // note the code below assumes hrefs have been resolved and elements
-      // re-parsed from xml and serialized as html elements ready for insertion
-      for (var s=ss.length-1;s >= 0;s--) {
-        container.insertAdjacentElement('afterbegin',ss[s]);
-      }
     },
     _createExtent: function () {
     
@@ -2447,34 +2450,12 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       return this.options.pane;
     },
     _drawTile: function(mapml, coords, tile) {
-        var stylesheets = mapml.querySelectorAll('link[rel=stylesheet],style');
+        var stylesheets = mapml.querySelector('link[rel=stylesheet],style');
         if (stylesheets) {
-          var ss = [];
-          for (var si=0;si<stylesheets.length;si++) {
-            if (stylesheets[si].nodeName.toUpperCase() === "LINK" ) {
-              var base = mapml.querySelector('base') && mapml.querySelector('base').hasAttribute('href') ? 
-                  new URL(mapml.querySelector('base').getAttribute('href')).href : 
-                  mapml.URL;
-              var href = stylesheets[si].hasAttribute('href') ? new URL(stylesheets[si].getAttribute('href'),base).href: null;
-              if (href) {
-                var linkElm = document.createElement("link");
-                linkElm.setAttribute("href", href);
-                linkElm.setAttribute("rel", "stylesheet");
-                ss.push(linkElm);
-              }  
-            } else { // <style>
-                var styleElm = document.createElement('style');
-                styleElm.textContent = stylesheets[si].textContent;
-                ss.push(styleElm);
-            }
-          }
-          // insert <link> or <style> elements after the begining  of the container
-          // element, in document order as copied from original mapml document
-          // note the code below assumes hrefs have been resolved and elements
-          // re-parsed from xml and serialized as html elements ready for insertion
-          for (var s=ss.length-1;s >= 0;s--) {
-            tile.insertAdjacentElement('afterbegin',ss[s]);
-          }
+          var base = mapml.querySelector('base') && mapml.querySelector('base').hasAttribute('href') ? 
+              new URL(mapml.querySelector('base').getAttribute('href')).href : 
+              mapml.URL;
+        M.parseStylesheetAsHTML(mapml,base,tile);
         }
         var features = mapml.querySelectorAll('feature');
         for (var i=0; i< features.length; i++) {
@@ -3427,49 +3408,12 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       var features = mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === "LAYER-" ? mapml.getElementsByTagName("feature") : null,
           i, len, feature;
 
-      var linkedStylesheets = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelectorAll("link[rel=stylesheet],style") : null;
+      var linkedStylesheets = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelector("link[rel=stylesheet],style") : null;
       if (linkedStylesheets) {
-        for (i=linkedStylesheets.length-1;i >= 0;i--) {
-
-          // need to resolve URLs in mapml documents against appropriate base URL
-          // so that relative embedded URLs resolve properly against either the
-          // base element or the URL of the document if no base is specified
-          const stylesheet = linkedStylesheets[i];
-          var baseEl = mapml.querySelector('base'),
-            base = (new URL(baseEl?baseEl.getAttribute('href'):mapml.baseURI)).href,
-            href = stylesheet.nodeName.toUpperCase() === "LINK" ?(new URL(stylesheet.getAttribute('href'),base)).href: null;
-          if (href) {
-            if (!this._container.querySelector("link[href='"+href+"']")) {
-              const linkElm = document.createElementNS("http://www.w3.org/1999/xhtml", "link");
-              linkElm.setAttribute("href", href);
-              linkElm.setAttribute("type", "text/css");
-              linkElm.setAttribute("rel", "stylesheet");
-              // if this layer is created via inline content, i.e. by this means:
-              // <layer- label="inline map content belongs to html author">
-              //    <style> _author inline styles_ </style>
-              //    <link rel=stylesheet href="_author styles remote stylesheet">
-              //      <extent>
-              //        ... important mapml stuff ...
-              //        <link rel="features" tref="mapml url here, potentially
-              //                             returning document with remote linked or
-              //                             remote inline styles">
-              //      </extent>
-              // </layer->
-              // we should prepend the links (or inline styles)  into the layer 
-              // _container copied from within the templated features mapml document, 
-              // because we want to allow the html author to be able to override 
-              // them, which they may have done by providing the <style> element
-              // above (so we want the links from the remote mapml documents
-              // loaded via the features templated link above to be inserted
-              // into the shadow root *before* the styles or links that the
-              // html author has created.
-              this._container.prepend(linkElm);
-            }
-          } else { /* style element */
-            // serialize from the XML, parse into the host document as HTML
-            this._container.insertAdjacentHTML('afterbegin',stylesheet.outerHTML);
-          }
-        }
+        var base = mapml.querySelector('base') && mapml.querySelector('base').hasAttribute('href') ? 
+            new URL(mapml.querySelector('base').getAttribute('href')).href : 
+            mapml.URL;
+        M.parseStylesheetAsHTML(mapml,base,this._container);
       }
       
       if (features) {
