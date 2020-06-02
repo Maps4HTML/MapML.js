@@ -2454,7 +2454,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
             if (stylesheets[si].nodeName.toUpperCase() === "LINK" ) {
               var base = mapml.querySelector('base') && mapml.querySelector('base').hasAttribute('href') ? 
                   new URL(mapml.querySelector('base').getAttribute('href')).href : 
-                  new URL(mapml.getURI).href;
+                  mapml.URL;
               var href = stylesheets[si].hasAttribute('href') ? new URL(stylesheets[si].getAttribute('href'),base).href: null;
               if (href) {
                 var linkElm = document.createElement("link");
