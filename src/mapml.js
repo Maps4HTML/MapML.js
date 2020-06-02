@@ -3464,19 +3464,10 @@ M.MapMLFeatures = L.FeatureGroup.extend({
               // into the shadow root *before* the styles or links that the
               // html author has created.
               this._container.prepend(linkElm);
-              // this never fires. Why?
-              this.once('moveend',
-                function() {
-                  linkElm.remove();
-                },this);
             }
           } else { /* style element */
             // serialize from the XML, parse into the host document as HTML
             this._container.insertAdjacentHTML('afterbegin',stylesheet.outerHTML);
-              // this never fires. Why?
-            this.once('moveend', function() {
-              stylesheet.remove();
-            },this);
           }
         }
       }
