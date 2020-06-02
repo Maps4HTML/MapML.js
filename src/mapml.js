@@ -614,10 +614,12 @@ M.Util = {
         if (stylesheets[i].nodeName.toUpperCase() === "LINK" ) {
           var href = stylesheets[i].hasAttribute('href') ? new URL(stylesheets[i].getAttribute('href'),base).href: null;
           if (href) {
-            var linkElm = document.createElement("link");
-            linkElm.setAttribute("href", href);
-            linkElm.setAttribute("rel", "stylesheet");
-            ss.push(linkElm);
+            if (!container.querySelector("link[href='"+href+"']")) {
+              var linkElm = document.createElement("link");
+              linkElm.setAttribute("href", href);
+              linkElm.setAttribute("rel", "stylesheet");
+              ss.push(linkElm);
+            }
           }  
         } else { // <style>
             var styleElm = document.createElement('style');
