@@ -1399,10 +1399,7 @@ M.MapMLLayer = L.Layer.extend({
                   }
                   layer._mapmlTileContainer.appendChild(tiles);
                 }
-                var ss = mapml.querySelectorAll('link[rel=stylesheet],style');
-                if (ss) {
-                  layer._stylesheets = layer._parseLinkedStylesheets(ss, base);
-                }
+                layer._parseLinkedStylesheets(mapml, base, layer._container);
                 var styleLinks = mapml.querySelectorAll('link[rel=style],link[rel="self style"],link[rel="style self"]');
                 if (styleLinks.length > 1) {
                   var stylesControl = document.createElement('details'),
@@ -1454,9 +1451,10 @@ M.MapMLLayer = L.Layer.extend({
             layer.fire('extentload', layer, false);
         }
     },
-    _parseLinkedStylesheets: function(stylesheets, base) {
-      if (!stylesheets) return;
+    _parseLinkedStylesheets: function(mapml, base, container) {
+      if (!mapml || !mapml.querySelector('link[rel=stylesheet],style')) return;
       var ss = [];
+      var stylesheets = mapml.querySelectorAll('link[rel=stylesheet],style');
       for (var i=0;i<stylesheets.length;i++) {
         if (stylesheets[i].nodeName.toUpperCase() === "LINK" ) {
           var href = stylesheets[i].hasAttribute('href') ? new URL(stylesheets[i].getAttribute('href'),base).href: null;
@@ -1472,7 +1470,13 @@ M.MapMLLayer = L.Layer.extend({
             ss.push(styleElm);
         }
       }
-      return ss;
+      // insert <link> or <style> elements after the begining  of the container
+      // element, in document order as copied from original mapml document
+      // note the code below assumes hrefs have been resolved and elements
+      // re-parsed from xml and serialized as html elements ready for insertion
+      for (var s=ss.length-1;s >= 0;s--) {
+        container.insertAdjacentElement('afterbegin',ss[s]);
+      }
     },
     _createExtent: function () {
     
@@ -2405,6 +2409,17 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       // Leaflet tutorial: http://leafletjs.com/examples/extending/extending-1-classes.html#methods-of-the-parent-class
       L.TileLayer.prototype.initialize.call(this, template.template, L.extend(options, {pane: this._container}));
     },
+    _initContainer: function () {
+      if (this._container) { return; }
+
+      this._container = L.DomUtil.create('div', 'leaflet-layer', this.options.pane);
+      L.DomUtil.addClass(this._container,'mapml-templated-tile-container');
+      this._updateZIndex();
+
+      if (this.options.opacity < 1) {
+        this._updateOpacity();
+      }
+    },
     createTile: function (coords) {
       if (this._template.type.startsWith('image/')) {
         return L.TileLayer.prototype.createTile.call(this, coords, function(){});
@@ -2432,6 +2447,35 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       return this.options.pane;
     },
     _drawTile: function(mapml, coords, tile) {
+        var stylesheets = mapml.querySelectorAll('link[rel=stylesheet],style');
+        if (stylesheets) {
+          var ss = [];
+          for (var si=0;si<stylesheets.length;si++) {
+            if (stylesheets[si].nodeName.toUpperCase() === "LINK" ) {
+              var base = mapml.querySelector('base') && mapml.querySelector('base').hasAttribute('href') ? 
+                  new URL(mapml.querySelector('base').getAttribute('href')).href : 
+                  new URL(mapml.getURI).href;
+              var href = stylesheets[si].hasAttribute('href') ? new URL(stylesheets[si].getAttribute('href'),base).href: null;
+              if (href) {
+                var linkElm = document.createElement("link");
+                linkElm.setAttribute("href", href);
+                linkElm.setAttribute("rel", "stylesheet");
+                ss.push(linkElm);
+              }  
+            } else { // <style>
+                var styleElm = document.createElement('style');
+                styleElm.textContent = stylesheets[i].textContent;
+                ss.push(styleElm);
+            }
+          }
+          // insert <link> or <style> elements after the begining  of the container
+          // element, in document order as copied from original mapml document
+          // note the code below assumes hrefs have been resolved and elements
+          // re-parsed from xml and serialized as html elements ready for insertion
+          for (var s=ss.length-1;s >= 0;s--) {
+            tile.insertAdjacentElement('afterbegin',ss[s]);
+          }
+        }
         var features = mapml.querySelectorAll('feature');
         for (var i=0; i< features.length; i++) {
           this._draw(features[i], coords, tile);
@@ -2762,27 +2806,6 @@ M.TemplatedTileLayer = L.TileLayer.extend({
         points.push(point);
       }
       return points;
-    },
-    _initContainer: function () {
-      if (this._container) { return; }
-
-      this._container = L.DomUtil.create('div', 'leaflet-layer', this.options.pane);
-      L.DomUtil.addClass(this._container,'mapml-templated-tile-container');
-      var stylesheets = this.options._leafletLayer && this.options._leafletLayer._stylesheets;
-      if (stylesheets) {
-        // insert <link> or <style> elements after the begining  of the container
-        // element, in document order as copied from original mapml document
-        // note the code below assumes hrefs have been resolved and elements
-        // re-parsed from xml and serialized as html elements ready for insertion
-        for (var i=stylesheets.length-1;i >= 0;i--) {
-          this._container.insertAdjacentElement('afterbegin',stylesheets[i]);
-        }
-      }
-      this._updateZIndex();
-
-      if (this.options.opacity < 1) {
-        this._updateOpacity();
-      }
     },
     _fetchTile:  function (coords, tile) {
        fetch(this.getTileUrl(coords),{redirect: 'follow'}).then(
