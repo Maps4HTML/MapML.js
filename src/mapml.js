@@ -2464,7 +2464,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
               }  
             } else { // <style>
                 var styleElm = document.createElement('style');
-                styleElm.textContent = stylesheets[i].textContent;
+                styleElm.textContent = stylesheets[si].textContent;
                 ss.push(styleElm);
             }
           }
