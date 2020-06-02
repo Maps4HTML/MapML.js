@@ -3403,6 +3403,10 @@ M.MapMLFeatures = L.FeatureGroup.extend({
         this.addData(mapml);
       }
     },
+    
+    getEvents: function(){
+      return {'moveend':this._removeCSS};
+    },
 
     addData: function (mapml) {
       var features = mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === "LAYER-" ? mapml.getElementsByTagName("feature") : null,
@@ -3477,7 +3481,13 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       if (layer.setStyle) {
         layer.setStyle(style);
       }
-    }
+    },
+    _removeCSS: function(){
+      let toDelete = this._container.querySelectorAll("link[rel=stylesheet],style");
+      for(let i = 0; i < toDelete.length;i++){
+        this._container.removeChild(toDelete[i]);
+      }
+    },
 });
 L.extend(M.MapMLFeatures, {
 	 geometryToLayer: function (mapml, pointToLayer, coordsToLatLng, vectorOptions) {
