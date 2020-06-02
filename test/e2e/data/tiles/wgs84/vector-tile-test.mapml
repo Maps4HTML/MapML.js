@@ -4,6 +4,11 @@
         <meta charset="utf-8" />
         <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="© Natural Resources Canada" />
         <link rel="stylesheet" href="vector-tile-test.css" />
+        <style>
+            .secondLayerVector{
+                color:black;
+            }
+        </style>
     </head>
     <body>
       <extent units="WGS84">

@@ -3,20 +3,19 @@ const playwright = require("playwright");
 let page, browser, context;
 
 describe("Playwright Style Parsed and Implemented Test", () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     browser = await playwright["chromium"].launch({ headless: true });
     context = await browser.newContext();
     page = await context.newPage();
     await page.goto(PATH + "styleOrder.html");
   });
 
-  afterEach(async function () {
-    //await page.screenshot({ path: `${this.currentTest.title.replace(/\s+/g, '_')}.png` })
+  afterAll(async function () {
     await browser.close();
   });
 
   //check the order of inline CSS style tag/link addition
-  test("Inline CSS added inorder for feature", async () => {
+  test("CSS within html page added to inorder to overlay-pane container", async () => {
     const styleContent = await page.$eval(
       "css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div",
       (styleE) => styleE.innerHTML
@@ -30,7 +29,7 @@ describe("Playwright Style Parsed and Implemented Test", () => {
   });
 
   //check the order of referenced CSS style tag/link addition
-  test("Referenced CSS added inorder for feature", async () => {
+  test("CSS from a retrieved MapML file added inorder inside templated-layer container", async () => {
     //has to wait since it takes awhile to load in large Canvec layer
     const firstStyle = await page.$eval(
       "css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link",
@@ -44,7 +43,7 @@ describe("Playwright Style Parsed and Implemented Test", () => {
       expect(secondStyle).toMatch("canvec_feature");
   });
 
-  test("Inline CSS added for feature", async () => {
+  test("CSS within html page added to overlay-pane container", async () => {
     //ask how the inline styles are added to affect an entire layer
     const foundStyleLink = await page.$("#first");
     const foundStyleTag = await page.$(
@@ -53,7 +52,7 @@ describe("Playwright Style Parsed and Implemented Test", () => {
     expect(foundStyleTag).toBeTruthy() && expect(foundStyleLink).toBeTruthy();
   });
 
-  test("Referenced CSS added for feature", async () => {
+  test("CSS from a retrieved MapML File added to templated-layer container", async () => {
     const foundStyleLinkOne = await page.$(
       "css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link"
     );
@@ -64,14 +63,14 @@ describe("Playwright Style Parsed and Implemented Test", () => {
       expect(foundStyleLinkTwo).toBeTruthy();
   });
 
-  test("Referenced CSS added inorder for vector tile", async () => {
+  test("CSS from a retrieved MapML file added inorder inside svg within templated-tile-container", async () => {
     const foundStyleLinkOne = await page.$(
-      "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > style"
+      "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg:nth-child(1) > style"
     );
     expect(foundStyleLinkOne).toBeTruthy();
   });
 
-  test("Inline CSS added inorder for vector tile", async () => {
+  test("CSS within html page added inorder to overlay-pane container", async () => {
     const foundStyleLink = await page.$(
       "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > link"
     );

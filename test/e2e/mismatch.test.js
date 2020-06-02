@@ -5,14 +5,14 @@ const domToPlaywright = require("dom-to-playwright").default;
 let page, browser, context;
 
 describe("Playwright Mismatched Layers Test", () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     browser = await playwright["chromium"].launch({ headless: true });
     context = await browser.newContext();
     page = await context.newPage();
     await page.goto(PATH);
   });
 
-  afterEach(async function () {
+  afterAll(async function () {
     //await page.screenshot({ path: `${this.currentTest.title.replace(/\s+/g, '_')}.png` })
     await browser.close();
   });
