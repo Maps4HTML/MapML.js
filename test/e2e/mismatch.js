@@ -1,24 +1,31 @@
 const playwright = require("playwright");
 const { JSDOM } = require("jsdom");
 const domToPlaywright = require("dom-to-playwright").default;
+jest.setTimeout(30000);
 
-let page, browser, context;
+(async () => {
+  for (const browserType of BROWSER) {
+    let page, browser, context;
+    describe("Playwright Mismatched Layers Test in " + browserType, () => {
+      beforeAll(async () => {
+        browser = await playwright[browserType].launch({
+          headless: ISHEADLESS,
+        });
+        context = await browser.newContext();
+        page = await context.newPage();
+        if (browserType === "firefox") {
+          await page.waitForNavigation();
+        }
+        await page.goto(PATH);
+      });
 
-describe("Playwright Mismatched Layers Test", () => {
-  beforeAll(async () => {
-    browser = await playwright["chromium"].launch({ headless: true });
-    context = await browser.newContext();
-    page = await context.newPage();
-    await page.goto(PATH);
-  });
+      afterAll(async function () {
+        //await page.screenshot({ path: `${this.currentTest.title.replace(/\s+/g, '_')}.png` })
+        await browser.close();
+      });
 
-  afterAll(async function () {
-    //await page.screenshot({ path: `${this.currentTest.title.replace(/\s+/g, '_')}.png` })
-    await browser.close();
-  });
-
-  test("CBMTILE Map with OSMTILE layer", async () => {
-    const { document } = new JSDOM(`
+      test("["+browserType+"] "+"CBMTILE Map with OSMTILE layer", async () => {
+        const { document } = new JSDOM(`
         <!doctype html>
             <html>
             <head>
@@ -37,15 +44,15 @@ describe("Playwright Mismatched Layers Test", () => {
             </body>
             </html>
         `).window;
-    const { update } = await domToPlaywright(page, document);
+        const { update } = await domToPlaywright(page, document);
 
-    await update(document);
-    let el = await document.getElementById("checkMe");
-    expect(el.getAttribute("disabled")).not.toBe(null);
-  });
+        await update(document);
+        let el = await document.getElementById("checkMe");
+        expect(el.getAttribute("disabled")).not.toBe(null);
+      });
 
-  test("OSMTILE Map with CBMTILE layer", async () => {
-    const { document } = new JSDOM(`
+      test("["+browserType+"] "+"OSMTILE Map with CBMTILE layer", async () => {
+        const { document } = new JSDOM(`
         <!doctype html>
             <html>
             <head>
@@ -64,10 +71,12 @@ describe("Playwright Mismatched Layers Test", () => {
             </body>
             </html>
         `).window;
-    const { update } = await domToPlaywright(page, document);
+        const { update } = await domToPlaywright(page, document);
 
-    await update(document);
-    let el = await document.getElementById("checkMe");
-    expect(el.getAttribute("disabled")).not.toBe(null);
-  });
-});
+        await update(document);
+        let el = await document.getElementById("checkMe");
+        expect(el.getAttribute("disabled")).not.toBe(null);
+      });
+    });
+  }
+})();
