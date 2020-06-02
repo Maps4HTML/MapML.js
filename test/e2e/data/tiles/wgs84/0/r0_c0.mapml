@@ -5,10 +5,16 @@
       <meta charset="utf-8"/>
       <meta content="text/mapml" http-equiv="Content-Type"/>
       <style>
-         .refStyle{
+         .refStyleOne{
             color:black;
          }
       </style>
+      <style>
+         .refStyleTwo{
+            color:black;
+         }
+      </style>
+      <link rel="stylesheet" href="" />
    </head>
    <body>
       <feature id="fclass.2" class="fclass">
