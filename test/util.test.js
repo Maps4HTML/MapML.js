@@ -161,5 +161,63 @@ describe("M.Util Tests", () => {
         expect(check).toBeFalsy();
     });
   });
+
+  describe("M.coordsToArray(containerPoints) utility function tests", () => {
+
+    /* test("Null input", () => {
+      var output = M.coordsToArray(null);
+      expect(output).toEqual([])
+    });
+
+    test("Array of numbers input", () => {
+      var inputArray = [1, 2, 3, 4];
+
+      var output = M.coordsToArray(inputArray);
+      expect(output).toEqual([[1, 2], [3, 4]])
+    });
+
+    test("Single number array input", () => {
+      var inputArray = [1];
+
+      var output = M.coordsToArray(inputArray);
+      expect(output).toEqual([])
+    });
+
+    test("Empty array input", () => {
+      var inputArray = [];
+
+      var output = M.coordsToArray(inputArray);
+      expect(output).toEqual([])
+    }); */
+
+    test("Even number of input coords", () => {
+      var inputArray = "1,2,3,4";
+
+      var output = M.coordsToArray(inputArray);
+      expect(output).toEqual([[1, 2], [3, 4]])
+    });
+
+    test("Odd number of input coords", () => {
+      var inputArray = "1,2,3,4,5";
+
+      var output = M.coordsToArray(inputArray);
+      expect(output).toEqual([[1, 2], [3, 4]])
+    });
+
+    test("Single number input", () => {
+      var inputArray = "1";
+
+      var output = M.coordsToArray(inputArray);
+      expect(output).toEqual([])
+    });
+
+    test("Empty string input", () => {
+      var inputArray = "";
+
+      var output = M.coordsToArray(inputArray);
+      expect(output).toEqual([])
+    });
+
+  });
 });
 
