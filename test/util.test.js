@@ -135,8 +135,7 @@ describe("M.Util Tests", () => {
     });
 
     //base = random object
-    test("M.parseStylesheetToHTML(mapml with linked, inline styles, base=Element with href='', container)", () => {
-
+    test("M.parseStylesheetToHTML(mapml with linked, inline styles, base= Object, container)", () => {
       var testcontainer = document.createElement('div');
       var mapml = parser.parseFromString(mapmlString, "application/xml")
 
