@@ -612,7 +612,7 @@ M.Util = {
       if(base instanceof Element) {
         base = base.getAttribute('href')?base.getAttribute('href'):document.URL;
       } else{
-        if (!base || base==="" || base instanceof Object) base=document.URL
+        if (!base || base==="" || base instanceof Object) base=document.URL;
       }
 
       var ss = [];
