@@ -2,6 +2,8 @@ language: node_js
 node_js:
   - node
 dist: bionic
+services:
+  - xvfb
 install:
  - npm install
  - npm install -g grunt-cli
