@@ -607,12 +607,12 @@ M.Util = {
     return pairs;
   },
   parseStylesheetAsHTML: function(mapml, base, container) {
-      if (!mapml || !mapml.querySelector('link[rel=stylesheet],style')) return;
+      if (!(container instanceof Element) || !mapml || !mapml.querySelector('link[rel=stylesheet],style')) return;
 
       if(base instanceof Element) {
         base = base.getAttribute('href')?base.getAttribute('href'):document.URL;
-      } else{
-        if (!base || base==="" || base instanceof Object) base=document.URL;
+      } else if (!base || base==="" || base instanceof Object) {
+        return;
       }
 
       var ss = [];

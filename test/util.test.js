@@ -79,20 +79,18 @@ describe("M.Util Tests", () => {
 
     //base = null
     test("(null, null, null) should do nothing", () => {
-      try {
-        expect(M.parseStylesheetAsHTML(null, null, null));
-      } catch (e) {
-        expect(false).toBeTruthy();
-      }
+      var check = M.parseStylesheetAsHTML(null, null, null)
+      expect(check).toBeFalsy()
     });
 
     test("M.parseStylesheetToHTML(mapml with linked, inline styles, base=null, container)", () => {
       var testcontainer = document.createElement('div');
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       mapml.firstChild.firstChild.append(link);
-      M.parseStylesheetAsHTML(mapml, null, testcontainer);
+      var check = M.parseStylesheetAsHTML(mapml, null, testcontainer);
 
-      expect(testcontainer.querySelector("link").href).toEqual(document.URL + 'remote.css');
+      expect(testcontainer).toEqual(document.createElement('div')) &&
+        expect(check).toBeFalsy();
 
     });
 
@@ -105,12 +103,9 @@ describe("M.Util Tests", () => {
       mapml.firstChild.firstChild.append(styleLinkTwo);
       mapml.firstChild.firstChild.append(styleLinkThree);
 
-      M.parseStylesheetAsHTML(mapml, null, testcontainer);
-
-      expect(testcontainer.children[1].href).toEqual(document.URL + "remote.css") &&
-        expect(testcontainer.children[2].href).toEqual("styleTwo.css") &&
-        expect(testcontainer.children[3].href).toEqual("styleThree.css") &&
-        expect(testcontainer.children[0].textContent).toEqual('.css {property:cool}');
+      var check = M.parseStylesheetAsHTML(mapml, null, testcontainer);
+      expect(testcontainer).toEqual(document.createElement('div')) &&
+        expect(check).toBeFalsy()
     });
 
     //base = Element
@@ -140,8 +135,30 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
 
       mapml.firstChild.firstChild.append(link);
-      M.parseStylesheetAsHTML(mapml, new Object, testcontainer);
-      expect(testcontainer.querySelector('link').href).toEqual(document.URL + 'remote.css');
+      var check = M.parseStylesheetAsHTML(mapml, new Object, testcontainer);
+      expect(testcontainer).toEqual(document.createElement('div')) &&
+        expect(check).toBeFalsy();
+    });
+
+    test("M.parseStylesheetToHTML(mapml with linked, inline styles, base=valid base, container = null)", () => {
+      var testBase = parser.parseFromString('<doc><base href="http://test.com/"/></doc>', 'application/xml').firstChild.firstChild;
+      var testcontainer = document.createElement('div');
+      var mapml = parser.parseFromString(mapmlString, "application/xml");
+      mapml.firstChild.firstChild.append(testBase);
+      mapml.firstChild.firstChild.append(link);
+      var check = M.parseStylesheetAsHTML(mapml, base, null);
+      expect(testcontainer).toEqual(document.createElement('div')) &&
+        expect(check).toBeFalsy();
+    });
+
+    test("M.parseStylesheetToHTML(mapml with linked, inline styles, base=valid base, container = non Element)", () => {
+      var testcontainer = document.createElement('div');
+      var mapml = parser.parseFromString(mapmlString, "application/xml");
+
+      mapml.firstChild.firstChild.append(link);
+      var check = M.parseStylesheetAsHTML(mapml, base, new Object);
+      expect(testcontainer).toEqual(document.createElement('div')) &&
+        expect(check).toBeFalsy();
     });
   });
 });
