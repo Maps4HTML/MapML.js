@@ -10,8 +10,8 @@ module.exports = {
       preset: "jest-playwright-preset",
       globals: {
         PATH: "http://localhost:30001/",
-        BROWSER: ["chromium", "firefox"],
-        ISHEADLESS: false
+        BROWSER: ["chromium"],
+        ISHEADLESS: true
       },
       testMatch: ["**/test/e2e/*.test.js"]
     }
