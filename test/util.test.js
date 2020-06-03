@@ -6,7 +6,7 @@ describe("M.Util Tests", () => {
     var mapmlString = "<mapml><head><style>.css {property:cool}</style></head><body></body></mapml>",
       parser = new DOMParser(),
       base = "https://example.org/mapml/is/awesome/",
-      link = parser.parseFromString('<doc><link rel="stylesheet" href="./remote.css" /></doc>', 'application/xml').firstChild;
+      link = parser.parseFromString('<doc><link rel="stylesheet" href="./remote.css" /></doc>', 'application/xml').firstChild.firstChild;
 
 
     test("M.parseStylesheetToHTML(mapml,base,container)", () => {
@@ -92,7 +92,7 @@ describe("M.Util Tests", () => {
       mapml.firstChild.firstChild.append(link);
       M.parseStylesheetAsHTML(mapml, null, testcontainer)
 
-      expect(testcontainer.querySelector("link").href).toEqual('remote.css')
+      expect(testcontainer.querySelector("link").href).toEqual(document.URL + 'remote.css')
 
     });
 
@@ -107,7 +107,7 @@ describe("M.Util Tests", () => {
 
       M.parseStylesheetAsHTML(mapml, null, testcontainer)
 
-      expect(testcontainer.children[1].href).toEqual("remote.css") &&
+      expect(testcontainer.children[1].href).toEqual(document.URL + "remote.css") &&
         expect(testcontainer.children[2].href).toEqual("styleTwo.css") &&
         expect(testcontainer.children[3].href).toEqual("styleThree.css") &&
         expect(testcontainer.children[0].textContent).toEqual('.css {property:cool}');
@@ -121,11 +121,11 @@ describe("M.Util Tests", () => {
       mapml.firstChild.firstChild.append(nullBase)
       mapml.firstChild.firstChild.append(link);
       M.parseStylesheetAsHTML(mapml, nullBase, testcontainer)
-      expect(testcontainer.querySelector('link').href).toEqual('remote.css')
+      expect(testcontainer.querySelector('link').href).toEqual(document.URL + 'remote.css')
     });
 
-    test("M.parseStylesheetToHTML(mapml with linked, inline styles, base=Element with href='', container)", () => {
-      var testBase = parser.parseFromString('<doc><base href="http://test.com/"/></doc>', 'application/xml').firstChild;
+    test("M.parseStylesheetToHTML(mapml with linked, inline styles, base=Element with href=test.com, container)", () => {
+      var testBase = parser.parseFromString('<doc><base href="http://test.com/"/></doc>', 'application/xml').firstChild.firstChild;
       var testcontainer = document.createElement('div');
       var mapml = parser.parseFromString(mapmlString, "application/xml")
       mapml.firstChild.firstChild.append(testBase)
@@ -142,7 +142,7 @@ describe("M.Util Tests", () => {
 
       mapml.firstChild.firstChild.append(link);
       M.parseStylesheetAsHTML(mapml, new Object, testcontainer)
-      expect(testcontainer.querySelector('link').href).toEqual('remote.css')
+      expect(testcontainer.querySelector('link').href).toEqual(document.URL + 'remote.css')
     });
   });
 });

@@ -608,6 +608,13 @@ M.Util = {
   },
   parseStylesheetAsHTML: function(mapml, base, container) {
       if (!mapml || !mapml.querySelector('link[rel=stylesheet],style')) return;
+
+      if(base instanceof Element) {
+        base = base.getAttribute('href')?base.getAttribute('href'):document.URL;
+      } else{
+        if (!base || base==="" || base instanceof Object) base=document.URL
+      }
+
       var ss = [];
       var stylesheets = mapml.querySelectorAll('link[rel=stylesheet],style');
       for (var i=0;i<stylesheets.length;i++) {
