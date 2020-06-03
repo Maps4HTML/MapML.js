@@ -3,7 +3,7 @@ module.exports = {
     {
       displayName: "UNIT Testing",
       testMatch: ["**/test/*.test.js"],
-      setupFiles: ["./test/setup.js"],
+      setupFiles: ["./test/setup.js"]
     },
     {
       displayName: "E2E Testing",
@@ -11,9 +11,9 @@ module.exports = {
       globals: {
         PATH: "http://localhost:30001/",
         BROWSER: ["chromium", "firefox"],
-        ISHEADLESS: false,
+        ISHEADLESS: false
       },
-      testMatch: ["**/test/e2e/*.test.js"],
-    },
-  ],
+      testMatch: ["**/test/e2e/*.test.js"]
+    }
+  ]
 };
