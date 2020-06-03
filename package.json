@@ -28,10 +28,10 @@
       "name": "Maps for HTML community",
       "email": "public-maps4html@w3.org",
       "url": "https://github.com/Maps4HTML/Web-Map-Custom-Element/graphs/contributors"
-	}
+    }
   ],
   "scripts": {
-    "test": "jest --detectOpenHandles",
+    "test": "jest --detectOpenHandles --verbose --noStackTrace",
     "test:watch": "jest --detectOpenHandles --watch"
   },
   "dependencies": {},
@@ -52,6 +52,8 @@
     "leaflet": "~1.6.0",
     "proj4": "2.6.0",
     "proj4leaflet": "1.0.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "dom-to-playwright": "^0.1.1",
+    "jsdom": "^16.2.2"
   }
 }

@@ -1,0 +1,116 @@
+.refDiff {
+  fill-opacity: 0.7;
+  stroke-width: 2;
+  stroke: black;
+  stroke-opacity: 1;
+  stroke-dasharray: 3;
+}
+
+svg path.fclass {
+  stroke: blue;
+}
+
+svg.web-map.style-scope path.fclass._1 {
+  stroke: blue;
+  fill: #ff8c00;
+}
+svg path.fclass._2 {
+  stroke: blue;
+  fill: #f5deb3;
+}
+svg path.fclass._3 {
+  stroke: blue;
+  fill: #7cfc00;
+}
+svg path.fclass._4 {
+  stroke: blue;
+  fill: #e9967a;
+}
+svg path.fclass._5 {
+  stroke: blue;
+  fill: #000080;
+}
+svg path.fclass._6 {
+  stroke: blue;
+  fill: #006400;
+}
+svg path.fclass._7 {
+  stroke: blue;
+  fill: #c0c0c0;
+}
+svg path.fclass._8 {
+  stroke: blue;
+  fill: #ffe4e1;
+}
+svg path.fclass._9 {
+  stroke: blue;
+  fill: #696969;
+}
+svg path.fclass._10 {
+  stroke: blue;
+  fill: #556b2f;
+}
+svg path.fclass._11 {
+  stroke: blue;
+  fill: #dcdcdc;
+}
+svg path.fclass._12 {
+  stroke: blue;
+  fill: #00008b;
+}
+svg path.fclass._13 {
+  stroke: blue;
+  fill: #fff8dc;
+}
+svg path.fclass._14 {
+  stroke: blue;
+  fill: #bc8f8f;
+}
+svg path.fclass._15 {
+  stroke: blue;
+  fill: #483d8b;
+}
+svg path.fclass._16 {
+  stroke: blue;
+  fill: #4682b4;
+}
+svg path.fclass._17 {
+  stroke: blue;
+  fill: #98fb98;
+}
+svg path.fclass._18 {
+  stroke: blue;
+  fill: #fffff0;
+}
+svg path.fclass._19 {
+  stroke: blue;
+  fill: #ee82ee;
+}
+svg path.fclass._20 {
+  stroke: blue;
+  fill: #db7093;
+}
+svg path.fclass._21 {
+  stroke: blue;
+  fill: #ff1493;
+}
+svg path.fclass._22 {
+  stroke: blue;
+  fill: #f0f8ff;
+}
+svg path.fclass._23 {
+  stroke: blue;
+  fill: #adff2f;
+}
+svg path.fclass._24 {
+  stroke: blue;
+  fill: #7fffd4;
+}
+svg path.fclass._25 {
+  stroke: blue;
+  fill: #ff7f50;
+}
+svg path.fclass._26 {
+  stroke: blue;
+  fill: #5f9ea0;
+}

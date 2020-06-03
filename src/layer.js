@@ -219,18 +219,6 @@ export class MapLayer extends HTMLElement {
       this._layer.addTo(this._layer._map);
     }
     
-    // Convention / limitation of this polyfill: styles that you want 
-    // to apply to a <layer-> child need to be a <style> element child of 
-    // the <layer->, because this polyfill is not native, just a showcase
-    // of what could be.  COULD BE IMPROVED.
-    // move any layer- child style elements into the shadow root of the map,
-    // so that styles specified for the layer will apply to how those things
-    // are implemented, currently by a Leaflet map div.
-    var inline_styles = this.querySelectorAll('style,link[rel=stylesheet]');
-    for(var i=0;i< inline_styles.length;i++) {
-      this.parentNode._container.insertAdjacentElement('beforebegin',inline_styles[i]);
-    }
-    
     // add the handler which toggles the 'checked' property based on the
     // user checking/unchecking the layer from the layer control
     // this must be done *after* the layer is actually added to the map

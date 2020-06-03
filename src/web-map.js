@@ -4,7 +4,7 @@ import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet us
 import './mapml.js';       // refactored URI usage, replaced with URL standard
 import './Leaflet.fullscreen.js';
 import { MapLayer } from './layer.js';
-import { MapArea } from './map-area.js'
+import { MapArea } from './map-area.js';
 
 export class WebMap extends HTMLMapElement {
   static get observedAttributes() {

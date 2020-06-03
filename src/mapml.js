@@ -38,7 +38,7 @@
  * publicity pertaining to the work without specific, written prior permission. 
  * Title to copyright in this work will at all times remain with copyright holders.
  */
-;/* 
+/* 
  * Copyright 2015-2016 Canada Centre for Mapping and Earth Observation, 
  * Earth Sciences Sector, Natural Resources Canada.
  * 
@@ -605,9 +605,46 @@ M.Util = {
       pairs.push([parseInt(coords[i-1]),parseInt(coords[i])]);
     }
     return pairs;
+  },
+  parseStylesheetAsHTML: function(mapml, base, container) {
+      if (!(container instanceof Element) || !mapml || !mapml.querySelector('link[rel=stylesheet],style')) return;
+
+      if(base instanceof Element) {
+        base = base.getAttribute('href')?base.getAttribute('href'):document.URL;
+      } else if (!base || base==="" || base instanceof Object) {
+        return;
+      }
+
+      var ss = [];
+      var stylesheets = mapml.querySelectorAll('link[rel=stylesheet],style');
+      for (var i=0;i<stylesheets.length;i++) {
+        if (stylesheets[i].nodeName.toUpperCase() === "LINK" ) {
+          var href = stylesheets[i].hasAttribute('href') ? new URL(stylesheets[i].getAttribute('href'),base).href: null;
+          if (href) {
+            if (!container.querySelector("link[href='"+href+"']")) {
+              var linkElm = document.createElement("link");
+              linkElm.setAttribute("href", href);
+              linkElm.setAttribute("rel", "stylesheet");
+              ss.push(linkElm);
+            }
+          }  
+        } else { // <style>
+            var styleElm = document.createElement('style');
+            styleElm.textContent = stylesheets[i].textContent;
+            ss.push(styleElm);
+        }
+      }
+      // insert <link> or <style> elements after the begining  of the container
+      // element, in document order as copied from original mapml document
+      // note the code below assumes hrefs have been resolved and elements
+      // re-parsed from xml and serialized as html elements ready for insertion
+      for (var s=ss.length-1;s >= 0;s--) {
+        container.insertAdjacentElement('afterbegin',ss[s]);
+      }
   }
 };
 M.coordsToArray = M.Util.coordsToArray;
+M.parseStylesheetAsHTML = M.Util.parseStylesheetAsHTML;
 M.QueryHandler = L.Handler.extend({
     addHooks: function() {
         // get a reference to the actual <map> element, so we can 
@@ -791,12 +828,13 @@ M.MapMLLayer = L.Layer.extend({
     initialize: function (href, content, options) {
         // in the custom element, the attribute is actually 'src'
         // the _href version is the URL received from layer-@src
+        var mapml;
         if (href) {
             this._href = href;
         }
         if (content) {
           this._layerEl = content;
-          var mapml = content.querySelector('image,feature,tile,extent') ? true : false;
+          mapml = content.querySelector('image,feature,tile,extent') ? true : false;
           if (!href && mapml) {
               this._content = content;
           }
@@ -883,6 +921,7 @@ M.MapMLLayer = L.Layer.extend({
           {pane: this._container,
            _leafletLayer: this});
         }
+        // what is _mapmlTileContainer for and why have two copies of it.
         this._tileLayer._mapmlTileContainer = this._mapmlTileContainer;
         map.addLayer(this._tileLayer);       
         this._tileLayer._container.appendChild(this._mapmlTileContainer);
@@ -907,10 +946,6 @@ M.MapMLLayer = L.Layer.extend({
                   }).addTo(map);
                 }
               }, this);
-            // if we get to this point and there is no this._extent, it means
-            // we're waiting for the server to return one -> get content when
-            // that is available.
-            this.once('extentload', this._onMoveEnd, this);
         }
         this.setZIndex(this.options.zIndex);
         this.getPane().appendChild(this._container);
@@ -920,10 +955,7 @@ M.MapMLLayer = L.Layer.extend({
         return this;
     },
     getEvents: function () {
-        return {
-            moveend: this._onMoveEnd,
-            zoomanim: this._onZoomAnim
-        };
+        return {zoomanim: this._onZoomAnim};
     },
     redraw: function() {
       // for now, only redraw templated layers.
@@ -937,7 +969,7 @@ M.MapMLLayer = L.Layer.extend({
           min = zoom && zoom.hasAttribute("min") ? parseInt(zoom.getAttribute("min")) : this._map.getMinZoom(),
           max =  zoom && zoom.hasAttribute("max") ? parseInt(zoom.getAttribute("max")) : this._map.getMaxZoom(),
           canZoom = (toZoom < min && this._extent.zoomout) || (toZoom > max && this._extent.zoomin);
-      if (!this._extent.hasAttribute('action') && !(min <= toZoom && toZoom <= max)){
+      if (!(min <= toZoom && toZoom <= max)){
         if (this._extent.zoomin && toZoom > max) {
           // this._href is the 'original' url from which this layer came
           // since we are following a zoom link we will be getting a new
@@ -1178,7 +1210,7 @@ M.MapMLLayer = L.Layer.extend({
         label.appendChild(name);
         opacityControlSummaryLabel.innerText = 'opacity';
         opacity.id = "o" + L.stamp(opacity);
-        opacityControlSummaryLabel.setAttribute('for', opacity.id)
+        opacityControlSummaryLabel.setAttribute('for', opacity.id);
         opacityControlSummary.appendChild(opacityControlSummaryLabel);
         opacityControl.appendChild(opacityControlSummary);
         opacityControl.appendChild(opacity);
@@ -1204,7 +1236,7 @@ M.MapMLLayer = L.Layer.extend({
             }
           }, this);
 
-        fieldset.appendChild(details)
+        fieldset.appendChild(details);
         details.appendChild(summary);
         summary.appendChild(label);
         details.appendChild(opacityControl);
@@ -1304,8 +1336,7 @@ M.MapMLLayer = L.Layer.extend({
                      
                     layer.fire('changeprojection', {href:  (new URL(selectedAlternate.getAttribute('href'), base)).href}, false);
                     return;
-                } else if (!serverExtent.hasAttribute("action") && 
-                        serverExtent.querySelector('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]') &&
+                } else if (serverExtent.querySelector('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]') &&
                         serverExtent.hasAttribute("units")) {
                   layer._templateVars = [];
                   // set up the URL template and associated inputs (which yield variable values when processed)
@@ -1326,7 +1357,7 @@ M.MapMLLayer = L.Layer.extend({
                       inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
                       if (inp) {
                         inputs.push(inp);
-                        includesZoom = inp.hasAttribute("type") && inp.getAttribute("type").toLowerCase() === "zoom";
+                        includesZoom = includesZoom || inp.hasAttribute("type") && inp.getAttribute("type").toLowerCase() === "zoom";
                         if (inp.hasAttribute('shard')) {
                           var id = inp.getAttribute('list');
                           inp.servers = [];
@@ -1395,6 +1426,17 @@ M.MapMLLayer = L.Layer.extend({
                 if (layer._templatedLayer) {
                   layer._templatedLayer.reset(layer._templateVars);
                 }
+                if (mapml.querySelector('tile')) {
+                  var tiles = document.createElement("tiles"),
+                    zoom = mapml.querySelector('meta[name=zoom][content]') || mapml.querySelector('input[type=zoom][value]');
+                  tiles.setAttribute("zoom", zoom.getAttribute('content') || zoom.getAttribute('value'));
+                  var newTiles = mapml.getElementsByTagName('tile');
+                  for (var nt=0;nt<newTiles.length;nt++) {
+                      tiles.appendChild(document.importNode(newTiles[nt], true));
+                  }
+                  layer._mapmlTileContainer.appendChild(tiles);
+                }
+                M.parseStylesheetAsHTML(mapml, base, layer._container);
                 var styleLinks = mapml.querySelectorAll('link[rel=style],link[rel="self style"],link[rel="style self"]');
                 if (styleLinks.length > 1) {
                   var stylesControl = document.createElement('details'),
@@ -1446,174 +1488,6 @@ M.MapMLLayer = L.Layer.extend({
             layer.fire('extentload', layer, false);
         }
     },
-    _getMapML: function(url) {
-        var layer = this;
-        if (url) {
-            var requestCounter = 0;
-            var xhr = new XMLHttpRequest();
-//            xhr.withCredentials = true;
-            // add a listener to terminate pulling the feed 
-            this._map.once('movestart', function() {
-              xhr.abort();
-            });
-            _pull(url, _processMapMLFeedResponse);
-        } else if (this._content) {
-            _processMapMLFeedResponse.call(this, this._content);
-        }
-        function _pull(url, fCallback) {
-            xhr.onreadystatechange = function () { 
-              if(this.readyState === this.DONE) {
-                if (this.status === 400 || 
-                    this.status === 404 || 
-                    this.status === 500 || 
-                    this.status === 406) {
-                    layer.error = true;
-                    layer.fire('extentload', layer, true);
-                    xhr.abort();
-                }
-              }};
-            xhr.onload = fCallback;
-            xhr.onerror = function () { 
-              console.error(this.statusText); 
-              layer.error = true;
-            };
-            xhr.open("GET", url);
-            xhr.setRequestHeader("Accept",M.mime+";projection="+layer.options.mapprojection+";zoom="+layer.zoom);
-            xhr.overrideMimeType("text/xml");
-            xhr.send();
-        }
-        function _processMapMLFeedResponse(content) {
-            var mapml = this.responseXML || content,
-                i;
-            if (mapml.querySelector) {
-              if (requestCounter === 0) {
-                var serverExtent = mapml.querySelector('extent');
-                if (!serverExtent) {
-                    serverExtent = layer._synthesizeExtent(mapml);
-                } else if (!serverExtent.hasAttribute("action") && 
-                        serverExtent.querySelector('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]') &&
-                        serverExtent.hasAttribute("units")) {
-                  layer._templateVars = [];
-                  // set up the URL template and associated inputs (which yield variable values when processed)
-                  var tlist = serverExtent.querySelectorAll('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]'),
-                      varNamesRe = (new RegExp('(?:\{)(.*?)(?:\})','g')),
-                      zoomInput = serverExtent.querySelector('input[type="zoom" i]'),
-                      includesZoom = false;
-                  for (i=0;i< tlist.length;i++) {
-                    var t = tlist[i],
-                        template = t.getAttribute('tref'), v,
-                        vcount=template.match(varNamesRe),
-                        trel = (!t.hasAttribute('rel') || t.getAttribute('rel').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('rel').toLowerCase(),
-                        ttype = (!t.hasAttribute('type')? 'image/*':t.getAttribute('type').toLowerCase()),
-                        inputs = [];
-                    while ((v = varNamesRe.exec(template)) !== null) {
-                      var varName = v[1],
-                      inp = serverExtent.querySelector('input[name='+varName+']');
-                      if (inp) {
-                        inputs.push(inp);
-                        includesZoom = inp.hasAttribute("type") && inp.getAttribute("type").toLowerCase() === "zoom";
-
-                      } else {
-                        console.log('input with name='+varName+' not found for template variable of same name');
-                        // no match found, template won't be used
-                        break;
-                      }
-                    }
-                    if (template && vcount.length === inputs.length) {
-                      // template has a matching input for every variable reference {varref}
-                      if(!includesZoom && zoomInput) {
-                        // except zoom 
-                        inputs.push(zoomInput);
-                      }
-                      layer._templateVars.push({template:template, rel: trel, type: ttype, values: inputs});
-                    }
-                  }
-                }
-                layer._extent = serverExtent;
-                layer._parseLicenseAndLegend(mapml, layer);
-                var zoomin = mapml.querySelector('link[rel=zoomin]'),
-                    zoomout = mapml.querySelector('link[rel=zoomout]'),
-                    base = (new URL(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : mapml.baseURI || this.responseURL, this.responseURL)).href;
-                delete layer._extent.zoomin;
-                delete layer._extent.zoomout;
-                if (zoomin) {
-                    layer._extent.zoomin = (new URL(zoomin.getAttribute('href'), base)).href;
-                }
-                if (zoomout) {
-                    layer._extent.zoomout = (new URL(zoomout.getAttribute('href'), base)).href;
-                }
-                
-              }
-              if (mapml.querySelector('feature')) {
-                  layer._mapmlvectors.addData(mapml);
-              }
-              if (mapml.querySelector('tile')) {
-                  var tiles = document.createElement("tiles"),
-                    zoom = mapml.querySelector('meta[name=zoom][content]') || mapml.querySelector('input[type=zoom][value]');
-                  tiles.setAttribute("zoom", zoom.getAttribute('content') || zoom.getAttribute('value'));
-                  var newTiles = mapml.getElementsByTagName('tile');
-                  for (i=0;i<newTiles.length;i++) {
-                      tiles.appendChild(document.importNode(newTiles[i], true));
-                  }
-                  layer._mapmlTileContainer.appendChild(tiles);
-              }
-              if (mapml.querySelector('image')) {
-                  var images = mapml.getElementsByTagName('image'),
-                      imageOverlays = [],
-                      // need a reference to the _imageLayer container element to pass to children
-                      // so they can append the img element they create to it.
-                      container = layer._imageContainer;
-                  for (i=0;i<images.length;i++) {
-                      var image = images[i],
-                          src = image.getAttribute('src'),
-                          map = layer._map,
-                          // TODO when the image location is returned by the MapML
-                          // document image element, use that location instead
-                          // of map.getPixelBounds().min.  Also, read and use the
-                          // angle of the image from the mapml//image element
-                          // Currently, map.getPixelBounds() usage assumes that
-                          // the returned image fills the extent of the mapml document
-                          location = map.getPixelBounds().min.subtract(map.getPixelOrigin()),
-                          size = map.getSize();
-                          imageOverlays[i] = M.imageOverlay(src,location,size,/* angle */0,container);
-                  }
-                  var layersToRemove = layer._imageLayer.getLayers(),
-                      last = imageOverlays.length-1,
-                      removeLayers = function () {
-                      for (var ic = 0;ic < layersToRemove.length;ic++) {
-                        layer._imageLayer.removeLayer(layersToRemove[ic]);
-                      }
-                  };
-                  for (i=0;i < imageOverlays.length;i++) {
-                    layer._imageLayer.addLayer(imageOverlays[i]);
-                    if (i === last) {
-                      imageOverlays[i].on('load', removeLayers);
-                    }
-                  }
-              }
-              var next = _parseLink('next',mapml);
-              if (next && requestCounter < layer.options.maxNext) {
-                  requestCounter++;
-                  _pull(next, _processMapMLFeedResponse);
-              } else {
-                  if (layer._mapmlTileContainer.getElementsByTagName('tile').length > 0) {
-                    layer._tileLayer._onMapMLProcessed();
-                  }
-                  layer.fire('extentload', layer, true);
-              }
-            }
-        }
-        function _parseLink(rel, xml) {
-            // depends on js-uri http://code.google.com/p/js-uri/ 
-            // would be greate to depend on the URL standard and not a library
-            var baseEl = xml.querySelector('base'), 
-                base =  baseEl ? baseEl.getAttribute('href'):null,
-                baseUri = (new URL(base||xml.baseURI)).href,
-                link = xml.querySelector('link[rel='+rel+']'),
-                relLink = link?(new URL(link.getAttribute('href'),baseUri)).href:null;
-            return relLink;
-        }
-    },
     _createExtent: function () {
     
         var extent = document.createElement('extent'),
@@ -1647,7 +1521,6 @@ M.MapMLLayer = L.Layer.extend({
         projection.setAttribute('type','projection');
         projection.setAttribute('value','WGS84');
         
-        extent.setAttribute('action','synthetic');
         extent.appendChild(xminInput);
         extent.appendChild(yminInput);
         extent.appendChild(xmaxInput);
@@ -1818,43 +1691,6 @@ M.MapMLLayer = L.Layer.extend({
           layer._legendUrl = legendLink.getAttribute('href');
         }
     },
-    _onMoveEnd: function () {
-        // this can only be done when the layer is on a map, because the url
-        // calculation requires to process the extent of the map through the 
-        // extent form that should have already been received.
-        var url =  this._calculateUrl();
-        if (url) {
-            this.href = url;
-            this.fire('loadstart');
-            this._mapmlvectors.clearLayers();
-            this._initEl();
-            this._getMapML(url);
-        } else if (this._content && !this._mapmlvectors.getLayers().length) {
-            // if the content hasn't been parsed yet, parse it into vectors,
-            // images and tiles, if applicable
-            // 
-            // this shouldn't only be contingent on vectors - could be other stuff
-            // located in this._content that has been parsed, so it should be 
-            // generalized to be: if (this._content && !vectors && !images && !tiles)
-            // tiles could be = Object.keys($0._layer._tileLayer._tiles).length
-            // images = not sure yet. NOT FINISHED.
-            // vectors = this._mapmlvectors.getLayers().length
-            this._getMapML(null);
-        }
-    },
-    _initEl: function () {
-        if (!this._mapmlTileContainer) {return;}
-        var container = this._mapmlTileContainer;
-        while (container.firstChild)
-            container.removeChild(container.firstChild);
-    },
-    _reset: function() {
-        this._initEl();
-        L.empty(this._container);
-        this._mapmlvectors.clearLayers();
-        //this._map.removeLayer(this._mapmlvectors);
-        return;
-    },
     // return the LatLngBounds of the map unprojected such that the whole
     // map is covered, not just a band defined by the projected map bounds.
     _getUnprojectedMapLatLngBounds: function(map) {
@@ -1867,71 +1703,6 @@ M.MapMLLayer = L.Layer.extend({
           ne = map.unproject(bounds.getTopRight()),
           se = map.unproject(origin.add(map.getSize()));
         return L.latLngBounds(sw,ne).extend(se).extend(nw);
-    },
-    _calculateUrl: function() {
-        
-        if (!this._map) return null;
-        if (!this._mapmlTileContainer && !this._extent) return this._href;
-        var extent = this._extent;
-        if (!extent) return this._href;
-        // action SHOULD HAVE BEEN resolved against any base ALREADY
-        var action = extent.getAttribute("action"),
-                base = (new URL(this._href ? this._href : this._content ? this._content.baseURI : document.baseURI)).href;
-        // establish the range of zoom values for the extent
-        var zoom = extent.querySelectorAll("input[type=zoom]")[0];
-        if ( !zoom ) return null;
-        var min = parseInt(zoom.getAttribute("min")),
-            max = parseInt(zoom.getAttribute("max")),
-            values = {}, // the values object will contain the values for the URI template
-            mapZoom = this._map.getZoom();
-        // check that the zoom of the map is in the range of the zoom of the service
-        if ( min <= mapZoom && mapZoom <= max) {
-          values.zoom = mapZoom;
-        } else if (!action){
-          if (extent.zoomin && mapZoom > max) {
-            this._href = extent.zoomin;
-            this.href = extent.zoomin;
-            return this.href;
-          } else if (extent.zoomout && mapZoom < min) {
-            this._href = extent.zoomout;
-            this.href = extent.zoomout;
-            return this.href;
-          }
-        } else {
-          return null;
-        }
-        
-        if (!action || action === "synthetic") return null;
-        var b,projectionValue = extent.getAttribute('units');
-        
-        // if the mapml extent being processed is WGS84, we need to speak in those units
-        if (projectionValue === 'WGS84') {
-          b = this._getUnprojectedMapLatLngBounds();
-        } else {
-          // otherwise, use the bounds of the map
-          b = this._map.getPixelBounds();
-        }
-        var varnames = this._setUpInputVars(extent.querySelectorAll('input'));
-        
-        var queryParams = "";
-        values[varnames.extent.zoom.name] = mapZoom;
-        queryParams += varnames.extent.zoom.name+"={"+varnames.extent.zoom.name+"}&";
-        values[varnames.extent.left.name] = b.min?b.min.x:b.getWest();
-        queryParams += varnames.extent.left.name+"={"+varnames.extent.left.name+"}&";
-        values[varnames.extent.bottom.name] = b.max?b.max.y:b.getSouth();
-        queryParams += varnames.extent.bottom.name+"={"+varnames.extent.bottom.name+"}&";
-        values[varnames.extent.right.name] = b.max?b.max.x:b.getEast();
-        queryParams += varnames.extent.right.name+"={"+varnames.extent.right.name+"}&";
-        values[varnames.extent.top.name] = b.min?b.min.y:b.getNorth();
-        queryParams += varnames.extent.top.name+"={"+varnames.extent.top.name+"}"+(varnames.extent.hidden.length>0?"&":"");
-        for (var i=0;i<varnames.extent.hidden.length;i++) {
-          values[varnames.extent.hidden[i].name] = varnames.extent.hidden[i].value;
-          queryParams += varnames.extent.hidden[i].name+"={"+varnames.extent.hidden[i].name+"}"+(i<varnames.extent.hidden.length-1?"&":"");
-        }
-        
-        action += "?"+queryParams;
-        var rel = (new URL(action, base)).href;
-        return L.Util.template(rel, values);
     },
     // this takes into account that WGS84 is considered a wildcard match.
     _projectionMatches: function(map) {
@@ -2648,6 +2419,17 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       // Leaflet tutorial: http://leafletjs.com/examples/extending/extending-1-classes.html#methods-of-the-parent-class
       L.TileLayer.prototype.initialize.call(this, template.template, L.extend(options, {pane: this._container}));
     },
+    _initContainer: function () {
+      if (this._container) { return; }
+
+      this._container = L.DomUtil.create('div', 'leaflet-layer', this.options.pane);
+      L.DomUtil.addClass(this._container,'mapml-templated-tile-container');
+      this._updateZIndex();
+
+      if (this.options.opacity < 1) {
+        this._updateOpacity();
+      }
+    },
     createTile: function (coords) {
       if (this._template.type.startsWith('image/')) {
         return L.TileLayer.prototype.createTile.call(this, coords, function(){});
@@ -2675,6 +2457,13 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       return this.options.pane;
     },
     _drawTile: function(mapml, coords, tile) {
+        var stylesheets = mapml.querySelector('link[rel=stylesheet],style');
+        if (stylesheets) {
+          var base = mapml.querySelector('base') && mapml.querySelector('base').hasAttribute('href') ? 
+              new URL(mapml.querySelector('base').getAttribute('href')).href : 
+              mapml.URL;
+        M.parseStylesheetAsHTML(mapml,base,tile);
+        }
         var features = mapml.querySelectorAll('feature');
         for (var i=0; i< features.length; i++) {
           this._draw(features[i], coords, tile);
@@ -3006,17 +2795,6 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       }
       return points;
     },
-    _initContainer: function () {
-      if (this._container) { return; }
-
-      this._container = L.DomUtil.create('div', 'leaflet-layer', this.options.pane);
-      L.DomUtil.addClass(this._container,'mapml-templated-tile-container');
-      this._updateZIndex();
-
-      if (this.options.opacity < 1) {
-        this._updateOpacity();
-      }
-    },
     _fetchTile:  function (coords, tile) {
        fetch(this.getTileUrl(coords),{redirect: 'follow'}).then(
           function(response) {
@@ -3027,30 +2805,13 @@ M.TemplatedTileLayer = L.TileLayer.extend({
               return Promise.reject(response);
             }
           }).then(function(response) {
-            var contenttype = response.headers.get("Content-Type");
-            if ( contenttype.startsWith("text/mapml")) {
-              return handleMapMLResponse(response);
-            } else {
-              return handleOtherResponse(response);
-            }
+            return response.text();
+          }).then(text => {
+            var parser = new DOMParser();
+                return parser.parseFromString(text, "application/xml");
           }).then(mapml => {
             this._drawTile(mapml, coords, tile);
           }).catch(function(err) {});
-      function handleMapMLResponse(response) {
-          return response.text().then(text => {
-              var parser = new DOMParser();
-                  return parser.parseFromString(text, "application/xml");
-          });
-      }
-      function handleOtherResponse(response) {
-          return response.text().then(text => {
-              var c = document.createElement('iframe');
-              c.csp = "script-src 'none'";
-              c.style = "border: none";
-              c.srcdoc = text;
-              tile.appendChild(c);
-          });
-      }
     },
     getTileUrl: function (coords) {
         if (coords.z >= this._template.tilematrix.bounds.length || 
@@ -3649,37 +3410,23 @@ M.MapMLFeatures = L.FeatureGroup.extend({
         this.addData(mapml);
       }
     },
+    
+    getEvents: function(){
+      return {'moveend':this._removeCSS};
+    },
 
     addData: function (mapml) {
       var features = mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === "LAYER-" ? mapml.getElementsByTagName("feature") : null,
           i, len, feature;
 
-      var linkedStylesheets = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelectorAll("link[rel=stylesheet]") : null;
+      var linkedStylesheets = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelector("link[rel=stylesheet],style") : null;
       if (linkedStylesheets) {
-        for (i=0;i < linkedStylesheets.length;i++) {
-
-          var baseEl = mapml.querySelector('base'),
-              stylesheet = linkedStylesheets[i],
-            base = (new URL(baseEl?baseEl.getAttribute('href'):mapml.baseURI)).href,
-            stylesheet = (new URL(stylesheet.getAttribute('href'),base)).href;
-          if (stylesheet) {
-            if (!document.head.querySelector("link[href='"+stylesheet+"']")) {
-              var linkElm = document.createElementNS("http://www.w3.org/1999/xhtml", "link");
-              linkElm.setAttribute("href", stylesheet);
-              linkElm.setAttribute("type", "text/css");
-              linkElm.setAttribute("rel", "stylesheet");
-              document.head.appendChild(linkElm);
-            }
-          }
-        }
+        var base = mapml.querySelector('base') && mapml.querySelector('base').hasAttribute('href') ? 
+            new URL(mapml.querySelector('base').getAttribute('href')).href : 
+            mapml.URL;
+        M.parseStylesheetAsHTML(mapml,base,this._container);
       }
-      var inlineStyleSheets = mapml.nodeType === Node.DOCUMENT_NODE || Node.ELEMENT_NODE ? mapml.querySelectorAll("style") : null;
-      if (inlineStyleSheets) {
-        for (i=0;i<inlineStyleSheets.length;i++) {
-          document.head.insertAdjacentHTML('beforeend',inlineStyleSheets[i].outerHTML);
-        }
-      }
-
+      
       if (features) {
        for (i = 0, len = features.length; i < len; i++) {
         // Only add this if geometry is set and not null
@@ -3697,7 +3444,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       if (options.filter && !options.filter(mapml)) { return; }
       
       if (mapml.classList.length) {
-        options.className = mapml.classList.value
+        options.className = mapml.classList.value;
       }
 
       var layer = M.MapMLFeatures.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options);
@@ -3741,7 +3488,13 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       if (layer.setStyle) {
         layer.setStyle(style);
       }
-    }
+    },
+    _removeCSS: function(){
+      let toDelete = this._container.querySelectorAll("link[rel=stylesheet],style");
+      for(let i = 0; i < toDelete.length;i++){
+        this._container.removeChild(toDelete[i]);
+      }
+    },
 });
 L.extend(M.MapMLFeatures, {
 	 geometryToLayer: function (mapml, pointToLayer, coordsToLatLng, vectorOptions) {
