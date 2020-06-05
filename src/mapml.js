@@ -928,12 +928,13 @@ M.MapMLLayer = L.Layer.extend({
         
         if(!this._tempGridLayer){
           this._tempGridLayer = M.mapMlTempGrid({
-            pane:this._container
+            pane:this._container,
+            className:"tempGridML"
           });
         }
         this._tempGridLayer._mapmlTileContainer = this._mapmlTileContainer;
         map.addLayer(this._tempGridLayer);
-        this._tempGridLayer._container.appendChild(this._mapmlTileContainer);
+        //this._tempGridLayer._container.appendChild(this._mapmlTileContainer);
 
         // if the extent has been initialized and received, update the map,
         if (this._extent) {
@@ -3748,177 +3749,64 @@ M.mapMlLayerControl = function (layers, options) {
 
 
   M.MapMlTempGrid = L.GridLayer.extend({
-    initialize: function(options) {
-      L.setOptions(this, options);
-      L.GridLayer.prototype.initialize.call(this, options);
+
+    onAdd: function () {
+      this._initContainer();
+      //this.on('moveend', this.fetchAndGroup, this);
+      this._levels = {};
+      this._tiles = {};
+      this._groups = this._groupTiles(this._mapmlTileContainer.getElementsByTagName('tile'));
+      this._resetView();
+      this._update();
     },
-    _initContainer: function () {
-      if (this._container) { return; }
 
-      this._container = L.DomUtil.create('div', 'leaflet-layer', this.getPane());
-      L.DomUtil.addClass(this._container,'mapml-tempGrid-container');
-      this._updateZIndex();
-
-      if (this.options.opacity < 1) {
-        this._updateOpacity();
-      }
-    }, 
-    getPane: function() {
-      return this.options.pane;
-    },
-    createTile: function (url) {
-      var tile = document.createElement('img');
-      tile.src = url;
-      tile.alt="tile with img tag"
-      return tile;
-    },
-    _update: function (center) {
-      var map = this._map;
-      if (!map) { return; }
-      var zoom = this._clampZoom(map.getZoom());
-
-      if (center === undefined) { center = map.getCenter(); }
-      if (zoom === undefined) { zoom = map.getZoom(); }
-      var tileZoom = Math.round(zoom);
-
-      if (tileZoom > this.options.maxZoom ||
-              tileZoom < this.options.minZoom) { return; }
-
-      var pixelBounds = this._getTiledPixelBounds(center, zoom, tileZoom),
-          tileRange = this._pxBoundsToTileRange(pixelBounds)
-
-      // Sanity check: panic if the tile range contains Infinity somewhere.
-      if (!(isFinite(tileRange.min.x) &&
-            isFinite(tileRange.min.y) &&
-            isFinite(tileRange.max.x) &&
-            isFinite(tileRange.max.y))) { throw new Error('Attempted to load an infinite number of tiles'); }
-
-
-      var tiles = this._groupTiles(this._mapmlTileContainer.getElementsByTagName('tile'));
-
-      for (var key in this._tiles) {
-        this._tiles[key].current = false;
-      }
-
-      // _update just loads more tiles. If the tile zoom level differs too much
-      // from the map's, let _setView reset levels and prune old tiles.
-      if (Math.abs(zoom - tileZoom) > 1) { this._setView(center, zoom); return; }
-
-      // create a queue of coordinates to load tiles from
-      for (var j = tileRange.min.y; j <= tileRange.max.y; j++) {
-        for (var i = tileRange.min.x; i <= tileRange.max.x; i++) {
-          var coords = new L.Point(i, j);
-          coords.z = tileZoom;
-
-          if (!this._isValidTile(coords)) { continue; }
-
-          var tile = this._tiles[this._tileCoordsToKey(coords)];
-          if (tile) {
-            tile.current = true;
-            for (var k=0; k<tiles.length; k++) { 
-              if (tiles[k][0].row === tile.coords.y && tiles[k][0].col === tile.coords.x) { 
-                tiles.splice(k,1);
-                continue;
-              }
-            }
-         }
+    createTile: function (coords) {
+      var tileGroup = [];
+      for(let j = 0;j<this._groups.length;j++){
+        if((this._groups[j][0].col+':'+this._groups[j][0].row+':'+this._groups[j][0].zoom) === this._tileCoordsToKey(coords)){
+          tileGroup = this._groups[j];
+          break;
         }
       }
-
-      if(!tiles.length){return;}
-      this._addTiles(tiles);
+      
+      var tileBundle = document.createElement('div');
+      for(let i = 0;i<tileGroup.length;i++){
+        var tile= document.createElement('img');
+        tile.src = tileGroup[i].src;
+        tileBundle.appendChild(tile);
+      }
+      var placeHolder = document.createElement('div');
+      placeHolder.style.outline = '1px solid black';
+      placeHolder.innerHTML ='-------------coordx'+coords.x+':coordy'+coords.y+':coordz'+coords.z+'<br/><br/><p style="text-align: right;">Loaded But Not An Image</p> <img src="https://img.favpng.com/17/8/2/react-secrets-of-the-javascript-ninja-node-js-youtube-png-favpng-ucXDe8DD6pdf4ex0mSHmTyLCE.jpg" width="50" height="50">';
+      return tileGroup.length > 0?tileBundle:placeHolder;
     },
+
     _groupTiles: function (tiles) {
       var tileArray = [];
       for (var i=0;i<tiles.length;i++) {
         var tile = {};
         tile.row = parseInt(tiles[i].getAttribute('row'));
         tile.col = parseInt(tiles[i].getAttribute('col'));
+        tile.zoom = parseInt(tiles[i].getAttribute('zoom'));
         tile.src = tiles[i].getAttribute('src');
         tileArray.push(tile);
       }
-      return groupBy(tileArray, function(item) { return[item.row, item.col]; });
+      return groupBy(tileArray, function(item) { return[item.row, item.col, item.zoom]; });
       function groupBy( array , f ) {
-          var groups = {};
-          array.forEach( function( o ) {
-            var group = JSON.stringify( f(o) );
-            groups[group] = groups[group] || [];
-            groups[group].push( o );  
-          });
-          return Object.keys(groups).map( function( group ) {
-            return groups[group]; 
-          });
+        var groups = {};
+        array.forEach( function( o ) {
+          var group = JSON.stringify( f(o) );
+          groups[group] = groups[group] || [];
+          groups[group].push( o );  
+        });
+        return Object.keys(groups).map( function( group ) {
+          return groups[group]; 
+        });
       }
     },
-    _addTiles: function (tiles) {
-      var queue = [], group = {};
-      for (var i=0;i<tiles.length;i++) {
-        group.col = tiles[i][0].col;
-        group.row = tiles[i][0].row;
-        if (this._isValidTile(new L.Point(group.col, group.row))) {
-          queue.push(tiles[i]);
-        }
-      }
-
-      var tilesToLoad = queue.length;
-
-      if (tilesToLoad === 0) { return; }
-
-      var fragment = document.createDocumentFragment();
-
-      // if its the first batch of tiles to load
-      if (!this._loading) {
-        this._loading = true;
-        this.fire('loading');
-      }
-
-      for (i = 0; i < tilesToLoad; i++) {
-        this._addTile(queue[i][0], fragment);
-      }
-
-      this._level.el.appendChild(fragment);
-    },
-    _addTile: function (tileToLoad, container) {
-      // tiles have been grouped by row/col, so all members of the array
-      // share those values.
-    var coords = new L.Point(tileToLoad.col, tileToLoad.row);
-      coords.z = this._map.getZoom();
-      var key = this._tileCoordsToKey(coords);
-      var tile;
-      
-
-      // create an img element for each tile element for this grid cell
-      tile = this.createTile(tileToLoad.src, L.bind(this._tileReady, this, coords));
-      this._initTile(tile);
-      L.DomUtil.removeClass(tile,'leaflet-tile');
-      //setTimeout(L.bind(this._tileReady, this, coords, null, tile), 0);
-      tileToLoad.img = tile;
-
-
-      var tileContainer;
-      if (this._tiles[key]) {
-        tileContainer = this._tiles[key].el;
-      } else {
-        tileContainer = document.createElement('div');
-        L.DomUtil.addClass(tileContainer, 'leaflet-tile');
-        tileContainer.appendChild(tileToLoad.img);
-          
-      }
-      L.DomUtil.setPosition(tile, this._getTilePos(coords));
-
-    // save tile in cache
-      this._tiles[key] = {
-      el: tile,
-      coords: coords,
-      current: true
-      };
-          // append the tile container div to the container fragment
-      container.appendChild(tile);
-      this.fire('tileloadstart', {
-      tile: tile,
-      coords: coords
-      });
-    }
+/*     fetchAndGroup: function(){
+       this._groups = this._groupTiles(this._mapmlTileContainer.getElementsByTagName('tile'));
+    } */
   });
 
   M.mapMlTempGrid = function(options) {
