@@ -916,7 +916,7 @@ M.MapMLLayer = L.Layer.extend({
         // the layer._imageContainer property contains an element in which
         // content will be maintained
         
-        if (!this._tileLayer) {
+        /* if (!this._tileLayer) {
           this._tileLayer = M.mapMLTileLayer(this.href?this.href:this._href, 
           {pane: this._container,
            _leafletLayer: this});
@@ -924,7 +924,17 @@ M.MapMLLayer = L.Layer.extend({
         // what is _mapmlTileContainer for and why have two copies of it.
         this._tileLayer._mapmlTileContainer = this._mapmlTileContainer;
         map.addLayer(this._tileLayer);       
-        this._tileLayer._container.appendChild(this._mapmlTileContainer);
+        this._tileLayer._container.appendChild(this._mapmlTileContainer); */
+        
+        if(!this._tempGridLayer){
+          this._tempGridLayer = M.mapMlTempGrid({
+            pane:this._container
+          });
+        }
+        this._tempGridLayer._mapmlTileContainer = this._mapmlTileContainer;
+        map.addLayer(this._tempGridLayer);
+        this._tempGridLayer._container.appendChild(this._mapmlTileContainer);
+
         // if the extent has been initialized and received, update the map,
         if (this._extent) {
             if (this._templateVars) {
@@ -3735,6 +3745,185 @@ M.MapMLLayerControl = L.Control.Layers.extend({
 M.mapMlLayerControl = function (layers, options) {
 	return new M.MapMLLayerControl(layers, options);
 };
+
+
+  M.MapMlTempGrid = L.GridLayer.extend({
+    initialize: function(options) {
+      L.setOptions(this, options);
+      L.GridLayer.prototype.initialize.call(this, options);
+    },
+    _initContainer: function () {
+      if (this._container) { return; }
+
+      this._container = L.DomUtil.create('div', 'leaflet-layer', this.getPane());
+      L.DomUtil.addClass(this._container,'mapml-tempGrid-container');
+      this._updateZIndex();
+
+      if (this.options.opacity < 1) {
+        this._updateOpacity();
+      }
+    }, 
+    getPane: function() {
+      return this.options.pane;
+    },
+    createTile: function (url) {
+      var tile = document.createElement('img');
+      tile.src = url;
+      tile.alt="tile with img tag"
+      return tile;
+    },
+    _update: function (center) {
+      var map = this._map;
+      if (!map) { return; }
+      var zoom = this._clampZoom(map.getZoom());
+
+      if (center === undefined) { center = map.getCenter(); }
+      if (zoom === undefined) { zoom = map.getZoom(); }
+      var tileZoom = Math.round(zoom);
+
+      if (tileZoom > this.options.maxZoom ||
+              tileZoom < this.options.minZoom) { return; }
+
+      var pixelBounds = this._getTiledPixelBounds(center, zoom, tileZoom),
+          tileRange = this._pxBoundsToTileRange(pixelBounds)
+
+      // Sanity check: panic if the tile range contains Infinity somewhere.
+      if (!(isFinite(tileRange.min.x) &&
+            isFinite(tileRange.min.y) &&
+            isFinite(tileRange.max.x) &&
+            isFinite(tileRange.max.y))) { throw new Error('Attempted to load an infinite number of tiles'); }
+
+
+      var tiles = this._groupTiles(this._mapmlTileContainer.getElementsByTagName('tile'));
+
+      for (var key in this._tiles) {
+        this._tiles[key].current = false;
+      }
+
+      // _update just loads more tiles. If the tile zoom level differs too much
+      // from the map's, let _setView reset levels and prune old tiles.
+      if (Math.abs(zoom - tileZoom) > 1) { this._setView(center, zoom); return; }
+
+      // create a queue of coordinates to load tiles from
+      for (var j = tileRange.min.y; j <= tileRange.max.y; j++) {
+        for (var i = tileRange.min.x; i <= tileRange.max.x; i++) {
+          var coords = new L.Point(i, j);
+          coords.z = tileZoom;
+
+          if (!this._isValidTile(coords)) { continue; }
+
+          var tile = this._tiles[this._tileCoordsToKey(coords)];
+          if (tile) {
+            tile.current = true;
+            for (var k=0; k<tiles.length; k++) { 
+              if (tiles[k][0].row === tile.coords.y && tiles[k][0].col === tile.coords.x) { 
+                tiles.splice(k,1);
+                continue;
+              }
+            }
+         }
+        }
+      }
+
+      if(!tiles.length){return;}
+      this._addTiles(tiles);
+    },
+    _groupTiles: function (tiles) {
+      var tileArray = [];
+      for (var i=0;i<tiles.length;i++) {
+        var tile = {};
+        tile.row = parseInt(tiles[i].getAttribute('row'));
+        tile.col = parseInt(tiles[i].getAttribute('col'));
+        tile.src = tiles[i].getAttribute('src');
+        tileArray.push(tile);
+      }
+      return groupBy(tileArray, function(item) { return[item.row, item.col]; });
+      function groupBy( array , f ) {
+          var groups = {};
+          array.forEach( function( o ) {
+            var group = JSON.stringify( f(o) );
+            groups[group] = groups[group] || [];
+            groups[group].push( o );  
+          });
+          return Object.keys(groups).map( function( group ) {
+            return groups[group]; 
+          });
+      }
+    },
+    _addTiles: function (tiles) {
+      var queue = [], group = {};
+      for (var i=0;i<tiles.length;i++) {
+        group.col = tiles[i][0].col;
+        group.row = tiles[i][0].row;
+        if (this._isValidTile(new L.Point(group.col, group.row))) {
+          queue.push(tiles[i]);
+        }
+      }
+
+      var tilesToLoad = queue.length;
+
+      if (tilesToLoad === 0) { return; }
+
+      var fragment = document.createDocumentFragment();
+
+      // if its the first batch of tiles to load
+      if (!this._loading) {
+        this._loading = true;
+        this.fire('loading');
+      }
+
+      for (i = 0; i < tilesToLoad; i++) {
+        this._addTile(queue[i][0], fragment);
+      }
+
+      this._level.el.appendChild(fragment);
+    },
+    _addTile: function (tileToLoad, container) {
+      // tiles have been grouped by row/col, so all members of the array
+      // share those values.
+    var coords = new L.Point(tileToLoad.col, tileToLoad.row);
+      coords.z = this._map.getZoom();
+      var key = this._tileCoordsToKey(coords);
+      var tile;
+      
+
+      // create an img element for each tile element for this grid cell
+      tile = this.createTile(tileToLoad.src, L.bind(this._tileReady, this, coords));
+      this._initTile(tile);
+      L.DomUtil.removeClass(tile,'leaflet-tile');
+      //setTimeout(L.bind(this._tileReady, this, coords, null, tile), 0);
+      tileToLoad.img = tile;
+
+
+      var tileContainer;
+      if (this._tiles[key]) {
+        tileContainer = this._tiles[key].el;
+      } else {
+        tileContainer = document.createElement('div');
+        L.DomUtil.addClass(tileContainer, 'leaflet-tile');
+        tileContainer.appendChild(tileToLoad.img);
+          
+      }
+      L.DomUtil.setPosition(tile, this._getTilePos(coords));
+
+    // save tile in cache
+      this._tiles[key] = {
+      el: tile,
+      coords: coords,
+      current: true
+      };
+          // append the tile container div to the container fragment
+      container.appendChild(tile);
+      this.fire('tileloadstart', {
+      tile: tile,
+      coords: coords
+      });
+    }
+  });
+
+  M.mapMlTempGrid = function(options) {
+    return new M.MapMlTempGrid(options);
+  };
 
 
 }(window, document));
