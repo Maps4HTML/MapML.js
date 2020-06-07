@@ -1,7 +1,7 @@
 {
   "name": "web-map-custom-element",
   "version": "0.7.0",
-  "description": "web-map customized built-in HTML <map> or custom <geo-map>",
+  "description": "web-map customized built-in HTML <map> or custom <mm-mapp>",
   "keywords": [
     "web-components",
     "web",

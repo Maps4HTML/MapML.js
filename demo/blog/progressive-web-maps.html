@@ -2,10 +2,10 @@
 <html lang="en" dir="ltr" itemscope itemtype="http://schema.org/BlogPosting">
   <head>
     <!-- for the purposes of explaining stuff, force IE to compatibility mode -->
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /> 
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"> 
     <title>Progressive Web Maps</title>
-    <link rel='icon' href='../MapsForHTML_16x16.png' sizes='16x16'>
+    <link rel="icon" href="../MapsForHTML_16x16.png" sizes="16x16">
     <meta name="description" content="The HTML map element needs a community.  The Maps for HTML Community Group wants to adopt it.">
     <meta name="keywords" content="maps,maps for html,web maps,image maps,html5,Web map demos,Web map examples,progressive web apps,web platform,progressive web maps,polymer,javascript,css3,service workers,offline,mobile">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
@@ -170,7 +170,7 @@
 &lt;-- else the map@is=web-map should have custom behaviour, including zoom, pan, layers, controls etc. --&gt;
 
 &lt;-- The img element is only used for fallback processing, otherwise it is deleted by the custom element on load --&gt;
-&lt;img usemap="#dowslake" src="map1.png" width="700" height="400" alt="Dow's Lake area" />
+&lt;img usemap="#dowslake" src="map1.png" width="700" height="400" alt="Dow's Lake area">
 
 &lt;-- The map element can be set up by the HTML author to provide the old image map behaviour --&gt;
 &lt;map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls hidden>
@@ -189,7 +189,7 @@
       </code>
       </pre>
       <!-- the @width / @height attributes take precedence over properties, but currently don't change to reflect updates -->
-      <img usemap="#dowslake" src="../map1.png" width="700" height="400" alt="Dow's Lake area" />
+      <img usemap="#dowslake" src="../map1.png" width="700" height="400" alt="Dow's Lake area">
       <map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" controls hidden>
         <layer- id="osm" src="https://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden></layer->
         <layer- id="canvec" label="CanVec+ 031G" src="https://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></layer->

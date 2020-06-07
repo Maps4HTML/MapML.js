@@ -1,8 +1,9 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Province of British Columbia tile caches</title>
-    <meta charset="UTF-8">
     <script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="../web-map.html">
     <style>
@@ -21,16 +22,15 @@
     </style>
   </head>
   <body>
-  <map is="web-map" zoom="12" lat="48.42168226" lon="-123.37612152" width="700" height="400" controls>
-    <layer- label="BC Web Mercator" src="https://geogratis.gc.ca/mapml/en/osmtile/bc/" checked></layer->
-    <layer- label="Open Street Map" src="https://geogratis.gc.ca/mapml/osm/"></layer->
-    <layer- label="British Columbia Geological Survey" src="bcgov.mapml"></layer->
-  </map>
-  <map is="web-map" zoom="8" lat="48.45131899883153" lon="-123.38236113068885"  width="700" height="400" controls projection="BCTILE">
-    <layer- label="BC Roads" src="https://geogratis.gc.ca/mapml/en/bctile/png/" checked ></layer->
-    <layer- label="BC Terrain" src="https://geogratis.gc.ca/mapml/en/bctile/jpeg/" class="hillshade"></layer->
-    <area is="map-area" id="marker" href='http://geobc.gov.bc.ca/' alt="GeoBC" coords="354,197" shape="marker">
-  </map>
-    
+    <map is="web-map" zoom="12" lat="48.42168226" lon="-123.37612152" width="700" height="400" controls>
+      <layer- label="BC Web Mercator" src="https://geogratis.gc.ca/mapml/en/osmtile/bc/" checked></layer->
+      <layer- label="Open Street Map" src="https://geogratis.gc.ca/mapml/osm/"></layer->
+      <layer- label="British Columbia Geological Survey" src="bcgov.mapml"></layer->
+    </map>
+    <map is="web-map" zoom="8" lat="48.45131899883153" lon="-123.38236113068885" width="700" height="400" controls projection="BCTILE">
+      <layer- label="BC Roads" src="https://geogratis.gc.ca/mapml/en/bctile/png/" checked></layer->
+      <layer- label="BC Terrain" src="https://geogratis.gc.ca/mapml/en/bctile/jpeg/" class="hillshade"></layer->
+      <area is="map-area" id="marker" href="http://geobc.gov.bc.ca/" alt="GeoBC" coords="354,197" shape="marker">
+    </map>
   </body>
 </html>
