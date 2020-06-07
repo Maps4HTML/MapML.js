@@ -1,16 +1,27 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>index-mm-mapp.html</title>
-    <meta charset="UTF-8">
     <script type="module" src="dist/mm-mapp.js"></script>
-     <style>
-      html {height:100%} * {margin:0px;padding:0px} body,mm-mapp {height:inherit}
+    <style>
+      html {
+        height: 100%;
+      }
+      * {
+        margin: 0px;
+        padding: 0px;
+      }
+      body,
+      mm-mapp {
+        height: inherit;
+      }
     </style>
   </head>
   <body>
-      <mm-mapp projection="CBMTILE" zoom="2" lat="45" lon="-90" controls controlslist="nofullscreen">
-          <layer- label='CBMT' src='http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/' checked></layer->
-      </mm-mapp>     
+    <mm-mapp projection="CBMTILE" zoom="2" lat="45" lon="-90" controls controlslist="nofullscreen">
+      <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
+    </mm-mapp>
   </body>
 </html>

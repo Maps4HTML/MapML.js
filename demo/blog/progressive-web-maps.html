@@ -174,8 +174,8 @@
 
 &lt;-- The map element can be set up by the HTML author to provide the old image map behaviour --&gt;
 &lt;map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="400" controls hidden>
-  &lt;layer- id="osm" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden>&lt;/layer-&gt;
-  &lt;layer- id="canvec" src="http://geogratis.gc.ca/mapml/canvec/50k/features/"  label="CanVec+ 031G" class="transparency">&lt;/layer-&gt;
+  &lt;layer- id="osm" src="https://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden>&lt;/layer-&gt;
+  &lt;layer- id="canvec" src="https://geogratis.gc.ca/mapml/canvec/50k/features/"  label="CanVec+ 031G" class="transparency">&lt;/layer-&gt;
   &lt;layer- id="marker" label="Marker layer" src="marker.mapml">&lt;/layer-&gt;
   &lt;area is="map-area"id="marker2" href='http://example.com/marker/' alt="Marker" coords="265,185" shape="marker">
   <emphasis>The shape=marker keyword is new, if we want a link there in old UAs we have to provide a fallback, using rect</emphasis>
@@ -191,8 +191,8 @@
       <!-- the @width / @height attributes take precedence over properties, but currently don't change to reflect updates -->
       <img usemap="#dowslake" src="../map1.png" width="700" height="400" alt="Dow's Lake area" />
       <map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" controls hidden>
-        <layer- id="osm" src="http://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden></layer->
-        <layer- id="canvec" label="CanVec+ 031G" src="http://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></layer->
+        <layer- id="osm" src="https://geogratis.gc.ca/mapml/osm/" label="Open Street Map" checked hidden></layer->
+        <layer- id="canvec" label="CanVec+ 031G" src="https://geogratis.gc.ca/mapml/canvec/50k/features/" class="transparency"></layer->
         <!-- the HTML author can create MapML files and serve them as layers if they prefer -->
         <layer- id="marker" label="Marker layer" src="../marker.mapml"></layer->
         
