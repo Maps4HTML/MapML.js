@@ -1,17 +1,16 @@
-<!DOCTYPE html>
-
-<html>
+<!doctype html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Test layers</title>
-    <meta charset="UTF-8">
-    <link rel='icon' href='MapsForHTML_16x16.png' sizes='16x16'>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="MapsForHTML_16x16.png" sizes="16x16">
     <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../web-map.html">
     <style>
       /* map must have a defined height and width, can be set either by @height/@width or with css properties */
       div {
-        max-width: inherit
+        max-width: inherit;
       }
       map {
         max-width: 100%;
@@ -23,104 +22,106 @@
       .hillshade {
         opacity: 0.3;
       }
-      map-area[shape=circle] {
-        fill: white; stroke: aqua; stroke-width: 5px;fill-opacity: 0.0
+      map-area[shape="circle"] {
+        fill: white;
+        stroke: aqua;
+        stroke-width: 5px;
+        fill-opacity: 0;
       }
     </style>
   </head>
   <body>
     <div>
-  <map is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="900" controls>
-    <layer- label="osm" src="http://geogratis.gc.ca/mapml/osm/" checked></layer->
-    <layer- label="cbmt_en" src="http://geogratis.gc.ca/mapml/en/osmtile/cbmt/"></layer->
-    <layer- label="cbmt_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/cbmt/"></layer->
-    <layer- label="toporama_en" src="http://geogratis.gc.ca/mapml/en/osmtile/toporama/"></layer->
-    <layer- label="toporama_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/toporama/"></layer->
-    <layer- label="landmass_en" src="http://geogratis.gc.ca/mapml/en/osmtile/landmass/"></layer->
-    <layer- label="landmass_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/landmass/"></layer->
-    <layer- label="cded250k_en" src="http://geogratis.gc.ca/mapml/en/osmtile/cded250k/"></layer->
-    <layer- label="cded250k_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/cded250k/"></layer->
-    <layer- label="cded50k_en" src="http://geogratis.gc.ca/mapml/en/osmtile/cded50k/"></layer->
-    <layer- label="cded50k_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/cded50k/"></layer->
-    <layer- label="image_en" src="http://geogratis.gc.ca/mapml/en/osmtile/image/"></layer->
-    <layer- label="image_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/image/"></layer->
-    <layer- label="landcover_en" src="http://geogratis.gc.ca/mapml/en/osmtile/landcover/"></layer->
-    <layer- label="landcover_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/landcover/"></layer->
-    <layer- label="hydro_en" src="http://geogratis.gc.ca/mapml/en/osmtile/hydro/"></layer->
-    <layer- label="hydro_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/hydro/"></layer->
-    <layer- label="network_en" src="http://geogratis.gc.ca/mapml/en/osmtile/network/"></layer->
-    <layer- label="network_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/network/"></layer->
-    <layer- label="hydref_en" src="http://geogratis.gc.ca/mapml/en/osmtile/hydref/"></layer->
-    <layer- label="hydref_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/hydref/"></layer->
-    <layer- label="bathymetry_en" src="http://geogratis.gc.ca/mapml/en/osmtile/bathymetry/"></layer->
-    <layer- label="bathymetry_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/bathymetry/"></layer->
-    <layer- label="boundaries_en" src="http://geogratis.gc.ca/mapml/en/osmtile/boundaries/"></layer->
-    <layer- label="boundaries_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/boundaries/"></layer->
-    <layer- label="roads_en" src="http://geogratis.gc.ca/mapml/en/osmtile/roads/"></layer->
-    <layer- label="roads_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/roads/"></layer->
-    <layer- label="refroads_en" src="http://geogratis.gc.ca/mapml/en/osmtile/refroads/"></layer->
-    <layer- label="refroads_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/refroads/"></layer->
-    <layer- label="rail_en" src="http://geogratis.gc.ca/mapml/en/osmtile/rail/"></layer->
-    <layer- label="rail_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/rail/"></layer->
-    <layer- label="nts_en" src="http://geogratis.gc.ca/mapml/en/osmtile/nts/"></layer->
-    <layer- label="nts_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/nts/"></layer->
-    <layer- label="ablands_en" src="http://geogratis.gc.ca/mapml/en/osmtile/ablnd/"></layer->
-    <layer- label="ablands_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/ablnd/"></layer->
-    <layer- label="placenames_en" src="http://geogratis.gc.ca/mapml/en/osmtile/placenames/"></layer->
-    <layer- label="placenames_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/placenames/"></layer->
-    <layer- label="muni_bndy_en" src="http://geogratis.gc.ca/mapml/en/osmtile/municipalities/"></layer->
-    <layer- label="muni_bndy_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/municipalities/"></layer->
-    <layer- label="drainage_en" src="http://geogratis.gc.ca/mapml/en/osmtile/drainage/"></layer->
-    <layer- label="drainage_fr" src="http://geogratis.gc.ca/mapml/fr/osmtile/drainage/"></layer->
-    <layer- label="ce_en" src="http://geogratis.gc.ca/mapml/en/osmtile/ce/"></layer->
-  </map>
-  <map is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="900" controls projection="CBMTILE">
-    <layer- label="cbmt_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
-    <layer- label="cbmt_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/cbmt/"></layer->
-    <layer- class="hillshade" label="cbme_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbme/"></layer->
-    <layer- class="hillshade" label="cbce_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/cbce/"></layer->
-    <layer- label="toporama_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/toporama/"></layer->
-    <layer- label="toporama_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/toporama/"></layer->
-    <layer- label="landmass_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/landmass/"></layer->
-    <layer- label="landmass_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/landmass/"></layer->
-    <layer- label="cded250k_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/cded250k/"></layer->
-    <layer- label="cded250k_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/cded250k/"></layer->
-    <layer- label="cded50k_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/cded50k/"></layer->
-    <layer- label="cded50k_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/cded50k/"></layer->
-    <layer- label="image_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/image/"></layer->
-    <layer- label="image_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/image/"></layer->
-    <layer- label="landcover_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/landcover/"></layer->
-    <layer- label="landcover_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/landcover/"></layer->
-    <layer- label="hydro_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/hydro/"></layer->
-    <layer- label="hydro_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/hydro/"></layer->
-    <layer- label="network_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/network/"></layer->
-    <layer- label="network_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/network/"></layer->
-    <layer- label="hydref_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/hydref/"></layer->
-    <layer- label="hydref_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/hydref/"></layer->
-    <layer- label="bathymetry_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/bathymetry/"></layer->
-    <layer- label="bathymetry_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/bathymetry/"></layer->
-    <layer- label="boundaries_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/boundaries/"></layer->
-    <layer- label="boundaries_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/boundaries/"></layer->
-    <layer- label="roads_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/roads/"></layer->
-    <layer- label="roads_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/roads/"></layer->
-    <layer- label="refroads_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/refroads/"></layer->
-    <layer- label="refroads_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/refroads/"></layer->
-    <layer- label="rail_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/rail/"></layer->
-    <layer- label="rail_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/rail/"></layer->
-    <layer- label="nts_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/nts/"></layer->
-    <layer- label="nts_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/nts/"></layer->
-    <layer- label="ablands_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/ablnd/"></layer->
-    <layer- label="ablands_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/ablnd/"></layer->
-     <layer- label="placenames_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/placenames/"></layer->
-    <layer- label="placenames_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/placenames/"></layer->
-   <layer- label="muni_bndy_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/municipalities/"></layer->
-    <layer- label="muni_bndy_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/municipalities/"></layer->
-    <layer- label="drainage_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/drainage/"></layer->
-    <layer- label="drainage_fr" src="http://geogratis.gc.ca/mapml/fr/cbmtile/drainage/"></layer->
-    <layer- label="ce_en" src="http://geogratis.gc.ca/mapml/en/cbmtile/ce/"></layer->
-    <layer- id="fdr" label="Fire Risk forecast" src="http://geogratis.gc.ca/mapml/fdr_current/"   style="opacity: 0.4"></layer->
-  </map>
-</div>
-
+      <map is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="900" controls>
+        <layer- label="osm" src="https://geogratis.gc.ca/mapml/osm/" checked></layer->
+        <layer- label="cbmt_en" src="https://geogratis.gc.ca/mapml/en/osmtile/cbmt/"></layer->
+        <layer- label="cbmt_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/cbmt/"></layer->
+        <layer- label="toporama_en" src="https://geogratis.gc.ca/mapml/en/osmtile/toporama/"></layer->
+        <layer- label="toporama_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/toporama/"></layer->
+        <layer- label="landmass_en" src="https://geogratis.gc.ca/mapml/en/osmtile/landmass/"></layer->
+        <layer- label="landmass_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/landmass/"></layer->
+        <layer- label="cded250k_en" src="https://geogratis.gc.ca/mapml/en/osmtile/cded250k/"></layer->
+        <layer- label="cded250k_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/cded250k/"></layer->
+        <layer- label="cded50k_en" src="https://geogratis.gc.ca/mapml/en/osmtile/cded50k/"></layer->
+        <layer- label="cded50k_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/cded50k/"></layer->
+        <layer- label="image_en" src="https://geogratis.gc.ca/mapml/en/osmtile/image/"></layer->
+        <layer- label="image_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/image/"></layer->
+        <layer- label="landcover_en" src="https://geogratis.gc.ca/mapml/en/osmtile/landcover/"></layer->
+        <layer- label="landcover_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/landcover/"></layer->
+        <layer- label="hydro_en" src="https://geogratis.gc.ca/mapml/en/osmtile/hydro/"></layer->
+        <layer- label="hydro_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/hydro/"></layer->
+        <layer- label="network_en" src="https://geogratis.gc.ca/mapml/en/osmtile/network/"></layer->
+        <layer- label="network_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/network/"></layer->
+        <layer- label="hydref_en" src="https://geogratis.gc.ca/mapml/en/osmtile/hydref/"></layer->
+        <layer- label="hydref_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/hydref/"></layer->
+        <layer- label="bathymetry_en" src="https://geogratis.gc.ca/mapml/en/osmtile/bathymetry/"></layer->
+        <layer- label="bathymetry_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/bathymetry/"></layer->
+        <layer- label="boundaries_en" src="https://geogratis.gc.ca/mapml/en/osmtile/boundaries/"></layer->
+        <layer- label="boundaries_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/boundaries/"></layer->
+        <layer- label="roads_en" src="https://geogratis.gc.ca/mapml/en/osmtile/roads/"></layer->
+        <layer- label="roads_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/roads/"></layer->
+        <layer- label="refroads_en" src="https://geogratis.gc.ca/mapml/en/osmtile/refroads/"></layer->
+        <layer- label="refroads_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/refroads/"></layer->
+        <layer- label="rail_en" src="https://geogratis.gc.ca/mapml/en/osmtile/rail/"></layer->
+        <layer- label="rail_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/rail/"></layer->
+        <layer- label="nts_en" src="https://geogratis.gc.ca/mapml/en/osmtile/nts/"></layer->
+        <layer- label="nts_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/nts/"></layer->
+        <layer- label="ablands_en" src="https://geogratis.gc.ca/mapml/en/osmtile/ablnd/"></layer->
+        <layer- label="ablands_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/ablnd/"></layer->
+        <layer- label="placenames_en" src="https://geogratis.gc.ca/mapml/en/osmtile/placenames/"></layer->
+        <layer- label="placenames_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/placenames/"></layer->
+        <layer- label="muni_bndy_en" src="https://geogratis.gc.ca/mapml/en/osmtile/municipalities/"></layer->
+        <layer- label="muni_bndy_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/municipalities/"></layer->
+        <layer- label="drainage_en" src="https://geogratis.gc.ca/mapml/en/osmtile/drainage/"></layer->
+        <layer- label="drainage_fr" src="https://geogratis.gc.ca/mapml/fr/osmtile/drainage/"></layer->
+        <layer- label="ce_en" src="https://geogratis.gc.ca/mapml/en/osmtile/ce/"></layer->
+      </map>
+      <map is="web-map" zoom="17" lat="45.398043" lon="-75.70683" width="700" height="900" controls projection="CBMTILE">
+        <layer- label="cbmt_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
+        <layer- label="cbmt_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/cbmt/"></layer->
+        <layer- class="hillshade" label="cbme_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbme/"></layer->
+        <layer- class="hillshade" label="cbce_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/cbce/"></layer->
+        <layer- label="toporama_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/toporama/"></layer->
+        <layer- label="toporama_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/toporama/"></layer->
+        <layer- label="landmass_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/landmass/"></layer->
+        <layer- label="landmass_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/landmass/"></layer->
+        <layer- label="cded250k_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/cded250k/"></layer->
+        <layer- label="cded250k_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/cded250k/"></layer->
+        <layer- label="cded50k_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/cded50k/"></layer->
+        <layer- label="cded50k_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/cded50k/"></layer->
+        <layer- label="image_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/image/"></layer->
+        <layer- label="image_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/image/"></layer->
+        <layer- label="landcover_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/landcover/"></layer->
+        <layer- label="landcover_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/landcover/"></layer->
+        <layer- label="hydro_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/hydro/"></layer->
+        <layer- label="hydro_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/hydro/"></layer->
+        <layer- label="network_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/network/"></layer->
+        <layer- label="network_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/network/"></layer->
+        <layer- label="hydref_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/hydref/"></layer->
+        <layer- label="hydref_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/hydref/"></layer->
+        <layer- label="bathymetry_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/bathymetry/"></layer->
+        <layer- label="bathymetry_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/bathymetry/"></layer->
+        <layer- label="boundaries_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/boundaries/"></layer->
+        <layer- label="boundaries_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/boundaries/"></layer->
+        <layer- label="roads_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/roads/"></layer->
+        <layer- label="roads_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/roads/"></layer->
+        <layer- label="refroads_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/refroads/"></layer->
+        <layer- label="refroads_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/refroads/"></layer->
+        <layer- label="rail_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/rail/"></layer->
+        <layer- label="rail_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/rail/"></layer->
+        <layer- label="nts_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/nts/"></layer->
+        <layer- label="nts_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/nts/"></layer->
+        <layer- label="ablands_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/ablnd/"></layer->
+        <layer- label="ablands_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/ablnd/"></layer->
+        <layer- label="placenames_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/placenames/"></layer->
+        <layer- label="placenames_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/placenames/"></layer->
+        <layer- label="muni_bndy_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/municipalities/"></layer->
+        <layer- label="muni_bndy_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/municipalities/"></layer->
+        <layer- label="drainage_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/drainage/"></layer->
+        <layer- label="drainage_fr" src="https://geogratis.gc.ca/mapml/fr/cbmtile/drainage/"></layer->
+        <layer- label="ce_en" src="https://geogratis.gc.ca/mapml/en/cbmtile/ce/"></layer->
+        <layer- id="fdr" label="Fire Risk forecast" src="https://geogratis.gc.ca/mapml/fdr_current/" style="opacity: 0.4;"></layer->
+      </map>
+    </div>
   </body>
 </html>

@@ -6,7 +6,7 @@ describe("M.Util Tests", () => {
     var mapmlString = "<mapml><head><style>.css {property:cool}</style></head><body></body></mapml>",
       parser = new DOMParser(),
       base = "https://example.org/mapml/is/awesome/",
-      link = parser.parseFromString('<doc><link rel="stylesheet" href="./remote.css" /></doc>', 'application/xml').firstChild.firstChild;
+      link = parser.parseFromString('<doc><link rel="stylesheet" href="./remote.css"/></doc>', 'application/xml').firstChild.firstChild;
 
 
     test("M.parseStylesheetToHTML(mapml,base,container)", () => {
@@ -60,8 +60,8 @@ describe("M.Util Tests", () => {
         expect(testcontainer.querySelector('link').href).toEqual(base + "remote.css");
     });
     test("M.parseStylesheetToHTML(mapml with assorted linked, inline styles, valid base, container)", () => {
-      var styleLinkTwo = parser.parseFromString('<doc><link rel="stylesheet" href="./styleTwo.css" /></doc>', 'application/xml').firstChild;
-      var styleLinkThree = parser.parseFromString('<doc><link rel="stylesheet" href="./styleThree.css" /></doc>', 'application/xml').firstChild;
+      var styleLinkTwo = parser.parseFromString('<doc><link rel="stylesheet" href="./styleTwo.css"/></doc>', 'application/xml').firstChild;
+      var styleLinkThree = parser.parseFromString('<doc><link rel="stylesheet" href="./styleThree.css"/></doc>', 'application/xml').firstChild;
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       var testcontainer = document.createElement('div');
       mapml.firstChild.firstChild.append(link);
@@ -95,8 +95,8 @@ describe("M.Util Tests", () => {
     });
 
     test("M.parseStylesheetToHTML(mapml with assortedlinked, inline styles, null base, null container)", () => {
-      var styleLinkTwo = parser.parseFromString('<doc><link rel="stylesheet" href="./styleTwo.css" /></doc>', 'application/xml').firstChild;
-      var styleLinkThree = parser.parseFromString('<doc><link rel="stylesheet" href="./styleThree.css" /></doc>', 'application/xml').firstChild;
+      var styleLinkTwo = parser.parseFromString('<doc><link rel="stylesheet" href="./styleTwo.css"/></doc>', 'application/xml').firstChild;
+      var styleLinkThree = parser.parseFromString('<doc><link rel="stylesheet" href="./styleThree.css"/></doc>', 'application/xml').firstChild;
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       var testcontainer = document.createElement('div');
       mapml.firstChild.firstChild.append(link);
