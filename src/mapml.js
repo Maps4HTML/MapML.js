@@ -603,13 +603,13 @@ M.Util = {
   //meta content is the content attribute of meta
   // input "max=5,min=4" => [[max,5][min,5]]
   metaContentToArray: function(content){
-    if(!content)return [];
+    if(!content || content instanceof Object)return [];
     let contentArray = [];
     let stringSplit = content.split(',');
 
     for(let i=0;i<stringSplit.length;i++){
       let prop = stringSplit[i].split("=");
-      contentArray.push([prop[0],prop[1]]);
+      if(prop.length === 2) contentArray.push([prop[0],prop[1]]);
     }
     return contentArray;
   }
@@ -658,6 +658,7 @@ M.Util = {
       }
   }
 };
+M.metaContentToArray = M.Util.metaContentToArray;
 M.coordsToArray = M.Util.coordsToArray;
 M.parseStylesheetAsHTML = M.Util.parseStylesheetAsHTML;
 M.QueryHandler = L.Handler.extend({
@@ -940,43 +941,44 @@ M.MapMLLayer = L.Layer.extend({
         this._tileLayer._mapmlTileContainer = this._mapmlTileContainer;
         map.addLayer(this._tileLayer);       
         this._tileLayer._container.appendChild(this._mapmlTileContainer); */
-        
-        let tiles = this._mapmlTileContainer.getElementsByTagName('tile');
-        let meta = M.Util.metaContentToArray(this._mapmlTileContainer.getElementsByTagName('tiles')[0].getAttribute('zoom'));
-        
-        //maybe instead of setting max default to be based on crs, set max to 3 + nativeZoomMax
-        let nMax = 0,nMin = 0, min=0, max = map.options.crs.options.resolutions.length;
-        for (let i=0;i<tiles.length;i++) {
-          if(parseInt(tiles[i].getAttribute('zoom')) > nMax) nMax = parseInt(tiles[i].getAttribute('zoom'));
-          if(parseInt(tiles[i].getAttribute('zoom')) < nMin) nMin = parseInt(tiles[i].getAttribute('zoom'));
-        }
-        if(meta.length === 2){
-          if(meta[0][0] === "min"){
-            min = parseInt(meta[0][1]);
-            max = parseInt(meta[1][1]);
-          }else{
-            min = parseInt(meta[1][1]);
-            max = parseInt(meta[0][1]);
+        if(this._mapmlTileContainer.getElementsByTagName("tiles").length > 0){
+          let tiles = this._mapmlTileContainer.getElementsByTagName('tile');
+          let meta = M.metaContentToArray(this._mapmlTileContainer.getElementsByTagName('tiles')[0].getAttribute('zoom'));
+          
+          //maybe instead of setting max default to be based on crs, set max to 3 + nativeZoomMax
+          let nMax = 0,nMin = 0, min=0, max = map.options.crs.options.resolutions.length;
+          for (let i=0;i<tiles.length;i++) {
+            if(parseInt(tiles[i].getAttribute('zoom')) > nMax) nMax = parseInt(tiles[i].getAttribute('zoom'));
+            if(parseInt(tiles[i].getAttribute('zoom')) < nMin) nMin = parseInt(tiles[i].getAttribute('zoom'));
           }
-        } else if(meta.length === 1){
-          if(meta[0][0] === "min"){
-            min = parseInt(meta[0][1]);
-          }else{
-            max = parseInt(meta[0][1]);
+          if(meta.length === 2){
+            if(meta[0][0] === "min"){
+              min = parseInt(meta[0][1]);
+              max = parseInt(meta[1][1]);
+            }else{
+              min = parseInt(meta[1][1]);
+              max = parseInt(meta[0][1]);
+            }
+          } else if(meta.length === 1){
+            if(meta[0][0] === "min"){
+              min = parseInt(meta[0][1]);
+            }else{
+              max = parseInt(meta[0][1]);
+            }
           }
+          if(!this._tempGridLayer){
+            this._tempGridLayer = M.mapMlTempGrid({
+              pane:this._container,
+              className:"tempGridML",
+              maxNativeZoom:nMax,
+              minNativeZoom:nMin,
+              maxZoom:max,
+              minZoom:min
+            });
+          }
+          this._tempGridLayer._mapmlTileContainer = this._mapmlTileContainer;
+          map.addLayer(this._tempGridLayer);
         }
-        if(!this._tempGridLayer){
-          this._tempGridLayer = M.mapMlTempGrid({
-            pane:this._container,
-            className:"tempGridML",
-            maxNativeZoom:nMax,
-            minNativeZoom:nMin,
-            maxZoom:max,
-            minZoom:min
-          });
-        }
-        this._tempGridLayer._mapmlTileContainer = this._mapmlTileContainer;
-        map.addLayer(this._tempGridLayer);
 
         //this._tempGridLayer._container.appendChild(this._mapmlTileContainer);
 

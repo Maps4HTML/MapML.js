@@ -219,5 +219,41 @@ describe("M.Util Tests", () => {
     });
 
   });
+
+  describe("M.metaContentToArray(content) utility function tests", () => {
+    test("Null object passed", () => {
+      let output = M.metaContentToArray(null);
+
+      expect(output).toEqual([]);
+    });
+
+    test("Valid single input", () => {
+      let output = M.metaContentToArray("max=5");
+
+      expect(output).toEqual([["max", "5"]]);
+    });
+
+    test("Valid multiple input", () => {
+      let output = M.metaContentToArray("max=5,min=23,zoom=65,x=65");
+
+      expect(output).toEqual([["max","5"],["min","23"],["zoom","65"],["x","65"]]);
+    });
+
+    test("Empty string", () => {
+      let output = M.metaContentToArray("");
+
+      expect(output).toEqual([]);
+    });
+    test("Invalid string", () => {
+      let output = M.metaContentToArray("This is an invalid string");
+      expect(output).toEqual([]);
+    });
+
+    test("Invalid object", () => {
+      let output = M.metaContentToArray(new Object);
+      expect(output).toEqual([]);
+    });
+  });
+
 });
 
