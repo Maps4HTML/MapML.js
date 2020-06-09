@@ -599,6 +599,21 @@ window.M = M;
   });
 }());
 M.Util = {
+  
+  //meta content is the content attribute of meta
+  // input "max=5,min=4" => [[max,5][min,5]]
+  metaContentToArray: function(content){
+    if(!content)return [];
+    let contentArray = [];
+    let stringSplit = content.split(',');
+
+    for(let i=0;i<stringSplit.length;i++){
+      let prop = stringSplit[i].split("=");
+      contentArray.push([prop[0],prop[1]]);
+    }
+    return contentArray;
+  }
+  ,
   coordsToArray: function(containerPoints) {
     // returns an array of arrays of coordinate pairs coordsToArray("1,2,3,4") -> [[1,2],[3,4]]
     for (var i=1, pairs = [], coords = containerPoints.split(",");i<coords.length;i+=2) {
@@ -926,14 +941,43 @@ M.MapMLLayer = L.Layer.extend({
         map.addLayer(this._tileLayer);       
         this._tileLayer._container.appendChild(this._mapmlTileContainer); */
         
+        let tiles = this._mapmlTileContainer.getElementsByTagName('tile');
+        let meta = M.Util.metaContentToArray(this._mapmlTileContainer.getElementsByTagName('tiles')[0].getAttribute('zoom'));
+        
+        //maybe instead of setting max default to be based on crs, set max to 3 + nativeZoomMax
+        let nMax = 0,nMin = 0, min=0, max = map.options.crs.options.resolutions.length;
+        for (let i=0;i<tiles.length;i++) {
+          if(parseInt(tiles[i].getAttribute('zoom')) > nMax) nMax = parseInt(tiles[i].getAttribute('zoom'));
+          if(parseInt(tiles[i].getAttribute('zoom')) < nMin) nMin = parseInt(tiles[i].getAttribute('zoom'));
+        }
+        if(meta.length === 2){
+          if(meta[0][0] === "min"){
+            min = parseInt(meta[0][1]);
+            max = parseInt(meta[1][1]);
+          }else{
+            min = parseInt(meta[1][1]);
+            max = parseInt(meta[0][1]);
+          }
+        } else if(meta.length === 1){
+          if(meta[0][0] === "min"){
+            min = parseInt(meta[0][1]);
+          }else{
+            max = parseInt(meta[0][1]);
+          }
+        }
         if(!this._tempGridLayer){
           this._tempGridLayer = M.mapMlTempGrid({
             pane:this._container,
-            className:"tempGridML"
+            className:"tempGridML",
+            maxNativeZoom:nMax,
+            minNativeZoom:nMin,
+            maxZoom:max,
+            minZoom:min
           });
         }
         this._tempGridLayer._mapmlTileContainer = this._mapmlTileContainer;
         map.addLayer(this._tempGridLayer);
+
         //this._tempGridLayer._container.appendChild(this._mapmlTileContainer);
 
         // if the extent has been initialized and received, update the map,
@@ -1001,12 +1045,12 @@ M.MapMLLayer = L.Layer.extend({
     },
     onRemove: function (map) {
         L.DomUtil.remove(this._container);      
-        map.removeLayer(this._mapmlvectors);
+        /* map.removeLayer(this._mapmlvectors);
         map.removeLayer(this._tileLayer);
         map.removeLayer(this._imageLayer);
         if (this._templatedLayer) {
             map.removeLayer(this._templatedLayer);
-        }
+        } */
     },
     getZoomBounds: function () {
         var ext = this._extent;
@@ -3752,7 +3796,6 @@ M.mapMlLayerControl = function (layers, options) {
 
     onAdd: function () {
       this._initContainer();
-      //this.on('moveend', this.fetchAndGroup, this);
       this._levels = {};
       this._tiles = {};
       this._groups = this._groupTiles(this._mapmlTileContainer.getElementsByTagName('tile'));
@@ -3761,52 +3804,39 @@ M.mapMlLayerControl = function (layers, options) {
     },
 
     createTile: function (coords) {
-      var tileGroup = [];
-      for(let j = 0;j<this._groups.length;j++){
-        if((this._groups[j][0].col+':'+this._groups[j][0].row+':'+this._groups[j][0].zoom) === this._tileCoordsToKey(coords)){
-          tileGroup = this._groups[j];
-          break;
-        }
-      }
+      let tileGroup = this._groups.get(this._tileCoordsToKey(coords)) || [];      
+      let tileBundle = document.createElement('tile');
+      tileBundle.setAttribute("col",coords.x);
+      tileBundle.setAttribute("row",coords.y);
+      tileBundle.setAttribute("zoom",coords.z);
       
-      var tileBundle = document.createElement('div');
       for(let i = 0;i<tileGroup.length;i++){
-        var tile= document.createElement('img');
+        let tile= document.createElement('img');
         tile.src = tileGroup[i].src;
         tileBundle.appendChild(tile);
       }
-      var placeHolder = document.createElement('div');
-      placeHolder.style.outline = '1px solid black';
-      placeHolder.innerHTML ='-------------coordx'+coords.x+':coordy'+coords.y+':coordz'+coords.z+'<br/><br/><p style="text-align: right;">Loaded But Not An Image</p> <img src="https://img.favpng.com/17/8/2/react-secrets-of-the-javascript-ninja-node-js-youtube-png-favpng-ucXDe8DD6pdf4ex0mSHmTyLCE.jpg" width="50" height="50">';
+      let placeHolder = document.createElement('div');
+      placeHolder.innerHTML ='coordx'+coords.x+':coordy'+coords.y+':coordz'+coords.z;
       return tileGroup.length > 0?tileBundle:placeHolder;
     },
 
     _groupTiles: function (tiles) {
-      var tileArray = [];
-      for (var i=0;i<tiles.length;i++) {
-        var tile = {};
+      let tileMap = new Map();
+      for (let i=0;i<tiles.length;i++) {
+        let tile = {};
         tile.row = parseInt(tiles[i].getAttribute('row'));
         tile.col = parseInt(tiles[i].getAttribute('col'));
         tile.zoom = parseInt(tiles[i].getAttribute('zoom'));
         tile.src = tiles[i].getAttribute('src');
-        tileArray.push(tile);
+        let tileCode = tile.col+":"+tile.row+":"+tile.zoom;
+        if(tileMap.has(tileCode)){
+          tileMap.set(tileCode,tileMap.get(tileCode).push(tile))
+        } else{
+          tileMap.set(tileCode,[tile])
+        }
       }
-      return groupBy(tileArray, function(item) { return[item.row, item.col, item.zoom]; });
-      function groupBy( array , f ) {
-        var groups = {};
-        array.forEach( function( o ) {
-          var group = JSON.stringify( f(o) );
-          groups[group] = groups[group] || [];
-          groups[group].push( o );  
-        });
-        return Object.keys(groups).map( function( group ) {
-          return groups[group]; 
-        });
-      }
+      return tileMap;
     },
-/*     fetchAndGroup: function(){
-       this._groups = this._groupTiles(this._mapmlTileContainer.getElementsByTagName('tile'));
-    } */
   });
 
   M.mapMlTempGrid = function(options) {
