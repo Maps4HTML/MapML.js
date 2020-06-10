@@ -1,13 +1,11 @@
 const playwright = require("playwright");
-const { JSDOM } = require("jsdom");
-const domToPlaywright = require("dom-to-playwright").default;
 jest.setTimeout(30000);
 
 (async () => {
   for (const browserType of BROWSER) {
     let page, browser, context;
     describe("Playwright Mismatched Layers Test in " + browserType, () => {
-      beforeAll(async () => {
+      beforeEach(async () => {
         browser = await playwright[browserType].launch({
           headless: ISHEADLESS,
         });
@@ -24,8 +22,8 @@ jest.setTimeout(30000);
         await browser.close();
       });
 
-      test("["+browserType+"] "+"CBMTILE Map with OSMTILE layer", async () => {
-        const { document } = new JSDOM(`
+      test("[" + browserType + "] " + "CBMTILE Map with OSMTILE layer", async () => {
+        await page.setContent(`
         <!doctype html>
             <html>
             <head>
@@ -43,16 +41,12 @@ jest.setTimeout(30000);
                 </map>     
             </body>
             </html>
-        `).window;
-        const { update } = await domToPlaywright(page, document);
+        `);
 
-        await update(document);
-        let el = await document.getElementById("checkMe");
-        expect(el.getAttribute("disabled")).not.toBe(null);
       });
 
-      test("["+browserType+"] "+"OSMTILE Map with CBMTILE layer", async () => {
-        const { document } = new JSDOM(`
+      test("[" + browserType + "] " + "OSMTILE Map with CBMTILE layer", async () => {
+        await page.setContent(`
         <!doctype html>
             <html>
             <head>
@@ -70,12 +64,7 @@ jest.setTimeout(30000);
                 </map>     
             </body>
             </html>
-        `).window;
-        const { update } = await domToPlaywright(page, document);
-
-        await update(document);
-        let el = await document.getElementById("checkMe");
-        expect(el.getAttribute("disabled")).not.toBe(null);
+        `);
       });
     });
   }

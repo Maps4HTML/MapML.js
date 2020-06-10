@@ -599,7 +599,6 @@ window.M = M;
   });
 }());
 M.Util = {
-  
   //meta content is the content attribute of meta
   // input "max=5,min=4" => [[max,5][min,5]]
   metaContentToArray: function(content){
@@ -612,8 +611,7 @@ M.Util = {
       if(prop.length === 2) contentArray.push([prop[0],prop[1]]);
     }
     return contentArray;
-  }
-  ,
+  },
   coordsToArray: function(containerPoints) {
     // returns an array of arrays of coordinate pairs coordsToArray("1,2,3,4") -> [[1,2],[3,4]]
     for (var i=1, pairs = [], coords = containerPoints.split(",");i<coords.length;i+=2) {
@@ -941,42 +939,13 @@ M.MapMLLayer = L.Layer.extend({
         this._tileLayer._mapmlTileContainer = this._mapmlTileContainer;
         map.addLayer(this._tileLayer);       
         this._tileLayer._container.appendChild(this._mapmlTileContainer); */
-        if(this._mapmlTileContainer.getElementsByTagName("tiles").length > 0){
-          let tiles = this._mapmlTileContainer.getElementsByTagName('tile');
-          let meta = M.metaContentToArray(this._mapmlTileContainer.getElementsByTagName('tiles')[0].getAttribute('zoom'));
-          
-          //maybe instead of setting max default to be based on crs, set max to 3 + nativeZoomMax
-          let nMax = 0,nMin = 0, min=0, max = map.options.crs.options.resolutions.length;
-          for (let i=0;i<tiles.length;i++) {
-            if(parseInt(tiles[i].getAttribute('zoom')) > nMax) nMax = parseInt(tiles[i].getAttribute('zoom'));
-            if(parseInt(tiles[i].getAttribute('zoom')) < nMin) nMin = parseInt(tiles[i].getAttribute('zoom'));
-          }
-          if(meta.length === 2){
-            if(meta[0][0] === "min"){
-              min = parseInt(meta[0][1]);
-              max = parseInt(meta[1][1]);
-            }else{
-              min = parseInt(meta[1][1]);
-              max = parseInt(meta[0][1]);
-            }
-          } else if(meta.length === 1){
-            if(meta[0][0] === "min"){
-              min = parseInt(meta[0][1]);
-            }else{
-              max = parseInt(meta[0][1]);
-            }
-          }
-          if(!this._tempGridLayer){
-            this._tempGridLayer = M.mapMlTempGrid({
-              pane:this._container,
-              className:"tempGridML",
-              maxNativeZoom:nMax,
-              minNativeZoom:nMin,
-              maxZoom:max,
-              minZoom:min
-            });
-          }
-          this._tempGridLayer._mapmlTileContainer = this._mapmlTileContainer;
+        if(!this._tempGridLayer && this._mapmlTileContainer.getElementsByTagName("tiles").length > 0){
+          this._tempGridLayer = M.mapMlTempGrid({
+            pane:this._container,
+            className:"tempGridML",
+            tileContainer:this._mapmlTileContainer,
+            resLength:map.options.crs.options.resolutions.length,
+          });
           map.addLayer(this._tempGridLayer);
         }
 
@@ -3796,11 +3765,20 @@ M.mapMlLayerControl = function (layers, options) {
 
   M.MapMlTempGrid = L.GridLayer.extend({
 
+    initialize: function (options) {
+      let zoomBounds = this._getZoomBounds(options.tileContainer,options.resLength);
+      options.maxNativeZoom = zoomBounds.nMax;
+      options.minNativeZoom = zoomBounds.nMin;
+      options.maxZoom = zoomBounds.max;
+      options.minZoom = zoomBounds.min;
+      L.setOptions(this, options);
+    },
+
     onAdd: function () {
       this._initContainer();
       this._levels = {};
       this._tiles = {};
-      this._groups = this._groupTiles(this._mapmlTileContainer.getElementsByTagName('tile'));
+      this._groups = this._groupTiles(this.options.tileContainer.getElementsByTagName('tile'));
       this._resetView();
       this._update();
     },
@@ -3822,6 +3800,37 @@ M.mapMlLayerControl = function (layers, options) {
       return tileGroup.length > 0?tileBundle:placeHolder;
     },
 
+    _getZoomBounds: function(container, resLength){
+      if(!container) return {};
+      let meta = M.metaContentToArray(container.getElementsByTagName('tiles')[0].getAttribute('zoom'));
+      let zoom = {};
+      let tiles = container.getElementsByTagName("tile");
+      zoom.nMax = 0;
+      zoom.nMin = resLength;
+      zoom.min=0;
+      zoom.max = resLength;
+      for (let i=0;i<tiles.length;i++) {
+        if(parseInt(tiles[i].getAttribute('zoom')) > zoom.nMax) zoom.nMax = parseInt(tiles[i].getAttribute('zoom'));
+        if(parseInt(tiles[i].getAttribute('zoom')) < zoom.nMin) zoom.nMin = parseInt(tiles[i].getAttribute('zoom'));
+      }
+      if(meta.length === 2){
+        if(meta[0][0] === "min"){
+          zoom.min = parseInt(meta[0][1]);
+          zoom.max = parseInt(meta[1][1]);
+        }else{
+          zoom.min = parseInt(meta[1][1]);
+          zoom.max = parseInt(meta[0][1]);
+        }
+      } else if(meta.length === 1){
+        if(meta[0][0] === "min"){
+          zoom.min = parseInt(meta[0][1]);
+        }else{
+          zoom.max = parseInt(meta[0][1]);
+        }
+      }
+      return zoom;
+    },
+
     _groupTiles: function (tiles) {
       let tileMap = new Map();
       for (let i=0;i<tiles.length;i++) {
@@ -3832,9 +3841,9 @@ M.mapMlLayerControl = function (layers, options) {
         tile.src = tiles[i].getAttribute('src');
         let tileCode = tile.col+":"+tile.row+":"+tile.zoom;
         if(tileMap.has(tileCode)){
-          tileMap.set(tileCode,tileMap.get(tileCode).push(tile))
+          tileMap.set(tileCode,tileMap.get(tileCode).push(tile));
         } else{
-          tileMap.set(tileCode,[tile])
+          tileMap.set(tileCode,[tile]);
         }
       }
       return tileMap;

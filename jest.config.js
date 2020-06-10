@@ -1,6 +1,7 @@
 module.exports = {
   projects: [
     {
+      preset:"playwright-runner",
       displayName: "UNIT Testing",
       testMatch: ["**/test/*.test.js"],
       setupFiles: ["./test/setup.js"]
