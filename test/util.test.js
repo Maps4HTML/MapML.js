@@ -220,37 +220,37 @@ describe("M.Util Tests", () => {
 
   });
 
-  describe("M.metaContentToArray(content) utility function tests", () => {
+  describe("M.metaContentToObject(content) utility function tests", () => {
     test("Null object passed", () => {
-      let output = M.metaContentToArray(null);
+      let output = M.metaContentToObject(null);
 
       expect(output).toEqual({});
     });
 
     test("Valid single input", () => {
-      let output = M.metaContentToArray("max=5");
+      let output = M.metaContentToObject("max=5");
 
       expect(output).toEqual({ max: "5" });
     });
 
     test("Valid multiple input", () => {
-      let output = M.metaContentToArray("max=5,min=23,zoom=65,x=65");
+      let output = M.metaContentToObject("max=5,min=23,zoom=65,x=65");
 
       expect(output).toEqual({ max: "5", min: "23", zoom: "65", x: "65" });
     });
 
     test("Empty string", () => {
-      let output = M.metaContentToArray("");
+      let output = M.metaContentToObject("");
 
       expect(output).toEqual({});
     });
-    test("Invalid string", () => {
-      let output = M.metaContentToArray("This is an invalid string");
-      expect(output).toEqual({});
+    test("No equal sign just value", () => {
+      let output = M.metaContentToObject("noequal");
+      expect(output).toEqual({ content: "noequal" });
     });
 
     test("Invalid object", () => {
-      let output = M.metaContentToArray(new Object);
+      let output = M.metaContentToObject(new Object);
       expect(output).toEqual({});
     });
   });

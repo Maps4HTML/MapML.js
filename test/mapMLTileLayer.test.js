@@ -189,31 +189,46 @@ describe("MapMLTileLayer Tests", function () {
         y: 18,
         z: 3,
       }
-      const groups = layer._groupTiles(tileContainer.getElementsByTagName('tile'));
-      layer._groups = groups;
       const result = layer.createTile(point);
       expect(result.getElementsByTagName("img").length).toEqual(1);
     });
 
-    /* test("One image element in tile", function () {
-  
+    test("Multiple image element in tile", function () {
+      let tileContainer = document.createElement("div");
+      tileContainer.innerHTML = '<tiles zoom="min=0,max=24"><tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></tile><tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></tile><tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></tile><tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></tile><tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></tile><tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></tile></tiles>'
+      let layer = M.mapMLTileLayer({
+        pane: container,
+        className: "tempGridML",
+        tileContainer: tileContainer,
+        maxZoomBound: 24,
+      })
       let point = {
         x: 17,
         y: 18,
         z: 3,
       }
+      const result = layer.createTile(point);
+      expect(result.getElementsByTagName("img").length).toEqual(2);
+    });
+
+    test("Multiple image element in tile in order", function () {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<tiles zoom="min=0,max=24"><tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></tile><tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></tile><tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></tile><tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></tile><tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></tile><tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></tile></tiles>'
-      const layer = M.mapMLTileLayer({
+      let layer = M.mapMLTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
-        maxZoomBound: 26,
+        maxZoomBound: 24,
       })
-      const result = layer._groupTiles(tileContainer.getElementsByTagName('tile'));
-      expect(result.size).toEqual(5) && expect(result.get("17:18:3").length).toEqual(2) && expect(result.get("17:18:3")[0].src).toEqual("data/cbmt/2/c11_r12.png") &&
-        expect(result.get("17:18:3").length).toEqual(2) && expect(result.get("17:18:3")[1].src).toEqual("data/cbmt/2/c11_r10.png");
+      let point = {
+        x: 17,
+        y: 18,
+        z: 3,
+      }
+      const result = layer.createTile(point);
+      expect(result.getElementsByTagName("img")[0].src).toEqual("http://localhost/data/cbmt/2/c11_r12.png") &&
+        expect(result.getElementsByTagName("img")[1].src).toEqual("http://localhost/data/cbmt/2/c11_r10.png");
     });
-  */
+
   });
 });
