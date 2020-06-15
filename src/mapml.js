@@ -935,7 +935,7 @@ M.MapMLLayer = L.Layer.extend({
         if(!this._staticTileLayer && this._mapmlTileContainer.getElementsByTagName("tiles").length > 0){
           this._staticTileLayer = M.mapMLStaticTileLayer({
             pane:this._container,
-            className:"mapMLStaticTileLayer",
+            className:"mapml-static-tile-layer",
             tileContainer:this._mapmlTileContainer,
             maxZoomBound:map.options.crs.options.resolutions.length,
           });
