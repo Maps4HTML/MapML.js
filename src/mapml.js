@@ -3478,11 +3478,15 @@ M.mapMlLayerControl = function (layers, options) {
       let zoomBounds = this._getZoomBounds(options.tileContainer,options.maxZoomBound);
       options.maxNativeZoom = zoomBounds.nMax, options.minNativeZoom = zoomBounds.nMin, options.maxZoom = zoomBounds.max, options.minZoom = zoomBounds.min;
       L.setOptions(this, options);
-      this.outOfBounds = false;
       this._groups = this._groupTiles(this.options.tileContainer.getElementsByTagName('tile'));
       this._bounds = this._getLayerBounds(this._groups);
     },
 
+    onAdd: function(){
+      this.outOfBounds = !(this._withinBounds(this._map.getPixelBounds(), this._bounds[this._map.getZoom()]));
+      L.GridLayer.prototype.onAdd.call(this,this._map);
+    },
+    
     _onMoveEnd : function(){
       if (!this._map || this._map._animatingZoom ||!this._bounds[this._map.getZoom()]) { return; }
       this.outOfBounds = !(this._withinBounds(this._map.getPixelBounds(), this._bounds[this._map.getZoom()]));
@@ -3506,17 +3510,17 @@ M.mapMlLayerControl = function (layers, options) {
 
     createTile: function (coords) {
       let tileGroup = this._groups[this._tileCoordsToKey(coords)] || [];      
-      let tileBundle = document.createElement('tile');
-      tileBundle.setAttribute("col",coords.x);
-      tileBundle.setAttribute("row",coords.y);
-      tileBundle.setAttribute("zoom",coords.z);
+      let tileElem = document.createElement('tile');
+      tileElem.setAttribute("col",coords.x);
+      tileElem.setAttribute("row",coords.y);
+      tileElem.setAttribute("zoom",coords.z);
       
       for(let i = 0;i<tileGroup.length;i++){
         let tile= document.createElement('img');
         tile.src = tileGroup[i].src;
-        tileBundle.appendChild(tile);
+        tileElem.appendChild(tile);
       }
-      return tileBundle;
+      return tileElem;
     },
 
     //----------------------------------
