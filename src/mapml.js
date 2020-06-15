@@ -938,7 +938,6 @@ M.MapMLLayer = L.Layer.extend({
             className:"mapMLTileLayer",
             tileContainer:this._mapmlTileContainer,
             maxZoomBound:map.options.crs.options.resolutions.length,
-            TCRS:map.options.crs.options,
           });
           map.addLayer(this._tileLayer);
         }
@@ -3488,21 +3487,18 @@ M.mapMlLayerControl = function (layers, options) {
     },
 
     _onMoveEnd : function(){
-      if (!this._map || this._map._animatingZoom) { return; }
-      this.outOfBounds = !(this._withinBound(this._map.getPixelBounds(), this._bounds, this._map.getZoom()));
+      if (!this._map || this._map._animatingZoom ||!this._bounds[this._map.getZoom()]) { return; }
+      this.outOfBounds = !(this._withinBound(this._map.getPixelBounds(), this._bounds[this._map.getZoom()]));
       if(this.outOfBounds){
-        console.log("Out of Bounds");
+        console.log("Out of bounds");
         return;
       }
       this._update();
     },
 
-    _withinBound : function(mapBounds, layerBounds, zoomLevel){
-      let xMax = mapBounds.max.x * this._map.options.crs.options.resolutions[zoomLevel];
-      let yMax = mapBounds.max.y * this._map.options.crs.options.resolutions[zoomLevel];
-      let xMin = mapBounds.min.x * this._map.options.crs.options.resolutions[zoomLevel];
-      let yMin = mapBounds.min.y * this._map.options.crs.options.resolutions[zoomLevel];
-      return layerBounds.overlaps(L.bounds(L.point(xMin,yMin),L.point(xMax,yMax)));
+    _withinBound : function(mapBound, layerBound){
+      let xMax = mapBound.max.x /256, yMax = mapBound.max.y /256, xMin = mapBound.min.x /256, yMin = mapBound.min.y /256;
+      return layerBound.overlaps(L.bounds(L.point(xMin,yMin),L.point(xMax,yMax)));
     },
 
     _isValidTile(coords) {
@@ -3523,12 +3519,10 @@ M.mapMlLayerControl = function (layers, options) {
         tile.src = tileGroup[i].src;
         tileBundle.appendChild(tile);
       }
-      let x = (coords.x)* 256 * this.options.TCRS.resolutions[coords.z];
-      let y = (coords.y)* 256 * this.options.TCRS.resolutions[coords.z];
       let tempDiv = document.createElement("div");
-      let pcrsVal = `<p>X:${x} meters</br> Y:${y} meters</p>`;
+      let pcrsVal = `<p>X:${coords.x}</br> Y:${coords.y}</p>`;
       tempDiv.innerHTML = pcrsVal;
-      tileBundle.appendChild(tempDiv);
+      tileBundle.appendChild(tempDiv.firstChild);
       return tileBundle;
     },
 
@@ -3542,7 +3536,24 @@ M.mapMlLayerControl = function (layers, options) {
     //----------------------------------
     //between those is the bounds of the layer
     _getLayerBounds: function(tileGroups){
-      let maxX =0,maxY=0,minX=6456345,minY=645645;
+      let layerBounds = {};
+      for(let tile in tileGroups){
+        let sCoords = tile.split(":"), coords = {};
+        coords.x = +sCoords[0],coords.y = +sCoords[1], coords.z = +sCoords[2];
+        if(sCoords[2] in layerBounds){
+          if(coords.x < layerBounds[sCoords[2]].min.x)layerBounds[sCoords[2]].min.x = coords.x;
+          if(coords.y < layerBounds[sCoords[2]].min.y)layerBounds[sCoords[2]].min.y = coords.y;
+          if((coords.x+1) > layerBounds[sCoords[2]].max.x)layerBounds[sCoords[2]].max.x = (coords.x+1);
+          if((coords.y+1) > layerBounds[sCoords[2]].max.y)layerBounds[sCoords[2]].max.y = (coords.y+1); 
+        } else{
+          layerBounds[sCoords[2]] = L.bounds(L.point(coords.x,coords.y),L.point((coords.x+1),(coords.y+1)));
+        }
+      }
+
+      return layerBounds;
+
+      //if needed to get global bounds of tiles rather than individual ones for each layer use this
+/*       let maxX =0,maxY=0,minX=6456345,minY=645645;
       for(let i =0;i<Object.keys(tileGroups).length;i++){
         let coordsString = Object.keys(tileGroups)[i].split(":");
         //replace ["CBMTILE"] with the projection type of this layer/map
@@ -3555,35 +3566,30 @@ M.mapMlLayerControl = function (layers, options) {
         if(ym > maxY) maxY = ym;
         if(y < minY) minY = y; 
       }
-      return L.bounds(L.point(minX,minY),L.point(maxX,maxY));
+      return L.bounds(L.point(minX,minY),L.point(maxX,maxY)); */
     },
 
     _getZoomBounds: function(container, maxZoomBound){
       if(!container) return {};
-      let meta = M.metaContentToObject(container.getElementsByTagName('tiles')[0].getAttribute('zoom'));
-      let zoom = {};
-      let tiles = container.getElementsByTagName("tile");
-      zoom.nMax = 0;
-      zoom.nMin = maxZoomBound;
+      let meta = M.metaContentToObject(container.getElementsByTagName('tiles')[0].getAttribute('zoom')),zoom = {},tiles = container.getElementsByTagName("tile");
+      zoom.nMax = 0, zoom.nMin = maxZoomBound;
       for (let i=0;i<tiles.length;i++) {
-        if(parseInt(tiles[i].getAttribute('zoom')) > zoom.nMax) zoom.nMax = parseInt(tiles[i].getAttribute('zoom'));
-        if(parseInt(tiles[i].getAttribute('zoom')) < zoom.nMin) zoom.nMin = parseInt(tiles[i].getAttribute('zoom'));
+        if(+tiles[i].getAttribute('zoom') > zoom.nMax) zoom.nMax = +tiles[i].getAttribute('zoom');
+        if(+tiles[i].getAttribute('zoom') < zoom.nMin) zoom.nMin = +tiles[i].getAttribute('zoom');
       }
       zoom.min = zoom.nMin - 3 <= 0? 0: zoom.nMin - 3;
       zoom.max = maxZoomBound;
       if(Object.keys(meta).length === 2){
         if(Object.keys(meta)[0] === "min"){
-          zoom.min = parseInt(meta.min);
-          zoom.max = parseInt(meta.max);
+          zoom.min = +meta.min, zoom.max = +meta.max;
         }else{
-          zoom.min = parseInt(meta.min);
-          zoom.max = parseInt(meta.max);
+          zoom.min = +meta.min, zoom.max = +meta.max;
         }
       } else if(Object.keys(meta).length === 1){
         if(Object.keys(meta)[0] === "min"){
-          zoom.min = parseInt(meta.min);
+          zoom.min = +meta.min;
         }else{
-          zoom.max = parseInt(meta.max);
+          zoom.max = +meta.max;
         }
       }
       return zoom;
@@ -3593,10 +3599,7 @@ M.mapMlLayerControl = function (layers, options) {
       let tileMap = {};
       for (let i=0;i<tiles.length;i++) {
         let tile = {};
-        tile.row = parseInt(tiles[i].getAttribute('row'));
-        tile.col = parseInt(tiles[i].getAttribute('col'));
-        tile.zoom = parseInt(tiles[i].getAttribute('zoom'));
-        tile.src = tiles[i].getAttribute('src');
+        tile.row = +tiles[i].getAttribute('row'),tile.col = +tiles[i].getAttribute('col'),tile.zoom = +tiles[i].getAttribute('zoom'),tile.src = tiles[i].getAttribute('src');
         let tileCode = tile.col+":"+tile.row+":"+tile.zoom;
         if(tileCode in tileMap){
           tileMap[tileCode].push(tile);

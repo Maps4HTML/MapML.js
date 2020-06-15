@@ -52,7 +52,7 @@ describe("MapMLTileLayer Tests", function () {
       expect(result["17:18:3"].length).toEqual(2) && expect(result["17:18:3"][1].src).toEqual("data/cbmt/2/c11_r10.png");
   });
 
-  describe("Getting zoom bounds", function () {
+  describe("Deriving zoom bounds", function () {
     test("max=null,min=null,nativeMax=3,nativeMin=2", function () {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '\
@@ -229,6 +229,9 @@ describe("MapMLTileLayer Tests", function () {
       expect(result.getElementsByTagName("img")[0].src).toEqual("http://localhost/data/cbmt/2/c11_r12.png") &&
         expect(result.getElementsByTagName("img")[1].src).toEqual("http://localhost/data/cbmt/2/c11_r10.png");
     });
+  });
+
+  describe("Deriving layer bounds", function () {
 
   });
 });
