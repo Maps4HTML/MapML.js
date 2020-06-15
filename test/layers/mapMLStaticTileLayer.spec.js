@@ -93,7 +93,7 @@ describe("MapMLStaticTileLayer Tests", function () {
       expect(zoomBounds.nMax).toEqual(3) && expect(zoomBounds.nMin).toEqual(2) &&
         expect(zoomBounds.max).toEqual(18) && expect(zoomBounds.min).toEqual(0);
     });
-    test("max=18,min=null,nativeMax=20,nativeMin=4", function () {
+    test("max=null,min=3,nativeMax=20,nativeMin=4", function () {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '\
         <tiles zoom="min=3">\
@@ -111,12 +111,12 @@ describe("MapMLStaticTileLayer Tests", function () {
       })
       let zoomBounds = layer._getZoomBounds(tileContainer, 26)
       expect(zoomBounds.nMax).toEqual(20) && expect(zoomBounds.nMin).toEqual(4) &&
-        expect(zoomBounds.max).toEqual(26) && expect(zoomBounds.min).toEqual(3);
+        expect(zoomBounds.max).toEqual(26) && expect(zoomBounds.min).toBe(3);
     });
     test("max=0,min=0,nativeMax=0,nativeMin=0", function () {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '\
-        <tiles zoom="min=5,max=18">\
+        <tiles zoom="min=0,max=0">\
           <tile zoom="0" row="18" col="17" src="data/cbmt/2/c11_r12.png"></tile>\
           <tile zoom="0" row="10" col="11" src="data/cbmt/2/c11_r10.png"></tile>\
           <tile zoom="0" row="11" col="9" src="data/cbmt/2/c9_r11.png"></tile>\
@@ -161,7 +161,7 @@ describe("MapMLStaticTileLayer Tests", function () {
           <tile zoom="19" row="10" col="11" src="data/cbmt/2/c11_r10.png"></tile>\
           <tile zoom="15" row="11" col="9" src="data/cbmt/2/c9_r11.png"></tile>\
           <tile zoom="12" row="11" col="9" src="data/cbmt/2/c10_r11.png"></tile>\
-          <tile zoom="2" row="11" col="9" src="data/cbmt/2/c11_r11.png"></tile>\
+          <tile zoom="5" row="11" col="9" src="data/cbmt/2/c11_r11.png"></tile>\
         </tiles>'
       const layer = M.mapMLStaticTileLayer({
         pane: container,
@@ -170,8 +170,8 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 25,
       })
       let zoomBounds = layer._getZoomBounds(tileContainer, 25);
-      expect(zoomBounds.nMax).toEqual(19) && expect(zoomBounds.nMin).toEqual(2) &&
-        expect(zoomBounds.max).toEqual(25) && expect(zoomBounds.min).toEqual(0);
+      expect(zoomBounds.nMax).toEqual(19) && expect(zoomBounds.nMin).toEqual(5) &&
+        expect(zoomBounds.max).toBeFalsy() && expect(zoomBounds.min).toBeFalsy();
     });
   });
   describe("Creating tiles with MapMLStaticTileLayer.createTile()", function () {

@@ -3532,12 +3532,14 @@ M.mapMlLayerControl = function (layers, options) {
       let layerBounds = {};
       for(let tile in tileGroups){
         let sCoords = tile.split(":"), coords = {};
-        coords.x = +sCoords[0],coords.y = +sCoords[1], coords.z = +sCoords[2];
+        coords.x = +sCoords[0],coords.y = +sCoords[1], coords.z = +sCoords[2]; //+String same as parseInt(String)
         if(sCoords[2] in layerBounds){
-          if(coords.x < layerBounds[sCoords[2]].min.x)layerBounds[sCoords[2]].min.x = coords.x;
+          layerBounds[sCoords[2]].extend(L.point(coords.x,coords.y));
+          layerBounds[sCoords[2]].extend(L.point((coords.x+1),(coords.y+1)));
+/*           if(coords.x < layerBounds[sCoords[2]].min.x)layerBounds[sCoords[2]].min.x = coords.x;
           if(coords.y < layerBounds[sCoords[2]].min.y)layerBounds[sCoords[2]].min.y = coords.y;
           if((coords.x+1) > layerBounds[sCoords[2]].max.x)layerBounds[sCoords[2]].max.x = (coords.x+1);
-          if((coords.y+1) > layerBounds[sCoords[2]].max.y)layerBounds[sCoords[2]].max.y = (coords.y+1); 
+          if((coords.y+1) > layerBounds[sCoords[2]].max.y)layerBounds[sCoords[2]].max.y = (coords.y+1);  */
         } else{
           layerBounds[sCoords[2]] = L.bounds(L.point(coords.x,coords.y),L.point((coords.x+1),(coords.y+1)));
         }
