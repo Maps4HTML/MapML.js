@@ -932,14 +932,14 @@ M.MapMLLayer = L.Layer.extend({
         // content will be maintained
         
         //only add the layer if there are tiles to be rendered
-        if(!this._tileLayer && this._mapmlTileContainer.getElementsByTagName("tiles").length > 0){
-          this._tileLayer = M.mapMLTileLayer({
+        if(!this._staticTileLayer && this._mapmlTileContainer.getElementsByTagName("tiles").length > 0){
+          this._staticTileLayer = M.mapMLStaticTileLayer({
             pane:this._container,
-            className:"mapMLTileLayer",
+            className:"mapMLStaticTileLayer",
             tileContainer:this._mapmlTileContainer,
             maxZoomBound:map.options.crs.options.resolutions.length,
           });
-          map.addLayer(this._tileLayer);
+          map.addLayer(this._staticTileLayer);
         }
 
         // if the extent has been initialized and received, update the map,
@@ -3472,14 +3472,11 @@ M.mapMlLayerControl = function (layers, options) {
 };
 
 
-  M.MapMLTileLayer = L.GridLayer.extend({
+  M.MapMLStaticTileLayer = L.GridLayer.extend({
 
     initialize: function (options) {
       let zoomBounds = this._getZoomBounds(options.tileContainer,options.maxZoomBound);
-      options.maxNativeZoom = zoomBounds.nMax;
-      options.minNativeZoom = zoomBounds.nMin;
-      options.maxZoom = zoomBounds.max;
-      options.minZoom = zoomBounds.min;
+      options.maxNativeZoom = zoomBounds.nMax, options.minNativeZoom = zoomBounds.nMin, options.maxZoom = zoomBounds.max, options.minZoom = zoomBounds.min;
       L.setOptions(this, options);
       this.outOfBounds = false;
       this._groups = this._groupTiles(this.options.tileContainer.getElementsByTagName('tile'));
@@ -3488,15 +3485,15 @@ M.mapMlLayerControl = function (layers, options) {
 
     _onMoveEnd : function(){
       if (!this._map || this._map._animatingZoom ||!this._bounds[this._map.getZoom()]) { return; }
-      this.outOfBounds = !(this._withinBound(this._map.getPixelBounds(), this._bounds[this._map.getZoom()]));
+      this.outOfBounds = !(this._withinBounds(this._map.getPixelBounds(), this._bounds[this._map.getZoom()]));
       if(this.outOfBounds){
-        console.log("Out of bounds");
+        console.log("Out of bounds"); //this is a temp. indicator only for debugging
         return;
       }
       this._update();
     },
 
-    _withinBound : function(mapBound, layerBound){
+    _withinBounds : function(mapBound, layerBound){
       let xMax = mapBound.max.x /256, yMax = mapBound.max.y /256, xMin = mapBound.min.x /256, yMin = mapBound.min.y /256;
       return layerBound.overlaps(L.bounds(L.point(xMin,yMin),L.point(xMax,yMax)));
     },
@@ -3519,10 +3516,6 @@ M.mapMlLayerControl = function (layers, options) {
         tile.src = tileGroup[i].src;
         tileBundle.appendChild(tile);
       }
-      let tempDiv = document.createElement("div");
-      let pcrsVal = `<p>X:${coords.x}</br> Y:${coords.y}</p>`;
-      tempDiv.innerHTML = pcrsVal;
-      tileBundle.appendChild(tempDiv.firstChild);
       return tileBundle;
     },
 
@@ -3569,6 +3562,7 @@ M.mapMlLayerControl = function (layers, options) {
       return L.bounds(L.point(minX,minY),L.point(maxX,maxY)); */
     },
 
+    //switch to minus 2 instead of 3, if specified min is > -2 then go with the minus 2
     _getZoomBounds: function(container, maxZoomBound){
       if(!container) return {};
       let meta = M.metaContentToObject(container.getElementsByTagName('tiles')[0].getAttribute('zoom')),zoom = {},tiles = container.getElementsByTagName("tile");
@@ -3577,21 +3571,9 @@ M.mapMlLayerControl = function (layers, options) {
         if(+tiles[i].getAttribute('zoom') > zoom.nMax) zoom.nMax = +tiles[i].getAttribute('zoom');
         if(+tiles[i].getAttribute('zoom') < zoom.nMin) zoom.nMin = +tiles[i].getAttribute('zoom');
       }
-      zoom.min = zoom.nMin - 3 <= 0? 0: zoom.nMin - 3;
-      zoom.max = maxZoomBound;
-      if(Object.keys(meta).length === 2){
-        if(Object.keys(meta)[0] === "min"){
-          zoom.min = +meta.min, zoom.max = +meta.max;
-        }else{
-          zoom.min = +meta.min, zoom.max = +meta.max;
-        }
-      } else if(Object.keys(meta).length === 1){
-        if(Object.keys(meta)[0] === "min"){
-          zoom.min = +meta.min;
-        }else{
-          zoom.max = +meta.max;
-        }
-      }
+      zoom.min = zoom.nMin - 2 <= 0? 0: zoom.nMin - 2, zoom.max = maxZoomBound;
+      if(meta.min)zoom.min = +meta.min < (zoom.nMin - 2)?(zoom.nMin - 2):+meta.min;
+      if(meta.max)zoom.max = +meta.max;
       return zoom;
     },
 
@@ -3611,8 +3593,8 @@ M.mapMlLayerControl = function (layers, options) {
     },
   });
 
-  M.mapMLTileLayer = function(options) {
-    return new M.MapMLTileLayer(options);
+  M.mapMLStaticTileLayer = function(options) {
+    return new M.MapMLStaticTileLayer(options);
   };
 
 

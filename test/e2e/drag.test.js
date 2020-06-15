@@ -24,7 +24,7 @@ jest.setTimeout(30000);
         await browser.close();
       });
 
-      test("["+browserType+"]"+" Drag and drop of invalid HTML page", async () => {
+      test("[" + browserType + "]" + " Drag and drop of invalid HTML page", async () => {
         const dataTransfer = await page.evaluateHandle(() =>
           new DataTransfer().setData("text/uri-list", "http://example.com")
         );
@@ -40,7 +40,7 @@ jest.setTimeout(30000);
         expect(vars.length).toBe(1);
       });
 
-      test("["+browserType+"]"+" Drag and drop of layers", async () => {
+      test("[" + browserType + "]" + " Drag and drop of layers", async () => {
         const dataTransfer = await page.evaluateHandle(
           () => new DataTransfer()
         );

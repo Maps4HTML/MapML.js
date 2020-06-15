@@ -4,7 +4,7 @@ jest.setTimeout(50000);
   for (const browserType of BROWSER) {
     let page, browser, context;
     describe(
-      "Playwright MapMLTempGrid Layer Tests in " + browserType,
+      "Playwright mapMLStaticTile Layer Tests in " + browserType,
       () => {
         beforeAll(async () => {
           browser = await playwright[browserType].launch({
@@ -16,7 +16,7 @@ jest.setTimeout(50000);
           if (browserType === "firefox") {
             await page.waitForNavigation();
           }
-          await page.goto(PATH + "mapMLTileLayer.html");
+          await page.goto(PATH + "mapMLStaticTileLayer.html");
         });
 
         afterAll(async function () {
@@ -25,7 +25,7 @@ jest.setTimeout(50000);
 
         test("[" + browserType + "]" + " Tiles load in on default map zoom level", async () => {
           const tiles = await page.$eval(
-            "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapMLTileLayer > div",
+            "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapMLStaticTileLayer > div",
             (tileGroup) => tileGroup.getElementsByTagName("tile").length
           );
           expect(tiles).toEqual(3);

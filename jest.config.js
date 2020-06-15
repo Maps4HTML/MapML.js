@@ -3,7 +3,7 @@ module.exports = {
     {
       preset: "playwright-runner",
       displayName: "UNIT Testing",
-      testMatch: ["**/test/*.test.js"],
+      testMatch: ["**/test/**/*.spec.js"],
       setupFiles: ["./test/setup.js"]
     },
     {
