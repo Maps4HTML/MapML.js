@@ -30,10 +30,13 @@ jest.setTimeout(50000);
           );
           expect(styleContent.indexOf("first")).toBeLessThan(
             styleContent.indexOf(".second")
-          ) &&
-            expect(styleContent.indexOf(".third")).toBeLessThan(
-              styleContent.indexOf("forth")
-            );
+          );
+          expect(styleContent.indexOf(".second")).toBeLessThan(
+            styleContent.indexOf(".third")
+          );
+          expect(styleContent.indexOf(".third")).toBeLessThan(
+            styleContent.indexOf("forth")
+          );
         });
 
         test("[" + browserType + "]" + " CSS from a retrieved MapML file added inorder inside templated-layer container", async () => {
@@ -45,8 +48,8 @@ jest.setTimeout(50000);
             "css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link:nth-child(2)",
             (styleL) => styleL.outerHTML
           );
-          expect(firstStyle).toMatch("canvec_cantopo") &&
-            expect(secondStyle).toMatch("canvec_feature");
+          expect(firstStyle).toMatch("canvec_cantopo");
+          expect(secondStyle).toMatch("canvec_feature");
         });
 
         test("[" + browserType + "]" + " CSS within html page added to overlay-pane container", async () => {
@@ -54,8 +57,8 @@ jest.setTimeout(50000);
           const foundStyleTag = await page.$(
             "css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > style:nth-child(2)"
           );
-          expect(foundStyleTag).toBeTruthy() &&
-            expect(foundStyleLink).toBeTruthy();
+          expect(foundStyleTag).toBeTruthy();
+          expect(foundStyleLink).toBeTruthy();
         });
 
         test("[" + browserType + "]" + " CSS from a retrieved MapML File added to templated-layer container", async () => {
@@ -65,8 +68,8 @@ jest.setTimeout(50000);
           const foundStyleLinkTwo = await page.$(
             "css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link:nth-child(2)"
           );
-          expect(foundStyleLinkOne).toBeTruthy() &&
-            expect(foundStyleLinkTwo).toBeTruthy();
+          expect(foundStyleLinkOne).toBeTruthy();
+          expect(foundStyleLinkTwo).toBeTruthy();
         });
 
         //testing done on 2nd map in the page
@@ -82,9 +85,9 @@ jest.setTimeout(50000);
           const foundStyleLink = await page.$(
             "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg:nth-child(1) > link"
           );
-          expect(firstStyle).toMatch("refStyleOne") &&
-            expect(secondStyle).toMatch("refStyleTwo") &&
-            expect(foundStyleLink).toBeTruthy();
+          expect(firstStyle).toMatch("refStyleOne");
+          expect(secondStyle).toMatch("refStyleTwo");
+          expect(foundStyleLink).toBeTruthy();
         });
         test("[" + browserType + "]" + " CSS within html page added inorder to overlay-pane container", async () => {
           const foundStyleLink = await page.$(
@@ -93,8 +96,8 @@ jest.setTimeout(50000);
           const foundStyleTag = await page.$(
             "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > style"
           );
-          expect(foundStyleTag).toBeTruthy() &&
-            expect(foundStyleLink).toBeTruthy();
+          expect(foundStyleTag).toBeTruthy();
+          expect(foundStyleLink).toBeTruthy();
         });
       }
     );

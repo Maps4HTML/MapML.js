@@ -16,9 +16,12 @@ describe("MapMLStaticTileLayer Tests", function () {
       maxZoomBound: 24,
     })
     map.addLayer(layer);
-    expect(layer.options.pane).toEqual(container) && expect(layer.options.className).toEqual("tempGridML") &&
-      expect(layer.options.maxNativeZoom).toEqual(3) && expect(layer.options.minNativeZoom).toEqual(0) &&
-      expect(layer.options.maxZoom).toEqual(24) && expect(layer.options.minZoom).toEqual(0);
+    expect(layer.options.pane).toEqual(container);
+    expect(layer.options.className).toEqual("tempGridML");
+    expect(layer.options.maxNativeZoom).toEqual(3);
+    expect(layer.options.minNativeZoom).toEqual(0);
+    expect(layer.options.maxZoom).toEqual(24);
+    expect(layer.options.minZoom).toEqual(0);
   });
 
   test("Creating tile group map", function () {
@@ -32,10 +35,12 @@ describe("MapMLStaticTileLayer Tests", function () {
     })
 
     const result = layer._groupTiles(tileContainer.getElementsByTagName('tile'));
-    expect(Object.keys(result).length).toEqual(6) && expect(result["17:18:3"]).toBeTruthy() &&
-      expect(result["11:10:2"]).toBeTruthy() && expect(result["9:10:2"]).toBeTruthy() &&
-      expect(result["9:11:2"]).toBeTruthy() && expect(result["2:3:0"]).toBeTruthy() &&
-      expect(result["3:3:0"]).toBeTruthy();
+    expect(Object.keys(result).length).toEqual(6); expect(result["17:18:3"]).toBeTruthy();
+    expect(result["11:10:2"]).toBeTruthy();
+    expect(result["9:10:2"]).toBeTruthy();
+    expect(result["9:11:2"]).toBeTruthy();
+    expect(result["2:3:0"]).toBeTruthy();
+    expect(result["3:3:0"]).toBeTruthy();
   });
 
   test("Creating tile group map with multiple img in one tile in document order", function () {
@@ -48,8 +53,11 @@ describe("MapMLStaticTileLayer Tests", function () {
       maxZoomBound: 26,
     })
     const result = layer._groupTiles(tileContainer.getElementsByTagName('tile'));
-    expect(Object.keys(result).length).toEqual(5) && expect(result["17:18:3"].length).toEqual(2) && expect(result["17:18:3"][0].src).toEqual("data/cbmt/2/c11_r12.png") &&
-      expect(result["17:18:3"].length).toEqual(2) && expect(result["17:18:3"][1].src).toEqual("data/cbmt/2/c11_r10.png");
+    expect(Object.keys(result).length).toEqual(5);
+    expect(result["17:18:3"].length).toEqual(2);
+    expect(result["17:18:3"][0].src).toEqual("data/cbmt/2/c11_r12.png");
+    expect(result["17:18:3"].length).toEqual(2);
+    expect(result["17:18:3"][1].src).toEqual("data/cbmt/2/c11_r10.png");
   });
 
   describe("Deriving zoom bounds with MapMLStaticTileLayer._getZoomBounds()", function () {
@@ -70,8 +78,10 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 26,
       })
       let zoomBounds = layer._getZoomBounds(tileContainer, 26);
-      expect(zoomBounds.nMax).toEqual(3) && expect(zoomBounds.nMin).toEqual(2) &&
-        expect(zoomBounds.max).toEqual(26) && expect(zoomBounds.min).toEqual(0);
+      expect(zoomBounds.nMax).toEqual(3);
+      expect(zoomBounds.nMin).toEqual(2);
+      expect(zoomBounds.max).toEqual(26);
+      expect(zoomBounds.min).toEqual(0);
     });
     test("max=18,min=null,nativeMax=3,nativeMin=2", function () {
       let tileContainer = document.createElement("div");
@@ -90,8 +100,10 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 26,
       })
       let zoomBounds = layer._getZoomBounds(tileContainer, 26)
-      expect(zoomBounds.nMax).toEqual(3) && expect(zoomBounds.nMin).toEqual(2) &&
-        expect(zoomBounds.max).toEqual(18) && expect(zoomBounds.min).toEqual(0);
+      expect(zoomBounds.nMax).toEqual(3);
+      expect(zoomBounds.nMin).toEqual(2);
+      expect(zoomBounds.max).toEqual(18);
+      expect(zoomBounds.min).toEqual(0);
     });
     test("max=null,min=3,nativeMax=20,nativeMin=4", function () {
       let tileContainer = document.createElement("div");
@@ -110,8 +122,10 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 26,
       })
       let zoomBounds = layer._getZoomBounds(tileContainer, 26)
-      expect(zoomBounds.nMax).toEqual(20) && expect(zoomBounds.nMin).toEqual(4) &&
-        expect(zoomBounds.max).toEqual(26) && expect(zoomBounds.min).toBe(3);
+      expect(zoomBounds.nMax).toEqual(20);
+      expect(zoomBounds.nMin).toEqual(4);
+      expect(zoomBounds.max).toEqual(26);
+      expect(zoomBounds.min).toBe(3);
     });
     test("max=0,min=0,nativeMax=0,nativeMin=0", function () {
       let tileContainer = document.createElement("div");
@@ -130,8 +144,10 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 26,
       })
       let zoomBounds = layer._getZoomBounds(tileContainer, 26)
-      expect(zoomBounds.nMax).toEqual(0) && expect(zoomBounds.nMin).toEqual(0) &&
-        expect(zoomBounds.max).toEqual(0) && expect(zoomBounds.min).toEqual(0);
+      expect(zoomBounds.nMax).toEqual(0);
+      expect(zoomBounds.nMin).toEqual(0);
+      expect(zoomBounds.max).toEqual(0);
+      expect(zoomBounds.min).toEqual(0);
     });
     test("max=5,min=18,nativeMax=3,nativeMin=2", function () {
       let tileContainer = document.createElement("div");
@@ -150,8 +166,10 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 26,
       })
       let zoomBounds = layer._getZoomBounds(tileContainer, 26)
-      expect(zoomBounds.nMax).toEqual(3) && expect(zoomBounds.nMin).toEqual(2) &&
-        expect(zoomBounds.max).toEqual(18) && expect(zoomBounds.min).toEqual(5);
+      expect(zoomBounds.nMax).toEqual(3);
+      expect(zoomBounds.nMin).toEqual(2);
+      expect(zoomBounds.max).toEqual(18);
+      expect(zoomBounds.min).toEqual(5);
     });
     test("max=string,min=string,nativeMax=19,nativeMin=2", function () {
       let tileContainer = document.createElement("div");
@@ -170,8 +188,10 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 25,
       })
       let zoomBounds = layer._getZoomBounds(tileContainer, 25);
-      expect(zoomBounds.nMax).toEqual(19) && expect(zoomBounds.nMin).toEqual(5) &&
-        expect(zoomBounds.max).toBeFalsy() && expect(zoomBounds.min).toBeFalsy();
+      expect(zoomBounds.nMax).toEqual(19);
+      expect(zoomBounds.nMin).toEqual(5);
+      expect(zoomBounds.max).toBeFalsy();
+      expect(zoomBounds.min).toBeFalsy();
     });
   });
   describe("Creating tiles with MapMLStaticTileLayer.createTile()", function () {
@@ -226,8 +246,8 @@ describe("MapMLStaticTileLayer Tests", function () {
         z: 3,
       }
       const result = layer.createTile(point);
-      expect(result.getElementsByTagName("img")[0].src).toEqual("http://localhost/data/cbmt/2/c11_r12.png") &&
-        expect(result.getElementsByTagName("img")[1].src).toEqual("http://localhost/data/cbmt/2/c11_r10.png");
+      expect(result.getElementsByTagName("img")[0].src).toEqual("http://localhost/data/cbmt/2/c11_r12.png");
+      expect(result.getElementsByTagName("img")[1].src).toEqual("http://localhost/data/cbmt/2/c11_r10.png");
     });
   });
 
@@ -244,10 +264,10 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 24,
       })
       let result = layer._bounds;
-      expect(result["0"]).toEqual(L.bounds(L.point(2, 3), L.point(4, 4))) &&
-        expect(result["2"]).toEqual(L.bounds(L.point(9, 10), L.point(10, 12))) &&
-        expect(result["3"]).toEqual(L.bounds(L.point(17, 18), L.point(18, 19))) &&
-        expect(result["1"]).toBeFalsy();
+      expect(result["0"]).toEqual(L.bounds(L.point(2, 3), L.point(4, 4)));
+      expect(result["2"]).toEqual(L.bounds(L.point(9, 10), L.point(10, 12)));
+      expect(result["3"]).toEqual(L.bounds(L.point(17, 18), L.point(18, 19)));
+      expect(result["1"]).toBeFalsy();
     });
     test("Different set of reasonable tiles", function () {
       let tileContainer = document.createElement("div");
@@ -259,10 +279,10 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 24,
       })
       let result = layer._bounds;
-      expect(result["0"]).toEqual(L.bounds(L.point(0, 0), L.point(2, 2))) &&
-        expect(result["2"]).toEqual(L.bounds(L.point(11, 8), L.point(14, 9))) &&
-        expect(result["3"]).toEqual(L.bounds(L.point(12, 19), L.point(14, 21))) &&
-        expect(result["1"]).toBeFalsy();
+      expect(result["0"]).toEqual(L.bounds(L.point(0, 0), L.point(2, 2)));
+      expect(result["2"]).toEqual(L.bounds(L.point(11, 8), L.point(14, 9)));
+      expect(result["3"]).toEqual(L.bounds(L.point(12, 19), L.point(14, 21)));
+      expect(result["1"]).toBeFalsy();
     });
     test("Single tile", function () {
       let tileContainer = document.createElement("div");
@@ -274,8 +294,8 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 24,
       })
       let result = layer._bounds;
-      expect(result["0"]).toEqual(L.bounds(L.point(0, 0), L.point(1, 1))) &&
-        expect(result["1"]).toBeFalsy();
+      expect(result["0"]).toEqual(L.bounds(L.point(0, 0), L.point(1, 1)));
+      expect(result["1"]).toBeFalsy();
     });
     test("Empty tiles container", function () {
       let tileContainer = document.createElement("div");
