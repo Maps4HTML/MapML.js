@@ -1006,13 +1006,16 @@ M.MapMLLayer = L.Layer.extend({
       }
     },
     onRemove: function (map) {
-        L.DomUtil.remove(this._container);      
-        /* map.removeLayer(this._mapmlvectors);
-        map.removeLayer(this._tileLayer);
+        L.DomUtil.remove(this._container);
+        if(this._staticTileLayer){
+          map.removeLayer(this._staticTileLayer);
+          this._staticTileLayer = null;
+        }
+        map.removeLayer(this._mapmlvectors);
         map.removeLayer(this._imageLayer);
         if (this._templatedLayer) {
             map.removeLayer(this._templatedLayer);
-        } */
+        }
     },
     getZoomBounds: function () {
         var ext = this._extent;
@@ -2042,6 +2045,7 @@ M.TemplatedFeaturesLayer =  L.Layer.extend({
         .catch(function (error) { console.log(error);});
     },
     _onMoveEnd: function() {
+      console.log("MOVEEND");
       this._features.clearLayers();
       // TODO add preference with a bit less weight than that for text/mapml; 0.8 for application/geo+json; 0.6
       var mapml, headers = new Headers({'Accept': 'text/mapml;q=0.9,application/geo+json;q=0.8'}),
