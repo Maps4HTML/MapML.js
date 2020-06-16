@@ -1,6 +1,32 @@
 /* global assert, M */
 describe("MapMLStaticTileLayer Tests", function () {
-  var map, container;
+  var map, container, resolutions = [
+    156543.0339,
+    78271.51695,
+    39135.758475,
+    19567.8792375,
+    9783.93961875,
+    4891.969809375,
+    2445.9849046875,
+    1222.9924523438,
+    611.49622617188,
+    305.74811308594,
+    152.87405654297,
+    76.437028271484,
+    38.218514135742,
+    19.109257067871,
+    9.5546285339355,
+    4.7773142669678,
+    2.3886571334839,
+    1.1943285667419,
+    0.59716428337097,
+    0.29858214168549,
+    0.14929107084274,
+    0.074645535421371,
+    0.03732276771068573,
+    0.018661383855342865,
+    0.009330691927671432495
+  ];
   beforeEach(() => {
     map = L.map(document.createElement("map"));
     container = document.createElement("div");
@@ -263,10 +289,11 @@ describe("MapMLStaticTileLayer Tests", function () {
         tileContainer: tileContainer,
         maxZoomBound: 24,
       })
-      let result = layer._bounds;
-      expect(result["0"]).toEqual(L.bounds(L.point(2, 3), L.point(4, 4)));
-      expect(result["2"]).toEqual(L.bounds(L.point(9, 10), L.point(10, 12)));
-      expect(result["3"]).toEqual(L.bounds(L.point(17, 18), L.point(18, 19)));
+      let groups = layer._groupTiles(tileContainer.getElementsByTagName('tile'));
+      let result = layer._getLayerBounds(groups, resolutions);
+      expect(result["0"]).toEqual(L.bounds(L.point(80150033.3568, 120225050.0352), L.point(160300066.7136, 160300066.7136)));
+      expect(result["2"]).toEqual(L.bounds(L.point(90168787.5264, 100187541.69600001), L.point(100187541.69600001, 120225050.0352)));
+      expect(result["3"]).toEqual(L.bounds(L.point(85159410.44160001, 90168787.5264), L.point(90168787.5264, 95178164.6112)));
       expect(result["1"]).toBeFalsy();
     });
     test("Different set of reasonable tiles", function () {
@@ -278,10 +305,11 @@ describe("MapMLStaticTileLayer Tests", function () {
         tileContainer: tileContainer,
         maxZoomBound: 24,
       })
-      let result = layer._bounds;
-      expect(result["0"]).toEqual(L.bounds(L.point(0, 0), L.point(2, 2)));
-      expect(result["2"]).toEqual(L.bounds(L.point(11, 8), L.point(14, 9)));
-      expect(result["3"]).toEqual(L.bounds(L.point(12, 19), L.point(14, 21)));
+      let groups = layer._groupTiles(tileContainer.getElementsByTagName('tile'));
+      let result = layer._getLayerBounds(groups, resolutions);
+      expect(result["0"]).toEqual(L.bounds(L.point(0, 0), L.point(80150033.3568, 80150033.3568)));
+      expect(result["2"]).toEqual(L.bounds(L.point(110206295.8656, 80150033.3568), L.point(140262558.37440002, 90168787.5264)));
+      expect(result["3"]).toEqual(L.bounds(L.point(60112525.0176, 95178164.6112), L.point(70131279.18720001, 105196918.7808)));
       expect(result["1"]).toBeFalsy();
     });
     test("Single tile", function () {
@@ -293,8 +321,9 @@ describe("MapMLStaticTileLayer Tests", function () {
         tileContainer: tileContainer,
         maxZoomBound: 24,
       })
-      let result = layer._bounds;
-      expect(result["0"]).toEqual(L.bounds(L.point(0, 0), L.point(1, 1)));
+      let groups = layer._groupTiles(tileContainer.getElementsByTagName('tile'));
+      let result = layer._getLayerBounds(groups, resolutions);
+      expect(result["0"]).toEqual(L.bounds(L.point(0, 0), L.point(40075016.6784, 40075016.6784)));
       expect(result["1"]).toBeFalsy();
     });
     test("Empty tiles container", function () {
@@ -306,7 +335,8 @@ describe("MapMLStaticTileLayer Tests", function () {
         tileContainer: tileContainer,
         maxZoomBound: 24,
       })
-      let result = layer._bounds;
+      let groups = layer._groupTiles(tileContainer.getElementsByTagName('tile'));
+      let result = layer._getLayerBounds(groups, resolutions);
       expect(result).toEqual({});
     });
   });
@@ -316,15 +346,17 @@ describe("MapMLStaticTileLayer Tests", function () {
   describe("Checking layer overlap with map using MapMLStaticTileLayer._withinBounds()", function () {
     test("Within map bounds completely", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="min=0,max=24"></tiles>'
+      tileContainer.innerHTML = '<tiles zoom="min=0,max=24"><tile zoom="0" row="1" col="1" src="data/cbmt/2/c11_r11.png"></tile></tiles>'
       let layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
         maxZoomBound: 24,
       })
-      let mapBound = L.bounds(L.point(0, 0,), L.point((11 * 256), (11 * 256))), layerBound = L.bounds(L.point(1, 1), L.point(10, 10));
-      expect(layer._withinBounds(mapBound, layerBound)).toEqual(true);
+      let groups = layer._groupTiles(tileContainer.getElementsByTagName('tile'));
+      let layerBounds = layer._getLayerBounds(groups, resolutions);
+      let mapBound = L.bounds(L.point(0, 0,), L.point((2 * 256), (2 * 256)));
+      expect(layer._withinBounds(mapBound, layerBounds["0"], resolutions, 0)).toEqual(true);
     });
     test("Layer bound above map bounds completely", function () {
       let tileContainer = document.createElement("div");
@@ -335,8 +367,8 @@ describe("MapMLStaticTileLayer Tests", function () {
         tileContainer: tileContainer,
         maxZoomBound: 24,
       })
-      let mapBound = L.bounds(L.point(0, 0,), L.point((11 * 256), (11 * 256))), layerBound = L.bounds(L.point(1, -5), L.point(10, -1));
-      expect(layer._withinBounds(mapBound, layerBound)).toEqual(false);
+      let mapBound = L.bounds(L.point(0, 0,), L.point(2816, 2816), layerBound = L.bounds(L.point(256 * resolutions[0], -1280 * resolutions[0]), L.point(2560 * resolutions[0], -256 * resolutions[0])));
+      expect(layer._withinBounds(mapBound, layerBound, resolutions, 0)).toEqual(false);
     });
     test("Layer bound below map bounds completely", function () {
       let tileContainer = document.createElement("div");
@@ -347,8 +379,8 @@ describe("MapMLStaticTileLayer Tests", function () {
         tileContainer: tileContainer,
         maxZoomBound: 24,
       })
-      let mapBound = L.bounds(L.point(0, 0,), L.point((11 * 256), (11 * 256))), layerBound = L.bounds(L.point(1, 12), L.point(10, 15));
-      expect(layer._withinBounds(mapBound, layerBound)).toEqual(false);
+      let mapBound = L.bounds(L.point(0, 0,), L.point((11 * 256), (11 * 256))), layerBound = L.bounds(L.point(256 * resolutions[0], 3072 * resolutions[0]), L.point(2560 * resolutions[0], 3840 * resolutions[0]));
+      expect(layer._withinBounds(mapBound, layerBound, resolutions, 0)).toEqual(false);
     });
     test("Layer bound to the left of map bounds completely", function () {
       let tileContainer = document.createElement("div");
@@ -359,8 +391,8 @@ describe("MapMLStaticTileLayer Tests", function () {
         tileContainer: tileContainer,
         maxZoomBound: 24,
       })
-      let mapBound = L.bounds(L.point(0, 0,), L.point((11 * 256), (11 * 256))), layerBound = L.bounds(L.point(-10, 1), L.point(-1, 10));
-      expect(layer._withinBounds(mapBound, layerBound)).toEqual(false);
+      let mapBound = L.bounds(L.point(0, 0,), L.point((11 * 256), (11 * 256))), layerBound = L.bounds(L.point(-2560 * resolutions[0], 256 * resolutions[0]), L.point(-256 * resolutions[0], 2560 * resolutions[0]));
+      expect(layer._withinBounds(mapBound, layerBound, resolutions, 0)).toEqual(false);
     });
     test("Layer bound to the right of map bounds completely", function () {
       let tileContainer = document.createElement("div");
@@ -371,8 +403,8 @@ describe("MapMLStaticTileLayer Tests", function () {
         tileContainer: tileContainer,
         maxZoomBound: 24,
       })
-      let mapBound = L.bounds(L.point(0, 0,), L.point((11 * 256), (11 * 256))), layerBound = L.bounds(L.point(12, 1), L.point(14, 10));
-      expect(layer._withinBounds(mapBound, layerBound)).toEqual(false);
+      let mapBound = L.bounds(L.point(0, 0,), L.point((11 * 256), (11 * 256))), layerBound = L.bounds(L.point(3072 * resolutions[0], 256 * resolutions[0]), L.point(3584 * resolutions[0], 2560 * resolutions[0]));
+      expect(layer._withinBounds(mapBound, layerBound, resolutions, 0)).toEqual(false);
     });
     test("Layer bounds overlaps at border of bounds", function () {
       let tileContainer = document.createElement("div");
@@ -383,8 +415,8 @@ describe("MapMLStaticTileLayer Tests", function () {
         tileContainer: tileContainer,
         maxZoomBound: 24,
       })
-      let mapBound = L.bounds(L.point(0, 0,), L.point((11 * 256), (11 * 256))), layerBound = L.bounds(L.point(11, 1), L.point(14, 10));
-      expect(layer._withinBounds(mapBound, layerBound)).toEqual(false);
+      let mapBound = L.bounds(L.point(0, 0,), L.point((11 * 256), (11 * 256))), layerBound = L.bounds(L.point(2816 * resolutions[0], 256 * resolutions[0]), L.point(3584 * resolutions[0], 2560 * resolutions[0]));
+      expect(layer._withinBounds(mapBound, layerBound, resolutions, 0)).toEqual(false);
     });
   });
 });

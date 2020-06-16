@@ -3411,6 +3411,10 @@ M.MapMLLayerControl = L.Control.Layers.extend({
             zoomBounds, obj, visible, projectionMatches;
         for (var i = 0; i < this._layers.length; i++) {
             obj = this._layers[i];
+/*             if(!(obj.layer._staticTileLayer.isVisible)){
+              this.remove(obj);
+              this._layers[i].name = "Out Of Bounds";
+            } */
             if (obj.layer._extent || obj.layer.error) {
 
                 // get the 'bounds' of zoom levels of the layer as described by the server
@@ -3479,41 +3483,50 @@ M.mapMlLayerControl = function (layers, options) {
       options.maxNativeZoom = zoomBounds.nMax, options.minNativeZoom = zoomBounds.nMin, options.maxZoom = zoomBounds.max, options.minZoom = zoomBounds.min;
       L.setOptions(this, options);
       this._groups = this._groupTiles(this.options.tileContainer.getElementsByTagName('tile'));
-      this._bounds = this._getLayerBounds(this._groups);
     },
 
     onAdd: function(){
-      this.outOfBounds = !(this._withinBounds(this._map.getPixelBounds(), this._bounds[this._map.getZoom()]));
+      this._bounds = this._getLayerBounds(this._groups,this._map.options.crs.options.resolutions); //stores meter values of bounds
+      this.isVisible = this._withinBounds(this._map.getPixelBounds(), this._bounds[this._map.getZoom()],this._map.options.crs.options.resolutions,this._map.getZoom());
       L.GridLayer.prototype.onAdd.call(this,this._map);
     },
-    
-    _onMoveEnd : function(){
-      if (!this._map || this._map._animatingZoom ||!this._bounds[this._map.getZoom()]) { return; }
-      this.outOfBounds = !(this._withinBounds(this._map.getPixelBounds(), this._bounds[this._map.getZoom()]));
-      if(this.outOfBounds){
+
+    getEvents: function(){
+      let events = L.GridLayer.prototype.getEvents.call(this,this._map);
+      events.moveend = this._setBoundsFlag;
+      return events;
+    },
+
+
+    //sets the bounds flag of the layer and calls default moveEnd if within bounds
+    //its the zoom level is between the nativeZoom and zoom then it uses the nativeZoom value to get the bound its checking
+    _setBoundsFlag : function(e){
+      let zoomLevel = this._map.getZoom();
+      zoomLevel = zoomLevel > this.options.maxNativeZoom? this.options.maxNativeZoom: zoomLevel;
+      zoomLevel = zoomLevel < this.options.minNativeZoom? this.options.minNativeZoom: zoomLevel;
+      this.isVisible = this._withinBounds(this._map.getPixelBounds(), this._bounds[zoomLevel],this._map.options.crs.options.resolutions, this._map.getZoom());
+      if(!(this.isVisible)){
         console.log("Out of bounds"); //this is a temp. indicator only for debugging
         return;
       }
-      this._update();
+      this.fire('moveend',e,true);
     },
 
-    _withinBounds : function(mapBound, layerBound){
-      let xMax = mapBound.max.x /256, yMax = mapBound.max.y /256, xMin = mapBound.min.x /256, yMin = mapBound.min.y /256;
-      return layerBound.overlaps(L.bounds(L.point(xMin,yMin),L.point(xMax,yMax)));
+    //checks if layer bound is within map view
+    _withinBounds : function(mapBound, layerBound, resolutions, zoom){
+      if(!mapBound || !layerBound || !resolutions || zoom === undefined) return false;
+      let zoomConstant = resolutions[zoom];
+      let xMax = mapBound.max.x * zoomConstant, yMax = mapBound.max.y * zoomConstant, xMin = mapBound.min.x * zoomConstant, yMin = mapBound.min.y * zoomConstant;
+      return layerBound.overlaps(L.bounds(L.point(xMin,yMin),L.point(xMax,yMax))) && zoom <= this.options.maxZoom && zoom >= this.options.minZoom;
     },
 
     _isValidTile(coords) {
-      //return true for debugging if needed, shows meter coords on map tiles
-      //return true
       return this._groups[this._tileCoordsToKey(coords)];
     },
 
     createTile: function (coords) {
-      let tileGroup = this._groups[this._tileCoordsToKey(coords)] || [];      
-      let tileElem = document.createElement('tile');
-      tileElem.setAttribute("col",coords.x);
-      tileElem.setAttribute("row",coords.y);
-      tileElem.setAttribute("zoom",coords.z);
+      let tileGroup = this._groups[this._tileCoordsToKey(coords)] || [], tileElem = document.createElement('tile');
+      tileElem.setAttribute("col",coords.x), tileElem.setAttribute("row",coords.y), tileElem.setAttribute("zoom",coords.z);
       
       for(let i = 0;i<tileGroup.length;i++){
         let tile= document.createElement('img');
@@ -3532,20 +3545,17 @@ M.mapMlLayerControl = function (layers, options) {
     //                      maxX,maxY
     //----------------------------------
     //between those is the bounds of the layer
-    _getLayerBounds: function(tileGroups){
+    //gets the bounds of each zoomlevel in terms of meters
+    _getLayerBounds: function(tileGroups, resolutions){
       let layerBounds = {};
       for(let tile in tileGroups){
-        let sCoords = tile.split(":"), coords = {};
-        coords.x = +sCoords[0],coords.y = +sCoords[1], coords.z = +sCoords[2]; //+String same as parseInt(String)
+        let sCoords = tile.split(":"), pixelCoords = {}, zoomConstant = resolutions[sCoords[2]];
+        pixelCoords.x = +sCoords[0] * 256,pixelCoords.y = +sCoords[1] * 256, pixelCoords.z = +sCoords[2]; //+String same as parseInt(String)
         if(sCoords[2] in layerBounds){
-          layerBounds[sCoords[2]].extend(L.point(coords.x,coords.y));
-          layerBounds[sCoords[2]].extend(L.point((coords.x+1),(coords.y+1)));
-/*           if(coords.x < layerBounds[sCoords[2]].min.x)layerBounds[sCoords[2]].min.x = coords.x;
-          if(coords.y < layerBounds[sCoords[2]].min.y)layerBounds[sCoords[2]].min.y = coords.y;
-          if((coords.x+1) > layerBounds[sCoords[2]].max.x)layerBounds[sCoords[2]].max.x = (coords.x+1);
-          if((coords.y+1) > layerBounds[sCoords[2]].max.y)layerBounds[sCoords[2]].max.y = (coords.y+1);  */
+          layerBounds[sCoords[2]].extend(L.point(pixelCoords.x * zoomConstant,pixelCoords.y * zoomConstant));
+          layerBounds[sCoords[2]].extend(L.point(((pixelCoords.x+256) * zoomConstant),((pixelCoords.y+256) * zoomConstant)));
         } else{
-          layerBounds[sCoords[2]] = L.bounds(L.point(coords.x,coords.y),L.point((coords.x+1),(coords.y+1)));
+          layerBounds[sCoords[2]] = L.bounds(L.point(pixelCoords.x * zoomConstant,pixelCoords.y * zoomConstant),L.point(((pixelCoords.x+256) * zoomConstant),((pixelCoords.y+256) * zoomConstant)));
         }
       }
 
