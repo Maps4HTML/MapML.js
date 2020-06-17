@@ -3381,7 +3381,7 @@ M.MapMLLayerControl = L.Control.Layers.extend({
         this._initLayout();
         this._map.on('moveend', this._validateExtents, this);
         this._update();
-        this._validateExtents();
+        //this._validateExtents();
         return this._container;
     },
     onRemove: function (map) {
@@ -3409,16 +3409,27 @@ M.MapMLLayerControl = L.Control.Layers.extend({
       return (this._map) ? this._update() : this;
     },
     _validateExtents: function (e) {
+      let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
+      for (let i = 0; i < this._layers.length; i++) {
+        for(let type of layerTypes){
+          if(this._layers[i].layer[type]){
+            let label = this._layers[i].input.labels[0].getElementsByTagName("span");
+            if(this._layers[i].layer[type].isVisible === false){
+              label[0].style.fontStyle = "italic";
+              label[0].style.color = "red";
+            } else if (this._layers[i].layer[type].isVisible === true) {
+              label[0].style.fontStyle = "normal";
+              label[0].style.color = "black";
+            }
+          }
+        }
+      }
         // get the bounds of the map in Tiled CRS pixel units
-        var zoom = this._map.getZoom(),
+        /* var zoom = this._map.getZoom(),
             bounds = this._map.getPixelBounds(),
             zoomBounds, obj, visible, projectionMatches;
         for (var i = 0; i < this._layers.length; i++) {
             obj = this._layers[i];
-/*             if(!(obj.layer._staticTileLayer.isVisible)){
-              this.remove(obj);
-              this._layers[i].name = "Out Of Bounds";
-            } */
             if (obj.layer._extent || obj.layer.error) {
 
                 // get the 'bounds' of zoom levels of the layer as described by the server
@@ -3449,7 +3460,7 @@ M.MapMLLayerControl = L.Control.Layers.extend({
                     obj.input.nextElementSibling.style.fontStyle = '';
                 }
             }
-        }
+        } */
     },
     _withinZoomBounds: function(zoom, range) {
         return range.min <= zoom && zoom <= range.max;
@@ -3463,7 +3474,6 @@ M.MapMLLayerControl = L.Control.Layers.extend({
     		obj.input.layerId = L.stamp(obj.layer);
 
       L.DomEvent.on(obj.input, 'click', this._onInputClick, this);
-
       // this is necessary because when there are several layers in the
       // layer control, the response to the last one can be a long time
       // after the info is first displayed, so we have to go back and
@@ -3490,6 +3500,9 @@ M.mapMlLayerControl = function (layers, options) {
     },
 
     onAdd: function(){
+      //this is a temporary proof of concept on swapping the order of handlers
+      //need a better alternative
+      [this._map._events.moveend[5],this._map._events.moveend[2]] = [this._map._events.moveend[2],this._map._events.moveend[5]];
       this._bounds = this._getLayerBounds(this._groups,this._map.options.crs.options.resolutions); //stores meter values of bounds
       this.isVisible = this._withinBounds(this._map.getPixelBounds(), this._bounds[this._map.getZoom()],this._map.options.crs.options.resolutions,this._map.getZoom());
       L.GridLayer.prototype.onAdd.call(this,this._map);
@@ -3509,10 +3522,7 @@ M.mapMlLayerControl = function (layers, options) {
       zoomLevel = zoomLevel > this.options.maxNativeZoom? this.options.maxNativeZoom: zoomLevel;
       zoomLevel = zoomLevel < this.options.minNativeZoom? this.options.minNativeZoom: zoomLevel;
       this.isVisible = this._withinBounds(this._map.getPixelBounds(), this._bounds[zoomLevel],this._map.options.crs.options.resolutions, this._map.getZoom());
-      if(!(this.isVisible)){
-        console.log("Out of bounds"); //this is a temp. indicator only for debugging
-        return;
-      }
+      if(!(this.isVisible))return;
       this.fire('moveend',e,true);
     },
 
