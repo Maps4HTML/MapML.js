@@ -2045,7 +2045,6 @@ M.TemplatedFeaturesLayer =  L.Layer.extend({
         .catch(function (error) { console.log(error);});
     },
     _onMoveEnd: function() {
-      console.log("MOVEEND");
       this._features.clearLayers();
       // TODO add preference with a bit less weight than that for text/mapml; 0.8 for application/geo+json; 0.6
       var mapml, headers = new Headers({'Accept': 'text/mapml;q=0.9,application/geo+json;q=0.8'}),
@@ -3409,21 +3408,30 @@ M.MapMLLayerControl = L.Control.Layers.extend({
       return (this._map) ? this._update() : this;
     },
     _validateExtents: function (e) {
-      let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
-      for (let i = 0; i < this._layers.length; i++) {
-        for(let type of layerTypes){
-          if(this._layers[i].layer[type]){
-            let label = this._layers[i].input.labels[0].getElementsByTagName("span");
-            if(this._layers[i].layer[type].isVisible === false){
-              label[0].style.fontStyle = "italic";
-              label[0].style.color = "red";
-            } else if (this._layers[i].layer[type].isVisible === true) {
-              label[0].style.fontStyle = "normal";
-              label[0].style.color = "black";
+      //the settimeout allows the function inside the {} to be moved to the task/callback queue rather than executing immediately
+      //allowing the callback function to be run after all the other moveend event handlers
+      //without having to reorder like in the previous iteration
+      setTimeout(()=>{
+        let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
+        for (let i = 0; i < this._layers.length; i++) {
+          let count = 0, total=0;
+          layerTypes.forEach((type) =>{
+            if(this._layers[i].layer[type]){
+              total++;
+              if(!(this._layers[i].layer[type].isVisible))count++;
             }
+          });
+          let label = this._layers[i].input.labels[0].getElementsByTagName("span"),input = this._layers[i].input.labels[0].getElementsByTagName("input");
+          if(count === total){
+            input[0].parentElement.parentElement.parentElement.parentElement.disabled = true;
+            label[0].style.fontStyle = "italic";
+          } else {
+            input[0].parentElement.parentElement.parentElement.parentElement.disabled = false;
+            label[0].style.fontStyle = "normal";
           }
         }
-      }
+      }, 0);
+
         // get the bounds of the map in Tiled CRS pixel units
         /* var zoom = this._map.getZoom(),
             bounds = this._map.getPixelBounds(),
@@ -3500,9 +3508,6 @@ M.mapMlLayerControl = function (layers, options) {
     },
 
     onAdd: function(){
-      //this is a temporary proof of concept on swapping the order of handlers
-      //need a better alternative
-      [this._map._events.moveend[5],this._map._events.moveend[2]] = [this._map._events.moveend[2],this._map._events.moveend[5]];
       this._bounds = this._getLayerBounds(this._groups,this._map.options.crs.options.resolutions); //stores meter values of bounds
       this.isVisible = this._withinBounds(this._map.getPixelBounds(), this._bounds[this._map.getZoom()],this._map.options.crs.options.resolutions,this._map.getZoom());
       L.GridLayer.prototype.onAdd.call(this,this._map);
