@@ -2045,7 +2045,6 @@ M.TemplatedFeaturesLayer =  L.Layer.extend({
         .catch(function (error) { console.log(error);});
     },
     _onMoveEnd: function() {
-      console.log("MOVEEND");
       this._features.clearLayers();
       // TODO add preference with a bit less weight than that for text/mapml; 0.8 for application/geo+json; 0.6
       var mapml, headers = new Headers({'Accept': 'text/mapml;q=0.9,application/geo+json;q=0.8'}),
@@ -3381,7 +3380,7 @@ M.MapMLLayerControl = L.Control.Layers.extend({
         this._initLayout();
         this._map.on('moveend', this._validateExtents, this);
         this._update();
-        this._validateExtents();
+        //this._validateExtents();
         return this._container;
     },
     onRemove: function (map) {
@@ -3415,10 +3414,6 @@ M.MapMLLayerControl = L.Control.Layers.extend({
             zoomBounds, obj, visible, projectionMatches;
         for (var i = 0; i < this._layers.length; i++) {
             obj = this._layers[i];
-/*             if(!(obj.layer._staticTileLayer.isVisible)){
-              this.remove(obj);
-              this._layers[i].name = "Out Of Bounds";
-            } */
             if (obj.layer._extent || obj.layer.error) {
 
                 // get the 'bounds' of zoom levels of the layer as described by the server
@@ -3463,7 +3458,6 @@ M.MapMLLayerControl = L.Control.Layers.extend({
     		obj.input.layerId = L.stamp(obj.layer);
 
       L.DomEvent.on(obj.input, 'click', this._onInputClick, this);
-
       // this is necessary because when there are several layers in the
       // layer control, the response to the last one can be a long time
       // after the info is first displayed, so we have to go back and
@@ -3509,10 +3503,7 @@ M.mapMlLayerControl = function (layers, options) {
       zoomLevel = zoomLevel > this.options.maxNativeZoom? this.options.maxNativeZoom: zoomLevel;
       zoomLevel = zoomLevel < this.options.minNativeZoom? this.options.minNativeZoom: zoomLevel;
       this.isVisible = this._withinBounds(this._map.getPixelBounds(), this._bounds[zoomLevel],this._map.options.crs.options.resolutions, this._map.getZoom());
-      if(!(this.isVisible)){
-        console.log("Out of bounds"); //this is a temp. indicator only for debugging
-        return;
-      }
+      if(!(this.isVisible))return;
       this.fire('moveend',e,true);
     },
 
