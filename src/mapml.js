@@ -601,7 +601,7 @@ window.M = M;
 M.Util = {
 
   pixelToMeterBounds : function(bound, zoomConstant){
-    if(!bound||zoomConstant === undefined) return {};
+    if(!bound || !bound.max || !bound.min ||zoomConstant === undefined || zoomConstant === null || zoomConstant instanceof Object) return {};
     let xMax = bound.max.x * zoomConstant, yMax = bound.max.y * zoomConstant, xMin = bound.min.x * zoomConstant, yMin = bound.min.y * zoomConstant;
     return L.bounds(L.point(xMin,yMin),L.point(xMax,yMax));
   },
