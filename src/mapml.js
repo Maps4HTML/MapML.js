@@ -599,6 +599,12 @@ window.M = M;
   });
 }());
 M.Util = {
+
+  pixelToMeterBounds : function(bound, zoomConstant){
+    if(!bound||zoomConstant === undefined) return {};
+    let xMax = bound.max.x * zoomConstant, yMax = bound.max.y * zoomConstant, xMin = bound.min.x * zoomConstant, yMin = bound.min.y * zoomConstant;
+    return L.bounds(L.point(xMin,yMin),L.point(xMax,yMax));
+  },
   //meta content is the content attribute of meta
   // input "max=5,min=4" => [[max,5][min,5]]
   metaContentToObject: function(content){
@@ -657,6 +663,7 @@ M.Util = {
       }
   }
 };
+M.pixelToMeterBounds = M.Util.pixelToMeterBounds;
 M.metaContentToObject = M.Util.metaContentToObject;
 M.coordsToArray = M.Util.coordsToArray;
 M.parseStylesheetAsHTML = M.Util.parseStylesheetAsHTML;
@@ -932,7 +939,7 @@ M.MapMLLayer = L.Layer.extend({
         // content will be maintained
         
         //only add the layer if there are tiles to be rendered
-        if(!this._staticTileLayer && this._mapmlTileContainer.getElementsByTagName("tiles").length > 0){
+        if((!this._staticTileLayer || this._staticTileLayer._container === null) && this._mapmlTileContainer.getElementsByTagName("tiles").length > 0){
           this._staticTileLayer = M.mapMLStaticTileLayer({
             pane:this._container,
             className:"mapml-static-tile-layer",
@@ -1009,7 +1016,7 @@ M.MapMLLayer = L.Layer.extend({
         L.DomUtil.remove(this._container);
         if(this._staticTileLayer){
           map.removeLayer(this._staticTileLayer);
-          this._staticTileLayer = null;
+          //this._staticTileLayer = null;
         }
         map.removeLayer(this._mapmlvectors);
         map.removeLayer(this._imageLayer);
@@ -2433,11 +2440,23 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       if (template.tile.subdomains) {
         L.setOptions(this, L.extend(this.options, {subdomains: template.tile.subdomains}));
       }
+      this.isVisible = true;
       this._template = template;
       this._initContainer();
       // call the parent constructor with the template tref value, per the 
       // Leaflet tutorial: http://leafletjs.com/examples/extending/extending-1-classes.html#methods-of-the-parent-class
       L.TileLayer.prototype.initialize.call(this, template.template, L.extend(options, {pane: this._container}));
+    },
+    onAdd : function(){
+      this._bounds = M.pixelToMeterBounds(L.bounds(L.point(this._template.tilematrix.col.min*256,this._template.tilematrix.row.min*256),L.point(this._template.tilematrix.col.max*256,this._template.tilematrix.row.max*256))
+        ,this._map.options.crs.options.resolutions[this._template.zoom.value]);
+      this._map.on('moveend', this._setBoundsFlag, this );
+      this._map.fire('moveend');
+      L.TileLayer.prototype.onAdd.call(this,this._map);
+    },
+    onRemove : function(){
+      this._map.off('moveend', this._setBoundsFlag, this );
+      L.TileLayer.prototype.onRemove.call(this,this._map);
     },
     _initContainer: function () {
       if (this._container) { return; }
@@ -2449,6 +2468,10 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       if (this.options.opacity < 1) {
         this._updateOpacity();
       }
+    },
+    _setBoundsFlag : function(){
+      let mapBounds = M.pixelToMeterBounds(this._map.getPixelBounds(),this._map.options.crs.options.resolutions[this._map.getZoom()]);
+      this.isVisible = this._bounds.overlaps(mapBounds);
     },
     createTile: function (coords) {
       if (this._template.type.startsWith('image/')) {
@@ -3380,7 +3403,7 @@ M.MapMLLayerControl = L.Control.Layers.extend({
         this._initLayout();
         this._map.on('moveend', this._validateExtents, this);
         this._update();
-        //this._validateExtents();
+        this._validateExtents();
         return this._container;
     },
     onRemove: function (map) {
@@ -3417,8 +3440,18 @@ M.MapMLLayerControl = L.Control.Layers.extend({
           let count = 0, total=0;
           layerTypes.forEach((type) =>{
             if(this._layers[i].layer[type]){
-              total++;
-              if(!(this._layers[i].layer[type].isVisible))count++;
+              switch(type){
+                case "_templatedLayer":
+                  for(let j =0;j<this._layers[i].layer[type]._templates.length;j++){
+                    total++;
+                    if(!(this._layers[i].layer[type]._templates[j].layer.isVisible))count++;
+                  }
+                break;
+                default:
+                  total++;
+                  if(!(this._layers[i].layer[type].isVisible))count++;
+                break;
+              }
             }
           });
           let label = this._layers[i].input.labels[0].getElementsByTagName("span"),input = this._layers[i].input.labels[0].getElementsByTagName("input");
@@ -3509,10 +3542,10 @@ M.mapMlLayerControl = function (layers, options) {
 
     onAdd: function(){
       this._bounds = this._getLayerBounds(this._groups,this._map.options.crs.options.resolutions); //stores meter values of bounds
-      this.isVisible = this._withinBounds(this._map.getPixelBounds(), this._bounds[this._map.getZoom()],this._map.options.crs.options.resolutions,this._map.getZoom());
+      this._map.fire('moveend');
       L.GridLayer.prototype.onAdd.call(this,this._map);
     },
-
+    
     getEvents: function(){
       let events = L.GridLayer.prototype.getEvents.call(this,this._map);
       events.moveend = this._setBoundsFlag;
@@ -3526,17 +3559,10 @@ M.mapMlLayerControl = function (layers, options) {
       let zoomLevel = this._map.getZoom();
       zoomLevel = zoomLevel > this.options.maxNativeZoom? this.options.maxNativeZoom: zoomLevel;
       zoomLevel = zoomLevel < this.options.minNativeZoom? this.options.minNativeZoom: zoomLevel;
-      this.isVisible = this._withinBounds(this._map.getPixelBounds(), this._bounds[zoomLevel],this._map.options.crs.options.resolutions, this._map.getZoom());
+      this.isVisible = this._bounds[zoomLevel] && this._bounds[zoomLevel].overlaps(M.pixelToMeterBounds(this._map.getPixelBounds(),this._map.options.crs.options.resolutions[this._map.getZoom()]));
+
       if(!(this.isVisible))return;
       this.fire('moveend',e,true);
-    },
-
-    //checks if layer bound is within map view
-    _withinBounds : function(mapBound, layerBound, resolutions, zoom){
-      if(!mapBound || !layerBound || !resolutions || zoom === undefined) return false;
-      let zoomConstant = resolutions[zoom];
-      let xMax = mapBound.max.x * zoomConstant, yMax = mapBound.max.y * zoomConstant, xMin = mapBound.min.x * zoomConstant, yMin = mapBound.min.y * zoomConstant;
-      return layerBound.overlaps(L.bounds(L.point(xMin,yMin),L.point(xMax,yMax))) && zoom <= this.options.maxZoom && zoom >= this.options.minZoom;
     },
 
     _isValidTile(coords) {

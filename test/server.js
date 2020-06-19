@@ -10,8 +10,16 @@ app.use(express.static(path.join(__dirname, "e2e")));
 app.use("/data", express.static(path.join(__dirname, "e2e/data/tiles/cbmt")));
 app.use("/data", express.static(path.join(__dirname, "e2e/data/tiles/wgs84")));
 app.use(
+  "/data/cbmt/0",
+  express.static(path.join(__dirname, "e2e/data/tiles/cbmt/0"))
+);
+app.use(
   "/data/cbmt/2",
   express.static(path.join(__dirname, "e2e/data/tiles/cbmt/2"))
+);
+app.use(
+  "/data/cbmt/3",
+  express.static(path.join(__dirname, "e2e/data/tiles/cbmt/3"))
 );
 app.use(
   "/data/wgs84/0",

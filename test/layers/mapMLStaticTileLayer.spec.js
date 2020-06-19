@@ -343,7 +343,7 @@ describe("MapMLStaticTileLayer Tests", function () {
 
   //Checking the _withinBound method of mapMLStaticTileLayer
   //return true when overlapping, if overlapped at exactly the border, return false
-  describe("Checking layer overlap with map using MapMLStaticTileLayer._withinBounds()", function () {
+  /* describe("Checking layer overlap with map using MapMLStaticTileLayer._withinBounds()", function () {
     test("Within map bounds completely", function () {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<tiles zoom="min=0,max=24"><tile zoom="0" row="1" col="1" src="data/cbmt/2/c11_r11.png"></tile></tiles>'
@@ -418,5 +418,5 @@ describe("MapMLStaticTileLayer Tests", function () {
       let mapBound = L.bounds(L.point(0, 0,), L.point((11 * 256), (11 * 256))), layerBound = L.bounds(L.point(2816 * resolutions[0], 256 * resolutions[0]), L.point(3584 * resolutions[0], 2560 * resolutions[0]));
       expect(layer._withinBounds(mapBound, layerBound, resolutions, 0)).toEqual(false);
     });
-  });
+  }); */
 });
