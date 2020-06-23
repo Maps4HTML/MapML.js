@@ -2448,8 +2448,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       L.TileLayer.prototype.initialize.call(this, template.template, L.extend(options, {pane: this._container}));
     },
     onAdd : function(){
-      this._bounds = M.pixelToMeterBounds(L.bounds(L.point(this._template.tilematrix.col.min*256,this._template.tilematrix.row.min*256),L.point(this._template.tilematrix.col.max*256,this._template.tilematrix.row.max*256))
-        ,this._map.options.crs.options.resolutions[this._template.zoom.value]);
+      this._bounds = M.pixelToMeterBounds(L.bounds(L.point(this._template.tilematrix.col.min*256,this._template.tilematrix.row.min*256),L.point(this._template.tilematrix.col.max*256,this._template.tilematrix.row.max*256)),this._map.options.crs.options.resolutions[this._template.zoom.value]);
       this._map.on('moveend', this._setBoundsFlag, this );
       this._map.fire('moveend');
       L.TileLayer.prototype.onAdd.call(this,this._map);
@@ -2471,6 +2470,10 @@ M.TemplatedTileLayer = L.TileLayer.extend({
     },
     _setBoundsFlag : function(){
       let mapBounds = M.pixelToMeterBounds(this._map.getPixelBounds(),this._map.options.crs.options.resolutions[this._map.getZoom()]);
+      if(!this._bounds.length){ //temporary to allow layers with no bounds currently to still work, remove once bounds
+        this.isVisible = true;  //are implemented for all layer types that use templatedTileLayer
+        return;
+      }
       this.isVisible = this._bounds.overlaps(mapBounds);
     },
     createTile: function (coords) {
@@ -3439,7 +3442,8 @@ M.MapMLLayerControl = L.Control.Layers.extend({
         for (let i = 0; i < this._layers.length; i++) {
           let count = 0, total=0;
           layerTypes.forEach((type) =>{
-            if(this._layers[i].layer[type]){
+            if(this._layers[i].input.checked && this._layers[i].layer[type]){
+              //uses switch incase other layer types have different structures where isVisible is located
               switch(type){
                 case "_templatedLayer":
                   for(let j =0;j<this._layers[i].layer[type]._templates.length;j++){
@@ -3455,7 +3459,7 @@ M.MapMLLayerControl = L.Control.Layers.extend({
             }
           });
           let label = this._layers[i].input.labels[0].getElementsByTagName("span"),input = this._layers[i].input.labels[0].getElementsByTagName("input");
-          if(count === total){
+          if(count === total && count != 0){
             input[0].parentElement.parentElement.parentElement.parentElement.disabled = true;
             label[0].style.fontStyle = "italic";
           } else {
