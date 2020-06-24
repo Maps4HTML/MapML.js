@@ -1379,6 +1379,7 @@ M.MapMLLayer = L.Layer.extend({
                         trel = (!t.hasAttribute('rel') || t.getAttribute('rel').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('rel').toLowerCase(),
                         ttype = (!t.hasAttribute('type')? 'image/*':t.getAttribute('type').toLowerCase()),
                         inputs = [];
+                        var zoomBounds = layer._content !== undefined?M.metaContentToObject(layer._content.querySelector('meta').getAttribute('content')):M.metaContentToObject("min=0,max=23");
                     while ((v = varNamesRe.exec(template)) !== null) {
                       var varName = v[1],
                       inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
@@ -1432,7 +1433,7 @@ M.MapMLLayer = L.Layer.extend({
                         inputs.push(zoomInput);
                       }
                       // template has a matching input for every variable reference {varref}
-                      layer._templateVars.push({template:decodeURI(new URL(template, base)), title:title, rel: trel, type: ttype, values: inputs});
+                      layer._templateVars.push({template:decodeURI(new URL(template, base)), title:title, rel: trel, type: ttype, values: inputs, zoomBounds:zoomBounds});
                     }
                   }
                 }
@@ -2437,6 +2438,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       // options first...
       L.setOptions(this, options);
       this._setUpTileTemplateVars(template);
+      this.options.maxZoom = template.zoomBounds.max,this.options.minZoom = template.zoomBounds.min,this.options.maxNativeZoom=template.zoom.max,this.options.minNativeZoom=template.zoom.min;
       if (template.tile.subdomains) {
         L.setOptions(this, L.extend(this.options, {subdomains: template.tile.subdomains}));
       }
@@ -2450,7 +2452,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
     onAdd : function(){
       this._bounds = M.pixelToMeterBounds(L.bounds(L.point(this._template.tilematrix.col.min*256,this._template.tilematrix.row.min*256),L.point(this._template.tilematrix.col.max*256,this._template.tilematrix.row.max*256)),this._map.options.crs.options.resolutions[this._template.zoom.value]);
       this._map.on('moveend', this._setBoundsFlag, this );
-      this._map.fire('moveend');
+      this._setBoundsFlag();
       L.TileLayer.prototype.onAdd.call(this,this._map);
     },
     onRemove : function(){
@@ -2470,7 +2472,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
     },
     _setBoundsFlag : function(){
       let mapBounds = M.pixelToMeterBounds(this._map.getPixelBounds(),this._map.options.crs.options.resolutions[this._map.getZoom()]);
-      if(!this._bounds.length){ //temporary to allow layers with no bounds currently to still work, remove once bounds
+      if(Object.keys(this._bounds).length === 0){ //temporary to allow layers with no bounds currently to still work, remove once bounds
         this.isVisible = true;  //are implemented for all layer types that use templatedTileLayer
         return;
       }
@@ -3441,23 +3443,28 @@ M.MapMLLayerControl = L.Control.Layers.extend({
         let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
         for (let i = 0; i < this._layers.length; i++) {
           let count = 0, total=0;
-          layerTypes.forEach((type) =>{
-            if(this._layers[i].input.checked && this._layers[i].layer[type]){
-              //uses switch incase other layer types have different structures where isVisible is located
-              switch(type){
-                case "_templatedLayer":
-                  for(let j =0;j<this._layers[i].layer[type]._templates.length;j++){
+          if( !this._layers[i].layer._extent.getAttribute("units") || this._layers[i].layer._extent.getAttribute("units") === this._map.options.projection){
+            layerTypes.forEach((type) =>{
+              if(this._layers[i].input.checked && this._layers[i].layer[type]){
+                //uses switch incase other layer types have different structures where isVisible is located
+                switch(type){
+                  case "_templatedLayer":
+                    for(let j =0;j<this._layers[i].layer[type]._templates.length;j++){
+                      total++;
+                      if(!(this._layers[i].layer[type]._templates[j].layer.isVisible))count++;
+                    }
+                  break;
+                  default:
                     total++;
-                    if(!(this._layers[i].layer[type]._templates[j].layer.isVisible))count++;
-                  }
-                break;
-                default:
-                  total++;
-                  if(!(this._layers[i].layer[type].isVisible))count++;
-                break;
+                    if(!(this._layers[i].layer[type].isVisible))count++;
+                  break;
+                }
               }
-            }
-          });
+            });
+          } else{
+            count = 1;
+            total = 1;
+          }
           let label = this._layers[i].input.labels[0].getElementsByTagName("span"),input = this._layers[i].input.labels[0].getElementsByTagName("input");
           if(count === total && count != 0){
             input[0].parentElement.parentElement.parentElement.parentElement.disabled = true;
@@ -3538,15 +3545,15 @@ M.mapMlLayerControl = function (layers, options) {
   M.MapMLStaticTileLayer = L.GridLayer.extend({
 
     initialize: function (options) {
-      let zoomBounds = this._getZoomBounds(options.tileContainer,options.maxZoomBound);
-      options.maxNativeZoom = zoomBounds.nMax, options.minNativeZoom = zoomBounds.nMin, options.maxZoom = zoomBounds.max, options.minZoom = zoomBounds.min;
+      this._zoomBounds = this._getZoomBounds(options.tileContainer,options.maxZoomBound);
+      options.maxNativeZoom = this._zoomBounds.nMax, options.minNativeZoom = this._zoomBounds.nMin, options.maxZoom = this._zoomBounds.max, options.minZoom = this._zoomBounds.min;
       L.setOptions(this, options);
       this._groups = this._groupTiles(this.options.tileContainer.getElementsByTagName('tile'));
     },
 
     onAdd: function(){
       this._bounds = this._getLayerBounds(this._groups,this._map.options.crs.options.resolutions); //stores meter values of bounds
-      this._map.fire('moveend');
+      this._setBoundsFlag();
       L.GridLayer.prototype.onAdd.call(this,this._map);
     },
     
