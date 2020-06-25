@@ -22,7 +22,10 @@
   <map is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
 
     <layer- label="Arizona" checked>
-      <extent units="CBMTILE"></extent>
+      <meta name="projection" content="CBMTILE" />
+      <meta name="cs" content="tilematrix" />
+      <meta name="zoom" content="min=0,max=5" />
+      <meta name="projection" content="CBMTILE" />
       <link id="first" rel="stylesheet" type="text/css" href="first.css">
       <style>
         .second {
@@ -35,7 +38,7 @@
         }
       </style>
       <link id="forth" rel="stylesheet" type="text/css" href="forth.css">
-      <feature class="refDiff">
+      <feature zoom="2" class="refDiff">
         <properties>
           <h1>Arizona</h1>
         </properties>
@@ -54,6 +57,7 @@
       </feature>
     </layer->
     <layer- label="Alabama" checked>
+      <meta name="zoom" content="min=0,max=10" />
       <extent units="CBMTILE">
         <input name="z" type="zoom" min="2" max="18" />
         <input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" />
@@ -73,6 +77,7 @@
           color: aliceblue;
         }
       </style>
+      <meta name="zoom" content="min=0,max=10" />
       <extent units="WGS84">
         <input name="zoomLevel" type="zoom" min="0" max="2" />
 

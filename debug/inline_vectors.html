@@ -17,7 +17,7 @@
   </head>
   <body>
     <map is="web-map" projection="CBMTILE" zoom="2" lat="61.209125" lon="-90.850837" width="900" height="400" controls>
-      <layer- label="Canada Base Map - Transportation (CBMT)" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
+      <!-- <layer- label="Canada Base Map - Transportation (CBMT)" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer-> -->
       
       <layer- label="US Population Density" checked style="display: none">
         <!-- styles that you want to apply to a layer must be in the layer element
@@ -55,8 +55,8 @@
             fill: #FFEDA0;
           }
         </style>
-        <extent units="WGS84"></extent>
-        <feature class="all  _50-100">
+        <meta name="projection" content="CBMTILE"/>
+        <feature zoom="2" class="all  _50-100">
           <properties>
             <h1>Alabama</h1>
           </properties>
@@ -66,7 +66,7 @@
             </polygon>
           </geometry>
         </feature>
-        <feature class="all  _0-10">
+        <feature zoom="2" class="all  _0-10">
           <properties>
             <h1>Alaska</h1>
           </properties>
@@ -206,7 +206,7 @@
             </multipolygon>
           </geometry>
         </feature>
-        <feature class="all  _50-100">
+        <feature zoom="2" class="all  _50-100">
           <properties>
             <h1>Arizona</h1>
           </properties>

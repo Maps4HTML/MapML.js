@@ -1344,9 +1344,9 @@ M.MapMLLayer = L.Layer.extend({
         function _processInitialExtent(content) {
             var mapml = this.responseXML || content;
             if (this.readyState === this.DONE && mapml.querySelector) {
-                var serverExtent = mapml.querySelector('extent'),
+                var serverExtent = mapml.querySelector('extent') || mapml.querySelector('meta[name=projection]'),
                     projectionMatch = serverExtent && serverExtent.hasAttribute('units') && 
-                    serverExtent.getAttribute('units').toUpperCase() === layer.options.mapprojection,
+                    serverExtent.getAttribute('units').toUpperCase() === layer.options.mapprojection || serverExtent && serverExtent.hasAttribute('content') && M.metaContentToObject(serverExtent.getAttribute('content')).content ===layer.options.mapprojection,
                     selectedAlternate = !projectionMatch && mapml.querySelector('head link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 
@@ -1379,7 +1379,7 @@ M.MapMLLayer = L.Layer.extend({
                         trel = (!t.hasAttribute('rel') || t.getAttribute('rel').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('rel').toLowerCase(),
                         ttype = (!t.hasAttribute('type')? 'image/*':t.getAttribute('type').toLowerCase()),
                         inputs = [];
-                        var zoomBounds = layer._content !== undefined?M.metaContentToObject(layer._content.querySelector('meta').getAttribute('content')):M.metaContentToObject("min=0,max=23");
+                        var zoomBounds = mapml.querySelector('meta[name=zoom]')?M.metaContentToObject(mapml.querySelector('meta[name=zoom]').getAttribute('content')):M.metaContentToObject("min=0,max=23");
                     while ((v = varNamesRe.exec(template)) !== null) {
                       var varName = v[1],
                       inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
@@ -3169,16 +3169,30 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       // info: https://github.com/Leaflet/Leaflet/pull/4597 
       L.DomUtil.addClass(this._container,'leaflet-pane mapml-vector-container');
       L.setOptions(this.options.renderer, {pane: this._container});
-
       this._layers = {};
-
       if (mapml) {
+        if(!mapml.querySelector('extent')){
+          this.isVisible = true; //placeholder for when this actually gets updated in the future
+          this.zoomBounds = this._getZoomBounds(mapml);
+          this.options.maxZoom = this.zoomBounds.max, this.options.minZoom = this.zoomBounds.min,this.options.minNativeZoom = this.zoomBounds.nMin, this.options.maxNativeZoom = this.zoomBounds.nMax;
+        }
         this.addData(mapml);
       }
     },
     
     getEvents: function(){
       return {'moveend':this._removeCSS};
+    },
+
+    _getZoomBounds: function(container){
+      if (!container) return {};
+      let meta = M.metaContentToObject(container.querySelector('meta[name=zoom]').getAttribute('content'));
+      let nMin = 100,nMax=0, features = container.getElementsByTagName('feature'),zoom={};
+      for(let i =0;i<features.length;i++){
+        if(+features[i].getAttribute('zoom') > nMax) nMax = +features[i].getAttribute('zoom');
+        if(+features[i].getAttribute('zoom') < nMin) nMin = +features[i].getAttribute('zoom');
+      }
+      return {min:+meta.min,max:+meta.max,nMin:nMin,nMax:nMax};
     },
 
     addData: function (mapml) {
@@ -3192,7 +3206,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
             mapml.URL;
         M.parseStylesheetAsHTML(mapml,base,this._container);
       }
-      
+      let max = 0, min= 100;
       if (features) {
        for (i = 0, len = features.length; i < len; i++) {
         // Only add this if geometry is set and not null
@@ -3204,8 +3218,10 @@ M.MapMLFeatures = L.FeatureGroup.extend({
        }
        return this;
       }
-
       var options = this.options;
+
+      options.maxZoom = max;
+      options.minZoom = min;
 
       if (options.filter && !options.filter(mapml)) { return; }
       
@@ -3443,7 +3459,8 @@ M.MapMLLayerControl = L.Control.Layers.extend({
         let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
         for (let i = 0; i < this._layers.length; i++) {
           let count = 0, total=0;
-          if( !this._layers[i].layer._extent.getAttribute("units") || this._layers[i].layer._extent.getAttribute("units") === this._map.options.projection){
+          let layerProjection = this._layers[i].layer._extent.getAttribute('units') || this._layers[i].layer._extent.getAttribute('content');
+          if( !layerProjection || layerProjection === this._map.options.projection){
             layerTypes.forEach((type) =>{
               if(this._layers[i].input.checked && this._layers[i].layer[type]){
                 //uses switch incase other layer types have different structures where isVisible is located
