@@ -3172,6 +3172,8 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       this._layers = {};
       if (mapml) {
         if(!mapml.querySelector('extent')){
+          this._features = {};
+          this._staticFeature = true;
           this.isVisible = true; //placeholder for when this actually gets updated in the future
           this.zoomBounds = this._getZoomBounds(mapml);
           this.options.maxZoom = this.zoomBounds.max, this.options.minZoom = this.zoomBounds.min,this.options.minNativeZoom = this.zoomBounds.nMin, this.options.maxNativeZoom = this.zoomBounds.nMax;
@@ -3180,14 +3182,67 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       }
     },
     
+    _clampZoom : function(){
+      let zoom = this._map.getZoom();
+      if (undefined !== this.options.minNativeZoom && zoom < this.options.minNativeZoom) {
+        return this.options.minNativeZoom;
+      }
+
+      if (undefined !== this.options.maxNativeZoom && this.options.maxNativeZoom < zoom) {
+        return this.options.maxNativeZoom;
+      }
+
+      return zoom;
+    },
+
     getEvents: function(){
-      return {'moveend':this._removeCSS};
+      if(this._staticFeature){
+        return {
+          'moveend':this._onMoveEnd,
+          'zoom':this._checkZoom,
+        };
+      }
+      return {
+        'moveend':this._removeCSS
+      };
+    },
+
+    _onMoveEnd : function(){
+      let mapZoom = this._map.getZoom();
+      if(mapZoom > this.options.maxZoom || mapZoom < this.options.minZoom){
+
+      } else {
+
+      }
+    },
+
+    _setBoundsFlag : function(){
+      
+      this.isVisible = true;
+      this._removeCSS;
+    },
+
+    _checkZoom : function(){
+      let mapZoom = this._map.getZoom();
+      const features = Object.keys(this._features);
+      for(let i of features){
+        for(let j =0;j < this._features[i].length;j++){
+          this.removeLayer(this._features[i][j]);
+        }
+      }
+      if(mapZoom > this.options.maxZoom || mapZoom < this.options.minZoom){
+      }
+      else if(this._features[mapZoom]){
+        for(let k =0;k < this._features[mapZoom].length;k++){
+          this.addLayer(this._features[mapZoom][k]);
+        }
+      }
     },
 
     _getZoomBounds: function(container){
       if (!container) return {};
       let meta = M.metaContentToObject(container.querySelector('meta[name=zoom]').getAttribute('content'));
-      let nMin = 100,nMax=0, features = container.getElementsByTagName('feature'),zoom={};
+      let nMin = 100,nMax=0, features = container.getElementsByTagName('feature');
       for(let i =0;i<features.length;i++){
         if(+features[i].getAttribute('zoom') > nMax) nMax = +features[i].getAttribute('zoom');
         if(+features[i].getAttribute('zoom') < nMin) nMin = +features[i].getAttribute('zoom');
@@ -3206,7 +3261,6 @@ M.MapMLFeatures = L.FeatureGroup.extend({
             mapml.URL;
         M.parseStylesheetAsHTML(mapml,base,this._container);
       }
-      let max = 0, min= 100;
       if (features) {
        for (i = 0, len = features.length; i < len; i++) {
         // Only add this if geometry is set and not null
@@ -3216,12 +3270,11 @@ M.MapMLFeatures = L.FeatureGroup.extend({
          this.addData(feature);
         }
        }
-       return this;
+       return this; //if templated this runs
       }
-      var options = this.options;
 
-      options.maxZoom = max;
-      options.minZoom = min;
+      //if its a mapml with no more links this runs
+      var options = this.options;
 
       if (options.filter && !options.filter(mapml)) { return; }
       
@@ -3244,7 +3297,17 @@ M.MapMLFeatures = L.FeatureGroup.extend({
         if (options.onEachFeature) {
          options.onEachFeature(layer.properties, layer);
         }
-        return this.addLayer(layer);
+        if(this._staticFeature){
+          let featureZoom = mapml.getAttribute('zoom');
+          if(featureZoom in this._features){
+            this._features[featureZoom].push(layer);
+          } else{
+            this._features[featureZoom]=[layer];
+          }
+          return;
+        } else {
+          return this.addLayer(layer);
+        }
       }
     },
         
