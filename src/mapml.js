@@ -599,6 +599,13 @@ window.M = M;
   });
 }());
 M.Util = {
+  boundsToMeterBounds: function(bounds, zoomConstant, cs){
+    switch(cs){
+      case "TILEMATRIX":
+        return M.pixelToMeterBounds(bounds,zoomConstant);
+      break;
+    }
+  },
 
   pixelToMeterBounds : function(bound, zoomConstant){
     if(!bound || !bound.max || !bound.min ||zoomConstant === undefined || zoomConstant === null || zoomConstant instanceof Object) return {};
@@ -663,6 +670,7 @@ M.Util = {
       }
   }
 };
+M.boundsToMeterBounds = M.Util.boundsToMeterBounds;
 M.pixelToMeterBounds = M.Util.pixelToMeterBounds;
 M.metaContentToObject = M.Util.metaContentToObject;
 M.coordsToArray = M.Util.coordsToArray;
@@ -971,9 +979,35 @@ M.MapMLLayer = L.Layer.extend({
                 }
               }, this);
         }
+        this._map.options.mapEl.getMapBounds = this._getMapBounds;
         this.setZIndex(this.options.zIndex);
         this.getPane().appendChild(this._container);
     },
+
+    _getMapBounds: function(){
+      let layers = Object.keys(this._map._layers);
+      let bounds, zoomBounds;
+      for(let i =0; i< layers.length;i++){
+        if(this._map._layers[layers[i]].layerBounds){
+          if(!bounds){
+            bounds = this._map._layers[layers[i]].layerBounds;
+          }else {
+            bounds.extend(this._map._layers[layers[i]].layerBounds.min);
+            bounds.extend(this._map._layers[layers[i]].layerBounds.max);
+          }
+        }
+        if(this._map._layers[layers[i]].zoomBounds){
+          if(!zoomBounds){
+            zoomBounds = {minZoom:this._map._layers[layers[i]].zoomBounds.minZoom, maxZoom:this._map._layers[layers[i]].zoomBounds.maxZoom};
+          }else {
+            if(this._map._layers[layers[i]].zoomBounds.minZoom < zoomBounds.minZoom) zoomBounds.minZoom = this._map._layers[layers[i]].zoomBounds.minZoom;
+            if(this._map._layers[layers[i]].zoomBounds.maxZoom > zoomBounds.maxZoom) zoomBounds.maxZoom = this._map._layers[layers[i]].zoomBounds.maxZoom;
+          }
+        }
+      }
+      return {bounds:{units:"meters",...bounds},...zoomBounds};
+    },
+
     addTo: function (map) {
         map.addLayer(this);
         return this;
@@ -2471,12 +2505,13 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       }
     },
     _setBoundsFlag : function(){
-      let mapBounds = M.pixelToMeterBounds(this._map.getPixelBounds(),this._map.options.crs.options.resolutions[this._map.getZoom()]);
+      let mapZoom = this._map.getZoom();
+      let mapBounds = M.pixelToMeterBounds(this._map.getPixelBounds(),this._map.options.crs.options.resolutions[mapZoom]);
       if(Object.keys(this._bounds).length === 0){ //temporary to allow layers with no bounds currently to still work, remove once bounds
         this.isVisible = true;  //are implemented for all layer types that use templatedTileLayer
         return;
       }
-      this.isVisible = this._bounds.overlaps(mapBounds);
+      this.isVisible = mapZoom <= this.options.maxZoom && mapZoom >= this.options.minZoom && this._bounds.overlaps(mapBounds);
     },
     createTile: function (coords) {
       if (this._template.type.startsWith('image/')) {
@@ -3171,35 +3206,24 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       L.setOptions(this.options.renderer, {pane: this._container});
       this._layers = {};
       if (mapml) {
-        if(!mapml.querySelector('extent')){
+        if(!mapml.querySelector('extent') && mapml.querySelector('feature')){
           this._features = {};
           this._staticFeature = true;
           this.isVisible = true; //placeholder for when this actually gets updated in the future
           this.zoomBounds = this._getZoomBounds(mapml);
-          this.options.maxZoom = this.zoomBounds.max, this.options.minZoom = this.zoomBounds.min,this.options.minNativeZoom = this.zoomBounds.nMin, this.options.maxNativeZoom = this.zoomBounds.nMax;
+          this.layerBounds = this._getLayerBounds(mapml);
         }
         this.addData(mapml);
+        if(!mapml.querySelector('extent')){
+          this._resetFeatures(this.options._leafletLayer._map.getZoom());
+        }
       }
-    },
-    
-    _clampZoom : function(){
-      let zoom = this._map.getZoom();
-      if (undefined !== this.options.minNativeZoom && zoom < this.options.minNativeZoom) {
-        return this.options.minNativeZoom;
-      }
-
-      if (undefined !== this.options.maxNativeZoom && this.options.maxNativeZoom < zoom) {
-        return this.options.maxNativeZoom;
-      }
-
-      return zoom;
     },
 
     getEvents: function(){
       if(this._staticFeature){
         return {
-          'moveend':this._onMoveEnd,
-          'zoom':this._checkZoom,
+          'moveend':this._setBoundsFlag,
         };
       }
       return {
@@ -3207,47 +3231,86 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       };
     },
 
-    _onMoveEnd : function(){
-      let mapZoom = this._map.getZoom();
-      if(mapZoom > this.options.maxZoom || mapZoom < this.options.minZoom){
-
-      } else {
-
-      }
-    },
-
     _setBoundsFlag : function(){
-      
-      this.isVisible = true;
+      let zoomLevel = this._map.getZoom();
+      zoomLevel = zoomLevel > this.zoomBounds.maxNativeZoom? this.zoomBounds.maxNativeZoom: zoomLevel;
+      zoomLevel = zoomLevel < this.zoomBounds.minNativeZoom? this.zoomBounds.minNativeZoom: zoomLevel;
+      this.isVisible = this._checkZoom() && this._layers && this.layerBounds && this.layerBounds.overlaps(M.pixelToMeterBounds(this._map.getPixelBounds(),this._map.options.crs.options.resolutions[this._map.getZoom()]));
       this._removeCSS;
     },
 
+    _getLayerBounds : function(container) {
+      if (!container) return null;
+      try{
+        let cs = M.metaContentToObject(container.querySelector('meta[name=cs]').getAttribute('content')).content.toUpperCase();
+        let projection = M.metaContentToObject(container.querySelector('meta[name=projection]').getAttribute('content'));
+        let zoomConstant = M[projection.content].options.resolutions[M.metaContentToObject(container.querySelector('meta[name=zoom]').getAttribute('content')).value];
+        let meta = M.metaContentToObject(container.querySelector('meta[name=bounds]').getAttribute('content'));
+        return M.boundsToMeterBounds(L.bounds(L.point(+meta.topLeftVertical* 256,+meta.topLeftHorizontal * 256),L.point(+meta.bottomRightVertical * 256,+meta.bottomRightHorizontal * 256)),zoomConstant,cs);
+      } catch (error){
+        return null;
+      }
+    },
+
+    _resetFeatures : function (zoom){
+      this.clearLayers();
+      if(this._features && this._features[zoom]){
+        for(let k =0;k < this._features[zoom].length;k++){
+          this.addLayer(this._features[zoom][k]);
+        }
+      }
+    },
+
     _checkZoom : function(){
-      let mapZoom = this._map.getZoom();
-      const features = Object.keys(this._features);
-      for(let i of features){
-        for(let j =0;j < this._features[i].length;j++){
-          this.removeLayer(this._features[i][j]);
-        }
+      let clampZoom = this._clampZoom();
+      this._resetFeatures(clampZoom);
+      if(clampZoom > this.zoomBounds.maxZoom || clampZoom < this.zoomBounds.minZoom){
+        return false;
+      }else if(this._features[clampZoom]){
+        return true;
       }
-      if(mapZoom > this.options.maxZoom || mapZoom < this.options.minZoom){
+    },
+    
+    _clampZoom : function(){
+      let zoom = this._map.getZoom();
+      if(zoom > this.zoomBounds.maxZoom || zoom < this.zoomBounds.minZoom) return zoom;
+      if (undefined !== this.zoomBounds.minNativeZoom && zoom < this.zoomBounds.minNativeZoom) {
+        return this.zoomBounds.minNativeZoom;
       }
-      else if(this._features[mapZoom]){
-        for(let k =0;k < this._features[mapZoom].length;k++){
-          this.addLayer(this._features[mapZoom][k]);
-        }
+      if (undefined !== this.zoomBounds.maxNativeZoom && this.zoomBounds.maxNativeZoom < zoom) {
+        return this.zoomBounds.maxNativeZoom;
+      }
+
+      return zoom;
+    },
+
+    _setZoomTransform: function(center, clampZoom){
+      var scale = this._map.getZoomScale(this._map.getZoom(),clampZoom),
+		    translate = center.multiplyBy(scale)
+		        .subtract(this._map._getNewPixelOrigin(center, this._map.getZoom())).round();
+
+      if (any3d) {
+        L.setTransform(this._layers[clampZoom], translate, scale);
+      } else {
+        L.setPosition(this._layers[clampZoom], translate);
       }
     },
 
     _getZoomBounds: function(container){
-      if (!container) return {};
-      let meta = M.metaContentToObject(container.querySelector('meta[name=zoom]').getAttribute('content'));
-      let nMin = 100,nMax=0, features = container.getElementsByTagName('feature');
+      if (!container) return null
+      let nMin = 100,nMax=0, features = container.getElementsByTagName('feature'),meta,projection;
       for(let i =0;i<features.length;i++){
+        if(!features[i].getAttribute('zoom')) continue;
         if(+features[i].getAttribute('zoom') > nMax) nMax = +features[i].getAttribute('zoom');
         if(+features[i].getAttribute('zoom') < nMin) nMin = +features[i].getAttribute('zoom');
       }
-      return {min:+meta.min,max:+meta.max,nMin:nMin,nMax:nMax};
+      try{
+        projection = M.metaContentToObject(container.querySelector('meta[name=projection]').getAttribute('content')).content;
+        meta = M.metaContentToObject(container.querySelector('meta[name=zoom]').getAttribute('content'));
+      } catch(error){
+        return {minZoom:0,maxZoom: M[projection || "CBMTILE"].options.resolutions.length,minNativeZoom:nMin,maxNativeZoom:nMax} 
+      }
+      return {minZoom:+meta.min ,maxZoom:+meta.max ,minNativeZoom:nMin,maxNativeZoom:nMax};
     },
 
     addData: function (mapml) {
@@ -3519,10 +3582,14 @@ M.MapMLLayerControl = L.Control.Layers.extend({
       //allowing the callback function to be run after all the other moveend event handlers
       //without having to reorder like in the previous iteration
       setTimeout(()=>{
-        let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
+        let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"],layerProjection;
         for (let i = 0; i < this._layers.length; i++) {
           let count = 0, total=0;
-          let layerProjection = this._layers[i].layer._extent.getAttribute('units') || this._layers[i].layer._extent.getAttribute('content');
+          if(this._layers[i].layer._extent){
+            layerProjection = this._layers[i].layer._extent.getAttribute('units') || this._layers[i].layer._extent.getAttribute('content');
+          } else {
+            layerProjection = true;
+          }
           if( !layerProjection || layerProjection === this._map.options.projection){
             layerTypes.forEach((type) =>{
               if(this._layers[i].input.checked && this._layers[i].layer[type]){
@@ -3625,14 +3692,19 @@ M.mapMlLayerControl = function (layers, options) {
   M.MapMLStaticTileLayer = L.GridLayer.extend({
 
     initialize: function (options) {
-      this._zoomBounds = this._getZoomBounds(options.tileContainer,options.maxZoomBound);
-      options.maxNativeZoom = this._zoomBounds.nMax, options.minNativeZoom = this._zoomBounds.nMin, options.maxZoom = this._zoomBounds.max, options.minZoom = this._zoomBounds.min;
+      this.zoomBounds = this._getZoomBounds(options.tileContainer,options.maxZoomBound);
+      options = {...options, ...this.zoomBounds};
       L.setOptions(this, options);
       this._groups = this._groupTiles(this.options.tileContainer.getElementsByTagName('tile'));
     },
 
     onAdd: function(){
       this._bounds = this._getLayerBounds(this._groups,this._map.options.crs.options.resolutions); //stores meter values of bounds
+      this.layerBounds = this._bounds[Object.keys(this._bounds)[0]];
+      for(let key of Object.keys(this._bounds)){
+        this.layerBounds.extend(this._bounds[key].min);
+        this.layerBounds.extend(this._bounds[key].max);
+      }
       this._setBoundsFlag();
       L.GridLayer.prototype.onAdd.call(this,this._map);
     },
@@ -3657,6 +3729,7 @@ M.mapMlLayerControl = function (layers, options) {
     },
 
     _isValidTile(coords) {
+      //return true;
       return this._groups[this._tileCoordsToKey(coords)];
     },
 
@@ -3669,6 +3742,9 @@ M.mapMlLayerControl = function (layers, options) {
         tile.src = tileGroup[i].src;
         tileElem.appendChild(tile);
       }
+      //let temp = document.createElement('p');
+      //temp.innerText = `x:${coords.x}\ny:${coords.y}\nz:${coords.z}`
+      //tileElem.appendChild(temp);
       return tileElem;
     },
 
@@ -3716,16 +3792,17 @@ M.mapMlLayerControl = function (layers, options) {
 
     //switch to minus 2 instead of 3, if specified min is > -2 then go with the minus 2
     _getZoomBounds: function(container, maxZoomBound){
-      if(!container) return {};
+      if(!container) return null
       let meta = M.metaContentToObject(container.getElementsByTagName('tiles')[0].getAttribute('zoom')),zoom = {},tiles = container.getElementsByTagName("tile");
-      zoom.nMax = 0, zoom.nMin = maxZoomBound;
+      zoom.maxNativeZoom = 0, zoom.minNativeZoom = maxZoomBound;
       for (let i=0;i<tiles.length;i++) {
-        if(+tiles[i].getAttribute('zoom') > zoom.nMax) zoom.nMax = +tiles[i].getAttribute('zoom');
-        if(+tiles[i].getAttribute('zoom') < zoom.nMin) zoom.nMin = +tiles[i].getAttribute('zoom');
+        if(!tiles[i].getAttribute('zoom')) continue;
+        if(+tiles[i].getAttribute('zoom') > zoom.maxNativeZoom) zoom.maxNativeZoom = +tiles[i].getAttribute('zoom');
+        if(+tiles[i].getAttribute('zoom') < zoom.minNativeZoom) zoom.minNativeZoom = +tiles[i].getAttribute('zoom');
       }
-      zoom.min = zoom.nMin - 2 <= 0? 0: zoom.nMin - 2, zoom.max = maxZoomBound;
-      if(meta.min)zoom.min = +meta.min < (zoom.nMin - 2)?(zoom.nMin - 2):+meta.min;
-      if(meta.max)zoom.max = +meta.max;
+      zoom.minZoom = zoom.minNativeZoom - 2 <= 0? 0: zoom.minNativeZoom - 2, zoom.maxZoom = maxZoomBound;
+      if(meta.min)zoom.minZoom = +meta.min < (zoom.minNativeZoom - 2)?(zoom.minNativeZoom - 2):+meta.min;
+      if(meta.max)zoom.maxZoom = +meta.max;
       return zoom;
     },
 

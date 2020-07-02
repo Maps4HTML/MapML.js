@@ -1,6 +1,33 @@
 /* global expect, M */
 
 describe("M.Util Tests", () => {
+  let resolutions = [
+    156543.0339,
+    78271.51695,
+    39135.758475,
+    19567.8792375,
+    9783.93961875,
+    4891.969809375,
+    2445.9849046875,
+    1222.9924523438,
+    611.49622617188,
+    305.74811308594,
+    152.87405654297,
+    76.437028271484,
+    38.218514135742,
+    19.109257067871,
+    9.5546285339355,
+    4.7773142669678,
+    2.3886571334839,
+    1.1943285667419,
+    0.59716428337097,
+    0.29858214168549,
+    0.14929107084274,
+    0.074645535421371,
+    0.03732276771068573,
+    0.018661383855342865,
+    0.009330691927671432495
+  ];
   describe("M.parseStylesheetToHTML(mapml,base,container) utility function tests", () => {
 
     var mapmlString = "<mapml><head><style>.css {property:cool}</style></head><body></body></mapml>",
@@ -256,33 +283,7 @@ describe("M.Util Tests", () => {
   });
 
   describe("M.pixelToMeterBounds utility function tests", () => {
-    let resolutions = [
-      156543.0339,
-      78271.51695,
-      39135.758475,
-      19567.8792375,
-      9783.93961875,
-      4891.969809375,
-      2445.9849046875,
-      1222.9924523438,
-      611.49622617188,
-      305.74811308594,
-      152.87405654297,
-      76.437028271484,
-      38.218514135742,
-      19.109257067871,
-      9.5546285339355,
-      4.7773142669678,
-      2.3886571334839,
-      1.1943285667419,
-      0.59716428337097,
-      0.29858214168549,
-      0.14929107084274,
-      0.074645535421371,
-      0.03732276771068573,
-      0.018661383855342865,
-      0.009330691927671432495
-    ];
+
     test("Null, Null parameters", () => {
       let output = M.pixelToMeterBounds(null, null);
       expect(output).toEqual({});
@@ -317,6 +318,14 @@ describe("M.Util Tests", () => {
       expect(output).toEqual({});
     });
 
+  });
+
+  describe("M.boundsToMeterBounds utility function tests", () => {
+    test("TILEMATRIX bounds", () => {
+      let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
+      let output = M.boundsToMeterBounds(bounds, resolutions[0], "TILEMATRIX");
+      expect(output).toEqual(L.bounds(L.point(156543.0339, 156543.0339), L.point(782715.1695000001, 782715.1695000001)));
+    });
   });
 
 });
