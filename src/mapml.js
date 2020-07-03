@@ -668,8 +668,20 @@ M.Util = {
       for (var s=ss.length-1;s >= 0;s--) {
         container.insertAdjacentElement('afterbegin',ss[s]);
       }
-  }
+  },
+
+  splitCoordinate: function(element, index, array) {
+    var a = [];
+    element.split(/\s+/gim).forEach(M.Util.parseNumber,a);
+    this.push(a);
+  },
+
+  parseNumber : function(element, index, array){
+    this.push(parseFloat(element));
+  },
 };
+
+M.splitCoordinate = M.Util.splitCoordinate;
 M.boundsToMeterBounds = M.Util.boundsToMeterBounds;
 M.pixelToMeterBounds = M.Util.pixelToMeterBounds;
 M.metaContentToObject = M.Util.metaContentToObject;
@@ -1005,7 +1017,7 @@ M.MapMLLayer = L.Layer.extend({
           }
         }
       }
-      return {bounds:{units:"meters",...bounds},...zoomBounds};
+      return {bounds:{units:this._map._layers[layers[0]].options.mapprojection==="WGS84"?"decimal degrees":"meters",...bounds},...zoomBounds};
     },
 
     addTo: function (map) {
@@ -2472,9 +2484,15 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       // options first...
       L.setOptions(this, options);
       this._setUpTileTemplateVars(template);
-      this.options.maxZoom = template.zoomBounds.max,this.options.minZoom = template.zoomBounds.min,this.options.maxNativeZoom=template.zoom.max,this.options.minNativeZoom=template.zoom.min;
+      this.options.maxZoom = +template.zoomBounds.max,this.options.minZoom = +template.zoomBounds.min,this.options.maxNativeZoom=template.zoom.max,this.options.minNativeZoom=template.zoom.min;
       if (template.tile.subdomains) {
         L.setOptions(this, L.extend(this.options, {subdomains: template.tile.subdomains}));
+      }
+      this.zoomBounds = {
+        maxZoom:+this.options.maxZoom,
+        minZoom:+this.options.minZoom,
+        maxNativeZoom:this.options.maxNativeZoom,
+        minNativeZoom:this.options.minNativeZoom,
       }
       this.isVisible = true;
       this._template = template;
@@ -2484,11 +2502,17 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       L.TileLayer.prototype.initialize.call(this, template.template, L.extend(options, {pane: this._container}));
     },
     onAdd : function(){
-      this._bounds = M.pixelToMeterBounds(L.bounds(L.point(this._template.tilematrix.col.min*256,this._template.tilematrix.row.min*256),L.point(this._template.tilematrix.col.max*256,this._template.tilematrix.row.max*256)),this._map.options.crs.options.resolutions[this._template.zoom.value]);
+      this.layerBounds = M.pixelToMeterBounds(L.bounds(L.point(this._template.tilematrix.col.min*256,this._template.tilematrix.row.min*256),L.point(this._template.tilematrix.col.max*256,this._template.tilematrix.row.max*256)),this._map.options.crs.options.resolutions[this._template.zoom.value]);
       this._map.on('moveend', this._setBoundsFlag, this );
       this._setBoundsFlag();
       L.TileLayer.prototype.onAdd.call(this,this._map);
     },
+
+/*     getEvents: function(){
+      this._map.on('moveend', this._setBoundsFlag, this );
+      return L.TileLayer.prototype.getEvents();
+    }, */
+
     onRemove : function(){
       this._map.off('moveend', this._setBoundsFlag, this );
       L.TileLayer.prototype.onRemove.call(this,this._map);
@@ -2507,11 +2531,11 @@ M.TemplatedTileLayer = L.TileLayer.extend({
     _setBoundsFlag : function(){
       let mapZoom = this._map.getZoom();
       let mapBounds = M.pixelToMeterBounds(this._map.getPixelBounds(),this._map.options.crs.options.resolutions[mapZoom]);
-      if(Object.keys(this._bounds).length === 0){ //temporary to allow layers with no bounds currently to still work, remove once bounds
+      if(Object.keys(this.layerBounds).length === 0){ //temporary to allow layers with no bounds currently to still work, remove once bounds
         this.isVisible = true;  //are implemented for all layer types that use templatedTileLayer
         return;
       }
-      this.isVisible = mapZoom <= this.options.maxZoom && mapZoom >= this.options.minZoom && this._bounds.overlaps(mapBounds);
+      this.isVisible = mapZoom <= this.options.maxZoom && mapZoom >= this.options.minZoom && this.layerBounds.overlaps(mapBounds);
     },
     createTile: function (coords) {
       if (this._template.type.startsWith('image/')) {
@@ -2568,72 +2592,75 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       // at this time.  In the case of multiple <coordinates> per geometry, we
       // will look for class attribute on the first <coordinates> element.
       // var cl; // classList -> DOMTokenList https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList
-      switch (geometry.firstElementChild.tagName.toUpperCase()) {
-        case 'POINT':
-          coordinates = [];
-          geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(parseNumber,coordinates);
-          pt = this.coordsToPoint(coordinates, tileCoords);
-          renderPoint(pt, geometry);
-          break;
-        case 'MULTIPOINT':
-          coordinates = [];
-          // TODO the definition of multipoint geometry was modified in testbed 15
-          // to align with geojson a bit better.  
-          // this modification requires one <coordinates> element with 1 or more
-          // text string coordinate pairs, per the model for <coordinates> in a
-          // linestring (but with different semantics). As such, in order to separately
-          // select and style a coordinate, the user has to wrap it in a <span class="...>
-          // The code below does not  support that yet.  the renderPoint code
-          // will have to use treewalker (as the polygon code does), and copy the
-          // classes from the geometry element to each child svg element
-          // created i.e. onto the circle or path(s) that are created.
-          geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(splitCoordinate, coordinates);
-          members = this.coordsToPoints(coordinates, 0, tileCoords);
-          for(member=0;member<members.length;member++) {
-            // propagate the classes from the feature to each geometry
-            const g = geometry;
-            feature.classList.forEach(val => g.getElementsByTagName('coordinates')[0].classList.add(val));
-            renderPoint(members[member], g.getElementsByTagName('coordinates')[0]);
-          }
-          break;
-        case 'LINESTRING':
-          coordinates = [];
-          geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(splitCoordinate, coordinates);
-          renderLinestring(this.coordsToPoints(coordinates, 0, tileCoords), geometry);
-          break;
-        case 'MULTILINESTRING':
-          members = geometry.getElementsByTagName('coordinates');
-          for (member=0;member<members.length;member++) {
+      //if(this.isVisible){
+        switch (geometry.firstElementChild.tagName.toUpperCase()) {
+          case 'POINT':
             coordinates = [];
-          // propagate the classes from the feature to each geometry
-            const m = members[member];
-            feature.classList.forEach(val => m.classList.add(val));
-            m.textContent.match(/(\S+ \S+)/gim).forEach(splitCoordinate, coordinates);
+            geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(parseNumber,coordinates);
+            pt = this.coordsToPoint(coordinates, tileCoords);
+            renderPoint(pt, geometry);
+            break;
+          case 'MULTIPOINT':
+            coordinates = [];
+            // TODO the definition of multipoint geometry was modified in testbed 15
+            // to align with geojson a bit better.  
+            // this modification requires one <coordinates> element with 1 or more
+            // text string coordinate pairs, per the model for <coordinates> in a
+            // linestring (but with different semantics). As such, in order to separately
+            // select and style a coordinate, the user has to wrap it in a <span class="...>
+            // The code below does not  support that yet.  the renderPoint code
+            // will have to use treewalker (as the polygon code does), and copy the
+            // classes from the geometry element to each child svg element
+            // created i.e. onto the circle or path(s) that are created.
+            geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(splitCoordinate, coordinates);
+            members = this.coordsToPoints(coordinates, 0, tileCoords);
+            for(member=0;member<members.length;member++) {
+              // propagate the classes from the feature to each geometry
+              const g = geometry;
+              feature.classList.forEach(val => g.getElementsByTagName('coordinates')[0].classList.add(val));
+              renderPoint(members[member], g.getElementsByTagName('coordinates')[0]);
+            }
+            break;
+          case 'LINESTRING':
+            coordinates = [];
+            geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(splitCoordinate, coordinates);
             renderLinestring(this.coordsToPoints(coordinates, 0, tileCoords), geometry);
-          }
-          break;
-        case 'POLYGON':
-          renderPolygon(this.coordsToPoints(coordinatesToArray(geometry.getElementsByTagName('coordinates')), 1, tileCoords), geometry);
-          break;
-        case 'MULTIPOLYGON':
-          members = geometry.getElementsByTagName('polygon');
-          for (member=0;member<members.length;member++) {
+            break;
+          case 'MULTILINESTRING':
+            members = geometry.getElementsByTagName('coordinates');
+            for (member=0;member<members.length;member++) {
+              coordinates = [];
             // propagate the classes from the feature to each geometry
-            const m = members[member];
-            feature.classList.forEach(val => m.classList.add(val));
-            renderPolygon(
-              this.coordsToPoints(coordinatesToArray(
-              m.getElementsByTagName('coordinates')), 1 ,tileCoords), m
-            );
-          }
-          break;
-        case 'GEOMETRYCOLLECTION':
-          console.log('GEOMETRYCOLLECTION Not implemented yet');
-          break;
-        default:
-          console.log('Invalid geometry');
-          break;
-      }
+              const m = members[member];
+              feature.classList.forEach(val => m.classList.add(val));
+              m.textContent.match(/(\S+ \S+)/gim).forEach(splitCoordinate, coordinates);
+              renderLinestring(this.coordsToPoints(coordinates, 0, tileCoords), geometry);
+            }
+            break;
+          case 'POLYGON':
+            renderPolygon(this.coordsToPoints(coordinatesToArray(geometry.getElementsByTagName('coordinates')), 1, tileCoords), geometry);
+            break;
+          case 'MULTIPOLYGON':
+            members = geometry.getElementsByTagName('polygon');
+            for (member=0;member<members.length;member++) {
+              // propagate the classes from the feature to each geometry
+              const m = members[member];
+              feature.classList.forEach(val => m.classList.add(val));
+              renderPolygon(
+                this.coordsToPoints(coordinatesToArray(
+                m.getElementsByTagName('coordinates')), 1 ,tileCoords), m
+              );
+            }
+            break;
+          case 'GEOMETRYCOLLECTION':
+            console.log('GEOMETRYCOLLECTION Not implemented yet');
+            break;
+          default:
+            console.log('Invalid geometry');
+            break;
+        }
+      //}
+
       function renderPolygon(p, f) {
         var poly = document.createElementNS('http://www.w3.org/2000/svg', 'path'),
             path = "";
@@ -2796,7 +2823,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
         var a = new Array(coordinates.length);
         for (var i=0;i<a.length;i++) {
           a[i]=[];
-          (coordinates[i] || coordinates).textContent.match(/(\S+\s+\S+)/gim).forEach(splitCoordinate, a[i]);
+          (coordinates[i] || coordinates).textContent.match(/(\S+\s+\S+)/gim).forEach(M.splitCoordinate, a[i]);
         }
         return a;
       }
@@ -2829,15 +2856,6 @@ M.TemplatedTileLayer = L.TileLayer.extend({
             tilePoint = L.point(tcrsCoords.x - (tile.x*256), tcrsCoords.y - (tile.y*256));
 
         return tilePoint;
-      }
-      function splitCoordinate(element, index, array) {
-        var a = [];
-        element.split(/\s+/gim).forEach(parseNumber,a);
-        this.push(a);
-      }
-
-      function parseNumber(element, index, array) {
-        this.push(parseFloat(element));
       }
     },
     coordsToLatLng: function (coords) { // (Array[, Boolean]) -> LatLng
@@ -3214,8 +3232,8 @@ M.MapMLFeatures = L.FeatureGroup.extend({
           this.layerBounds = this._getLayerBounds(mapml);
         }
         this.addData(mapml);
-        if(!mapml.querySelector('extent')){
-          this._resetFeatures(this.options._leafletLayer._map.getZoom());
+        if(this._staticFeature){
+          this._resetFeatures(this._clampZoom(this.options._leafletLayer._map.getZoom()));
         }
       }
     },
@@ -3262,7 +3280,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
     },
 
     _checkZoom : function(){
-      let clampZoom = this._clampZoom();
+      let clampZoom = this._clampZoom(this._map.getZoom());
       this._resetFeatures(clampZoom);
       if(clampZoom > this.zoomBounds.maxZoom || clampZoom < this.zoomBounds.minZoom){
         return false;
@@ -3271,8 +3289,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       }
     },
     
-    _clampZoom : function(){
-      let zoom = this._map.getZoom();
+    _clampZoom : function(zoom){
       if(zoom > this.zoomBounds.maxZoom || zoom < this.zoomBounds.minZoom) return zoom;
       if (undefined !== this.zoomBounds.minNativeZoom && zoom < this.zoomBounds.minNativeZoom) {
         return this.zoomBounds.minNativeZoom;
@@ -3424,14 +3441,14 @@ L.extend(M.MapMLFeatures, {
     switch (geometry.firstElementChild.tagName.toUpperCase()) {
       case 'POINT':
         coordinates = [];
-        geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(parseNumber,coordinates);
+        geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(M.parseNumber,coordinates);
         latlng = coordsToLatLng(coordinates);
         return pointToLayer ? pointToLayer(mapml, latlng) : 
                                     new L.Marker(latlng, pointOptions);
 
       case 'MULTIPOINT':
         coordinates = [];
-        geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(splitCoordinate, coordinates);
+        geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
         latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng);
         var points = new Array(latlngs.length);
         for(member=0;member<points.length;member++) {
@@ -3440,7 +3457,7 @@ L.extend(M.MapMLFeatures, {
         return new L.featureGroup(points);
       case 'LINESTRING':
         coordinates = [];
-        geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(splitCoordinate, coordinates);
+        geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
         latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng);
         return new L.Polyline(latlngs, vectorOptions);
       case 'MULTILINESTRING':
@@ -3484,19 +3501,9 @@ L.extend(M.MapMLFeatures, {
       var a = new Array(coordinates.length);
       for (var i=0;i<a.length;i++) {
         a[i]=[];
-        (coordinates[i] || coordinates).textContent.match(/(\S+\s+\S+)/gim).forEach(splitCoordinate, a[i]);
+        (coordinates[i] || coordinates).textContent.match(/(\S+\s+\S+)/gim).forEach(M.splitCoordinate, a[i]);
       }
       return a;
-    }
-
-    function splitCoordinate(element, index, array) {
-      var a = [];
-      element.split(/\s+/gim).forEach(parseNumber,a);
-      this.push(a);
-    }
-
-    function parseNumber(element, index, array) {
-      this.push(parseFloat(element));
     }
   },
         
