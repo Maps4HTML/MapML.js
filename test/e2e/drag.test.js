@@ -81,21 +81,20 @@ jest.setTimeout(30000);
     test("HTML - add additional MapML Layer", async () => {
       const { document } = new JSDOM(`
           <!doctype html>
-              <html lang="en">
+              <html>
               <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width,initial-scale=1">
-                <title>index-map.html</title>
-                <script type="module" src="dist/web-map.js"></script>
-                <style>
-                html {height: 100%} body,map {height: inherit} * {margin: 0;padding: 0;}
-                </style>
+                  <title>index-map.html</title>
+                  <meta charset="UTF-8">
+                  <script type="module" src="dist/web-map.js"></script>
+                  <style>
+                  html {height: 100%} body,map {height: inherit} * {margin: 0;padding: 0;}
+                  </style>
               </head>
               <body>
-                <map is="web-map" projection="CBMTILE" zoom="2" lat="45" lon="-90" controls>
-                  <layer- label='CBMT' src='https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/' checked></layer->
-                  <layer- label='CBMT' src='https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/' checked></layer->
-                </map>
+                  <map is="web-map" projection="CBMTILE" zoom="2" lat="45" lon="-90" controls >
+                      <layer- label='CBMT' src='https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/' checked></layer->
+                      <layer- label='CBMT' src='https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/' checked></layer->
+                  </map>     
               </body>
               </html>
           `).window;
@@ -109,21 +108,20 @@ jest.setTimeout(30000);
     test("HTML - add additional non-MapML Layer", async () => {
       const { document } = new JSDOM(`
           <!doctype html>
-              <html lang="en">
+              <html>
               <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width,initial-scale=1">
-                <title>index-map.html</title>
-                <script type="module" src="dist/web-map.js"></script>
-                <style>
-                html {height: 100%} body,map {height: inherit} * {margin: 0;padding: 0;}
-                </style>
+                  <title>index-map.html</title>
+                  <meta charset="UTF-8">
+                  <script type="module" src="dist/web-map.js"></script>
+                  <style>
+                  html {height: 100%} body,map {height: inherit} * {margin: 0;padding: 0;}
+                  </style>
               </head>
               <body>
-                <map is="web-map" projection="CBMTILE" zoom="2" lat="45" lon="-90" controls>
-                  <layer- label='CBMT' src='https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/' checked></layer->
-                  <layer- label='CBMT' src='https://example.com/' checked></layer->
-                </map>
+                  <map is="web-map" projection="CBMTILE" zoom="2" lat="45" lon="-90" controls >
+                      <layer- label='CBMT' src='https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/' checked></layer->
+                      <layer- label='CBMT' src='https://example.com/' checked></layer->
+                  </map>     
               </body>
               </html>
           `).window;

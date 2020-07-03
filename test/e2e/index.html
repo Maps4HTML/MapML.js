@@ -1,30 +1,32 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Drag Test</title>
-    <script type="module" src="web-map.js"></script>
-    <style>
-      html {
-        height: 100%;
-      }
+<!DOCTYPE html>
+<html>
 
-      body,
-      map {
-        height: inherit;
-      }
+<head>
+	<title>Drag Test</title>
+	<meta charset="UTF-8" />
+	<script type="module" src="web-map.js"></script>
+	<style>
+		html {
+			height: 100%;
+		}
 
-      * {
-        margin: 0;
-        padding: 0;
-      }
-    </style>
-  </head>
+		body,
+		map {
+			height: inherit;
+		}
 
-  <body>
-    <map is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
-      <layer- label="CBMT" src="data/cbmt.mapml" checked></layer->
-    </map>
-  </body>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+
+<body>
+	<map is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
+		<layer- label="CBMT" src="data/cbmt.mapml" checked></layer->
+
+	</map>
+</body>
+
 </html>
