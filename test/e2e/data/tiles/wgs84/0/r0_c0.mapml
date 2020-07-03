@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <mapml>
    <head>
       <title>ne_10m_admin_0_countries</title>
@@ -16,6 +17,25 @@
       </style>
       <link rel="stylesheet" href="" />
    </head>
+=======
+<mapml lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/mapml">
+    <title>ne_10m_admin_0_countries</title>
+    <style>
+      .refStyleOne {
+        color: black;
+      }
+    </style>
+    <style>
+      .refStyleTwo {
+        color: black;
+      }
+    </style>
+    <link rel="stylesheet" href="">
+  </head>
+>>>>>>> upstream/master
    <body>
       <feature id="fclass.2" class="fclass">
          <geometry>

@@ -1082,7 +1082,7 @@ M.MapMLLayer = L.Layer.extend({
         } else if (type === "zoom") {
               extentVarNames.extent.zoom = {name: name};
         } else if (type === "location" && (units === "pcrs" || units ==="gcrs" || units === "tcrs")) {
-          //<input name="..." units="pcrs" type="location" position="top|bottom-left|right" axis="northing|easting"/>
+          //<input name="..." units="pcrs" type="location" position="top|bottom-left|right" axis="northing|easting">
           switch (axis) {
             case ('easting'):
               if (position) {
@@ -1941,7 +1941,7 @@ M.TemplatedImageLayer =  L.Layer.extend({
         } else if ( type === "height") {
               extentVarNames.extent.height = name;
         } else if (type === "location" && (units === "pcrs" || units ==="gcrs") ) {
-          //<input name="..." units="pcrs" type="location" position="top|bottom-left|right" axis="northing|easting|latitude|longitude"/>
+          //<input name="..." units="pcrs" type="location" position="top|bottom-left|right" axis="northing|easting|latitude|longitude">
           switch (axis) {
             case ('longitude'):
             case ('easting'):
@@ -2144,7 +2144,7 @@ M.TemplatedFeaturesLayer =  L.Layer.extend({
         } else if (type === "zoom") {
               featuresVarNames.feature.zoom = {name: name};
         } else if (type === "location" && (units === "pcrs" || units ==="gcrs" || units === "tcrs")) {
-          //<input name="..." units="pcrs" type="location" position="top|bottom-left|right" axis="northing|easting"/>
+          //<input name="..." units="pcrs" type="location" position="top|bottom-left|right" axis="northing|easting">
           switch (axis) {
             case ('x'):
             case ('longitude'):
@@ -2332,7 +2332,7 @@ M.TemplatedLayer = L.Layer.extend({
               // unsuportted axis value
           }
         } else if (type === "zoom") {
-          //<input name="..." type="zoom" value="0" min="0" max="17"/>
+          //<input name="..." type="zoom" value="0" min="0" max="17">
            queryVarNames.query.zoom = name;
         } else if (select) {
             /*jshint -W104 */
@@ -3022,7 +3022,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
               // unsuportted axis value
           }
         } else if (type.toLowerCase() === "zoom") {
-          //<input name="..." type="zoom" value="0" min="0" max="17"/>
+          //<input name="..." type="zoom" value="0" min="0" max="17">
            zoom = {
              name: name,
              min: 0, 

@@ -1,7 +1,7 @@
 {
   "name": "web-map-custom-element",
   "version": "0.7.0",
-  "description": "web-map customized built-in HTML <map> or custom <geo-map>",
+  "description": "web-map customized built-in HTML <map> or custom <mm-mapp>",
   "keywords": [
     "web-components",
     "web",
@@ -37,8 +37,9 @@
   "dependencies": {},
   "devDependencies": {
     "@runette/leaflet-fullscreen": "1.0.4",
+    "dom-to-playwright": "^0.1.1",
     "express": "^4.17.1",
-    "grunt": "1.1.0",
+    "grunt": "^1.1.0",
     "grunt-contrib-clean": "^2.0.0",
     "grunt-contrib-concat": "~1.0.0",
     "grunt-contrib-copy": "~1.0.0",
@@ -48,6 +49,7 @@
     "grunt-html": "~9.3.0",
     "jest": "^26.0.1",
     "jest-playwright-preset": "^0.1.3",
+    "jsdom": "^16.2.2",
     "leaflet": "~1.6.0",
     "path": "^0.12.7",
     "playwright": "^1.0.1",

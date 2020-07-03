@@ -3,25 +3,27 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>inline vectors</title>
+    <title>css-inline-style-test.html</title>
     <script type="module" src="../dist/web-map.js"></script>
     <style>
-      [is="web-map"] {
-        width: 100%;
-        height: 400px;
-        max-width: 100%;
+      html {
+        height: 100%;
       }
-      .transparency {
-        opacity: 0.2;
+      body,
+      map {
+        height: inherit;
+      }
+      * {
+        margin: 0;
+        padding: 0;
       }
     </style>
   </head>
   <body>
-    <map is="web-map" projection="CBMTILE" zoom="2" lat="61.209125" lon="-90.850837" width="900" height="400" controls>
-      <layer- label="Canada Base Map - Transportation (CBMT)" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
+    <map is="web-map" projection="CBMTILE" zoom="2" lat="35" lon="-90.850837" controls>
+      <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/?z=18" checked></layer->
       <layer- label="US Population Density" checked style="display: none;">
-        <!-- styles that you want to apply to a layer must be in the layer element
-             as they are copied into the shadow root of the map -->
+        <!-- this style should go into the layer container -->
         <style>
           .all {
             fill-opacity: 0.7;
@@ -603,7 +605,7 @@
             <h1>Maine</h1>
           </properties>
           <geometry>
-            <Polygon>
+            <polygon>
               <coordinates>
                 -70.703921 43.057759 -70.824413 43.128959 -70.807983 43.227544 -70.966814 43.34256 -71.032537 44.657025 -71.08183 45.303304 -70.649151 45.440228 -70.720352 45.511428 -70.556043 45.664782 -70.386258 45.735983 -70.41912
                 45.796229 -70.260289 45.889337 -70.309581 46.064599 -70.210996 46.327492 -70.057642 46.415123 -69.997395 46.694447 -69.225147 47.461219 -69.044408 47.428357 -69.033454 47.242141 -68.902007 47.176418 -68.578868 47.285957
@@ -613,7 +615,7 @@
                 44.043608 -69.258008 43.923115 -69.444224 43.966931 -69.553763 43.840961 -69.707118 43.82453 -69.833087 43.720469 -69.986442 43.742376 -70.030257 43.851915 -70.254812 43.676653 -70.194565 43.567114 -70.358873 43.528776
                 -70.369827 43.435668 -70.556043 43.320652 -70.703921 43.057759
               </coordinates>
-            </Polygon>
+            </polygon>
           </geometry>
         </feature>
         <feature class="all _500-1000">

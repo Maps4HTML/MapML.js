@@ -1,10 +1,12 @@
-<mapml><head><title>A point in Map Markup Language</title>
-<meta http-equiv="Content-Type" content="text/mapml"/>
-<meta charset="utf-8"/>
-<meta name="projection" content="WGS84"/>
-<meta name="zoom" content="min=10,max=18"/>
-<meta name="extent" content="xmin=-74.19733,ymin=45.41587,xmax=-73.12864,ymax=45.65485"/> 
-<link rel="license" href="foo" title="Foo © Natural Resources Canada"/>
+<mapml lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/mapml">
+  <title>A point in Map Markup Language</title>
+  <meta name="projection" content="WGS84">
+  <meta name="zoom" content="min=10,max=18">
+  <meta name="extent" content="xmin=-74.19733,ymin=45.41587,xmax=-73.12864,ymax=45.65485"> 
+  <link rel="license" href="foo" title="Foo © Natural Resources Canada">
 </head>
 <body>
 <feature id="palais">
@@ -17,5 +19,5 @@
 </Point>
 </geometry>
 </feature>
-
-</body></mapml>
+</body>
+</mapml>
