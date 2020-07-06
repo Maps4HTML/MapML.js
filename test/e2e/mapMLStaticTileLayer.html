@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>static-tile-elements.html</title>
+    <meta charset="UTF-8">
+        <script type="module" src="web-map.js"></script>
+     <style>
+       html {height: 100%} body,map {height: inherit} * {margin: 0;padding: 0;}
+    </style>
+  </head>
+  <body>
+      <map is="web-map" projection="CBMTILE"  zoom="2" lat="59.87304909" lon="-53.22587225"  width="900" height="400" controls>
+      
+        <!--
+      <layer- label="Canada Base Map" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/"></layer->
+      <!-- MapML clients should support feature, tile and image elements -->
+      <layer- label="Static MapML with tiles" checked>
+        <meta name="zoom" content="min=0,max=24">
+        <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="Canada Base Map © Natural Resources Canada">
+        <tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></tile>
+        <tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></tile>
+        <tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></tile>
+        <tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></tile>
+        <tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></tile>
+        <tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></tile>
+     <!-- <feature>
+    <properties>
+      <h1>Canada</h1>
+    </properties>
+    <geometry>
+      <Point>
+        <coordinates>-96 52</coordinates>
+      </Point>
+    </geometry>
+  </feature>-->
+
+    </layer->
+    </map>
+  </body>
+</html>

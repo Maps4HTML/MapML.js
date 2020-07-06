@@ -6,7 +6,7 @@ describe("M.Util Tests", () => {
     var mapmlString = "<mapml><head><style>.css {property:cool}</style></head><body></body></mapml>",
       parser = new DOMParser(),
       base = "https://example.org/mapml/is/awesome/",
-      link = parser.parseFromString('<doc><link rel="stylesheet" href="./remote.css"/></doc>', 'application/xml').firstChild.firstChild;
+      link = parser.parseFromString('<doc><link rel="stylesheet" href="./remote.css" /></doc>', 'application/xml').firstChild.firstChild;
 
 
     test("M.parseStylesheetToHTML(mapml,base,container)", () => {
@@ -15,9 +15,9 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       var testcontainer = document.createElement('div');
       M.parseStylesheetAsHTML(mapml, base, testcontainer);
-      expect(testcontainer.querySelector('link')).toBeFalsy() &&
-        expect(testcontainer.querySelector('style')).toBeTruthy() &&
-        expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}');
+      expect(testcontainer.querySelector('link')).toBeFalsy();
+      expect(testcontainer.querySelector('style')).toBeTruthy();
+      expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}');
 
 
     });
@@ -31,11 +31,11 @@ describe("M.Util Tests", () => {
 
       // we expect both the link and the inline style to be copied
       M.parseStylesheetAsHTML(mapml, base, testcontainer);
-      expect(mapml.firstChild.firstChild.nodeName).toEqual("head") &&
-        expect(testcontainer.querySelector('link')).toBeTruthy() &&
-        expect(testcontainer.querySelector('style')).toBeTruthy() &&
-        expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}') &&
-        expect(testcontainer.querySelector('link').href).toEqual(base + "remote.css");
+      expect(mapml.firstChild.firstChild.nodeName).toEqual("head");
+      expect(testcontainer.querySelector('link')).toBeTruthy();
+      expect(testcontainer.querySelector('style')).toBeTruthy();
+      expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}');
+      expect(testcontainer.querySelector('link').href).toEqual(base + "remote.css");
 
     });
 
@@ -43,9 +43,9 @@ describe("M.Util Tests", () => {
       var testcontainer = document.createElement('div');
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       M.parseStylesheetAsHTML(mapml, base, testcontainer);
-      expect(testcontainer.querySelector('link')).toBeFalsy() &&
-        expect(testcontainer.querySelector('style')).toBeTruthy() &&
-        expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}');
+      expect(testcontainer.querySelector('link')).toBeFalsy();
+      expect(testcontainer.querySelector('style')).toBeTruthy();
+      expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}');
     });
     test("M.parseStylesheetToHTML(mapml with linked, inline styles, valid base, container)", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
@@ -54,14 +54,14 @@ describe("M.Util Tests", () => {
       mapml.firstChild.firstChild.append(link);
 
       M.parseStylesheetAsHTML(mapml, base, testcontainer);
-      expect(testcontainer.querySelector('link')).toBeTruthy() &&
-        expect(testcontainer.querySelector('style')).toBeTruthy() &&
-        expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}') &&
-        expect(testcontainer.querySelector('link').href).toEqual(base + "remote.css");
+      expect(testcontainer.querySelector('link')).toBeTruthy();
+      expect(testcontainer.querySelector('style')).toBeTruthy();
+      expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}');
+      expect(testcontainer.querySelector('link').href).toEqual(base + "remote.css");
     });
     test("M.parseStylesheetToHTML(mapml with assorted linked, inline styles, valid base, container)", () => {
-      var styleLinkTwo = parser.parseFromString('<doc><link rel="stylesheet" href="./styleTwo.css"/></doc>', 'application/xml').firstChild;
-      var styleLinkThree = parser.parseFromString('<doc><link rel="stylesheet" href="./styleThree.css"/></doc>', 'application/xml').firstChild;
+      var styleLinkTwo = parser.parseFromString('<doc><link rel="stylesheet" href="./styleTwo.css" /></doc>', 'application/xml').firstChild;
+      var styleLinkThree = parser.parseFromString('<doc><link rel="stylesheet" href="./styleThree.css" /></doc>', 'application/xml').firstChild;
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       var testcontainer = document.createElement('div');
       mapml.firstChild.firstChild.append(link);
@@ -70,17 +70,17 @@ describe("M.Util Tests", () => {
 
       M.parseStylesheetAsHTML(mapml, base, testcontainer);
 
-      expect(testcontainer.children[1].href).toEqual(base + "remote.css") &&
-        expect(testcontainer.children[2].href).toEqual(base + "styleTwo.css") &&
-        expect(testcontainer.children[3].href).toEqual(base + "styleThree.css") &&
-        expect(testcontainer.children[0].textContent).toEqual('.css {property:cool}');
+      expect(testcontainer.children[1].href).toEqual(base + "remote.css");
+      expect(testcontainer.children[2].href).toEqual(base + "styleTwo.css");
+      expect(testcontainer.children[3].href).toEqual(base + "styleThree.css");
+      expect(testcontainer.children[0].textContent).toEqual('.css {property:cool}');
 
     });
 
     //base = null
     test("(null, null, null) should do nothing", () => {
-      var check = M.parseStylesheetAsHTML(null, null, null)
-      expect(check).toBeFalsy()
+      var check = M.parseStylesheetAsHTML(null, null, null);
+      expect(check).toBeFalsy();
     });
 
     test("M.parseStylesheetToHTML(mapml with linked, inline styles, base=null, container)", () => {
@@ -89,14 +89,14 @@ describe("M.Util Tests", () => {
       mapml.firstChild.firstChild.append(link);
       var check = M.parseStylesheetAsHTML(mapml, null, testcontainer);
 
-      expect(testcontainer).toEqual(document.createElement('div')) &&
-        expect(check).toBeFalsy();
+      expect(testcontainer).toEqual(document.createElement('div'));
+      expect(check).toBeFalsy();
 
     });
 
     test("M.parseStylesheetToHTML(mapml with assortedlinked, inline styles, null base, null container)", () => {
-      var styleLinkTwo = parser.parseFromString('<doc><link rel="stylesheet" href="./styleTwo.css"/></doc>', 'application/xml').firstChild;
-      var styleLinkThree = parser.parseFromString('<doc><link rel="stylesheet" href="./styleThree.css"/></doc>', 'application/xml').firstChild;
+      var styleLinkTwo = parser.parseFromString('<doc><link rel="stylesheet" href="./styleTwo.css" /></doc>', 'application/xml').firstChild;
+      var styleLinkThree = parser.parseFromString('<doc><link rel="stylesheet" href="./styleThree.css" /></doc>', 'application/xml').firstChild;
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       var testcontainer = document.createElement('div');
       mapml.firstChild.firstChild.append(link);
@@ -104,8 +104,8 @@ describe("M.Util Tests", () => {
       mapml.firstChild.firstChild.append(styleLinkThree);
 
       var check = M.parseStylesheetAsHTML(mapml, null, testcontainer);
-      expect(testcontainer).toEqual(document.createElement('div')) &&
-        expect(check).toBeFalsy()
+      expect(testcontainer).toEqual(document.createElement('div'));
+      expect(check).toBeFalsy();
     });
 
     //base = Element
@@ -115,7 +115,7 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       mapml.firstChild.firstChild.append(nullBase);
       mapml.firstChild.firstChild.append(link);
-      M.parseStylesheetAsHTML(mapml, nullBase, testcontainer)
+      M.parseStylesheetAsHTML(mapml, nullBase, testcontainer);
       expect(testcontainer.querySelector('link').href).toEqual(document.URL + 'remote.css');
     });
 
@@ -135,9 +135,9 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
 
       mapml.firstChild.firstChild.append(link);
-      var check = M.parseStylesheetAsHTML(mapml, new Object, testcontainer);
-      expect(testcontainer).toEqual(document.createElement('div')) &&
-        expect(check).toBeFalsy();
+      var check = M.parseStylesheetAsHTML(mapml, {}, testcontainer);
+      expect(testcontainer).toEqual(document.createElement('div'));
+      expect(check).toBeFalsy();
     });
 
     test("M.parseStylesheetToHTML(mapml with linked, inline styles, base=valid base, container = null)", () => {
@@ -147,8 +147,8 @@ describe("M.Util Tests", () => {
       mapml.firstChild.firstChild.append(testBase);
       mapml.firstChild.firstChild.append(link);
       var check = M.parseStylesheetAsHTML(mapml, base, null);
-      expect(testcontainer).toEqual(document.createElement('div')) &&
-        expect(check).toBeFalsy();
+      expect(testcontainer).toEqual(document.createElement('div'));
+      expect(check).toBeFalsy();
     });
 
     test("M.parseStylesheetToHTML(mapml with linked, inline styles, base=valid base, container = non Element)", () => {
@@ -156,9 +156,9 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
 
       mapml.firstChild.firstChild.append(link);
-      var check = M.parseStylesheetAsHTML(mapml, base, new Object);
-      expect(testcontainer).toEqual(document.createElement('div')) &&
-        expect(check).toBeFalsy();
+      var check = M.parseStylesheetAsHTML(mapml, base, {});
+      expect(testcontainer).toEqual(document.createElement('div'));
+      expect(check).toBeFalsy();
     });
   });
 
@@ -194,30 +194,66 @@ describe("M.Util Tests", () => {
       var inputArray = "1,2,3,4";
 
       var output = M.coordsToArray(inputArray);
-      expect(output).toEqual([[1, 2], [3, 4]])
+      expect(output).toEqual([[1, 2], [3, 4]]);
     });
 
     test("Odd number of input coords", () => {
       var inputArray = "1,2,3,4,5";
 
       var output = M.coordsToArray(inputArray);
-      expect(output).toEqual([[1, 2], [3, 4]])
+      expect(output).toEqual([[1, 2], [3, 4]]);
     });
 
     test("Single number input", () => {
       var inputArray = "1";
 
       var output = M.coordsToArray(inputArray);
-      expect(output).toEqual([])
+      expect(output).toEqual([]);
     });
 
     test("Empty string input", () => {
       var inputArray = "";
 
       var output = M.coordsToArray(inputArray);
-      expect(output).toEqual([])
+      expect(output).toEqual([]);
     });
 
   });
+
+  describe("M.metaContentToObject(content) utility function tests", () => {
+    test("Null object passed", () => {
+      let output = M.metaContentToObject(null);
+
+      expect(output).toEqual({});
+    });
+
+    test("Valid single input", () => {
+      let output = M.metaContentToObject("max=5");
+
+      expect(output).toEqual({ max: "5" });
+    });
+
+    test("Valid multiple input", () => {
+      let output = M.metaContentToObject("max=5,min=23,zoom=65,x=65");
+
+      expect(output).toEqual({ max: "5", min: "23", zoom: "65", x: "65" });
+    });
+
+    test("Empty string", () => {
+      let output = M.metaContentToObject("");
+
+      expect(output).toEqual({});
+    });
+    test("No equal sign just value", () => {
+      let output = M.metaContentToObject("noequal");
+      expect(output).toEqual({ content: "noequal" });
+    });
+
+    test("Invalid object", () => {
+      let output = M.metaContentToObject({});
+      expect(output).toEqual({});
+    });
+  });
+
 });
 
