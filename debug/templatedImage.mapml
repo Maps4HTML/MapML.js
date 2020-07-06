@@ -1,22 +1,20 @@
 <mapml>
   <head>
     <title>Toporama</title>
-    <meta http-equiv="Content-Type" content="text/mapml"/>
     <meta charset="utf-8"/>
-    <base href=""/>
     <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/atlas-canada/read-about-topographic-maps/16840#topolicensing" title="Toporama © Natural Resources Canada"/>
     <link rel="legend" href="http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&REQUEST=GetLegendGraphic&LAYER=WMS-Toporama&VERSION=1.1&FORMAT=image/png"/>
   </head>
   <body>
-    <extent units="OSMTILE">
-      <input name="z" type="zoom" value="18" min="4" max="18"/>
+    <extent units="CBMTILE">
+      <input name="z" type="zoom" value="19" min="0" max="19"/>
       <input name="w" type="width"/>
       <input name="h" type="height"/>
-      <input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="-2.003750834E7" max="2.003750834E7"/>
-      <input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" min="-2.003750834E7" max="2.003750834E7"/>
-      <input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" min="-2.003750834E7" max="2.003750834E7"/>
-      <input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="-2.003750834E7" max="2.003750834E7"/>
-      <link rel="image" tref="http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/jpeg&TRANSPARENT=FALSE&STYLES=&VERSION=1.3.0&LAYERS=WMS-Toporama&WIDTH={w}&HEIGHT={h}&CRS=EPSG:3857&BBOX={xmin},{ymin},{xmax},{ymax}&m4h=t"/>
+      <input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="-7786477.0" max="7148753.0"/>
+      <input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" min="-927808.0" max="7928344.0"/>
+      <input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" min="-7786477.0" max="7148753.0"/>
+      <input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="-927808.0" max="7928344.0"/>
+      <link rel="image" tref="http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/jpeg&TRANSPARENT=FALSE&STYLES=&VERSION=1.3.0&LAYERS=WMS-Toporama&WIDTH={w}&HEIGHT={h}&CRS=EPSG:3978&BBOX={xmin},{ymin},{xmax},{ymax}&m4h=t"/>
     </extent>
   </body>
 </mapml>

@@ -3638,44 +3638,6 @@ M.MapMLLayerControl = L.Control.Layers.extend({
           }
         }
       }, 0);
-
-        // get the bounds of the map in Tiled CRS pixel units
-        /* var zoom = this._map.getZoom(),
-            bounds = this._map.getPixelBounds(),
-            zoomBounds, obj, visible, projectionMatches;
-        for (var i = 0; i < this._layers.length; i++) {
-            obj = this._layers[i];
-            if (obj.layer._extent || obj.layer.error) {
-
-                // get the 'bounds' of zoom levels of the layer as described by the server
-                zoomBounds = obj.layer.getZoomBounds();
-                projectionMatches = obj.layer._projectionMatches(this._map);
-                //the bounds intersecting the layer extent bounds is used to
-                // disable/enable the layer in the layer control
-                visible = projectionMatches && this._withinZoomBounds(zoom, zoomBounds); // && bounds.intersects(obj.layer.getLayerExtentBounds(this._map)) ;
-                if (!visible) {
-                    obj.input.disabled = true;
-                    if (!projectionMatches) {
-                        this._map.removeLayer(obj.layer);
-                        obj.input.disabled = true;
-                        obj.input.checked = false;
-                    }
-                    obj.input.nextElementSibling.style.fontStyle = 'italic';
-                } else {
-                    obj.input.disabled = false;
-                    obj.input.style = null;
-                    // this is a bug fix for the situation where the author
-                    // includes a <layer- src="..." label="..."></layer->
-                    // without a 'checked' attribute, meaning the layer should
-                    // be in the layer control (if that's enabled) but not on
-                    // the map (visible doesn't imply it's on the map / checked,
-                    // just that it should be checkable if desired).
-                    obj.input.checked = obj.layer._layerEl.checked;
-                    // ie does not work with null 
-                    obj.input.nextElementSibling.style.fontStyle = '';
-                }
-            }
-        } */
     },
     _withinZoomBounds: function(zoom, range) {
         return range.min <= zoom && zoom <= range.max;

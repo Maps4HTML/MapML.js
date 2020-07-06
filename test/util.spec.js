@@ -323,8 +323,8 @@ describe("M.Util Tests", () => {
   describe("M.boundsToMeterBounds utility function tests", () => {
     test("TILEMATRIX bounds", () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
-      let output = M.boundsToMeterBounds(bounds, resolutions[0], "TILEMATRIX");
-      expect(output).toEqual(L.bounds(L.point(156543.0339, 156543.0339), L.point(782715.1695000001, 782715.1695000001)));
+      let output = M.boundsToMeterBounds(bounds, 3, resolutions, "TILEMATRIX");
+      expect(output).toEqual(L.bounds(L.point(5009377.0848, 5009377.0848), L.point(25046885.424000002, 25046885.424000002)));
     });
   });
 
