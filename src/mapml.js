@@ -599,11 +599,20 @@ window.M = M;
   });
 }());
 M.Util = {
-  boundsToMeterBounds: function(bounds, zoomConstant, cs){
+  boundsToMeterBounds: function(bounds, zoom, resolutions, cs){
     switch(cs){
       case "TILEMATRIX":
-        return M.pixelToMeterBounds(bounds,zoomConstant);
+        let tileToPixelBounds = L.bounds(L.point(bounds.min.x*256,bounds.min.y*256),L.point(bounds.max.x*256,bounds.max.y*256));
+        return M.pixelToMeterBounds(tileToPixelBounds,resolutions[zoom]);
       break;
+      case "PCRS":
+        return M.pixelToMeterBounds(bounds,resolutions[zoom]);  
+      break;
+      case "GCRS":
+        let gcrsToPixelBounds = L.bounds(L.Map.project(bounds.min,+zoom),L.Map.project(bounds.max,+zoom));
+        return M.pixelToMeterBounds(gcrsToPixelBounds,resolutions[zoom]);
+      break;
+        
     }
   },
 
@@ -991,7 +1000,7 @@ M.MapMLLayer = L.Layer.extend({
                 }
               }, this);
         }
-        this._map.options.mapEl.getMapBounds = this._getMapBounds;
+        this._map.options.mapEl.getBounds = this._getMapBounds;
         this.setZIndex(this.options.zIndex);
         this.getPane().appendChild(this._container);
     },
@@ -3262,9 +3271,9 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       try{
         let cs = M.metaContentToObject(container.querySelector('meta[name=cs]').getAttribute('content')).content.toUpperCase();
         let projection = M.metaContentToObject(container.querySelector('meta[name=projection]').getAttribute('content'));
-        let zoomConstant = M[projection.content].options.resolutions[M.metaContentToObject(container.querySelector('meta[name=zoom]').getAttribute('content')).value];
+        let resolutions = M[projection.content].options.resolutions, zoom = M.metaContentToObject(container.querySelector('meta[name=zoom]').getAttribute('content')).value;
         let meta = M.metaContentToObject(container.querySelector('meta[name=bounds]').getAttribute('content'));
-        return M.boundsToMeterBounds(L.bounds(L.point(+meta.topLeftVertical* 256,+meta.topLeftHorizontal * 256),L.point(+meta.bottomRightVertical * 256,+meta.bottomRightHorizontal * 256)),zoomConstant,cs);
+        return M.boundsToMeterBounds(L.bounds(L.point(+meta.topLeftVertical,+meta.topLeftHorizontal),L.point(+meta.bottomRightVertical,+meta.bottomRightHorizontal)),zoom, resolutions,cs);
       } catch (error){
         return null;
       }
@@ -3719,6 +3728,7 @@ M.mapMlLayerControl = function (layers, options) {
     getEvents: function(){
       let events = L.GridLayer.prototype.getEvents.call(this,this._map);
       events.moveend = this._setBoundsFlag;
+      events.move = ()=>{}; //needed to prevent moveend from running
       return events;
     },
 
@@ -3726,12 +3736,13 @@ M.mapMlLayerControl = function (layers, options) {
     //sets the bounds flag of the layer and calls default moveEnd if within bounds
     //its the zoom level is between the nativeZoom and zoom then it uses the nativeZoom value to get the bound its checking
     _setBoundsFlag : function(e){
-      let zoomLevel = this._map.getZoom();
+      let mapZoom = this._map.getZoom();
+      let zoomLevel = mapZoom;
       zoomLevel = zoomLevel > this.options.maxNativeZoom? this.options.maxNativeZoom: zoomLevel;
       zoomLevel = zoomLevel < this.options.minNativeZoom? this.options.minNativeZoom: zoomLevel;
-      this.isVisible = this._bounds[zoomLevel] && this._bounds[zoomLevel].overlaps(M.pixelToMeterBounds(this._map.getPixelBounds(),this._map.options.crs.options.resolutions[this._map.getZoom()]));
-
-      if(!(this.isVisible))return;
+      this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && this._bounds[zoomLevel] && this._bounds[zoomLevel].overlaps(M.pixelToMeterBounds(this._map.getPixelBounds(),this._map.options.crs.options.resolutions[this._map.getZoom()]));
+      
+      if(!(this.isVisible))return; //onMoveEnd still gets fired even when layer is out of bounds??, most likely need to overrride _onMoveEnd
       this.fire('moveend',e,true);
     },
 

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Web Map Template - default style</title>
+  <meta charset="utf-8" />
+  <script type="module" src="../dist/web-map.js"></script>
+  <style>
+    html {
+      height: 100%
+    }
+
+    body,
+    map {
+      height: inherit
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <map is="web-map" projection="OSMTILE" zoom="4" lat="53.331" lon="-91.667" controls>
+
+    <layer- label="Toporama" src="./templatedImage.mapml" checked></layer->
+  </map>
+</body>
+
+</html>
