@@ -3478,7 +3478,10 @@ M.mapMlLayerControl = function (layers, options) {
 
     initialize: function (options) {
       let zoomBounds = this._getZoomBounds(options.tileContainer,options.maxZoomBound);
-      options.maxNativeZoom = zoomBounds.nMax, options.minNativeZoom = zoomBounds.nMin, options.maxZoom = zoomBounds.max, options.minZoom = zoomBounds.min;
+      options.maxNativeZoom = zoomBounds.nMax;
+      options.minNativeZoom = zoomBounds.nMin;
+      options.maxZoom = zoomBounds.max;
+      options.minZoom = zoomBounds.min;
       L.setOptions(this, options);
       this._groups = this._groupTiles(this.options.tileContainer.getElementsByTagName('tile'));
     },
@@ -3521,7 +3524,9 @@ M.mapMlLayerControl = function (layers, options) {
 
     createTile: function (coords) {
       let tileGroup = this._groups[this._tileCoordsToKey(coords)] || [], tileElem = document.createElement('tile');
-      tileElem.setAttribute("col",coords.x), tileElem.setAttribute("row",coords.y), tileElem.setAttribute("zoom",coords.z);
+      tileElem.setAttribute("col",coords.x);
+      tileElem.setAttribute("row",coords.y);
+      tileElem.setAttribute("zoom",coords.z);
       
       for(let i = 0;i<tileGroup.length;i++){
         let tile= document.createElement('img');
@@ -3545,7 +3550,9 @@ M.mapMlLayerControl = function (layers, options) {
       let layerBounds = {};
       for(let tile in tileGroups){
         let sCoords = tile.split(":"), pixelCoords = {}, zoomConstant = resolutions[sCoords[2]];
-        pixelCoords.x = +sCoords[0] * 256,pixelCoords.y = +sCoords[1] * 256, pixelCoords.z = +sCoords[2]; //+String same as parseInt(String)
+        pixelCoords.x = +sCoords[0] * 256;
+        pixelCoords.y = +sCoords[1] * 256;
+        pixelCoords.z = +sCoords[2]; //+String same as parseInt(String)
         if(sCoords[2] in layerBounds){
           layerBounds[sCoords[2]].extend(L.point(pixelCoords.x * zoomConstant,pixelCoords.y * zoomConstant));
           layerBounds[sCoords[2]].extend(L.point(((pixelCoords.x+256) * zoomConstant),((pixelCoords.y+256) * zoomConstant)));
@@ -3555,34 +3562,20 @@ M.mapMlLayerControl = function (layers, options) {
       }
 
       return layerBounds;
-
-      //if needed to get global bounds of tiles rather than individual ones for each layer use this
-/*       let maxX =0,maxY=0,minX=6456345,minY=645645;
-      for(let i =0;i<Object.keys(tileGroups).length;i++){
-        let coordsString = Object.keys(tileGroups)[i].split(":");
-        //replace ["CBMTILE"] with the projection type of this layer/map
-        let x = (parseInt(coordsString[0])*256) * this.options.TCRS.resolutions[parseInt(coordsString[2])];
-        let y = (parseInt(coordsString[1])*256) * this.options.TCRS.resolutions[parseInt(coordsString[2])];
-        let xm = ((parseInt(coordsString[0])+1)*256) * this.options.TCRS.resolutions[parseInt(coordsString[2])];
-        let ym = ((parseInt(coordsString[1])+1)*256) * this.options.TCRS.resolutions[parseInt(coordsString[2])];
-        if(xm > maxX) maxX = xm;
-        if(x < minX) minX = x;
-        if(ym > maxY) maxY = ym;
-        if(y < minY) minY = y; 
-      }
-      return L.bounds(L.point(minX,minY),L.point(maxX,maxY)); */
     },
 
     //switch to minus 2 instead of 3, if specified min is > -2 then go with the minus 2
     _getZoomBounds: function(container, maxZoomBound){
       if(!container) return {};
       let meta = M.metaContentToObject(container.getElementsByTagName('tiles')[0].getAttribute('zoom')),zoom = {},tiles = container.getElementsByTagName("tile");
-      zoom.nMax = 0, zoom.nMin = maxZoomBound;
+      zoom.nMax = 0;
+      zoom.nMin = maxZoomBound;
       for (let i=0;i<tiles.length;i++) {
         if(+tiles[i].getAttribute('zoom') > zoom.nMax) zoom.nMax = +tiles[i].getAttribute('zoom');
         if(+tiles[i].getAttribute('zoom') < zoom.nMin) zoom.nMin = +tiles[i].getAttribute('zoom');
       }
-      zoom.min = zoom.nMin - 2 <= 0? 0: zoom.nMin - 2, zoom.max = maxZoomBound;
+      zoom.min = zoom.nMin - 2 <= 0? 0: zoom.nMin - 2;
+      zoom.max = maxZoomBound;
       if(meta.min)zoom.min = +meta.min < (zoom.nMin - 2)?(zoom.nMin - 2):+meta.min;
       if(meta.max)zoom.max = +meta.max;
       return zoom;
@@ -3592,7 +3585,10 @@ M.mapMlLayerControl = function (layers, options) {
       let tileMap = {};
       for (let i=0;i<tiles.length;i++) {
         let tile = {};
-        tile.row = +tiles[i].getAttribute('row'),tile.col = +tiles[i].getAttribute('col'),tile.zoom = +tiles[i].getAttribute('zoom'),tile.src = tiles[i].getAttribute('src');
+        tile.row = +tiles[i].getAttribute('row');
+        tile.col = +tiles[i].getAttribute('col');
+        tile.zoom = +tiles[i].getAttribute('zoom');
+        tile.src = tiles[i].getAttribute('src');
         let tileCode = tile.col+":"+tile.row+":"+tile.zoom;
         if(tileCode in tileMap){
           tileMap[tileCode].push(tile);

@@ -79,8 +79,8 @@ describe("M.Util Tests", () => {
 
     //base = null
     test("(null, null, null) should do nothing", () => {
-      var check = M.parseStylesheetAsHTML(null, null, null)
-      expect(check).toBeFalsy()
+      var check = M.parseStylesheetAsHTML(null, null, null);
+      expect(check).toBeFalsy();
     });
 
     test("M.parseStylesheetToHTML(mapml with linked, inline styles, base=null, container)", () => {
@@ -105,7 +105,7 @@ describe("M.Util Tests", () => {
 
       var check = M.parseStylesheetAsHTML(mapml, null, testcontainer);
       expect(testcontainer).toEqual(document.createElement('div'));
-      expect(check).toBeFalsy()
+      expect(check).toBeFalsy();
     });
 
     //base = Element
@@ -115,7 +115,7 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       mapml.firstChild.firstChild.append(nullBase);
       mapml.firstChild.firstChild.append(link);
-      M.parseStylesheetAsHTML(mapml, nullBase, testcontainer)
+      M.parseStylesheetAsHTML(mapml, nullBase, testcontainer);
       expect(testcontainer.querySelector('link').href).toEqual(document.URL + 'remote.css');
     });
 
@@ -135,7 +135,7 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
 
       mapml.firstChild.firstChild.append(link);
-      var check = M.parseStylesheetAsHTML(mapml, new Object, testcontainer);
+      var check = M.parseStylesheetAsHTML(mapml, {}, testcontainer);
       expect(testcontainer).toEqual(document.createElement('div'));
       expect(check).toBeFalsy();
     });
@@ -156,7 +156,7 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
 
       mapml.firstChild.firstChild.append(link);
-      var check = M.parseStylesheetAsHTML(mapml, base, new Object);
+      var check = M.parseStylesheetAsHTML(mapml, base, {});
       expect(testcontainer).toEqual(document.createElement('div'));
       expect(check).toBeFalsy();
     });
@@ -194,28 +194,28 @@ describe("M.Util Tests", () => {
       var inputArray = "1,2,3,4";
 
       var output = M.coordsToArray(inputArray);
-      expect(output).toEqual([[1, 2], [3, 4]])
+      expect(output).toEqual([[1, 2], [3, 4]]);
     });
 
     test("Odd number of input coords", () => {
       var inputArray = "1,2,3,4,5";
 
       var output = M.coordsToArray(inputArray);
-      expect(output).toEqual([[1, 2], [3, 4]])
+      expect(output).toEqual([[1, 2], [3, 4]]);
     });
 
     test("Single number input", () => {
       var inputArray = "1";
 
       var output = M.coordsToArray(inputArray);
-      expect(output).toEqual([])
+      expect(output).toEqual([]);
     });
 
     test("Empty string input", () => {
       var inputArray = "";
 
       var output = M.coordsToArray(inputArray);
-      expect(output).toEqual([])
+      expect(output).toEqual([]);
     });
 
   });
@@ -250,7 +250,7 @@ describe("M.Util Tests", () => {
     });
 
     test("Invalid object", () => {
-      let output = M.metaContentToObject(new Object);
+      let output = M.metaContentToObject({});
       expect(output).toEqual({});
     });
   });
