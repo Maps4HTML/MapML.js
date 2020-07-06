@@ -3129,6 +3129,135 @@ M.TemplatedTileLayer = L.TileLayer.extend({
 M.templatedTileLayer = function(template, options) {
   return new M.TemplatedTileLayer(template, options);
 };
+M.MapMLStaticTileLayer = L.GridLayer.extend({
+
+  initialize: function (options) {
+    let zoomBounds = this._getZoomBounds(options.tileContainer,options.maxZoomBound);
+    options.maxNativeZoom = zoomBounds.nMax;
+    options.minNativeZoom = zoomBounds.nMin;
+    options.maxZoom = zoomBounds.max;
+    options.minZoom = zoomBounds.min;
+    L.setOptions(this, options);
+    this._groups = this._groupTiles(this.options.tileContainer.getElementsByTagName('tile'));
+  },
+
+  onAdd: function(){
+    this._bounds = this._getLayerBounds(this._groups,this._map.options.crs.options.resolutions); //stores meter values of bounds
+    this.isVisible = this._withinBounds(this._map.getPixelBounds(), this._bounds[this._map.getZoom()],this._map.options.crs.options.resolutions,this._map.getZoom());
+    L.GridLayer.prototype.onAdd.call(this,this._map);
+  },
+
+  getEvents: function(){
+    let events = L.GridLayer.prototype.getEvents.call(this,this._map);
+    events.moveend = this._setBoundsFlag;
+    return events;
+  },
+
+
+  //sets the bounds flag of the layer and calls default moveEnd if within bounds
+  //its the zoom level is between the nativeZoom and zoom then it uses the nativeZoom value to get the bound its checking
+  _setBoundsFlag : function(e){
+    let zoomLevel = this._map.getZoom();
+    zoomLevel = zoomLevel > this.options.maxNativeZoom? this.options.maxNativeZoom: zoomLevel;
+    zoomLevel = zoomLevel < this.options.minNativeZoom? this.options.minNativeZoom: zoomLevel;
+    this.isVisible = this._withinBounds(this._map.getPixelBounds(), this._bounds[zoomLevel],this._map.options.crs.options.resolutions, this._map.getZoom());
+    if(!(this.isVisible))return;
+    this.fire('moveend',e,true);
+  },
+
+  //checks if layer bound is within map view
+  _withinBounds : function(mapBound, layerBound, resolutions, zoom){
+    if(!mapBound || !layerBound || !resolutions || zoom === undefined) return false;
+    let zoomConstant = resolutions[zoom];
+    let xMax = mapBound.max.x * zoomConstant, yMax = mapBound.max.y * zoomConstant, xMin = mapBound.min.x * zoomConstant, yMin = mapBound.min.y * zoomConstant;
+    return layerBound.overlaps(L.bounds(L.point(xMin,yMin),L.point(xMax,yMax))) && zoom <= this.options.maxZoom && zoom >= this.options.minZoom;
+  },
+
+  _isValidTile(coords) {
+    return this._groups[this._tileCoordsToKey(coords)];
+  },
+
+  createTile: function (coords) {
+    let tileGroup = this._groups[this._tileCoordsToKey(coords)] || [], tileElem = document.createElement('tile');
+    tileElem.setAttribute("col",coords.x);
+    tileElem.setAttribute("row",coords.y);
+    tileElem.setAttribute("zoom",coords.z);
+    
+    for(let i = 0;i<tileGroup.length;i++){
+      let tile= document.createElement('img');
+      tile.src = tileGroup[i].src;
+      tileElem.appendChild(tile);
+    }
+    return tileElem;
+  },
+
+  //----------------------------------
+  //  minX,minY
+  // 
+  //
+  //
+  //
+  //                      maxX,maxY
+  //----------------------------------
+  //between those is the bounds of the layer
+  //gets the bounds of each zoomlevel in terms of meters
+  _getLayerBounds: function(tileGroups, resolutions){
+    let layerBounds = {};
+    for(let tile in tileGroups){
+      let sCoords = tile.split(":"), pixelCoords = {}, zoomConstant = resolutions[sCoords[2]];
+      pixelCoords.x = +sCoords[0] * 256;
+      pixelCoords.y = +sCoords[1] * 256;
+      pixelCoords.z = +sCoords[2]; //+String same as parseInt(String)
+      if(sCoords[2] in layerBounds){
+        layerBounds[sCoords[2]].extend(L.point(pixelCoords.x * zoomConstant,pixelCoords.y * zoomConstant));
+        layerBounds[sCoords[2]].extend(L.point(((pixelCoords.x+256) * zoomConstant),((pixelCoords.y+256) * zoomConstant)));
+      } else{
+        layerBounds[sCoords[2]] = L.bounds(L.point(pixelCoords.x * zoomConstant,pixelCoords.y * zoomConstant),L.point(((pixelCoords.x+256) * zoomConstant),((pixelCoords.y+256) * zoomConstant)));
+      }
+    }
+
+    return layerBounds;
+  },
+
+  //switch to minus 2 instead of 3, if specified min is > -2 then go with the minus 2
+  _getZoomBounds: function(container, maxZoomBound){
+    if(!container) return {};
+    let meta = M.metaContentToObject(container.getElementsByTagName('tiles')[0].getAttribute('zoom')),zoom = {},tiles = container.getElementsByTagName("tile");
+    zoom.nMax = 0;
+    zoom.nMin = maxZoomBound;
+    for (let i=0;i<tiles.length;i++) {
+      if(+tiles[i].getAttribute('zoom') > zoom.nMax) zoom.nMax = +tiles[i].getAttribute('zoom');
+      if(+tiles[i].getAttribute('zoom') < zoom.nMin) zoom.nMin = +tiles[i].getAttribute('zoom');
+    }
+    zoom.min = zoom.nMin - 2 <= 0? 0: zoom.nMin - 2;
+    zoom.max = maxZoomBound;
+    if(meta.min)zoom.min = +meta.min < (zoom.nMin - 2)?(zoom.nMin - 2):+meta.min;
+    if(meta.max)zoom.max = +meta.max;
+    return zoom;
+  },
+
+  _groupTiles: function (tiles) {
+    let tileMap = {};
+    for (let i=0;i<tiles.length;i++) {
+      let tile = {};
+      tile.row = +tiles[i].getAttribute('row');
+      tile.col = +tiles[i].getAttribute('col');
+      tile.zoom = +tiles[i].getAttribute('zoom');
+      tile.src = tiles[i].getAttribute('src');
+      let tileCode = tile.col+":"+tile.row+":"+tile.zoom;
+      if(tileCode in tileMap){
+        tileMap[tileCode].push(tile);
+      } else{
+        tileMap[tileCode]=[tile];
+      }
+    }
+    return tileMap;
+  },
+});
+
+M.mapMLStaticTileLayer = function(options) {
+  return new M.MapMLStaticTileLayer(options);
+};
 M.MapMLFeatures = L.FeatureGroup.extend({
   /*
    * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.
@@ -3472,137 +3601,4 @@ M.MapMLLayerControl = L.Control.Layers.extend({
 M.mapMlLayerControl = function (layers, options) {
 	return new M.MapMLLayerControl(layers, options);
 };
-
-
-  M.MapMLStaticTileLayer = L.GridLayer.extend({
-
-    initialize: function (options) {
-      let zoomBounds = this._getZoomBounds(options.tileContainer,options.maxZoomBound);
-      options.maxNativeZoom = zoomBounds.nMax;
-      options.minNativeZoom = zoomBounds.nMin;
-      options.maxZoom = zoomBounds.max;
-      options.minZoom = zoomBounds.min;
-      L.setOptions(this, options);
-      this._groups = this._groupTiles(this.options.tileContainer.getElementsByTagName('tile'));
-    },
-
-    onAdd: function(){
-      this._bounds = this._getLayerBounds(this._groups,this._map.options.crs.options.resolutions); //stores meter values of bounds
-      this.isVisible = this._withinBounds(this._map.getPixelBounds(), this._bounds[this._map.getZoom()],this._map.options.crs.options.resolutions,this._map.getZoom());
-      L.GridLayer.prototype.onAdd.call(this,this._map);
-    },
-
-    getEvents: function(){
-      let events = L.GridLayer.prototype.getEvents.call(this,this._map);
-      events.moveend = this._setBoundsFlag;
-      return events;
-    },
-
-
-    //sets the bounds flag of the layer and calls default moveEnd if within bounds
-    //its the zoom level is between the nativeZoom and zoom then it uses the nativeZoom value to get the bound its checking
-    _setBoundsFlag : function(e){
-      let zoomLevel = this._map.getZoom();
-      zoomLevel = zoomLevel > this.options.maxNativeZoom? this.options.maxNativeZoom: zoomLevel;
-      zoomLevel = zoomLevel < this.options.minNativeZoom? this.options.minNativeZoom: zoomLevel;
-      this.isVisible = this._withinBounds(this._map.getPixelBounds(), this._bounds[zoomLevel],this._map.options.crs.options.resolutions, this._map.getZoom());
-      if(!(this.isVisible))return;
-      this.fire('moveend',e,true);
-    },
-
-    //checks if layer bound is within map view
-    _withinBounds : function(mapBound, layerBound, resolutions, zoom){
-      if(!mapBound || !layerBound || !resolutions || zoom === undefined) return false;
-      let zoomConstant = resolutions[zoom];
-      let xMax = mapBound.max.x * zoomConstant, yMax = mapBound.max.y * zoomConstant, xMin = mapBound.min.x * zoomConstant, yMin = mapBound.min.y * zoomConstant;
-      return layerBound.overlaps(L.bounds(L.point(xMin,yMin),L.point(xMax,yMax))) && zoom <= this.options.maxZoom && zoom >= this.options.minZoom;
-    },
-
-    _isValidTile(coords) {
-      return this._groups[this._tileCoordsToKey(coords)];
-    },
-
-    createTile: function (coords) {
-      let tileGroup = this._groups[this._tileCoordsToKey(coords)] || [], tileElem = document.createElement('tile');
-      tileElem.setAttribute("col",coords.x);
-      tileElem.setAttribute("row",coords.y);
-      tileElem.setAttribute("zoom",coords.z);
-      
-      for(let i = 0;i<tileGroup.length;i++){
-        let tile= document.createElement('img');
-        tile.src = tileGroup[i].src;
-        tileElem.appendChild(tile);
-      }
-      return tileElem;
-    },
-
-    //----------------------------------
-    //  minX,minY
-    // 
-    //
-    //
-    //
-    //                      maxX,maxY
-    //----------------------------------
-    //between those is the bounds of the layer
-    //gets the bounds of each zoomlevel in terms of meters
-    _getLayerBounds: function(tileGroups, resolutions){
-      let layerBounds = {};
-      for(let tile in tileGroups){
-        let sCoords = tile.split(":"), pixelCoords = {}, zoomConstant = resolutions[sCoords[2]];
-        pixelCoords.x = +sCoords[0] * 256;
-        pixelCoords.y = +sCoords[1] * 256;
-        pixelCoords.z = +sCoords[2]; //+String same as parseInt(String)
-        if(sCoords[2] in layerBounds){
-          layerBounds[sCoords[2]].extend(L.point(pixelCoords.x * zoomConstant,pixelCoords.y * zoomConstant));
-          layerBounds[sCoords[2]].extend(L.point(((pixelCoords.x+256) * zoomConstant),((pixelCoords.y+256) * zoomConstant)));
-        } else{
-          layerBounds[sCoords[2]] = L.bounds(L.point(pixelCoords.x * zoomConstant,pixelCoords.y * zoomConstant),L.point(((pixelCoords.x+256) * zoomConstant),((pixelCoords.y+256) * zoomConstant)));
-        }
-      }
-
-      return layerBounds;
-    },
-
-    //switch to minus 2 instead of 3, if specified min is > -2 then go with the minus 2
-    _getZoomBounds: function(container, maxZoomBound){
-      if(!container) return {};
-      let meta = M.metaContentToObject(container.getElementsByTagName('tiles')[0].getAttribute('zoom')),zoom = {},tiles = container.getElementsByTagName("tile");
-      zoom.nMax = 0;
-      zoom.nMin = maxZoomBound;
-      for (let i=0;i<tiles.length;i++) {
-        if(+tiles[i].getAttribute('zoom') > zoom.nMax) zoom.nMax = +tiles[i].getAttribute('zoom');
-        if(+tiles[i].getAttribute('zoom') < zoom.nMin) zoom.nMin = +tiles[i].getAttribute('zoom');
-      }
-      zoom.min = zoom.nMin - 2 <= 0? 0: zoom.nMin - 2;
-      zoom.max = maxZoomBound;
-      if(meta.min)zoom.min = +meta.min < (zoom.nMin - 2)?(zoom.nMin - 2):+meta.min;
-      if(meta.max)zoom.max = +meta.max;
-      return zoom;
-    },
-
-    _groupTiles: function (tiles) {
-      let tileMap = {};
-      for (let i=0;i<tiles.length;i++) {
-        let tile = {};
-        tile.row = +tiles[i].getAttribute('row');
-        tile.col = +tiles[i].getAttribute('col');
-        tile.zoom = +tiles[i].getAttribute('zoom');
-        tile.src = tiles[i].getAttribute('src');
-        let tileCode = tile.col+":"+tile.row+":"+tile.zoom;
-        if(tileCode in tileMap){
-          tileMap[tileCode].push(tile);
-        } else{
-          tileMap[tileCode]=[tile];
-        }
-      }
-      return tileMap;
-    },
-  });
-
-  M.mapMLStaticTileLayer = function(options) {
-    return new M.MapMLStaticTileLayer(options);
-  };
-
-
 }(window, document));
