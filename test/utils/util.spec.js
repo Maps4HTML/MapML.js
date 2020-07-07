@@ -1,33 +1,6 @@
 /* global expect, M */
 
 describe("M.Util Tests", () => {
-  let resolutions = [
-    156543.0339,
-    78271.51695,
-    39135.758475,
-    19567.8792375,
-    9783.93961875,
-    4891.969809375,
-    2445.9849046875,
-    1222.9924523438,
-    611.49622617188,
-    305.74811308594,
-    152.87405654297,
-    76.437028271484,
-    38.218514135742,
-    19.109257067871,
-    9.5546285339355,
-    4.7773142669678,
-    2.3886571334839,
-    1.1943285667419,
-    0.59716428337097,
-    0.29858214168549,
-    0.14929107084274,
-    0.074645535421371,
-    0.03732276771068573,
-    0.018661383855342865,
-    0.009330691927671432495
-  ];
   describe("M.parseStylesheetToHTML(mapml,base,container) utility function tests", () => {
 
     var mapmlString = "<mapml><head><style>.css {property:cool}</style></head><body></body></mapml>",
@@ -281,52 +254,5 @@ describe("M.Util Tests", () => {
       expect(output).toEqual({});
     });
   });
-
-  describe("M.pixelToMeterBounds utility function tests", () => {
-
-    test("Null, Null parameters", () => {
-      let output = M.pixelToMeterBounds(null, null);
-      expect(output).toEqual({});
-    });
-    test("Null, float parameters", () => {
-      let output = M.pixelToMeterBounds(null, resolutions[0]);
-      expect(output).toEqual({});
-    });
-    test("bounds, Null parameters", () => {
-      let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
-      let output = M.pixelToMeterBounds(bounds, null);
-      expect(output).toEqual({});
-    });
-    test("bounds, float parameters", () => {
-      let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
-      let output = M.pixelToMeterBounds(bounds, resolutions[0]);
-      expect(output).toEqual(L.bounds(L.point(156543.0339, 156543.0339), L.point(782715.1695000001, 782715.1695000001)));
-    });
-    test("bounds, float parameters", () => {
-      let bounds = L.bounds(L.point(9, 0), L.point(54, 87));
-      let output = M.pixelToMeterBounds(bounds, resolutions[3]);
-      expect(output).toEqual(L.bounds(L.point(176110.9131375, 0), L.point(1056665.478825, 1702405.4936625)));
-    });
-    test("bounds (with null min & max points), float parameters", () => {
-      let bounds = L.bounds(L.point(null, null), L.point(null, null));
-      let output = M.pixelToMeterBounds(bounds, resolutions[3]);
-      expect(output).toEqual({});
-    });
-    test("bounds (with valid min & null max point), float parameters", () => {
-      let bounds = L.bounds(L.point(1, 1), L.point(null, null));
-      let output = M.pixelToMeterBounds(bounds, resolutions[3]);
-      expect(output).toEqual({});
-    });
-
-  });
-
-  describe("M.boundsToMeterBounds utility function tests", () => {
-    test("TILEMATRIX bounds", () => {
-      let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
-      let output = M.boundsToMeterBounds(bounds, 3, resolutions, "TILEMATRIX");
-      expect(output).toEqual(L.bounds(L.point(5009377.0848, 5009377.0848), L.point(25046885.424000002, 25046885.424000002)));
-    });
-  });
-
 });
 

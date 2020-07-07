@@ -618,7 +618,6 @@ M.Util = {
             case "j":
             case "longitude":
             case "column":
-            case "horizontal":
             case "easting":
               units = inputs[i].getAttribute("units");
               bounds.min.x = min;
@@ -629,7 +628,6 @@ M.Util = {
             case "i":
             case "latitude":
             case "row":
-            case "vertical":
             case "northing":
               bounds.min.y = min;
               bounds.max.y = max;
@@ -648,6 +646,7 @@ M.Util = {
   },
 
   boundsToMeterBounds: function(bounds, zoom, resolutions, cs){
+    if(!bounds || !zoom && zoom !== 0 || !resolutions || !cs) return {};
     switch(cs.toUpperCase()){
       case "TILEMATRIX":
         let tileToPixelBounds = L.bounds(L.point(bounds.min.x*256,bounds.min.y*256),L.point(bounds.max.x*256,bounds.max.y*256));
@@ -669,9 +668,9 @@ M.Util = {
     }
   },
 
-  pixelToMeterBounds : function(bound, zoomConstant){
-    if(!bound || !bound.max || !bound.min ||zoomConstant === undefined || zoomConstant === null || zoomConstant instanceof Object) return {};
-    let xMax = bound.max.x * zoomConstant, yMax = bound.max.y * zoomConstant, xMin = bound.min.x * zoomConstant, yMin = bound.min.y * zoomConstant;
+  pixelToMeterBounds : function(bound, resolution){
+    if(!bound || !bound.max || !bound.min ||resolution === undefined || resolution === null || resolution instanceof Object) return {};
+    let xMax = bound.max.x * resolution, yMax = bound.max.y * resolution, xMin = bound.min.x * resolution, yMin = bound.min.y * resolution;
     return L.bounds(L.point(xMin,yMin),L.point(xMax,yMax));
   },
   //meta content is the content attribute of meta
