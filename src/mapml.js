@@ -1995,8 +1995,18 @@ M.TemplatedImageLayer =  L.Layer.extend({
       let mapZoom = this._map.getZoom();
       let mapBounds = M.pixelToMeterBounds(this._map.getPixelBounds(),this._map.options.crs.options.resolutions[mapZoom]);
       this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && this.layerBounds.overlaps(mapBounds);
-      if(!(this.isVisible))return;
+      if(!(this.isVisible)){
+        this._clearLayer();
+        return;
+      }
       this._onMoveEnd();
+    },
+
+    _clearLayer: function(){
+      let containerImages = this._container.querySelectorAll('img');
+      for(let i = 0; i< containerImages.length;i++){
+        this._container.removeChild(containerImages[i]);
+      }
     },
 
     _onMoveEnd: function() {
