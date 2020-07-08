@@ -66,34 +66,34 @@ describe("M.Util Bounds Related Tests", () => {
 
   describe("M.boundsToMeterBounds utility function tests", () => {
     test("Null bounds", () => {
-      let output = M.boundsToMeterBounds(null, 3, resolutions, "TILEMATRIX");
+      let output = M.boundsToMeterBounds(null, 3, resolutions, "CBMTILE", "TILEMATRIX");
       expect(output).toEqual({});
     });
     test("Tile bounds, null ", () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
-      let output = M.boundsToMeterBounds(bounds, null, null, null);
+      let output = M.boundsToMeterBounds(bounds, null, null, null, null);
       expect(output).toEqual({});
     });
     test("Lowercase units bounds", () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
-      let output = M.boundsToMeterBounds(bounds, 3, resolutions, "tilematrix");
+      let output = M.boundsToMeterBounds(bounds, 3, resolutions, "CBMTILE", "tilematrix");
       expect(output).toEqual(L.bounds(L.point(5009377.0848, 5009377.0848), L.point(25046885.424000002, 25046885.424000002)));
     });
     test("TILEMATRIX bounds", () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
-      let output = M.boundsToMeterBounds(bounds, 3, resolutions, "TILEMATRIX");
+      let output = M.boundsToMeterBounds(bounds, 3, resolutions, "CBMTILE", "TILEMATRIX");
       expect(output).toEqual(L.bounds(L.point(5009377.0848, 5009377.0848), L.point(25046885.424000002, 25046885.424000002)));
     });
     test("PCRS bounds ", () => {
       let bounds = L.bounds(L.point(1, 1), L.point(559, 559));
-      let output = M.boundsToMeterBounds(bounds, 0, resolutions, "pcrs");
+      let output = M.boundsToMeterBounds(bounds, 0, resolutions, "CBMTILE", "pcrs");
       expect(output).toEqual(L.bounds(L.point(1, 1), L.point(559, 559)));
     });
-    /*     test("GCRS bounds ", () => {
-          let bounds = L.bounds(L.point(1, 1), L.point(559, 559));
-          let output = M.boundsToMeterBounds(bounds, 0, resolutions, "GCrs");
-          expect(output).toEqual(L.bounds(L.point(1, 1), L.point(559, 559)));
-        }); */
+    test("GCRS bounds ", () => {
+      let bounds = L.bounds(L.point(1, 1), L.point(15, 15));
+      let output = M.boundsToMeterBounds(bounds, 0, resolutions, "CBMTILE", "GCrs");
+      expect(output).toEqual("Values dont seem accurate");
+    });
   });
 
   //template format = 
@@ -106,7 +106,9 @@ describe("M.Util Bounds Related Tests", () => {
     test("Valid template with 3 inputs, tilematrix", () => {
       let template = {};
       let inputContainer = document.createElement("div");
-      inputContainer.innerHTML = '<input name="zoomLevel" type="zoom" value="1" min="1" max="2"><input name="row" type="location" axis="row" units="tilematrix" min="0" max="2"><input name="col" type="location" axis="column" units="tilematrix" min="0" max="2">';
+      inputContainer.innerHTML = '<input name="zoomLevel" type="zoom" value="1" min="1" max="2">';
+      inputContainer.innerHTML += '<input name="row" type="location" axis="row" units="tilematrix" min="0" max="2">';
+      inputContainer.innerHTML += '<input name="col" type="location" axis="column" units="tilematrix" min="0" max="2">';
       template.values = inputContainer.querySelectorAll("input");
       template.zoomBounds = { min: "0", max: "5" };
       template.projection = "WGS84";
@@ -119,8 +121,8 @@ describe("M.Util Bounds Related Tests", () => {
       let template = {};
       let inputContainer = document.createElement("div");
       inputContainer.innerHTML = '<input name="zoomLevel" type="zoom" value="2" min="1" max="5">';
-      inputContainer.innerHTML += '<input name="row" type="location" axis="row" units="pcrs" min="5" max="10">';
-      inputContainer.innerHTML += '<input name="col" type="location" axis="column" units="pcrs" min="5" max="10">';
+      inputContainer.innerHTML += '<input name="row" type="location" axis="northing" units="pcrs" min="5" max="10">';
+      inputContainer.innerHTML += '<input name="col" type="location" axis="easting" units="pcrs" min="5" max="10">';
       template.values = inputContainer.querySelectorAll("input");
       template.zoomBounds = { min: "1", max: "16" };
       template.projection = "WGS84";
@@ -164,6 +166,60 @@ describe("M.Util Bounds Related Tests", () => {
       let extractedBounds = M.extractInputBounds(template);
 
       expect(extractedBounds).toEqual({ bounds: { max: { x: 500, y: 500 }, min: { x: 0, y: 0 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 15, minNativeZoom: 3, minZoom: 2 } });
+    });
+    test("Template with missing easting input, pcrs", () => {
+      let template = {};
+      let inputContainer = document.createElement("div");
+      inputContainer.innerHTML = '<input name="zoomLevel" type="zoom" value="2" min="1" max="5">';
+      inputContainer.innerHTML += '<input name="row" type="location" axis="northing" units="pcrs" min="5" max="10">';
+      template.values = inputContainer.querySelectorAll("input");
+      template.zoomBounds = { min: "1", max: "16" };
+      template.projection = "WGS84";
+
+      let extractedBounds = M.extractInputBounds(template);
+
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 512, y: 10 }, min: { x: 0, y: 5 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
+    });
+    test("Template with missing easting and northing input", () => {
+      let template = {};
+      let inputContainer = document.createElement("div");
+      inputContainer.innerHTML = '<input name="zoomLevel" type="zoom" value="2" min="1" max="5">';
+      template.values = inputContainer.querySelectorAll("input");
+      template.zoomBounds = { min: "1", max: "12" };
+      template.projection = "WGS84";
+
+      let extractedBounds = M.extractInputBounds(template);
+
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 512, y: 256 }, min: { x: 0, y: 0 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 12, minNativeZoom: 1, minZoom: 1 } });
+    });
+    test("Template with 3 inputs missing", () => {
+      let template = {};
+      let inputContainer = document.createElement("div");
+      template.values = inputContainer.querySelectorAll("input");
+      template.zoomBounds = { min: "3", max: "12" };
+      template.projection = "WGS84";
+
+      let extractedBounds = M.extractInputBounds(template);
+
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 512, y: 256 }, min: { x: 0, y: 0 } }, zoomBounds: { maxNativeZoom: 22, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
+    });
+    test("Template with no projection", () => {
+      let template = {};
+      let inputContainer = document.createElement("div");
+      inputContainer.innerHTML = '<input name="zoomLevel" type="zoom" value="1" min="1" max="2">';
+      inputContainer.innerHTML += '<input name="row" type="location" axis="row" units="tilematrix" min="0" max="2">';
+      inputContainer.innerHTML += '<input name="col" type="location" axis="column" units="tilematrix" min="0" max="2">';
+      template.values = inputContainer.querySelectorAll("input");
+      template.zoomBounds = { min: "0", max: "5" };
+
+      let extractedBounds = M.extractInputBounds(template);
+
+      expect(extractedBounds).toEqual({});
+    });
+    test("Null template", () => {
+      let extractedBounds = M.extractInputBounds(null);
+
+      expect(extractedBounds).toEqual({});
     });
   });
 

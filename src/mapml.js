@@ -600,8 +600,9 @@ window.M = M;
 }());
 M.Util = {  
   extractInputBounds: function(template){
+    if(!template || !template.hasOwnProperty("projection")) return {};
     let inputs = template.values, projection = template.projection;
-    let bounds = M[projection].getProjectedBounds(0), value = 0, nMinZoom = 0, nMaxZoom = M[projection].options.resolutions.length, units ="PCRS";
+    let bounds = this[projection].getProjectedBounds(0), value = 0, nMinZoom = 0, nMaxZoom = this[projection].options.resolutions.length, units ="PCRS";
     for(let i=0;i<inputs.length;i++){
       let count = 0
       switch(inputs[i].getAttribute("type")){
@@ -642,10 +643,10 @@ M.Util = {
       if(count >= 3) break;
     }
     let zoomBoundsFormatted = {minZoom:+template.zoomBounds.min,maxZoom:+template.zoomBounds.max,minNativeZoom:nMinZoom,maxNativeZoom:nMaxZoom};
-    return {zoomBounds:zoomBoundsFormatted,bounds:M.boundsToMeterBounds(bounds, value,M[template.projection].options.resolutions,units)};
+    return {zoomBounds:zoomBoundsFormatted,bounds:this.boundsToMeterBounds(bounds, value,M[template.projection].options.resolutions,template.projection,units)};
   },
 
-  boundsToMeterBounds: function(bounds, zoom, resolutions, cs){
+  boundsToMeterBounds: function(bounds, zoom, resolutions, projection,cs){
     if(!bounds || !zoom && zoom !== 0 || !resolutions || !cs) return {};
     switch(cs.toUpperCase()){
       case "TILEMATRIX":
@@ -659,7 +660,9 @@ M.Util = {
         return M.pixelToMeterBounds(bounds,resolutions[zoom]);
         break;
       case "GCRS":
-        let gcrsToPixelBounds = L.bounds(L.Map.project(bounds.min,+zoom),L.Map.project(bounds.max,+zoom));
+        let latLngBounds = L.latLngBounds(L.latLng(bounds.min.x,bounds.max.y),L.latLng(bounds.max.x,bounds.min.y));
+        let minPoint = this[projection].project(latLngBounds._southWest,+zoom), maxPoint = this[projection].project(latLngBounds._northEast,+zoom);
+        let gcrsToPixelBounds = L.bounds(minPoint,maxPoint);
         return M.pixelToMeterBounds(gcrsToPixelBounds,resolutions[zoom]);
         break;
       default:
