@@ -1056,33 +1056,41 @@ M.MapMLLayer = L.Layer.extend({
                 }
               }, this);
         }
-        this._map.options.mapEl.getBounds = this._getMapBounds;
+        this._setLayerElBounds();
         this.setZIndex(this.options.zIndex);
         this.getPane().appendChild(this._container);
     },
 
-    _getMapBounds: function(){
-      let layers = Object.keys(this._map._layers);
-      let bounds, zoomBounds;
-      for(let i =0; i< layers.length;i++){
-        if(this._map._layers[layers[i]].layerBounds){
-          if(!bounds){
-            bounds = this._map._layers[layers[i]].layerBounds;
-          }else {
-            bounds.extend(this._map._layers[layers[i]].layerBounds.min);
-            bounds.extend(this._map._layers[layers[i]].layerBounds.max);
+    //check if layer has bounds before setting the bounds if !bounds
+    //needs further implementation
+    _setLayerElBounds: function(){
+      var bounds;
+      let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
+      layerTypes.forEach((type) =>{
+        if(this[type]){
+          switch(type){
+            case "_templatedLayer":
+              for(let j =0;j<this[type]._templates.length;j++){
+                if(!bounds){
+                  bounds = {bounds:{units:this.options.mapprojection==="WGS84"?"LatLng":"Meters",...this[type]._templates[j].layer.layerBounds},...this[type]._templates[j].layer.zoomBounds};
+                } else {
+                  bounds.bounds.bounds.extend(this[type]._templates[j].layer.layerBounds.min);
+                bounds.bounds.bounds.extend(this[type]._templates[j].layer.layerBounds.max);
+                }
+              }
+            break;
+            default:
+              if(!bounds){
+                bounds = {bounds:{units:this.options.mapprojection==="WGS84"?"LatLng":"Meters",...this[type].layerBounds},...this[type].zoomBounds};
+              } else{
+                bounds.bounds.bounds.extend(this[type].layerBounds.min);
+                bounds.bounds.bounds.extend(this[type].layerBounds.max);
+              }
+            break;
           }
         }
-        if(this._map._layers[layers[i]].zoomBounds){
-          if(!zoomBounds){
-            zoomBounds = {minZoom:this._map._layers[layers[i]].zoomBounds.minZoom, maxZoom:this._map._layers[layers[i]].zoomBounds.maxZoom};
-          }else {
-            if(this._map._layers[layers[i]].zoomBounds.minZoom < zoomBounds.minZoom) zoomBounds.minZoom = this._map._layers[layers[i]].zoomBounds.minZoom;
-            if(this._map._layers[layers[i]].zoomBounds.maxZoom > zoomBounds.maxZoom) zoomBounds.maxZoom = this._map._layers[layers[i]].zoomBounds.maxZoom;
-          }
-        }
-      }
-      return {bounds:{units:this._map._layers[layers[0]].options.mapprojection==="WGS84"?"decimal degrees":"meters",...bounds},...zoomBounds};
+      });
+      this._layerEl = bounds;
     },
 
     addTo: function (map) {
