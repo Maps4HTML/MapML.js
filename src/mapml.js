@@ -647,7 +647,7 @@ M.Util = {
   },
 
   boundsToMeterBounds: function(bounds, zoom, resolutions, projection,cs){
-    if(!bounds || !zoom && zoom !== 0 || !resolutions || !cs) return {};
+    if(!bounds || !zoom && +zoom !== 0 || !resolutions || !cs) return {};
     switch(cs.toUpperCase()){
       case "TILEMATRIX":
         let tileToPixelBounds = L.bounds(L.point(bounds.min.x*256,bounds.min.y*256),L.point(bounds.max.x*256,bounds.max.y*256));
@@ -1078,7 +1078,7 @@ M.MapMLLayer = L.Layer.extend({
               break;
             default:
               if(this[type].layerBounds){
-                if(!bounds){
+                if(!localBounds){
                   localBounds = {bounds:{units:this.options.mapprojection==="WGS84"?"LatLng":"Meters",...this[type].layerBounds},...this[type].zoomBounds};
                 } else{
                   localBounds.bounds.extend(this[type].layerBounds.min);
@@ -1135,7 +1135,6 @@ M.MapMLLayer = L.Layer.extend({
         L.DomUtil.remove(this._container);
         if(this._staticTileLayer){
           map.removeLayer(this._staticTileLayer);
-          //this._staticTileLayer = null;
         }
         map.removeLayer(this._mapmlvectors);
         map.removeLayer(this._imageLayer);
@@ -3486,7 +3485,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
         let projection = M.metaContentToObject(container.querySelector('meta[name=projection]').getAttribute('content'));
         let resolutions = M[projection.content].options.resolutions, zoom = M.metaContentToObject(container.querySelector('meta[name=zoom]').getAttribute('content')).value;
         let meta = M.metaContentToObject(container.querySelector('meta[name=bounds]').getAttribute('content'));
-        return M.boundsToMeterBounds(L.bounds(L.point(+meta.topLeftVertical,+meta.topLeftHorizontal),L.point(+meta.bottomRightVertical,+meta.bottomRightHorizontal)),zoom, resolutions,cs);
+        return M.boundsToMeterBounds(L.bounds(L.point(+meta.topLeftVertical,+meta.topLeftHorizontal),L.point(+meta.bottomRightVertical,+meta.bottomRightHorizontal)),zoom, resolutions,projection.content,cs);
       } catch (error){
         return null;
       }
@@ -3935,9 +3934,6 @@ M.mapMlLayerControl = function (layers, options) {
         tile.src = tileGroup[i].src;
         tileElem.appendChild(tile);
       }
-      //let temp = document.createElement('p');
-      //temp.innerText = `x:${coords.x}\ny:${coords.y}\nz:${coords.z}`
-      //tileElem.appendChild(temp);
       return tileElem;
     },
 
@@ -3965,22 +3961,6 @@ M.mapMlLayerControl = function (layers, options) {
       }
 
       return layerBounds;
-
-      //if needed to get global bounds of tiles rather than individual ones for each layer use this
-/*       let maxX =0,maxY=0,minX=6456345,minY=645645;
-      for(let i =0;i<Object.keys(tileGroups).length;i++){
-        let coordsString = Object.keys(tileGroups)[i].split(":");
-        //replace ["CBMTILE"] with the projection type of this layer/map
-        let x = (parseInt(coordsString[0])*256) * this.options.TCRS.resolutions[parseInt(coordsString[2])];
-        let y = (parseInt(coordsString[1])*256) * this.options.TCRS.resolutions[parseInt(coordsString[2])];
-        let xm = ((parseInt(coordsString[0])+1)*256) * this.options.TCRS.resolutions[parseInt(coordsString[2])];
-        let ym = ((parseInt(coordsString[1])+1)*256) * this.options.TCRS.resolutions[parseInt(coordsString[2])];
-        if(xm > maxX) maxX = xm;
-        if(x < minX) minX = x;
-        if(ym > maxY) maxY = ym;
-        if(y < minY) minY = y; 
-      }
-      return L.bounds(L.point(minX,minY),L.point(maxX,maxY)); */
     },
 
     //switch to minus 2 instead of 3, if specified min is > -2 then go with the minus 2

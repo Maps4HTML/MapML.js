@@ -119,7 +119,14 @@ describe("MapMLStaticTileLayer Tests", function () {
     });
     test("max=null,min=3,nativeMax=20,nativeMin=4", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="min=3"><tile zoom="4" row="18" col="17" src="data/cbmt/2/c11_r12.png"></tile><tile zoom="5" row="10" col="11" src="data/cbmt/2/c11_r10.png"></tile><tile zoom="20" row="11" col="9" src="data/cbmt/2/c9_r11.png"></tile><tile zoom="18" row="11" col="9" src="data/cbmt/2/c10_r11.png"></tile><tile zoom="18" row="11" col="9" src="data/cbmt/2/c11_r11.png"></tile></tiles>';
+      tileContainer.innerHTML = '<tiles zoom="min=3">';
+      tileContainer.innerHTML += '<tile zoom="4" row="18" col="17" src="data/cbmt/2/c11_r12.png">';
+      tileContainer.innerHTML += '</tile><tile zoom="5" row="10" col="11" src="data/cbmt/2/c11_r10.png">';
+      tileContainer.innerHTML += '</tile><tile zoom="20" row="11" col="9" src="data/cbmt/2/c9_r11.png">';
+      tileContainer.innerHTML += '</tile><tile zoom="18" row="11" col="9" src="data/cbmt/2/c10_r11.png">';
+      tileContainer.innerHTML += '</tile><tile zoom="18" row="11" col="9" src="data/cbmt/2/c11_r11.png">';
+      tileContainer.innerHTML += '</tile></tiles>';
+
       const layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",
@@ -127,10 +134,10 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 26,
       });
       let zoomBounds = layer._getZoomBounds(tileContainer, 26);
-      expect(zoomBounds.nMax).toEqual(20);
-      expect(zoomBounds.nMin).toEqual(4);
-      expect(zoomBounds.max).toEqual(26);
-      expect(zoomBounds.min).toBe(3);
+      expect(zoomBounds.maxNativeZoom).toEqual(20);
+      expect(zoomBounds.minNativeZoom).toEqual(4);
+      expect(zoomBounds.maxZoom).toEqual(26);
+      expect(zoomBounds.minZoom).toBe(3);
     });
     test("max=0,min=0,nativeMax=0,nativeMin=0", function () {
       let tileContainer = document.createElement("div");
@@ -142,10 +149,10 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 26,
       });
       let zoomBounds = layer._getZoomBounds(tileContainer, 26);
-      expect(zoomBounds.nMax).toEqual(0);
-      expect(zoomBounds.nMin).toEqual(0);
-      expect(zoomBounds.max).toEqual(0);
-      expect(zoomBounds.min).toEqual(0);
+      expect(zoomBounds.maxNativeZoom).toEqual(0);
+      expect(zoomBounds.minNativeZoom).toEqual(0);
+      expect(zoomBounds.maxZoom).toEqual(0);
+      expect(zoomBounds.minZoom).toEqual(0);
     });
     test("max=5,min=18,nativeMax=3,nativeMin=2", function () {
       let tileContainer = document.createElement("div");
@@ -157,10 +164,10 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 26,
       });
       let zoomBounds = layer._getZoomBounds(tileContainer, 26);
-      expect(zoomBounds.nMax).toEqual(3);
-      expect(zoomBounds.nMin).toEqual(2);
-      expect(zoomBounds.max).toEqual(18);
-      expect(zoomBounds.min).toEqual(5);
+      expect(zoomBounds.maxNativeZoom).toEqual(3);
+      expect(zoomBounds.minNativeZoom).toEqual(2);
+      expect(zoomBounds.maxZoom).toEqual(18);
+      expect(zoomBounds.minZoom).toEqual(5);
     });
     test("max=string,min=string,nativeMax=19,nativeMin=2", function () {
       let tileContainer = document.createElement("div");
