@@ -604,7 +604,7 @@ M.Util = {
     let inputs = template.values, projection = template.projection;
     let bounds = this[projection].getProjectedBounds(0), value = 0, nMinZoom = 0, nMaxZoom = this[projection].options.resolutions.length, units ="PCRS";
     for(let i=0;i<inputs.length;i++){
-      let count = 0
+      let count = 0;
       switch(inputs[i].getAttribute("type")){
         case "zoom":
           nMinZoom = +inputs[i].getAttribute("min");
@@ -632,7 +632,7 @@ M.Util = {
             case "northing":
               bounds.min.y = min;
               bounds.max.y = max;
-              count++
+              count++;
             break;
             default:
             break;
@@ -652,22 +652,17 @@ M.Util = {
       case "TILEMATRIX":
         let tileToPixelBounds = L.bounds(L.point(bounds.min.x*256,bounds.min.y*256),L.point(bounds.max.x*256,bounds.max.y*256));
         return M.pixelToMeterBounds(tileToPixelBounds,resolutions[zoom]);
-        break;
       case "PCRS":
         return bounds;
-        break;
       case "TCRS" || "TILE":
         return M.pixelToMeterBounds(bounds,resolutions[zoom]);
-        break;
       case "GCRS":
         let latLngBounds = L.latLngBounds(L.latLng(bounds.min.x,bounds.max.y),L.latLng(bounds.max.x,bounds.min.y));
         let minPoint = this[projection].project(latLngBounds._southWest,+zoom), maxPoint = this[projection].project(latLngBounds._northEast,+zoom);
         let gcrsToPixelBounds = L.bounds(minPoint,maxPoint);
         return M.pixelToMeterBounds(gcrsToPixelBounds,resolutions[zoom]);
-        break;
       default:
         return {};
-        break;
     }
   },
 
@@ -1053,6 +1048,7 @@ M.MapMLLayer = L.Layer.extend({
                     _leafletLayer: this,
                     crs: this.crs
                   }).addTo(map);
+                  this._setLayerElBounds();
                 }
               }, this);
         }
@@ -1061,36 +1057,40 @@ M.MapMLLayer = L.Layer.extend({
         this.getPane().appendChild(this._container);
     },
 
-    //check if layer has bounds before setting the bounds if !bounds
-    //needs further implementation
     _setLayerElBounds: function(){
-      var bounds;
+      var localBounds;
       let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
+      /* jshint ignore:start */
       layerTypes.forEach((type) =>{
         if(this[type]){
           switch(type){
             case "_templatedLayer":
               for(let j =0;j<this[type]._templates.length;j++){
-                if(!bounds){
-                  bounds = {bounds:{units:this.options.mapprojection==="WGS84"?"LatLng":"Meters",...this[type]._templates[j].layer.layerBounds},...this[type]._templates[j].layer.zoomBounds};
-                } else {
-                  bounds.bounds.bounds.extend(this[type]._templates[j].layer.layerBounds.min);
-                bounds.bounds.bounds.extend(this[type]._templates[j].layer.layerBounds.max);
+                if(this[type]._templates[j].layer.layerBounds){
+                  if(!localBounds){
+                    localBounds = {bounds:{units:this.options.mapprojection==="WGS84"?"LatLng":"Meters",...this[type]._templates[j].layer.layerBounds},...this[type]._templates[j].layer.zoomBounds};
+                  } else {
+                    localBounds.bounds.extend(this[type]._templates[j].layer.layerBounds.min);
+                    localBounds.bounds.extend(this[type]._templates[j].layer.layerBounds.max);
+                  }
                 }
               }
-            break;
+              break;
             default:
-              if(!bounds){
-                bounds = {bounds:{units:this.options.mapprojection==="WGS84"?"LatLng":"Meters",...this[type].layerBounds},...this[type].zoomBounds};
-              } else{
-                bounds.bounds.bounds.extend(this[type].layerBounds.min);
-                bounds.bounds.bounds.extend(this[type].layerBounds.max);
-              }
-            break;
+              if(this[type].layerBounds){
+                if(!bounds){
+                  localBounds = {bounds:{units:this.options.mapprojection==="WGS84"?"LatLng":"Meters",...this[type].layerBounds},...this[type].zoomBounds};
+                } else{
+                  localBounds.bounds.extend(this[type].layerBounds.min);
+                  localBounds.bounds.extend(this[type].layerBounds.max);
+                }
+              } 
+              break;
           }
         }
       });
-      this._layerEl = bounds;
+      /* jshint ignore:end */
+      this._layerEl.bounds = localBounds;
     },
 
     addTo: function (map) {
@@ -2584,7 +2584,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       this.zoomBounds = inputData.zoomBounds;
       this.layerBounds=inputData.bounds;
       this.isVisible = true;
-      options = {...options, ...this.zoomBounds};
+      options = {...options, ...this.zoomBounds}; // jshint ignore:line
       L.setOptions(this, options);
       this._setUpTileTemplateVars(template);
 
