@@ -254,6 +254,5 @@ describe("M.Util Tests", () => {
       expect(output).toEqual({});
     });
   });
-
 });
 

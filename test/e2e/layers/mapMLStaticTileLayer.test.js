@@ -1,4 +1,5 @@
 const playwright = require("playwright");
+const isVisible = require("../layers/isVisible");
 jest.setTimeout(50000);
 (async () => {
   for (const browserType of BROWSER) {
@@ -6,6 +7,7 @@ jest.setTimeout(50000);
     describe(
       "Playwright mapMLStaticTile Layer Tests in " + browserType,
       () => {
+        isVisible.test("mapMLStaticTileLayer.html", 3, 5, browserType);
         beforeAll(async () => {
           browser = await playwright[browserType].launch({
             headless: ISHEADLESS,

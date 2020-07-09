@@ -16,7 +16,7 @@ jest.setTimeout(30000);
         if (browserType === "firefox") {
           await page.waitForNavigation();
         }
-        await page.goto(PATH);
+        await page.goto(PATH + "drag.html");
       });
 
       afterEach(async function () {
