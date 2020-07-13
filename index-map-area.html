@@ -6,27 +6,62 @@
     <title>index-map-area.html</title>
     <script type="module" src="dist/web-map.js"></script>
     <style>
-      html {
+      html,
+      body {
         height: 100%;
-      }
-      body,
-      map {
-        height: inherit;
       }
       * {
         margin: 0;
         padding: 0;
       }
+      
+      /* Specifying the `:defined` selector is recommended to style the map
+      element, such that styles don't apply when fallback content is in use
+      (e.g. when scripting is disabled or when custom/built-in elements isn't
+      supported in the browser). */
+      map[is="web-map"]:defined {
+        /* Responsive map. */
+        /* max-width: 100%; */
+        
+        /* Full viewport. */
+        /* width: 100%; */
+        /* height: 100%; */
+        
+        /* Remove default (native-like) border. */
+        /* border: none; */
+      }
+      
+      /* Pre-style to avoid FOUC of inline layer- and fallback content. */
+      map[is="web-map"]:not(:defined) + img[usemap],
+      map[is="web-map"]:not(:defined) > :not(area):not(.web-map) {
+        display: none;
+      }
+      /* Ensure inline layer content is hidden if custom/built-in elements isn't
+      supported, or if javascript is disabled. This needs to be defined separately
+      from the above, because the `:not(:defined)` selector invalidates the entire
+      declaration in browsers that do not support it. */
+      layer- {
+        display: none;
+      }
     </style>
+    <noscript>
+      <style>
+        /* Ensure client-side image map fallbacks are displayed if custom/built-in
+        elements is supported but javascript is disabled. */
+        map[is="web-map"]:not(:defined) + img[usemap] {
+          display: initial;
+        }
+      </style>
+    </noscript>
   </head>
   <body>
-    <img usemap="#dowslake" src="map1.png" width="700" height="400" alt="Dow's Lake area">
-    <map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" controls hidden>
+    <map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" controls>
       <layer- id="osm" src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked></layer->
       <area is="map-area" id="doughnut" alt="Circle" href="https://example.com/circle/" coords="250,250,25" shape="circle" style="fill: white; stroke: aqua; stroke-width: 5px; fill-opacity: 0;">
       <area is="map-area" id="hole" coords="250,250,7" shape="circle" style="fill: blue; stroke: none; fill-opacity: 0.3;">
       <area is="map-area" id="rect" href="https://example.com/rectangle/" alt="Rectangle" coords="345,290,415,320" shape="rect" style="fill: greenyellow; stroke: blue; stroke-width: 3px; fill-opacity: 0.4;">
       <area is="map-area" id="poly" href="https://example.com/polygon/" alt="Polygon" coords="392,116,430,100,441,128,405,145" shape="poly" style="fill: pink; stroke: blue; stroke-width: 3px; fill-opacity: 0.4;">
     </map>
+    <img usemap="#dowslake" src="map1.png" width="700" height="400" alt="Dow's Lake area">
   </body>
 </html>

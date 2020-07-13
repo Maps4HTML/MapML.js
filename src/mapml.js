@@ -1228,7 +1228,7 @@ M.MapMLLayer = L.Layer.extend({
         }
         label.appendChild(input);
         label.appendChild(name);
-        opacityControlSummaryLabel.innerText = 'opacity';
+        opacityControlSummaryLabel.innerText = 'Opacity';
         opacity.id = "o" + L.stamp(opacity);
         opacityControlSummaryLabel.setAttribute('for', opacity.id);
         opacityControlSummary.appendChild(opacityControlSummaryLabel);

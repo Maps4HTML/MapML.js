@@ -72,22 +72,40 @@ export class MmMapp extends HTMLElement {
   constructor() {
     // Always call super first in constructor
     super();
-    // SUPER IMPORTANT TO SET THIS UP FIRST SO THAT LEAFLET ISN'T WORKING WITH
-    // A HEIGHT=0 BOX BY DEFAULT.
-    this.style.display = "block";
+    
     let tmpl = document.createElement('template');
     tmpl.innerHTML =
     `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
     `<link rel="stylesheet" href="${new URL("leaflet.fullscreen.css", import.meta.url).href}">` +
     `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`;
+    
     let shadowRoot = this.attachShadow({mode: 'open'});
     this._container = document.createElement('div');
-    // you have to include this otherwise you have to use quirks mode,
-    // (by omitting the doctype), which is bad.
-    this._container.style.height = "100%";
+    
+    // Set default styles for the map element.
+    let mapDefaultCSS = document.createElement('style');
+    mapDefaultCSS.innerHTML =
+    `:host {` +
+    `contain: content;` + // Contain layout and paint calculations within the map element.
+    `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
+    `overflow: hidden;` + // Make the map element behave and look more like a native element.
+    `height: 150px;` +
+    `width: 300px;` +
+    `border-width: 2px;` +
+    `border-style: inset;` +
+    `}`;
+    
+    // Hide all (light DOM) children of the map element.
+    let hideElementsCSS = document.createElement('style');
+    hideElementsCSS.innerHTML =
+    `mm-mapp > * {` +
+    `display: none!important;` +
+    `}`;
+
+    shadowRoot.appendChild(mapDefaultCSS);
     shadowRoot.appendChild(tmpl.content.cloneNode(true));
     shadowRoot.appendChild(this._container);
-
+    this.appendChild(hideElementsCSS);
   }
   connectedCallback() {
     if (this.isConnected) {
@@ -112,7 +130,7 @@ export class MmMapp extends HTMLElement {
       }
 
       if (!this.height || this.height !== h) {
-        this._container.style.height = h;
+        this._container.style.height = hpx;
         this.height = h;
       } else {
         this._container.style.height = this.height+"px";
@@ -136,7 +154,7 @@ export class MmMapp extends HTMLElement {
         });
 
         // the attribution control is not optional
-        this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+        this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
 
         // optionally add controls to the map
         if (this.controls) {
