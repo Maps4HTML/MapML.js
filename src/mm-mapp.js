@@ -89,7 +89,7 @@ export class MmMapp extends HTMLElement {
     `contain: content;` + // Contain layout and paint calculations within the map element.
     `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
     `overflow: hidden;` + // Make the map element behave and look more like a native element.
-    `height: 150px;` +
+    `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
     `width: 300px;` +
     `border-width: 2px;` +
     `border-style: inset;` +
