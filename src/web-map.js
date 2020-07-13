@@ -76,7 +76,7 @@ export class WebMap extends HTMLMapElement {
   constructor() {
     // Always call super first in constructor
     super();
-    this.style.display = "block";
+
     let tmpl = document.createElement('template');
     tmpl.innerHTML =
     `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
@@ -84,18 +84,40 @@ export class WebMap extends HTMLMapElement {
     `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`;
 
     const rootDiv = document.createElement('div');
-    // without this you have to omit the doctype, which is bad because
-    // it triggers quirks mode.
-    rootDiv.style.height = "100%";
-    // the map element is inline by default
-    this.style.display = "block";
+    rootDiv.classList.add('web-map');
+
     let shadowRoot = rootDiv.attachShadow({mode: 'open'});
     this._container = document.createElement('div');
-    this._container.style.minWidth = "100%";
-    this._container.style.minHeight = "100%";
+    
+    // Set default styles for the map element.
+    let mapDefaultCSS = document.createElement('style');
+    mapDefaultCSS.innerHTML =
+    `map[is="web-map"] {` +
+    `contain: content;` +  // Contain layout and paint calculations within the map element.
+    `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
+    `overflow: hidden;` + // Make the map element behave and look more like a native element.
+    `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
+    `width: 300px;` +
+    `border-width: 2px;` +
+    `border-style: inset;` +
+    `}` +
+    `map[is="web-map"] .web-map {` +
+    `display: contents;` + // This div doesn't have to participate in layout by generating its own box.
+    `}`;
+    
+    // Hide all (light DOM) children of the map element except for the
+    // `<area>` and `<div class="web-map">` (shadow root host) elements.
+    let hideElementsCSS = document.createElement('style');
+    hideElementsCSS.innerHTML =
+    `map[is="web-map"] > :not(area):not(.web-map) {` +
+    `display: none!important;` +
+    `}`;
+    
     shadowRoot.appendChild(tmpl.content.cloneNode(true));
     shadowRoot.appendChild(this._container);
     this.appendChild(rootDiv);
+    this.appendChild(hideElementsCSS);
+    document.head.insertAdjacentElement('afterbegin', mapDefaultCSS);
   }
   connectedCallback() {
     if (this.isConnected) {
@@ -120,7 +142,7 @@ export class WebMap extends HTMLMapElement {
       }
 
       if (!this.height || this.height !== h) {
-        this._container.style.height = h;
+        this._container.style.height = hpx;
         this.height = h;
       } else {
         this._container.style.height = this.height+"px";
@@ -144,7 +166,7 @@ export class WebMap extends HTMLMapElement {
         });
 
         // the attribution control is not optional
-        this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+        this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
 
         // optionally add controls to the map
         if (this.controls) {

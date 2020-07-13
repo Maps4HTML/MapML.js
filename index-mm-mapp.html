@@ -6,18 +6,52 @@
     <title>index-mm-mapp.html</title>
     <script type="module" src="dist/mm-mapp.js"></script>
     <style>
-      html {
+      html,
+      body {
         height: 100%;
       }
       * {
-        margin: 0px;
-        padding: 0px;
+        margin: 0;
+        padding: 0;
       }
-      body,
-      mm-mapp {
-        height: inherit;
+      
+      /* Specifying the `:defined` selector is recommended to style the map
+      element, such that styles don't apply when fallback content is in use
+      (e.g. when scripting is disabled or when custom/built-in elements isn't
+      supported in the browser). */
+      mm-mapp:defined {
+        /* Responsive map. */
+        /* max-width: 100%; */
+        
+        /* Full viewport. */
+        /* width: 100%; */
+        /* height: 100%; */
+        
+        /* Remove default (native-like) border. */
+        /* border: none; */
+      }
+      
+      /* Pre-style to avoid FOUC of inline layer- and fallback content. */
+      mm-mapp:not(:defined) > * {
+        display: none;
+      }
+      /* Ensure inline layer content is hidden if custom/built-in elements isn't
+      supported, or if javascript is disabled. This needs to be defined separately
+      from the above, because the `:not(:defined)` selector invalidates the entire
+      declaration in browsers that do not support it. */
+      layer- {
+        display: none;
       }
     </style>
+    <noscript>
+      <style>
+        /* Ensure fallback content (children of the map element) is displayed if
+        custom/built-in elements is supported but javascript is disabled. */
+        mm-mapp:not(:defined) > :not(layer-) {
+          display: initial;
+        }
+      </style>
+    </noscript>
   </head>
   <body>
     <mm-mapp projection="CBMTILE" zoom="2" lat="45" lon="-90" controls controlslist="nofullscreen">

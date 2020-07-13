@@ -91,10 +91,6 @@ export class MapLayer extends HTMLElement {
     }
   }
   connectedCallback() {
-    // this avoids displaying inline mapml content, such as features and inputs
-    // but does not avoid FOUC. 
-    // To avoid FOUC, use <layer- style="display: none"...>...</layer->
-    this.style = "display: none";
     this._ready();
     // if the map has been attached, set this layer up wrt Leaflet map
     if (this.parentNode._map) {

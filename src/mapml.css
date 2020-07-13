@@ -1,3 +1,11 @@
+.leaflet-container {
+  /* Override the `background-color` set by leaflet.css, enables inheritance from
+     the map or <body> element (same as iframes) to give the author more control. */
+  background-color: transparent;
+  max-height: 100%;
+  max-width: 100%;
+}
+
 /* this is required by tiles which are actually divs with multiple images in them */
 .leaflet-tile img {
         position: absolute;
@@ -41,4 +49,32 @@
 }
 .leaflet-control-layers label {
     display: inline;
+}
+
+.leaflet-control-layers.leaflet-control {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+/* Disable dragging of controls. */
+.leaflet-control a {
+  -webkit-user-drag: none;
+}
+
+/* Hide unintended highlighting of controls from clicking the map display in
+   quick succession. This is a workaround for `user-select: contain`, since it has
+   virtually no browser support: https://www.chromestatus.com/feature/5730263904550912. */
+.leaflet-control a::selection,
+.leaflet-popup-close-button::selection,
+.leaflet-control-attribution::selection {
+  background-color: transparent;
+}
+
+/* Restore the default focus outline of UA stylesheets,
+   which Leaflet unfortunately removes (https://github.com/Leaflet/Leaflet/issues/6986). */
+.leaflet-container :focus {
+  outline-color: -webkit-focus-ring-color!important;
+  outline-style: auto!important;
+  outline-width: thin!important;
+  outline: revert!important;
 }
