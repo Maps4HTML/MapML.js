@@ -1,5 +1,5 @@
 describe("M.Util Bounds Related Tests", () => {
-  let resolutions = [
+  let osmtileResolutions = [
     156543.0339,
     78271.51695,
     39135.758475,
@@ -26,73 +26,102 @@ describe("M.Util Bounds Related Tests", () => {
     0.018661383855342865,
     0.009330691927671432495
   ];
-  describe("M.pixelToMeterBounds utility function tests", () => {
+
+  let cbmtileResolution = [
+    38364.660062653464,
+    22489.62831258996,
+    13229.193125052918,
+    7937.5158750317505,
+    4630.2175937685215,
+    2645.8386250105837,
+    1587.5031750063501,
+    926.0435187537042,
+    529.1677250021168,
+    317.50063500127004,
+    185.20870375074085,
+    111.12522225044451,
+    66.1459656252646,
+    38.36466006265346,
+    22.48962831258996,
+    13.229193125052918,
+    7.9375158750317505,
+    4.6302175937685215,
+    2.6458386250105836,
+    1.5875031750063502,
+    0.92604351875370428,
+    0.52916772500211673,
+    0.31750063500127002,
+    0.18520870375074083,
+    0.11112522225044451,
+    0.066145965625264591
+  ];
+  describe("M.pixelToPCRSBounds utility function tests", () => {
 
     test("Null, Null parameters", () => {
-      let output = M.pixelToMeterBounds(null, null);
-      expect(output).toEqual({});
+      let output = M.pixelToPCRSBounds(null, null);
+      expect(output).toEqual(undefined);
     });
     test("Null, float parameters", () => {
-      let output = M.pixelToMeterBounds(null, resolutions[0]);
-      expect(output).toEqual({});
+      let output = M.pixelToPCRSBounds(null, osmtileResolutions[0]);
+      expect(output).toEqual(undefined);
     });
     test("bounds, Null parameters", () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
-      let output = M.pixelToMeterBounds(bounds, null);
-      expect(output).toEqual({});
+      let output = M.pixelToPCRSBounds(bounds, null);
+      expect(output).toEqual(undefined);
     });
-    test("bounds, float parameters", () => {
+    test("bounds, number parameters", () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
-      let output = M.pixelToMeterBounds(bounds, resolutions[0]);
-      expect(output).toEqual(L.bounds(L.point(156543.0339, 156543.0339), L.point(782715.1695000001, 782715.1695000001)));
+      let output = M.pixelToPCRSBounds(bounds, 0, "CBMTILE");
+      expect(output).toEqual(L.bounds(L.point(-34617435.339937344, 39118176.699686736), L.point(-34463976.699686736, 39271635.339937344)));
     });
-    test("bounds, float parameters", () => {
+    test("bounds, number parameters", () => {
       let bounds = L.bounds(L.point(9, 0), L.point(54, 87));
-      let output = M.pixelToMeterBounds(bounds, resolutions[3]);
-      expect(output).toEqual(L.bounds(L.point(176110.9131375, 0), L.point(1056665.478825, 1702405.4936625)));
+      let output = M.pixelToPCRSBounds(bounds, 3, "OSMTILE");
+      expect(output).toEqual(L.bounds(L.point(-19861397.4296202, 18335102.8488218), L.point(-18980842.86377497, 20037508.342789244)));
     });
     test("bounds (with null min & max points), float parameters", () => {
       let bounds = L.bounds(L.point(null, null), L.point(null, null));
-      let output = M.pixelToMeterBounds(bounds, resolutions[3]);
-      expect(output).toEqual({});
+      let output = M.pixelToPCRSBounds(bounds, 3, "CBMTILE");
+      expect(output).toEqual(undefined);
     });
     test("bounds (with valid min & null max point), float parameters", () => {
       let bounds = L.bounds(L.point(1, 1), L.point(null, null));
-      let output = M.pixelToMeterBounds(bounds, resolutions[3]);
-      expect(output).toEqual({});
+      let output = M.pixelToPCRSBounds(bounds, 3, "OSMTILE");
+      expect(output).toEqual(undefined);
     });
 
   });
 
-  describe("M.boundsToMeterBounds utility function tests", () => {
+  describe("M.boundsToPCRSBounds utility function tests", () => {
     test("Null bounds", () => {
-      let output = M.boundsToMeterBounds(null, 3, resolutions, "CBMTILE", "TILEMATRIX");
-      expect(output).toEqual({});
+      let output = M.boundsToPCRSBounds(null, 3, "CBMTILE", "TILEMATRIX");
+      expect(output).toEqual(undefined);
     });
     test("Tile bounds, null ", () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
-      let output = M.boundsToMeterBounds(bounds, null, null, null, null);
-      expect(output).toEqual({});
+      let output = M.boundsToPCRSBounds(bounds, null, null, null);
+      expect(output).toEqual(undefined);
     });
     test("Lowercase units bounds", () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
-      let output = M.boundsToMeterBounds(bounds, 3, resolutions, "CBMTILE", "tilematrix");
-      expect(output).toEqual(L.bounds(L.point(5009377.0848, 5009377.0848), L.point(25046885.424000002, 25046885.424000002)));
+      let output = M.boundsToPCRSBounds(bounds, 3, "CBMTILE", "tilematrix");
+      expect(output).toEqual(L.bounds(L.point(-32623795.935991872, 29149979.679959357), L.point(-24495779.679959357, 37277995.93599187)));
     });
     test("TILEMATRIX bounds", () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
-      let output = M.boundsToMeterBounds(bounds, 3, resolutions, "CBMTILE", "TILEMATRIX");
-      expect(output).toEqual(L.bounds(L.point(5009377.0848, 5009377.0848), L.point(25046885.424000002, 25046885.424000002)));
+      let output = M.boundsToPCRSBounds(bounds, 3, "CBMTILE", "TILEMATRIX");
+      expect(output).toEqual(L.bounds(L.point(-32623795.935991872, 29149979.679959357), L.point(-24495779.679959357, 37277995.93599187)));
     });
     test("PCRS bounds ", () => {
       let bounds = L.bounds(L.point(1, 1), L.point(559, 559));
-      let output = M.boundsToMeterBounds(bounds, 0, resolutions, "CBMTILE", "pcrs");
+      let output = M.boundsToPCRSBounds(bounds, 0, "CBMTILE", "pcrs");
       expect(output).toEqual(L.bounds(L.point(1, 1), L.point(559, 559)));
     });
     test("GCRS bounds ", () => {
       let bounds = L.bounds(L.point(1, 1), L.point(15, 15));
-      let output = M.boundsToMeterBounds(bounds, 0, resolutions, "CBMTILE", "GCrs");
-      expect(output).toEqual("Values dont seem accurate");
+      let output = M.boundsToPCRSBounds(bounds, 0, "CBMTILE", "GCrs");
+      expect(output).toEqual(L.bounds(L.point(11044163.602622755, 6054659.650462182), L.point(8756326.16822687, 3974012.3343449486)));
     });
   });
 
@@ -115,7 +144,7 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 180, y: 180 }, min: { x: 0, y: 0 } }, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 0, y: 90 }, min: { x: -180, y: -90 } }, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
     });
     test("Another valid template with 3 inputs, pcrs", () => {
       let template = {};
@@ -178,7 +207,7 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 512, y: 10 }, min: { x: 0, y: 5 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 720, y: 90 }, min: { x: -180, y: -810 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
     });
     test("Template with missing easting and northing input", () => {
       let template = {};
@@ -190,7 +219,7 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 512, y: 256 }, min: { x: 0, y: 0 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 12, minNativeZoom: 1, minZoom: 1 } });
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 720, y: 90 }, min: { x: -180, y: -810 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 12, minNativeZoom: 1, minZoom: 1 } });
     });
     test("Template with 3 inputs missing", () => {
       let template = {};
@@ -201,7 +230,7 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 512, y: 256 }, min: { x: 0, y: 0 } }, zoomBounds: { maxNativeZoom: 22, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 720, y: 90 }, min: { x: -180, y: -810 } }, zoomBounds: { maxNativeZoom: 22, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
     });
     test("Template with no projection", () => {
       let template = {};
@@ -214,12 +243,12 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({});
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 20037508.342789244, y: 20037508.342789244 }, min: { x: -20037508.342789244, y: -20037508.342789244 } }, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
     });
     test("Null template", () => {
       let extractedBounds = M.extractInputBounds(null);
 
-      expect(extractedBounds).toEqual({});
+      expect(extractedBounds).toEqual(undefined);
     });
   });
 

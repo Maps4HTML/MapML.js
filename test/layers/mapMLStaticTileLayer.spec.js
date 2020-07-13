@@ -110,8 +110,8 @@ describe("MapMLStaticTileLayer Tests", function () {
         className: "tempGridML",
         tileContainer: tileContainer,
         maxZoomBound: 26,
-      })
-      let zoomBounds = layer._getZoomBounds(tileContainer, 26)
+      });
+      let zoomBounds = layer._getZoomBounds(tileContainer, 26);
       expect(zoomBounds.maxNativeZoom).toEqual(3);
       expect(zoomBounds.minNativeZoom).toEqual(2);
       expect(zoomBounds.maxZoom).toEqual(18);

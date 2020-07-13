@@ -26,6 +26,10 @@ app.use(
   "/data/wgs84/0",
   express.static(path.join(__dirname, "e2e/data/tiles/wgs84/0"))
 );
+app.use(
+  "/data/wgs84/1",
+  express.static(path.join(__dirname, "e2e/data/tiles/wgs84/1"))
+);
 
 //lastly loads the dist, but the original src files have priority
 app.use(express.static(path.join(__dirname, "../dist")));
