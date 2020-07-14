@@ -1029,8 +1029,8 @@ M.MapMLLayer = L.Layer.extend({
         // content will be maintained
         
         //only add the layer if there are tiles to be rendered
-        if((!this._staticTileLayer || this._staticTileLayer._container === null) 
-          && this._mapmlTileContainer.getElementsByTagName("tiles").length > 0)
+        if((!this._staticTileLayer || this._staticTileLayer._container === null) && 
+          this._mapmlTileContainer.getElementsByTagName("tiles").length > 0)
         {
           this._staticTileLayer = M.mapMLStaticTileLayer({
             pane:this._container,
@@ -1481,8 +1481,8 @@ M.MapMLLayer = L.Layer.extend({
             if (this.readyState === this.DONE && mapml.querySelector) {
                 var serverExtent = mapml.querySelector('extent') || mapml.querySelector('meta[name=projection]'),
                     projectionMatch = serverExtent && serverExtent.hasAttribute('units') && 
-                    serverExtent.getAttribute('units').toUpperCase() === layer.options.mapprojection 
-                    || serverExtent && serverExtent.hasAttribute('content') && 
+                    serverExtent.getAttribute('units').toUpperCase() === layer.options.mapprojection || 
+                    serverExtent && serverExtent.hasAttribute('content') && 
                     M.metaContentToObject(serverExtent.getAttribute('content')).content ===layer.options.mapprojection,
                     selectedAlternate = !projectionMatch && mapml.querySelector('head link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
