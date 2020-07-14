@@ -255,10 +255,10 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 24,
       });
       let groups = layer._groupTiles(tileContainer.getElementsByTagName('tile'));
-      let result = layer._getLayerBounds(groups, resolutions);
-      expect(result["0"]).toEqual(L.bounds(L.point(80150033.3568, 120225050.0352), L.point(160300066.7136, 160300066.7136)));
-      expect(result["2"]).toEqual(L.bounds(L.point(90168787.5264, 100187541.69600001), L.point(100187541.69600001, 120225050.0352)));
-      expect(result["3"]).toEqual(L.bounds(L.point(85159410.44160001, 90168787.5264), L.point(90168787.5264, 95178164.6112)));
+      let result = layer._getLayerBounds(groups, "OSMTILE");
+      expect(result["0"]).toEqual(L.bounds(L.point(60112525.028367735, -140262558.39952472), L.point(140262558.39952472, -100187541.71394622)));
+      expect(result["2"]).toEqual(L.bounds(L.point(70131279.19976236, -100187541.71394622), L.point(80150033.37115698, -80150033.37115698)));
+      expect(result["3"]).toEqual(L.bounds(L.point(65121902.11406504, -75140656.28545967), L.point(70131279.19976236, -70131279.19976236)));
       expect(result["1"]).toBeFalsy();
     });
     test("Different set of reasonable tiles", function () {
@@ -271,10 +271,10 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 24,
       });
       let groups = layer._groupTiles(tileContainer.getElementsByTagName('tile'));
-      let result = layer._getLayerBounds(groups, resolutions);
-      expect(result["0"]).toEqual(L.bounds(L.point(0, 0), L.point(80150033.3568, 80150033.3568)));
-      expect(result["2"]).toEqual(L.bounds(L.point(110206295.8656, 80150033.3568), L.point(140262558.37440002, 90168787.5264)));
-      expect(result["3"]).toEqual(L.bounds(L.point(60112525.0176, 95178164.6112), L.point(70131279.18720001, 105196918.7808)));
+      let result = layer._getLayerBounds(groups, "OSMTILE");
+      expect(result["0"]).toEqual(L.bounds(L.point(-20037508.342789244, -60112525.028367735), L.point(60112525.028367735, 20037508.342789244)));
+      expect(result["2"]).toEqual(L.bounds(L.point(90168787.5425516, -70131279.19976236), L.point(120225050.05673547, -60112525.028367735)));
+      expect(result["3"]).toEqual(L.bounds(L.point(40075016.68557849, -85159410.4568543), L.point(50093770.85697311, -75140656.28545967)));
       expect(result["1"]).toBeFalsy();
     });
     test("Single tile", function () {
@@ -287,8 +287,8 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 24,
       });
       let groups = layer._groupTiles(tileContainer.getElementsByTagName('tile'));
-      let result = layer._getLayerBounds(groups, resolutions);
-      expect(result["0"]).toEqual(L.bounds(L.point(0, 0), L.point(40075016.6784, 40075016.6784)));
+      let result = layer._getLayerBounds(groups, "OSMTILE");
+      expect(result["0"]).toEqual(L.bounds(L.point(-20037508.342789244, -20037508.342789244), L.point(20037508.342789244, 20037508.342789244)));
       expect(result["1"]).toBeFalsy();
     });
     test("Empty tiles container", function () {
@@ -301,7 +301,7 @@ describe("MapMLStaticTileLayer Tests", function () {
         maxZoomBound: 24,
       });
       let groups = layer._groupTiles(tileContainer.getElementsByTagName('tile'));
-      let result = layer._getLayerBounds(groups, resolutions);
+      let result = layer._getLayerBounds(groups, "OSMTILE");
       expect(result).toEqual({});
     });
   });

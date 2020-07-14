@@ -7,7 +7,7 @@ jest.setTimeout(50000);
     describe(
       "Playwright mapMLStaticTile Layer Tests in " + browserType,
       () => {
-        isVisible.test("mapMLStaticTileLayer.html", 3, 5, browserType);
+        isVisible.test("mapMLStaticTileLayer.html", 3, 6, browserType);
         describe("General Tests " + browserType, () => {
           beforeAll(async () => {
             browser = await playwright[browserType].launch({
@@ -31,7 +31,7 @@ jest.setTimeout(50000);
               "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-static-tile-layer > div",
               (tileGroup) => tileGroup.getElementsByTagName("tile").length
             );
-            expect(tiles).toEqual(3);
+            expect(tiles).toEqual(1);
           });
           test("[" + browserType + "]" + " <layer->.bounds test", async () => {
             const bounds = await page.$eval(
@@ -41,8 +41,8 @@ jest.setTimeout(50000);
             let expectedBounds = {
               bounds: {
                 crs: 'CBMTILE/pcrs',
-                min: { x: 30480060.960121922, y: 33866734.40013547 },
-                max: { x: 40640081.280162565, y: 40640081.280162565 }
+                min: { x: -4175739.0398780815, y: -1330081.280162558 },
+                max: { x: 5984281.280162558, y: 5443265.599864535 }
               },
               maxNativeZoom: 3,
               minNativeZoom: 2,
@@ -59,8 +59,8 @@ jest.setTimeout(50000);
             let expectedBounds = {
               bounds: {
                 crs: 'CBMTILE/pcrs',
-                min: { x: 29464058.92811786, y: 29464058.92811786 },
-                max: { x: 39285411.90415715, y: 39285411.90415715 }
+                min: { x: -5191741.07188214, y: 24588.09584285319 },
+                max: { x: 4629611.904157147, y: 9845941.07188214 }
               },
               maxNativeZoom: 0,
               minNativeZoom: 0,

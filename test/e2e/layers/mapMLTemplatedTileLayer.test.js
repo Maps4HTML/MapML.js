@@ -33,7 +33,7 @@ jest.setTimeout(50000);
                 "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div",
                 (tileGroup) => tileGroup.getElementsByTagName("svg").length
               );
-              expect(tiles).toEqual(8);
+              expect(tiles).toEqual(2);
             });
             test("[" + browserType + "]" + " <layer->.bounds test", async () => {
               const bounds = await page.$eval(
@@ -55,7 +55,7 @@ jest.setTimeout(50000);
                 (layer) => layer.bounds
               );
               let expectedBounds = {
-                bounds: { crs: 'WGS84/pcrs', min: { x: 540, y: 540 }, max: { x: 720, y: 720 } },
+                bounds: { crs: 'WGS84/pcrs', min: { x: 360, y: -630 }, max: { x: 540, y: -450 } },
                 maxNativeZoom: 0,
                 minNativeZoom: 0,
                 minZoom: 0,

@@ -1369,7 +1369,7 @@ M.MapMLLayer = L.Layer.extend({
         }
         label.appendChild(input);
         label.appendChild(name);
-        opacityControlSummaryLabel.innerText = 'opacity';
+        opacityControlSummaryLabel.innerText = 'Opacity';
         opacity.id = "o" + L.stamp(opacity);
         opacityControlSummaryLabel.setAttribute('for', opacity.id);
         opacityControlSummary.appendChild(opacityControlSummaryLabel);
@@ -3357,7 +3357,7 @@ M.MapMLStaticTileLayer = L.GridLayer.extend({
   },
 
   onAdd: function(){
-    this._bounds = this._getLayerBounds(this._groups); //stores meter values of bounds
+    this._bounds = this._getLayerBounds(this._groups,this._map.options.projection); //stores meter values of bounds
     this.layerBounds = this._bounds[Object.keys(this._bounds)[0]];
     for(let key of Object.keys(this._bounds)){
       this.layerBounds.extend(this._bounds[key].min);
@@ -3417,7 +3417,7 @@ M.MapMLStaticTileLayer = L.GridLayer.extend({
   //----------------------------------
   //between those is the bounds of the layer
   //gets the bounds of each zoomlevel in terms of meters
-  _getLayerBounds: function(tileGroups){
+  _getLayerBounds: function(tileGroups, projection){
     let layerBounds = {};
     for(let tile in tileGroups){
       let sCoords = tile.split(":"), pixelCoords = {};
@@ -3434,7 +3434,7 @@ M.MapMLStaticTileLayer = L.GridLayer.extend({
     }
     for(let pixelBounds in layerBounds){
       let zoom = +pixelBounds;
-      layerBounds[pixelBounds] = M.pixelToPCRSBounds(layerBounds[pixelBounds],zoom,this._map.options.projection);//needs to be changed to get projection of layer
+      layerBounds[pixelBounds] = M.pixelToPCRSBounds(layerBounds[pixelBounds],zoom,projection);//needs to be changed to get projection of layer
     }
 
     return layerBounds;

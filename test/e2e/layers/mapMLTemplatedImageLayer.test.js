@@ -53,8 +53,8 @@ jest.setTimeout(50000);
               let expectedBounds = {
                 bounds: {
                   crs: 'CBMTILE/pcrs',
-                  min: { x: 29464058.92811786, y: 29464058.92811786 },
-                  max: { x: 39285411.90415715, y: 39285411.90415715 }
+                  min: { x: -5191741.07188214, y: 24588.09584285319 },
+                  max: { x: 4629611.904157147, y: 9845941.07188214 }
                 },
                 maxNativeZoom: 0,
                 minNativeZoom: 0,
