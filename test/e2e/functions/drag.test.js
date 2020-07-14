@@ -1,7 +1,4 @@
 const playwright = require("playwright");
-//install if needed later
-//const { JSDOM } = require("jsdom");
-//const domToPlaywright = require("dom-to-playwright").default;
 jest.setTimeout(30000);
 (async () => {
   for (const browserType of BROWSER) {
@@ -20,7 +17,6 @@ jest.setTimeout(30000);
       });
 
       afterEach(async function () {
-        //await page.screenshot({ path: `${this.currentTest.title.replace(/\s+/g, '_')}.png` })
         await browser.close();
       });
 

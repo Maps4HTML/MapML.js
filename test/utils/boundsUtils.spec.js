@@ -207,7 +207,7 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 720, y: 90 }, min: { x: -180, y: -810 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 45, y: -135 }, min: { x: -180, y: -360 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
     });
     test("Template with missing easting and northing input", () => {
       let template = {};
@@ -219,7 +219,7 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 720, y: 90 }, min: { x: -180, y: -810 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 12, minNativeZoom: 1, minZoom: 1 } });
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 45, y: 90 }, min: { x: -180, y: -135 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 12, minNativeZoom: 1, minZoom: 1 } });
     });
     test("Template with 3 inputs missing", () => {
       let template = {};

@@ -40,8 +40,8 @@ jest.setTimeout(50000);
                 },
                 minZoom: 4,
                 maxZoom: 4,
-                minNativeZoom: 0,
-                maxNativeZoom: 26
+                minNativeZoom: 4,
+                maxNativeZoom: 4
               };
               expect(bounds).toEqual(expectedBounds);
             });
