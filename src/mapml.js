@@ -2016,7 +2016,7 @@ M.TemplatedImageLayer =  L.Layer.extend({
     },
     onAdd: function () {
         this.setZIndex(this.options.zIndex);
-        this._setBoundsFlag();
+        this._map.fire('moveend',true);
     },
     redraw: function() {
         this._onMoveEnd();
@@ -2641,7 +2641,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       L.TileLayer.prototype.initialize.call(this, template.template, L.extend(options, {pane: this._container}));
     },
     onAdd : function(){
-      this._setBoundsFlag();
+      this._map.fire('moveend',true);
       L.TileLayer.prototype.onAdd.call(this,this._map);
     },
 
