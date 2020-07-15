@@ -644,7 +644,12 @@ M.Util = {
         default:
       }
     }
-    let zoomBoundsFormatted = {minZoom:+template.zoomBounds.min,maxZoom:+template.zoomBounds.max,minNativeZoom:nMinZoom,maxNativeZoom:nMaxZoom};
+    let zoomBoundsFormatted = {
+      minZoom:+template.zoomBounds.min,
+      maxZoom:+template.zoomBounds.max,
+      minNativeZoom:nMinZoom,
+      maxNativeZoom:nMaxZoom
+    };
     return {
       zoomBounds:zoomBoundsFormatted,
       bounds:this.boundsToPCRSBounds(bounds,value,projection,boundsUnit)
@@ -676,7 +681,8 @@ M.Util = {
     if(!bounds || !zoom && +zoom !== 0 || !cs) return undefined;
     switch(cs.toUpperCase()){
       case "TILEMATRIX":
-        let tileToPixelBounds = L.bounds(L.point(bounds.min.x*256,bounds.min.y*256),L.point(bounds.max.x*256,bounds.max.y*256));
+        let tileToPixelBounds = L.bounds(L.point(bounds.min.x*256,bounds.min.y*256),
+                                  L.point(bounds.max.x*256,bounds.max.y*256));
         return M.pixelToPCRSBounds(tileToPixelBounds,zoom,projection);
       case "PCRS":
         return bounds;
@@ -1080,20 +1086,19 @@ M.MapMLLayer = L.Layer.extend({
                     _leafletLayer: this,
                     crs: this.crs
                   }).addTo(map);
-                  this._setLayerElBounds();
+                  this._setLayerElExtent();
                 }
               }, this);
         }
-        this._setLayerElBounds();
+        this._setLayerElExtent();
         this.setZIndex(this.options.zIndex);
         this.getPane().appendChild(this._container);
     },
 
     //sets the <layer-> elements .bounds property 
-    _setLayerElBounds: function(){
-      var localBounds;
+    _setLayerElExtent: function(){
+      let localBounds, localZoomRanges;
       let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
-      /* jshint ignore:start */
       layerTypes.forEach((type) =>{
         if(this[type]){
           switch(type){
@@ -1102,15 +1107,10 @@ M.MapMLLayer = L.Layer.extend({
                 let templateType = this[type]._templates[j].rel === "query"?"query":"layer";
                 if(this[type]._templates[j][templateType].layerBounds){
                   if(!localBounds){
-                    localBounds = {bounds:{crs:`${this.options.mapprojection}/pcrs`}};
-                    Object.assign(localBounds.bounds,this[type]._templates[j][templateType].layerBounds);
-                    Object.assign(localBounds,this[type]._templates[j][templateType].zoomBounds);
+                    localBounds = this[type]._templates[j][templateType].layerBounds;
+                    localZoomRanges = this[type]._templates[j][templateType].zoomBounds;
                   } else {
-                    let templateBounds = this[type]._templates[j][templateType].layerBounds;
-                    localBounds.bounds.min.x = Math.min(localBounds.bounds.min.x,templateBounds.min.x);
-                    localBounds.bounds.min.y = Math.min(localBounds.bounds.min.y,templateBounds.min.y);
-                    localBounds.bounds.max.x = Math.max(localBounds.bounds.max.x,templateBounds.max.x);
-                    localBounds.bounds.max.y = Math.max(localBounds.bounds.max.y,templateBounds.max.y);
+                    localBounds.extend(this[type]._templates[j][templateType].layerBounds);
                   }
                 }
               }
@@ -1118,23 +1118,24 @@ M.MapMLLayer = L.Layer.extend({
             default:
               if(this[type].layerBounds){
                 if(!localBounds){
-                  localBounds = {bounds:{crs:`${this.options.mapprojection}/pcrs`}};
-                  Object.assign(localBounds.bounds,this[type].layerBounds);
-                    Object.assign(localBounds,this[type].zoomBounds);
+                  localBounds = this[type].layerBounds;
+                  localZoomRanges = this[type].zoomBounds;
                 } else{
-                  let compareBounds = this[type].layerBounds;
-                  localBounds.bounds.min.x = Math.min(localBounds.bounds.min.x,compareBounds.min.x);
-                  localBounds.bounds.min.y = Math.min(localBounds.bounds.min.y,compareBounds.min.y);
-                  localBounds.bounds.max.x = Math.max(localBounds.bounds.max.x,compareBounds.max.x);
-                  localBounds.bounds.max.y = Math.max(localBounds.bounds.max.y,compareBounds.max.y);
+                  localBounds.extend(this[type].layerBounds);
                 }
               } 
               break;
           }
         }
       });
-      /* jshint ignore:end */
-      this._layerEl.bounds = localBounds;
+      if(localBounds){
+        let locations = {
+          crs:`${this.options.mapprojection}/pcrs`,
+          topLeft:{horizontal:localBounds.min.x,vertical:localBounds.max.y},
+          bottomRight:{horizontal:localBounds.max.x,vertical:localBounds.min.y},
+        };
+        this._layerEl.extent = {extent:locations,zoom:localZoomRanges};
+      }
     },
 
     addTo: function (map) {
@@ -1544,7 +1545,9 @@ M.MapMLLayer = L.Layer.extend({
                         trel = (!t.hasAttribute('rel') || t.getAttribute('rel').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('rel').toLowerCase(),
                         ttype = (!t.hasAttribute('type')? 'image/*':t.getAttribute('type').toLowerCase()),
                         inputs = [];
-                        var zoomBounds = mapml.querySelector('meta[name=zoom]')?M.metaContentToObject(mapml.querySelector('meta[name=zoom]').getAttribute('content')):undefined;
+                        var zoomBounds = mapml.querySelector('meta[name=zoom]')?
+                                          M.metaContentToObject(mapml.querySelector('meta[name=zoom]').getAttribute('content')):
+                                          undefined;
                     while ((v = varNamesRe.exec(template)) !== null) {
                       var varName = v[1],
                       inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
@@ -2055,7 +2058,8 @@ M.TemplatedImageLayer =  L.Layer.extend({
     _setBoundsFlag : function(){
       let mapZoom = this._map.getZoom();
       let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
-      this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && this.layerBounds.overlaps(mapBounds);
+      this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && 
+                        this.layerBounds.overlaps(mapBounds);
       if(!(this.isVisible)){
         this._clearLayer();
         return;
@@ -2258,7 +2262,8 @@ M.TemplatedFeaturesLayer =  L.Layer.extend({
     _setBoundsFlag : function(){
       let mapZoom = this._map.getZoom();
       let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
-      this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && this.layerBounds.overlaps(mapBounds);
+      this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && 
+                        this.layerBounds.overlaps(mapBounds);
       if(Object.keys(this.layerBounds).length === 0){ //temporary to allow layers with no bounds currently to still work, remove once bounds
         this.isVisible = true;  //are implemented for all layer types that use templatedTileLayer
       }
@@ -2719,7 +2724,8 @@ M.TemplatedTileLayer = L.TileLayer.extend({
     _setBoundsFlag : function(e){
       let mapZoom = this._map.getZoom();
       let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
-      this.isVisible = mapZoom <= this.options.maxZoom && mapZoom >= this.options.minZoom && this.layerBounds.overlaps(mapBounds);
+      this.isVisible = mapZoom <= this.options.maxZoom && mapZoom >= this.options.minZoom && 
+                        this.layerBounds.overlaps(mapBounds);
       if(Object.keys(this.layerBounds).length === 0){ //temporary to allow layers with no bounds currently to still work, remove once bounds
         this.isVisible = true;  //are implemented for all layer types that use templatedTileLayer
       }
@@ -3434,10 +3440,12 @@ M.MapMLStaticTileLayer = L.GridLayer.extend({
     let zoomLevel = mapZoom;
     zoomLevel = zoomLevel > this.options.maxNativeZoom? this.options.maxNativeZoom: zoomLevel;
     zoomLevel = zoomLevel < this.options.minNativeZoom? this.options.minNativeZoom: zoomLevel;
-    this.isVisible = mapZoom <= this.zoomBounds.maxZoom && 
-                      mapZoom >= this.zoomBounds.minZoom && 
-                      this._bounds[zoomLevel] && 
-                      this._bounds[zoomLevel].overlaps(M.pixelToPCRSBounds(this._map.getPixelBounds(),this._map.getZoom(),this._map.options.projection));
+    this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && 
+                      this._bounds[zoomLevel] && this._bounds[zoomLevel]
+                      .overlaps(M.pixelToPCRSBounds(
+                        this._map.getPixelBounds(),
+                        this._map.getZoom(),
+                        this._map.options.projection));
     
     if(!(this.isVisible))return; //onMoveEnd still gets fired even when layer is out of bounds??, most likely need to overrride _onMoveEnd
     this.fire('moveend',e,true);
@@ -3449,7 +3457,8 @@ M.MapMLStaticTileLayer = L.GridLayer.extend({
   },
 
   createTile: function (coords) {
-    let tileGroup = this._groups[this._tileCoordsToKey(coords)] || [], tileElem = document.createElement('tile');
+    let tileGroup = this._groups[this._tileCoordsToKey(coords)] || [],
+        tileElem = document.createElement('tile');
     tileElem.setAttribute("col",coords.x);
     tileElem.setAttribute("row",coords.y);
     tileElem.setAttribute("zoom",coords.z);
@@ -3474,7 +3483,9 @@ M.MapMLStaticTileLayer = L.GridLayer.extend({
         layerBounds[sCoords[2]].extend(L.point(pixelCoords.x ,pixelCoords.y ));
         layerBounds[sCoords[2]].extend(L.point(((pixelCoords.x+256) ),((pixelCoords.y+256) )));
       } else{
-        layerBounds[sCoords[2]] = L.bounds(L.point(pixelCoords.x ,pixelCoords.y ),L.point(((pixelCoords.x+256) ),((pixelCoords.y+256) )));
+        layerBounds[sCoords[2]] = L.bounds(
+                                    L.point(pixelCoords.x ,pixelCoords.y ),
+                                    L.point(((pixelCoords.x+256) ),((pixelCoords.y+256) )));
       }
     }
     // TODO: optimize by removing 2nd loop, add util function to convert point in pixels to point in pcrs, use that instead then this loop
@@ -3489,7 +3500,8 @@ M.MapMLStaticTileLayer = L.GridLayer.extend({
 
   _getZoomBounds: function(container, maxZoomBound){
     if(!container) return null;
-    let meta = M.metaContentToObject(container.getElementsByTagName('tiles')[0].getAttribute('zoom')),zoom = {},tiles = container.getElementsByTagName("tile");
+    let meta = M.metaContentToObject(container.getElementsByTagName('tiles')[0].getAttribute('zoom')),
+        zoom = {},tiles = container.getElementsByTagName("tile");
     zoom.maxNativeZoom = 0;
     zoom.minNativeZoom = maxZoomBound;
     for (let i=0;i<tiles.length;i++) {
@@ -3556,8 +3568,10 @@ M.MapMLFeatures = L.FeatureGroup.extend({
           this._resetFeatures(this._clampZoom(this.options._leafletLayer._map.getZoom()));
 
           // TODO: attempt to set the maps zoom, doesnt update the map needs fixing
-          this.options._leafletLayer._map.minZoom = Math.min(this.zoomBounds.minZoom,this.options._leafletLayer._map.minZoom || 30);
-          this.options._leafletLayer._map.maxZoom =Math.max(this.zoomBounds.maxZoom,this.options._leafletLayer._map.maxZoom || 0);
+          this.options._leafletLayer._map.minZoom = Math.min(
+            this.zoomBounds.minZoom,this.options._leafletLayer._map.minZoom || 30);
+          this.options._leafletLayer._map.maxZoom = Math.max(
+            this.zoomBounds.maxZoom,this.options._leafletLayer._map.maxZoom || 0);
         }
       }
     },
@@ -3577,10 +3591,11 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       let zoomLevel = this._map.getZoom();
       zoomLevel = zoomLevel > this.zoomBounds.maxNativeZoom? this.zoomBounds.maxNativeZoom: zoomLevel;
       zoomLevel = zoomLevel < this.zoomBounds.minNativeZoom? this.zoomBounds.minNativeZoom: zoomLevel;
-      this.isVisible = this._checkZoom() && 
-                        this._layers && 
-                        this.layerBounds && 
-                        this.layerBounds.overlaps(M.pixelToPCRSBounds(this._map.getPixelBounds(),this._map.getZoom(),this._map.options.projection));
+      this.isVisible = this._checkZoom() && this._layers && this.layerBounds && 
+                        this.layerBounds.overlaps(
+                          M.pixelToPCRSBounds(
+                            this._map.getPixelBounds(),
+                            this._map.getZoom(),this._map.options.projection));
       this._removeCSS();
     },
 
@@ -3588,19 +3603,22 @@ M.MapMLFeatures = L.FeatureGroup.extend({
     _getLayerBounds : function(container) {
       if (!container) return null;
       try{
-        let cs = container.querySelector('meta[name=cs]') && 
-                  M.metaContentToObject(container.querySelector('meta[name=cs]').getAttribute('content')).content.toUpperCase() ||
-                  "OSMTILE";
         let projection = container.querySelector('meta[name=projection]') &&
-                          M.metaContentToObject(container.querySelector('meta[name=projection]').getAttribute('content')).content.toUpperCase() ||
-                          "TILEMATRIX";
+                          M.metaContentToObject(
+                            container.querySelector('meta[name=projection]').getAttribute('content'))
+                            .content.toUpperCase() || "OSMTILE";
         let zoom = container.querySelector('meta[name=zoom]') && 
                     M.metaContentToObject(container.querySelector('meta[name=zoom]').getAttribute('content')).value || 
                     "0";
-        let meta = container.querySelector('meta[name=bounds]') && 
-                    M.metaContentToObject(container.querySelector('meta[name=bounds]').getAttribute('content')) ||
-                    {topLeftVertical:0,topLeftHorizontal:0,bottomRightVertical:5,bottomRightHorizontal:5};
-        return M.boundsToPCRSBounds(L.bounds(L.point(+meta.topLeftVertical,+meta.topLeftHorizontal),L.point(+meta.bottomRightVertical,+meta.bottomRightHorizontal)),zoom,projection.content,cs);
+        let meta = container.querySelector('meta[name=extent]') && 
+                    M.metaContentToObject(
+                      container.querySelector('meta[name=extent]').getAttribute('content')) ||
+                    {"top-left-vertical":0,"top-left-horizontal":0,"bottom-right-vertical":5,"bottom-right-horizontal":5};
+        let cs = meta.cs || "TILEMATRIX";
+        return M.boundsToPCRSBounds(
+                L.bounds(L.point(+meta["top-left-vertical"],+meta["top-left-horizontal"]),
+                L.point(+meta["bottom-right-vertical"],+meta["bottom-right-horizontal"])),
+                zoom,projection.content,cs);
       } catch (error){
         //if error then by default set the layer to osm and bounds to the entire map view
         return M.boundsToPCRSBounds(L.bounds(L.point(0,0),L.point(5,5)),0,"OSMTILE","TILEMATRIX");
@@ -3662,9 +3680,19 @@ M.MapMLFeatures = L.FeatureGroup.extend({
         projection = M.metaContentToObject(container.querySelector('meta[name=projection]').getAttribute('content')).content;
         meta = M.metaContentToObject(container.querySelector('meta[name=zoom]').getAttribute('content'));
       } catch(error){
-        return {minZoom:0,maxZoom: M[projection || "CBMTILE"].options.resolutions.length,minNativeZoom:nMin,maxNativeZoom:nMax};
+        return {
+          minZoom:0,
+          maxZoom: M[projection || "CBMTILE"].options.resolutions.length,
+          minNativeZoom:nMin,
+          maxNativeZoom:nMax
+        };
       }
-      return {minZoom:+meta.min ,maxZoom:+meta.max ,minNativeZoom:nMin,maxNativeZoom:nMax};
+      return {
+        minZoom:+meta.min ,
+        maxZoom:+meta.max ,
+        minNativeZoom:nMin,
+        maxNativeZoom:nMax
+      };
     },
 
     addData: function (mapml) {

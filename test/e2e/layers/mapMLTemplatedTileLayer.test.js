@@ -35,10 +35,10 @@ jest.setTimeout(50000);
               );
               expect(tiles).toEqual(2);
             });
-            test("[" + browserType + "]" + " <layer->.bounds test", async () => {
+            test("[" + browserType + "]" + " <layer->.extent test", async () => {
               const bounds = await page.$eval(
                 "body > map > layer-:nth-child(1)",
-                (layer) => layer.bounds
+                (layer) => layer.extent
               );
               let expectedBounds = {
                 bounds: { crs: 'WGS84/pcrs', min: { x: -180, y: -270 }, max: { x: 180, y: 90 } },
@@ -49,10 +49,10 @@ jest.setTimeout(50000);
               };
               expect(bounds).toEqual(expectedBounds);
             });
-            test("[" + browserType + "]" + " 2nd <layer->.bounds test", async () => {
+            test("[" + browserType + "]" + " 2nd <layer->.extent test", async () => {
               const bounds = await page.$eval(
                 "body > map > layer-:nth-child(2)",
-                (layer) => layer.bounds
+                (layer) => layer.extent
               );
               let expectedBounds = {
                 bounds: { crs: 'WGS84/pcrs', min: { x: 360, y: -630 }, max: { x: 540, y: -450 } },

@@ -23,7 +23,7 @@ jest.setTimeout(30000);
 
       test("[" + browserType + "]" + " Static features with missing <meta name='zoom'> & <meta name='bounds'>", async () => {
         const layerController = await page.$eval("body > map:nth-child(1) > layer-:nth-child(1)",
-          (controller) => controller.bounds);
+          (controller) => controller.extent);
 
 
         expect(layerController).toEqual({
@@ -41,7 +41,7 @@ jest.setTimeout(30000);
 
       test("[" + browserType + "]" + " Static tiles with missing <meta name='zoom'>", async () => {
         const layerController = await page.$eval("body > map:nth-child(1) > layer-:nth-child(3)",
-          (controller) => controller.bounds);
+          (controller) => controller.extent);
 
 
         expect(layerController).toEqual({
@@ -59,7 +59,7 @@ jest.setTimeout(30000);
 
       test("[" + browserType + "]" + " Templated features with missing <meta name='zoom'>", async () => {
         const layerController = await page.$eval("body > map:nth-child(1) > layer-:nth-child(2)",
-          (controller) => controller.bounds);
+          (controller) => controller.extent);
 
         expect(layerController).toEqual({
           bounds: {
@@ -76,7 +76,7 @@ jest.setTimeout(30000);
 
       test("[" + browserType + "]" + " Templated tiles with missing <meta name='zoom'> & bounds", async () => {
         const layerController = await page.$eval("body > map:nth-child(2) > layer-",
-          (controller) => controller.bounds);
+          (controller) => controller.extent);
 
         expect(layerController).toEqual({
           bounds: {
@@ -93,7 +93,7 @@ jest.setTimeout(30000);
 
       test("[" + browserType + "]" + " Templated image with missing <meta name='zoom'>", async () => {
         const layerController = await page.$eval("body > map:nth-child(1) > layer-:nth-child(4)",
-          (controller) => controller.bounds);
+          (controller) => controller.extent);
 
         expect(layerController).toEqual({
           bounds: {

@@ -33,10 +33,10 @@ jest.setTimeout(50000);
             );
             expect(tiles).toEqual(1);
           });
-          test("[" + browserType + "]" + " <layer->.bounds test", async () => {
+          test("[" + browserType + "]" + " <layer->.extent test", async () => {
             const bounds = await page.$eval(
               "body > map > layer-:nth-child(1)",
-              (layer) => layer.bounds
+              (layer) => layer.extent
             );
             let expectedBounds = {
               bounds: {
@@ -51,10 +51,10 @@ jest.setTimeout(50000);
             };
             expect(bounds).toEqual(expectedBounds);
           });
-          test("[" + browserType + "]" + " 2nd <layer->.bounds test", async () => {
+          test("[" + browserType + "]" + " 2nd <layer->.extent test", async () => {
             const bounds = await page.$eval(
               "body > map > layer-:nth-child(2)",
-              (layer) => layer.bounds
+              (layer) => layer.extent
             );
             let expectedBounds = {
               bounds: {
