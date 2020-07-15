@@ -1076,14 +1076,18 @@ M.MapMLLayer = L.Layer.extend({
           switch(type){
             case "_templatedLayer":
               for(let j =0;j<this[type]._templates.length;j++){
-                if(this[type]._templates[j].layer.layerBounds){
+                let templateType = this[type]._templates[j].rel === "query"?"query":"layer";
+                if(this[type]._templates[j][templateType].layerBounds){
                   if(!localBounds){
                     localBounds = {bounds:{crs:`${this.options.mapprojection}/pcrs`}};
-                    Object.assign(localBounds.bounds,this[type]._templates[j].layer.layerBounds);
-                    Object.assign(localBounds,this[type]._templates[j].layer.zoomBounds);
+                    Object.assign(localBounds.bounds,this[type]._templates[j][templateType].layerBounds);
+                    Object.assign(localBounds,this[type]._templates[j][templateType].zoomBounds);
                   } else {
-                    localBounds.bounds.extend(this[type]._templates[j].layer.layerBounds.min);
-                    localBounds.bounds.extend(this[type]._templates[j].layer.layerBounds.max);
+                    let templateBounds = this[type]._templates[j][templateType].layerBounds;
+                    localBounds.bounds.min.x = Math.min(localBounds.bounds.min.x,templateBounds.min.x);
+                    localBounds.bounds.min.y = Math.min(localBounds.bounds.min.y,templateBounds.min.y);
+                    localBounds.bounds.max.x = Math.max(localBounds.bounds.max.x,templateBounds.max.x);
+                    localBounds.bounds.max.y = Math.max(localBounds.bounds.max.y,templateBounds.max.y);
                   }
                 }
               }
@@ -1095,8 +1099,11 @@ M.MapMLLayer = L.Layer.extend({
                   Object.assign(localBounds.bounds,this[type].layerBounds);
                     Object.assign(localBounds,this[type].zoomBounds);
                 } else{
-                  localBounds.bounds.extend(this[type].layerBounds.min);
-                  localBounds.bounds.extend(this[type].layerBounds.max);
+                  let compareBounds = this[type].layerBounds;
+                  localBounds.bounds.min.x = Math.min(localBounds.bounds.min.x,compareBounds.min.x);
+                  localBounds.bounds.min.y = Math.min(localBounds.bounds.min.y,compareBounds.min.y);
+                  localBounds.bounds.max.x = Math.max(localBounds.bounds.max.x,compareBounds.max.x);
+                  localBounds.bounds.max.y = Math.max(localBounds.bounds.max.y,compareBounds.max.y);
                 }
               } 
               break;
@@ -2399,6 +2406,7 @@ M.TemplatedLayer = L.Layer.extend({
       } else if (templates[i].rel === 'query') {
           // add template to array of queryies to be added to map and processed
           // on click/tap events
+          this.options._leafletLayer._map.on('moveend', this._setBoundsFlag, this);
           if (!this._queries) {
             this._queries = [];
           }
@@ -2422,6 +2430,22 @@ M.TemplatedLayer = L.Layer.extend({
   _onZoomStart: function() {
       this.closePopup();
   },
+
+  _setBoundsFlag : function(){
+    let templates = this._templates, map = this.options._leafletLayer._map;
+    let zoom = map.getZoom(), mapBounds = M.pixelToPCRSBounds(map.getPixelBounds(),zoom,map.options.projection);
+    for(let i = 0;i<templates.length;i++){
+      if(templates[i].rel === "query"){
+        if(zoom <= templates[i].query.zoomBounds.maxZoom && 
+          zoom >= templates[i].query.zoomBounds.minZoom && 
+          templates[i].query.layerBounds.overlaps(mapBounds))
+        {
+          templates[i].query.isVisible = true;
+        }
+      }
+    }
+  },
+
   _setupQueryVars: function(template) {
       // process the inputs associated to template and create an object named
       // query with member properties as follows:
@@ -2439,7 +2463,11 @@ M.TemplatedLayer = L.Layer.extend({
       //  title: link title
 
       var queryVarNames = {query:{}},
-          inputs = template.values;
+          inputs = template.values,
+          bounds = M.extractInputBounds(template);
+      queryVarNames.query.layerBounds = bounds.bounds;
+      queryVarNames.query.zoomBounds = bounds.zoomBounds;
+      queryVarNames.query.isVisible = true;
       
       for (var i=0;i<template.values.length;i++) {
         var type = inputs[i].getAttribute("type"), 
@@ -3889,8 +3917,9 @@ M.MapMLLayerControl = L.Control.Layers.extend({
                 switch(type){
                   case "_templatedLayer":
                     for(let j =0;j<this._layers[i].layer[type]._templates.length;j++){
+                      let templateType = this._layers[i].layer[type]._templates[j].rel ==="query"?"query":"layer";
                       total++;
-                      if(!(this._layers[i].layer[type]._templates[j].layer.isVisible))count++;
+                      if(!(this._layers[i].layer[type]._templates[j][templateType].isVisible))count++;
                     }
                   break;
                   default:
