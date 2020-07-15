@@ -601,7 +601,7 @@ window.M = M;
 M.Util = {  
   extractInputBounds: function(template){
     if(!template) return undefined;
-    let inputs = template.values, projection = template.projection || "OSMTILE", value = 0, units ="TILEMATRIX";
+    let inputs = template.values, projection = template.projection || "OSMTILE", value = 0, boundsUnit ="TILEMATRIX";
     let bounds = L.bounds(L.point(0,0),L.point(5,5)), nMinZoom = 0, nMaxZoom = this[projection].options.resolutions.length;
     if(!template.zoomBounds){
       template.zoomBounds ={};
@@ -624,7 +624,7 @@ M.Util = {
             case "longitude":
             case "column":
             case "easting":
-              units = inputs[i].getAttribute("units");
+              boundsUnit = M.axisToCS(inputs[i].getAttribute("axis").toLowerCase());
               bounds.min.x = min;
               bounds.max.x = max;
             break;
@@ -633,6 +633,7 @@ M.Util = {
             case "latitude":
             case "row":
             case "northing":
+              boundsUnit = M.axisToCS(inputs[i].getAttribute("axis").toLowerCase());
               bounds.min.y = min;
               bounds.max.y = max;
             break;
@@ -646,8 +647,29 @@ M.Util = {
     let zoomBoundsFormatted = {minZoom:+template.zoomBounds.min,maxZoom:+template.zoomBounds.max,minNativeZoom:nMinZoom,maxNativeZoom:nMaxZoom};
     return {
       zoomBounds:zoomBoundsFormatted,
-      bounds:this.boundsToPCRSBounds(bounds,value,projection,units)
+      bounds:this.boundsToPCRSBounds(bounds,value,projection,boundsUnit)
     };
+  },
+
+  axisToCS : function(axis){
+    switch(axis.toLowerCase()){
+      case "row":
+      case "column":
+        return "tilematrix";
+      case "i":
+      case "j":
+      case "x":
+      case "y":
+        return "TCRS";
+      case "latitude":
+      case "longitude":
+        return "GCRS";
+      case "northing":
+      case "easting":
+        return "PCRS";
+      default:
+        return "TILEMATRIX";
+    }
   },
 
   boundsToPCRSBounds: function(bounds, zoom, projection,cs){
@@ -746,6 +768,7 @@ M.Util = {
   },
 };
 
+M.axisToCS = M.Util.axisToCS;
 M.parseNumber = M.Util.parseNumber;
 M.extractInputBounds = M.Util.extractInputBounds;
 M.splitCoordinate = M.Util.splitCoordinate;
@@ -2630,6 +2653,8 @@ M.TemplatedLayer = L.Layer.extend({
     for (var i=0;i<this._templates.length;i++) {
       if (this._templates[i].rel !== 'query') {
         map.removeLayer(this._templates[i].layer);
+      } else {
+        map.off('moveend',this._setBoundsFlag);
       }
     }
   }

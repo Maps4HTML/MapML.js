@@ -196,19 +196,6 @@ describe("M.Util Bounds Related Tests", () => {
 
       expect(extractedBounds).toEqual({ bounds: { max: { x: 500, y: 500 }, min: { x: 0, y: 0 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 15, minNativeZoom: 3, minZoom: 2 } });
     });
-    test("Template with missing easting input, pcrs", () => {
-      let template = {};
-      let inputContainer = document.createElement("div");
-      inputContainer.innerHTML = '<input name="zoomLevel" type="zoom" value="2" min="1" max="5">';
-      inputContainer.innerHTML += '<input name="row" type="location" axis="northing" units="pcrs" min="5" max="10">';
-      template.values = inputContainer.querySelectorAll("input");
-      template.zoomBounds = { min: "1", max: "16" };
-      template.projection = "WGS84";
-
-      let extractedBounds = M.extractInputBounds(template);
-
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 45, y: -135 }, min: { x: -180, y: -360 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
-    });
     test("Template with missing easting and northing input", () => {
       let template = {};
       let inputContainer = document.createElement("div");
