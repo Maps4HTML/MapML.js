@@ -84,6 +84,9 @@
   
 var M = {};
 window.M = M;
+const TILE_SIZE = 256;
+const FALLBACK_PROJECTION = "OSMTILE";
+const FALLBACK_CS = "TILEMATRIX";
 
 (function () {
   M.detectImagePath = function (container) {
@@ -601,7 +604,7 @@ window.M = M;
 M.Util = {  
   extractInputBounds: function(template){
     if(!template) return undefined;
-    let inputs = template.values, projection = template.projection || "OSMTILE", value = 0, boundsUnit ="TILEMATRIX";
+    let inputs = template.values, projection = template.projection || FALLBACK_PROJECTION, value = 0, boundsUnit = FALLBACK_CS;
     let bounds = L.bounds(L.point(0,0),L.point(5,5)), nMinZoom = 0, nMaxZoom = this[projection].options.resolutions.length;
     if(!template.zoomBounds){
       template.zoomBounds ={};
@@ -673,7 +676,7 @@ M.Util = {
       case "easting":
         return "PCRS";
       default:
-        return "TILEMATRIX";
+        return FALLBACK_CS;
     }
   },
 
@@ -681,8 +684,8 @@ M.Util = {
     if(!bounds || !zoom && +zoom !== 0 || !cs) return undefined;
     switch(cs.toUpperCase()){
       case "TILEMATRIX":
-        let tileToPixelBounds = L.bounds(L.point(bounds.min.x*256,bounds.min.y*256),
-                                  L.point(bounds.max.x*256,bounds.max.y*256));
+        let tileToPixelBounds = L.bounds(L.point(bounds.min.x*TILE_SIZE,bounds.min.y*TILE_SIZE),
+                                  L.point(bounds.max.x*TILE_SIZE,bounds.max.y*TILE_SIZE));
         return M.pixelToPCRSBounds(tileToPixelBounds,zoom,projection);
       case "PCRS":
         return bounds;
@@ -836,12 +839,13 @@ M.QueryHandler = L.Handler.extend({
             return crs.unproject(crs.transformation.untransform(c,crs.scale(zoom)),zoom);
           };
       var tcrsClickLoc = crs.latLngToPoint(e.latlng, zoom),
-          tileMatrixClickLoc = tcrsClickLoc.divideBy(256).floor(),
-          tileBounds = new L.Bounds(tcrsClickLoc.divideBy(256).floor().multiplyBy(256), tcrsClickLoc.divideBy(256).ceil().multiplyBy(256));
+          tileMatrixClickLoc = tcrsClickLoc.divideBy(TILE_SIZE).floor(),
+          tileBounds = new L.Bounds(tcrsClickLoc.divideBy(TILE_SIZE).floor().multiplyBy(TILE_SIZE), 
+          tcrsClickLoc.divideBy(TILE_SIZE).ceil().multiplyBy(TILE_SIZE));
   
       // all of the following are locations that might be used in a query, I think.
-      obj[template.query.tilei] = tcrsClickLoc.x.toFixed() - (tileMatrixClickLoc.x * 256);
-      obj[template.query.tilej] = tcrsClickLoc.y.toFixed() - (tileMatrixClickLoc.y * 256);
+      obj[template.query.tilei] = tcrsClickLoc.x.toFixed() - (tileMatrixClickLoc.x * TILE_SIZE);
+      obj[template.query.tilej] = tcrsClickLoc.y.toFixed() - (tileMatrixClickLoc.y * TILE_SIZE);
       
       // this forces the click to the centre of the map extent in the layer crs
       obj[template.query.mapi] = (map.getSize().divideBy(2)).x.toFixed();
@@ -1828,7 +1832,7 @@ M.MapMLLayer = L.Layer.extend({
         var metaZoom = mapml.querySelectorAll('meta[name=zoom]')[0],
             metaExtent = mapml.querySelector('meta[name=extent]'),
             metaProjection = mapml.querySelector('meta[name=projection]'),
-            proj = metaProjection ? metaProjection.getAttribute('content'): 'OSMTILE',
+            proj = metaProjection ? metaProjection.getAttribute('content'): FALLBACK_PROJECTION,
             i,expressions,bounds,zmin,zmax,xmin,ymin,xmax,ymax,expr,lhs,rhs;
         if (metaZoom) {
             expressions = metaZoom.getAttribute('content').split(',');
@@ -2741,8 +2745,8 @@ M.TemplatedTileLayer = L.TileLayer.extend({
         // that will render the content in the alread-placed tile
         // var tile = L.DomUtil.create('canvas', 'leaflet-tile');
         var tile = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        tile.setAttribute("width", "256");
-        tile.setAttribute("height", "256");
+        tile.setAttribute("width", `${TILE_SIZE}`);
+        tile.setAttribute("height", `${TILE_SIZE}`);
 //        tile.style.outline="1px solid red";
         L.DomUtil.addClass(tile, "leaflet-tile");
         this._fetchTile(coords, tile);
@@ -3048,7 +3052,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
         // transform to tcrs at tile.z
         // subtract the tcrs origin from tile.x,tile.y
         var tcrsCoords = crs.transformation.transform(coords,crs.scale(tile.z)),
-            tilePoint = L.point(tcrsCoords.x - (tile.x*256), tcrsCoords.y - (tile.y*256));
+            tilePoint = L.point(tcrsCoords.x - (tile.x*TILE_SIZE), tcrsCoords.y - (tile.y*TILE_SIZE));
 
         return tilePoint;
       }
@@ -3062,7 +3066,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       // transform to tcrs at tile.z
       // subtract the tcrs origin from tile.x,tile.y
       var tcrsCoords = crs.transformation.transform(coords,crs.scale(tile.z)),
-          tilePoint = L.point(tcrsCoords.x - (tile.x*256), tcrsCoords.y - (tile.y*256));
+          tilePoint = L.point(tcrsCoords.x - (tile.x*TILE_SIZE), tcrsCoords.y - (tile.y*TILE_SIZE));
 
       return tilePoint;
     },
@@ -3344,10 +3348,10 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       var transformation = this.options.crs.transformation, 
           scale = L.bind(this.options.crs.scale, this.options.crs),
       tilematrix2pcrs = function (c,zoom) {
-        return transformation.untransform(c.multiplyBy(256),scale(zoom));
+        return transformation.untransform(c.multiplyBy(TILE_SIZE),scale(zoom));
       },
       pcrs2tilematrix = function(c,zoom) {
-        return transformation.transform(c, scale(zoom)).divideBy(256).floor();
+        return transformation.transform(c, scale(zoom)).divideBy(TILE_SIZE).floor();
       };
       if (east && north) {
         
@@ -3475,17 +3479,17 @@ M.MapMLStaticTileLayer = L.GridLayer.extend({
     let layerBounds = {};
     for(let tile in tileGroups){
       let sCoords = tile.split(":"), pixelCoords = {};
-      pixelCoords.x = +sCoords[0] * 256;
-      pixelCoords.y = +sCoords[1] * 256;
+      pixelCoords.x = +sCoords[0] * TILE_SIZE;
+      pixelCoords.y = +sCoords[1] * TILE_SIZE;
       pixelCoords.z = +sCoords[2]; //+String same as parseInt(String)
       if(sCoords[2] in layerBounds){
 
         layerBounds[sCoords[2]].extend(L.point(pixelCoords.x ,pixelCoords.y ));
-        layerBounds[sCoords[2]].extend(L.point(((pixelCoords.x+256) ),((pixelCoords.y+256) )));
+        layerBounds[sCoords[2]].extend(L.point(((pixelCoords.x+TILE_SIZE) ),((pixelCoords.y+TILE_SIZE) )));
       } else{
         layerBounds[sCoords[2]] = L.bounds(
                                     L.point(pixelCoords.x ,pixelCoords.y ),
-                                    L.point(((pixelCoords.x+256) ),((pixelCoords.y+256) )));
+                                    L.point(((pixelCoords.x+TILE_SIZE) ),((pixelCoords.y+TILE_SIZE) )));
       }
     }
     // TODO: optimize by removing 2nd loop, add util function to convert point in pixels to point in pcrs, use that instead then this loop
@@ -3606,7 +3610,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
         let projection = container.querySelector('meta[name=projection]') &&
                           M.metaContentToObject(
                             container.querySelector('meta[name=projection]').getAttribute('content'))
-                            .content.toUpperCase() || "OSMTILE";
+                            .content.toUpperCase() || FALLBACK_PROJECTION;
         let zoom = container.querySelector('meta[name=zoom]') && 
                     M.metaContentToObject(container.querySelector('meta[name=zoom]').getAttribute('content')).value || 
                     "0";
@@ -3614,14 +3618,14 @@ M.MapMLFeatures = L.FeatureGroup.extend({
                     M.metaContentToObject(
                       container.querySelector('meta[name=extent]').getAttribute('content')) ||
                     {"top-left-vertical":0,"top-left-horizontal":0,"bottom-right-vertical":5,"bottom-right-horizontal":5};
-        let cs = meta.cs || "TILEMATRIX";
+        let cs = meta.cs || FALLBACK_CS;
         return M.boundsToPCRSBounds(
                 L.bounds(L.point(+meta["top-left-vertical"],+meta["top-left-horizontal"]),
                 L.point(+meta["bottom-right-vertical"],+meta["bottom-right-horizontal"])),
                 zoom,projection.content,cs);
       } catch (error){
         //if error then by default set the layer to osm and bounds to the entire map view
-        return M.boundsToPCRSBounds(L.bounds(L.point(0,0),L.point(5,5)),0,"OSMTILE","TILEMATRIX");
+        return M.boundsToPCRSBounds(L.bounds(L.point(0,0),L.point(5,5)),0,FALLBACK_PROJECTION,FALLBACK_CS);
       }
     },
 
@@ -3682,7 +3686,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       } catch(error){
         return {
           minZoom:0,
-          maxZoom: M[projection || "CBMTILE"].options.resolutions.length,
+          maxZoom: M[projection || FALLBACK_PROJECTION].options.resolutions.length,
           minNativeZoom:nMin,
           maxNativeZoom:nMax
         };
@@ -3957,10 +3961,11 @@ M.MapMLLayerControl = L.Control.Layers.extend({
         for (let i = 0; i < this._layers.length; i++) {
           let count = 0, total=0;
           if(this._layers[i].layer._extent){
-            layerProjection = this._layers[i].layer._extent.getAttribute('units') || this._layers[i].layer._extent.getAttribute('content') ||
+            layerProjection = this._layers[i].layer._extent.getAttribute('units') || 
+              this._layers[i].layer._extent.getAttribute('content') ||
               this._layers[i].layer._extent.querySelector("input[type=projection]").getAttribute('value');
           } else {
-            layerProjection = "OSMTILE";
+            layerProjection = FALLBACK_PROJECTION;
           }
           if( !layerProjection || layerProjection === this._map.options.projection){
             for(let j = 0 ;j<layerTypes.length;j++){
@@ -3970,7 +3975,8 @@ M.MapMLLayerControl = L.Control.Layers.extend({
                 switch(type){
                   case "_templatedLayer":
                     for(let j =0;j<this._layers[i].layer[type]._templates.length;j++){
-                      let templateType = this._layers[i].layer[type]._templates[j].rel ==="query"?"query":"layer";
+                      let templateType = this._layers[i].layer[type]._templates[j].rel ==="query"?
+                                          "query":"layer";
                       total++;
                       if(!(this._layers[i].layer[type]._templates[j][templateType].isVisible))count++;
                     }
@@ -3986,7 +3992,8 @@ M.MapMLLayerControl = L.Control.Layers.extend({
             count = 1;
             total = 1;
           }
-          let label = this._layers[i].input.labels[0].getElementsByTagName("span"),input = this._layers[i].input.labels[0].getElementsByTagName("input");
+          let label = this._layers[i].input.labels[0].getElementsByTagName("span"),
+              input = this._layers[i].input.labels[0].getElementsByTagName("input");
           if(count === total && count != 0){
             input[0].parentElement.parentElement.parentElement.parentElement.disabled = true;
             label[0].style.fontStyle = "italic";
