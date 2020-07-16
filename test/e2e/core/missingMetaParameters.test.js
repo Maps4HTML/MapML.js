@@ -4,7 +4,7 @@ jest.setTimeout(30000);
 (async () => {
   for (const browserType of BROWSER) {
     let page, browser, context;
-    describe("Playwright Missing Parameters Test in " + browserType, () => {
+    describe("Missing Parameters Test in " + browserType, () => {
       beforeEach(async () => {
         browser = await playwright[browserType].launch({
           headless: ISHEADLESS,
@@ -14,7 +14,7 @@ jest.setTimeout(30000);
         if (browserType === "firefox") {
           await page.waitForNavigation();
         }
-        await page.goto(PATH + "missingParameters.html");
+        await page.goto(PATH + "missingMetaParameters.html");
       });
 
       afterEach(async function () {
@@ -42,7 +42,7 @@ jest.setTimeout(30000);
             maxNativeZoom: 4,
             minNativeZoom: 2,
             minZoom: 0,
-            maxZoom: 26
+            maxZoom: 25
           }
         });
       });
@@ -68,7 +68,7 @@ jest.setTimeout(30000);
             maxNativeZoom: 3,
             minNativeZoom: 2,
             minZoom: 0,
-            maxZoom: 26
+            maxZoom: 25
           }
         });
       });
@@ -93,7 +93,7 @@ jest.setTimeout(30000);
             maxNativeZoom: 18,
             minNativeZoom: 2,
             minZoom: 0,
-            maxZoom: 26
+            maxZoom: 25
           }
         });
       });
@@ -118,7 +118,7 @@ jest.setTimeout(30000);
             maxNativeZoom: 2,
             minNativeZoom: 0,
             minZoom: 0,
-            maxZoom: 22
+            maxZoom: 21
           }
         });
       });
@@ -143,7 +143,7 @@ jest.setTimeout(30000);
             maxNativeZoom: 19,
             minNativeZoom: 0,
             minZoom: 0,
-            maxZoom: 26
+            maxZoom: 25
           }
         });
       });

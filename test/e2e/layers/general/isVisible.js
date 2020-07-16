@@ -34,7 +34,7 @@ exports.test = (path, zoomIn, zoomOut, browserType) => {
       });
       test("[" + browserType + "]" + " isVisible property false when zoomed out of bounds (zooming out)", async () => {
 
-        for (let i = 0; i < zoomOut; i++)
+        for (let i = 0; i < zoomOut + zoomIn; i++)
           await page.click('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out');
 
         const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1)",

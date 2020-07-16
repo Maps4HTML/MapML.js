@@ -217,7 +217,7 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 720, y: 90 }, min: { x: -180, y: -810 } }, zoomBounds: { maxNativeZoom: 22, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 720, y: 90 }, min: { x: -180, y: -810 } }, zoomBounds: { maxNativeZoom: 21, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
     });
     test("Template with no projection", () => {
       let template = {};

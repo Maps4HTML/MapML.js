@@ -1,7 +1,7 @@
 <html>
 
 <head>
-  <title>StyleOrder Test</title>
+  <title>Missing Meta Parameters Test</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script type="module" src="web-map.js"></script>
@@ -23,9 +23,7 @@
 
     <layer- label="Arizona" checked>
       <meta name="projection" content="CBMTILE" />
-      <meta name="zoom" content="min=0,max=5,value=0" />
-      <meta name="extent"
-        content="cs=tilematrix,top-left-vertical=0,top-left-horizontal=0,bottom-right-vertical=5,bottom-right-horizontal=5" />
+      <meta name="cs" content="tilematrix" />
 
       <link id="first" rel="stylesheet" type="text/css" href="first.css">
       <style>
@@ -88,7 +86,7 @@
       </feature>
     </layer->
     <layer- label="Alabama" checked>
-      <meta name="zoom" content="min=0,max=10" />
+
       <extent units="CBMTILE">
         <input name="z" type="zoom" min="2" max="18" />
         <input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" />
@@ -98,6 +96,17 @@
         <link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
       </extent>
     </layer->
+    <layer- label="Static MapML with tiles" checked>
+      <meta name="projection" content="CBMTILE">
+      <link rel="license"
+        href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
+        title="Canada Base Map © Natural Resources Canada">
+      <tile zoom="3" row="18" col="17" src="data/cbmt/3/c17_r18.png"></tile>
+      <tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></tile>
+      <tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></tile>
+      <tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></tile>
+    </layer->
+    <layer- label="Toporama" src="data/templatedImage.mapml" checked></layer->
   </map>
   <map is="web-map" projection="WGS84" zoom="0" lat="0" lon="0" controls>
 
@@ -108,19 +117,17 @@
           color: aliceblue;
         }
       </style>
-      <meta name="zoom" content="min=0,max=10" />
       <extent units="WGS84">
         <input name="zoomLevel" type="zoom" min="0" max="2" value="0" />
 
-        <input name="row" type="location" axis="row" units="tilematrix" min="0" max="5" />
-        <input name="col" type="location" axis="column" units="tilematrix" min="0" max="5" />
+        <input name="row" type="location" axis="row" units="tilematrix" />
+        <input name="col" type="location" axis="column" units="tilematrix" />
 
         <link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)'
           tref='data/wgs84/{zoomLevel}/r{row}_c{col}.mapml' />
 
       </extent>
     </layer->
-    <layer- label="src-based Countries" src="data/vector-tile-test.mapml" checked></layer->
   </map>
 </body>
 

@@ -1,5 +1,6 @@
 const playwright = require("playwright");
-const isVisible = require('../layers/isVisible');
+const isVisible = require('./general/isVisible');
+const zoomLimit = require("./general/zoomLimit");
 jest.setTimeout(50000);
 (async () => {
   for (const browserType of BROWSER) {
@@ -7,7 +8,8 @@ jest.setTimeout(50000);
     describe(
       "Playwright mapMLTemplatedImage Layer Tests in " + browserType,
       () => {
-        isVisible.test("mapMLTemplatedImageLayer.html", 1, 2, browserType);
+        isVisible.test("mapMLTemplatedImageLayer.html", 2, 1, browserType);
+        zoomLimit.test("mapMLTemplatedImageLayer.html", 1, 0, browserType);
         describe(
           "General Tests " + browserType,
           () => {
@@ -46,7 +48,7 @@ jest.setTimeout(50000);
                 },
                 zoom: {
                   minZoom: 4,
-                  maxZoom: 4,
+                  maxZoom: 5,
                   minNativeZoom: 4,
                   maxNativeZoom: 4
                 }

@@ -605,7 +605,7 @@ M.Util = {
   extractInputBounds: function(template){
     if(!template) return undefined;
     let inputs = template.values, projection = template.projection || FALLBACK_PROJECTION, value = 0, boundsUnit = FALLBACK_CS;
-    let bounds = L.bounds(L.point(0,0),L.point(5,5)), nMinZoom = 0, nMaxZoom = this[projection].options.resolutions.length;
+    let bounds = L.bounds(L.point(0,0),L.point(5,5)), nMinZoom = 0, nMaxZoom = this[projection].options.resolutions.length - 1;
     if(!template.zoomBounds){
       template.zoomBounds ={};
       template.zoomBounds.min=0;
@@ -1066,7 +1066,7 @@ M.MapMLLayer = L.Layer.extend({
             pane:this._container,
             className:"mapml-static-tile-layer",
             tileContainer:this._mapmlTileContainer,
-            maxZoomBound:map.options.crs.options.resolutions.length,
+            maxZoomBound:map.options.crs.options.resolutions.length - 1,
           });
           map.addLayer(this._staticTileLayer);
         }
@@ -2043,6 +2043,7 @@ M.TemplatedImageLayer =  L.Layer.extend({
         this.zoomBounds = inputData.zoomBounds;
         this.layerBounds=inputData.bounds;
         this.isVisible = true;
+        Object.assign(options,this.zoomBounds);
         L.setOptions(this, L.extend(options,this._setUpExtentTemplateVars(template)));
     },
     getEvents: function () {
@@ -2052,6 +2053,7 @@ M.TemplatedImageLayer =  L.Layer.extend({
         return events;
     },
     onAdd: function () {
+        this._map._addZoomLimit(this);  //used to set the zoom limit of the map
         this.setZIndex(this.options.zIndex);
         this._map.fire('moveend',true);
     },
@@ -2204,10 +2206,11 @@ M.TemplatedFeaturesLayer =  L.Layer.extend({
       this.zoomBounds = inputData.zoomBounds;
       this.layerBounds=inputData.bounds;
       this.isVisible = true;
-        this._template = template;
-        this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
-        L.DomUtil.addClass(this._container, 'mapml-features-container');
-        L.setOptions(this, L.extend(options,this._setUpFeaturesTemplateVars(template)));
+      this._template = template;
+      this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
+      Object.assign(options,this.zoomBounds);
+      L.DomUtil.addClass(this._container, 'mapml-features-container');
+      L.setOptions(this, L.extend(options,this._setUpFeaturesTemplateVars(template)));
     },
     getEvents: function () {
         var events = {
@@ -2216,6 +2219,7 @@ M.TemplatedFeaturesLayer =  L.Layer.extend({
         return events;
     },
     onAdd: function () {
+      this._map._addZoomLimit(this);
       var mapml, headers = new Headers({'Accept': 'text/mapml'});
           var parser = new DOMParser(),
           opacity = this.options.opacity,
@@ -2438,6 +2442,7 @@ M.TemplatedLayer = L.Layer.extend({
       } else if (templates[i].rel === 'query') {
           // add template to array of queryies to be added to map and processed
           // on click/tap events
+          this.hasSetBoundsHandler = true;
           this.options._leafletLayer._map.on('moveend', this._setBoundsFlag, this);
           if (!this._queries) {
             this._queries = [];
@@ -2497,6 +2502,7 @@ M.TemplatedLayer = L.Layer.extend({
       var queryVarNames = {query:{}},
           inputs = template.values,
           bounds = M.extractInputBounds(template);
+      Object.assign(this.options,bounds.zoomBounds);
       queryVarNames.query.layerBounds = bounds.bounds;
       queryVarNames.query.zoomBounds = bounds.zoomBounds;
       queryVarNames.query.isVisible = true;
@@ -2643,6 +2649,8 @@ M.TemplatedLayer = L.Layer.extend({
     for (var i=0;i<this._templates.length;i++) {
       if (this._templates[i].rel !== 'query') {
         map.addLayer(this._templates[i].layer);
+      } else {
+        this._map._addZoomLimit(this);
       }
     }
   },
@@ -2663,7 +2671,7 @@ M.TemplatedLayer = L.Layer.extend({
       if (this._templates[i].rel !== 'query') {
         map.removeLayer(this._templates[i].layer);
       } else {
-        map.off('moveend',this._setBoundsFlag);
+        map.off('moveend',this._setBoundsFlag,this);
       }
     }
   }
@@ -2703,6 +2711,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       L.TileLayer.prototype.initialize.call(this, template.template, L.extend(options, {pane: this._container}));
     },
     onAdd : function(){
+      this._map._addZoomLimit(this);
       this._map.fire('moveend',true);
       L.TileLayer.prototype.onAdd.call(this,this._map);
     },
@@ -2710,7 +2719,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
     getEvents: function(){
       let events = L.TileLayer.prototype.getEvents.call(this,this._map);
       events.moveend = this._setBoundsFlag;
-      //events.move = ()=>{};
+      events.move = function _nullFunction(){};
       return events;
     },
 
@@ -3566,16 +3575,13 @@ M.MapMLFeatures = L.FeatureGroup.extend({
           this.isVisible = true; //placeholder for when this actually gets updated in the future
           this.zoomBounds = this._getZoomBounds(mapml);
           this.layerBounds = this._getLayerBounds(mapml);
+          Object.assign(this.options,this.zoomBounds);
         }
         this.addData(mapml);
         if(this._staticFeature){
           this._resetFeatures(this._clampZoom(this.options._leafletLayer._map.getZoom()));
 
-          // TODO: attempt to set the maps zoom, doesnt update the map needs fixing
-          this.options._leafletLayer._map.minZoom = Math.min(
-            this.zoomBounds.minZoom,this.options._leafletLayer._map.minZoom || 30);
-          this.options._leafletLayer._map.maxZoom = Math.max(
-            this.zoomBounds.maxZoom,this.options._leafletLayer._map.maxZoom || 0);
+          this.options._leafletLayer._map._addZoomLimit(this);
         }
       }
     },
@@ -3686,7 +3692,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       } catch(error){
         return {
           minZoom:0,
-          maxZoom: M[projection || FALLBACK_PROJECTION].options.resolutions.length,
+          maxZoom: M[projection || FALLBACK_PROJECTION].options.resolutions.length - 1,
           minNativeZoom:nMin,
           maxNativeZoom:nMax
         };

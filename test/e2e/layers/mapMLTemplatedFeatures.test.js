@@ -6,10 +6,10 @@ jest.setTimeout(50000);
   for (const browserType of BROWSER) {
     let page, browser, context;
     describe(
-      "Playwright mapMLStaticTile Layer Tests in " + browserType,
+      "Playwright mapMLFeatures (Static Features) Layer Tests in " + browserType,
       () => {
-        isVisible.test("mapMLStaticTileLayer.html", 3, 3, browserType);
-        zoomLimit.test("mapMLStaticTileLayer.html", 2, 2, browserType);
+        isVisible.test("mapMLTemplatedFeatures.html", 3, 2, browserType);
+        zoomLimit.test("mapMLTemplatedFeatures.html", 2, 1, browserType);
         describe("General Tests ", () => {
           beforeAll(async () => {
             browser = await playwright[browserType].launch({
@@ -21,19 +21,11 @@ jest.setTimeout(50000);
             if (browserType === "firefox") {
               await page.waitForNavigation();
             }
-            await page.goto(PATH + "mapMLStaticTileLayer.html");
+            await page.goto(PATH + "mapMLTemplatedFeatures.html");
           });
 
           afterAll(async function () {
             await browser.close();
-          });
-
-          test("[" + browserType + "]" + " Tiles load in on default map zoom level", async () => {
-            const tiles = await page.$eval(
-              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-static-tile-layer > div",
-              (tileGroup) => tileGroup.getElementsByTagName("tile").length
-            );
-            expect(tiles).toEqual(1);
           });
           test("[" + browserType + "]" + " <layer->.extent test", async () => {
             const extent = await page.$eval(
@@ -44,19 +36,19 @@ jest.setTimeout(50000);
               extent: {
                 crs: "CBMTILE/pcrs",
                 bottomRight: {
-                  horizontal: 5984281.280162558,
-                  vertical: -1330081.280162558,
+                  horizontal: 1617642.4028044068,
+                  vertical: -222452.18449031282,
                 },
                 topLeft: {
-                  horizontal: -4175739.0398780815,
-                  vertical: 5443265.599864535,
+                  horizontal: 1501645.2210838948,
+                  vertical: -66110.70639331453,
                 },
               },
               zoom: {
-                maxNativeZoom: 3,
+                maxNativeZoom: 18,
                 minNativeZoom: 2,
-                minZoom: 1,
-                maxZoom: 4
+                minZoom: 2,
+                maxZoom: 5
               }
             };
             expect(extent).toEqual(expectedExtent);

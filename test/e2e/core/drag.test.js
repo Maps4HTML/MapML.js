@@ -3,7 +3,7 @@ jest.setTimeout(30000);
 (async () => {
   for (const browserType of BROWSER) {
     let page, browser, context;
-    describe("Playwright UI Drag&Drop Test in " + browserType, () => {
+    describe("UI Drag&Drop Test in " + browserType, () => {
       beforeEach(async () => {
         browser = await playwright[browserType].launch({
           headless: ISHEADLESS,

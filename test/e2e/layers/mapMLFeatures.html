@@ -1,7 +1,7 @@
 <html>
 
 <head>
-  <title>Missing Parameters</title>
+  <title>Static Features Test</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script type="module" src="web-map.js"></script>
@@ -23,7 +23,9 @@
 
     <layer- label="Arizona" checked>
       <meta name="projection" content="CBMTILE" />
-      <meta name="cs" content="tilematrix" />
+      <meta name="zoom" content="min=1,max=5,value=0" />
+      <meta name="extent"
+        content="cs=tilematrix,top-left-vertical=0,top-left-horizontal=0,bottom-right-vertical=5,bottom-right-horizontal=5" />
 
       <link id="first" rel="stylesheet" type="text/css" href="first.css">
       <style>
@@ -85,50 +87,16 @@
         </geometry>
       </feature>
     </layer->
-    <layer- label="Alabama" checked>
-
-      <extent units="CBMTILE">
-        <input name="z" type="zoom" min="2" max="18" />
-        <input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" />
-        <input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46" />
-        <input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" />
-        <input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" />
-        <link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
-      </extent>
-    </layer->
     <layer- label="Static MapML with tiles" checked>
+      <meta name="zoom" content="min=0,max=10">
       <meta name="projection" content="CBMTILE">
       <link rel="license"
         href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
         title="Canada Base Map © Natural Resources Canada">
-      <tile zoom="3" row="18" col="17" src="data/cbmt/3/c17_r18.png"></tile>
-      <tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></tile>
-      <tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></tile>
-      <tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></tile>
-    </layer->
-    <layer- label="Toporama" src="data/templatedImage.mapml" checked></layer->
-  </map>
-  <map is="web-map" projection="WGS84" zoom="0" lat="0" lon="0" controls>
-
-    <layer- label="Inline Countries" checked>
-      <link rel="stylesheet" href="styleOrder.css">
-      <style>
-        .secondVector {
-          color: aliceblue;
-        }
-      </style>
-      <extent units="WGS84">
-        <input name="zoomLevel" type="zoom" min="0" max="2" value="0" />
-
-        <input name="row" type="location" axis="row" units="tilematrix" />
-        <input name="col" type="location" axis="column" units="tilematrix" />
-
-        <link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)'
-          tref='data/wgs84/{zoomLevel}/r{row}_c{col}.mapml' />
-
-      </extent>
+      <tile zoom="0" row="3" col="3" src="data/cbmt/0/c3_r3.png"></tile>
     </layer->
   </map>
+
 </body>
 
 </html>
