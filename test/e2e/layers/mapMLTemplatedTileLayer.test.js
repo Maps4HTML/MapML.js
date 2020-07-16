@@ -36,32 +36,56 @@ jest.setTimeout(50000);
               expect(tiles).toEqual(2);
             });
             test("[" + browserType + "]" + " <layer->.extent test", async () => {
-              const bounds = await page.$eval(
+              const extent = await page.$eval(
                 "body > map > layer-:nth-child(1)",
                 (layer) => layer.extent
               );
-              let expectedBounds = {
-                bounds: { crs: 'WGS84/pcrs', min: { x: -180, y: -270 }, max: { x: 180, y: 90 } },
-                minZoom: 1,
-                maxZoom: 1,
-                minNativeZoom: 1,
-                maxNativeZoom: 1
+              let expectedExtent = {
+                extent: {
+                  crs: "WGS84/pcrs",
+                  bottomRight: {
+                    horizontal: 180,
+                    vertical: -270,
+                  },
+                  topLeft: {
+                    horizontal: -180,
+                    vertical: 90,
+                  },
+                },
+                zoom: {
+                  minZoom: 1,
+                  maxZoom: 1,
+                  minNativeZoom: 1,
+                  maxNativeZoom: 1
+                }
               };
-              expect(bounds).toEqual(expectedBounds);
+              expect(extent).toEqual(expectedExtent);
             });
             test("[" + browserType + "]" + " 2nd <layer->.extent test", async () => {
-              const bounds = await page.$eval(
+              const extent = await page.$eval(
                 "body > map > layer-:nth-child(2)",
                 (layer) => layer.extent
               );
-              let expectedBounds = {
-                bounds: { crs: 'WGS84/pcrs', min: { x: 360, y: -630 }, max: { x: 540, y: -450 } },
-                maxNativeZoom: 0,
-                minNativeZoom: 0,
-                minZoom: 0,
-                maxZoom: 10
+              let expectedExtent = {
+                extent: {
+                  crs: "WGS84/pcrs",
+                  bottomRight: {
+                    horizontal: 540,
+                    vertical: -630,
+                  },
+                  topLeft: {
+                    horizontal: 360,
+                    vertical: -450,
+                  },
+                },
+                zoom: {
+                  maxNativeZoom: 0,
+                  minNativeZoom: 0,
+                  minZoom: 0,
+                  maxZoom: 10
+                }
               };
-              expect(bounds).toEqual(expectedBounds);
+              expect(extent).toEqual(expectedExtent);
             });
           });
 

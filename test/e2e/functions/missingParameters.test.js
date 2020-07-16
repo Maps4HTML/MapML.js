@@ -21,21 +21,29 @@ jest.setTimeout(30000);
         await browser.close();
       });
 
-      test("[" + browserType + "]" + " Static features with missing <meta name='zoom'> & <meta name='bounds'>", async () => {
+      test("[" + browserType + "]" + " Static features with missing <meta name='zoom'> & <meta name='extent'>", async () => {
         const layerController = await page.$eval("body > map:nth-child(1) > layer-:nth-child(1)",
           (controller) => controller.extent);
 
 
         expect(layerController).toEqual({
-          bounds: {
-            crs: 'CBMTILE/pcrs',
-            min: { x: -20037508.342789244, y: -180337575.0851032 },
-            max: { x: 180337575.0851032, y: 20037508.342789244 }
+          extent: {
+            crs: "CBMTILE/pcrs",
+            bottomRight: {
+              horizontal: 180337575.0851032,
+              vertical: -180337575.0851032,
+            },
+            topLeft: {
+              horizontal: -20037508.342789244,
+              vertical: 20037508.342789244,
+            },
           },
-          minZoom: 0,
-          maxZoom: 26,
-          minNativeZoom: 2,
-          maxNativeZoom: 4
+          zoom: {
+            maxNativeZoom: 4,
+            minNativeZoom: 2,
+            minZoom: 0,
+            maxZoom: 26
+          }
         });
       });
 
@@ -45,15 +53,23 @@ jest.setTimeout(30000);
 
 
         expect(layerController).toEqual({
-          bounds: {
-            crs: 'CBMTILE/pcrs',
-            min: { x: -4175739.0398780815, y: -1330081.280162558 },
-            max: { x: 5984281.280162558, y: 5443265.599864535 }
+          extent: {
+            crs: "CBMTILE/pcrs",
+            bottomRight: {
+              horizontal: 5984281.280162558,
+              vertical: -1330081.280162558,
+            },
+            topLeft: {
+              horizontal: -4175739.0398780815,
+              vertical: 5443265.599864535,
+            },
           },
-          minZoom: 0,
-          maxZoom: 26,
-          minNativeZoom: 2,
-          maxNativeZoom: 3
+          zoom: {
+            maxNativeZoom: 3,
+            minNativeZoom: 2,
+            minZoom: 0,
+            maxZoom: 26
+          }
         });
       });
 
@@ -62,32 +78,48 @@ jest.setTimeout(30000);
           (controller) => controller.extent);
 
         expect(layerController).toEqual({
-          bounds: {
-            crs: 'CBMTILE/pcrs',
-            min: { x: 1501645.2210838948, y: -222452.18449031282 },
-            max: { x: 1617642.4028044068, y: -66110.70639331453 }
+          extent: {
+            crs: "CBMTILE/pcrs",
+            bottomRight: {
+              horizontal: 1617642.4028044068,
+              vertical: -222452.18449031282,
+            },
+            topLeft: {
+              horizontal: 1501645.2210838948,
+              vertical: -66110.70639331453,
+            },
           },
-          minZoom: 0,
-          maxZoom: 26,
-          minNativeZoom: 2,
-          maxNativeZoom: 18
+          zoom: {
+            maxNativeZoom: 18,
+            minNativeZoom: 2,
+            minZoom: 0,
+            maxZoom: 26
+          }
         });
       });
 
-      test("[" + browserType + "]" + " Templated tiles with missing <meta name='zoom'> & bounds", async () => {
+      test("[" + browserType + "]" + " Templated tiles with missing <meta name='zoom'> & extent", async () => {
         const layerController = await page.$eval("body > map:nth-child(2) > layer-",
           (controller) => controller.extent);
 
         expect(layerController).toEqual({
-          bounds: {
-            crs: 'WGS84/pcrs',
-            min: { x: -180, y: -810 },
-            max: { x: 720, y: 90 }
+          extent: {
+            crs: "WGS84/pcrs",
+            bottomRight: {
+              horizontal: 720,
+              vertical: -810,
+            },
+            topLeft: {
+              horizontal: -180,
+              vertical: 90,
+            },
           },
-          minZoom: 0,
-          maxZoom: 22,
-          minNativeZoom: 0,
-          maxNativeZoom: 2
+          zoom: {
+            maxNativeZoom: 2,
+            minNativeZoom: 0,
+            minZoom: 0,
+            maxZoom: 22
+          }
         });
       });
 
@@ -96,15 +128,23 @@ jest.setTimeout(30000);
           (controller) => controller.extent);
 
         expect(layerController).toEqual({
-          bounds: {
-            crs: 'CBMTILE/pcrs',
-            min: { x: 28448056, y: 28448056 },
-            max: { x: 38608077, y: 42672085 }
+          extent: {
+            crs: "CBMTILE/pcrs",
+            bottomRight: {
+              horizontal: 38608077,
+              vertical: 28448056,
+            },
+            topLeft: {
+              horizontal: 28448056,
+              vertical: 42672085,
+            },
           },
-          minZoom: 0,
-          maxZoom: 26,
-          minNativeZoom: 0,
-          maxNativeZoom: 19
+          zoom: {
+            maxNativeZoom: 19,
+            minNativeZoom: 0,
+            minZoom: 0,
+            maxZoom: 26
+          }
         });
       });
     });

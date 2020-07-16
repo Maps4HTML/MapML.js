@@ -28,40 +28,56 @@ jest.setTimeout(50000);
               await browser.close();
             });
             test("[" + browserType + "]" + " <layer->.extent test", async () => {
-              const bounds = await page.$eval(
+              const extent = await page.$eval(
                 "body > map > layer-:nth-child(1)",
                 (layer) => layer.extent
               );
-              let expectedBounds = {
-                bounds: {
-                  crs: 'CBMTILE/pcrs',
-                  min: { x: 28448056, y: 28448056 },
-                  max: { x: 38608077, y: 42672085 }
+              let expectedExtent = {
+                extent: {
+                  crs: "CBMTILE/pcrs",
+                  bottomRight: {
+                    horizontal: 38608077,
+                    vertical: 28448056,
+                  },
+                  topLeft: {
+                    horizontal: 28448056,
+                    vertical: 42672085,
+                  },
                 },
-                minZoom: 4,
-                maxZoom: 4,
-                minNativeZoom: 4,
-                maxNativeZoom: 4
+                zoom: {
+                  minZoom: 4,
+                  maxZoom: 4,
+                  minNativeZoom: 4,
+                  maxNativeZoom: 4
+                }
               };
-              expect(bounds).toEqual(expectedBounds);
+              expect(extent).toEqual(expectedExtent);
             });
             test("[" + browserType + "]" + " 2nd <layer->.extent test", async () => {
-              const bounds = await page.$eval(
+              const extent = await page.$eval(
                 "body > map > layer-:nth-child(2)",
                 (layer) => layer.extent
               );
-              let expectedBounds = {
-                bounds: {
-                  crs: 'CBMTILE/pcrs',
-                  min: { x: -5191741.07188214, y: 24588.09584285319 },
-                  max: { x: 4629611.904157147, y: 9845941.07188214 }
+              let expectedExtent = {
+                extent: {
+                  crs: "CBMTILE/pcrs",
+                  bottomRight: {
+                    horizontal: 4629611.904157147,
+                    vertical: 24588.09584285319,
+                  },
+                  topLeft: {
+                    horizontal: -5191741.07188214,
+                    vertical: 9845941.07188214,
+                  },
                 },
-                maxNativeZoom: 0,
-                minNativeZoom: 0,
-                minZoom: 0,
-                maxZoom: 10
+                zoom: {
+                  maxNativeZoom: 0,
+                  minNativeZoom: 0,
+                  minZoom: 0,
+                  maxZoom: 10
+                }
               };
-              expect(bounds).toEqual(expectedBounds);
+              expect(extent).toEqual(expectedExtent);
             });
           });
       }

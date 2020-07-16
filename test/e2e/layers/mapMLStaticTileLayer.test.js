@@ -8,7 +8,7 @@ jest.setTimeout(50000);
       "Playwright mapMLStaticTile Layer Tests in " + browserType,
       () => {
         isVisible.test("mapMLStaticTileLayer.html", 3, 6, browserType);
-        describe("General Tests " + browserType, () => {
+        describe("General Tests ", () => {
           beforeAll(async () => {
             browser = await playwright[browserType].launch({
               headless: ISHEADLESS,
@@ -34,40 +34,56 @@ jest.setTimeout(50000);
             expect(tiles).toEqual(1);
           });
           test("[" + browserType + "]" + " <layer->.extent test", async () => {
-            const bounds = await page.$eval(
+            const extent = await page.$eval(
               "body > map > layer-:nth-child(1)",
               (layer) => layer.extent
             );
-            let expectedBounds = {
-              bounds: {
-                crs: 'CBMTILE/pcrs',
-                min: { x: -4175739.0398780815, y: -1330081.280162558 },
-                max: { x: 5984281.280162558, y: 5443265.599864535 }
+            let expectedExtent = {
+              extent: {
+                crs: "CBMTILE/pcrs",
+                bottomRight: {
+                  horizontal: 5984281.280162558,
+                  vertical: -1330081.280162558,
+                },
+                topLeft: {
+                  horizontal: -4175739.0398780815,
+                  vertical: 5443265.599864535,
+                },
               },
-              maxNativeZoom: 3,
-              minNativeZoom: 2,
-              minZoom: 1,
-              maxZoom: 4
+              zoom: {
+                maxNativeZoom: 3,
+                minNativeZoom: 2,
+                minZoom: 1,
+                maxZoom: 4
+              }
             };
-            expect(bounds).toEqual(expectedBounds);
+            expect(extent).toEqual(expectedExtent);
           });
           test("[" + browserType + "]" + " 2nd <layer->.extent test", async () => {
-            const bounds = await page.$eval(
+            const extent = await page.$eval(
               "body > map > layer-:nth-child(2)",
               (layer) => layer.extent
             );
-            let expectedBounds = {
-              bounds: {
-                crs: 'CBMTILE/pcrs',
-                min: { x: -5191741.07188214, y: 24588.09584285319 },
-                max: { x: 4629611.904157147, y: 9845941.07188214 }
+            let expectedExtent = {
+              extent: {
+                crs: "CBMTILE/pcrs",
+                bottomRight: {
+                  horizontal: 4629611.904157147,
+                  vertical: 24588.09584285319,
+                },
+                topLeft: {
+                  horizontal: -5191741.07188214,
+                  vertical: 9845941.07188214,
+                },
               },
-              maxNativeZoom: 0,
-              minNativeZoom: 0,
-              minZoom: 0,
-              maxZoom: 10
+              zoom: {
+                maxNativeZoom: 0,
+                minNativeZoom: 0,
+                minZoom: 0,
+                maxZoom: 10
+              }
             };
-            expect(bounds).toEqual(expectedBounds);
+            expect(extent).toEqual(expectedExtent);
           });
         });
       }
