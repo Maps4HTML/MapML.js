@@ -8,7 +8,7 @@ exports.test = (path, zoomIn, zoomOut, browserType) => {
       beforeAll(async () => {
         browser = await playwright[browserType].launch({
           headless: ISHEADLESS,
-          slowMo: 50,
+          slowMo: 70,
         });
         context = await browser.newContext();
         page = await context.newPage();

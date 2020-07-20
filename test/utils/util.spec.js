@@ -290,5 +290,27 @@ describe("M.Util Tests", () => {
     });
   });
 
+  describe("M.axisToCS() utility function tests", () => {
+    test("Null axis", () => {
+      let output = M.axisToCS(null);
+      expect(output).toEqual(undefined);
+    });
+    test("Non-String axis", () => {
+      let output = M.axisToCS(5);
+      expect(output).toEqual(undefined);
+    });
+    test("Lowercase axis", () => {
+      let output = M.axisToCS("row");
+      expect(output).toEqual("TILEMATRIX");
+    });
+    test("Uppercase axis", () => {
+      let output = M.axisToCS("NORTHING");
+      expect(output).toEqual("PCRS");
+    });
+    test("Random String", () => {
+      let output = M.axisToCS("TEST");
+      expect(output).toEqual("TILEMATRIX");
+    });
+  });
 });
 

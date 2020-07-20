@@ -604,8 +604,10 @@ const FALLBACK_CS = "TILEMATRIX";
 M.Util = {  
   extractInputBounds: function(template){
     if(!template) return undefined;
+
+    //sets variables with their respective fallback values incase content is missing from the template
     let inputs = template.values, projection = template.projection || FALLBACK_PROJECTION, value = 0, boundsUnit = FALLBACK_CS;
-    let bounds = L.bounds(L.point(0,0),L.point(5,5)), nMinZoom = 0, nMaxZoom = this[projection].options.resolutions.length - 1;
+    let bounds = this[projection].options.crs.tilematrix.bounds(0), nMinZoom = 0, nMaxZoom = this[projection].options.resolutions.length - 1;
     if(!template.zoomBounds){
       template.zoomBounds ={};
       template.zoomBounds.min=0;
@@ -623,7 +625,6 @@ M.Util = {
           let max = +inputs[i].getAttribute("max"),min = +inputs[i].getAttribute("min");
           switch(inputs[i].getAttribute("axis").toLowerCase()){
             case "x":
-            case "j":
             case "longitude":
             case "column":
             case "easting":
@@ -632,7 +633,6 @@ M.Util = {
               bounds.max.x = max;
             break;
             case "y":
-            case "i":
             case "latitude":
             case "row":
             case "northing":
@@ -660,24 +660,27 @@ M.Util = {
   },
 
   axisToCS : function(axis){
-    switch(axis.toLowerCase()){
-      case "row":
-      case "column":
-        return "tilematrix";
-      case "i":
-      case "j":
-      case "x":
-      case "y":
-        return "TCRS";
-      case "latitude":
-      case "longitude":
-        return "GCRS";
-      case "northing":
-      case "easting":
-        return "PCRS";
-      default:
-        return FALLBACK_CS;
-    }
+    try{
+      switch(axis.toLowerCase()){
+        case "row":
+        case "column":
+          return "TILEMATRIX";
+        case "i":
+        case "j":
+          return ["MAP","TILE"];
+        case "x":
+        case "y":
+          return "TCRS";
+        case "latitude":
+        case "longitude":
+          return "GCRS";
+        case "northing":
+        case "easting":
+          return "PCRS";
+        default:
+          return FALLBACK_CS;
+      }
+    } catch (e) {return undefined;}
   },
 
   boundsToPCRSBounds: function(bounds, zoom, projection,cs){
@@ -1105,40 +1108,103 @@ M.MapMLLayer = L.Layer.extend({
       let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
       layerTypes.forEach((type) =>{
         if(this[type]){
-          switch(type){
-            case "_templatedLayer":
-              for(let j =0;j<this[type]._templates.length;j++){
-                let templateType = this[type]._templates[j].rel === "query"?"query":"layer";
-                if(this[type]._templates[j][templateType].layerBounds){
-                  if(!localBounds){
-                    localBounds = this[type]._templates[j][templateType].layerBounds;
-                    localZoomRanges = this[type]._templates[j][templateType].zoomBounds;
-                  } else {
-                    localBounds.extend(this[type]._templates[j][templateType].layerBounds);
-                  }
+          if(type === "_templatedLayer"){
+            for(let j =0;j<this[type]._templates.length;j++){
+              if(this[type]._templates[j].rel === "query") continue;
+              if(this[type]._templates[j].layer.layerBounds){
+                if(!localBounds){
+                  localBounds = this[type]._templates[j].layer.layerBounds;
+                  localZoomRanges = this[type]._templates[j].layer.zoomBounds;
+                } else {
+                  localBounds.extend(this[type]._templates[j].layer.layerBounds);
                 }
               }
-              break;
-            default:
-              if(this[type].layerBounds){
-                if(!localBounds){
-                  localBounds = this[type].layerBounds;
-                  localZoomRanges = this[type].zoomBounds;
-                } else{
-                  localBounds.extend(this[type].layerBounds);
-                }
-              } 
-              break;
+            }
+          } else {
+            if(this[type].layerBounds){
+              if(!localBounds){
+                localBounds = this[type].layerBounds;
+                localZoomRanges = this[type].zoomBounds;
+              } else{
+                localBounds.extend(this[type].layerBounds);
+              }
+            } 
           }
         }
       });
+
       if(localBounds){
-        let locations = {
-          crs:`${this.options.mapprojection}/pcrs`,
-          topLeft:{horizontal:localBounds.min.x,vertical:localBounds.max.y},
-          bottomRight:{horizontal:localBounds.max.x,vertical:localBounds.min.y},
+        //converts to tcrs bounds relative to the map view, (i.e. topleft bottomright)
+        let tcrsTopLeft = [], tcrsBottomRight = [];
+        this._map.options.crs._scales.forEach((scale)=>{
+          let minConverted = this._map.options.crs.transformation.transform(localBounds.min,scale);
+          let maxConverted = this._map.options.crs.transformation.transform(localBounds.max,scale);
+          tcrsTopLeft.push({
+            horizontal: minConverted.x,
+            vertical:maxConverted.y,
+          });
+          tcrsBottomRight.push({
+            horizontal: maxConverted.x,
+            vertical: minConverted.y,
+          });
+        });
+        
+        //converts the tcrs values from earlier to tilematrix
+        let tileMatrixTopLeft = [], tileMatrixBottomRight = [];
+        for(let i = 0;i < tcrsTopLeft.length;i++){
+          tileMatrixTopLeft.push({
+            horizontal: tcrsTopLeft[i].horizontal / TILE_SIZE,
+            vertical:tcrsTopLeft[i].vertical / TILE_SIZE,
+          });
+          tileMatrixBottomRight.push({
+            horizontal: tcrsBottomRight[i].horizontal / TILE_SIZE,
+            vertical: tcrsBottomRight[i].vertical / TILE_SIZE,
+          });
+        }
+
+        //converts the gcrs, I believe it can take any number values from -inf to +inf
+        let unprojectedMin = this._map.options.crs.unproject(localBounds.min),
+            unprojectedMax = this._map.options.crs.unproject(localBounds.max);
+        let gcrs = {
+          topLeft:{
+            horizontal: unprojectedMin.lng,
+            vertical:unprojectedMax.lat,
+          },
+          bottomRight:{
+            horizontal: unprojectedMax.lng,
+            vertical: unprojectedMin.lat,
+          },
         };
-        this._layerEl.extent = {extent:locations,zoom:localZoomRanges};
+
+        //formats known pcrs bounds to correct format
+        let pcrs = {
+          topLeft:{
+            horizontal:localBounds.min.x,
+            vertical:localBounds.max.y,
+          },
+          bottomRight:{
+            horizontal:localBounds.max.x,
+            vertical:localBounds.min.y,
+          },
+        };
+
+        //formats all extent data
+        this._layerEl.extent = {
+          topLeft:{
+            tcrs:tcrsTopLeft,
+            tilematrix:tileMatrixTopLeft,
+            gcrs:gcrs.topLeft,
+            pcrs:pcrs.topLeft,
+          },
+          bottomRight:{
+            tcrs:tcrsBottomRight,
+            tilematrix:tileMatrixBottomRight,
+            gcrs:gcrs.bottomRight,
+            pcrs:pcrs.bottomRight,
+          },
+          zoom:localZoomRanges, 
+          projection:this.options.mapprojection
+        };
       }
     },
 
@@ -2043,12 +2109,12 @@ M.TemplatedImageLayer =  L.Layer.extend({
         this.zoomBounds = inputData.zoomBounds;
         this.layerBounds=inputData.bounds;
         this.isVisible = true;
-        Object.assign(options,this.zoomBounds);
+        L.extend(options, this.zoomBounds);
         L.setOptions(this, L.extend(options,this._setUpExtentTemplateVars(template)));
     },
     getEvents: function () {
         var events = {
-            moveend: this._setBoundsFlag
+            moveend: this._onMoveEnd
         };
         return events;
     },
@@ -2061,18 +2127,6 @@ M.TemplatedImageLayer =  L.Layer.extend({
         this._onMoveEnd();
     },
 
-    _setBoundsFlag : function(){
-      let mapZoom = this._map.getZoom();
-      let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
-      this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && 
-                        this.layerBounds.overlaps(mapBounds);
-      if(!(this.isVisible)){
-        this._clearLayer();
-        return;
-      }
-      this._onMoveEnd();
-    },
-
     _clearLayer: function(){
       let containerImages = this._container.querySelectorAll('img');
       for(let i = 0; i< containerImages.length;i++){
@@ -2081,6 +2135,14 @@ M.TemplatedImageLayer =  L.Layer.extend({
     },
 
     _onMoveEnd: function() {
+      let mapZoom = this._map.getZoom();
+      let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
+      this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && 
+                        this.layerBounds.overlaps(mapBounds);
+      if(!(this.isVisible)){
+        this._clearLayer();
+        return;
+      }
       var map = this._map,
         loc = map.getPixelBounds().min.subtract(map.getPixelOrigin()),
         size = map.getSize(),
@@ -2104,7 +2166,10 @@ M.TemplatedImageLayer =  L.Layer.extend({
             this._container.style.zIndex = this.options.zIndex;
         }
     },
-    onRemove: function () {
+    onRemove: function (map) {
+      this._clearLayer();
+      map._removeZoomLimit(this);
+      this._container = null;
     },
     getImageUrl: function() {
         var obj = {};
@@ -2208,13 +2273,13 @@ M.TemplatedFeaturesLayer =  L.Layer.extend({
       this.isVisible = true;
       this._template = template;
       this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
-      Object.assign(options,this.zoomBounds);
+      L.extend(options, this.zoomBounds);
       L.DomUtil.addClass(this._container, 'mapml-features-container');
       L.setOptions(this, L.extend(options,this._setUpFeaturesTemplateVars(template)));
     },
     getEvents: function () {
         var events = {
-            moveend: this._setBoundsFlag
+            moveend: this._onMoveEnd
         };
         return events;
     },
@@ -2266,24 +2331,17 @@ M.TemplatedFeaturesLayer =  L.Layer.extend({
         .catch(function (error) { console.log(error);});
     },
 
-    // TODO: templated layers have very similar _setBoundsFlag methods, might be valuable considering inheriting this function from a paraent class
-    _setBoundsFlag : function(){
+    _onMoveEnd: function() {
       let mapZoom = this._map.getZoom();
       let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
       this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && 
                         this.layerBounds.overlaps(mapBounds);
-      if(Object.keys(this.layerBounds).length === 0){ //temporary to allow layers with no bounds currently to still work, remove once bounds
-        this.isVisible = true;  //are implemented for all layer types that use templatedTileLayer
-      }
+      
+      this._features.clearLayers();
       if(!(this.isVisible)){
-        this._features.clearLayers();
         return;
       }
-      this._onMoveEnd();
-    },
 
-    _onMoveEnd: function() {
-      this._features.clearLayers();
       // TODO add preference with a bit less weight than that for text/mapml; 0.8 for application/geo+json; 0.6
       var mapml, headers = new Headers({'Accept': 'text/mapml;q=0.9,application/geo+json;q=0.8'}),
           parser = new DOMParser(),
@@ -2443,7 +2501,6 @@ M.TemplatedLayer = L.Layer.extend({
           // add template to array of queryies to be added to map and processed
           // on click/tap events
           this.hasSetBoundsHandler = true;
-          this.options._leafletLayer._map.on('moveend', this._setBoundsFlag, this);
           if (!this._queries) {
             this._queries = [];
           }
@@ -2468,21 +2525,6 @@ M.TemplatedLayer = L.Layer.extend({
       this.closePopup();
   },
 
-  _setBoundsFlag : function(){
-    let templates = this._templates, map = this.options._leafletLayer._map;
-    let zoom = map.getZoom(), mapBounds = M.pixelToPCRSBounds(map.getPixelBounds(),zoom,map.options.projection);
-    for(let i = 0;i<templates.length;i++){
-      if(templates[i].rel === "query"){
-        if(zoom <= templates[i].query.zoomBounds.maxZoom && 
-          zoom >= templates[i].query.zoomBounds.minZoom && 
-          templates[i].query.layerBounds.overlaps(mapBounds))
-        {
-          templates[i].query.isVisible = true;
-        }
-      }
-    }
-  },
-
   _setupQueryVars: function(template) {
       // process the inputs associated to template and create an object named
       // query with member properties as follows:
@@ -2500,12 +2542,7 @@ M.TemplatedLayer = L.Layer.extend({
       //  title: link title
 
       var queryVarNames = {query:{}},
-          inputs = template.values,
-          bounds = M.extractInputBounds(template);
-      Object.assign(this.options,bounds.zoomBounds);
-      queryVarNames.query.layerBounds = bounds.bounds;
-      queryVarNames.query.zoomBounds = bounds.zoomBounds;
-      queryVarNames.query.isVisible = true;
+          inputs = template.values;
       
       for (var i=0;i<template.values.length;i++) {
         var type = inputs[i].getAttribute("type"), 
@@ -2649,8 +2686,6 @@ M.TemplatedLayer = L.Layer.extend({
     for (var i=0;i<this._templates.length;i++) {
       if (this._templates[i].rel !== 'query') {
         map.addLayer(this._templates[i].layer);
-      } else {
-        this._map._addZoomLimit(this);
       }
     }
   },
@@ -2670,8 +2705,6 @@ M.TemplatedLayer = L.Layer.extend({
     for (var i=0;i<this._templates.length;i++) {
       if (this._templates[i].rel !== 'query') {
         map.removeLayer(this._templates[i].layer);
-      } else {
-        map.off('moveend',this._setBoundsFlag,this);
       }
     }
   }
@@ -2697,7 +2730,7 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       this.zoomBounds = inputData.zoomBounds;
       this.layerBounds=inputData.bounds;
       this.isVisible = true;
-      Object.assign(options,this.zoomBounds);
+      L.extend(options, this.zoomBounds);
       L.setOptions(this, options);
       this._setUpTileTemplateVars(template);
 
@@ -2712,14 +2745,14 @@ M.TemplatedTileLayer = L.TileLayer.extend({
     },
     onAdd : function(){
       this._map._addZoomLimit(this);
-      this._map.fire('moveend',true);
       L.TileLayer.prototype.onAdd.call(this,this._map);
+      this._map.fire('moveend',true);
     },
 
     getEvents: function(){
       let events = L.TileLayer.prototype.getEvents.call(this,this._map);
-      events.moveend = this._setBoundsFlag;
-      events.move = function _nullFunction(){};
+      this._parentOnMoveEnd = events.moveend;
+      events.moveend = this._handleMoveEnd;
       return events;
     },
 
@@ -2734,16 +2767,13 @@ M.TemplatedTileLayer = L.TileLayer.extend({
         this._updateOpacity();
       }
     },
-    _setBoundsFlag : function(e){
+    _handleMoveEnd : function(e){
       let mapZoom = this._map.getZoom();
       let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
       this.isVisible = mapZoom <= this.options.maxZoom && mapZoom >= this.options.minZoom && 
                         this.layerBounds.overlaps(mapBounds);
-      if(Object.keys(this.layerBounds).length === 0){ //temporary to allow layers with no bounds currently to still work, remove once bounds
-        this.isVisible = true;  //are implemented for all layer types that use templatedTileLayer
-      }
-      if(!(this.isVisible))return; //onMoveEnd still gets fired even when layer is out of bounds??, most likely need to overrride _onMoveEnd
-      this.fire('moveend',e,true);
+      if(!(this.isVisible))return;
+      this._parentOnMoveEnd();
     },
     createTile: function (coords) {
       if (this._template.type.startsWith('image/')) {
@@ -3422,7 +3452,7 @@ M.MapMLStaticTileLayer = L.GridLayer.extend({
 
   initialize: function (options) {
     this.zoomBounds = this._getZoomBounds(options.tileContainer,options.maxZoomBound);
-    Object.assign(options,this.zoomBounds); //same as the ...operator but doesnt throw warnings by jshint
+    L.extend(options, this.zoomBounds);
     L.setOptions(this, options);
     this._groups = this._groupTiles(this.options.tileContainer.getElementsByTagName('tile'));
   },
@@ -3434,13 +3464,14 @@ M.MapMLStaticTileLayer = L.GridLayer.extend({
       this.layerBounds.extend(this._bounds[key].min);
       this.layerBounds.extend(this._bounds[key].max);
     }
-    this._setBoundsFlag();
     L.GridLayer.prototype.onAdd.call(this,this._map);
+    this._map.fire('moveend',true);
   },
   
   getEvents: function(){
     let events = L.GridLayer.prototype.getEvents.call(this,this._map);
-    events.moveend = this._setBoundsFlag;
+    this._parentOnMoveEnd = events.moveend;
+    events.moveend = this._handleMoveEnd;
     events.move = ()=>{}; //needed to prevent moveend from running
     return events;
   },
@@ -3448,7 +3479,7 @@ M.MapMLStaticTileLayer = L.GridLayer.extend({
 
   //sets the bounds flag of the layer and calls default moveEnd if within bounds
   //its the zoom level is between the nativeZoom and zoom then it uses the nativeZoom value to get the bound its checking
-  _setBoundsFlag : function(e){
+  _handleMoveEnd : function(e){
     let mapZoom = this._map.getZoom();
     let zoomLevel = mapZoom;
     zoomLevel = zoomLevel > this.options.maxNativeZoom? this.options.maxNativeZoom: zoomLevel;
@@ -3461,7 +3492,7 @@ M.MapMLStaticTileLayer = L.GridLayer.extend({
                         this._map.options.projection));
     
     if(!(this.isVisible))return; //onMoveEnd still gets fired even when layer is out of bounds??, most likely need to overrride _onMoveEnd
-    this.fire('moveend',e,true);
+    this._parentOnMoveEnd();
   },
 
   _isValidTile(coords) {
@@ -3575,7 +3606,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
           this.isVisible = true; //placeholder for when this actually gets updated in the future
           this.zoomBounds = this._getZoomBounds(mapml);
           this.layerBounds = this._getLayerBounds(mapml);
-          Object.assign(this.options,this.zoomBounds);
+          L.extend(this.options, this.zoomBounds);
         }
         this.addData(mapml);
         if(this._staticFeature){
@@ -3589,7 +3620,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
     getEvents: function(){
       if(this._staticFeature){
         return {
-          'moveend':this._setBoundsFlag,
+          'moveend':this._handleMoveEnd,
         };
       }
       return {
@@ -3597,7 +3628,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       };
     },
 
-    _setBoundsFlag : function(){
+    _handleMoveEnd : function(){
       let zoomLevel = this._map.getZoom();
       zoomLevel = zoomLevel > this.zoomBounds.maxNativeZoom? this.zoomBounds.maxNativeZoom: zoomLevel;
       zoomLevel = zoomLevel < this.zoomBounds.minNativeZoom? this.zoomBounds.minNativeZoom: zoomLevel;
@@ -3628,10 +3659,10 @@ M.MapMLFeatures = L.FeatureGroup.extend({
         return M.boundsToPCRSBounds(
                 L.bounds(L.point(+meta["top-left-vertical"],+meta["top-left-horizontal"]),
                 L.point(+meta["bottom-right-vertical"],+meta["bottom-right-horizontal"])),
-                zoom,projection.content,cs);
+                zoom,projection,cs);
       } catch (error){
         //if error then by default set the layer to osm and bounds to the entire map view
-        return M.boundsToPCRSBounds(L.bounds(L.point(0,0),L.point(5,5)),0,FALLBACK_PROJECTION,FALLBACK_CS);
+        return M.boundsToPCRSBounds(M[FALLBACK_PROJECTION].options.crs.tilematrix.bounds(0),0,FALLBACK_PROJECTION,FALLBACK_CS);
       }
     },
 
@@ -3977,20 +4008,15 @@ M.MapMLLayerControl = L.Control.Layers.extend({
             for(let j = 0 ;j<layerTypes.length;j++){
               let type = layerTypes[j];
               if(this._layers[i].input.checked && this._layers[i].layer[type]){
-                //uses switch incase other layer types have different structures where isVisible is located
-                switch(type){
-                  case "_templatedLayer":
-                    for(let j =0;j<this._layers[i].layer[type]._templates.length;j++){
-                      let templateType = this._layers[i].layer[type]._templates[j].rel ==="query"?
-                                          "query":"layer";
-                      total++;
-                      if(!(this._layers[i].layer[type]._templates[j][templateType].isVisible))count++;
-                    }
-                  break;
-                  default:
+                if(type === "_templatedLayer"){
+                  for(let j =0;j<this._layers[i].layer[type]._templates.length;j++){
+                    if(this._layers[i].layer[type]._templates[j].rel ==="query") continue;
                     total++;
+                    if(!(this._layers[i].layer[type]._templates[j].layer.isVisible))count++;
+                  }
+                } else {
+                  total++;
                     if(!(this._layers[i].layer[type].isVisible))count++;
-                  break;
                 }
               }
             }

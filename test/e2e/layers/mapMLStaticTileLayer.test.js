@@ -1,8 +1,28 @@
 const playwright = require("playwright");
 const isVisible = require("./general/isVisible");
 const zoomLimit = require("./general/zoomLimit");
+const extentProperty = require("./general/extentProperty");
 jest.setTimeout(50000);
 (async () => {
+  let expectedPCRS = {
+    topLeft: {
+      horizontal: -4175739.0398780815,
+      vertical: 5443265.599864535,
+    },
+    bottomRight: {
+      horizontal: 5984281.280162558,
+      vertical: -1330081.280162558,
+    },
+  }, expectedGCRS = {
+    topLeft: {
+      horizontal: -133.75137103791573,
+      vertical: 36.915777752306546,
+    },
+    bottomRight: {
+      horizontal: 13.251318374931316,
+      vertical: 26.63127363018255,
+    },
+  };
   for (const browserType of BROWSER) {
     let page, browser, context;
     describe(
@@ -10,6 +30,7 @@ jest.setTimeout(50000);
       () => {
         isVisible.test("mapMLStaticTileLayer.html", 3, 3, browserType);
         zoomLimit.test("mapMLStaticTileLayer.html", 2, 2, browserType);
+        extentProperty.test("mapMLStaticTileLayer.html", expectedPCRS, expectedGCRS, browserType);
         describe("General Tests ", () => {
           beforeAll(async () => {
             browser = await playwright[browserType].launch({
@@ -34,58 +55,6 @@ jest.setTimeout(50000);
               (tileGroup) => tileGroup.getElementsByTagName("tile").length
             );
             expect(tiles).toEqual(1);
-          });
-          test("[" + browserType + "]" + " <layer->.extent test", async () => {
-            const extent = await page.$eval(
-              "body > map > layer-:nth-child(1)",
-              (layer) => layer.extent
-            );
-            let expectedExtent = {
-              extent: {
-                crs: "CBMTILE/pcrs",
-                bottomRight: {
-                  horizontal: 5984281.280162558,
-                  vertical: -1330081.280162558,
-                },
-                topLeft: {
-                  horizontal: -4175739.0398780815,
-                  vertical: 5443265.599864535,
-                },
-              },
-              zoom: {
-                maxNativeZoom: 3,
-                minNativeZoom: 2,
-                minZoom: 1,
-                maxZoom: 4
-              }
-            };
-            expect(extent).toEqual(expectedExtent);
-          });
-          test("[" + browserType + "]" + " 2nd <layer->.extent test", async () => {
-            const extent = await page.$eval(
-              "body > map > layer-:nth-child(2)",
-              (layer) => layer.extent
-            );
-            let expectedExtent = {
-              extent: {
-                crs: "CBMTILE/pcrs",
-                bottomRight: {
-                  horizontal: 4629611.904157147,
-                  vertical: 24588.09584285319,
-                },
-                topLeft: {
-                  horizontal: -5191741.07188214,
-                  vertical: 9845941.07188214,
-                },
-              },
-              zoom: {
-                maxNativeZoom: 0,
-                minNativeZoom: 0,
-                minZoom: 0,
-                maxZoom: 10
-              }
-            };
-            expect(extent).toEqual(expectedExtent);
           });
         });
       }

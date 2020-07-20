@@ -1,8 +1,28 @@
 const playwright = require("playwright");
 const isVisible = require('./general/isVisible');
 const zoomLimit = require("./general/zoomLimit");
+const extentProperty = require("./general/extentProperty");
 jest.setTimeout(50000);
 (async () => {
+  let expectedPCRS = {
+    topLeft: {
+      horizontal: -180,
+      vertical: 90,
+    },
+    bottomRight: {
+      horizontal: 180,
+      vertical: -270,
+    },
+  }, expectedGCRS = {
+    topLeft: {
+      horizontal: -180,
+      vertical: 90,
+    },
+    bottomRight: {
+      horizontal: 180,
+      vertical: -270,
+    },
+  };
   for (const browserType of BROWSER) {
     let page, browser, context;
     describe(
@@ -10,6 +30,7 @@ jest.setTimeout(50000);
       () => {
         isVisible.test("mapMLTemplatedTileLayer.html", 2, 2, browserType);
         zoomLimit.test("mapMLTemplatedTileLayer.html", 1, 0, browserType);
+        extentProperty.test("mapMLTemplatedTileLayer.html", expectedPCRS, expectedGCRS, browserType);
         describe(
           "General Tests " + browserType,
           () => {
@@ -36,58 +57,6 @@ jest.setTimeout(50000);
                 (tileGroup) => tileGroup.getElementsByTagName("svg").length
               );
               expect(tiles).toEqual(2);
-            });
-            test("[" + browserType + "]" + " <layer->.extent test", async () => {
-              const extent = await page.$eval(
-                "body > map > layer-:nth-child(1)",
-                (layer) => layer.extent
-              );
-              let expectedExtent = {
-                extent: {
-                  crs: "WGS84/pcrs",
-                  bottomRight: {
-                    horizontal: 180,
-                    vertical: -270,
-                  },
-                  topLeft: {
-                    horizontal: -180,
-                    vertical: 90,
-                  },
-                },
-                zoom: {
-                  minZoom: 1,
-                  maxZoom: 2,
-                  minNativeZoom: 1,
-                  maxNativeZoom: 1
-                }
-              };
-              expect(extent).toEqual(expectedExtent);
-            });
-            test("[" + browserType + "]" + " 2nd <layer->.extent test", async () => {
-              const extent = await page.$eval(
-                "body > map > layer-:nth-child(2)",
-                (layer) => layer.extent
-              );
-              let expectedExtent = {
-                extent: {
-                  crs: "WGS84/pcrs",
-                  bottomRight: {
-                    horizontal: 540,
-                    vertical: -630,
-                  },
-                  topLeft: {
-                    horizontal: 360,
-                    vertical: -450,
-                  },
-                },
-                zoom: {
-                  maxNativeZoom: 0,
-                  minNativeZoom: 0,
-                  minZoom: 0,
-                  maxZoom: 10
-                }
-              };
-              expect(extent).toEqual(expectedExtent);
             });
           });
 

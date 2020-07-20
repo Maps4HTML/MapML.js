@@ -206,7 +206,7 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 45, y: 90 }, min: { x: -180, y: -135 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 12, minNativeZoom: 1, minZoom: 1 } });
+      expect(extractedBounds).toEqual({ bounds: { max: { x: -90, y: 90 }, min: { x: -180, y: 45 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 12, minNativeZoom: 1, minZoom: 1 } });
     });
     test("Template with 3 inputs missing", () => {
       let template = {};
@@ -217,7 +217,7 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 720, y: 90 }, min: { x: -180, y: -810 } }, zoomBounds: { maxNativeZoom: 21, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 180, y: 90 }, min: { x: -180, y: -90 } }, zoomBounds: { maxNativeZoom: 21, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
     });
     test("Template with no projection", () => {
       let template = {};
