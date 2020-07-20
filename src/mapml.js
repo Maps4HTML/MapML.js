@@ -4001,10 +4001,12 @@ M.MapMLLayerControl = L.Control.Layers.extend({
           let label = this._layers[i].input.labels[0].getElementsByTagName("span"),
               input = this._layers[i].input.labels[0].getElementsByTagName("input");
           if(count === total && count != 0){
+            this._layers[i].layer._layerEl.setAttribute("disabled", ""); //set a disabled attribute on the layer element
             input[0].parentElement.parentElement.parentElement.parentElement.disabled = true;
             label[0].style.fontStyle = "italic";
           } else {
             //might be better not to disable the layer controls, might want to deselect layer even when its out of bounds
+            this._layers[i].layer._layerEl.removeAttribute("disabled");
             input[0].parentElement.parentElement.parentElement.parentElement.disabled = false;
             label[0].style.fontStyle = "normal";
           }
