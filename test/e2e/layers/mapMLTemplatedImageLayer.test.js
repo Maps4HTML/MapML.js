@@ -5,21 +5,21 @@ jest.setTimeout(50000);
 (async () => {
   let expectedPCRS = {
     topLeft: {
-      horizontal: 28448056,
-      vertical: 42672085,
+      horizontal: -6207743.103886206,
+      vertical: 3952277.216154434,
     },
     bottomRight: {
-      horizontal: 38608077,
-      vertical: 28448056,
+      horizontal: 3952277.216154434,
+      vertical: -3362085.3441706896,
     },
   }, expectedGCRS = {
     topLeft: {
-      horizontal: 49.21675580514393,
-      vertical: -70.33287846599659,
+      horizontal: -136.9120743861578,
+      vertical: 54.8100849543377,
     },
     bottomRight: {
-      horizontal: 54.37855468522463,
-      vertical: -60.404651716482284,
+      horizontal: -6.267177352336376,
+      vertical: 6.5831982143623975,
     },
   };
   for (const browserType of BROWSER) {
