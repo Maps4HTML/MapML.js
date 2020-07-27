@@ -164,7 +164,13 @@ export class WebMap extends HTMLMapElement {
           // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
           fadeAnimation: true
         });
-
+        this.extent = function (){
+          let pcrsBounds = M.pixelToPCRSBounds(
+            this._map.getPixelBounds(),
+            this._map.getZoom(),
+            this._map.options.projection);
+          return (M.convertAndFormatPCRS(pcrsBounds, this._map));
+        };
         // the attribution control is not optional
         this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
 

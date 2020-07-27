@@ -239,4 +239,69 @@ describe("M.Util Bounds Related Tests", () => {
     });
   });
 
+  /* jshint ignore:start */
+  describe("M.convertAndFormatPCRS utility function tests", () => {
+    let projections = ["CBMTILE", "OSMTILE", "WGS84", "APSTILE"];
+    //all expected results are in the order of projections (CBMTILE then OSMTILE...)
+    //all referring to bottomRight
+    let expectedPCRS = [
+      { horizontal: 643, vertical: 16 },
+      { horizontal: 643, vertical: 16 },
+      { horizontal: 643, vertical: 16 },
+      { horizontal: 643, vertical: 16 }];
+    let expectedGCRS = [
+      { horizontal: -94.99116604546431, vertical: 49.00014387212851 },
+      { horizontal: 0.005776167276888522, vertical: 0.00014373044546862331 },
+      { horizontal: 643, vertical: 16 },
+      { horizontal: 164.6567832000427, vertical: 64.91659472871468 }];
+    let expectedFirstTileMatrix = [
+      { horizontal: 3.528683174767241, vertical: 4.00250190537931 },
+      { horizontal: 0.5000160449091025, vertical: 0.4999996007487626 },
+      { horizontal: 4.572222222222222, vertical: 0.41111111111111115 },
+      { horizontal: 0.4672963373316954, vertical: 0.5327139185619564 }];
+    let expectedFirstTCRS = [
+      { horizontal: 903.3428927404137, vertical: 1024.6404877771033 },
+      { horizontal: 128.00410749673023, vertical: 127.99989779168322 },
+      { horizontal: 1170.4888888888888, vertical: 105.24444444444445 },
+      { horizontal: 119.62786235691402, vertical: 136.37476315186083 }];
+    for (let i = 0; i < projections.length; i++) {
+      test(`Accurate conversion and formatting in ${projections[i]} projection`, () => {
+        let container = document.createElement('div'), mapEl = document.createElement('div');
+        let map = L.map(container, {
+          center: new L.LatLng(0, 0),
+          projection: projections[i],
+          query: true,
+          mapEl: mapEl,
+          crs: M[projections[i]],
+          zoom: 0,
+          zoomControl: false,
+          fadeAnimation: true
+        });
+        let pcrsBounds = L.bounds(L.point(14, 16), L.point(643, 24454));
+        let conversion = M.convertAndFormatPCRS(pcrsBounds, map);
+        expect(conversion.bottomRight.pcrs).toEqual(expectedPCRS[i]);
+        expect(conversion.bottomRight.gcrs).toEqual(expectedGCRS[i]);
+        expect(conversion.bottomRight.tilematrix[0]).toEqual(expectedFirstTileMatrix[i]);
+        expect(conversion.bottomRight.tcrs[0]).toEqual(expectedFirstTCRS[i]);
+      });
+      test(`Correct number of TCRS and TileMatrix conversions in ${projections[i]} projection`, () => {
+        let container = document.createElement('div'), mapEl = document.createElement('div');
+        let map = L.map(container, {
+          center: new L.LatLng(0, 0),
+          projection: projections[i],
+          query: true,
+          mapEl: mapEl,
+          crs: M[projections[i]],
+          zoom: 0,
+          zoomControl: false,
+          fadeAnimation: true
+        });
+        let pcrsBounds = L.bounds(L.point(14, 16), L.point(643, 24454));
+        let conversion = M.convertAndFormatPCRS(pcrsBounds, map);
+        expect(conversion.bottomRight.tilematrix.length).toEqual(M[projections[i]].options.resolutions.length);
+        expect(conversion.bottomRight.tcrs.length).toEqual(M[projections[i]].options.resolutions.length);
+      });
+    }
+  });
+  /* jshint ignore:end */
 });

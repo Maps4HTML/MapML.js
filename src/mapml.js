@@ -601,7 +601,82 @@ const FALLBACK_CS = "TILEMATRIX";
     }
   });
 }());
-M.Util = {  
+M.Util = {
+  convertAndFormatPCRS : function(pcrsBounds, map){
+    if(!pcrsBounds || !map) return {};
+
+    let tcrsTopLeft = [], tcrsBottomRight = [],
+        tileMatrixTopLeft = [], tileMatrixBottomRight = [];
+
+    for(let i = 0;i<map.options.crs.options.resolutions.length;i++){
+      let scale = map.options.crs.scale(i),
+          minConverted = map.options.crs.transformation.transform(pcrsBounds.min,scale),
+          maxConverted = map.options.crs.transformation.transform(pcrsBounds.max,scale);
+          
+      tcrsTopLeft.push({
+        horizontal: minConverted.x,
+        vertical:maxConverted.y,
+      });
+      tcrsBottomRight.push({
+        horizontal: maxConverted.x,
+        vertical: minConverted.y,
+      });
+
+      //converts the tcrs values from earlier to tilematrix
+      tileMatrixTopLeft.push({
+        horizontal: tcrsTopLeft[i].horizontal / 256,
+        vertical:tcrsTopLeft[i].vertical / 256,
+      });
+      tileMatrixBottomRight.push({
+        horizontal: tcrsBottomRight[i].horizontal / 256,
+        vertical: tcrsBottomRight[i].vertical / 256,
+      });
+    }
+    
+    //converts the gcrs, I believe it can take any number values from -inf to +inf
+    let unprojectedMin = map.options.crs.unproject(pcrsBounds.min),
+        unprojectedMax = map.options.crs.unproject(pcrsBounds.max);
+
+    let gcrs = {
+      topLeft:{
+        horizontal: unprojectedMin.lng,
+        vertical:unprojectedMax.lat,
+      },
+      bottomRight:{
+        horizontal: unprojectedMax.lng,
+        vertical: unprojectedMin.lat,
+      },
+    };
+
+    //formats known pcrs bounds to correct format
+    let pcrs = {
+      topLeft:{
+        horizontal:pcrsBounds.min.x,
+        vertical:pcrsBounds.max.y,
+      },
+      bottomRight:{
+        horizontal:pcrsBounds.max.x,
+        vertical:pcrsBounds.min.y,
+      },
+    };
+
+    //formats all extent data
+    return {
+      topLeft:{
+        tcrs:tcrsTopLeft,
+        tilematrix:tileMatrixTopLeft,
+        gcrs:gcrs.topLeft,
+        pcrs:pcrs.topLeft,
+      },
+      bottomRight:{
+        tcrs:tcrsBottomRight,
+        tilematrix:tileMatrixBottomRight,
+        gcrs:gcrs.bottomRight,
+        pcrs:pcrs.bottomRight,
+      },
+      projection:map.options.projection
+    };
+  },
   extractInputBounds: function(template){
     if(!template) return undefined;
 
@@ -780,6 +855,7 @@ M.Util = {
   },
 };
 
+M.convertAndFormatPCRS = M.Util.convertAndFormatPCRS;
 M.axisToCS = M.Util.axisToCS;
 M.parseNumber = M.Util.parseNumber;
 M.extractInputBounds = M.Util.extractInputBounds;
@@ -1164,78 +1240,10 @@ M.MapMLLayer = L.Layer.extend({
       });
 
       if(localBounds){
-        //converts to tcrs bounds relative to the map view, (i.e. topleft bottomright)
-        let tcrsTopLeft = [], tcrsBottomRight = [];
-        for(let i = 0;i<this._map.options.crs.options.resolutions.length;i++){
-          let scale = this._map.options.crs.scale(i);
-          let minConverted = this._map.options.crs.transformation.transform(localBounds.min,scale);
-          let maxConverted = this._map.options.crs.transformation.transform(localBounds.max,scale);
-          tcrsTopLeft.push({
-            horizontal: minConverted.x,
-            vertical:maxConverted.y,
-          });
-          tcrsBottomRight.push({
-            horizontal: maxConverted.x,
-            vertical: minConverted.y,
-          });
-        }
-        
-        //converts the tcrs values from earlier to tilematrix
-        let tileMatrixTopLeft = [], tileMatrixBottomRight = [];
-        for(let i = 0;i < tcrsTopLeft.length;i++){
-          tileMatrixTopLeft.push({
-            horizontal: tcrsTopLeft[i].horizontal / TILE_SIZE,
-            vertical:tcrsTopLeft[i].vertical / TILE_SIZE,
-          });
-          tileMatrixBottomRight.push({
-            horizontal: tcrsBottomRight[i].horizontal / TILE_SIZE,
-            vertical: tcrsBottomRight[i].vertical / TILE_SIZE,
-          });
-        }
-
-        //converts the gcrs, I believe it can take any number values from -inf to +inf
-        let unprojectedMin = this._map.options.crs.unproject(localBounds.min),
-            unprojectedMax = this._map.options.crs.unproject(localBounds.max);
-        let gcrs = {
-          topLeft:{
-            horizontal: unprojectedMin.lng,
-            vertical:unprojectedMax.lat,
-          },
-          bottomRight:{
-            horizontal: unprojectedMax.lng,
-            vertical: unprojectedMin.lat,
-          },
-        };
-
-        //formats known pcrs bounds to correct format
-        let pcrs = {
-          topLeft:{
-            horizontal:localBounds.min.x,
-            vertical:localBounds.max.y,
-          },
-          bottomRight:{
-            horizontal:localBounds.max.x,
-            vertical:localBounds.min.y,
-          },
-        };
-
-        //formats all extent data
-        this._layerEl.extent = {
-          topLeft:{
-            tcrs:tcrsTopLeft,
-            tilematrix:tileMatrixTopLeft,
-            gcrs:gcrs.topLeft,
-            pcrs:pcrs.topLeft,
-          },
-          bottomRight:{
-            tcrs:tcrsBottomRight,
-            tilematrix:tileMatrixBottomRight,
-            gcrs:gcrs.bottomRight,
-            pcrs:pcrs.bottomRight,
-          },
-          zoom:localZoomRanges, 
-          projection:this.options.mapprojection
-        };
+        //assigns the formatted extent object to .extent and spreads the zoom ranges to .extent also
+        this._layerEl.extent = (Object.assign(
+                                  M.convertAndFormatPCRS(localBounds,this._map),
+                                  {zoom:localZoomRanges}));
       }
     },
 
