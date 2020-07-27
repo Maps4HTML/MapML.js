@@ -10,7 +10,6 @@
         <link rel="license" href="http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="CanVec+ © Natural Resources Canada"/>
     </head>
     <body>
-        <extent></extent>
         <feature class="all  _50-100">
             <properties>
                 <h1>Alabama</h1>

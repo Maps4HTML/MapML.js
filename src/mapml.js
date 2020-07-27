@@ -1030,8 +1030,9 @@ M.MapMLLayer = L.Layer.extend({
     },
     onAdd: function (map) {
         this._map = map;
-        if (!this._mapmlvectors) {
-          this._mapmlvectors = M.mapMlFeatures(this._content, {
+        if(this._content){
+          if (!this._mapmlvectors) {
+            this._mapmlvectors = M.mapMlFeatures(this._content, {
               // pass the vector layer a renderer of its own, otherwise leaflet
               // puts everything into the overlayPane
               renderer: L.svg(),
@@ -1051,8 +1052,37 @@ M.MapMLLayer = L.Layer.extend({
                 }
               }
             });
+          }
+          map.addLayer(this._mapmlvectors);
+        } else {
+          this.once('extentload', function() {
+            if (!this._mapmlvectors) {
+              this._mapmlvectors = M.mapMlFeatures(this._content, {
+                  // pass the vector layer a renderer of its own, otherwise leaflet
+                  // puts everything into the overlayPane
+                  renderer: L.svg(),
+                  // pass the vector layer the container for the parent into which
+                  // it will append its own container for rendering into
+                  pane: this._container,
+                  opacity: this.options.opacity,
+                  imagePath: M.detectImagePath(this._map.getContainer()),
+                  // each owned child layer gets a reference to the root layer
+                  _leafletLayer: this,
+                  onEachFeature: function(properties, geometry) {
+                    // need to parse as HTML to preserve semantics and styles
+                    if (properties) {
+                      var c = document.createElement('div');
+                      c.insertAdjacentHTML('afterbegin', properties.innerHTML);
+                      geometry.bindPopup(c, {autoPan:false});
+                    }
+                  }
+                }).addTo(map);
+            }
+            this._setLayerElExtent();
+          },this);
         }
-        map.addLayer(this._mapmlvectors);
+        
+        
         
         if (!this._imageLayer) {
             this._imageLayer = L.layerGroup();
@@ -1252,7 +1282,9 @@ M.MapMLLayer = L.Layer.extend({
         if(this._staticTileLayer){
           map.removeLayer(this._staticTileLayer);
         }
-        map.removeLayer(this._mapmlvectors);
+        if(this._mapmlvectors){
+          map.removeLayer(this._mapmlvectors);
+        }
         map.removeLayer(this._imageLayer);
         if (this._templatedLayer) {
             map.removeLayer(this._templatedLayer);
@@ -1577,6 +1609,7 @@ M.MapMLLayer = L.Layer.extend({
         }
         function _processInitialExtent(content) {
             var mapml = this.responseXML || content;
+            if(mapml.querySelector('feature'))layer._content = mapml;
             if(!this.responseXML && this.responseText) mapml = new DOMParser().parseFromString(this.responseText,'text/xml');
             if (this.readyState === this.DONE && mapml.querySelector) {
                 var serverExtent = mapml.querySelector('extent') || mapml.querySelector('meta[name=projection]'),
@@ -2829,74 +2862,72 @@ M.TemplatedTileLayer = L.TileLayer.extend({
       // at this time.  In the case of multiple <coordinates> per geometry, we
       // will look for class attribute on the first <coordinates> element.
       // var cl; // classList -> DOMTokenList https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList
-      //if(this.isVisible){
-        switch (geometry.firstElementChild.tagName.toUpperCase()) {
-          case 'POINT':
-            coordinates = [];
-            geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(M.parseNumber,coordinates);
-            pt = this.coordsToPoint(coordinates, tileCoords);
-            renderPoint(pt, geometry);
-            break;
-          case 'MULTIPOINT':
-            coordinates = [];
-            // TODO the definition of multipoint geometry was modified in testbed 15
-            // to align with geojson a bit better.  
-            // this modification requires one <coordinates> element with 1 or more
-            // text string coordinate pairs, per the model for <coordinates> in a
-            // linestring (but with different semantics). As such, in order to separately
-            // select and style a coordinate, the user has to wrap it in a <span class="...>
-            // The code below does not  support that yet.  the renderPoint code
-            // will have to use treewalker (as the polygon code does), and copy the
-            // classes from the geometry element to each child svg element
-            // created i.e. onto the circle or path(s) that are created.
-            geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-            members = this.coordsToPoints(coordinates, 0, tileCoords);
-            for(member=0;member<members.length;member++) {
-              // propagate the classes from the feature to each geometry
-              const g = geometry;
-              feature.classList.forEach(val => g.getElementsByTagName('coordinates')[0].classList.add(val));
-              renderPoint(members[member], g.getElementsByTagName('coordinates')[0]);
-            }
-            break;
-          case 'LINESTRING':
-            coordinates = [];
-            geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-            renderLinestring(this.coordsToPoints(coordinates, 0, tileCoords), geometry);
-            break;
-          case 'MULTILINESTRING':
-            members = geometry.getElementsByTagName('coordinates');
-            for (member=0;member<members.length;member++) {
-              coordinates = [];
+      switch (geometry.firstElementChild.tagName.toUpperCase()) {
+        case 'POINT':
+          coordinates = [];
+          geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(M.parseNumber,coordinates);
+          pt = this.coordsToPoint(coordinates, tileCoords);
+          renderPoint(pt, geometry);
+          break;
+        case 'MULTIPOINT':
+          coordinates = [];
+          // TODO the definition of multipoint geometry was modified in testbed 15
+          // to align with geojson a bit better.  
+          // this modification requires one <coordinates> element with 1 or more
+          // text string coordinate pairs, per the model for <coordinates> in a
+          // linestring (but with different semantics). As such, in order to separately
+          // select and style a coordinate, the user has to wrap it in a <span class="...>
+          // The code below does not  support that yet.  the renderPoint code
+          // will have to use treewalker (as the polygon code does), and copy the
+          // classes from the geometry element to each child svg element
+          // created i.e. onto the circle or path(s) that are created.
+          geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
+          members = this.coordsToPoints(coordinates, 0, tileCoords);
+          for(member=0;member<members.length;member++) {
             // propagate the classes from the feature to each geometry
-              const m = members[member];
-              feature.classList.forEach(val => m.classList.add(val));
-              m.textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-              renderLinestring(this.coordsToPoints(coordinates, 0, tileCoords), geometry);
-            }
-            break;
-          case 'POLYGON':
-            renderPolygon(this.coordsToPoints(coordinatesToArray(geometry.getElementsByTagName('coordinates')), 1, tileCoords), geometry);
-            break;
-          case 'MULTIPOLYGON':
-            members = geometry.getElementsByTagName('polygon');
-            for (member=0;member<members.length;member++) {
-              // propagate the classes from the feature to each geometry
-              const m = members[member];
-              feature.classList.forEach(val => m.classList.add(val));
-              renderPolygon(
-                this.coordsToPoints(coordinatesToArray(
-                m.getElementsByTagName('coordinates')), 1 ,tileCoords), m
-              );
-            }
-            break;
-          case 'GEOMETRYCOLLECTION':
-            console.log('GEOMETRYCOLLECTION Not implemented yet');
-            break;
-          default:
-            console.log('Invalid geometry');
-            break;
-        }
-      //}
+            const g = geometry;
+            feature.classList.forEach(val => g.getElementsByTagName('coordinates')[0].classList.add(val));
+            renderPoint(members[member], g.getElementsByTagName('coordinates')[0]);
+          }
+          break;
+        case 'LINESTRING':
+          coordinates = [];
+          geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
+          renderLinestring(this.coordsToPoints(coordinates, 0, tileCoords), geometry);
+          break;
+        case 'MULTILINESTRING':
+          members = geometry.getElementsByTagName('coordinates');
+          for (member=0;member<members.length;member++) {
+            coordinates = [];
+          // propagate the classes from the feature to each geometry
+            const m = members[member];
+            feature.classList.forEach(val => m.classList.add(val));
+            m.textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
+            renderLinestring(this.coordsToPoints(coordinates, 0, tileCoords), geometry);
+          }
+          break;
+        case 'POLYGON':
+          renderPolygon(this.coordsToPoints(coordinatesToArray(geometry.getElementsByTagName('coordinates')), 1, tileCoords), geometry);
+          break;
+        case 'MULTIPOLYGON':
+          members = geometry.getElementsByTagName('polygon');
+          for (member=0;member<members.length;member++) {
+            // propagate the classes from the feature to each geometry
+            const m = members[member];
+            feature.classList.forEach(val => m.classList.add(val));
+            renderPolygon(
+              this.coordsToPoints(coordinatesToArray(
+              m.getElementsByTagName('coordinates')), 1 ,tileCoords), m
+            );
+          }
+          break;
+        case 'GEOMETRYCOLLECTION':
+          console.log('GEOMETRYCOLLECTION Not implemented yet');
+          break;
+        default:
+          console.log('Invalid geometry');
+          break;
+      }
 
       function renderPolygon(p, f) {
         var poly = document.createElementNS('http://www.w3.org/2000/svg', 'path'),
@@ -3567,7 +3598,7 @@ M.MapMLStaticTileLayer = L.GridLayer.extend({
       let tile = {};
       tile.row = +tiles[i].getAttribute('row');
       tile.col = +tiles[i].getAttribute('col');
-      tile.zoom = +tiles[i].getAttribute('zoom');
+      tile.zoom = +tiles[i].getAttribute('zoom') || 0;
       tile.src = tiles[i].getAttribute('src');
       let tileCode = tile.col+":"+tile.row+":"+tile.zoom;
       if(tileCode in tileMap){
@@ -3602,6 +3633,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
           this._features = {};
           this._staticFeature = true;
           this.isVisible = true; //placeholder for when this actually gets updated in the future
+          this.nativeZoom = +this._getNativeZoom(mapml);
           this.zoomBounds = this._getZoomBounds(mapml);
           this.layerBounds = this._getLayerBounds(mapml);
           L.extend(this.options, this.zoomBounds);
@@ -3627,14 +3659,19 @@ M.MapMLFeatures = L.FeatureGroup.extend({
     },
 
     _handleMoveEnd : function(){
-      let zoomLevel = this._map.getZoom();
-      zoomLevel = zoomLevel > this.zoomBounds.maxNativeZoom? this.zoomBounds.maxNativeZoom: zoomLevel;
-      zoomLevel = zoomLevel < this.zoomBounds.minNativeZoom? this.zoomBounds.minNativeZoom: zoomLevel;
-      this.isVisible = this._checkZoom() && this._layers && this.layerBounds && 
+      let mapZoom = this._map.getZoom();
+      if(mapZoom > this.zoomBounds.maxZoom || mapZoom < this.zoomBounds.minZoom){
+        this.clearLayers();
+        this.isVisible = false;
+        return;
+      }
+      let clampZoom = this._clampZoom(mapZoom);
+      this._resetFeatures(clampZoom);
+      this.isVisible = this._layers && this.layerBounds && 
                         this.layerBounds.overlaps(
                           M.pixelToPCRSBounds(
                             this._map.getPixelBounds(),
-                            this._map.getZoom(),this._map.options.projection));
+                            mapZoom,this._map.options.projection));
       this._removeCSS();
     },
 
@@ -3646,9 +3683,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
                           M.metaContentToObject(
                             container.querySelector('meta[name=projection]').getAttribute('content'))
                             .content.toUpperCase() || FALLBACK_PROJECTION;
-        let zoom = container.querySelector('meta[name=zoom]') && 
-                    M.metaContentToObject(container.querySelector('meta[name=zoom]').getAttribute('content')).value || 
-                    "0";
+        let zoom = this._getNativeZoom(container);
         let meta = container.querySelector('meta[name=extent]') && 
                     M.metaContentToObject(
                       container.querySelector('meta[name=extent]').getAttribute('content')) ||
@@ -3673,16 +3708,6 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       }
     },
 
-    _checkZoom : function(){
-      let clampZoom = this._clampZoom(this._map.getZoom());
-      this._resetFeatures(clampZoom);
-      if(clampZoom > this.zoomBounds.maxZoom || clampZoom < this.zoomBounds.minZoom){
-        return false;
-      }else if(this._features[clampZoom]){
-        return true;
-      }
-    },
-    
     _clampZoom : function(zoom){
       if(zoom > this.zoomBounds.maxZoom || zoom < this.zoomBounds.minZoom) return zoom;
       if (undefined !== this.zoomBounds.minNativeZoom && zoom < this.zoomBounds.minNativeZoom) {
@@ -3705,6 +3730,12 @@ M.MapMLFeatures = L.FeatureGroup.extend({
       } else {
         L.setPosition(this._layers[clampZoom], translate);
       }
+    },
+
+    _getNativeZoom: function(mapml){
+      return mapml.querySelector('meta[name=zoom]') && 
+        M.metaContentToObject(mapml.querySelector('meta[name=zoom]').getAttribute('content')).value || 
+        "0";
     },
 
     _getZoomBounds: function(container){
@@ -3782,7 +3813,7 @@ M.MapMLFeatures = L.FeatureGroup.extend({
          options.onEachFeature(layer.properties, layer);
         }
         if(this._staticFeature){
-          let featureZoom = mapml.getAttribute('zoom');
+          let featureZoom = mapml.getAttribute('zoom') || this.nativeZoom;
           if(featureZoom in this._features){
             this._features[featureZoom].push(layer);
           } else{
