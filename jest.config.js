@@ -14,7 +14,7 @@ module.exports = {
         BROWSER: ["chromium"],
         ISHEADLESS: true
       },
-      testMatch: ["**/test/e2e/*.test.js"]
+      testMatch: ["**/test/e2e/**/*.test.js"]
     }
   ]
 };

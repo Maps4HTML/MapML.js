@@ -255,5 +255,62 @@ describe("M.Util Tests", () => {
     });
   });
 
+  describe("M.metaContentToObject(content) utility function tests", () => {
+    test("Null object passed", () => {
+      let output = M.metaContentToObject(null);
+
+      expect(output).toEqual({});
+    });
+
+    test("Valid single input", () => {
+      let output = M.metaContentToObject("max=5");
+
+      expect(output).toEqual({ max: "5" });
+    });
+
+    test("Valid multiple input", () => {
+      let output = M.metaContentToObject("max=5,min=23,zoom=65,x=65");
+
+      expect(output).toEqual({ max: "5", min: "23", zoom: "65", x: "65" });
+    });
+
+    test("Empty string", () => {
+      let output = M.metaContentToObject("");
+
+      expect(output).toEqual({});
+    });
+    test("No equal sign just value", () => {
+      let output = M.metaContentToObject("noequal");
+      expect(output).toEqual({ content: "noequal" });
+    });
+
+    test("Invalid object", () => {
+      let output = M.metaContentToObject({});
+      expect(output).toEqual({});
+    });
+  });
+
+  describe("M.axisToCS() utility function tests", () => {
+    test("Null axis", () => {
+      let output = M.axisToCS(null);
+      expect(output).toEqual(undefined);
+    });
+    test("Non-String axis", () => {
+      let output = M.axisToCS(5);
+      expect(output).toEqual(undefined);
+    });
+    test("Lowercase axis", () => {
+      let output = M.axisToCS("row");
+      expect(output).toEqual("TILEMATRIX");
+    });
+    test("Uppercase axis", () => {
+      let output = M.axisToCS("NORTHING");
+      expect(output).toEqual("PCRS");
+    });
+    test("Random String", () => {
+      let output = M.axisToCS("TEST");
+      expect(output).toEqual("TILEMATRIX");
+    });
+  });
 });
 

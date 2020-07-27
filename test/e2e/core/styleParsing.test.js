@@ -4,7 +4,7 @@ jest.setTimeout(50000);
   for (const browserType of BROWSER) {
     let page, browser, context;
     describe(
-      "Playwright Style Parsed and Implemented Test in " + browserType,
+      "Style Parsed and Implemented Test in " + browserType,
       () => {
         beforeAll(async () => {
           browser = await playwright[browserType].launch({
@@ -15,7 +15,7 @@ jest.setTimeout(50000);
           if (browserType === "firefox") {
             await page.waitForNavigation();
           }
-          await page.goto(PATH + "styleOrder.html");
+          await page.goto(PATH + "styleParsing.html");
         });
 
         afterAll(async function () {

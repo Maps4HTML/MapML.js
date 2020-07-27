@@ -1,12 +1,9 @@
 const playwright = require("playwright");
-//install if needed later
-//const { JSDOM } = require("jsdom");
-//const domToPlaywright = require("dom-to-playwright").default;
 jest.setTimeout(30000);
 (async () => {
   for (const browserType of BROWSER) {
     let page, browser, context;
-    describe("Playwright UI Drag&Drop Test in " + browserType, () => {
+    describe("UI Drag&Drop Test in " + browserType, () => {
       beforeEach(async () => {
         browser = await playwright[browserType].launch({
           headless: ISHEADLESS,
@@ -16,11 +13,10 @@ jest.setTimeout(30000);
         if (browserType === "firefox") {
           await page.waitForNavigation();
         }
-        await page.goto(PATH);
+        await page.goto(PATH + "drag.html");
       });
 
       afterEach(async function () {
-        //await page.screenshot({ path: `${this.currentTest.title.replace(/\s+/g, '_')}.png` })
         await browser.close();
       });
 
