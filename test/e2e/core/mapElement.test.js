@@ -41,7 +41,7 @@ jest.setTimeout(50000);
         test("[" + browserType + "]" + " Initial map element extent", async () => {
           const extent = await page.$eval(
             "body > map",
-            (map) => map.extent()
+            (map) => map.extent
           );
 
           expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
@@ -56,7 +56,7 @@ jest.setTimeout(50000);
           );
           const extent = await page.$eval(
             "body > map",
-            (map) => map.extent()
+            (map) => map.extent
           );
 
           expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
