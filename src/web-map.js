@@ -423,7 +423,7 @@ export class WebMap extends HTMLMapElement {
     }
   }
   zoomTo(lat, lon, zoom) {
-    zoom = zoom||this.zoom;
+    zoom = Number.isInteger(zoom)? zoom:this.zoom;
     var location = new L.LatLng(lat,lon);
     this._map.setView(location, zoom);
     this.zoom = zoom;
