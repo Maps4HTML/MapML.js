@@ -44,6 +44,8 @@ jest.setTimeout(50000);
             (map) => map.extent
           );
 
+          expect(extent.projection).toEqual("CBMTILE");
+          expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
           expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
           expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
           expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
@@ -59,6 +61,7 @@ jest.setTimeout(50000);
             (map) => map.extent
           );
 
+          expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
           expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
           expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
           expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);

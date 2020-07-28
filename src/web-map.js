@@ -75,11 +75,19 @@ export class WebMap extends HTMLMapElement {
   }
 
   get extent(){
-    let pcrsBounds = M.pixelToPCRSBounds(
-      this._map.getPixelBounds(),
-      this._map.getZoom(),
-      this._map.options.projection);
-    return (M.convertAndFormatPCRS(pcrsBounds, this._map));
+    let map = this._map,
+      pcrsBounds = M.pixelToPCRSBounds(
+        map.getPixelBounds(),
+        map.getZoom(),
+        map.options.projection);
+    let formattedExtent = M.convertAndFormatPCRS(pcrsBounds, map);
+    if(map.getMaxZoom() !== Infinity){
+      formattedExtent.zoom = {
+        minZoom:map.getMinZoom(),
+        maxZoom:map.getMaxZoom()
+      };
+    }
+    return (formattedExtent);
   }
 
   constructor() {
