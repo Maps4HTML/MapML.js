@@ -164,12 +164,21 @@ export class WebMap extends HTMLMapElement {
       } else {
         this._container.style.height = this.height+"px";
       }
+
+      // create an array to track the history of the map and the current index
+      if(!this._history){
+        this._history = [];
+        this._historyIndex = -1;
+        this._traversalCall = false;
+      }
+
       // create the Leaflet map if this is the first time attached is called
       if (!this._map) {
         this._map = L.map(this._container, {
           center: new L.LatLng(this.lat, this.lon),
           projection: this.projection,
           query: true,
+          contextMenu: true,
           mapEl: this,
           crs: M[this.projection],
           zoom: this.zoom,
@@ -369,6 +378,7 @@ export class WebMap extends HTMLMapElement {
     this._map.on('moveend',
       function () {
         this._updateMapCenter();
+        this._addToHistory();
         this.dispatchEvent(new CustomEvent('moveend', {detail:
           {target: this}}));
       }, this);
@@ -447,6 +457,64 @@ export class WebMap extends HTMLMapElement {
     this.lon = this._map.getCenter().lng;
     this.zoom = this._map.getZoom();
   }
+
+  _addToHistory(){
+    if(this._traversalCall){
+      this._traversalCall = false;
+      return;
+    }
+    let mapLocation = this._map.getCenter();
+    let location ={
+      zoom:this._map.getZoom(),
+      lat:mapLocation.lat,
+      lng:mapLocation.lng,
+    };
+    this._historyIndex++;
+    this._history.push(location);
+  }
+
+  back(){
+    let mapEl = this,
+        history = mapEl._history;
+    if(mapEl._historyIndex > 0){
+      mapEl._historyIndex--;
+    }
+    let prev = history[mapEl._historyIndex];
+    mapEl._traversalCall = true;
+    mapEl.zoomTo(prev.lat,prev.lng,prev.zoom);
+  }
+
+  forward(){
+    let mapEl = this,
+        history = this._history;
+    if(mapEl._historyIndex < history.length -1){
+      mapEl._historyIndex++;
+    }
+    let next = history[this._historyIndex];
+    mapEl._traversalCall = true;
+    mapEl.zoomTo(next.lat,next.lng,next.zoom);
+  }
+
+  reload(){
+    let mapEl = this,
+        initialLocation = mapEl._history.shift();
+    mapEl._history = [initialLocation];
+    mapEl._traversalCall = true;
+    mapEl.zoomTo(initialLocation.lat,initialLocation.lng,initialLocation.zoom);
+  }
+
+  viewSource(){
+    let mapHTML = this.outerHTML,
+        divIndex = mapHTML.indexOf("<div");
+    //27 is the length of the div string
+    mapHTML = mapHTML.replace(mapHTML.substring(divIndex,divIndex+27),"");
+
+    let blob = new Blob([mapHTML],{type:"application/xml"}),
+        url = URL.createObjectURL(blob);
+    window.open(url);
+    URL.revokeObjectURL(url);
+  }
+
   _ready() {
     // when used in a custom element, the leaflet script element is hidden inside
     // the import's shadow dom.
