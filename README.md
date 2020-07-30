@@ -1,7 +1,7 @@
 
 # Customized built-in &lt;map&gt; element
 
-[![Build Status](https://travis-ci.org/Maps4HTML/Web-Map-Custom-Element.svg?branch=master)](https://travis-ci.org/Maps4HTML/Web-Map-Custom-Element.svg?branch=master)
+![Build Status](https://api.travis-ci.com/Maps4HTML/Web-Map-Custom-Element.svg?branch=master)
 
 The customized built-in `<map>` element is a prototype [implementation](http://maps4html.github.io/Web-Map-Custom-Element/)
 of the [HTML-Map-Element specification](http://maps4html.github.io/HTML-Map-Element/spec/).
