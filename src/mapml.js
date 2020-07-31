@@ -1035,6 +1035,17 @@ M.QueryHandler = L.Handler.extend({
     }
 });
 
+
+/*
+MIT License related to portions of M.ContextMenu 
+Copyright (c) 2017 adam.ratcliffe@gmail.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), 
+to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+*/
 M.ContextMenu = L.Handler.extend({
   _touchstart: L.Browser.msPointer ? 'MSPointerDown' : L.Browser.pointer ? 'pointerdown' : 'touchstart',
 
@@ -1044,40 +1055,82 @@ M.ContextMenu = L.Handler.extend({
     //setting the items in the context menu and their callback functions
     this._items = [
       {
-        text:"Back (B)",
+        text:"Back (<kbd>B</kbd>)",
         callback:this._goBack,
       },
       {
-        text:"Forward (F)",
+        text:"Forward (<kbd>F</kbd>)",
         callback:this._goForward,
       },
       {
-        text:"Reload (R)",
+        text:"Reload (<kbd>R</kbd>)",
         callback:this._reload,
       },
       '-',
       {
-        text:"Toggle Controls (T)",
+        text:"Toggle Controls (<kbd>T</kbd>)",
         callback:this._toggleControls,
       },
       {
-        text:"Copy Coordinates (C)", 
+        text:"Copy Coordinates (<kbd>C</kbd>) >", 
         callback:this._copyCoords,
+        hideOnSelect:false,
+        submenu:[
+          {
+            text:"tile",
+            callback:this._copyTile,
+          },
+          {
+            text:"tilematrix",
+            callback:this._copyTileMatrix,
+          },
+          '-',
+          {
+            text:"map",
+            callback:this._copyMap,
+          },
+          '-',
+          {
+            text:"tcrs",
+            callback:this._copyTCRS,
+          },
+          {
+            text:"pcrs",
+            callback:this._copyPCRS,
+          },
+          {
+            text:"gcrs",
+            callback:this._copyGCRS,
+          },
+        ]
       },
       {
-        text:"View Map Source (V)",
+        text:"View Map Source (<kbd>V</kbd>)",
         callback:this._viewSource,
       },
     ];
     this._visible = false;
+    this._keyboardEvent = false;
 
     this._container = L.DomUtil.create("div", "mapml-contextmenu", map._container);
     this._container.style.zIndex = 10000;
     this._container.style.position = "absolute";
 
     this._container.style.width = "150px";
-
+    
     this._createItems();
+
+    this._coordMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-submenu", this._container);
+    this._coordMenu.style.zIndex = 10000;
+    this._coordMenu.style.position = "absolute";
+
+    this._coordMenu.style.width = "80px";
+
+    this._clickEvent = null;
+
+    for(let i =0;i<this._items[5].submenu.length;i++){
+      this._createItem(this._coordMenu,this._items[5].submenu[i],i);
+    }
 
     L.DomEvent
       .on(this._container, 'click', L.DomEvent.stop)
@@ -1158,12 +1211,65 @@ M.ContextMenu = L.Handler.extend({
   },
 
   _copyCoords: function(e){
+    let directory = this.contextMenu?this.contextMenu:this;
+    directory._showCoordMenu(e);
+  },
+
+  _copyData: function(data){
     const el = document.createElement('textarea');
-    el.value = `Latitude:${e.latlng.lat}, Longitude:${e.latlng.lng}`;
+    el.value = data;
     document.body.appendChild(el);
     el.select();
     document.execCommand('copy');
     document.body.removeChild(el);
+  },
+
+  _copyGCRS: function(e){
+    let mapEl = this.options.mapEl,
+        click = this.contextMenu._clickEvent;
+    this.contextMenu._copyData(`z:${mapEl.zoom}, lon :${click.latlng.lng}, lat:${click.latlng.lat}`);
+  },
+
+  _copyTCRS: function(e){
+    let mapEl = this.options.mapEl,
+        click = this.contextMenu._clickEvent,
+        point = mapEl._map.project(click.latlng);
+    this.contextMenu._copyData(`z: ${mapEl.zoom}, x:${point.x}, y:${point.y}`);
+  },
+
+  _copyTileMatrix: function(e){
+    let mapEl = this.options.mapEl,
+        click = this.contextMenu._clickEvent,
+        point = mapEl._map.project(click.latlng);
+    this.contextMenu._copyData(`z: ${mapEl.zoom}, column:${point.x/256}, row:${point.y/256}`);
+  },
+
+  _copyPCRS: function(e){
+    let mapEl = this.options.mapEl,
+        click = this.contextMenu._clickEvent,
+        point = mapEl._map.project(click.latlng),
+        scale = mapEl._map.options.crs.scale(+mapEl.zoom),
+        pcrs = mapEl._map.options.crs.transformation.untransform(point,scale);
+    this.contextMenu._copyData(`z: ${mapEl.zoom}, easting:${pcrs.x}, northing:${pcrs.y}`);
+  },
+
+  _copyTile: function(e){
+    let mapEl = this.options.mapEl,
+        click = this.contextMenu._clickEvent,
+        point = mapEl._map.options.crs.project(click.latlng),
+        pointX = point.x % 256, pointY = point.y % 256;
+    if(pointX < 0) pointX+= 256;
+    if(pointY < 0) pointY+= 256;
+
+    this.contextMenu._copyData(`z: ${mapEl.zoom}, 
+                                i:${Math.round(pointX)}, 
+                                j:${Math.round(pointY)}`);
+  },
+
+  _copyMap: function(e){
+    let mapEl = this.options.mapEl,
+        click = this.contextMenu._clickEvent;
+    this.contextMenu._copyData(`z:${mapEl.zoom}, i:${click.containerPoint.x}, j:${click.containerPoint.y}`);
   },
 
   _createItem: function (container, options, index) {
@@ -1177,7 +1283,8 @@ M.ContextMenu = L.Handler.extend({
         html = '';
 
     el.innerHTML = html + options.text;
-    el.href = '#';
+    el.href = "#";
+    el.setAttribute("role","button");
 
     L.DomEvent
       .on(el, 'mouseover', this._onItemMouseOver, this)
@@ -1211,16 +1318,11 @@ M.ContextMenu = L.Handler.extend({
   },
 
   _createEventHandler: function (el, func, context, hideOnSelect) {
-    let disabledCls = 'mapml-contextmenu-item-disabled',
-        parent = this;
+    let parent = this;
 
     hideOnSelect = (hideOnSelect !== undefined) ? hideOnSelect : true;
 
     return function (e) {
-      if (L.DomUtil.hasClass(el, disabledCls)) {
-        return;
-      }
-
       let map = parent._map,
         containerPoint = parent._showLocation.containerPoint,
         layerPoint = map.containerPointToLayerPoint(containerPoint),
@@ -1268,7 +1370,12 @@ M.ContextMenu = L.Handler.extend({
   },
 
   _show: function (e) {
-      this._showAtPoint(e.containerPoint, e);
+    this._clickEvent = e;
+    this._showAtPoint(e.containerPoint, e);
+    if(e.originalEvent.button === 0){
+      this._keyboardEvent = true;
+      this._container.firstChild.focus();
+    }
   },
 
   _showAtPoint: function (pt, data) {
@@ -1298,6 +1405,7 @@ M.ContextMenu = L.Handler.extend({
       if (this._visible) {
           this._visible = false;
           this._container.style.display = 'none';
+          this._coordMenu.style.display = 'none';
           this._map.fire('contextmenu.hide', {contextmenu: this});
       }
   },
@@ -1399,12 +1507,46 @@ M.ContextMenu = L.Handler.extend({
     },250);
   },
 
+  _showCoordMenu: function(e){
+    let mapSize = this._map.getSize(),
+        click = this._clickEvent,
+        menu = this._coordMenu;
+
+    menu.style.display = "block";
+
+    if (click.containerPoint.x + 150 + 80 > mapSize.x) {
+      menu.style.left = 'auto';
+      menu.style.right = 150 + 'px';
+    } else {
+      menu.style.left = 150 + 'px';
+      menu.style.right = 'auto';
+    }
+
+    if (click.containerPoint.y + 150 > mapSize.y) {
+      menu.style.top = 'auto';
+      menu.style.bottom = 20 + 'px';
+    } else {
+      menu.style.top = 100 + 'px';
+      menu.style.bottom = 'auto';
+    }
+    if(this._keyboardEvent)menu.firstChild.focus();
+  },
+
+  _hideCoordMenu: function(e){
+    if(e.srcElement.parentElement.classList.contains("mapml-submenu") ||
+        e.srcElement.innerText === "Copy Coordinates (C) >")return;
+    let menu = this._coordMenu;
+    menu.style.display = "none";
+  },
+
   _onItemMouseOver: function (e) {
-      L.DomUtil.addClass(e.target || e.srcElement, 'over');
+    L.DomUtil.addClass(e.target || e.srcElement, 'over');
+    if(e.srcElement.innerText === "Copy Coordinates (C) >") this._showCoordMenu(e);
   },
 
   _onItemMouseOut: function (e) {
-      L.DomUtil.removeClass(e.target || e.srcElement, 'over');
+    L.DomUtil.removeClass(e.target || e.srcElement, 'over');
+    this._hideCoordMenu(e);
   }
 });
 

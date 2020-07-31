@@ -81,7 +81,6 @@
 
 .mapml-contextmenu {
   display: none;
-  overflow-y: auto;
   max-height: 100%;
   max-width: 100%;
   box-shadow: 0 1px 7px rgba(0,0,0,0.4);
@@ -91,7 +90,7 @@
   background-color: #fff;
   cursor: default;
   -webkit-user-select: none;
-     -moz-user-select: none;
+     -moz-user-select: none;    
       -ms-user-select: none;
           user-select: none;
 }
@@ -113,15 +112,7 @@
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
 }
-
-.mapml-contextmenu-icon {
-  margin: 2px 8px 0 0;
-  width: 16px;
-  height: 16px;
-  float: left;
-  border: 0;
-}
-
+      
 .mapml-contextmenu-separator {
   border-bottom: 1px solid #ccc;
   margin: 5px 0;

@@ -38,6 +38,41 @@ jest.setTimeout(50000);
           await browser.close();
         });
 
+        test("[" + browserType + "]" + " Context menu focus on keyboard shortcut", async () => {
+          await page.click("body > map");
+          await page.keyboard.press("Shift+F10");
+          const aHandle = await page.evaluateHandle(() => document.querySelector(".web-map"));
+          const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
+          const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
+          const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
+          let name = await nameHandle.jsonValue();
+          await nameHandle.dispose();
+          expect(name).toEqual("Back (B)");
+        });
+
+        test("[" + browserType + "]" + " Context menu tab goes to next item", async () => {
+          await page.keyboard.press("Tab");
+          const aHandle = await page.evaluateHandle(() => document.querySelector(".web-map"));
+          const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
+          const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
+          const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
+          let name = await nameHandle.jsonValue();
+          await nameHandle.dispose();
+          expect(name).toEqual("Forward (F)");
+        });
+
+        test("[" + browserType + "]" + " Submenu opens on C with focus on first item", async () => {
+          await page.keyboard.press("c");
+          await page.keyboard.press("Tab");
+          const aHandle = await page.evaluateHandle(() => document.querySelector(".web-map"));
+          const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
+          const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
+          const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
+          let name = await nameHandle.jsonValue();
+          await nameHandle.dispose();
+          expect(name).toEqual("tile");
+        });
+
         test("[" + browserType + "]" + " Context menu displaying on map", async () => {
           await page.click("body > map", { button: "right" });
           const contextMenu = await page.$eval(

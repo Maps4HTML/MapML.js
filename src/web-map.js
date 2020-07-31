@@ -94,6 +94,7 @@ export class WebMap extends HTMLMapElement {
     // Always call super first in constructor
     super();
 
+    this._source = this.outerHTML;
     let tmpl = document.createElement('template');
     tmpl.innerHTML =
     `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
@@ -499,17 +500,13 @@ export class WebMap extends HTMLMapElement {
     let mapEl = this,
         initialLocation = mapEl._history.shift();
     mapEl._history = [initialLocation];
+    mapEl._historyIndex = -1;
     mapEl._traversalCall = true;
     mapEl.zoomTo(initialLocation.lat,initialLocation.lng,initialLocation.zoom);
   }
 
   viewSource(){
-    let mapHTML = this.outerHTML,
-        divIndex = mapHTML.indexOf("<div");
-    //27 is the length of the div string
-    mapHTML = mapHTML.replace(mapHTML.substring(divIndex,divIndex+27),"");
-
-    let blob = new Blob([mapHTML],{type:"application/xml"}),
+    let blob = new Blob([this._source],{type:"text/plain"}),
         url = URL.createObjectURL(blob);
     window.open(url);
     URL.revokeObjectURL(url);
