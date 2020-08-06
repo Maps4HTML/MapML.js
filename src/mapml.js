@@ -1222,7 +1222,8 @@ M.MapMLLayer = L.Layer.extend({
                   localBounds = this[type]._templates[j].layer.layerBounds;
                   localZoomRanges = this[type]._templates[j].layer.zoomBounds;
                 } else {
-                  localBounds.extend(this[type]._templates[j].layer.layerBounds);
+                  localBounds.extend(this[type]._templates[j].layer.layerBounds.min);
+                  localBounds.extend(this[type]._templates[j].layer.layerBounds.max);
                 }
               }
             }
@@ -1232,7 +1233,8 @@ M.MapMLLayer = L.Layer.extend({
                 localBounds = this[type].layerBounds;
                 localZoomRanges = this[type].zoomBounds;
               } else{
-                localBounds.extend(this[type].layerBounds);
+                localBounds.extend(this[type].layerBounds.min);
+                localBounds.extend(this[type].layerBounds.max);
               }
             } 
           }
