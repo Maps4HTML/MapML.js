@@ -1066,7 +1066,9 @@ M.ContextMenu = L.Handler.extend({
         text:"Reload (<kbd>R</kbd>)",
         callback:this._reload,
       },
-      '-',
+      {
+        spacer:"-",
+      },
       {
         text:"Toggle Controls (<kbd>T</kbd>)",
         callback:this._toggleControls,
@@ -1075,6 +1077,7 @@ M.ContextMenu = L.Handler.extend({
         text:"Copy Coordinates (<kbd>C</kbd>) >", 
         callback:this._copyCoords,
         hideOnSelect:false,
+        popup:true,
         submenu:[
           {
             text:"tile",
@@ -1084,12 +1087,16 @@ M.ContextMenu = L.Handler.extend({
             text:"tilematrix",
             callback:this._copyTileMatrix,
           },
-          '-',
+          {
+            spacer:"-",
+          },
           {
             text:"map",
             callback:this._copyMap,
           },
-          '-',
+          {
+            spacer:"-",
+          },
           {
             text:"tcrs",
             callback:this._copyTCRS,
@@ -1118,19 +1125,24 @@ M.ContextMenu = L.Handler.extend({
 
     this._container.style.width = "150px";
     
-    this._createItems();
+    for (let i = 0; i < 6; i++) {
+      this._items[i].el = this._createItem(this._container, this._items[i]);
+    }
 
     this._coordMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-submenu", this._container);
     this._coordMenu.style.zIndex = 10000;
     this._coordMenu.style.position = "absolute";
 
     this._coordMenu.style.width = "80px";
+    this._coordMenu.id = "mapml-copy-submenu";
 
     this._clickEvent = null;
 
     for(let i =0;i<this._items[5].submenu.length;i++){
       this._createItem(this._coordMenu,this._items[5].submenu[i],i);
     }
+
+    this._items[6].el = this._createItem(this._container, this._items[6]);
 
     L.DomEvent
       .on(this._container, 'click', L.DomEvent.stop)
@@ -1173,16 +1185,6 @@ M.ContextMenu = L.Handler.extend({
       mousedown: this._hide,
       zoomstart: this._hide
     }, this);
-  },
-
-  _createItems: function () {
-    var itemOptions = this._items,
-        item,
-        i, l;
-
-    for (i = 0, l = itemOptions.length; i < l; i++) {
-      this._items.push(this._createItem(this._container, itemOptions[i]));
-    }
   },
 
   _goForward: function(e){
@@ -1273,7 +1275,7 @@ M.ContextMenu = L.Handler.extend({
   },
 
   _createItem: function (container, options, index) {
-    if (options.separator || options === '-') {
+    if (options.spacer) {
       return this._createSeparator(container, index);
     }
 
@@ -1285,6 +1287,11 @@ M.ContextMenu = L.Handler.extend({
     el.innerHTML = html + options.text;
     el.href = "#";
     el.setAttribute("role","button");
+    if(options.popup){
+      el.setAttribute("aria-haspopup", "true");
+      el.setAttribute("aria-expanded", "false");
+      el.setAttribute("aria-controls", "mapml-copy-submenu");
+    }
 
     L.DomEvent
       .on(el, 'mouseover', this._onItemMouseOver, this)
@@ -1480,6 +1487,10 @@ M.ContextMenu = L.Handler.extend({
       let key = e.keyCode;
 
       switch(key){
+        case 32:
+          if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
+            this._map._container.parentNode.activeElement.click();
+          break;
         case 66:
           this._goBack(e);
           break;
@@ -1510,8 +1521,10 @@ M.ContextMenu = L.Handler.extend({
   _showCoordMenu: function(e){
     let mapSize = this._map.getSize(),
         click = this._clickEvent,
-        menu = this._coordMenu;
+        menu = this._coordMenu,
+        copyEl = this._items[5].el.el;
 
+    copyEl.setAttribute("aria-expanded","true");
     menu.style.display = "block";
 
     if (click.containerPoint.x + 150 + 80 > mapSize.x) {
@@ -1535,7 +1548,8 @@ M.ContextMenu = L.Handler.extend({
   _hideCoordMenu: function(e){
     if(e.srcElement.parentElement.classList.contains("mapml-submenu") ||
         e.srcElement.innerText === "Copy Coordinates (C) >")return;
-    let menu = this._coordMenu;
+    let menu = this._coordMenu, copyEl = this._items[5].el.el;
+    copyEl.setAttribute("aria-expanded","false");
     menu.style.display = "none";
   },
 
