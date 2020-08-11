@@ -52,6 +52,7 @@
     "path": "^0.12.7",
     "playwright": "^1.2.1",
     "proj4": "2.6.0",
-    "proj4leaflet": "1.0.1"
+    "proj4leaflet": "1.0.1",
+    "rollup": "^2.23.1"
   }
 }
