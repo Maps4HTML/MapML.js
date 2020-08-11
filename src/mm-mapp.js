@@ -69,10 +69,28 @@ export class MmMapp extends HTMLElement {
   get layers() {
     return this.getElementsByTagName('layer-');
   }
+
+  get extent(){
+    let map = this._map,
+      pcrsBounds = M.pixelToPCRSBounds(
+        map.getPixelBounds(),
+        map.getZoom(),
+        map.options.projection);
+    let formattedExtent = M.convertAndFormatPCRS(pcrsBounds, map);
+    if(map.getMaxZoom() !== Infinity){
+      formattedExtent.zoom = {
+        minZoom:map.getMinZoom(),
+        maxZoom:map.getMaxZoom()
+      };
+    }
+    return (formattedExtent);
+  }
+
   constructor() {
     // Always call super first in constructor
     super();
     
+    this._source = this.outerHTML;
     let tmpl = document.createElement('template');
     tmpl.innerHTML =
     `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
@@ -135,12 +153,21 @@ export class MmMapp extends HTMLElement {
       } else {
         this._container.style.height = this.height+"px";
       }
+
+      // create an array to track the history of the map and the current index
+      if(!this._history){
+        this._history = [];
+        this._historyIndex = -1;
+        this._traversalCall = false;
+      }
+
       // create the Leaflet map if this is the first time attached is called
       if (!this._map) {
         this._map = L.map(this._container, {
           center: new L.LatLng(this.lat, this.lon),
           projection: this.projection,
           query: true,
+          contextMenu: true,
           mapEl: this,
           crs: M[this.projection],
           zoom: this.zoom,
@@ -320,6 +347,7 @@ export class MmMapp extends HTMLElement {
     this._map.on('moveend',
       function () {
         this._updateMapCenter();
+        this._addToHistory();
         this.dispatchEvent(new CustomEvent('moveend', {detail:
           {target: this}}));
       }, this);
@@ -384,7 +412,7 @@ export class MmMapp extends HTMLElement {
     }
   }
   zoomTo(lat, lon, zoom) {
-    zoom = zoom||this.zoom;
+    zoom = Number.isInteger(zoom)? zoom:this.zoom;
     var location = new L.LatLng(lat,lon);
     this._map.setView(location, zoom);
     this.zoom = zoom;
@@ -398,6 +426,60 @@ export class MmMapp extends HTMLElement {
     this.lon = this._map.getCenter().lng;
     this.zoom = this._map.getZoom();
   }
+
+  _addToHistory(){
+    if(this._traversalCall){
+      this._traversalCall = false;
+      return;
+    }
+    let mapLocation = this._map.getCenter();
+    let location ={
+      zoom:this._map.getZoom(),
+      lat:mapLocation.lat,
+      lng:mapLocation.lng,
+    };
+    this._historyIndex++;
+    this._history.push(location);
+  }
+
+  back(){
+    let mapEl = this,
+        history = mapEl._history;
+    if(mapEl._historyIndex > 0){
+      mapEl._historyIndex--;
+    }
+    let prev = history[mapEl._historyIndex];
+    mapEl._traversalCall = true;
+    mapEl.zoomTo(prev.lat,prev.lng,prev.zoom);
+  }
+
+  forward(){
+    let mapEl = this,
+        history = this._history;
+    if(mapEl._historyIndex < history.length -1){
+      mapEl._historyIndex++;
+    }
+    let next = history[this._historyIndex];
+    mapEl._traversalCall = true;
+    mapEl.zoomTo(next.lat,next.lng,next.zoom);
+  }
+
+  reload(){
+    let mapEl = this,
+        initialLocation = mapEl._history.shift();
+    mapEl._history = [initialLocation];
+    mapEl._historyIndex = -1;
+    mapEl._traversalCall = true;
+    mapEl.zoomTo(initialLocation.lat,initialLocation.lng,initialLocation.zoom);
+  }
+
+  viewSource(){
+    let blob = new Blob([this._source],{type:"text/plain"}),
+        url = URL.createObjectURL(blob);
+    window.open(url);
+    URL.revokeObjectURL(url);
+  }
+  
   _ready() {
     // when used in a custom element, the leaflet script element is hidden inside
     // the import's shadow dom.
