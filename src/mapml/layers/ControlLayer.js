@@ -127,5 +127,5 @@ export var MapMLLayerControl = L.Control.Layers.extend({
     }
 });
 export var mapMlLayerControl = function (layers, options) {
-	return new M.MapMLLayerControl(layers, options);
+	return new MapMLLayerControl(layers, options);
 };

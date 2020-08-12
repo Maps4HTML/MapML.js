@@ -230,5 +230,5 @@ export var templatedLayer = function(templates, options) {
   // a template object contains the template, plus associated <input> elements
   // which need to be processed just prior to creating a url from the template 
   // with the values of the inputs
-  return new M.TemplatedLayer(templates, options);
+  return new TemplatedLayer(templates, options);
 };

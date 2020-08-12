@@ -214,5 +214,5 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
     }
 });
 export var templatedFeaturesLayer = function(template, options) {
-    return new M.TemplatedFeaturesLayer(template, options);
+    return new TemplatedFeaturesLayer(template, options);
 };

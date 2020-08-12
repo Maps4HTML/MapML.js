@@ -183,7 +183,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         options.className = mapml.classList.value;
       }
 
-      var layer = M.MapMLFeatures.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options);
+      var layer = this.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options);
       if (layer) {
         layer.properties = mapml.getElementsByTagName('properties')[0];
         
@@ -347,5 +347,5 @@ export var MapMLFeatures = L.FeatureGroup.extend({
   }
 });
 export var mapMlFeatures = function (mapml, options) {
-	return new M.MapMLFeatures(mapml, options);
+	return new MapMLFeatures(mapml, options);
 };

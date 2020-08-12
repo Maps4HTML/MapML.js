@@ -78,6 +78,20 @@
  * publicity pertaining to the work without specific, written prior permission. 
  * Title to copyright in this work will at all times remain with copyright holders.
  */
+
+import { MapMLStaticTileLayer, mapMLStaticTileLayer } from './layers/StaticTileLayer';
+import { MapMLLayerControl, mapMlLayerControl } from './layers/ControlLayer';
+import { MapMLFeatures, mapMlFeatures } from './layers/FeatureLayer';
+import { TemplatedTileLayer, templatedTileLayer } from './layers/TemplatedTileLayer';
+import { TemplatedLayer, templatedLayer } from './layers/TemplatedLayer';
+import { TemplatedFeaturesLayer, templatedFeaturesLayer } from './layers/TemplatedFeaturesLayer';
+import { TemplatedImageLayer, templatedImageLayer } from './layers/TemplatedImageLayer';
+import { ImageOverlay, imageOverlay } from './layers/ImageLayer';
+import { MapMLLayer, mapMLLayer } from './layers/MapLayer';
+import { QueryHandler } from './handlers/QueryHandler';
+import { ContextMenu } from './handlers/ContextMenu';
+import { Util } from './utils/Util';
+
 /* global L, Node */
 /*jshint esversion: 6 */
 (function (window, document, undefined) {
@@ -599,16 +613,16 @@ window.M = M;
   });
 }());
 
-M.convertAndFormatPCRS = Utils.convertAndFormatPCRS;
-M.axisToCS = Utils.axisToCS;
-M.parseNumber = Utils.parseNumber;
-M.extractInputBounds = Utils.extractInputBounds;
-M.splitCoordinate = Utils.splitCoordinate;
-M.boundsToPCRSBounds = Utils.boundsToPCRSBounds;
-M.pixelToPCRSBounds = Utils.pixelToPCRSBounds;
-M.metaContentToObject = Utils.metaContentToObject;
-M.coordsToArray = Utils.coordsToArray;
-M.parseStylesheetAsHTML = Utils.parseStylesheetAsHTML;
+M.convertAndFormatPCRS = Util.convertAndFormatPCRS;
+M.axisToCS = Util.axisToCS;
+M.parseNumber = Util.parseNumber;
+M.extractInputBounds = Util.extractInputBounds;
+M.splitCoordinate = Util.splitCoordinate;
+M.boundsToPCRSBounds = Util.boundsToPCRSBounds;
+M.pixelToPCRSBounds = Util.pixelToPCRSBounds;
+M.metaContentToObject = Util.metaContentToObject;
+M.coordsToArray = Util.coordsToArray;
+M.parseStylesheetAsHTML = Util.parseStylesheetAsHTML;
 
 M.QueryHandler = QueryHandler;
 M.ContextMenu = ContextMenu;

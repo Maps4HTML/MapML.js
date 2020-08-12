@@ -101,5 +101,5 @@ export var ImageOverlay = L.ImageOverlay.extend({
         
 });
 export var imageOverlay = function (url, location, size, angle, container, options) {
-        return new M.ImageOverlay(url, location, size, angle, container, options);
+        return new ImageOverlay(url, location, size, angle, container, options);
 };

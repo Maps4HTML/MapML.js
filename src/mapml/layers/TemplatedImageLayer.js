@@ -158,5 +158,5 @@ export var TemplatedImageLayer =  L.Layer.extend({
     },
 });
 export var templatedImageLayer = function(template, options) {
-    return new M.TemplatedImageLayer(template, options);
+    return new TemplatedImageLayer(template, options);
 };

@@ -728,5 +728,5 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     }
 });
 export var templatedTileLayer = function(template, options) {
-  return new M.TemplatedTileLayer(template, options);
+  return new TemplatedTileLayer(template, options);
 };

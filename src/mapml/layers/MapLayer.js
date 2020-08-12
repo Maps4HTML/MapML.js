@@ -1001,5 +1001,5 @@ export var MapMLLayer = L.Layer.extend({
 });
 export var mapMLLayer = function (url, node, options) {
   if (!url && !node) return null;
-	return new M.MapMLLayer(url, node, options);
+	return new MapMLLayer(url, node, options);
 };

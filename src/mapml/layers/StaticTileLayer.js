@@ -134,5 +134,5 @@ export var MapMLStaticTileLayer = L.GridLayer.extend({
 });
 
 export var mapMLStaticTileLayer = function(options) {
-  return new M.MapMLStaticTileLayer(options);
+  return new MapMLStaticTileLayer(options);
 };
