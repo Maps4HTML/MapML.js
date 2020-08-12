@@ -214,6 +214,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
         }
         poly.style.display = ""; // fill it
       }
+      /* jshint ignore:start */
       function _renderOutline(c, classList) {
         for (var i=0;i<c.length;i++) {
           const nf = NodeFilter;
@@ -231,6 +232,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
                 }), classList);
         }
       }
+      /* jshint ignore:end */
       function _coordinatesToPaths(tw,cl) {
         var coordinatesAsArrays = [];
         var n,i;
