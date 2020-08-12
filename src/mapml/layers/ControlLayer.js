@@ -90,7 +90,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
           }
           let label = this._layers[i].input.labels[0].getElementsByTagName("span"),
               input = this._layers[i].input.labels[0].getElementsByTagName("input");
-          if(count === total && count != 0){
+          if(count === total && count !== 0){
             this._layers[i].layer._layerEl.setAttribute("disabled", ""); //set a disabled attribute on the layer element
             input[0].parentElement.parentElement.parentElement.parentElement.disabled = true;
             label[0].style.fontStyle = "italic";
