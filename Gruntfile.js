@@ -137,7 +137,16 @@ module.exports = function(grunt) {
     },
     clean: {
       dist: ['dist']
-    }
+    },
+    rollup: {
+      options: {
+        format: 'iife',
+      },
+      main: {
+        dest: 'dist/mapml.js',
+        src: 'src/mapml/index.js', // Only one source file is permitted
+      },
+    },
   });
 
   /*grunt.loadNpmTasks('grunt-html');*/
@@ -147,12 +156,14 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-rollup');
 
 /* grunt.loadNpmTasks('grunt-processhtml'); */
 
 
   grunt.registerTask('test', ['jshint']);
 
-  grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'concat', 'uglify']);
+  grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'concat', 'uglify', 'rollup']);
+  grunt.registerTask('build', ['rollup']);
 
 };
