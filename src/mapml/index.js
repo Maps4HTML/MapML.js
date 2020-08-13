@@ -93,7 +93,6 @@ import { Util } from './utils/Util';
 
 
 /* global L, Node */
-/*jshint esversion: 6 */
 (function (window, document, undefined) {
   
 var M = {};
