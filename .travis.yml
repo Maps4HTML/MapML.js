@@ -6,6 +6,6 @@ dist: bionic
 install:
  - npm install
  - npm install -g grunt-cli
- - grunt clean copy
+ - grunt clean copy rollup
 script:
  - npm test
