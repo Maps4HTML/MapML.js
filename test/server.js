@@ -7,6 +7,7 @@ const port = 30001;
 app.use(express.static(path.join(__dirname, "../dist")));
 app.use(express.static(path.join(__dirname, "e2e/core")));
 app.use(express.static(path.join(__dirname, "e2e/layers")));
+app.use(express.static(path.join(__dirname, "e2e/mapml-viewer")));
 app.use("/data", express.static(path.join(__dirname, "e2e/data/tiles/cbmt")));
 app.use("/data", express.static(path.join(__dirname, "e2e/data/tiles/wgs84")));
 app.use(

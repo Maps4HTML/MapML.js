@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>index-mm-mapp.html</title>
-    <script type="module" src="dist/mm-mapp.js"></script>
+    <title>index-mapml-viewer.html</title>
+    <script type="module" src="dist/mapml-viewer.js"></script>
     <style>
       html,
       body {
@@ -19,7 +19,7 @@
       element, such that styles don't apply when fallback content is in use
       (e.g. when scripting is disabled or when custom/built-in elements isn't
       supported in the browser). */
-      mm-mapp:defined {
+      mapml-viewer:defined {
         /* Responsive map. */
         /* max-width: 100%; */
         
@@ -32,7 +32,7 @@
       }
       
       /* Pre-style to avoid FOUC of inline layer- and fallback content. */
-      mm-mapp:not(:defined) > * {
+      mapml-viewer:not(:defined) > * {
         display: none;
       }
       /* Ensure inline layer content is hidden if custom/built-in elements isn't
@@ -47,15 +47,15 @@
       <style>
         /* Ensure fallback content (children of the map element) is displayed if
         custom/built-in elements is supported but javascript is disabled. */
-        mm-mapp:not(:defined) > :not(layer-) {
+        mapml-viewer:not(:defined) > :not(layer-) {
           display: initial;
         }
       </style>
     </noscript>
   </head>
   <body>
-    <mm-mapp projection="CBMTILE" zoom="2" lat="45" lon="-90" controls controlslist="nofullscreen">
+    <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls controlslist="nofullscreen">
       <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
-    </mm-mapp>
+    </mapml-viewer>
   </body>
 </html>

@@ -5,7 +5,7 @@ import './mapml.js';       // refactored URI usage, replaced with URL standard
 import './Leaflet.fullscreen.js';
 import { MapLayer } from './layer.js';
 
-export class MmMapp extends HTMLElement {
+export class MapViewer extends HTMLElement {
   static get observedAttributes() {
     return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls'];
   }
@@ -116,13 +116,14 @@ export class MmMapp extends HTMLElement {
     // Hide all (light DOM) children of the map element.
     let hideElementsCSS = document.createElement('style');
     hideElementsCSS.innerHTML =
-    `mm-mapp > * {` +
+    `mapml-viewer > * {` +
     `display: none!important;` +
     `}`;
 
     shadowRoot.appendChild(mapDefaultCSS);
     shadowRoot.appendChild(tmpl.content.cloneNode(true));
     shadowRoot.appendChild(this._container);
+
     this.appendChild(hideElementsCSS);
   }
   connectedCallback() {
@@ -179,7 +180,6 @@ export class MmMapp extends HTMLElement {
           // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
           fadeAnimation: true
         });
-
         // the attribution control is not optional
         this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
 
@@ -225,7 +225,7 @@ export class MmMapp extends HTMLElement {
   }
   _dropHandler(event) {
     event.preventDefault();
-    // create a new <layer-> child of this <mm-mapp> element
+    // create a new <layer-> child of this <mapml-viewer> element
       let l = new MapLayer();
       l.src = event.dataTransfer.getData("text");
       l.label = 'Layer';
@@ -503,5 +503,5 @@ export class MmMapp extends HTMLElement {
   }
 }
 // need to provide options { extends: ... }  for custom built-in elements
-window.customElements.define('mm-mapp', MmMapp);
+window.customElements.define('mapml-viewer', MapViewer);
 window.customElements.define('layer-', MapLayer);
