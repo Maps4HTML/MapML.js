@@ -486,8 +486,9 @@ export var MapMLLayer = L.Layer.extend({
         opacity.setAttribute('type','range');
         opacity.setAttribute('min', '0');
         opacity.setAttribute('max','1.0');
-        opacity.setAttribute('value', '1.0');
+        opacity.setAttribute('value', this._container.style.opacity || '1.0');
         opacity.setAttribute('step','0.1');
+        opacity.value = this._container.style.opacity || '1.0';
 
         L.DomEvent.on(opacity,'change', this._changeOpacity, this);
         L.DomEvent.on(name,'dragstart', function(event) {

@@ -143,40 +143,73 @@ jest.setTimeout(50000);
           expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
           expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
         });
-        test("[" + browserType + "]" + " Context menu, toggle controls off", async () => {
-          const controlsOn = await page.$eval(
-            "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-            (controls) => controls.childElementCount
-          );
 
-          await page.click("body > map", { button: "right" });
-          await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+        describe("Context Menu, Toggle Controls " + browserType, () => {
+          test("[" + browserType + "]" + " Context menu, toggle controls off", async () => {
+            const controlsOn = await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
+              (controls) => controls.childElementCount
+            );
 
-          const controlsOff = await page.$eval(
-            "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-            (controls) => controls.childElementCount
-          );
+            await page.click("body > map", { button: "right" });
+            await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
 
-          expect(controlsOn).toEqual(2);
-          expect(controlsOff).toEqual(0);
-        });
+            const controlsOff = await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
+              (controls) => controls.childElementCount
+            );
 
-        test("[" + browserType + "]" + " Context menu, toggle controls on", async () => {
-          const controlsOn = await page.$eval(
-            "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-            (controls) => controls.childElementCount
-          );
+            expect(controlsOn).toEqual(2);
+            expect(controlsOff).toEqual(0);
+          });
 
-          await page.click("body > map", { button: "right" });
-          await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+          test("[" + browserType + "]" + " Context menu, toggle controls on", async () => {
+            const controlsOn = await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
+              (controls) => controls.childElementCount
+            );
 
-          const controlsOff = await page.$eval(
-            "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-            (controls) => controls.childElementCount
-          );
+            await page.click("body > map", { button: "right" });
+            await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
 
-          expect(controlsOn).toEqual(0);
-          expect(controlsOff).toEqual(2);
+            const controlsOff = await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
+              (controls) => controls.childElementCount
+            );
+
+            expect(controlsOn).toEqual(0);
+            expect(controlsOff).toEqual(2);
+          });
+
+          test("[" + browserType + "]" + " Context menu, toggle controls after changing opacity", async () => {
+            await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
+            await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details",
+              (div) => div.open = true
+            );
+            await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details",
+              (div) => div.open = true
+            );
+            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input");
+            const valueBefore = await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input",
+              (opacity) => opacity.value
+            );
+            expect(valueBefore).toEqual("0.5");
+
+            await page.click("body > map", { button: "right" });
+            await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+            await page.click("body > map", { button: "right" });
+            await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+
+            const valueAfter = await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input",
+              (opacity) => opacity.value
+            );
+
+            expect(valueAfter).toEqual("0.5");
+          });
         });
 
         test("[" + browserType + "]" + " Submenu, copy all coordinate systems", async () => {
