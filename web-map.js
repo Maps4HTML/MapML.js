@@ -1,14 +1,16 @@
 import './leaflet-src.js';  // a lightly modified version of Leaflet for use as browser module
 import './proj4-src.js';        // modified version of proj4; could be stripped down for mapml
-import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use. 
+import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use.
 import './mapml.js';       // refactored URI usage, replaced with URL standard
+import './Leaflet.fullscreen.js';
 import { MapLayer } from './layer.js';
+import { MapArea } from './map-area.js';
 
 export class WebMap extends HTMLMapElement {
   static get observedAttributes() {
     return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls'];
   }
-  // see comments below regarding attributeChangedCallback vs. getter/setter 
+  // see comments below regarding attributeChangedCallback vs. getter/setter
   // usage.  Effectively, the user of the element must use the property, not
   // the getAttribute/setAttribute/removeAttribute DOM API, because the latter
   // calls don't result in the getter/setter being called (so you have to use
@@ -23,6 +25,14 @@ export class WebMap extends HTMLMapElement {
     else
       this.removeAttribute('controls');
     this._toggleControls(hasControls);
+  }
+  get controlslist() {
+    return this.hasAttribute('controlslist') ? this.getAttribute("controlslist") : "";
+  }
+  set controlslist(val) {
+    if (val.toLowerCase() === "nofullscreen") {
+      this.setAttribute("controlslist", "nofullscreen");
+    }
   }
   get lat() {
     return this.hasAttribute("lat") ? this.getAttribute("lat") : "0";
@@ -60,63 +70,116 @@ export class WebMap extends HTMLMapElement {
   get layers() {
     return this.getElementsByTagName('layer-');
   }
+  get areas() {
+    return this.getElementsByTagName('area');
+  }
+
+  get extent(){
+    let map = this._map,
+      pcrsBounds = M.pixelToPCRSBounds(
+        map.getPixelBounds(),
+        map.getZoom(),
+        map.options.projection);
+    let formattedExtent = M.convertAndFormatPCRS(pcrsBounds, map);
+    if(map.getMaxZoom() !== Infinity){
+      formattedExtent.zoom = {
+        minZoom:map.getMinZoom(),
+        maxZoom:map.getMaxZoom()
+      };
+    }
+    return (formattedExtent);
+  }
+
   constructor() {
     // Always call super first in constructor
     super();
+
+    this._source = this.outerHTML;
     let tmpl = document.createElement('template');
-    tmpl.innerHTML = 
-    `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">` +
-    `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">`;
+    tmpl.innerHTML =
+    `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
+    `<link rel="stylesheet" href="${new URL("leaflet.fullscreen.css", import.meta.url).href}">` +
+    `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`;
 
     const rootDiv = document.createElement('div');
-    // without this you have to omit the doctype, which is bad because
-    // it triggers quirks mode.
-    rootDiv.style.height = "100%";
-    // the map element is inline by default
-    this.style.display = "block";
+    rootDiv.classList.add('web-map');
+
     let shadowRoot = rootDiv.attachShadow({mode: 'open'});
     this._container = document.createElement('div');
-    this._container.style.minWidth = "100%";
-    this._container.style.minHeight = "100%";
+    
+    // Set default styles for the map element.
+    let mapDefaultCSS = document.createElement('style');
+    mapDefaultCSS.innerHTML =
+    `map[is="web-map"] {` +
+    `contain: content;` +  // Contain layout and paint calculations within the map element.
+    `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
+    `overflow: hidden;` + // Make the map element behave and look more like a native element.
+    `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
+    `width: 300px;` +
+    `border-width: 2px;` +
+    `border-style: inset;` +
+    `}` +
+    `map[is="web-map"] .web-map {` +
+    `display: contents;` + // This div doesn't have to participate in layout by generating its own box.
+    `}`;
+    
+    // Hide all (light DOM) children of the map element except for the
+    // `<area>` and `<div class="web-map">` (shadow root host) elements.
+    let hideElementsCSS = document.createElement('style');
+    hideElementsCSS.innerHTML =
+    `map[is="web-map"] > :not(area):not(.web-map) {` +
+    `display: none!important;` +
+    `}`;
+    
     shadowRoot.appendChild(tmpl.content.cloneNode(true));
     shadowRoot.appendChild(this._container);
     this.appendChild(rootDiv);
+    this.appendChild(hideElementsCSS);
+    document.head.insertAdjacentElement('afterbegin', mapDefaultCSS);
   }
   connectedCallback() {
-//    console.log('Custom map element added to page.');
     if (this.isConnected) {
 
       // the dimension attributes win, if they're there. A map does not
-      // have an intrinsic size, unlike an image or video, and so must 
+      // have an intrinsic size, unlike an image or video, and so must
       // have a defined width and height.
-//      var s = window.getComputedStyle(this),
-//        wpx = s.width, hpx=s.height, 
-//        w = parseInt(wpx.replace('px','')),
-//        h = parseInt(hpx.replace('px',''));
-//
-//      if (wpx === "" || hpx === "") {
-//         return;
-//      }
-//
-//      if (!this.width || this.width !== w) {
-//        this._container.style.width = wpx;
-//        this.width = w;
-//      } else {
-//        this._container.style.width = this.width+"px";
-//      }
-//
-//      if (!this.height || this.height !== h) {
-//        this._container.style.height = h;
-//        this.height = h;
-//      } else {
-//        this._container.style.height = this.height+"px";
-//      }
+      var s = window.getComputedStyle(this),
+        wpx = s.width, hpx=s.height,
+        w = parseInt(wpx.replace('px','')),
+        h = parseInt(hpx.replace('px',''));
+
+      if (wpx === "" || hpx === "") {
+         return;
+      }
+
+      if (!this.width || this.width !== w) {
+        this._container.style.width = wpx;
+        this.width = w;
+      } else {
+        this._container.style.width = this.width+"px";
+      }
+
+      if (!this.height || this.height !== h) {
+        this._container.style.height = hpx;
+        this.height = h;
+      } else {
+        this._container.style.height = this.height+"px";
+      }
+
+      // create an array to track the history of the map and the current index
+      if(!this._history){
+        this._history = [];
+        this._historyIndex = -1;
+        this._traversalCall = false;
+      }
+
       // create the Leaflet map if this is the first time attached is called
       if (!this._map) {
         this._map = L.map(this._container, {
           center: new L.LatLng(this.lat, this.lon),
           projection: this.projection,
           query: true,
+          contextMenu: true,
           mapEl: this,
           crs: M[this.projection],
           zoom: this.zoom,
@@ -124,20 +187,43 @@ export class WebMap extends HTMLMapElement {
           // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
           // the mapml response is received the screen tends to flash.  I'm sure
           // there is a better configuration than that, but at this moment
-          // I'm not sure how to approach that issue.  
-          // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24 
+          // I'm not sure how to approach that issue.
+          // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
           fadeAnimation: true
         });
-
         // the attribution control is not optional
-        this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+        this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps4HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
 
         // optionally add controls to the map
         if (this.controls) {
           this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
           this._zoomControl = L.control.zoom().addTo(this._map);
+          if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
+            this._fullScreenControl = L.control.fullscreen().addTo(this._map);
+          }
+        }
+        if (this.hasAttribute('name')) {
+          var name = this.getAttribute('name');
+          if (name) {
+            this.poster = document.querySelector('img[usemap='+'"#'+name+'"]');
+            // firefox has an issue where the attribution control's use of
+            // _container.innerHTML does not work properly if the engine is throwing
+            // exceptions because there are no area element children of the image map
+            // for firefox only, a workaround is to actually remove the image...
+            if (this.poster) {
+              if (L.Browser.gecko) {
+                  this.poster.removeAttribute('usemap');
+              }
+              //this.appendChild(this.poster);
+            }
+          }
         }
 
+        // undisplay the img in the image map, because it's not needed now
+        // gives a slight fouc, not optimal
+        if (this.poster) {
+          this.poster.style.display = 'none';
+        }
         this._setUpEvents();
         // this.fire('load', {target: this});
       }
@@ -172,11 +258,19 @@ export class WebMap extends HTMLMapElement {
   _dropHandler(event) {
     event.preventDefault();
     // create a new <layer-> child of this <map> element
-    let l = new MapLayer();
-    l.src = event.dataTransfer.getData("text");
-    l.label = 'Layer';
-    l.checked = 'true';
-    this.appendChild(l);
+      let l = new MapLayer();
+      l.src = event.dataTransfer.getData("text");
+      l.label = 'Layer';
+      l.checked = 'true';
+      this.appendChild(l);
+      l.addEventListener("error", function () {
+        if (l.parentElement) {
+          // should invoke lifecyle callbacks automatically by removing it from DOM
+          l.parentElement.removeChild(l);
+        }
+        // garbage collect it
+        l = null;
+      });
   }
   _dragoverHandler(event) {
     function contains(list, value) {
@@ -207,111 +301,115 @@ export class WebMap extends HTMLMapElement {
       function () {
         this.dispatchEvent(new CustomEvent('load', {detail: {target: this}}));
       }, this);
-    this._map.on('preclick', 
+    this._map.on('preclick',
       function (e) {
-        this.dispatchEvent(new CustomEvent('preclick', {detail: 
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+        this.dispatchEvent(new CustomEvent('preclick', {detail:
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('click', 
+    this._map.on('click',
       function (e) {
         this.dispatchEvent(new CustomEvent('click', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('dblclick', 
+    this._map.on('dblclick',
       function (e) {
         this.dispatchEvent(new CustomEvent('dblclick', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('mousemove', 
+    this._map.on('mousemove',
       function (e) {
         this.dispatchEvent(new CustomEvent('mousemove', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('mouseover', 
+    this._map.on('mouseover',
       function (e) {
         this.dispatchEvent(new CustomEvent('mouseover', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('mouseout', 
+    this._map.on('mouseout',
       function (e) {
         this.dispatchEvent(new CustomEvent('mouseout', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('mousedown', 
+    this._map.on('mousedown',
       function (e) {
         this.dispatchEvent(new CustomEvent('mousedown', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       },this);
-    this._map.on('mouseup', 
+    this._map.on('mouseup',
       function (e) {
         this.dispatchEvent(new CustomEvent('mouseup', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
       }, this);
-    this._map.on('contextmenu', 
+    this._map.on('contextmenu',
       function (e) {
         this.dispatchEvent(new CustomEvent('contextmenu', {detail:
-          {lat: e.latlng.lat,     lon: e.latlng.lng, 
+          {lat: e.latlng.lat,     lon: e.latlng.lng,
              x: e.containerPoint.x, y: e.containerPoint.y}
          }));
-      }, this);      
-    this._map.on('movestart', 
+      }, this);
+    this._map.on('movestart',
       function () {
         this._updateMapCenter();
-        this.dispatchEvent(new CustomEvent('movestart', {detail: 
+        this.dispatchEvent(new CustomEvent('movestart', {detail:
           {target: this}}));
-      }, this);      
-    this._map.on('move', 
+      }, this);
+    this._map.on('move',
       function () {
         this._updateMapCenter();
-        this.dispatchEvent(new CustomEvent('move', {detail: 
+        this.dispatchEvent(new CustomEvent('move', {detail:
           {target: this}}));
-      }, this);      
-    this._map.on('moveend', 
+      }, this);
+    this._map.on('moveend',
       function () {
         this._updateMapCenter();
-        this.dispatchEvent(new CustomEvent('moveend', {detail: 
+        this._addToHistory();
+        this.dispatchEvent(new CustomEvent('moveend', {detail:
           {target: this}}));
-      }, this);      
-    this._map.on('zoomstart', 
+      }, this);
+    this._map.on('zoomstart',
       function () {
         this._updateMapCenter();
-        this.dispatchEvent(new CustomEvent('zoomstart', {detail: 
+        this.dispatchEvent(new CustomEvent('zoomstart', {detail:
           {target: this}}));
-      }, this);      
-    this._map.on('zoom', 
+      }, this);
+    this._map.on('zoom',
       function () {
         this._updateMapCenter();
-        this.dispatchEvent(new CustomEvent('zoom', {detail: 
+        this.dispatchEvent(new CustomEvent('zoom', {detail:
           {target: this}}));
-      }, this);      
-    this._map.on('zoomend', 
+      }, this);
+    this._map.on('zoomend',
       function () {
         this._updateMapCenter();
-        this.dispatchEvent(new CustomEvent('zoomend', {detail: 
+        this.dispatchEvent(new CustomEvent('zoomend', {detail:
           {target: this}}));
-      }, this);      
+      }, this);
   }
   _toggleControls(controls) {
     if (this._map) {
       if (controls && !this._layerControl) {
         this._zoomControl = L.control.zoom().addTo(this._map);
         this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
+        if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
+          this._fullScreenControl = L.control.fullscreen().addTo(this._map);
+        }
         for (var i=0;i<this.layers.length;i++) {
           if (!this.layers[i].hidden) {
             this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
@@ -322,8 +420,13 @@ export class WebMap extends HTMLMapElement {
       } else if (this._layerControl) {
         this._map.removeControl(this._layerControl);
         this._map.removeControl(this._zoomControl);
+        if (this._fullScreenControl) {
+          this._map.removeControl(this._fullScreenControl);
+          delete this._fullScreenControl;
+        }
         delete this._layerControl;
-        delete this._zoomControl;      }
+        delete this._zoomControl;
+      }
     }
   }
   _widthChanged(width) {
@@ -341,7 +444,7 @@ export class WebMap extends HTMLMapElement {
     }
   }
   zoomTo(lat, lon, zoom) {
-    zoom = zoom||this.zoom;
+    zoom = Number.isInteger(zoom)? zoom:this.zoom;
     var location = new L.LatLng(lat,lon);
     this._map.setView(location, zoom);
     this.zoom = zoom;
@@ -355,6 +458,60 @@ export class WebMap extends HTMLMapElement {
     this.lon = this._map.getCenter().lng;
     this.zoom = this._map.getZoom();
   }
+
+  _addToHistory(){
+    if(this._traversalCall){
+      this._traversalCall = false;
+      return;
+    }
+    let mapLocation = this._map.getCenter();
+    let location ={
+      zoom:this._map.getZoom(),
+      lat:mapLocation.lat,
+      lng:mapLocation.lng,
+    };
+    this._historyIndex++;
+    this._history.push(location);
+  }
+
+  back(){
+    let mapEl = this,
+        history = mapEl._history;
+    if(mapEl._historyIndex > 0){
+      mapEl._historyIndex--;
+    }
+    let prev = history[mapEl._historyIndex];
+    mapEl._traversalCall = true;
+    mapEl.zoomTo(prev.lat,prev.lng,prev.zoom);
+  }
+
+  forward(){
+    let mapEl = this,
+        history = this._history;
+    if(mapEl._historyIndex < history.length -1){
+      mapEl._historyIndex++;
+    }
+    let next = history[this._historyIndex];
+    mapEl._traversalCall = true;
+    mapEl.zoomTo(next.lat,next.lng,next.zoom);
+  }
+
+  reload(){
+    let mapEl = this,
+        initialLocation = mapEl._history.shift();
+    mapEl._history = [initialLocation];
+    mapEl._historyIndex = -1;
+    mapEl._traversalCall = true;
+    mapEl.zoomTo(initialLocation.lat,initialLocation.lng,initialLocation.zoom);
+  }
+
+  viewSource(){
+    let blob = new Blob([this._source],{type:"text/plain"}),
+        url = URL.createObjectURL(blob);
+    window.open(url);
+    URL.revokeObjectURL(url);
+  }
+
   _ready() {
     // when used in a custom element, the leaflet script element is hidden inside
     // the import's shadow dom.
@@ -396,3 +553,4 @@ export class WebMap extends HTMLMapElement {
 // need to provide options { extends: ... }  for custom built-in elements
 window.customElements.define('web-map', WebMap,  { extends: 'map' });
 window.customElements.define('layer-', MapLayer);
+window.customElements.define('map-area', MapArea, {extends: 'area'});
