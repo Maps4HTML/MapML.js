@@ -71,6 +71,13 @@ export var ContextMenu = L.Handler.extend({
             text:"gcrs",
             callback:this._copyGCRS,
           },
+          {
+            spacer:"-",
+          },
+          {
+            text:"All",
+            callback:this._copyAllCoords,
+          }
         ]
       },
       {
@@ -234,6 +241,23 @@ export var ContextMenu = L.Handler.extend({
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent;
     this.contextMenu._copyData(`z:${mapEl.zoom}, i:${click.containerPoint.x}, j:${click.containerPoint.y}`);
+  },
+
+  _copyAllCoords: function(e){
+    let mapEl = this.options.mapEl,
+    click = this.contextMenu._clickEvent,
+    point = mapEl._map.project(click.latlng),
+    pointX = point.x % TILE_SIZE, pointY = point.y % TILE_SIZE,
+    scale = mapEl._map.options.crs.scale(+mapEl.zoom),
+    pcrs = mapEl._map.options.crs.transformation.untransform(point,scale);
+    let allData = `z:${mapEl.zoom}\n`;
+    allData += `tile: i:${Math.round(pointX)}, j:${Math.round(pointY)}\n`;
+    allData += `tilematrix: column:${point.x/TILE_SIZE}, row:${point.y/TILE_SIZE}\n`;
+    allData += `map: i:${click.containerPoint.x}, j:${click.containerPoint.y}\n`;
+    allData += `tcrs: x:${point.x}, y:${point.y}\n`;
+    allData += `pcrs: easting:${pcrs.x}, northing:${pcrs.y}\n`;
+    allData += `gcrs: lon :${click.latlng.lng}, lat:${click.latlng.lat}`;
+    this.contextMenu._copyData(allData);
   },
 
   _createItem: function (container, options, index) {
