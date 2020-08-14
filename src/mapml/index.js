@@ -78,6 +78,8 @@
  * publicity pertaining to the work without specific, written prior permission. 
  * Title to copyright in this work will at all times remain with copyright holders.
  */
+
+import {DebugOverlay, debugOverlay} from './layers/DebugLayer';
 import { MapMLStaticTileLayer, mapMLStaticTileLayer } from './layers/StaticTileLayer';
 import { MapMLLayerControl, mapMlLayerControl } from './layers/ControlLayer';
 import { MapMLFeatures, mapMlFeatures } from './layers/FeatureLayer';
@@ -656,5 +658,8 @@ M.mapMlLayerControl = mapMlLayerControl;
 
 M.MapMLStaticTileLayer = MapMLStaticTileLayer;
 M.mapMLStaticTileLayer = mapMLStaticTileLayer;
+
+M.DebugOverlay = DebugOverlay;
+M.debugOverlay = debugOverlay;
 
 }(window, document));
