@@ -91,8 +91,6 @@ export class MapLayer extends HTMLElement {
     }
   }
   connectedCallback() {
-    // this avoids displaying inline mapml content, such as features and inputs
-    this.style = "display: none";
     this._ready();
     // if the map has been attached, set this layer up wrt Leaflet map
     if (this.parentNode._map) {
@@ -141,6 +139,16 @@ export class MapLayer extends HTMLElement {
     // which control the layer, not potentially the previous style / src
     if (this._layerControl) {
       this._layerControl.addOrUpdateOverlay(this._layer, this.label);
+    }
+    if (!this._layer.error) {
+      // re-use 'loadedmetadata' event from HTMLMediaElement inteface, applied
+      // to MapML extent as metadata
+      // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/loadedmetadata_event
+      this.dispatchEvent(new CustomEvent('loadedmetadata', {detail: 
+                {target: this}}));
+    } else {
+      this.dispatchEvent(new CustomEvent('error', {detail: 
+                {target: this}}));
     }
   }
   _validateDisabled() {
@@ -206,6 +214,7 @@ export class MapLayer extends HTMLElement {
     if (this.checked) {
       this._layer.addTo(this._layer._map);
     }
+    
     // add the handler which toggles the 'checked' property based on the
     // user checking/unchecking the layer from the layer control
     // this must be done *after* the layer is actually added to the map
