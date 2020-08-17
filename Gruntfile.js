@@ -2,23 +2,22 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    concat: {
-      options: {
-        separator: ';'
-      },
-      dist: {
-        src: ['src/**/a.js;src/**/b.js'],
-        dest: 'dist/c.js'
-      }
-    },
+//    concat: {
+//      options: {
+//        separator: ';'
+//      },
+//      dist: {
+//        src: ['dist/mapml.js'],
+//        dest: 'dist/c.js'
+//      }
+//    },
     uglify: {
       options: {
        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
       },
       dist: {
         files: {
-          'dist/mapml.min.js': ['<%= concat.dist.dest %>']
-         /* ,'dist/leaflet.js': ['bower_components/polymer-leaflet/leaflet-src.js'] */
+          'dist/mapml.min.js': ['<%= rollup.main.dest %>']
         }
       }
     },
@@ -153,7 +152,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify-es');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-concat');
+//  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-rollup');
@@ -163,7 +162,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', ['jshint']);
 
-  grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'concat', 'uglify', 'rollup']);
+  grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'rollup', 'uglify']);
   grunt.registerTask('build', ['rollup']);
 
 };
