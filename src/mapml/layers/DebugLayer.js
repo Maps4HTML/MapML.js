@@ -139,30 +139,36 @@ export var DebugVectors = L.LayerGroup.extend({
     L.LayerGroup.prototype.initialize.call(this, this._map, options);
   },
   onAdd: function (map) {
-    let id = Object.keys(map._layers),
-      layers = map._layers,
-      colors = ["#FF5733", "#8DFF33", "#3397FF", "#E433FF", "#F3FF33"],
-      center = map.options.crs.transformation.transform(L.point(0, 0), map.options.crs.scale(0)),
-      centerVector = L.circle(map.options.crs.pointToLatLng(center, 0), { radius: 250 }),
-      j = 0;
+    map.on('overlayremove', this._mapLayerUpdate, this);
+    map.on('overlayadd', this._mapLayerUpdate, this);
+    let center = map.options.crs.transformation.transform(L.point(0, 0), map.options.crs.scale(0)),
+      centerVector = L.circle(map.options.crs.pointToLatLng(center, 0), { radius: 250 });
 
     this.addLayer(centerVector);
+    this._addBounds();
+  },
+  onRemove: function (map) {
+    this.clearLayers();
+  },
+
+  _addBounds: function () {
+    let id = Object.keys(this._map._layers),
+      layers = this._map._layers,
+      colors = ["#FF5733", "#8DFF33", "#3397FF", "#E433FF", "#F3FF33"],
+      j = 0;
     for (let i of id) {
       if (layers[i].layerBounds) {
-        let gcrsBounds = this._toLatLng(layers[i].layerBounds);
-        let boundsRect = L.polygon(gcrsBounds, {
-          color: colors[j % colors.length],
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.01
-        });
+        let gcrsBounds = this._toLatLng(layers[i].layerBounds),
+          boundsRect = L.polygon(gcrsBounds, {
+            color: colors[j % colors.length],
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.01
+          });
         this.addLayer(boundsRect);
         j++;
       }
     }
-  },
-  onRemove: function (map) {
-    this.clearLayers();
   },
 
   _toLatLng: function (bounds) {
@@ -176,6 +182,11 @@ export var DebugVectors = L.LayerGroup.extend({
       bL = map.options.crs.pointToLatLng(L.point(pixelMax.x, pixelMin.y), 0);
 
     return [tL, tR, bR, bL];
+  },
+
+  _mapLayerUpdate: function (e) {
+    this.clearLayers();
+    this._addBounds();
   },
 });
 
