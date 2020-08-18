@@ -35,6 +35,7 @@ export var DebugOverlay = L.Layer.extend({
     map.removeLayer(this._grid);
     map.removeLayer(this._panel);
     map.removeLayer(this._vectors);
+    L.DomUtil.remove(this._container);
   },
 
 });
