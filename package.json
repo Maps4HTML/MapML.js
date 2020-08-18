@@ -1,6 +1,6 @@
 {
   "name": "web-map-custom-element",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "web-map customized built-in HTML <map> or custom <mapml-viewer>",
   "keywords": [
     "web-components",
@@ -11,8 +11,8 @@
     "geo-map",
     "map layer"
   ],
-  "main": "web-map.js",
-  "module": "web-map.js",
+  "main": "mapml-viewer.js",
+  "module": "mapml-viewer.js",
   "author": "Maps for HTML Community Group",
   "repository": {
     "type": "git",
