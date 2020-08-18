@@ -1,0 +1,59 @@
+{
+  "name": "web-map-custom-element",
+  "version": "0.8.0",
+  "description": "web-map customized built-in HTML <map> or custom <mapml-viewer>",
+  "keywords": [
+    "web-components",
+    "web",
+    "maps",
+    "map",
+    "web-map",
+    "geo-map",
+    "map layer"
+  ],
+  "main": "mapml-viewer.js",
+  "module": "mapml-viewer.js",
+  "author": "Maps for HTML Community Group",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Maps4HTML/Web-Map-Custom-Element.git"
+  },
+  "website": "http://maps4html.github.io/Web-Map-Custom-Element/",
+  "bugs": {
+    "url": "https://github.com/Maps4HTML/Web-Map-Custom-Element/issues"
+  },
+  "license": "W3C",
+  "contributors": [
+    {
+      "name": "Maps for HTML community",
+      "email": "public-maps4html@w3.org",
+      "url": "https://github.com/Maps4HTML/Web-Map-Custom-Element/graphs/contributors"
+    }
+  ],
+  "scripts": {
+    "test": "jest --detectOpenHandles --verbose --noStackTrace",
+    "test:watch": "jest --detectOpenHandles --watch"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@runette/leaflet-fullscreen": "1.0.4",
+    "express": "^4.17.1",
+    "grunt": "^1.1.0",
+    "grunt-contrib-clean": "^2.0.0",
+    "grunt-contrib-concat": "~1.0.0",
+    "grunt-contrib-copy": "~1.0.0",
+    "grunt-contrib-jshint": "~2.0.0",
+    "grunt-contrib-uglify-es": "~3.3.0",
+    "grunt-contrib-watch": "~1.1.0",
+    "grunt-html": "~9.3.0",
+    "grunt-rollup": "^11.3.0",
+    "jest": "^26.1.0",
+    "jest-playwright-preset": "^0.1.3",
+    "leaflet": "~1.6.0",
+    "path": "^0.12.7",
+    "playwright": "^1.2.1",
+    "proj4": "2.6.0",
+    "proj4leaflet": "1.0.1",
+    "rollup": "^2.23.1"
+  }
+}
