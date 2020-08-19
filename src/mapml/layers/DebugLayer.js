@@ -27,6 +27,7 @@ export var DebugOverlay = L.Layer.extend({
     this._vectors = debugVectors({
       className: "mapml-debug-vectors",
       pane: map._panes.mapPane,
+      toolPane: this._container,
     });
     map.addLayer(this._vectors);
   },
@@ -142,10 +143,11 @@ export var DebugVectors = L.LayerGroup.extend({
   onAdd: function (map) {
     map.on('overlayremove', this._mapLayerUpdate, this);
     map.on('overlayadd', this._mapLayerUpdate, this);
-    let center = map.options.crs.transformation.transform(L.point(0, 0), map.options.crs.scale(0)),
-      centerVector = L.circle(map.options.crs.pointToLatLng(center, 0), { radius: 250 });
+    let center = map.options.crs.transformation.transform(L.point(0, 0), map.options.crs.scale(0));
+    this._centerVector = L.circle(map.options.crs.pointToLatLng(center, 0), { radius: 250 });
+    this._centerVector.bindTooltip("Projection Center");
 
-    this.addLayer(centerVector);
+    this.addLayer(this._centerVector);
     this._addBounds();
   },
   onRemove: function (map) {
@@ -157,6 +159,8 @@ export var DebugVectors = L.LayerGroup.extend({
       layers = this._map._layers,
       colors = ["#FF5733", "#8DFF33", "#3397FF", "#E433FF", "#F3FF33"],
       j = 0;
+
+    this.addLayer(this._centerVector);
     for (let i of id) {
       if (layers[i].layerBounds) {
         let gcrsBounds = this._toLatLng(layers[i].layerBounds),
@@ -166,6 +170,8 @@ export var DebugVectors = L.LayerGroup.extend({
             opacity: 1,
             fillOpacity: 0.01
           });
+        if (layers[i].options._leafletLayer)
+          boundsRect.bindTooltip(layers[i].options._leafletLayer._title);
         this.addLayer(boundsRect);
         j++;
       }
