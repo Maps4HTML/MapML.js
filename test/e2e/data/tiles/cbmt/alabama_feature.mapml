@@ -10,6 +10,37 @@
         <link rel="license" href="http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="CanVec+ © Natural Resources Canada"/>
     </head>
     <body>
+        <feature zoom="2" class="refDiff">
+            <properties>
+                <h1>Test</h1>
+            </properties>
+            <geometry cs="pcrs">
+                <polygon>
+                    <coordinates>257421 -3567196 -271745 1221771 -3896544 242811 -3183549 -2613313</coordinates>
+                </polygon>
+            </geometry>
+        </feature>
+
+        <feature zoom="2" class="refDiff">
+            <properties>
+                <h1>Test</h1>
+            </properties>
+            <geometry cs="tcrs">
+                <polygon>
+                    <coordinates>2771 3106 2946 3113 2954 3210 2815 3192</coordinates>
+                </polygon>
+            </geometry>
+        </feature>
+        <feature zoom="2" class="all  _50-100">
+            <properties>
+                <h1>Test Cube</h1>
+            </properties>
+            <geometry cs="tilematrix">
+                <polygon>
+                    <coordinates>11 11 12 11 12 12 11 12</coordinates>
+                </polygon>
+            </geometry>
+        </feature>
         <feature class="all  _50-100">
             <properties>
                 <h1>Alabama</h1>

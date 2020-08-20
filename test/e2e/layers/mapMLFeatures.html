@@ -19,13 +19,15 @@
 </head>
 
 <body>
-  <map is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
+  <map style="height: 500px;width:500px;" is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344"
+    controls>
 
     <layer- label="Arizona" checked>
       <meta name="projection" content="CBMTILE" />
       <meta name="zoom" content="min=1,max=5,value=0" />
+      <meta name="cs" content="gcrs" />
       <meta name="extent"
-        content="cs=tilematrix,top-left-vertical=0,top-left-horizontal=0,bottom-right-vertical=5,bottom-right-horizontal=5" />
+        content="zoom=0,cs=tilematrix,top-left-vertical=0,top-left-horizontal=0,bottom-right-vertical=5,bottom-right-horizontal=5" />
 
       <link id="first" rel="stylesheet" type="text/css" href="first.css">
       <style>
@@ -39,6 +41,39 @@
         }
       </style>
       <link id="forth" rel="stylesheet" type="text/css" href="forth.css">
+      <feature zoom="2" class="refDiff">
+        <properties>
+          <h1>Test</h1>
+        </properties>
+        <geometry cs="tilematrix">
+          <polygon>
+            <coordinates>11 11 12 11 12 12 11 12</coordinates>
+          </polygon>
+        </geometry>
+      </feature>
+
+      <feature zoom="2" class="refDiff">
+        <properties>
+          <h1>Test</h1>
+        </properties>
+        <geometry cs="pcrs">
+          <polygon>
+            <coordinates>257421 -3567196 -271745 1221771 -3896544 242811 -3183549 -2613313</coordinates>
+          </polygon>
+        </geometry>
+      </feature>
+
+      <feature zoom="2" class="refDiff">
+        <properties>
+          <h1>Test</h1>
+        </properties>
+        <geometry cs="tcrs">
+          <polygon>
+            <coordinates>2771 3106 2946 3113 2954 3210 2815 3192</coordinates>
+          </polygon>
+        </geometry>
+      </feature>
+
       <feature zoom="2" class="refDiff">
         <properties>
           <h1>Arizona</h1>
