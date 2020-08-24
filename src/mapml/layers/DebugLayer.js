@@ -185,8 +185,8 @@ export var DebugVectors = L.LayerGroup.extend({
 
     let tL = map.options.crs.pointToLatLng(pixelMin, 0),
       bR = map.options.crs.pointToLatLng(pixelMax, 0),
-      tR = map.options.crs.pointToLatLng(L.point(pixelMin.x, pixelMax.y), 0),
-      bL = map.options.crs.pointToLatLng(L.point(pixelMax.x, pixelMin.y), 0);
+      tR = map.options.crs.pointToLatLng(L.point(pixelMax.x, pixelMin.y), 0),
+      bL = map.options.crs.pointToLatLng(L.point(pixelMin.x, pixelMax.y), 0);
 
     return [tL, tR, bR, bL];
   },
