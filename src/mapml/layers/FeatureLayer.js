@@ -67,26 +67,33 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     //sets default if any are missing, better to only replace ones that are missing
     _getLayerBounds : function(container) {
       if (!container) return null;
+      let projection = container.querySelector('meta[name=projection]') &&
+                    M.metaContentToObject(
+                      container.querySelector('meta[name=projection]').getAttribute('content'))
+                      .content.toUpperCase() || FALLBACK_PROJECTION;
       try{
-        let projection = container.querySelector('meta[name=projection]') &&
-                          M.metaContentToObject(
-                            container.querySelector('meta[name=projection]').getAttribute('content'))
-                            .content.toUpperCase() || FALLBACK_PROJECTION;
 
         let meta = container.querySelector('meta[name=extent]') && 
                     M.metaContentToObject(
                       container.querySelector('meta[name=extent]').getAttribute('content'));
 
         let zoom = meta.zoom || 0;
-        let cs = meta.cs || FALLBACK_CS;
-      
+        let cs = FALLBACK_CS,
+            metaKeys = Object.keys(meta);
+        for(let i =0;i<metaKeys.length;i++){
+          if(!metaKeys[i].includes("zoom")){
+            cs = M.axisToCS(metaKeys[i].split("-")[2]);
+            break;
+          }
+        }
+        let axes = M.csToAxes(cs);
         return M.boundsToPCRSBounds(
-                L.bounds(L.point(+meta["top-left-horizontal"],+meta["top-left-vertical"]),
-                L.point(+meta["bottom-right-horizontal"],+meta["bottom-right-vertical"])),
+                L.bounds(L.point(+meta[`top-left-${axes[0]}`],+meta[`top-left-${axes[1]}`]),
+                L.point(+meta[`bottom-right-${axes[0]}`],+meta[`bottom-right-${axes[1]}`])),
                 zoom,projection,cs);
       } catch (error){
         //if error then by default set the layer to osm and bounds to the entire map view
-        return M.boundsToPCRSBounds(M[FALLBACK_PROJECTION].options.crs.tilematrix.bounds(0),0,FALLBACK_PROJECTION,FALLBACK_CS);
+        return M.boundsToPCRSBounds(M[FALLBACK_PROJECTION].options.crs.tilematrix.bounds(0),0,projection,FALLBACK_CS);
       }
     },
 
