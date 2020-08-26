@@ -66,6 +66,30 @@ jest.setTimeout(50000);
 
         });
 
+        test("[" + browserType + "]" + " Reasonable debug layer extent created", async () => {
+          const feature = await page.$eval(
+            "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(2)",
+            (tile) => tile.getAttribute("d")
+          );
+          expect(feature).toEqual("M82.51724137931035 332.27586206896535L347.34482758620686 332.27586206896535L347.34482758620686 -38.48275862068965L82.51724137931035 -38.48275862068965z");
+        });
+
+        test("[" + browserType + "]" + " Large debug layer extent created", async () => {
+          const feature = await page.$eval(
+            "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(3)",
+            (tile) => tile.getAttribute("d")
+          );
+          expect(feature).toEqual("M-659 500L365 500L365 -780L-659 -780z");
+        });
+
+        test("[" + browserType + "]" + " Debug layer extent beyond ((0,0), (5,5))  created", async () => {
+          const feature = await page.$eval(
+            "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(4)",
+            (tile) => tile.getAttribute("d")
+          );
+          expect(feature).toEqual("M-1683 1268L1133 1268L1133 -1292L-1683 -1292z");
+        });
+
         test("[" + browserType + "]" + " Accurate debug coordinates", async () => {
           await page.hover("body > mapml-viewer");
           const tile = await page.$eval(
