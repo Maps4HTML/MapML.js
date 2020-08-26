@@ -52,17 +52,31 @@ export var DebugPanel = L.Layer.extend({
   },
 
   onAdd: function (map) {
-    map.debug = {};
-    map.debug._infoContainer = this._debugContainer = L.DomUtil.create("div", "mapml-debug-panel", this.options.pane);
+    let mapSize = map.getSize();
 
-    let infoContainer = map.debug._infoContainer;
-    infoContainer.style.zIndex = 10000;
-    infoContainer.style.width = 150;
-    infoContainer.style.position = "absolute";
-    infoContainer.style.top = "auto";
-    infoContainer.style.bottom = "4px";
-    infoContainer.style.right = "auto";
-    infoContainer.style.left = "4px";
+    //conditionally show debug panel only when the map has enough space for it
+    if (mapSize.x > 400 || mapSize.y > 300) {
+      map.debug = {};
+      map.debug._infoContainer = this._debugContainer = L.DomUtil.create("div", "mapml-debug-panel", this.options.pane);
+
+      let infoContainer = map.debug._infoContainer;
+      infoContainer.style.zIndex = 10000;
+      infoContainer.style.width = 150;
+      infoContainer.style.position = "absolute";
+      infoContainer.style.top = "auto";
+      infoContainer.style.bottom = "4px";
+      infoContainer.style.right = "auto";
+      infoContainer.style.left = "4px";
+
+      map.debug._tileCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
+      map.debug._tileMatrixCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
+      map.debug._mapCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
+      map.debug._tcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
+      map.debug._pcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
+      map.debug._gcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
+
+      this._map.on("mousemove", this._updateCoords);
+    }
 
     this._title = L.DomUtil.create("div", "mapml-debug-banner", this.options.pane);
     this._title.innerHTML = "DEBUG MODE";
@@ -72,15 +86,6 @@ export var DebugPanel = L.Layer.extend({
     this._title.style.bottom = "auto";
     this._title.style.left = "auto";
     this._title.style.right = "4px";
-
-    map.debug._tileCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-    map.debug._tileMatrixCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-    map.debug._mapCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-    map.debug._tcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-    map.debug._pcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-    map.debug._gcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-
-    this._map.on("mousemove", this._updateCoords);
   },
   onRemove: function () {
     L.DomUtil.remove(this._title);
@@ -198,6 +203,7 @@ export var debugVectors = function (options) {
 var ProjectedExtent = L.Path.extend({
 
   initialize: function (locations, options) {
+    //locations passed in as pcrs coordinates
     this._locations = locations;
     L.setOptions(this, options);
   },
@@ -208,18 +214,21 @@ var ProjectedExtent = L.Path.extend({
       map = this._map;
     for (let i = 0; i < this._locations.length; i++) {
       let point = map.options.crs.transformation.transform(this._locations[i], scale);
+      //substract the pixel origin from the pixel coordinates to get the location relative to map viewport
       this._rings.push(L.point(point.x, point.y)._subtract(map.getPixelOrigin()));
     }
+    //leaflet SVG renderer looks for and array of arrays to build polygons,
+    //in this case it only deals with a rectangle so one closed array or points
     this._parts = [this._rings];
   },
 
   _update: function () {
     if (!this._map) return;
-    this._renderer._updatePoly(this, true);
+    this._renderer._updatePoly(this, true); //passing true creates a closed path i.e. a rectangle
   },
 
 });
 
 var projectedExtent = function (locations, options) {
   return new ProjectedExtent(locations, options);
-}
+};
