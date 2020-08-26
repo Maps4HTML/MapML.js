@@ -163,32 +163,25 @@ export var DebugVectors = L.LayerGroup.extend({
     this.addLayer(this._centerVector);
     for (let i of id) {
       if (layers[i].layerBounds) {
-        let gcrsBounds = this._toLatLng(layers[i].layerBounds),
-          boundsRect = L.polygon(gcrsBounds, {
-            color: colors[j % colors.length],
-            weight: 2,
-            opacity: 1,
-            fillOpacity: 0.01
-          });
+        let boundsArray = [
+          layers[i].layerBounds.min,
+          L.point(layers[i].layerBounds.max.x, layers[i].layerBounds.min.y),
+          layers[i].layerBounds.max,
+          L.point(layers[i].layerBounds.min.x, layers[i].layerBounds.max.y)
+        ];
+        let boundsRect = projectedExtent(boundsArray, {
+          color: colors[j % colors.length],
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.01,
+          fill: true,
+        });
         if (layers[i].options._leafletLayer)
-          boundsRect.bindTooltip(layers[i].options._leafletLayer._title);
+          boundsRect.bindTooltip(layers[i].options._leafletLayer._title, { sticky: true });
         this.addLayer(boundsRect);
         j++;
       }
     }
-  },
-
-  _toLatLng: function (bounds) {
-    let map = this._map,
-      pixelMin = map.options.crs.transformation.transform(bounds.min, map.options.crs.scale(0)),
-      pixelMax = map.options.crs.transformation.transform(bounds.max, map.options.crs.scale(0));
-
-    let tL = map.options.crs.pointToLatLng(pixelMin, 0),
-      bR = map.options.crs.pointToLatLng(pixelMax, 0),
-      tR = map.options.crs.pointToLatLng(L.point(pixelMax.x, pixelMin.y), 0),
-      bL = map.options.crs.pointToLatLng(L.point(pixelMin.x, pixelMax.y), 0);
-
-    return [tL, tR, bR, bL];
   },
 
   _mapLayerUpdate: function (e) {
@@ -200,3 +193,33 @@ export var DebugVectors = L.LayerGroup.extend({
 export var debugVectors = function (options) {
   return new DebugVectors(options);
 };
+
+
+var ProjectedExtent = L.Path.extend({
+
+  initialize: function (locations, options) {
+    this._locations = locations;
+    L.setOptions(this, options);
+  },
+
+  _project: function () {
+    this._rings = [];
+    let scale = this._map.options.crs.scale(this._map.getZoom()),
+      map = this._map;
+    for (let i = 0; i < this._locations.length; i++) {
+      let point = map.options.crs.transformation.transform(this._locations[i], scale);
+      this._rings.push(L.point(point.x, point.y)._subtract(map.getPixelOrigin()));
+    }
+    this._parts = [this._rings];
+  },
+
+  _update: function () {
+    if (!this._map) return;
+    this._renderer._updatePoly(this, true);
+  },
+
+});
+
+var projectedExtent = function (locations, options) {
+  return new ProjectedExtent(locations, options);
+}

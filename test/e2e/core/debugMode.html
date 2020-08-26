@@ -32,6 +32,22 @@
         <link rel='tile' tref='/data/cbmt/{zoomLevel}/c{col}_r{row}.png' />
       </extent>
     </layer->
+    <layer- label="CBMT - Large Extent" checked>
+      <extent units="CBMTILE">
+        <input name="zoomLevel" type="zoom" value="0" min="0" max="3" />
+        <input name="row" type="location" axis="row" units="tilematrix" min="0" max="5" />
+        <input name="col" type="location" axis="column" units="tilematrix" min="0" max="4" />
+        <link rel='tile' tref='/data/cbmt/{zoomLevel}/c{col}_r{row}.png' />
+      </extent>
+    </layer->
+    <layer- label="CBMT - Beyond Range Extent" checked>
+      <extent units="CBMTILE">
+        <input name="zoomLevel" type="zoom" value="0" min="0" max="3" />
+        <input name="row" type="location" axis="row" units="tilematrix" min="-2" max="8" />
+        <input name="col" type="location" axis="column" units="tilematrix" min="-4" max="7" />
+        <link rel='tile' tref='/data/cbmt/{zoomLevel}/c{col}_r{row}.png' />
+      </extent>
+    </layer->
   </mapml-viewer>
 </body>
 
