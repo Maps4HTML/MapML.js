@@ -130,7 +130,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
       // verify the extent and legend for the layer to know whether to
       // disable it , add the legend link etc.
       obj.layer.on('extentload', this._validateExtents, this);
-      
+      layercontrols.layer = obj.layer;
       this._overlaysList.appendChild(layercontrols);
       return layercontrols;
     }

@@ -85,8 +85,28 @@ export var ContextMenu = L.Handler.extend({
         callback:this._viewSource,
       },
     ];
+
+    this._layerItems = [
+      {
+        text:"Copy Extent",
+        callback:this._copyMetaExtent
+      },
+      {
+        text:"Zoom To Layer",
+        callback:this._zoomToLayer
+      },
+    ];
     this._visible = false;
     this._keyboardEvent = false;
+
+    
+    this._layerMenu = L.DomUtil.create("div", "mapml-contextmenu", map._container);
+    this._layerMenu.style.zIndex = 10000;
+    this._layerMenu.style.position = "absolute";
+    this._layerMenu.style.width = "150px";
+    for (let i = 0; i < this._layerItems.length; i++) {
+      this._createItem(this._layerMenu, this._layerItems[i]);
+    }
 
     this._container = L.DomUtil.create("div", "mapml-contextmenu", map._container);
     this._container.style.zIndex = 10000;
@@ -154,6 +174,33 @@ export var ContextMenu = L.Handler.extend({
       mousedown: this._hide,
       zoomstart: this._hide
     }, this);
+  },
+  _copyMetaExtent: function (e) {
+    let layerElem = this.contextMenu._layerClicked.parentElement.parentElement.parentElement.parentElement.layer._layerEl,
+        tL = layerElem.extent.topLeft.pcrs,
+        bR = layerElem.extent.bottomRight.pcrs;
+  
+    let data ='<meta name="extent" content="';
+    data+=`top-left-easting=${tL.horizontal},top-left-northing=${tL.vertical},`;
+    data+=`top-left-easting=${bR.horizontal},top-left-northing=${bR.vertical}"/>`;
+    const el = document.createElement('textarea');
+    el.value = data;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+  },
+
+  _zoomToLayer: function(){
+    let layerElem = this.contextMenu._layerClicked.parentElement.parentElement.parentElement.parentElement.layer._layerEl,
+        tL = layerElem.extent.topLeft.gcrs,
+        bR = layerElem.extent.bottomRight.gcrs;
+      
+    let corner1 = L.latLng(tL.vertical, tL.horizontal),
+        corner2 = L.latLng(bR.vertical, bR.horizontal),
+        bounds = L.latLngBounds(corner1, corner2);
+        
+    layerElem._layer._map.flyToBounds(bounds);
   },
 
   _goForward: function(e){
@@ -364,14 +411,19 @@ export var ContextMenu = L.Handler.extend({
 
   _show: function (e) {
     this._clickEvent = e;
-    this._showAtPoint(e.containerPoint, e);
+    if(e.originalEvent.srcElement.tagName === "SPAN"){
+      this._layerClicked = e.originalEvent.srcElement;
+      this._showAtPoint(e.containerPoint, e, this._layerMenu);
+    } else {
+      this._showAtPoint(e.containerPoint, e, this._container);
+    }
     if(e.originalEvent.button === 0){
       this._keyboardEvent = true;
       this._container.firstChild.focus();
     }
   },
 
-  _showAtPoint: function (pt, data) {
+  _showAtPoint: function (pt, data, container) {
       if (this._items.length) {
           let event = L.extend(data || {}, {contextmenu: this});
 
@@ -383,10 +435,10 @@ export var ContextMenu = L.Handler.extend({
               this._showLocation.relatedTarget = data.relatedTarget;
           }
 
-          this._setPosition(pt);
+          this._setPosition(pt,container);
 
           if (!this._visible) {
-              this._container.style.display = 'block';
+            container.style.display = 'block';
               this._visible = true;
           }
 
@@ -399,13 +451,13 @@ export var ContextMenu = L.Handler.extend({
           this._visible = false;
           this._container.style.display = 'none';
           this._coordMenu.style.display = 'none';
+          this._layerMenu.style.display = 'none';
           this._map.fire('contextmenu.hide', {contextmenu: this});
       }
   },
 
-  _setPosition: function (pt) {
+  _setPosition: function (pt, container) {
       let mapSize = this._map.getSize(),
-          container = this._container,
           containerSize = this._getElementSize(container),
           anchor;
 
