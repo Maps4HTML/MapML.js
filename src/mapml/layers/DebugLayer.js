@@ -151,8 +151,7 @@ export var DebugVectors = L.LayerGroup.extend({
     let center = map.options.crs.transformation.transform(L.point(0, 0), map.options.crs.scale(0));
     this._centerVector = L.circle(map.options.crs.pointToLatLng(center, 0), { radius: 250 });
     this._centerVector.bindTooltip("Projection Center");
-
-    this.addLayer(this._centerVector);
+    
     this._addBounds();
   },
   onRemove: function (map) {
