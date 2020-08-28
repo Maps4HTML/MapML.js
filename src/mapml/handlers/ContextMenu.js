@@ -88,12 +88,12 @@ export var ContextMenu = L.Handler.extend({
 
     this._layerItems = [
       {
-        text:"Copy Extent (<kbd>C</kbd>)",
-        callback:this._copyMetaExtent
-      },
-      {
         text:"Zoom To Layer (<kbd>Z</kbd>)",
         callback:this._zoomToLayer
+      },
+      {
+        text:"Copy Extent (<kbd>C</kbd>)",
+        callback:this._copyMetaExtent
       },
     ];
     this._visible = false;
@@ -174,34 +174,31 @@ export var ContextMenu = L.Handler.extend({
       zoomstart: this._hide
     }, this);
   },
+
   _copyMetaExtent: function (e) {
-    let context = e instanceof KeyboardEvent?this._map.contextMenu:this.contextMenu,
+    let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
         layerElem = context._layerClicked.layer._layerEl,
         tL = layerElem.extent.topLeft.pcrs,
         bR = layerElem.extent.bottomRight.pcrs;
-  
-    let data ='<meta name="extent" content="';
-    data+=`top-left-easting=${tL.horizontal},top-left-northing=${tL.vertical},`;
-    data+=`top-left-easting=${bR.horizontal},top-left-northing=${bR.vertical}"/>`;
-    const el = document.createElement('textarea');
-    el.value = data;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
+
+    let data = '<meta name="extent" content="';
+    data += `top-left-easting=${tL.horizontal},top-left-northing=${tL.vertical},`;
+    data += `top-left-easting=${bR.horizontal},top-left-northing=${bR.vertical}"/>`;
+
+    context._copyData(data);
   },
 
-  _zoomToLayer: function(e){
-    let context = e instanceof KeyboardEvent?this._map.contextMenu:this.contextMenu,
+  _zoomToLayer: function (e) {
+    let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
         layerElem = context._layerClicked.layer._layerEl,
         tL = layerElem.extent.topLeft.gcrs,
         bR = layerElem.extent.bottomRight.gcrs;
-      
+
     let corner1 = L.latLng(tL.vertical, tL.horizontal),
         corner2 = L.latLng(bR.vertical, bR.horizontal),
         bounds = L.latLngBounds(corner1, corner2);
-        
-    layerElem._layer._map.flyToBounds(bounds,{maxZoom:layerElem.extent.zoom.maxZoom});
+
+    layerElem._layer._map.flyToBounds(bounds, { maxZoom: layerElem.extent.zoom.maxZoom });
   },
 
   _goForward: function(e){
