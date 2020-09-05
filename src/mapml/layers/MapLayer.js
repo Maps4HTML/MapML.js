@@ -81,6 +81,7 @@ export var MapMLLayer = L.Layer.extend({
               pane: this._container,
               opacity: this.options.opacity,
               imagePath: M.detectImagePath(this._map.getContainer()),
+              projection:map.options.projection,
               // each owned child layer gets a reference to the root layer
               _leafletLayer: this,
               onEachFeature: function(properties, geometry) {

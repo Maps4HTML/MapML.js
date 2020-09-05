@@ -157,6 +157,25 @@ export var Util = {
     } catch (e) {return undefined;}
   },
 
+  //takes a given cs and retuns the axes, first horizontal then vertical
+  csToAxes: function(cs){
+    try{
+      switch(cs.toLowerCase()){
+        case "tilematrix":
+          return ["column", "row"];
+        case "map":
+        case "tile":
+          return ["i", "j"];
+        case "tcrs":
+          return ["x", "y"];
+        case "gcrs":
+          return ["longitude", "latitude"];
+        case "pcrs":
+          return ["easting", "northing"];
+      }
+    } catch (e) {return undefined;}
+  },
+
   boundsToPCRSBounds: function(bounds, zoom, projection,cs){
     if(!bounds || !zoom && +zoom !== 0 || !cs) return undefined;
     switch(cs.toUpperCase()){
@@ -187,8 +206,9 @@ export var Util = {
   },
   //meta content is the content attribute of meta
   // input "max=5,min=4" => [[max,5][min,5]]
-  metaContentToObject: function(content){
-    if(!content || content instanceof Object)return {};
+  metaContentToObject: function(input){
+    if(!input || input instanceof Object)return {};
+    let content = input.split(" ").join("");
     let contentArray = {};
     let stringSplit = content.split(',');
 

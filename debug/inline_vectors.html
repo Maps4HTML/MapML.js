@@ -16,7 +16,7 @@
     </style>
   </head>
   <body>
-    <map is="web-map" projection="CBMTILE" zoom="2" lat="61.209125" lon="-90.850837" width="900" height="400" controls>
+    <map style="width:500px;height:500px" is="web-map" projection="CBMTILE" zoom="2" lat="61.209125" lon="-90.850837" width="900" height="400" controls>
       <!-- <layer- label="Canada Base Map - Transportation (CBMT)" src="http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer-> -->
       
       <layer- label="US Population Density" checked style="display: none">
@@ -55,7 +55,42 @@
             fill: #FFEDA0;
           }
         </style>
+
         <meta name="projection" content="CBMTILE"/>
+        <meta name="cs" content="gcrs"/>
+        <feature zoom="0" class="all  _50-100">
+          <properties>
+            <h1>test</h1>
+          </properties>
+          <geometry cs="tilematrix">
+            <polygon>
+              <coordinates>0 0 1 0 1 1 0 1</coordinates>
+            </polygon>
+          </geometry>
+        </feature>
+
+        <feature zoom="0" class="all  _50-100">
+          <properties>
+            <h1>test</h1>
+          </properties>
+          <geometry cs="tilematrix">
+            <polygon>
+              <coordinates>4 4 5 4 5 5 4 5</coordinates>
+            </polygon>
+          </geometry>
+        </feature>
+
+        <feature zoom="0" class="all  _50-100">
+          <properties>
+            <h1>test</h1>
+          </properties>
+          <geometry cs="tilematrix">
+            <polygon>
+              <coordinates>2 2 3 2 3 3 2 3</coordinates>
+            </polygon>
+          </geometry>
+        </feature>
+
         <feature zoom="2" class="all  _50-100">
           <properties>
             <h1>Alabama</h1>

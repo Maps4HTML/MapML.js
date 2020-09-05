@@ -55,6 +55,31 @@ jest.setTimeout(50000);
             );
             expect(features).toEqual(52);
           });
+
+          test("[" + browserType + "]" + " Loading in tilematrix feature", async () => {
+            const feature = await page.$eval(
+              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > path:nth-child(1)",
+              (tile) => tile.getAttribute("d")
+            );
+            expect(feature).toEqual("M330 83L553 83L553 339L330 339z");
+          });
+
+          test("[" + browserType + "]" + " Loading in pcrs feature", async () => {
+            const feature = await page.$eval(
+              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > path:nth-child(2)",
+              (tile) => tile.getAttribute("d")
+            );
+            expect(feature).toEqual("M-53 451L153 508L113 146L-53 191z");
+          });
+
+          test("[" + browserType + "]" + " Loading in tcrs feature", async () => {
+            const feature = await page.$eval(
+              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > path:nth-child(3)",
+              (tile) => tile.getAttribute("d")
+            );
+            expect(feature).toEqual("M285 373L460 380L468 477L329 459z");
+          });
+
           test("[" + browserType + "]" + " valid <layer>.extent", async () => {
             const layerExtent = await page.$eval(
               "body > map > layer-:nth-child(3)",

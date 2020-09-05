@@ -1,4 +1,4 @@
-import { FALLBACK_CS, FALLBACK_PROJECTION } from '../utils/Constants';
+import { FALLBACK_CS, FALLBACK_PROJECTION, TILE_SIZE } from '../utils/Constants';
 
 export var MapMLFeatures = L.FeatureGroup.extend({
   /*
@@ -14,17 +14,20 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       L.setOptions(this.options.renderer, {pane: this._container});
       this._layers = {};
       if (mapml) {
+        let nativeZoom = mapml.querySelector("meta[name=zoom]") && 
+                          +M.metaContentToObject(mapml.querySelector("meta[name=zoom]").getAttribute("content")).value || 0;
+        let nativeCS = mapml.querySelector("meta[name=cs]") && 
+                        M.metaContentToObject(mapml.querySelector("meta[name=cs]").getAttribute("content")).content || "GCRS";
         //needed to check if the feature is static or not, since this method is used by templated also
         if(!mapml.querySelector('extent') && mapml.querySelector('feature')){
           this._features = {};
           this._staticFeature = true;
           this.isVisible = true; //placeholder for when this actually gets updated in the future
-          this.nativeZoom = +this._getNativeZoom(mapml);
           this.zoomBounds = this._getZoomBounds(mapml);
           this.layerBounds = this._getLayerBounds(mapml);
           L.extend(this.options, this.zoomBounds);
         }
-        this.addData(mapml);
+        this.addData(mapml, nativeCS, nativeZoom);
         if(this._staticFeature){
           this._resetFeatures(this._clampZoom(this.options._leafletLayer._map.getZoom()));
 
@@ -64,24 +67,33 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     //sets default if any are missing, better to only replace ones that are missing
     _getLayerBounds : function(container) {
       if (!container) return null;
+      let projection = container.querySelector('meta[name=projection]') &&
+                    M.metaContentToObject(
+                      container.querySelector('meta[name=projection]').getAttribute('content'))
+                      .content.toUpperCase() || FALLBACK_PROJECTION;
       try{
-        let projection = container.querySelector('meta[name=projection]') &&
-                          M.metaContentToObject(
-                            container.querySelector('meta[name=projection]').getAttribute('content'))
-                            .content.toUpperCase() || FALLBACK_PROJECTION;
-        let zoom = this._getNativeZoom(container);
+
         let meta = container.querySelector('meta[name=extent]') && 
                     M.metaContentToObject(
-                      container.querySelector('meta[name=extent]').getAttribute('content')) ||
-                    {"top-left-vertical":0,"top-left-horizontal":0,"bottom-right-vertical":5,"bottom-right-horizontal":5};
-        let cs = meta.cs || FALLBACK_CS;
+                      container.querySelector('meta[name=extent]').getAttribute('content'));
+
+        let zoom = meta.zoom || 0;
+        let cs = FALLBACK_CS,
+            metaKeys = Object.keys(meta);
+        for(let i =0;i<metaKeys.length;i++){
+          if(!metaKeys[i].includes("zoom")){
+            cs = M.axisToCS(metaKeys[i].split("-")[2]);
+            break;
+          }
+        }
+        let axes = M.csToAxes(cs);
         return M.boundsToPCRSBounds(
-                L.bounds(L.point(+meta["top-left-vertical"],+meta["top-left-horizontal"]),
-                L.point(+meta["bottom-right-vertical"],+meta["bottom-right-horizontal"])),
+                L.bounds(L.point(+meta[`top-left-${axes[0]}`],+meta[`top-left-${axes[1]}`]),
+                L.point(+meta[`bottom-right-${axes[0]}`],+meta[`bottom-right-${axes[1]}`])),
                 zoom,projection,cs);
       } catch (error){
         //if error then by default set the layer to osm and bounds to the entire map view
-        return M.boundsToPCRSBounds(M[FALLBACK_PROJECTION].options.crs.tilematrix.bounds(0),0,FALLBACK_PROJECTION,FALLBACK_CS);
+        return M.boundsToPCRSBounds(M[FALLBACK_PROJECTION].options.crs.tilematrix.bounds(0),0,projection,FALLBACK_CS);
       }
     },
 
@@ -118,12 +130,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       }
     },
 
-    _getNativeZoom: function(mapml){
-      return mapml.querySelector('meta[name=zoom]') && 
-        M.metaContentToObject(mapml.querySelector('meta[name=zoom]').getAttribute('content')).value || 
-        "0";
-    },
-
     _getZoomBounds: function(container){
       if (!container) return null;
       let nMin = 100,nMax=0, features = container.getElementsByTagName('feature'),meta,projection;
@@ -151,7 +157,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       };
     },
 
-    addData: function (mapml) {
+    addData: function (mapml, nativeCS, nativeZoom) {
       var features = mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === "LAYER-" ? mapml.getElementsByTagName("feature") : null,
           i, len, feature;
 
@@ -168,7 +174,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         feature = features[i];
         var geometriesExist = feature.getElementsByTagName("geometry").length && feature.getElementsByTagName("coordinates").length;
         if (geometriesExist) {
-         this.addData(feature);
+         this.addData(feature, nativeCS, nativeZoom);
         }
        }
        return this; //if templated this runs
@@ -182,8 +188,9 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       if (mapml.classList.length) {
         options.className = mapml.classList.value;
       }
+      let zoom = mapml.getAttribute("zoom") || nativeZoom;
 
-      var layer = this.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options);
+      var layer = this.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options, nativeCS, +zoom);
       if (layer) {
         layer.properties = mapml.getElementsByTagName('properties')[0];
         
@@ -199,7 +206,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
          options.onEachFeature(layer.properties, layer);
         }
         if(this._staticFeature){
-          let featureZoom = mapml.getAttribute('zoom') || this.nativeZoom;
+          let featureZoom = mapml.getAttribute('zoom') || nativeZoom;
           if(featureZoom in this._features){
             this._features[featureZoom].push(layer);
           } else{
@@ -241,7 +248,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         this._container.removeChild(toDelete[i]);
       }
     },
-	 geometryToLayer: function (mapml, pointToLayer, coordsToLatLng, vectorOptions) {
+	 geometryToLayer: function (mapml, pointToLayer, coordsToLatLng, vectorOptions, nativeCS, zoom) {
     var geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
         latlng, latlngs, coordinates, member, members, linestrings;
 
@@ -256,19 +263,21 @@ export var MapMLFeatures = L.FeatureGroup.extend({
                               popupAnchor: [1, -34],
                               shadowSize: [41, 41]
                             })};
+    
+    var cs = geometry.getAttribute("cs") || nativeCS;
 
     switch (geometry.firstElementChild.tagName.toUpperCase()) {
       case 'POINT':
         coordinates = [];
         geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(M.parseNumber,coordinates);
-        latlng = coordsToLatLng(coordinates);
+        latlng = coordsToLatLng(coordinates, cs, zoom, this.options.projection);
         return pointToLayer ? pointToLayer(mapml, latlng) : 
                                     new L.Marker(latlng, pointOptions);
 
       case 'MULTIPOINT':
         coordinates = [];
         geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-        latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng);
+        latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng, cs, zoom);
         var points = new Array(latlngs.length);
         for(member=0;member<points.length;member++) {
           points[member] = new L.Marker(latlngs[member],pointOptions);
@@ -277,7 +286,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       case 'LINESTRING':
         coordinates = [];
         geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-        latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng);
+        latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng, cs, zoom);
         return new L.Polyline(latlngs, vectorOptions);
       case 'MULTILINESTRING':
         members = geometry.getElementsByTagName('coordinates');
@@ -285,11 +294,11 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         for (member=0;member<members.length;member++) {
           linestrings[member] = coordinatesToArray(members[member]);
         }
-        latlngs = this.coordsToLatLngs(linestrings, 2, coordsToLatLng);
+        latlngs = this.coordsToLatLngs(linestrings, 2, coordsToLatLng, cs, zoom);
         return new L.Polyline(latlngs, vectorOptions);
       case 'POLYGON':
         var rings = geometry.getElementsByTagName('coordinates');
-        latlngs = this.coordsToLatLngs(coordinatesToArray(rings), 1, coordsToLatLng);
+        latlngs = this.coordsToLatLngs(coordinatesToArray(rings), 1, coordsToLatLng, cs, zoom);
         return new L.Polygon(latlngs, vectorOptions);
       case 'MULTIPOLYGON':
         members = geometry.getElementsByTagName('polygon');
@@ -297,7 +306,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         for (member=0;member<members.length;member++) {
           polygons[member] = coordinatesToArray(members[member].querySelectorAll('coordinates'));
         }
-        latlngs = this.coordsToLatLngs(polygons, 2, coordsToLatLng);
+        latlngs = this.coordsToLatLngs(polygons, 2, coordsToLatLng, cs, zoom);
         return new L.Polygon(latlngs, vectorOptions);
       case 'GEOMETRYCOLLECTION':
         console.log('GEOMETRYCOLLECTION Not implemented yet');
@@ -327,18 +336,36 @@ export var MapMLFeatures = L.FeatureGroup.extend({
   },
         
 
-  coordsToLatLng: function (coords) { // (Array[, Boolean]) -> LatLng
-   return new L.LatLng(coords[1], coords[0], coords[2]);
+  coordsToLatLng: function (coords, cs, zoom, projection) { // (Array[, Boolean]) -> LatLng
+    let pcrs;
+    switch(cs.toUpperCase()){
+      case "PCRS":
+        pcrs = coords;
+        break;
+      case "TILEMATRIX":
+        let pixels = coords.map((value)=>{
+          return value * TILE_SIZE;
+        });
+        pcrs = M[projection].transformation.untransform(L.point(pixels),M[projection].scale(+zoom));
+        break;
+      case "TCRS":
+        pcrs = M[projection].transformation.untransform(L.point(coords),M[projection].scale(+zoom));
+        break;
+      default:
+        return new L.LatLng(coords[1], coords[0], coords[2]);
+    }
+
+    return M[projection].unproject(L.point(pcrs), +zoom);
   },
 
-  coordsToLatLngs: function (coords, levelsDeep, coordsToLatLng) { // (Array[, Number, Function]) -> Array
+  coordsToLatLngs: function (coords, levelsDeep, coordsToLatLng, cs, zoom) { // (Array[, Number, Function]) -> Array
     var latlng, i, len,
         latlngs = [];
 
     for (i = 0, len = coords.length; i < len; i++) {
      latlng = levelsDeep ?
-             this.coordsToLatLngs(coords[i], levelsDeep - 1, coordsToLatLng) :
-             (coordsToLatLng || this.coordsToLatLng)(coords[i]);
+             this.coordsToLatLngs(coords[i], levelsDeep - 1, coordsToLatLng, cs, zoom) :
+             (coordsToLatLng || this.coordsToLatLng)(coords[i], cs, zoom, this.options.projection);
 
      latlngs.push(latlng);
     }

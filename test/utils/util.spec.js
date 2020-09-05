@@ -312,5 +312,40 @@ describe("M.Util Tests", () => {
       expect(output).toEqual("TILEMATRIX");
     });
   });
+
+  describe("M.csToAxes() utility function tests", () => {
+    test("Null cs", () => {
+      let output = M.csToAxes(null);
+      expect(output).toEqual(undefined);
+    });
+    test("Non-string cs", () => {
+      let output = M.csToAxes(5);
+      expect(output).toEqual(undefined);
+    });
+    test("cs = tilematrix", () => {
+      let output = M.csToAxes("tilematrix");
+      expect(output).toEqual(["column", "row"]);
+    });
+    test("cs = pcrs", () => {
+      let output = M.csToAxes("pcrs");
+      expect(output).toEqual(["easting", "northing"]);
+    });
+    test("cs = gcrs", () => {
+      let output = M.csToAxes("gcrs");
+      expect(output).toEqual(["longitude", "latitude"]);
+    });
+    test("cs = tcrs", () => {
+      let output = M.csToAxes("tcrs");
+      expect(output).toEqual(["x", "y"]);
+    });
+    test("cs = map", () => {
+      let output = M.csToAxes("map");
+      expect(output).toEqual(["i", "j"]);
+    });
+    test("cs = tile", () => {
+      let output = M.csToAxes("tile");
+      expect(output).toEqual(["i", "j"]);
+    });
+  });
 });
 

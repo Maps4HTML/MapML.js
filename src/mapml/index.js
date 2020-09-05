@@ -612,6 +612,7 @@ window.M = M;
   });
 }());
 
+M.csToAxes = Util.csToAxes;
 M.convertAndFormatPCRS = Util.convertAndFormatPCRS;
 M.axisToCS = Util.axisToCS;
 M.parseNumber = Util.parseNumber;

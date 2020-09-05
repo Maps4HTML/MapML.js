@@ -30,8 +30,8 @@ jest.setTimeout(30000);
           vertical: 39310000,
         });
         expect(layerController.bottomRight.pcrs).toEqual({
-          horizontal: 14450964.88019643,
-          vertical: -9796764.88019643,
+          horizontal: -24834447.023960713,
+          vertical: 29488647.023960713,
         });
         expect(layerController.zoom).toEqual({
           maxNativeZoom: 4,
