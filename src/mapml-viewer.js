@@ -193,6 +193,11 @@ export class MapViewer extends HTMLElement {
           }
         }
 
+        // Make the Leaflet container element programmatically identifiable
+        // (https://github.com/Leaflet/Leaflet/issues/7193).
+        this._container.setAttribute('role', 'region');
+        this._container.setAttribute('aria-label', 'Interactive map');
+
         this._setUpEvents();
         // this.fire('load', {target: this});
       }

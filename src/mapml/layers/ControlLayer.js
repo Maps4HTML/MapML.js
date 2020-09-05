@@ -28,6 +28,11 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         this._map.on('moveend', this._validateExtents, this);
         this._update();
         //this._validateExtents();
+        if(this._layers.length < 1 && !this._map._showControls){
+          this._container.setAttribute("hidden","");
+        } else {
+          this._map._showControls = true;
+        }
         return this._container;
     },
     onRemove: function (map) {
@@ -51,6 +56,10 @@ export var MapMLLayerControl = L.Control.Layers.extend({
       }
       if (!alreadyThere) {
         this.addOverlay(layer, name);
+      }
+      if(this._layers.length > 0){
+        this._container.removeAttribute("hidden");
+        this._map._showControls = true;
       }
       return (this._map) ? this._update() : this;
     },
