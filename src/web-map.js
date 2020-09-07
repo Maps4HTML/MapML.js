@@ -120,6 +120,9 @@ export class WebMap extends HTMLMapElement {
     `border-width: 2px;` +
     `border-style: inset;` +
     `}` +
+    `[is="web-map"][frameborder="0"] {` +
+  	`border-width: 0;` +
+  	`}` +
     `[is="web-map"] .web-map {` +
     `display: contents;` + // This div doesn't have to participate in layout by generating its own box.
     `}`;
