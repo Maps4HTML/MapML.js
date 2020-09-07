@@ -105,7 +105,7 @@ export class MapViewer extends HTMLElement {
     mapDefaultCSS.innerHTML =
     `:host {` +
     `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
-    `contain: content;` + // Contain layout and paint calculations within the map element.
+    `contain: size;` + // Contain size calculations within the map element.
     `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
     `overflow: hidden;` + // Make the map element behave and look more like a native element.
     `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
@@ -115,6 +115,9 @@ export class MapViewer extends HTMLElement {
     `}` +
     `:host([frameborder="0"]) {` +
     `border-width: 0;` +
+    `}` +
+    `:host .leaflet-container {` +
+    `contain: strict;` + // Contain size, layout and paint calculations within the leaflet container element.
     `}` +
     `:host(.leaflet-drag-target) .leaflet-control {` +
     `pointer-events: none;` + // Prevent `:hover` styles from applying to controls when the user is panning the map display and the cursor happens to move over a control.
