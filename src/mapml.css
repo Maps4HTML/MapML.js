@@ -23,37 +23,145 @@
 .leaflet-image-loaded {
         visibility: inherit;
 }
-.leaflet-control-layers fieldset {
-    border: none;
+
+/*
+ * Controls.
+ */
+
+.leaflet-bar a {
+  box-sizing: border-box;
+  width: 30px !important;
+  height: 30px !important;
+  line-height: 30px !important;
+  font-size: 24px !important;
+  font-weight: normal;
 }
-/* this is to indent the nested details in the layer control */
-/* details/summary is in progress 2018-03-02 on ms-edge so gonna rely on that...
-   https://wpdev.uservoice.com/forums/257854-microsoft-edge-developer/suggestions/6261266-details-summary-elements */
-.leaflet-control-layers details.mapml-control-layers > details.mapml-control-layers {
-        margin-left: 1em;
+
+.leaflet-control-layers-toggle {
+  width: 36px !important;
+  height: 36px !important;
 }
-.leaflet-control-layers details.mapml-control-layers > * {
-        margin-left: 0;
-        margin-right: 0;
+
+.leaflet-bar a,
+.leaflet-control-layers {
+  border-color: #e3e3e3 !important;
 }
-.leaflet-control-layers details.mapml-control-layers > select,
-.leaflet-control-layers details.mapml-control-layers > span{
-        margin-left: 1em;
+
+.leaflet-control-layers {
+  border-radius: 4px !important;
 }
-.leaflet-control-layers details.mapml-control-layers > input {
-        margin-left: 1em;
-        width: 90%
+.leaflet-touch .leaflet-bar a:last-child {
+  border-bottom-left-radius: 4px !important;
+  border-bottom-right-radius: 4px !important;
 }
-.leaflet-control-layers details.mapml-control-layers > details.mapml-control-layers > span {
-    display: block;
+.leaflet-touch .leaflet-bar a:first-child {
+  border-top-left-radius: 4px !important;
+  border-top-right-radius: 4px !important;
 }
-.leaflet-control-layers label {
-    display: inline;
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+  border-style: inherit;
 }
+
+.leaflet-bar,
+.leaflet-control-layers,
+.mapml-contextmenu,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgb(0, 0, 0, 0.3);
+}
+
+.leaflet-container .leaflet-control-attribution {
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+/*
+ * Zoom controls.
+ */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+  text-indent: unset;
+}
+
+/*
+ * Fullscreen control.
+ */
+
+.leaflet-control-fullscreen a {
+  background-size: 30px 60px !important;
+  background-position: 0 0 !important;
+}
+.leaflet-fullscreen-on .leaflet-control-fullscreen a {
+  background-size: 30px 60px !important;
+  background-position: 0 -30px !important;
+}
+
+/*
+ * Layer controls.
+ */
 
 .leaflet-control-layers.leaflet-control {
   margin-right: 10px;
   margin-left: 10px;
+  padding: 0;
+}
+
+.leaflet-control-layers-list {
+  padding: 0;
+}
+
+.leaflet-control-layers fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.leaflet-control-layers-overlays > fieldset > .mapml-control-layers > summary,
+.leaflet-control-layers-overlays > fieldset > .mapml-control-layers > summary ~ * {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.leaflet-control-layers-overlays > fieldset > .mapml-control-layers > summary {
+  padding-top: 7.5px;
+  padding-bottom: 7.5px;
+}
+
+.leaflet-control-layers-overlays > fieldset > .mapml-control-layers details > summary {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.leaflet-control-layers-overlays > fieldset > .mapml-control-layers details {
+  padding-bottom: 4px;
+  margin: 0 0 0 24px;
+}
+
+.leaflet-control-layers-overlays > fieldset > .mapml-control-layers details > summary ~ * {
+  margin-top: 5px;
+}
+
+.leaflet-control-layers label {
+  display: inline;
+  margin-left: 5px;
+}
+
+.mapml-control-layers > input {
+  width: 100%;
+}
+
+.leaflet-control-layers-list .leaflet-control-layers-overlays > :not(:last-of-type) {
+  border-bottom: 1px solid #e3e3e3;
+}
+
+/* Revert Leaflet styles that are causing misalignment. */
+.leaflet-control-layers-selector {
+  margin-top: revert;
+  position: revert;
+}
+.mapml-control-layers summary label > * {
+  vertical-align: middle;
 }
 
 /* Disable dragging of controls. */
@@ -82,7 +190,6 @@
 .mapml-contextmenu {
   display: none;
   max-width: 100%;
-  box-shadow: 0 1px 7px rgba(0,0,0,0.4);
   -webkit-border-radius: 4px;
           border-radius: 4px;
   padding: 4px 0;
@@ -113,6 +220,6 @@
 }
       
 .mapml-contextmenu-separator {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #e3e3e3;
   margin: 5px 0;
 }
