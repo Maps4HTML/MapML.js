@@ -112,6 +112,9 @@ export class MapViewer extends HTMLElement {
     `width: 300px;` +
     `border-width: 2px;` +
     `border-style: inset;` +
+    `}` +
+    `:host(.leaflet-drag-target) .leaflet-control {` +
+    `pointer-events: none;` + // Prevent `:hover` styles from applying to controls when the user is panning the map display and the cursor happens to move over a control.
     `}`;
     
     // Hide all (light DOM) children of the map element.

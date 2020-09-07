@@ -168,28 +168,9 @@
   vertical-align: middle;
 }
 
-/* Disable dragging of controls. */
-.leaflet-control a {
-  -webkit-user-drag: none;
-}
-
-/* Hide unintended highlighting of controls from clicking the map display in
-   quick succession. This is a workaround for `user-select: contain`, since it has
-   virtually no browser support: https://www.chromestatus.com/feature/5730263904550912. */
-.leaflet-control a::selection,
-.leaflet-popup-close-button::selection,
-.leaflet-control-attribution::selection {
-  background-color: transparent;
-}
-
-/* Restore the default focus outline of UA stylesheets,
-   which Leaflet unfortunately removes (https://github.com/Leaflet/Leaflet/issues/6986). */
-.leaflet-container :focus {
-  outline-color: -webkit-focus-ring-color!important;
-  outline-style: auto!important;
-  outline-width: thin!important;
-  outline: revert!important;
-}
+/*
+ * Context menu.
+ */
 
 .mapml-contextmenu {
   display: none;
@@ -199,10 +180,6 @@
   padding: 4px 0;
   background-color: #fff;
   cursor: default;
-  -webkit-user-select: none;
-     -moz-user-select: none;    
-      -ms-user-select: none;
-          user-select: none;
 }
 
 .mapml-contextmenu a.mapml-contextmenu-item {
@@ -226,4 +203,73 @@
 .mapml-contextmenu-separator {
   border-bottom: 1px solid #e3e3e3;
   margin: 5px 0;
+}
+
+/*
+ * User interaction.
+ */
+
+/* Disable dragging of controls. */
+.leaflet-control :not([draggable="true"]),
+.mapml-contextmenu :not([draggable="true"]) {
+  -webkit-user-drag: none;
+}
+
+/* Disable text selection in controls. */
+.leaflet-control,
+.mapml-contextmenu {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide unintended highlighting of controls from clicking the map display in
+   quick succession. This is a workaround for `user-select: contain`, since it has
+   virtually no browser support: https://www.chromestatus.com/feature/5730263904550912. */
+.leaflet-control a::selection,
+.leaflet-popup-close-button::selection,
+.leaflet-control-attribution::selection {
+  background-color: transparent;
+}
+
+/* Disable pointer events where they'd interfere with the intended action. */
+.mapml-contextmenu-item > *,
+.mapml-control-layers label[for^="o"],
+.leaflet-crosshair > *,
+.leaflet-crosshair .leaflet-control {
+  pointer-events: none!important;
+}
+
+/* Restore the default focus outline of UA stylesheets,
+   which Leaflet unfortunately removes (https://github.com/Leaflet/Leaflet/issues/6986). */
+.leaflet-container :focus {
+  outline-color: -webkit-focus-ring-color !important;
+  outline-style: auto !important;
+  outline-width: thin !important;
+  outline: revert !important;
+}
+/* Unset the outline that Leaflet occasionally sets on controls without also
+   delegating focus. */
+.leaflet-active:not(:focus) {
+  outline: unset !important;
+}
+
+/* Restore the default UA tap highlight color by overriding the opinionated tap
+   highlight color inherited from leaflet.css. */
+.leaflet-control a {
+  -webkit-tap-highlight-color: initial;
+}
+
+/* Less opinionated styles for the zoom box than inherited from leaflet.css. */
+.leaflet-zoom-box {
+  border: thin dotted;
+  background-color: rgba(255,255,255,0.33);
+}
+
+label,
+input,
+button,
+summary {
+  cursor: pointer;
 }

@@ -124,6 +124,12 @@ export class WebMap extends HTMLMapElement {
     `display: contents;` + // This div doesn't have to participate in layout by generating its own box.
     `}`;
     
+    let shadowRootCSS = document.createElement('style');
+    shadowRootCSS.innerHTML =
+    `:host(.leaflet-drag-target) .leaflet-control {` +
+    `pointer-events: none;` + // Prevent `:hover` styles from applying to controls when the user is panning the map display and the cursor happens to move over a control.
+    `}`;
+    
     // Hide all (light DOM) children of the map element except for the
     // `<area>` and `<div class="web-map">` (shadow root host) elements.
     let hideElementsCSS = document.createElement('style');
@@ -132,6 +138,7 @@ export class WebMap extends HTMLMapElement {
     `display: none!important;` +
     `}`;
     
+    shadowRoot.appendChild(shadowRootCSS);
     shadowRoot.appendChild(tmpl.content.cloneNode(true));
     shadowRoot.appendChild(this._container);
     this.appendChild(rootDiv);
