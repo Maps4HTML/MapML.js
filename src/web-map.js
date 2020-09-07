@@ -110,7 +110,7 @@ export class WebMap extends HTMLMapElement {
     // Set default styles for the map element.
     let mapDefaultCSS = document.createElement('style');
     mapDefaultCSS.innerHTML =
-    `map[is="web-map"] {` +
+    `[is="web-map"] {` +
     `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
     `contain: content;` +  // Contain layout and paint calculations within the map element.
     `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
@@ -120,7 +120,7 @@ export class WebMap extends HTMLMapElement {
     `border-width: 2px;` +
     `border-style: inset;` +
     `}` +
-    `map[is="web-map"] .web-map {` +
+    `[is="web-map"] .web-map {` +
     `display: contents;` + // This div doesn't have to participate in layout by generating its own box.
     `}`;
     
@@ -128,7 +128,7 @@ export class WebMap extends HTMLMapElement {
     // `<area>` and `<div class="web-map">` (shadow root host) elements.
     let hideElementsCSS = document.createElement('style');
     hideElementsCSS.innerHTML =
-    `map[is="web-map"] > :not(area):not(.web-map) {` +
+    `[is="web-map"] > :not(area):not(.web-map) {` +
     `display: none!important;` +
     `}`;
     
