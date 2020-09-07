@@ -116,6 +116,10 @@ export class MapViewer extends HTMLElement {
     `:host([frameborder="0"]) {` +
     `border-width: 0;` +
     `}` +
+    `:host .mapml-contextmenu,` +
+    `:host .leaflet-control-container {` +
+    `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154).
+    `}` +
     `:host .leaflet-container {` +
     `contain: strict;` + // Contain size, layout and paint calculations within the leaflet container element.
     `}` +

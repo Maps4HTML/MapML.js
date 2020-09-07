@@ -273,3 +273,14 @@ button,
 summary {
   cursor: pointer;
 }
+
+/*
+ * Visibility hack!
+ */
+
+/* Unset `visibility: hidden` in web-map.js/mapml-viewier.js – mitigates FOUC.
+   (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154) */
+.leaflet-container .mapml-contextmenu,
+.leaflet-container .leaflet-control-container {
+  visibility: unset!important;
+}
