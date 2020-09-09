@@ -139,20 +139,31 @@
 
 .leaflet-control-layers-overlays > fieldset > .mapml-control-layers details {
   padding-bottom: 4px;
-  margin: 0 0 0 24px;
+  margin: 0 0 0 15px;
 }
 
 .leaflet-control-layers-overlays > fieldset > .mapml-control-layers details > summary ~ * {
+  display: block;
   margin-top: 5px;
+  margin-left: 15px;
+  width: calc(100% - 15px);
 }
 
 .leaflet-control-layers label {
   display: inline;
-  margin-left: 5px;
 }
 
-.mapml-control-layers > input {
-  width: 100%;
+.mapml-control-layers summary::-webkit-details-marker {
+  margin-right: 5px;
+}
+.mapml-control-layers summary::marker {
+  margin-right: 5px;
+}
+
+.mapml-control-layers details [type="radio"],
+.mapml-control-layers details [type="checkbox"] {
+  margin-right: 5px;
+  margin-left: 0;
 }
 
 .leaflet-control-layers-list .leaflet-control-layers-overlays > :not(:last-of-type) {
