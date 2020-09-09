@@ -725,7 +725,7 @@ export var MapMLLayer = L.Layer.extend({
                 if (styleLinks.length > 1) {
                   var stylesControl = document.createElement('details'),
                   stylesControlSummary = document.createElement('summary');
-                  stylesControlSummary.innerText = 'style';
+                  stylesControlSummary.innerText = 'Style';
                   stylesControl.appendChild(stylesControlSummary);
                   var changeStyle = function (e) {
                       layer.fire('changestyle', {src: e.target.getAttribute("data-href")}, false);

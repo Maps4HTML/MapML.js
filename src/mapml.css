@@ -113,6 +113,7 @@
 
 .leaflet-control-layers-list {
   padding: 0;
+  text-transform: capitalize;
 }
 
 .leaflet-control-layers fieldset {
