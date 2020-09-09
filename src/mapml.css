@@ -287,11 +287,11 @@ summary {
 }
 
 /*
- * Visibility hack!
+ * Visibility hack – mitigates FOUC.
+ * (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154)
  */
 
-/* Unset `visibility: hidden` (inherited from web-map/mapml-viewer.js) – mitigates FOUC.
-   (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154) */
+/* Unset `visibility: hidden` (inherited from web-map/mapml-viewer.js). */
 .leaflet-container .mapml-contextmenu,
 .leaflet-container .leaflet-control-container {
   visibility: unset!important;
