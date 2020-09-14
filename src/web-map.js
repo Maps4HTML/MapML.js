@@ -115,8 +115,8 @@ export class WebMap extends HTMLMapElement {
     `contain: size;` + // Contain size calculations within the map element.
     `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
     `overflow: hidden;` + // Make the map element behave and look more like a native element.
-    `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
-    `width: 300px;` +
+    `height: ${this.hasAttribute('height') ? this.getAttribute('height') + "px;" : "150px;"}` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31), unless `width` or `height` is used.
+    `width: ${this.hasAttribute('width') ? this.getAttribute('width') + "px;" : "300px;"}` +
     `border-width: 2px;` +
     `border-style: inset;` +
     `}` +
