@@ -7,8 +7,6 @@
   <script type="module" src="web-map.js"></script>
   <style>
     [is=web-map] {
-      width: 100%;
-      height: 400px;
       max-width: 100%;
     }
 
@@ -19,7 +17,7 @@
 </head>
 
 <body>
-  <map style="width: 500px;height: 500px;" is="web-map" projection="CBMTILE" zoom="3" lat="45.5052040" lon="-75.2202344"
+  <map is="web-map" projection="CBMTILE" zoom="3" lat="45.5052040" lon="-75.2202344" width="500" height="500"
     controls>
     <layer- label="Alabama" checked>
       <meta name="zoom" content="min=2,max=5" />
