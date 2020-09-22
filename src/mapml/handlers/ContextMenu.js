@@ -181,9 +181,8 @@ export var ContextMenu = L.Handler.extend({
         tL = layerElem.extent.topLeft.pcrs,
         bR = layerElem.extent.bottomRight.pcrs;
 
-    let data = '<meta name="extent" content="';
-    data += `top-left-easting=${tL.horizontal},top-left-northing=${tL.vertical},`;
-    data += `top-left-easting=${bR.horizontal},top-left-northing=${bR.vertical}"/>`;
+    let data = `top-left-easting,${tL.horizontal}\ntop-left-northing,${tL.vertical}\n`;
+    data += `top-left-easting,${bR.horizontal},top-left-northing,${bR.vertical}`;
 
     context._copyData(data);
   },
@@ -250,14 +249,14 @@ export var ContextMenu = L.Handler.extend({
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
         point = mapEl._map.project(click.latlng);
-    this.contextMenu._copyData(`z: ${mapEl.zoom}, x:${point.x}, y:${point.y}`);
+    this.contextMenu._copyData(`z:${mapEl.zoom}, x:${point.x}, y:${point.y}`);
   },
 
   _copyTileMatrix: function(e){
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
         point = mapEl._map.project(click.latlng);
-    this.contextMenu._copyData(`z: ${mapEl.zoom}, column:${point.x/TILE_SIZE}, row:${point.y/TILE_SIZE}`);
+    this.contextMenu._copyData(`z:${mapEl.zoom}, column:${point.x/TILE_SIZE}, row:${point.y/TILE_SIZE}`);
   },
 
   _copyPCRS: function(e){
@@ -266,7 +265,7 @@ export var ContextMenu = L.Handler.extend({
         point = mapEl._map.project(click.latlng),
         scale = mapEl._map.options.crs.scale(+mapEl.zoom),
         pcrs = mapEl._map.options.crs.transformation.untransform(point,scale);
-    this.contextMenu._copyData(`z: ${mapEl.zoom}, easting:${pcrs.x}, northing:${pcrs.y}`);
+    this.contextMenu._copyData(`z:${mapEl.zoom}, easting:${pcrs.x}, northing:${pcrs.y}`);
   },
 
   _copyTile: function(e){
@@ -277,7 +276,7 @@ export var ContextMenu = L.Handler.extend({
     if(pointX < 0) pointX+= TILE_SIZE;
     if(pointY < 0) pointY+= TILE_SIZE;
 
-    this.contextMenu._copyData(`z: ${mapEl.zoom}, 
+    this.contextMenu._copyData(`z:${mapEl.zoom}, 
                                 i:${Math.round(pointX)}, 
                                 j:${Math.round(pointY)}`);
   },
