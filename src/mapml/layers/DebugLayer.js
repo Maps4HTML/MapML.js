@@ -151,16 +151,16 @@ export var DebugVectors = L.LayerGroup.extend({
     let center = map.options.crs.transformation.transform(L.point(0, 0), map.options.crs.scale(0));
     this._centerVector = L.circle(map.options.crs.pointToLatLng(center, 0), { radius: 250 });
     this._centerVector.bindTooltip("Projection Center");
-    
-    this._addBounds();
+
+    this._addBounds(map);
   },
   onRemove: function (map) {
     this.clearLayers();
   },
 
-  _addBounds: function () {
-    let id = Object.keys(this._map._layers),
-      layers = this._map._layers,
+  _addBounds: function (map) {
+    let id = Object.keys(map._layers),
+      layers = map._layers,
       colors = ["#FF5733", "#8DFF33", "#3397FF", "#E433FF", "#F3FF33"],
       j = 0;
 
@@ -190,7 +190,7 @@ export var DebugVectors = L.LayerGroup.extend({
 
   _mapLayerUpdate: function (e) {
     this.clearLayers();
-    this._addBounds();
+    this._addBounds(e.target);
   },
 });
 
