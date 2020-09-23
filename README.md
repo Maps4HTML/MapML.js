@@ -57,7 +57,7 @@ Please note that `<map>` as a customized built-in element has proven to have
 a critical [accessibility issue](https://github.com/w3c/html-aam/issues/292)
 in some browsers, which causes screen readers not to announce any of the map
 element's content,
-it is therefore recommended not to use  `<map is="web-map">` in production.
+it is therefore recommended not to use `<map is="web-map">` in production.
 
 ## Maps for HTML Community Group
 
