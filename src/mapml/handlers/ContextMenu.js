@@ -93,10 +93,10 @@ export var ContextMenu = L.Handler.extend({
       },
       {
         text:"Copy Extent (<kbd>C</kbd>)",
-        callback:this._copyMetaExtent
+        callback:this._copyLayerExtent
       },
     ];
-    this._visible = false;
+    this._mapMenuVisible = false;
     this._keyboardEvent = false;
 
     this._container = L.DomUtil.create("div", "mapml-contextmenu", map._container);
@@ -175,14 +175,14 @@ export var ContextMenu = L.Handler.extend({
     }, this);
   },
 
-  _copyMetaExtent: function (e) {
+  _copyLayerExtent: function (e) {
     let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
         layerElem = context._layerClicked.layer._layerEl,
         tL = layerElem.extent.topLeft.pcrs,
         bR = layerElem.extent.bottomRight.pcrs;
 
     let data = `top-left-easting,${tL.horizontal}\ntop-left-northing,${tL.vertical}\n`;
-    data += `top-left-easting,${bR.horizontal},top-left-northing,${bR.vertical}`;
+    data += `top-left-easting,${bR.horizontal}\ntop-left-northing,${bR.vertical}`;
 
     context._copyData(data);
   },
@@ -202,6 +202,7 @@ export var ContextMenu = L.Handler.extend({
       map.getZoom(),
       map.options.projection);
     
+    //fits the bounds to the map view
     if(mapBounds.contains(layerBounds)){
       while(mapBounds.contains(layerBounds) && (currentZoom + 1) <= layerElem.extent.zoom.maxZoom){
         currentZoom++;
@@ -211,6 +212,7 @@ export var ContextMenu = L.Handler.extend({
           map.getZoom(),
           map.options.projection);
       }
+      if(currentZoom - 1 >= 0) map.flyTo(center, (currentZoom - 1));
     } else {
       while(!(mapBounds.contains(layerBounds)) && (currentZoom - 1) >= layerElem.extent.zoom.minZoom){
         currentZoom--;
@@ -221,7 +223,6 @@ export var ContextMenu = L.Handler.extend({
           map.options.projection);
       }
     }
-    if(currentZoom - 1 >= 0) map.flyTo(center, (currentZoom - 1));
   },
 
   _goForward: function(e){
@@ -459,9 +460,9 @@ export var ContextMenu = L.Handler.extend({
 
           this._setPosition(pt,container);
 
-          if (!this._visible) {
+          if (!this._mapMenuVisible) {
             container.style.display = 'block';
-              this._visible = true;
+              this._mapMenuVisible = true;
           }
 
           this._map.fire('contextmenu.show', event);
@@ -469,8 +470,8 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _hide: function () {
-      if (this._visible) {
-          this._visible = false;
+      if (this._mapMenuVisible) {
+          this._mapMenuVisible = false;
           this._container.style.display = 'none';
           this._coordMenu.style.display = 'none';
           this._layerMenu.style.display = 'none';
@@ -542,7 +543,7 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _onKeyDown: function (e) {
-    if(!this._visible) return;
+    if(!this._mapMenuVisible) return;
     this._debounceKeyDown(function(){
       let key = e.keyCode;
       if(key!== 9 && !(!this._layerClicked && key === 67))
@@ -557,7 +558,7 @@ export var ContextMenu = L.Handler.extend({
           break;
         case 67: //C KEY
           if(this._layerClicked){
-            this._copyMetaExtent(e);
+            this._copyLayerExtent(e);
           } else {
             this._copyCoords({
               latlng:this._map.getCenter()
