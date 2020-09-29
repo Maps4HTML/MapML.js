@@ -136,7 +136,11 @@ export var ContextMenu = L.Handler.extend({
       .on(this._container, 'click', L.DomEvent.stop)
       .on(this._container, 'mousedown', L.DomEvent.stop)
       .on(this._container, 'dblclick', L.DomEvent.stop)
-      .on(this._container, 'contextmenu', L.DomEvent.stop);
+      .on(this._container, 'contextmenu', L.DomEvent.stop)
+      .on(this._layerMenu, 'click', L.DomEvent.stop)
+      .on(this._layerMenu, 'mousedown', L.DomEvent.stop)
+      .on(this._layerMenu, 'dblclick', L.DomEvent.stop)
+      .on(this._layerMenu, 'contextmenu', L.DomEvent.stop);
   },
 
   addHooks: function () {
@@ -432,11 +436,12 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _show: function (e) {
+    if(this._mapMenuVisible) this._hide();
     this._clickEvent = e;
     if(e.originalEvent.srcElement.tagName === "SPAN"){
       this._layerClicked = e.originalEvent.srcElement;
       this._showAtPoint(e.containerPoint, e, this._layerMenu);
-    } else {
+    } else if(e.originalEvent.srcElement.classList.contains("leaflet-container")) {
       this._layerClicked = undefined;
       this._showAtPoint(e.containerPoint, e, this._container);
     }
