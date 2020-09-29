@@ -188,16 +188,40 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _zoomToLayer: function (e) {
-    let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
-        layerElem = context._layerClicked.layer._layerEl,
-        tL = layerElem.extent.topLeft.gcrs,
-        bR = layerElem.extent.bottomRight.gcrs;
+    let map = e instanceof KeyboardEvent ? this._map : this,
+        layerElem = map.contextMenu._layerClicked.layer._layerEl,
+        tL = layerElem.extent.topLeft.pcrs,
+        bR = layerElem.extent.bottomRight.pcrs,
+        layerBounds = L.bounds(L.point(tL.horizontal, tL.vertical), L.point(bR.horizontal, bR.vertical)),
+        center = map.options.crs.unproject(layerBounds.getCenter(true)),
+        currentZoom = map.getZoom();
 
-    let corner1 = L.latLng(tL.vertical, tL.horizontal),
-        corner2 = L.latLng(bR.vertical, bR.horizontal),
-        bounds = L.latLngBounds(corner1, corner2);
-
-    layerElem._layer._map.flyToBounds(bounds, { maxZoom: layerElem.extent.zoom.maxZoom });
+    map.setView(center, currentZoom, {animate:false});
+    let mapBounds = M.pixelToPCRSBounds(
+      map.getPixelBounds(),
+      map.getZoom(),
+      map.options.projection);
+    
+    if(mapBounds.contains(layerBounds)){
+      while(mapBounds.contains(layerBounds) && (currentZoom + 1) <= layerElem.extent.zoom.maxZoom){
+        currentZoom++;
+        map.setView(center, currentZoom, {animate:false});
+        mapBounds = M.pixelToPCRSBounds(
+          map.getPixelBounds(),
+          map.getZoom(),
+          map.options.projection);
+      }
+    } else {
+      while(!(mapBounds.contains(layerBounds)) && (currentZoom - 1) >= layerElem.extent.zoom.minZoom){
+        currentZoom--;
+        map.setView(center, currentZoom, {animate:false});
+        mapBounds = M.pixelToPCRSBounds(
+          map.getPixelBounds(),
+          map.getZoom(),
+          map.options.projection);
+      }
+    }
+    if(currentZoom - 1 >= 0) map.flyTo(center, (currentZoom - 1));
   },
 
   _goForward: function(e){
