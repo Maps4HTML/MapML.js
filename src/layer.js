@@ -5,7 +5,7 @@ import './mapml.js';       // modified URI to make the function a property of wi
 
 export class MapLayer extends HTMLElement {
   static get observedAttributes() {
-    return ['src', 'label', 'checked', 'disabled', 'hidden'];
+    return ['src', 'label', 'checked', 'hidden'];
   }
   get src() {
     return this.hasAttribute('src')?this.getAttribute('src'):'';
@@ -105,12 +105,22 @@ export class MapLayer extends HTMLElement {
   }
   attributeChangedCallback(name, oldValue, newValue) {
     switch(name) {
-      case 'label': {
-          if (oldValue !== newValue) {
-            this.dispatchEvent(new CustomEvent('labelchanged', {detail: 
-              {target: this}}));
+      case 'label': 
+        if (oldValue !== newValue) {
+          this.dispatchEvent(new CustomEvent('labelchanged', {detail: 
+            {target: this}}));
+        }
+      break;
+      case 'checked': 
+        if (this._layer) {
+          if (typeof newValue === "string") {
+            this.parentElement._map.addLayer(this._layer);
+          } else {
+            this.parentElement._map.removeLayer(this._layer);
           }
-      }
+          this.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      break;
     }
   }
   _onLayerExtentLoad(e) {
