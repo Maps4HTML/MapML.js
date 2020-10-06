@@ -26,6 +26,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
     onAdd: function () {
         this._initLayout();
         this._map.on('moveend', this._validateExtents, this);
+        L.DomEvent.on(this.options.mapEl, "layerchange", this._validateExtents, this);
         this._update();
         //this._validateExtents();
         if(this._layers.length < 1 && !this._map._showControls){
@@ -70,6 +71,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"],layerProjection;
         for (let i = 0; i < this._layers.length; i++) {
           let count = 0, total=0;
+          this._layers[i].input.checked = this._layers[i].layer._layerEl.checked;
           if(this._layers[i].layer._extent){
             layerProjection = this._layers[i].layer._extent.getAttribute('units') || 
               this._layers[i].layer._extent.getAttribute('content') ||

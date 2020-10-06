@@ -199,7 +199,7 @@ export class MapViewer extends HTMLElement {
 
         // optionally add controls to the map
         if (this.controls) {
-          this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
+          this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
           this._zoomControl = L.control.zoom().addTo(this._map);
           if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
             this._fullScreenControl = L.control.fullscreen().addTo(this._map);
@@ -284,6 +284,12 @@ export class MapViewer extends HTMLElement {
   _setUpEvents() {
     this.addEventListener("drop", this._dropHandler, false);
     this.addEventListener("dragover", this._dragoverHandler, false);
+    this.addEventListener("change",
+    function(e) {
+      if(e.target.tagName === "LAYER-"){
+        this.dispatchEvent(new CustomEvent("layerchange", {details:{target: this, originalEvent: e}}));
+      }
+    }, false);
     this._map.on('load',
       function () {
         this.dispatchEvent(new CustomEvent('load', {detail: {target: this}}));
@@ -393,7 +399,7 @@ export class MapViewer extends HTMLElement {
     if (this._map) {
       if (controls && !this._layerControl) {
         this._zoomControl = L.control.zoom().addTo(this._map);
-        this._layerControl = M.mapMlLayerControl(null,{"collapsed": true}).addTo(this._map);
+        this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
         if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
           this._fullScreenControl = L.control.fullscreen().addTo(this._map);
         }
