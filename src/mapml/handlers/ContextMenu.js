@@ -85,7 +85,18 @@ export var ContextMenu = L.Handler.extend({
         callback:this._viewSource,
       },
     ];
-    this._visible = false;
+
+    this._layerItems = [
+      {
+        text:"Zoom To Layer (<kbd>Z</kbd>)",
+        callback:this._zoomToLayer
+      },
+      {
+        text:"Copy Extent (<kbd>C</kbd>)",
+        callback:this._copyLayerExtent
+      },
+    ];
+    this._mapMenuVisible = false;
     this._keyboardEvent = false;
 
     this._container = L.DomUtil.create("div", "mapml-contextmenu", map._container);
@@ -113,11 +124,23 @@ export var ContextMenu = L.Handler.extend({
 
     this._items[6].el = this._createItem(this._container, this._items[6]);
 
+    this._layerMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-layer-menu", map._container);
+    this._layerMenu.style.zIndex = 10000;
+    this._layerMenu.style.position = "absolute";
+    this._layerMenu.style.width = "150px";
+    for (let i = 0; i < this._layerItems.length; i++) {
+      this._createItem(this._layerMenu, this._layerItems[i]);
+    }
+
     L.DomEvent
       .on(this._container, 'click', L.DomEvent.stop)
       .on(this._container, 'mousedown', L.DomEvent.stop)
       .on(this._container, 'dblclick', L.DomEvent.stop)
-      .on(this._container, 'contextmenu', L.DomEvent.stop);
+      .on(this._container, 'contextmenu', L.DomEvent.stop)
+      .on(this._layerMenu, 'click', L.DomEvent.stop)
+      .on(this._layerMenu, 'mousedown', L.DomEvent.stop)
+      .on(this._layerMenu, 'dblclick', L.DomEvent.stop)
+      .on(this._layerMenu, 'contextmenu', L.DomEvent.stop);
   },
 
   addHooks: function () {
@@ -154,6 +177,56 @@ export var ContextMenu = L.Handler.extend({
       mousedown: this._hide,
       zoomstart: this._hide
     }, this);
+  },
+
+  _copyLayerExtent: function (e) {
+    let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
+        layerElem = context._layerClicked.layer._layerEl,
+        tL = layerElem.extent.topLeft.pcrs,
+        bR = layerElem.extent.bottomRight.pcrs;
+
+    let data = `top-left-easting,${tL.horizontal}\ntop-left-northing,${tL.vertical}\n`;
+    data += `top-left-easting,${bR.horizontal}\ntop-left-northing,${bR.vertical}`;
+
+    context._copyData(data);
+  },
+
+  _zoomToLayer: function (e) {
+    let map = e instanceof KeyboardEvent ? this._map : this,
+        layerElem = map.contextMenu._layerClicked.layer._layerEl,
+        tL = layerElem.extent.topLeft.pcrs,
+        bR = layerElem.extent.bottomRight.pcrs,
+        layerBounds = L.bounds(L.point(tL.horizontal, tL.vertical), L.point(bR.horizontal, bR.vertical)),
+        center = map.options.crs.unproject(layerBounds.getCenter(true)),
+        currentZoom = map.getZoom();
+
+    map.setView(center, currentZoom, {animate:false});
+    let mapBounds = M.pixelToPCRSBounds(
+      map.getPixelBounds(),
+      map.getZoom(),
+      map.options.projection);
+    
+    //fits the bounds to the map view
+    if(mapBounds.contains(layerBounds)){
+      while(mapBounds.contains(layerBounds) && (currentZoom + 1) <= layerElem.extent.zoom.maxZoom){
+        currentZoom++;
+        map.setView(center, currentZoom, {animate:false});
+        mapBounds = M.pixelToPCRSBounds(
+          map.getPixelBounds(),
+          map.getZoom(),
+          map.options.projection);
+      }
+      if(currentZoom - 1 >= 0) map.flyTo(center, (currentZoom - 1));
+    } else {
+      while(!(mapBounds.contains(layerBounds)) && (currentZoom - 1) >= layerElem.extent.zoom.minZoom){
+        currentZoom--;
+        map.setView(center, currentZoom, {animate:false});
+        mapBounds = M.pixelToPCRSBounds(
+          map.getPixelBounds(),
+          map.getZoom(),
+          map.options.projection);
+      }
+    }
   },
 
   _goForward: function(e){
@@ -205,14 +278,14 @@ export var ContextMenu = L.Handler.extend({
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
         point = mapEl._map.project(click.latlng);
-    this.contextMenu._copyData(`z: ${mapEl.zoom}, x:${point.x}, y:${point.y}`);
+    this.contextMenu._copyData(`z:${mapEl.zoom}, x:${point.x}, y:${point.y}`);
   },
 
   _copyTileMatrix: function(e){
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
         point = mapEl._map.project(click.latlng);
-    this.contextMenu._copyData(`z: ${mapEl.zoom}, column:${point.x/TILE_SIZE}, row:${point.y/TILE_SIZE}`);
+    this.contextMenu._copyData(`z:${mapEl.zoom}, column:${point.x/TILE_SIZE}, row:${point.y/TILE_SIZE}`);
   },
 
   _copyPCRS: function(e){
@@ -221,7 +294,7 @@ export var ContextMenu = L.Handler.extend({
         point = mapEl._map.project(click.latlng),
         scale = mapEl._map.options.crs.scale(+mapEl.zoom),
         pcrs = mapEl._map.options.crs.transformation.untransform(point,scale);
-    this.contextMenu._copyData(`z: ${mapEl.zoom}, easting:${pcrs.x}, northing:${pcrs.y}`);
+    this.contextMenu._copyData(`z:${mapEl.zoom}, easting:${pcrs.x}, northing:${pcrs.y}`);
   },
 
   _copyTile: function(e){
@@ -232,7 +305,7 @@ export var ContextMenu = L.Handler.extend({
     if(pointX < 0) pointX+= TILE_SIZE;
     if(pointY < 0) pointY+= TILE_SIZE;
 
-    this.contextMenu._copyData(`z: ${mapEl.zoom}, 
+    this.contextMenu._copyData(`z:${mapEl.zoom}, 
                                 i:${Math.round(pointX)}, 
                                 j:${Math.round(pointY)}`);
   },
@@ -363,15 +436,22 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _show: function (e) {
+    if(this._mapMenuVisible) this._hide();
     this._clickEvent = e;
-    this._showAtPoint(e.containerPoint, e);
+    if(e.originalEvent.srcElement.tagName === "SPAN"){
+      this._layerClicked = e.originalEvent.srcElement;
+      this._showAtPoint(e.containerPoint, e, this._layerMenu);
+    } else if(e.originalEvent.srcElement.classList.contains("leaflet-container")) {
+      this._layerClicked = undefined;
+      this._showAtPoint(e.containerPoint, e, this._container);
+    }
     if(e.originalEvent.button === 0){
       this._keyboardEvent = true;
       this._container.firstChild.focus();
     }
   },
 
-  _showAtPoint: function (pt, data) {
+  _showAtPoint: function (pt, data, container) {
       if (this._items.length) {
           let event = L.extend(data || {}, {contextmenu: this});
 
@@ -383,11 +463,11 @@ export var ContextMenu = L.Handler.extend({
               this._showLocation.relatedTarget = data.relatedTarget;
           }
 
-          this._setPosition(pt);
+          this._setPosition(pt,container);
 
-          if (!this._visible) {
-              this._container.style.display = 'block';
-              this._visible = true;
+          if (!this._mapMenuVisible) {
+            container.style.display = 'block';
+              this._mapMenuVisible = true;
           }
 
           this._map.fire('contextmenu.show', event);
@@ -395,17 +475,17 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _hide: function () {
-      if (this._visible) {
-          this._visible = false;
+      if (this._mapMenuVisible) {
+          this._mapMenuVisible = false;
           this._container.style.display = 'none';
           this._coordMenu.style.display = 'none';
+          this._layerMenu.style.display = 'none';
           this._map.fire('contextmenu.hide', {contextmenu: this});
       }
   },
 
-  _setPosition: function (pt) {
+  _setPosition: function (pt, container) {
       let mapSize = this._map.getSize(),
-          container = this._container,
           containerSize = this._getElementSize(container),
           anchor;
 
@@ -468,37 +548,46 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _onKeyDown: function (e) {
-    if(!this._visible) return;
+    if(!this._mapMenuVisible) return;
     this._debounceKeyDown(function(){
       let key = e.keyCode;
-
+      if(key!== 9 && !(!this._layerClicked && key === 67))
+        this._hide();
       switch(key){
-        case 32:
+        case 32:  //SPACE KEY
           if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
             this._map._container.parentNode.activeElement.click();
           break;
-        case 66:
+        case 66: //B KEY
           this._goBack(e);
           break;
-        case 67:
-          this._copyCoords({
-            latlng:this._map.getCenter()
-          });
+        case 67: //C KEY
+          if(this._layerClicked){
+            this._copyLayerExtent(e);
+          } else {
+            this._copyCoords({
+              latlng:this._map.getCenter()
+            });
+          }
           break;
-        case 70:
+        case 70: //F KEY
           this._goForward(e);
           break;
-        case 82:
+        case 82: //R KEY
           this._reload(e);
           break;
-        case 84:
+        case 84: //T KEY
           this._toggleControls(e);
           break;
-        case 86:
+        case 86: //V KEY
           this._viewSource(e);
           break;
-        case 27:
+        case 27: //H KEY
           this._hide();
+          break;
+        case 90: //Z KEY
+          if(this._layerClicked)
+            this._zoomToLayer(e);
           break;
       }
     },250);

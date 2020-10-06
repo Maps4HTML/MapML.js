@@ -132,9 +132,20 @@ export var MapMLLayerControl = L.Control.Layers.extend({
       // verify the extent and legend for the layer to know whether to
       // disable it , add the legend link etc.
       obj.layer.on('extentload', this._validateExtents, this);
-      
       this._overlaysList.appendChild(layercontrols);
       return layercontrols;
+    },
+
+    //overrides collapse and conditionally collapses the panel
+    collapse: function(e){
+      if(e.relatedTarget && e.relatedTarget.parentElement && 
+          (e.relatedTarget.className === "mapml-contextmenu mapml-layer-menu" || 
+          e.relatedTarget.parentElement.className === "mapml-contextmenu mapml-layer-menu") ||
+          this._map.contextMenu._layerMenu.style.display === "block")
+       return this;
+
+      L.DomUtil.removeClass(this._container, 'leaflet-control-layers-expanded');
+		  return this;
     }
 });
 export var mapMlLayerControl = function (layers, options) {

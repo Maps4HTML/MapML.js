@@ -464,6 +464,7 @@ export var MapMLLayer = L.Layer.extend({
         input.type = 'checkbox';
         input.className = 'leaflet-control-layers-selector';
         name.draggable = true;
+        name.layer = this;
 
         if (this._legendUrl) {
           var legendLink = document.createElement('a');
