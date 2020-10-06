@@ -113,7 +113,7 @@ export class MapLayer extends HTMLElement {
       break;
       case 'checked': 
         if (this._layer) {
-          if (newValue !== null) {
+          if (typeof newValue === "string") {
             this.parentElement._map.addLayer(this._layer);
           } else {
             this.parentElement._map.removeLayer(this._layer);
