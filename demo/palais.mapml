@@ -4,16 +4,19 @@
     <meta http-equiv="Content-Type" content="text/mapml" />
     <title>A point in Map Markup Language</title>
     <meta name="projection" content="CBMTILE"/>
+    <!-- I *thought* that you could specify a value=n in the zoom meta content,
+         and that would be used for the native zoom of features if they don't have
+         a zoom attribute?  Can't make this work, you need the feature.zoom property  -->
     <meta name="zoom" content="min=0,max=22,value=3" />
-    <meta name="cs" content="gcrs" />   
-    <meta name="extent" content="zoom=0,cs=tilematrix,top-left-vertical=3,top-left-horizontal=3,bottom-right-vertical=5,bottom-right-horizontal=4" />
     <link rel="license" href="foo" title="Foo © Natural Resources Canada" />
   </head>
   <body>
-    <feature id="palais">
+    <!-- zoom is a property of static features, represents "native" zoom concept -->
+    <feature id="palais" zoom="3">
       <properties>
         <name>Palais des congrès de Montréal</name>
       </properties>
+      <!-- cs is a property of anything that has parseable coordinates as content -->
       <geometry cs="gcrs">
         <point>
           <coordinates>-73.5602045 45.5038505</coordinates>
