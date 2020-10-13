@@ -29,8 +29,10 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         L.DomEvent.on(this.options.mapEl, "layerchange", this._validateExtents, this);
         this._update();
         //this._validateExtents();
-        if(this._layers.length < 1){
+        if(this._layers.length < 1 && !this._map._showControls){
           this._container.setAttribute("hidden","");
+        } else{
+          this._map._showControls = true;
         }
         return this._container;
     },
@@ -58,6 +60,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
       }
       if(this._layers.length > 0){
         this._container.removeAttribute("hidden");
+        this._map._showControls = true;
       }
       return (this._map) ? this._update() : this;
     },
