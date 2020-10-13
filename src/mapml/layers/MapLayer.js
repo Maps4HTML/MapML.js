@@ -138,6 +138,7 @@ export var MapMLLayer = L.Layer.extend({
         {
           this._staticTileLayer = M.mapMLStaticTileLayer({
             pane:this._container,
+            _leafletLayer: this,
             className:"mapml-static-tile-layer",
             tileContainer:this._mapmlTileContainer,
             maxZoomBound:map.options.crs.options.resolutions.length - 1,

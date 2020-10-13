@@ -81,6 +81,10 @@ export var ContextMenu = L.Handler.extend({
         ]
       },
       {
+        text:"Toggle Debug Mode (<kbd>D</kbd>)",
+        callback:this._toggleDebug,
+      },
+      {
         text:"View Map Source (<kbd>V</kbd>)",
         callback:this._viewSource,
       },
@@ -123,6 +127,7 @@ export var ContextMenu = L.Handler.extend({
     }
 
     this._items[6].el = this._createItem(this._container, this._items[6]);
+    this._items[7].el = this._createItem(this._container, this._items[7]);
 
     this._layerMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-layer-menu", map._container);
     this._layerMenu.style.zIndex = 10000;
@@ -252,6 +257,11 @@ export var ContextMenu = L.Handler.extend({
   _viewSource: function(e){
     let mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
     mapEl.viewSource();
+  },
+
+  _toggleDebug: function(e){
+    let mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
+    mapEl.toggleDebug();
   },
 
   _copyCoords: function(e){
@@ -570,7 +580,10 @@ export var ContextMenu = L.Handler.extend({
             });
           }
           break;
-        case 70: //F KEY
+        case 68:
+          this._toggleDebug(e);
+          break;
+        case 70:
           this._goForward(e);
           break;
         case 82: //R KEY

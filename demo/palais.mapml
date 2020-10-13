@@ -1,23 +1,27 @@
 <mapml lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/mapml">
-  <title>A point in Map Markup Language</title>
-  <meta name="projection" content="WGS84">
-  <meta name="zoom" content="min=10,max=18">
-  <meta name="extent" content="xmin=-74.19733,ymin=45.41587,xmax=-73.12864,ymax=45.65485"> 
-  <link rel="license" href="foo" title="Foo © Natural Resources Canada">
-</head>
-<body>
-<feature id="palais">
-<properties>
-<name>Palais des congrès de Montréal</name>
-</properties>
-<geometry>
-<Point>
-<coordinates>-73.5602045 45.5038505</coordinates>
-</Point>
-</geometry>
-</feature>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/mapml" />
+    <title>A point in Map Markup Language</title>
+    <meta name="projection" content="CBMTILE"/>
+    <!-- I *thought* that you could specify a value=n in the zoom meta content,
+         and that would be used for the native zoom of features if they don't have
+         a zoom attribute?  Can't make this work, you need the feature.zoom property  -->
+    <meta name="zoom" content="min=0,max=22,value=3" />
+    <link rel="license" href="foo" title="Foo © Natural Resources Canada" />
+  </head>
+  <body>
+    <!-- zoom is a property of static features, represents "native" zoom concept -->
+    <feature id="palais" zoom="3">
+      <properties>
+        <name>Palais des congrès de Montréal</name>
+      </properties>
+      <!-- cs is a property of anything that has parseable coordinates as content -->
+      <geometry cs="gcrs">
+        <point>
+          <coordinates>-73.5602045 45.5038505</coordinates>
+        </point>
+      </geometry>
+    </feature>
+  </body>
 </mapml>

@@ -31,7 +31,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         //this._validateExtents();
         if(this._layers.length < 1 && !this._map._showControls){
           this._container.setAttribute("hidden","");
-        } else {
+        } else{
           this._map._showControls = true;
         }
         return this._container;
@@ -63,6 +63,12 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         this._map._showControls = true;
       }
       return (this._map) ? this._update() : this;
+    },
+    removeLayer: function (layer) {
+      L.Control.Layers.prototype.removeLayer.call(this, layer);
+      if(this._layers.length === 0){
+        this._container.setAttribute("hidden", "");
+      }
     },
     _validateExtents: function (e) {
       //the settimeout allows the function inside the {} to be moved to the task/callback queue rather than executing immediately

@@ -58,16 +58,6 @@ export class MapLayer extends HTMLElement {
     } else {
       this.removeAttribute('hidden');
     }
-    var map = this.parentElement && this.parentElement._map;
-    if (map && this.parentElement.controls) {
-        if (val) {
-            this.parentElement._layerControl.removeLayer(this._layer);
-        } else {
-            this._layerControl = this.parentElement._layerControl;
-            this._layerControl.addOrUpdateOverlay(this._layer,this.label);
-        }
-        this._validateDisabled();
-    }
   }
   constructor() {
     // Always call super first in constructor
@@ -120,6 +110,20 @@ export class MapLayer extends HTMLElement {
           }
           this.dispatchEvent(new Event("change", { bubbles: true }));
         }
+      break;
+    case 'hidden':
+      var map = this.parentElement && this.parentElement._map;
+      if (map && this.parentElement.controls) {
+          if (typeof newValue === "string") {
+              if (this._layer) {
+                this.parentElement._layerControl.removeLayer(this._layer);
+              }
+          } else {
+              this._layerControl = this.parentElement._layerControl;
+              this._layerControl.addOrUpdateOverlay(this._layer, this.label);
+              this._validateDisabled();
+          }
+      }
       break;
     }
   }
@@ -177,18 +181,6 @@ export class MapLayer extends HTMLElement {
      // the 'event' comes from: either the api or a user click/tap
      // may not be necessary -> this._apiToggleChecked = false;
      this.checked = this._layer._map.hasLayer(this._layer);
-    }
-  }
-  _toggleHidden(hide) {
-    var map = this.parentElement && this.parentElement._map;
-    if (map && this.parentElement.controls) {
-      if (hide) {
-        this.parentElement._layerControl.removeLayer(this._layer);
-      } else {
-        this._layerControl = this.parentElement._layerControl;
-        this._layerControl.addOrUpdateOverlay(this._layer,this.label);
-      }
-      this._validateDisabled();
     }
   }
   _ready() {
