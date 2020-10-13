@@ -422,6 +422,17 @@ export class MapViewer extends HTMLElement {
       }
     }
   }
+
+  toggleDebug(){
+    let mapEl = this;
+    if(mapEl._debug){
+      this._debug.remove();
+      this._debug = undefined;
+    } else {
+      this._debug = M.debugOverlay().addTo(this._map);
+    }
+  }
+  
   _widthChanged(width) {
     this.style.width = width+"px";
     this._container.style.width = width+"px";

@@ -5,17 +5,17 @@ jest.setTimeout(50000);
   //expected topLeft values in the different cs, at the different
   //positions the map goes in
   let expectedPCRS = [
-    { horizontal: -5537023.0124460235, vertical: 2671749.64016594 },
-    { horizontal: -2810486.309372615, vertical: 5328171.619676568 }];
+    { horizontal: -9373489.01871137, vertical: 11303798.154262971 },
+    { horizontal: -9373489.01871137, vertical: 11303798.154262971 }];
   let expectedGCRS = [
-    { horizontal: -134.50882532096858, vertical: 34.758856143866666 },
-    { horizontal: -146.23778791492126, vertical: 54.997129539321016 }];
+    { horizontal: -128.07848522325827, vertical: -3.3883427348651636 },
+    { horizontal: -128.07848522325827, vertical: -3.3883427348651636 }];
   let expectedFirstTileMatrix = [
-    { horizontal: 2.96484375, vertical: 3.7304687500000004 },
-    { horizontal: 3.242456896551724, vertical: 3.4599946120689657 }];
+    { horizontal: 2.57421875, vertical: 2.8515625 },
+    { horizontal: 2.57421875, vertical: 2.8515625 }];
   let expectedFirstTCRS = [
-    { horizontal: 759, vertical: 955.0000000000001 },
-    { horizontal: 830.0689655172414, vertical: 885.7586206896552 }];
+    { horizontal: 659, vertical: 730 },
+    { horizontal: 659, vertical: 730 }];
 
   for (const browserType of BROWSER) {
     describe(
@@ -68,7 +68,7 @@ jest.setTimeout(50000);
           expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
         });
 
-        
+
       }
     );
   }

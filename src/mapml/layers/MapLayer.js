@@ -138,6 +138,7 @@ export var MapMLLayer = L.Layer.extend({
         {
           this._staticTileLayer = M.mapMLStaticTileLayer({
             pane:this._container,
+            _leafletLayer: this,
             className:"mapml-static-tile-layer",
             tileContainer:this._mapmlTileContainer,
             maxZoomBound:map.options.crs.options.resolutions.length - 1,
@@ -464,6 +465,7 @@ export var MapMLLayer = L.Layer.extend({
         input.type = 'checkbox';
         input.className = 'leaflet-control-layers-selector';
         name.draggable = true;
+        name.layer = this;
 
         if (this._legendUrl) {
           var legendLink = document.createElement('a');

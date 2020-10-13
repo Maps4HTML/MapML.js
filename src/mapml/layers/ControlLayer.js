@@ -31,7 +31,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         //this._validateExtents();
         if(this._layers.length < 1 && !this._map._showControls){
           this._container.setAttribute("hidden","");
-        } else {
+        } else{
           this._map._showControls = true;
         }
         return this._container;
@@ -63,6 +63,12 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         this._map._showControls = true;
       }
       return (this._map) ? this._update() : this;
+    },
+    removeLayer: function (layer) {
+      L.Control.Layers.prototype.removeLayer.call(this, layer);
+      if(this._layers.length === 0){
+        this._container.setAttribute("hidden", "");
+      }
     },
     _validateExtents: function (e) {
       //the settimeout allows the function inside the {} to be moved to the task/callback queue rather than executing immediately
@@ -132,9 +138,20 @@ export var MapMLLayerControl = L.Control.Layers.extend({
       // verify the extent and legend for the layer to know whether to
       // disable it , add the legend link etc.
       obj.layer.on('extentload', this._validateExtents, this);
-      
       this._overlaysList.appendChild(layercontrols);
       return layercontrols;
+    },
+
+    //overrides collapse and conditionally collapses the panel
+    collapse: function(e){
+      if(e.relatedTarget && e.relatedTarget.parentElement && 
+          (e.relatedTarget.className === "mapml-contextmenu mapml-layer-menu" || 
+          e.relatedTarget.parentElement.className === "mapml-contextmenu mapml-layer-menu") ||
+          this._map.contextMenu._layerMenu.style.display === "block")
+       return this;
+
+      L.DomUtil.removeClass(this._container, 'leaflet-control-layers-expanded');
+		  return this;
     }
 });
 export var mapMlLayerControl = function (layers, options) {
