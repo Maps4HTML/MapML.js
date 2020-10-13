@@ -89,8 +89,10 @@ export var DebugPanel = L.Layer.extend({
   },
   onRemove: function () {
     L.DomUtil.remove(this._title);
-    L.DomUtil.remove(this._debugContainer);
-    this._map.off("mousemove", this._updateCoords);
+    if(this._debugContainer){
+      L.DomUtil.remove(this._debugContainer);
+      this._map.off("mousemove", this._updateCoords);
+    }
   },
   _updateCoords: function (e) {
     if (this.contextMenu._visible) return;
