@@ -47,6 +47,7 @@ import { TemplatedFeaturesLayer, templatedFeaturesLayer } from './layers/Templat
 import { TemplatedImageLayer, templatedImageLayer } from './layers/TemplatedImageLayer';
 import { ImageOverlay, imageOverlay } from './layers/ImageLayer';
 import { MapMLLayer, mapMLLayer } from './layers/MapLayer';
+import { DebugOverlay, debugOverlay} from './layers/DebugLayer';
 import { QueryHandler } from './handlers/QueryHandler';
 import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
@@ -617,5 +618,8 @@ M.mapMlLayerControl = mapMlLayerControl;
 
 M.MapMLStaticTileLayer = MapMLStaticTileLayer;
 M.mapMLStaticTileLayer = mapMLStaticTileLayer;
+
+M.DebugOverlay = DebugOverlay;
+M.debugOverlay = debugOverlay;
 
 }(window, document));
