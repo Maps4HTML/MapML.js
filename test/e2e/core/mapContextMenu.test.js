@@ -144,81 +144,75 @@ jest.setTimeout(50000);
           expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
         });
 
-    describe("Context Menu, Toggle Controls " + browserType, () => {
-      test("[" + browserType + "]" + " Context menu, toggle controls off", async () => {
-        const controlsOn = await page.$eval(
-          "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-          (controls) => controls.childElementCount
-        );
+        describe("Context Menu, Toggle Controls " + browserType, () => {
+          test("[" + browserType + "]" + " Context menu, toggle controls off", async () => {
+            const controlsOn = await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
+              (controls) => controls.childElementCount
+            );
 
-        await page.click("body > map", { button: "right" });
-        await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+            await page.click("body > map", { button: "right" });
+            await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
 
-        const controlsOff = await page.$eval(
-          "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-          (controls) => controls.childElementCount
-        );
+            const controlsOff = await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
+              (controls) => controls.childElementCount
+            );
 
-        expect(controlsOn).toEqual(2);
-        expect(controlsOff).toEqual(0);
-      });
+            expect(controlsOn).toEqual(2);
+            expect(controlsOff).toEqual(0);
+          });
 
-      test("[" + browserType + "]" + " Context menu, toggle controls on", async () => {
-        const controlsOn = await page.$eval(
-          "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-          (controls) => controls.childElementCount
-        );
+          test("[" + browserType + "]" + " Context menu, toggle controls on", async () => {
+            const controlsOn = await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
+              (controls) => controls.childElementCount
+            );
 
-        await page.click("body > map", { button: "right" });
-        await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+            await page.click("body > map", { button: "right" });
+            await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
 
-        const controlsOff = await page.$eval(
-          "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-          (controls) => controls.childElementCount
-        );
+            const controlsOff = await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
+              (controls) => controls.childElementCount
+            );
 
-        expect(controlsOn).toEqual(0);
-        expect(controlsOff).toEqual(2);
-      });
+            expect(controlsOn).toEqual(0);
+            expect(controlsOff).toEqual(2);
+          });
 
-//      test("[" + browserType + "]" + " Context menu, toggle controls after changing opacity", async () => {
-//        await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
-//        await page.$eval(
-//          "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details",
-//          (div) => div.open = true
-//        );
-//        await page.$eval(
-//          "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details",
-//          (div) => div.open = true
-//        );
-//        await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input");
-//        const valueBefore = await page.$eval(
-//          "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input",
-//          (opacity) => opacity.value
-//        );
-//        expect(valueBefore).toEqual("0.5");
-//
-//        await page.click("body > map", { button: "right" });
-//        await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
-//        await page.click("body > map", { button: "right" });
-//        await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
-//
-//        const valueAfter = await page.$eval(
-//          "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input",
-//          (opacity) => opacity.value
-//        );
-//
-//        expect(valueAfter).toEqual("0.5");
-//      });
-    });
+          test("[" + browserType + "]" + " Context menu, toggle controls after changing opacity", async () => {
+            await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
+            await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details",
+              (div) => div.open = true
+            );
+            await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details",
+              (div) => div.open = true
+            );
+            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input");
+            const valueBefore = await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input",
+              (opacity) => opacity.value
+            );
+            expect(valueBefore).toEqual("0.5");
+
+            await page.click("body > map", { button: "right" });
+            await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+            await page.click("body > map", { button: "right" });
+            await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+
+            const valueAfter = await page.$eval(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input",
+              (opacity) => opacity.value
+            );
+
+            expect(valueAfter).toEqual("0.5");
+          });
+        });
 
         test("[" + browserType + "]" + " Submenu, copy all coordinate systems", async () => {
-          context = await browser.newContext();
-          page = await context.newPage();
-          if (browserType === "firefox") {
-            await page.waitForNavigation();
-          }
-          await page.goto(PATH + "mapElement.html");
           await page.click("body > map");
           await page.keyboard.press("Shift+F10");
           await page.keyboard.press("c");
@@ -231,17 +225,17 @@ jest.setTimeout(50000);
             "body > textarea",
             (text) => text.value
           );
-          let expected = "z:0\n";
-          expected += "tile: i:141, j:6\n";
-          expected += "tilematrix: column:3.55078125, row:4.023437500000001\n";
+          let expected = "z:1\n";
+          expected += "tile: i:30, j:50\n";
+          expected += "tilematrix: column:6.1171875000000036, row:6.195312500000004\n";
           expected += "map: i:150, j:75\n";
-          expected += "tcrs: x:909, y:1030.0000000000002\n";
-          expected += "pcrs: easting:217675.99695199728, northing:-205599.8645330742\n";
-          expected += "gcrs: lon :-92.15289674483756, lat:47.1142749003532";
+          expected += "tcrs: x:1566.000000000001, y:1586.0000000000011\n";
+          expected += "pcrs: easting:562957.9375158995, northing:3641449.4962322935\n";
+          expected += "gcrs: lon :-62.72946572940102, lat:80.88192121974802";
 
           expect(copyValue).toEqual(expected);
         });
-  }
+      }
     );
   }
 })();
