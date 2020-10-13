@@ -5,17 +5,17 @@ jest.setTimeout(50000);
   //expected topLeft values in the different cs, at the different
   //positions the map goes in
   let expectedPCRS = [
-    { horizontal: -5537023.0124460235, vertical: 2671749.64016594 },
-    { horizontal: -2810486.309372615, vertical: 5328171.619676568 }];
+    { horizontal: -9373489.01871137, vertical: 11303798.154262971 },
+    { horizontal: -5059449.140631609, vertical: 10388337.990009308 }];
   let expectedGCRS = [
-    { horizontal: -134.50882532096858, vertical: 34.758856143866666 },
-    { horizontal: -146.23778791492126, vertical: 54.997129539321016 }];
+    { horizontal: -128.07848522325827, vertical: -3.3883427348651636 },
+    { horizontal: -131.75138842058425, vertical: 18.07246131233218 }];
   let expectedFirstTileMatrix = [
-    { horizontal: 2.96484375, vertical: 3.7304687500000004 },
-    { horizontal: 3.242456896551724, vertical: 3.4599946120689657 }];
+    { horizontal: 2.57421875, vertical: 2.8515625 },
+    { horizontal: 3.0134698275862073, vertical: 2.944773706896552 }];
   let expectedFirstTCRS = [
-    { horizontal: 759, vertical: 955.0000000000001 },
-    { horizontal: 830.0689655172414, vertical: 885.7586206896552 }];
+    { horizontal: 659, vertical: 730 },
+    { horizontal: 771.4482758620691, vertical: 753.8620689655173 }];
 
   for (const browserType of BROWSER) {
     describe(
@@ -82,7 +82,7 @@ jest.setTimeout(50000);
           expect(contextMenu).toEqual("block");
         });
         test("[" + browserType + "]" + " Context menu, back item", async () => {
-          const mapMove = await page.$eval(
+          await page.$eval(
             "body > mapml-viewer",
             (map) => map.zoomTo(81, -63, 1)
           );
@@ -228,7 +228,7 @@ jest.setTimeout(50000);
           let expected = "z:1\n";
           expected += "tile: i:30, j:50\n";
           expected += "tilematrix: column:6.1171875000000036, row:6.195312500000004\n";
-          expected += "map: i:150, j:75\n";
+          expected += "map: i:250, j:300\n";
           expected += "tcrs: x:1566.000000000001, y:1586.0000000000011\n";
           expected += "pcrs: easting:562957.9375158995, northing:3641449.4962322935\n";
           expected += "gcrs: lon :-62.72946572940102, lat:80.88192121974802";
