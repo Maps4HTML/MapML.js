@@ -56,6 +56,7 @@ jest.setTimeout(50000);
             "body > mapml-viewer",
             (map) => map.zoomTo(81, -63, 1)
           );
+          await page.waitForTimeout(1000);
           const extent = await page.$eval(
             "body > mapml-viewer",
             (map) => map.extent
