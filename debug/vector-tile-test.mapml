@@ -1,38 +1,20 @@
-<mapml lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="Content-Type" content="text/mapml" />
-    <title>A point in Map Markup Language</title>
-    <meta name="projection" content="CBMTILE"/>
-    <!-- I *thought* that you could specify a value=n in the zoom meta content,
-         and that would be used for the native zoom of features if they don't have
-         a zoom attribute?  Can't make this work, you need the feature.zoom property  -->
-    <meta name="zoom" content="min=0,max=22,value=3" />
-    <link rel="license" href="foo" title="Foo © Natural Resources Canada" />
-  </head>
-  <body>
-    <!-- zoom is a property of static features, represents "native" zoom concept -->
-    <feature id="palais">
-      <properties>
-        <name>Palais des congrès de Montréal</name>
-      </properties>
-      <!-- cs is a property of anything that has parseable coordinates as content -->
-      <geometry cs="gcrs">
-        <point>
-          <coordinates>-73.5602045 45.5038505</coordinates>
-        </point>
-      </geometry>
-    </feature>
-        <feature id="palais2" zoom="4">
-      <properties>
-        <name>Another</name>
-      </properties>
-      <!-- cs is a property of anything that has parseable coordinates as content -->
-      <geometry cs="gcrs">
-        <point>
-          <coordinates>-68 51</coordinates>
-        </point>
-      </geometry>
-    </feature>
-  </body>
+<mapml>
+    <head>
+        <title>World Countries - WGS84</title>
+        <meta charset="utf-8" />
+        <meta name="zoom" content="min=0,max=5" />
+        <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="© Natural Resources Canada" />
+        <link rel="stylesheet" href="vector-tile-test.css" />
+    </head>
+    <body>
+        <extent units="WGS84">
+            <input name="zoomLevel" type="zoom" min="0" max="2" value="0"/>
+
+            <input name="row" type="location" axis="row" units="tilematrix" min="0" max="2"/>
+            <input name="col" type="location" axis="column" units="tilematrix" min="0" max="2"/>
+
+            <link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)' tref='../test/e2e/data/tiles/wgs84/{zoomLevel}/r{row}_c{col}.mapml'/>
+
+        </extent>
+    </body>
 </mapml>
