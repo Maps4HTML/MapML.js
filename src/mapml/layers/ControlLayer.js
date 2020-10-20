@@ -85,7 +85,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
           } else {
             layerProjection = FALLBACK_PROJECTION;
           }
-          if( !layerProjection || layerProjection === this._map.options.projection){
+          if( !layerProjection || layerProjection === this.options.mapEl.projection){
             for(let j = 0 ;j<layerTypes.length;j++){
               let type = layerTypes[j];
               if(this._layers[i].input.checked && this._layers[i].layer[type]){
