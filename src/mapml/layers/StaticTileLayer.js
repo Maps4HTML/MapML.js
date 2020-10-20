@@ -97,12 +97,14 @@ export var MapMLStaticTileLayer = L.GridLayer.extend({
     if(!container) return null;
     let meta = M.metaContentToObject(container.getElementsByTagName('tiles')[0].getAttribute('zoom')),
         zoom = {},tiles = container.getElementsByTagName("tile");
+    zoom.nativeZoom = +meta.value || 0;
     zoom.maxNativeZoom = 0;
     zoom.minNativeZoom = maxZoomBound;
     for (let i=0;i<tiles.length;i++) {
-      if(!tiles[i].getAttribute('zoom')) continue;
-      if(+tiles[i].getAttribute('zoom') > zoom.maxNativeZoom) zoom.maxNativeZoom = +tiles[i].getAttribute('zoom');
-      if(+tiles[i].getAttribute('zoom') < zoom.minNativeZoom) zoom.minNativeZoom = +tiles[i].getAttribute('zoom');
+      let lZoom = +tiles[i].getAttribute('zoom');
+      if(!tiles[i].getAttribute('zoom')) lZoom = zoom.nativeZoom;
+      zoom.minNativeZoom = Math.min(zoom.minNativeZoom, lZoom);
+      zoom.maxNativeZoom = Math.max(zoom.maxNativeZoom, lZoom);
     }
 
     //hard coded to only natively zoom out 2 levels, any more and too many tiles are going to be loaded in at one time
@@ -120,7 +122,7 @@ export var MapMLStaticTileLayer = L.GridLayer.extend({
       let tile = {};
       tile.row = +tiles[i].getAttribute('row');
       tile.col = +tiles[i].getAttribute('col');
-      tile.zoom = +tiles[i].getAttribute('zoom') || 0;
+      tile.zoom = +tiles[i].getAttribute('zoom') || this.options.nativeZoom;
       tile.src = tiles[i].getAttribute('src');
       let tileCode = tile.col+":"+tile.row+":"+tile.zoom;
       if(tileCode in tileMap){

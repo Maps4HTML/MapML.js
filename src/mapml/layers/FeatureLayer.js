@@ -23,7 +23,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
           this._features = {};
           this._staticFeature = true;
           this.isVisible = true; //placeholder for when this actually gets updated in the future
-          this.zoomBounds = this._getZoomBounds(mapml);
+          this.zoomBounds = this._getZoomBounds(mapml, nativeZoom);
           this.layerBounds = this._getLayerBounds(mapml);
           L.extend(this.options, this.zoomBounds);
         }
@@ -67,7 +67,8 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     //sets default if any are missing, better to only replace ones that are missing
     _getLayerBounds : function(container) {
       if (!container) return null;
-      let projection = container.querySelector('meta[name=projection]') &&
+      let cs = FALLBACK_CS,
+          projection = container.querySelector('meta[name=projection]') &&
                     M.metaContentToObject(
                       container.querySelector('meta[name=projection]').getAttribute('content'))
                       .content.toUpperCase() || FALLBACK_PROJECTION;
@@ -78,8 +79,8 @@ export var MapMLFeatures = L.FeatureGroup.extend({
                       container.querySelector('meta[name=extent]').getAttribute('content'));
 
         let zoom = meta.zoom || 0;
-        let cs = FALLBACK_CS,
-            metaKeys = Object.keys(meta);
+        
+        let metaKeys = Object.keys(meta);
         for(let i =0;i<metaKeys.length;i++){
           if(!metaKeys[i].includes("zoom")){
             cs = M.axisToCS(metaKeys[i].split("-")[2]);
@@ -93,7 +94,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
                 zoom,projection,cs);
       } catch (error){
         //if error then by default set the layer to osm and bounds to the entire map view
-        return M.boundsToPCRSBounds(M[FALLBACK_PROJECTION].options.crs.tilematrix.bounds(0),0,projection,FALLBACK_CS);
+        return M.boundsToPCRSBounds(M[projection].options.crs.tilematrix.bounds(0),0,projection, cs);
       }
     },
 
@@ -130,13 +131,14 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       }
     },
 
-    _getZoomBounds: function(container){
+    _getZoomBounds: function(container, nativeZoom){
       if (!container) return null;
       let nMin = 100,nMax=0, features = container.getElementsByTagName('feature'),meta,projection;
       for(let i =0;i<features.length;i++){
-        if(!features[i].getAttribute('zoom')) continue;
-        if(+features[i].getAttribute('zoom') > nMax) nMax = +features[i].getAttribute('zoom');
-        if(+features[i].getAttribute('zoom') < nMin) nMin = +features[i].getAttribute('zoom');
+        let lZoom = +features[i].getAttribute('zoom');
+        if(!features[i].getAttribute('zoom'))lZoom = nativeZoom;
+        nMax = Math.max(nMax, lZoom);
+        nMin = Math.min(nMin, lZoom);
       }
       try{
         projection = M.metaContentToObject(container.querySelector('meta[name=projection]').getAttribute('content')).content;

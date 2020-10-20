@@ -4,9 +4,7 @@
     <meta http-equiv="Content-Type" content="text/mapml" />
     <title>A point in Map Markup Language</title>
     <meta name="projection" content="CBMTILE"/>
-    <!-- I *thought* that you could specify a value=n in the zoom meta content,
-         and that would be used for the native zoom of features if they don't have
-         a zoom attribute?  Can't make this work, you need the feature.zoom property  -->
+    <!-- value sets the native zoom for all features, so if a feature is missing a zoom attribute it sets it to the value of meta.value -->
     <meta name="zoom" content="min=0,max=22,value=3" />
     <link rel="license" href="foo" title="Foo © Natural Resources Canada" />
   </head>

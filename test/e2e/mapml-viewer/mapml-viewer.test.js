@@ -6,16 +6,16 @@ jest.setTimeout(50000);
   //positions the map goes in
   let expectedPCRS = [
     { horizontal: -9373489.01871137, vertical: 11303798.154262971 },
-    { horizontal: -9373489.01871137, vertical: 11303798.154262971 }];
+    { horizontal: -5059449.140631609, vertical: 10388337.990009308 }];
   let expectedGCRS = [
     { horizontal: -128.07848522325827, vertical: -3.3883427348651636 },
-    { horizontal: -128.07848522325827, vertical: -3.3883427348651636 }];
+    { horizontal: -131.75138842058425, vertical: 18.07246131233218 }];
   let expectedFirstTileMatrix = [
     { horizontal: 2.57421875, vertical: 2.8515625 },
-    { horizontal: 2.57421875, vertical: 2.8515625 }];
+    { horizontal: 3.0134698275862073, vertical: 2.944773706896552 }];
   let expectedFirstTCRS = [
     { horizontal: 659, vertical: 730 },
-    { horizontal: 659, vertical: 730 }];
+    { horizontal: 771.4482758620691, vertical: 753.8620689655173 }];
 
   for (const browserType of BROWSER) {
     describe(
@@ -56,6 +56,7 @@ jest.setTimeout(50000);
             "body > mapml-viewer",
             (map) => map.zoomTo(81, -63, 1)
           );
+          await page.waitForTimeout(1000);
           const extent = await page.$eval(
             "body > mapml-viewer",
             (map) => map.extent
