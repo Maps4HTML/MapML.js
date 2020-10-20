@@ -133,7 +133,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
     _getZoomBounds: function(container, nativeZoom){
       if (!container) return null;
-      let nMin = 100,nMax=0, features = container.getElementsByTagName('feature'),meta,projection, noZoom = false;
+      let nMin = 100,nMax=0, features = container.getElementsByTagName('feature'),meta,projection;
       for(let i =0;i<features.length;i++){
         let lZoom = +features[i].getAttribute('zoom');
         if(!features[i].getAttribute('zoom'))lZoom = nativeZoom;
