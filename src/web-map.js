@@ -541,7 +541,7 @@ export class WebMap extends HTMLMapElement {
     let mapEl = this,
         initialLocation = mapEl._history.shift();
     mapEl._history = [initialLocation];
-    mapEl._historyIndex = -1;
+    mapEl._historyIndex = 0;
     mapEl._traversalCall = true;
     mapEl.zoomTo(initialLocation.lat,initialLocation.lng,initialLocation.zoom);
   }
