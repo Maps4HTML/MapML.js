@@ -86,6 +86,7 @@ jest.setTimeout(50000);
             "body > mapml-viewer",
             (map) => map.zoomTo(81, -63, 1)
           );
+          await page.waitForTimeout(1000);
           await page.click("body > mapml-viewer", { button: "right" });
           await page.click("div > div.mapml-contextmenu > a:nth-child(1)");
           const extent = await page.$eval(

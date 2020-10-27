@@ -82,10 +82,11 @@ jest.setTimeout(50000);
           expect(contextMenu).toEqual("block");
         });
         test("[" + browserType + "]" + " Context menu, back item", async () => {
-          const mapMove = await page.$eval(
+          await page.$eval(
             "body > map",
             (map) => map.zoomTo(81, -63, 1)
           );
+          await page.waitForTimeout(1000);
           await page.click("body > map", { button: "right" });
           await page.click("div > div.mapml-contextmenu > a:nth-child(1)");
           const extent = await page.$eval(
