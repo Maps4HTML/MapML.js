@@ -626,13 +626,18 @@ export var MapMLLayer = L.Layer.extend({
                         vcount=template.match(varNamesRe),
                         trel = (!t.hasAttribute('rel') || t.getAttribute('rel').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('rel').toLowerCase(),
                         ttype = (!t.hasAttribute('type')? 'image/*':t.getAttribute('type').toLowerCase()),
-                        inputs = [];
+                        inputs = [],
+                        tms = false;
                         var zoomBounds = mapml.querySelector('meta[name=zoom]')?
                                           M.metaContentToObject(mapml.querySelector('meta[name=zoom]').getAttribute('content')):
                                           undefined;
                     while ((v = varNamesRe.exec(template)) !== null) {
-                      var varName = v[1],
-                      inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
+                      var varName = v[1];
+                      if(varName[0] === "-"){
+                        varName = varName.split("-")[1];
+                        tms = true;
+                      }
+                      let inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
                       if (inp) {
                         inputs.push(inp);
                         includesZoom = includesZoom || inp.hasAttribute("type") && inp.getAttribute("type").toLowerCase() === "zoom";
@@ -690,7 +695,8 @@ export var MapMLLayer = L.Layer.extend({
                         type: ttype, 
                         values: inputs, 
                         zoomBounds:zoomBounds, 
-                        projection:serverExtent.getAttribute("units") || FALLBACK_PROJECTION
+                        projection:serverExtent.getAttribute("units") || FALLBACK_PROJECTION,
+                        tms:tms,
                       });
                     }
                   }
