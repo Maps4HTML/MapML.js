@@ -147,7 +147,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
       if(e.relatedTarget && e.relatedTarget.parentElement && 
           (e.relatedTarget.className === "mapml-contextmenu mapml-layer-menu" || 
           e.relatedTarget.parentElement.className === "mapml-contextmenu mapml-layer-menu") ||
-          this._map.contextMenu._layerMenu.style.display === "block")
+          (this._map && this._map.contextMenu._layerMenu.style.display === "block"))
        return this;
 
       L.DomUtil.removeClass(this._container, 'leaflet-control-layers-expanded');
