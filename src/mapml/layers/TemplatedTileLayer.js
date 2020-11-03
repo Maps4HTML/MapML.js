@@ -461,7 +461,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
           if (this.options.tms) {
             obj[this._template.tilematrix.row.name] = invertedY;
           }
-          obj[`-${this._template.tilematrix.row.name}`] = invertedY;
+          //obj[`-${this._template.tilematrix.row.name}`] = invertedY; //leaflet has this but I dont see a use in storing row and -row as it doesnt follow that pattern
         }
         obj.r = this.options.detectRetina && L.Browser.retina && this.options.maxZoom > 0 ? '@2x' : '';
         return L.Util.template(this._url, obj);

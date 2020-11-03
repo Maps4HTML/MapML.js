@@ -627,16 +627,12 @@ export var MapMLLayer = L.Layer.extend({
                         trel = (!t.hasAttribute('rel') || t.getAttribute('rel').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('rel').toLowerCase(),
                         ttype = (!t.hasAttribute('type')? 'image/*':t.getAttribute('type').toLowerCase()),
                         inputs = [],
-                        tms = false;
+                        tms = t && t.hasAttribute("tms");
                         var zoomBounds = mapml.querySelector('meta[name=zoom]')?
                                           M.metaContentToObject(mapml.querySelector('meta[name=zoom]').getAttribute('content')):
                                           undefined;
                     while ((v = varNamesRe.exec(template)) !== null) {
                       var varName = v[1];
-                      if(varName[0] === "-"){
-                        varName = varName.split("-")[1];
-                        tms = true;
-                      }
                       let inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
                       if (inp) {
                         inputs.push(inp);
