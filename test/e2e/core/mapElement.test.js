@@ -68,6 +68,27 @@ jest.setTimeout(50000);
           expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
           expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
         });
+
+        test("[" + browserType + "]" + " Reload button takes you back to initial state", async () => {
+          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.mapml-reload-button.leaflet-bar.leaflet-control > a");
+          const extent = await page.$eval(
+            "body > map",
+            (map) => map.extent
+          );
+
+          const history = await page.$eval(
+            "body > map",
+            (map) => map._history
+          );
+
+          expect(history.length).toEqual(1);
+          expect(extent.projection).toEqual("CBMTILE");
+          expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+          expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
+          expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+          expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
+          expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
+        });
       }
     );
   }

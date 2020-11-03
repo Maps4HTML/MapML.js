@@ -216,6 +216,7 @@ export class WebMap extends HTMLMapElement {
         if (this.controls) {
           this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
           this._zoomControl = L.control.zoom().addTo(this._map);
+          this._reloadButton = M.reloadButton().addTo(this._map);
           if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
             this._fullScreenControl = L.control.fullscreen().addTo(this._map);
           }
@@ -436,6 +437,7 @@ export class WebMap extends HTMLMapElement {
     if (this._map) {
       if (controls && !this._layerControl) {
         this._zoomControl = L.control.zoom().addTo(this._map);
+        this._reloadButton = M.reloadButton().addTo(this._map);
         this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
         if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
           this._fullScreenControl = L.control.fullscreen().addTo(this._map);
@@ -450,12 +452,14 @@ export class WebMap extends HTMLMapElement {
       } else if (this._layerControl) {
         this._map.removeControl(this._layerControl);
         this._map.removeControl(this._zoomControl);
+        this._map.removeControl(this._reloadButton);
         if (this._fullScreenControl) {
           this._map.removeControl(this._fullScreenControl);
           delete this._fullScreenControl;
         }
         delete this._layerControl;
         delete this._zoomControl;
+        delete this._reloadButton;
       }
     }
   }

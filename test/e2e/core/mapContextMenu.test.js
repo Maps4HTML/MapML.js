@@ -160,7 +160,7 @@ jest.setTimeout(50000);
               (controls) => controls.childElementCount
             );
 
-            expect(controlsOn).toEqual(2);
+            expect(controlsOn).toEqual(3);
             expect(controlsOff).toEqual(0);
           });
 
@@ -179,7 +179,7 @@ jest.setTimeout(50000);
             );
 
             expect(controlsOn).toEqual(0);
-            expect(controlsOff).toEqual(2);
+            expect(controlsOff).toEqual(3);
           });
 
           test("[" + browserType + "]" + " Context menu, toggle controls after changing opacity", async () => {
@@ -214,7 +214,7 @@ jest.setTimeout(50000);
         });
 
         test("[" + browserType + "]" + " Submenu, copy all coordinate systems using tab + enter to access", async () => {
-          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left");
+          await page.click("body > map");
           await page.keyboard.press("Shift+F10");
 
           for (let i = 0; i < 4; i++)
@@ -229,11 +229,11 @@ jest.setTimeout(50000);
             "body > textarea",
             (text) => text.value
           );
-          let expected = "z:0\n";
-          expected += "tile: i:150, j:162\n";
-          expected += "tilematrix: column:3.585937500000002, row:3.6317349137931063\n";
+          let expected = "z:1\n";
+          expected += "tile: i:30, j:50\n";
+          expected += "tilematrix: column:6.1171875000000036, row:6.195312500000004\n";
           expected += "map: i:250, j:300\n";
-          expected += "tcrs: x:918.0000000000006, y:929.7241379310352\n";
+          expected += "tcrs: x:1566.000000000001, y:1586.0000000000011\n";
           expected += "pcrs: easting:562957.9375158995, northing:3641449.4962322935\n";
           expected += "gcrs: lon :-62.72946572940102, lat:80.88192121974802";
 
