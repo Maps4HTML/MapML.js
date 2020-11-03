@@ -166,13 +166,45 @@ export class MapLayer extends HTMLElement {
     }
   }
   _validateDisabled() {
-    var layer = this._layer, map = layer._map;
+    let layer = this._layer, map = layer._map;
     if (map) {
-      var zoomBounds = layer.getZoomBounds(), zoom = map.getZoom(), 
-      withinZoomBounds = (zoomBounds && zoomBounds.min <= zoom && zoom <= zoomBounds.max),
-      projectionMatches = layer._projectionMatches(map),
-      visible = projectionMatches && withinZoomBounds;// && map.getPixelBounds().intersects(layer.getLayerExtentBounds(map));
-      this.disabled = !visible;
+      let count = 0, total=0, layerProjection, layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
+      if(layer._extent){
+        layerProjection = layer._extent.getAttribute('units') || 
+          layer._extent.getAttribute('content') ||
+          layer._extent.querySelector("input[type=projection]").getAttribute('value');
+      } else {
+        layerProjection = FALLBACK_PROJECTION;
+      }
+      if( !layerProjection || layerProjection === map.options.mapEl.projection){
+        for(let j = 0 ;j<layerTypes.length;j++){
+          let type = layerTypes[j];
+          if(this.checked && layer[type]){
+            if(type === "_templatedLayer"){
+              for(let j =0;j<layer[type]._templates.length;j++){
+                if(layer[type]._templates[j].rel ==="query") continue;
+                total++;
+                if(!(layer[type]._templates[j].layer.isVisible))count++;
+              }
+            } else {
+              total++;
+                if(!(layer[type].isVisible))count++;
+            }
+          }
+        }
+      } else{
+        count = 1;
+        total = 1;
+      }
+
+      if(count === total && count !== 0){
+        this.setAttribute("disabled", ""); //set a disabled attribute on the layer element
+        this.disabled = true;
+      } else {
+        //might be better not to disable the layer controls, might want to deselect layer even when its out of bounds
+        this.removeAttribute("disabled");
+        this.disabled = false;
+      }
     }
   }
   _onLayerChange() {
@@ -221,6 +253,7 @@ export class MapLayer extends HTMLElement {
     // user checking/unchecking the layer from the layer control
     // this must be done *after* the layer is actually added to the map
     this._layer.on('add remove', this._onLayerChange,  this);
+    this._layer.on('add remove', this._validateDisabled,  this);
 
     // if controls option is enabled, insert the layer into the overlays array
     if (this.parentNode.controls && !this.hidden) {
