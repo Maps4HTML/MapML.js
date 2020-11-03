@@ -213,11 +213,14 @@ jest.setTimeout(50000);
           });
         });
 
-        test("[" + browserType + "]" + " Submenu, copy all coordinate systems", async () => {
+        test("[" + browserType + "]" + " Submenu, copy all coordinate systems using tab + enter to access", async () => {
           await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left");
           await page.keyboard.press("Shift+F10");
-          await page.keyboard.press("c");
 
+          for (let i = 0; i < 4; i++)
+            await page.keyboard.press("Tab");
+
+          await page.keyboard.press("Enter");
           await page.click("#mapml-copy-submenu > a:nth-child(10)");
 
           await page.click("body > textarea");

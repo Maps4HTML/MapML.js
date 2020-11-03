@@ -213,6 +213,33 @@ jest.setTimeout(50000);
           });
         });
 
+        test("[" + browserType + "]" + " Submenu, copy all coordinate systems using tab + enter to access", async () => {
+          await page.click("body > mapml-viewer");
+          await page.keyboard.press("Shift+F10");
+          for (let i = 0; i < 4; i++)
+            await page.keyboard.press("Tab");
+
+          await page.keyboard.press("Enter");
+
+          await page.click("#mapml-copy-submenu > a:nth-child(10)");
+
+          await page.click("body > textarea");
+          await page.keyboard.press("Control+v");
+          const copyValue = await page.$eval(
+            "body > textarea",
+            (text) => text.value
+          );
+          let expected = "z:1\n";
+          expected += "tile: i:30, j:50\n";
+          expected += "tilematrix: column:6.1171875000000036, row:6.195312500000004\n";
+          expected += "map: i:250, j:300\n";
+          expected += "tcrs: x:1566.000000000001, y:1586.0000000000011\n";
+          expected += "pcrs: easting:562957.9375158995, northing:3641449.4962322935\n";
+          expected += "gcrs: lon :-62.72946572940102, lat:80.88192121974802";
+
+          expect(copyValue).toEqual(expected);
+        });
+
         test("[" + browserType + "]" + " Submenu, copy all coordinate systems", async () => {
           await page.click("body > mapml-viewer");
           await page.keyboard.press("Shift+F10");
@@ -221,6 +248,8 @@ jest.setTimeout(50000);
           await page.click("#mapml-copy-submenu > a:nth-child(10)");
 
           await page.click("body > textarea");
+          await page.keyboard.press("Control+a");
+          await page.keyboard.press("Backspace");
           await page.keyboard.press("Control+v");
           const copyValue = await page.$eval(
             "body > textarea",
