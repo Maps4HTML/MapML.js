@@ -51,7 +51,7 @@ import { DebugOverlay, debugOverlay} from './layers/DebugLayer';
 import { QueryHandler } from './handlers/QueryHandler';
 import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
-
+import { ReloadButton, reloadButton } from './control/ReloadButton';
 
 /* global L, Node */
 (function (window, document, undefined) {
@@ -615,6 +615,9 @@ M.mapMlFeatures = mapMlFeatures;
 
 M.MapMLLayerControl = MapMLLayerControl;
 M.mapMlLayerControl = mapMlLayerControl;
+
+M.ReloadButton = ReloadButton;
+M.reloadButton = reloadButton;
 
 M.MapMLStaticTileLayer = MapMLStaticTileLayer;
 M.mapMLStaticTileLayer = mapMLStaticTileLayer;

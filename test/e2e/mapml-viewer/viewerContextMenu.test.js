@@ -160,7 +160,7 @@ jest.setTimeout(50000);
               (controls) => controls.childElementCount
             );
 
-            expect(controlsOn).toEqual(2);
+            expect(controlsOn).toEqual(3);
             expect(controlsOff).toEqual(0);
           });
 
@@ -179,7 +179,7 @@ jest.setTimeout(50000);
             );
 
             expect(controlsOn).toEqual(0);
-            expect(controlsOff).toEqual(2);
+            expect(controlsOff).toEqual(3);
           });
 
           test("[" + browserType + "]" + " Context menu, toggle controls after changing opacity", async () => {
