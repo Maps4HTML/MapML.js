@@ -61,7 +61,7 @@ jest.setTimeout(50000);
             (text) => text.value
           );
 
-          expect(copyValue).toEqual(`top-left-easting,-6207743.103886206\ntop-left-northing,10861943.103886206\ntop-left-easting,3952277.216154434\ntop-left-northing,-3362085.3441706896`);
+          expect(copyValue).toEqual(`top-left-easting,-6207743.103886206\ntop-left-northing,10861943.103886206\nbottom-right-easting,3952277.216154434\nbottom-right-northing,-3362085.3441706896`);
         });
 
         test("[" + browserType + "]" + " Map zooms in to layer 2", async () => {
