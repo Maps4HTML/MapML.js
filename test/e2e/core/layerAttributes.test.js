@@ -22,7 +22,7 @@ jest.setTimeout(50000);
           await browser.close();
         });
 
-        test("[" + browserType + "]" + " Initial map element extent", async () => {
+        test("[" + browserType + "]" + " Check attribute removed", async () => {
           await page.$eval("body > mapml-viewer > layer-",
             (layer) => layer.removeAttribute("checked"));
           await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > a');
@@ -31,7 +31,7 @@ jest.setTimeout(50000);
 
           expect(layerController).toEqual(false);
         });
-        test("[" + browserType + "]" + " Initial map element extent", async () => {
+        test("[" + browserType + "]" + " Check attribute added", async () => {
           await page.$eval("body > mapml-viewer > layer-",
             (layer) => layer.setAttribute("checked", ""));
           const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > summary > label > input",

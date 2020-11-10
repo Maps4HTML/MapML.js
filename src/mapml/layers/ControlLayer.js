@@ -25,8 +25,8 @@ export var MapMLLayerControl = L.Control.Layers.extend({
     },
     onAdd: function () {
         this._initLayout();
-        this._map.on('moveend', this._validateExtents, this);
-        L.DomEvent.on(this.options.mapEl, "layerchange", this._validateExtents, this);
+        this._map.on('moveend', this._validateInput, this);
+        L.DomEvent.on(this.options.mapEl, "layerchange", this._validateInput, this);
         this._update();
         //this._validateExtents();
         if(this._layers.length < 1 && !this._map._showControls){
@@ -37,12 +37,12 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         return this._container;
     },
     onRemove: function (map) {
-        map.off('moveend', this._validateExtents, this);
+        map.off('moveend', this._validateInput, this);
         // remove layer-registerd event handlers so that if the control is not
         // on the map it does not generate layer events
         for (var i = 0; i < this._layers.length; i++) {
           this._layers[i].layer.off('add remove', this._onLayerChange, this);
-          this._layers[i].layer.off('extentload', this._validateExtents, this);
+          this._layers[i].layer.off('extentload', this._validateInput, this);
         }
     },
     addOrUpdateOverlay: function (layer, name) {
@@ -70,50 +70,17 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         this._container.setAttribute("hidden", "");
       }
     },
-    _validateExtents: function (e) {
-      //the settimeout allows the function inside the {} to be moved to the task/callback queue rather than executing immediately
-      //allowing the callback function to be run after all the other moveend event handlers
+    _validateInput: function (e) {
       setTimeout(()=>{
-        let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"],layerProjection;
         for (let i = 0; i < this._layers.length; i++) {
-          let count = 0, total=0;
-          this._layers[i].input.checked = this._layers[i].layer._layerEl.checked;
-          if(this._layers[i].layer._extent){
-            layerProjection = this._layers[i].layer._extent.getAttribute('units') || 
-              this._layers[i].layer._extent.getAttribute('content') ||
-              this._layers[i].layer._extent.querySelector("input[type=projection]").getAttribute('value');
-          } else {
-            layerProjection = FALLBACK_PROJECTION;
-          }
-          if( !layerProjection || layerProjection === this.options.mapEl.projection){
-            for(let j = 0 ;j<layerTypes.length;j++){
-              let type = layerTypes[j];
-              if(this._layers[i].input.checked && this._layers[i].layer[type]){
-                if(type === "_templatedLayer"){
-                  for(let j =0;j<this._layers[i].layer[type]._templates.length;j++){
-                    if(this._layers[i].layer[type]._templates[j].rel ==="query") continue;
-                    total++;
-                    if(!(this._layers[i].layer[type]._templates[j].layer.isVisible))count++;
-                  }
-                } else {
-                  total++;
-                    if(!(this._layers[i].layer[type].isVisible))count++;
-                }
-              }
-            }
-          } else{
-            count = 1;
-            total = 1;
-          }
+          if(!this._layers[i].input.labels[0])continue;
           let label = this._layers[i].input.labels[0].getElementsByTagName("span"),
               input = this._layers[i].input.labels[0].getElementsByTagName("input");
-          if(count === total && count !== 0){
-            this._layers[i].layer._layerEl.setAttribute("disabled", ""); //set a disabled attribute on the layer element
+          input[0].checked = this._layers[i].layer._layerEl.checked;
+          if(this._layers[i].layer._layerEl.disabled && this._layers[i].layer._layerEl.checked){
             input[0].parentElement.parentElement.parentElement.parentElement.disabled = true;
             label[0].style.fontStyle = "italic";
           } else {
-            //might be better not to disable the layer controls, might want to deselect layer even when its out of bounds
-            this._layers[i].layer._layerEl.removeAttribute("disabled");
             input[0].parentElement.parentElement.parentElement.parentElement.disabled = false;
             label[0].style.fontStyle = "normal";
           }

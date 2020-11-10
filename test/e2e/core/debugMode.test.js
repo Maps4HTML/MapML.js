@@ -110,12 +110,32 @@ jest.setTimeout(50000);
           expect(gcrs).toEqual("gcrs: lon: -92.15, lat: 47.11");
         });
 
-        test("[" + browserType + "]" + " Debug mode correctly re-enabled after disabling", async () => {
+        test("[" + browserType + "]" + " Layer disabled attribute update when controls are toggled off", async () => {
           await page.$eval(
             "body > mapml-viewer",
             (map) => map.toggleDebug()
           );
 
+          await page.$eval(
+            "body > mapml-viewer",
+            (map) => map.zoomTo(-51, 170, 0)
+          );
+
+          await page.waitForTimeout(1000);
+
+          const layer = await page.$eval(
+            "body > mapml-viewer > layer-:nth-child(1)",
+            (elem) => elem.hasAttribute("disabled")
+          );
+
+          expect(layer).toEqual(true);
+        });
+
+        test("[" + browserType + "]" + " Debug mode correctly re-enabled after disabling", async () => {
+          await page.$eval(
+            "body > mapml-viewer",
+            (map) => map.back()
+          );
           await page.$eval(
             "body > mapml-viewer",
             (map) => map.toggleDebug()
