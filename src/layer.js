@@ -254,6 +254,7 @@ export class MapLayer extends HTMLElement {
     // this must be done *after* the layer is actually added to the map
     this._layer.on('add remove', this._onLayerChange,  this);
     this._layer.on('add remove', this._validateDisabled,  this);
+    this._layer.on('extentload', this._validateDisabled,  this);
 
     // if controls option is enabled, insert the layer into the overlays array
     if (this.parentNode.controls && !this.hidden) {
