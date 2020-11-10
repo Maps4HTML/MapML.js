@@ -632,8 +632,8 @@ export var MapMLLayer = L.Layer.extend({
                                           M.metaContentToObject(mapml.querySelector('meta[name=zoom]').getAttribute('content')):
                                           undefined;
                     while ((v = varNamesRe.exec(template)) !== null) {
-                      var varName = v[1];
-                      let inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
+                      var varName = v[1],
+                          inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
                       if (inp) {
                         inputs.push(inp);
                         includesZoom = includesZoom || inp.hasAttribute("type") && inp.getAttribute("type").toLowerCase() === "zoom";
