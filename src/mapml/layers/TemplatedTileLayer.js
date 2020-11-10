@@ -15,6 +15,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       this.layerBounds=inputData.bounds;
       this.isVisible = true;
       L.extend(options, this.zoomBounds);
+      options.tms = template.tms;
       L.setOptions(this, options);
       this._setUpTileTemplateVars(template);
 
@@ -454,6 +455,13 @@ export var TemplatedTileLayer = L.TileLayer.extend({
             if (["row","col","zoom","left","right","top","bottom"].indexOf(v) < 0) {
                 obj[v] = this._template.tile[v];
             }
+        }
+        if (this._map && !this._map.options.crs.infinite) {
+          let invertedY = this._globalTileRange.max.y - coords.y;
+          if (this.options.tms) {
+            obj[this._template.tilematrix.row.name] = invertedY;
+          }
+          //obj[`-${this._template.tilematrix.row.name}`] = invertedY; //leaflet has this but I dont see a use in storing row and -row as it doesnt follow that pattern
         }
         obj.r = this.options.detectRetina && L.Browser.retina && this.options.maxZoom > 0 ? '@2x' : '';
         return L.Util.template(this._url, obj);

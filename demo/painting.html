@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Painting Example</title>
+        <meta charset="UTF-8">
+            <script type="module" src="../dist/mapml-viewer.js"></script>
+         <style>
+           html {height: 100%} body,map {height: inherit} * {margin: 0;padding: 0;}
+        </style>
+    </head>
+    <body>
+        <mapml-viewer style="width: 600px;height:600px" projection="WGS84" zoom="0" lat="0" lon="0" controls>
+ 
+            <layer- label="Inline Countries" checked>
+                <meta name="zoom" content="min=0,max=4">
+                <extent units="WGS84">
+                    <input name="zoomLevel" type="zoom" value="1" min="0" max="4"/>
+
+                    <input name="row" type="location" axis="row" units="tilematrix" min="0" max="2"/>
+                    <input name="col" type="location" axis="column" units="tilematrix" min="0" max="2"/>
+
+                    <link tms rel="tile" tref="https://maps4html.org/TiledArt-Rousseau/TheBanksOfTheBièvreNearBicêtre/{zoomLevel}/{col}/{row}.png" />
+
+                </extent>
+            </layer->
+        </mapml-viewer>
+    </body>
+</html>
