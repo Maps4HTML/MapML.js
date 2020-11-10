@@ -1,5 +1,3 @@
-import { FALLBACK_PROJECTION } from '../utils/Constants';
-
 export var MapMLLayerControl = L.Control.Layers.extend({
     /* removes 'base' layers as a concept */
     options: {
@@ -102,9 +100,8 @@ export var MapMLLayerControl = L.Control.Layers.extend({
       // this is necessary because when there are several layers in the
       // layer control, the response to the last one can be a long time
       // after the info is first displayed, so we have to go back and
-      // verify the extent and legend for the layer to know whether to
-      // disable it , add the legend link etc.
-      obj.layer.on('extentload', this._validateExtents, this);
+      // verify the layer element is not disabled and can have an enabled input.
+      obj.layer.on('extentload', this._validateInput, this);
       this._overlaysList.appendChild(layercontrols);
       return layercontrols;
     },
