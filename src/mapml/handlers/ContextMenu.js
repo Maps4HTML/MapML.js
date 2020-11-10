@@ -191,7 +191,7 @@ export var ContextMenu = L.Handler.extend({
         bR = layerElem.extent.bottomRight.pcrs;
 
     let data = `top-left-easting,${tL.horizontal}\ntop-left-northing,${tL.vertical}\n`;
-    data += `top-left-easting,${bR.horizontal}\ntop-left-northing,${bR.vertical}`;
+    data += `bottom-right-easting,${bR.horizontal}\nbottom-right-northing,${bR.vertical}`;
 
     context._copyData(data);
   },
