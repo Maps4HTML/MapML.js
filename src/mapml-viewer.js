@@ -142,7 +142,12 @@ export class MapViewer extends HTMLElement {
     this.appendChild(hideElementsCSS);
 
     this._toggleState = false;
-    this.controlsListObserver = new MutationObserver((m) => {this.controlsListChange(m,this)});
+    this.controlsListObserver = new MutationObserver((m) => {
+      m.forEach((change)=>{
+        if(change.type==="attributes" && change.attributeName === "controlslist")
+          this.setControls(false,false,false);
+      });
+    });
     this.controlsListObserver.observe(this, {attributes:true});
   }
   connectedCallback() {
@@ -227,6 +232,8 @@ export class MapViewer extends HTMLElement {
       let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl"],
           options = ["nozoom", "noreload", "nofullscreen", 'nolayer'];
 
+      //removes the left hand controls, if not done they will be re-added in the incorrect order
+      //better to just reset them
       for(let i = 0 ; i<3;i++){
         if(this[controls[i]]){
           this._map.removeControl(this[controls[i]]);
@@ -236,6 +243,7 @@ export class MapViewer extends HTMLElement {
 
       if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl){
         this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
+        //if this is the initial setup the layers dont need to be readded, causes issues if they are
         if(!setup){
           for (var i=0;i<this.layers.length;i++) {
             if (!this.layers[i].hidden) {
@@ -255,7 +263,7 @@ export class MapViewer extends HTMLElement {
       if (!this.controlslist.toLowerCase().includes("nofullscreen") && !this._fullScreenControl){
         this._fullScreenControl = L.control.fullscreen().addTo(this._map);
       }
-      
+      //removes any control layers that are not needed, either by the toggling or by the controlslist attribute
       for(let i in options){
         if(this[controls[i]] && (this.controlslist.toLowerCase().includes(options[i]) || (isToggle && !toggleShow ))){
           this._map.removeControl(this[controls[i]]);
@@ -263,13 +271,6 @@ export class MapViewer extends HTMLElement {
         }
       }
     }
-  }
-
-  controlsListChange(m, context) {
-    m.forEach((change)=>{
-      if(change.type==="attributes" && change.attributeName === "controlslist")
-        context.setControls(false,false,false)
-    });
   }
   attributeChangedCallback(name, oldValue, newValue) {
 //    console.log('Attribute: ' + name + ' changed from: '+ oldValue + ' to: '+newValue);

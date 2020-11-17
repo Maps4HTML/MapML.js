@@ -52,7 +52,7 @@ export var ReloadButton = L.Control.extend({
       L.DomUtil.removeClass(this._reloadButton, "leaflet-disabled");
       this._reloadButton.setAttribute("aria-disabled", "false");
 
-      if (this._disabled || this._map.options.mapEl._history.length <= 1) {
+      if (this._map && (this._disabled || this._map.options.mapEl._history.length <= 1)) {
         L.DomUtil.addClass(this._reloadButton, "leaflet-disabled");
         this._reloadButton.setAttribute("aria-disabled", "true");
       }
