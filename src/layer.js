@@ -2,7 +2,6 @@ import './leaflet-src.js';  // a lightly modified version of Leaflet for use as 
 import './proj4-src.js';        // modified version of proj4; could be stripped down for mapml
 import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use. 
 import './mapml.js';       // modified URI to make the function a property of window scope (possibly a bad thing to do).
-import { FALLBACK_PROJECTION } from '../utils/Constants';
 
 export class MapLayer extends HTMLElement {
   static get observedAttributes() {
@@ -175,7 +174,7 @@ export class MapLayer extends HTMLElement {
           layer._extent.getAttribute('content') ||
           layer._extent.querySelector("input[type=projection]").getAttribute('value');
       } else {
-        layerProjection = FALLBACK_PROJECTION;
+        layerProjection = "OSMTILE";
       }
       if( !layerProjection || layerProjection === map.options.mapEl.projection){
         for(let j = 0 ;j<layerTypes.length;j++){
