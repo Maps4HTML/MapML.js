@@ -251,7 +251,7 @@ export var ContextMenu = L.Handler.extend({
 
   _toggleControls: function(e){
     let mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
-    mapEl._toggleControls(true);
+    mapEl._toggleControls();
   },
 
   _viewSource: function(e){

@@ -141,6 +141,7 @@ export class MapViewer extends HTMLElement {
 
     this.appendChild(hideElementsCSS);
 
+    this._toggleState = false;
     this.controlsListObserver = new MutationObserver((m) => {this.controlsListChange(m,this)});
     this.controlsListObserver.observe(this, {attributes:true});
   }
@@ -201,7 +202,7 @@ export class MapViewer extends HTMLElement {
         // the attribution control is not optional
         this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
 
-        this.setControls();
+        this.setControls(false,false,true);
 
         // Make the Leaflet container element programmatically identifiable
         // (https://github.com/Leaflet/Leaflet/issues/7193).
@@ -221,10 +222,10 @@ export class MapViewer extends HTMLElement {
 //    console.log('Custom map element moved to new page.');
   }
 
-  setControls(){
-    if (this.controls) {
-      let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl"];
-      let options = ["nozoom", "noreload", "nofullscreen", 'nolayer'];
+  setControls(isToggle, toggleShow, setup){
+    if (this.controls && this._map) {
+      let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl"],
+          options = ["nozoom", "noreload", "nofullscreen", 'nolayer'];
 
       for(let i = 0 ; i<3;i++){
         if(this[controls[i]]){
@@ -235,6 +236,15 @@ export class MapViewer extends HTMLElement {
 
       if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl){
         this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
+        if(!setup){
+          for (var i=0;i<this.layers.length;i++) {
+            if (!this.layers[i].hidden) {
+              this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
+              this._map.on('moveend', this.layers[i]._validateDisabled,  this.layers[i]);
+              this.layers[i]._layerControl = this._layerControl;
+            }
+          }
+        }
       }
       if (!this.controlslist.toLowerCase().includes("nozoom") && !this._zoomControl){
         this._zoomControl = L.control.zoom().addTo(this._map);
@@ -247,7 +257,7 @@ export class MapViewer extends HTMLElement {
       }
       
       for(let i in options){
-        if(this[controls[i]] && this.controlslist.toLowerCase().includes(options[i])){
+        if(this[controls[i]] && (this.controlslist.toLowerCase().includes(options[i]) || (isToggle && !toggleShow ))){
           this._map.removeControl(this[controls[i]]);
           delete this[controls[i]];
         }
@@ -258,7 +268,7 @@ export class MapViewer extends HTMLElement {
   controlsListChange(m, context) {
     m.forEach((change)=>{
       if(change.type==="attributes" && change.attributeName === "controlslist")
-        context.setControls()
+        context.setControls(false,false,false)
     });
   }
   attributeChangedCallback(name, oldValue, newValue) {
@@ -433,34 +443,10 @@ export class MapViewer extends HTMLElement {
           {target: this}}));
       }, this);
   }
-  _toggleControls(controls) {
+  _toggleControls() {
     if (this._map) {
-      if (controls && !this._layerControl) {
-        this._zoomControl = L.control.zoom().addTo(this._map);
-        this._reloadButton = M.reloadButton().addTo(this._map);
-        this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
-        if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
-          this._fullScreenControl = L.control.fullscreen().addTo(this._map);
-        }
-        for (var i=0;i<this.layers.length;i++) {
-          if (!this.layers[i].hidden) {
-            this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
-            this._map.on('moveend', this.layers[i]._validateDisabled,  this.layers[i]);
-            this.layers[i]._layerControl = this._layerControl;
-          }
-        }
-      } else if (this._layerControl) {
-        this._map.removeControl(this._layerControl);
-        this._map.removeControl(this._zoomControl);
-        this._map.removeControl(this._reloadButton);
-        if (this._fullScreenControl) {
-          this._map.removeControl(this._fullScreenControl);
-          delete this._fullScreenControl;
-        }
-        delete this._layerControl;
-        delete this._zoomControl;
-        delete this._reloadButton;
-      }
+      this.setControls(true, this._toggleState, false);
+      this._toggleState = !this._toggleState;
     }
   }
 
