@@ -174,7 +174,7 @@ export class MapLayer extends HTMLElement {
           layer._extent.getAttribute('content') ||
           layer._extent.querySelector("input[type=projection]").getAttribute('value');
       } else {
-        layerProjection = FALLBACK_PROJECTION;
+        layerProjection = "OSMTILE";
       }
       if( !layerProjection || layerProjection === map.options.mapEl.projection){
         for(let j = 0 ;j<layerTypes.length;j++){

@@ -29,9 +29,10 @@ export class MapViewer extends HTMLElement {
     return this.hasAttribute('controlslist') ? this.getAttribute("controlslist") : "";
   }
   set controlslist(val) {
-    if (val.toLowerCase() === "nofullscreen") {
-      this.setAttribute("controlslist", "nofullscreen");
-    }
+    let options = ["nofullscreen", "nozoom", "nolayer", "noreload"],
+        lowerVal = val.toLowerCase();
+    if (this.controlslist.includes(lowerVal) || !options.includes(lowerVal))return;
+    this.setAttribute("controlslist", this.controlslist+` ${lowerVal}`);
   }
   get lat() {
     return this.hasAttribute("lat") ? this.getAttribute("lat") : "0";
@@ -139,6 +140,15 @@ export class MapViewer extends HTMLElement {
     shadowRoot.appendChild(this._container);
 
     this.appendChild(hideElementsCSS);
+
+    this._toggleState = false;
+    this.controlsListObserver = new MutationObserver((m) => {
+      m.forEach((change)=>{
+        if(change.type==="attributes" && change.attributeName === "controlslist")
+          this.setControls(false,false,false);
+      });
+    });
+    this.controlsListObserver.observe(this, {attributes:true});
   }
   connectedCallback() {
     if (this.isConnected) {
@@ -197,15 +207,7 @@ export class MapViewer extends HTMLElement {
         // the attribution control is not optional
         this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
 
-        // optionally add controls to the map
-        if (this.controls) {
-          this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
-          this._zoomControl = L.control.zoom().addTo(this._map);
-          this._reloadButton = M.reloadButton().addTo(this._map);
-          if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
-            this._fullScreenControl = L.control.fullscreen().addTo(this._map);
-          }
-        }
+        this.setControls(false,false,true);
 
         // Make the Leaflet container element programmatically identifiable
         // (https://github.com/Leaflet/Leaflet/issues/7193).
@@ -223,6 +225,52 @@ export class MapViewer extends HTMLElement {
   }
   adoptedCallback() {
 //    console.log('Custom map element moved to new page.');
+  }
+
+  setControls(isToggle, toggleShow, setup){
+    if (this.controls && this._map) {
+      let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl"],
+          options = ["nozoom", "noreload", "nofullscreen", 'nolayer'];
+
+      //removes the left hand controls, if not done they will be re-added in the incorrect order
+      //better to just reset them
+      for(let i = 0 ; i<3;i++){
+        if(this[controls[i]]){
+          this._map.removeControl(this[controls[i]]);
+          delete this[controls[i]];
+        }
+      }
+
+      if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl){
+        this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
+        //if this is the initial setup the layers dont need to be readded, causes issues if they are
+        if(!setup){
+          for (var i=0;i<this.layers.length;i++) {
+            if (!this.layers[i].hidden) {
+              this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
+              this._map.on('moveend', this.layers[i]._validateDisabled,  this.layers[i]);
+              this.layers[i]._layerControl = this._layerControl;
+            }
+          }
+        }
+      }
+      if (!this.controlslist.toLowerCase().includes("nozoom") && !this._zoomControl){
+        this._zoomControl = L.control.zoom().addTo(this._map);
+      }
+      if (!this.controlslist.toLowerCase().includes("noreload") && !this._reloadButton){
+        this._reloadButton = M.reloadButton().addTo(this._map);
+      }
+      if (!this.controlslist.toLowerCase().includes("nofullscreen") && !this._fullScreenControl){
+        this._fullScreenControl = L.control.fullscreen().addTo(this._map);
+      }
+      //removes any control layers that are not needed, either by the toggling or by the controlslist attribute
+      for(let i in options){
+        if(this[controls[i]] && (this.controlslist.toLowerCase().includes(options[i]) || (isToggle && !toggleShow ))){
+          this._map.removeControl(this[controls[i]]);
+          delete this[controls[i]];
+        }
+      }
+    }
   }
   attributeChangedCallback(name, oldValue, newValue) {
 //    console.log('Attribute: ' + name + ' changed from: '+ oldValue + ' to: '+newValue);
@@ -396,34 +444,10 @@ export class MapViewer extends HTMLElement {
           {target: this}}));
       }, this);
   }
-  _toggleControls(controls) {
+  _toggleControls() {
     if (this._map) {
-      if (controls && !this._layerControl) {
-        this._zoomControl = L.control.zoom().addTo(this._map);
-        this._reloadButton = M.reloadButton().addTo(this._map);
-        this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
-        if (!this.controlslist.toLowerCase().includes("nofullscreen")) {
-          this._fullScreenControl = L.control.fullscreen().addTo(this._map);
-        }
-        for (var i=0;i<this.layers.length;i++) {
-          if (!this.layers[i].hidden) {
-            this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
-            this._map.on('moveend', this.layers[i]._validateDisabled,  this.layers[i]);
-            this.layers[i]._layerControl = this._layerControl;
-          }
-        }
-      } else if (this._layerControl) {
-        this._map.removeControl(this._layerControl);
-        this._map.removeControl(this._zoomControl);
-        this._map.removeControl(this._reloadButton);
-        if (this._fullScreenControl) {
-          this._map.removeControl(this._fullScreenControl);
-          delete this._fullScreenControl;
-        }
-        delete this._layerControl;
-        delete this._zoomControl;
-        delete this._reloadButton;
-      }
+      this.setControls(true, this._toggleState, false);
+      this._toggleState = !this._toggleState;
     }
   }
 
