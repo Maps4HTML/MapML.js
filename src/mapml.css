@@ -28,6 +28,7 @@
         visibility: inherit;
 }
 
+/* Use legible font-sizes (Leaflet upstream PR: https://github.com/Leaflet/Leaflet/pull/7346). */
 .leaflet-control-scale-line,
 .leaflet-container .leaflet-control-scale,
 .leaflet-container .leaflet-control-attribution {
