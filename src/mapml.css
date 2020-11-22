@@ -28,6 +28,12 @@
         visibility: inherit;
 }
 
+.leaflet-control-scale-line,
+.leaflet-container .leaflet-control-scale,
+.leaflet-container .leaflet-control-attribution {
+  font-size: 12px;
+}
+
 /*
  * Controls.
  */
