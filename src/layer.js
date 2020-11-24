@@ -166,46 +166,49 @@ export class MapLayer extends HTMLElement {
     }
   }
   _validateDisabled() {
-    let layer = this._layer, map = layer._map;
-    if (map) {
-      let count = 0, total=0, layerProjection, layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
-      if(layer._extent){
-        layerProjection = layer._extent.getAttribute('units') || 
-          layer._extent.getAttribute('content') ||
-          layer._extent.querySelector("input[type=projection]").getAttribute('value');
-      } else {
-        layerProjection = "OSMTILE";
-      }
-      if( !layerProjection || layerProjection === map.options.mapEl.projection){
-        for(let j = 0 ;j<layerTypes.length;j++){
-          let type = layerTypes[j];
-          if(this.checked && layer[type]){
-            if(type === "_templatedLayer"){
-              for(let j =0;j<layer[type]._templates.length;j++){
-                if(layer[type]._templates[j].rel ==="query") continue;
+    setTimeout(() => {
+      let layer = this._layer, map = layer._map;
+      if (map) {
+        let count = 0, total=0, layerProjection, layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
+        if(layer._extent){
+          layerProjection = layer._extent.getAttribute('units') || 
+            layer._extent.getAttribute('content') ||
+            layer._extent.querySelector("input[type=projection]").getAttribute('value');
+        } else {
+          layerProjection = "OSMTILE";
+        }
+        if( !layerProjection || layerProjection === map.options.mapEl.projection){
+          for(let j = 0 ;j<layerTypes.length;j++){
+            let type = layerTypes[j];
+            if(this.checked && layer[type]){
+              if(type === "_templatedLayer"){
+                for(let j =0;j<layer[type]._templates.length;j++){
+                  if(layer[type]._templates[j].rel ==="query") continue;
+                  total++;
+                  if(!(layer[type]._templates[j].layer.isVisible))count++;
+                }
+              } else {
                 total++;
-                if(!(layer[type]._templates[j].layer.isVisible))count++;
+                  if(!(layer[type].isVisible))count++;
               }
-            } else {
-              total++;
-                if(!(layer[type].isVisible))count++;
             }
           }
+        } else{
+          count = 1;
+          total = 1;
         }
-      } else{
-        count = 1;
-        total = 1;
-      }
 
-      if(count === total && count !== 0){
-        this.setAttribute("disabled", ""); //set a disabled attribute on the layer element
-        this.disabled = true;
-      } else {
-        //might be better not to disable the layer controls, might want to deselect layer even when its out of bounds
-        this.removeAttribute("disabled");
-        this.disabled = false;
+        if(count === total && count !== 0){
+          this.setAttribute("disabled", ""); //set a disabled attribute on the layer element
+          this.disabled = true;
+        } else {
+          //might be better not to disable the layer controls, might want to deselect layer even when its out of bounds
+          this.removeAttribute("disabled");
+          this.disabled = false;
+        }
+        map.fire("validate");
       }
-    }
+    }, 0);
   }
   _onLayerChange() {
     if (this._layer._map) {
@@ -263,6 +266,7 @@ export class MapLayer extends HTMLElement {
     // toggle the this.disabled attribute depending on whether the layer
     // is: same prj as map, within view/zoom of map
     this._layer._map.on('moveend', this._validateDisabled,  this);
+    this._layer._map.on('checkdisabled', this._validateDisabled, this);
     // this is necessary to get the layer control to compare the layer
     // extents with the map extent & zoom, but it needs to be rethought TODO
     // for one thing, layers which are checked by the author before 

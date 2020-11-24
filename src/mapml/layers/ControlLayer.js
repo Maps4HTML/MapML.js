@@ -23,7 +23,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
     },
     onAdd: function () {
         this._initLayout();
-        this._map.on('moveend', this._validateInput, this);
+        this._map.on('validate', this._validateInput, this);
         L.DomEvent.on(this.options.mapEl, "layerchange", this._validateInput, this);
         this._update();
         //this._validateExtents();
@@ -35,7 +35,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         return this._container;
     },
     onRemove: function (map) {
-        map.off('moveend', this._validateInput, this);
+        map.off('validate', this._validateInput, this);
         // remove layer-registerd event handlers so that if the control is not
         // on the map it does not generate layer events
         for (var i = 0; i < this._layers.length; i++) {
@@ -69,21 +69,20 @@ export var MapMLLayerControl = L.Control.Layers.extend({
       }
     },
     _validateInput: function (e) {
-      setTimeout(()=>{
-        for (let i = 0; i < this._layers.length; i++) {
-          if(!this._layers[i].input.labels[0])continue;
-          let label = this._layers[i].input.labels[0].getElementsByTagName("span"),
-              input = this._layers[i].input.labels[0].getElementsByTagName("input");
-          input[0].checked = this._layers[i].layer._layerEl.checked;
-          if(this._layers[i].layer._layerEl.disabled && this._layers[i].layer._layerEl.checked){
-            input[0].parentElement.parentElement.parentElement.parentElement.disabled = true;
-            label[0].style.fontStyle = "italic";
-          } else {
-            input[0].parentElement.parentElement.parentElement.parentElement.disabled = false;
-            label[0].style.fontStyle = "normal";
-          }
+      for (let i = 0; i < this._layers.length; i++) {
+        if(!this._layers[i].input.labels[0])continue;
+        let label = this._layers[i].input.labels[0].getElementsByTagName("span"),
+            input = this._layers[i].input.labels[0].getElementsByTagName("input");
+        input[0].checked = this._layers[i].layer._layerEl.checked;
+        if(this._layers[i].layer._layerEl.disabled && this._layers[i].layer._layerEl.checked){
+          input[0].parentElement.parentElement.parentElement.parentElement.disabled = true;
+          label[0].style.fontStyle = "italic";
+        } else {
+          input[0].parentElement.parentElement.parentElement.parentElement.disabled = false;
+          label[0].style.fontStyle = "normal";
         }
-      }, 0);
+      }
+
     },
     _withinZoomBounds: function(zoom, range) {
         return range.min <= zoom && zoom <= range.max;

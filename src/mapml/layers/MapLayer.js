@@ -172,6 +172,9 @@ export var MapMLLayer = L.Layer.extend({
         this._setLayerElExtent();
         this.setZIndex(this.options.zIndex);
         this.getPane().appendChild(this._container);
+        setTimeout(() => {
+          map.fire('checkdisabled');
+        }, 0);
     },
 
     //sets the <layer-> elements .bounds property 

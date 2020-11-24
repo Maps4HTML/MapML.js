@@ -204,6 +204,7 @@ export var TemplatedLayer = L.Layer.extend({
         map.addLayer(this._templates[i].layer);
       }
     }
+    map.fire('moveend',true);
   },
 //  setZIndex: function (zIndex) {
 //      this.options.zIndex = zIndex;

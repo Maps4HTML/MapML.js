@@ -288,6 +288,7 @@ export class WebMap extends HTMLMapElement {
               this.layers[i]._layerControl = this._layerControl;
             }
           }
+          this._map.fire("validate");
         }
       }
       if (!this.controlslist.toLowerCase().includes("nozoom") && !this._zoomControl){
