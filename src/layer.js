@@ -169,15 +169,8 @@ export class MapLayer extends HTMLElement {
     setTimeout(() => {
       let layer = this._layer, map = layer._map;
       if (map) {
-        let count = 0, total=0, layerProjection, layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
-        if(layer._extent){
-          layerProjection = layer._extent.getAttribute('units') || 
-            layer._extent.getAttribute('content') ||
-            layer._extent.querySelector("input[type=projection]").getAttribute('value');
-        } else {
-          layerProjection = "OSMTILE";
-        }
-        if( !layerProjection || layerProjection === map.options.mapEl.projection){
+        let count = 0, total=0, layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
+        if(layer.validProjection){
           for(let j = 0 ;j<layerTypes.length;j++){
             let type = layerTypes[j];
             if(this.checked && layer[type]){
