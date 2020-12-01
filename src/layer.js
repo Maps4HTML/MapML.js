@@ -226,7 +226,7 @@ export class MapLayer extends HTMLElement {
     // be parsed from the second parameter here
     // IE 11 did not have a value for this.baseURI for some reason
     var base = this.baseURI ? this.baseURI : document.baseURI;
-    this._layer = M.mapMLLayer(this.src ? (new URL(this.src, base)).href: null, this);
+    this._layer = M.mapMLLayer(this.src ? (new URL(this.src, base)).href: null, this, {mapprojection:this.parentElement._map.options.projection});
     this._layer.on('extentload', this._onLayerExtentLoad, this);
     this._setUpEvents();
   }

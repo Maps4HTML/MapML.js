@@ -69,6 +69,7 @@ export var MapMLLayer = L.Layer.extend({
         this._container.style.opacity = opacity;
     },
     onAdd: function (map) {
+        if(this._extent && !this._validProjection(map)) return;
         this._map = map;
         if(this._content){
           if (!this._mapmlvectors) {
@@ -97,6 +98,7 @@ export var MapMLLayer = L.Layer.extend({
           map.addLayer(this._mapmlvectors);
         } else {
           this.once('extentload', function() {
+            if(!this._validProjection(map)) return;
             if (!this._mapmlvectors) {
               this._mapmlvectors = M.mapMlFeatures(this._content, {
                   // pass the vector layer a renderer of its own, otherwise leaflet
@@ -158,6 +160,7 @@ export var MapMLLayer = L.Layer.extend({
             }
         } else {
             this.once('extentload', function() {
+                if(!this._validProjection(map)) return;
                 if (this._templateVars) {
                   this._templatedLayer = M.templatedLayer(this._templateVars, 
                   { pane: this._container,
@@ -175,6 +178,17 @@ export var MapMLLayer = L.Layer.extend({
         setTimeout(() => {
           map.fire('checkdisabled');
         }, 0);
+    },
+
+    _validProjection : function(map){
+      let noLayer = false;
+      if(this._templateVars){
+        for(let template of this._templateVars)
+          if(!template.projectionMatch) noLayer = true;
+      }
+      if(noLayer || this.getProjection() !== map.options.projection)
+        return false;
+      return true;
     },
 
     //sets the <layer-> elements .bounds property 
@@ -694,6 +708,7 @@ export var MapMLLayer = L.Layer.extend({
                         type: ttype, 
                         values: inputs, 
                         zoomBounds:zoomBounds, 
+                        projectionMatch: projectionMatch || selectedAlternate,
                         projection:serverExtent.getAttribute("units") || FALLBACK_PROJECTION,
                         tms:tms,
                       });
@@ -963,11 +978,25 @@ export var MapMLLayer = L.Layer.extend({
     // a layer must share a projection with the map so that all the layers can
     // be overlayed in one coordinate space.  WGS84 is a 'wildcard', sort of.
     getProjection: function () {
-      // TODO review logic because input[type=projection] is deprecated
-        if (!this._extent || !this._extent.querySelector('input[type=projection]')) return 'WGS84';
-        var projection = this._extent.querySelector('input[type=projection]');
-        if (!projection.getAttribute('value')) return 'WGS84';
-        return projection.getAttribute('value');
+      let extent = this._extent;
+      if(!extent) return FALLBACK_PROJECTION;
+      switch (extent.tagName.toUpperCase()) {
+        case "EXTENT":
+          if(extent.hasAttribute('units'))
+            return extent.getAttribute('units').toUpperCase();
+          break;
+        case "INPUT":
+          if(extent.hasAttribute('value'))
+            return extent.getAttribute('value').toUpperCase();
+          break;
+        case "META":
+          if(extent.hasAttribute('content'))
+            return M.metaContentToObject(extent.getAttribute('content')).content.toUpperCase(); 
+          break;
+        default:
+          return FALLBACK_PROJECTION; 
+      }
+      return FALLBACK_PROJECTION;
     },
     _parseLicenseAndLegend: function (xml, layer) {
         var licenseLink =  xml.querySelector('link[rel=license]'), licenseTitle, licenseUrl, attText;
