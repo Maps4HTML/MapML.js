@@ -252,6 +252,7 @@ export class MapViewer extends HTMLElement {
               this.layers[i]._layerControl = this._layerControl;
             }
           }
+          this._map.fire("validate");
         }
       }
       if (!this.controlslist.toLowerCase().includes("nozoom") && !this._zoomControl){

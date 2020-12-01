@@ -71,6 +71,7 @@ jest.setTimeout(50000);
 
         test("[" + browserType + "]" + " Reload button takes you back to initial state", async () => {
           await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.mapml-reload-button.leaflet-bar.leaflet-control > a");
+          await page.waitForTimeout(1000);
           const extent = await page.$eval(
             "body > map",
             (map) => map.extent
