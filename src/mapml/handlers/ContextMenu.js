@@ -447,6 +447,7 @@ export var ContextMenu = L.Handler.extend({
     if(this._mapMenuVisible) this._hide();
     this._clickEvent = e;
     if(e.originalEvent.srcElement.tagName === "SPAN"){
+      if(!e.originalEvent.srcElement.layer.validProjection) return;
       this._layerClicked = e.originalEvent.srcElement;
       this._showAtPoint(e.containerPoint, e, this._layerMenu);
     } else if(e.originalEvent.srcElement.classList.contains("leaflet-container")) {

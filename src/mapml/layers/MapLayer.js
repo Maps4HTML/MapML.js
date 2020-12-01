@@ -24,6 +24,7 @@ export var MapMLLayer = L.Layer.extend({
               this._content = content;
           }
         }
+        L.setOptions(this, options);
         this._container = L.DomUtil.create('div', 'leaflet-layer');
         L.DomUtil.addClass(this._container,'mapml-layer');
         this._imageContainer = L.DomUtil.create('div', 'leaflet-layer', this._container);
@@ -47,7 +48,7 @@ export var MapMLLayer = L.Layer.extend({
         // options above. If you use this.options, you see the options defined
         // above.  Not going to change this, but failing to understand ATM.
         // may revisit some time.
-        L.setOptions(this, options);
+        this.validProjection = true; 
     },
     setZIndex: function (zIndex) {
         this.options.zIndex = zIndex;
@@ -69,7 +70,10 @@ export var MapMLLayer = L.Layer.extend({
         this._container.style.opacity = opacity;
     },
     onAdd: function (map) {
-        if(this._extent && !this._validProjection(map)) return;
+        if(this._extent && !this._validProjection(map)){
+          this.validProjection = false;
+          return;
+        }
         this._map = map;
         if(this._content){
           if (!this._mapmlvectors) {
@@ -98,7 +102,10 @@ export var MapMLLayer = L.Layer.extend({
           map.addLayer(this._mapmlvectors);
         } else {
           this.once('extentload', function() {
-            if(!this._validProjection(map)) return;
+            if(!this._validProjection(map)){
+              this.validProjection = false;
+              return;
+            }
             if (!this._mapmlvectors) {
               this._mapmlvectors = M.mapMlFeatures(this._content, {
                   // pass the vector layer a renderer of its own, otherwise leaflet
@@ -160,7 +167,10 @@ export var MapMLLayer = L.Layer.extend({
             }
         } else {
             this.once('extentload', function() {
-                if(!this._validProjection(map)) return;
+                if(!this._validProjection(map)){
+                  this.validProjection = false;
+                  return;
+                }
                 if (this._templateVars) {
                   this._templatedLayer = M.templatedLayer(this._templateVars, 
                   { pane: this._container,
