@@ -1,23 +1,29 @@
 export var DebugOverlay = L.Layer.extend({
 
   onAdd: function (map) {
-    this._container = L.DomUtil.create("div", "mapml-debug", map._container);
+    
+    let mapSize = map.getSize();
+    
+    //conditionally show debug panel only when the map has enough space for it
+    if (mapSize.x > 400 || mapSize.y > 300) {
+      this._container = L.DomUtil.create("div", "mapml-debug", map._container);
 
-    //adds a control panel
-    /*  this._controlPanel = L.DomUtil.create("div", "mapml-debug-control mapml-debug-panel", this._container);
-        let toggleGridBtn = document.createElement('button'), gridBtnText = document.createTextNode("Toggle Grid");
-        toggleGridBtn.appendChild(gridBtnText);
-        toggleGridBtn.overlay = this;
-        L.DomEvent.on(toggleGridBtn, 'click',this._toggleGrid);
-        this._controlPanel.appendChild(toggleGridBtn); */
-        
-    this._container.style.width = 150;
-    this._container.style.zIndex = 10000;
-    this._container.style.position = "absolute";
-    this._container.style.top = "auto";
-    this._container.style.bottom = "10px";
-    this._container.style.left = "10px";
-    this._container.style.right = "auto";
+      //adds a control panel
+      /*  this._controlPanel = L.DomUtil.create("div", "mapml-debug-control mapml-debug-panel", this._container);
+          let toggleGridBtn = document.createElement('button'), gridBtnText = document.createTextNode("Toggle Grid");
+          toggleGridBtn.appendChild(gridBtnText);
+          toggleGridBtn.overlay = this;
+          L.DomEvent.on(toggleGridBtn, 'click',this._toggleGrid);
+          this._controlPanel.appendChild(toggleGridBtn); */
+          
+      this._container.style.width = 150;
+      this._container.style.zIndex = 10000;
+      this._container.style.position = "absolute";
+      this._container.style.top = "auto";
+      this._container.style.bottom = "10px";
+      this._container.style.left = "10px";
+      this._container.style.right = "auto";
+    }
 
     this._grid = debugGrid({
       className: "mapml-debug-grid",
@@ -61,12 +67,12 @@ export var DebugPanel = L.Layer.extend({
 
   onAdd: function (map) {
     let mapSize = map.getSize();
-    
-    this._title = L.DomUtil.create("div", "mapml-debug-banner", this.options.pane);
-    this._title.innerHTML = "Debug mode";
 
     //conditionally show debug panel only when the map has enough space for it
     if (mapSize.x > 400 || mapSize.y > 300) {
+      this._title = L.DomUtil.create("div", "mapml-debug-banner", this.options.pane);
+      this._title.innerHTML = "Debug mode";
+      
       map.debug = {};
       map.debug._infoContainer = this._debugContainer = L.DomUtil.create("div", "mapml-debug-panel", this.options.pane);
 
