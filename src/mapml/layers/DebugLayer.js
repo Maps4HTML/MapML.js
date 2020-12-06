@@ -4,7 +4,7 @@ export var DebugOverlay = L.Layer.extend({
     
     let mapSize = map.getSize();
     
-    //conditionally show debug panel only when the map has enough space for it
+    //conditionally show container for debug panel/banner only when the map has enough space for it
     if (mapSize.x > 400 || mapSize.y > 300) {
       this._container = L.DomUtil.create("div", "mapml-debug", map._container);
 
