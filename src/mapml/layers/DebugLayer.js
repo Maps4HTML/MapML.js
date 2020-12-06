@@ -10,6 +10,14 @@ export var DebugOverlay = L.Layer.extend({
         toggleGridBtn.overlay = this;
         L.DomEvent.on(toggleGridBtn, 'click',this._toggleGrid);
         this._controlPanel.appendChild(toggleGridBtn); */
+        
+    this._container.style.width = 150;
+    this._container.style.zIndex = 10000;
+    this._container.style.position = "absolute";
+    this._container.style.top = "auto";
+    this._container.style.bottom = "10px";
+    this._container.style.left = "10px";
+    this._container.style.right = "auto";
 
     this._grid = debugGrid({
       className: "mapml-debug-grid",
@@ -53,6 +61,9 @@ export var DebugPanel = L.Layer.extend({
 
   onAdd: function (map) {
     let mapSize = map.getSize();
+    
+    this._title = L.DomUtil.create("div", "mapml-debug-banner", this.options.pane);
+    this._title.innerHTML = "Debug mode";
 
     //conditionally show debug panel only when the map has enough space for it
     if (mapSize.x > 400 || mapSize.y > 300) {
@@ -60,13 +71,6 @@ export var DebugPanel = L.Layer.extend({
       map.debug._infoContainer = this._debugContainer = L.DomUtil.create("div", "mapml-debug-panel", this.options.pane);
 
       let infoContainer = map.debug._infoContainer;
-      infoContainer.style.zIndex = 10000;
-      infoContainer.style.width = 150;
-      infoContainer.style.position = "absolute";
-      infoContainer.style.top = "auto";
-      infoContainer.style.bottom = "4px";
-      infoContainer.style.right = "auto";
-      infoContainer.style.left = "4px";
 
       map.debug._tileCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
       map.debug._tileMatrixCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
@@ -78,14 +82,6 @@ export var DebugPanel = L.Layer.extend({
       this._map.on("mousemove", this._updateCoords);
     }
 
-    this._title = L.DomUtil.create("div", "mapml-debug-banner", this.options.pane);
-    this._title.innerHTML = "DEBUG MODE";
-    this._title.style.zIndex = 10000;
-    this._title.style.position = "absolute";
-    this._title.style.top = "4px";
-    this._title.style.bottom = "auto";
-    this._title.style.left = "auto";
-    this._title.style.right = "4px";
   },
   onRemove: function () {
     L.DomUtil.remove(this._title);
