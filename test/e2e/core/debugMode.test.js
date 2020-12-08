@@ -103,11 +103,11 @@ jest.setTimeout(50000);
           );
 
           expect(tile).toEqual("tile: i: 141, j: 6");
-          expect(matrix).toEqual("tilematrix: column:3.55, row:4.02");
+          expect(matrix).toEqual("tilematrix: column:3, row:4");
           expect(map).toEqual("map: i: 250, j: 250");
-          expect(tcrs).toEqual("tcrs: x:909.00, y:1030.00");
+          expect(tcrs).toEqual("tcrs: x:909, y:1030");
           expect(pcrs).toEqual("pcrs: easting:217676.00, northing:-205599.86");
-          expect(gcrs).toEqual("gcrs: lon: -92.15, lat: 47.11");
+          expect(gcrs).toEqual("gcrs: lon: -92.152897, lat: 47.114275");
         });
 
         test("[" + browserType + "]" + " Layer disabled attribute update when controls are toggled off", async () => {

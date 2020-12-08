@@ -89,7 +89,7 @@ export var DebugPanel = L.Layer.extend({
   },
   onRemove: function () {
     L.DomUtil.remove(this._title);
-    if(this._debugContainer){
+    if (this._debugContainer) {
       L.DomUtil.remove(this._debugContainer);
       this._map.off("mousemove", this._updateCoords);
     }
@@ -105,11 +105,11 @@ export var DebugPanel = L.Layer.extend({
     if (pointI < 0) pointI += 256;
     if (pointJ < 0) pointJ += 256;
 
-    this.debug._tileCoord.innerHTML = `tile: i: ${Math.round(pointI)}, j: ${Math.round(pointJ)}`;
+    this.debug._tileCoord.innerHTML = `tile: i: ${Math.trunc(pointI)}, j: ${Math.trunc(pointJ)}`;
     this.debug._mapCoord.innerHTML = `map: i: ${e.containerPoint.x}, j: ${e.containerPoint.y}`;
-    this.debug._gcrsCoord.innerHTML = `gcrs: lon: ${e.latlng.lng.toFixed(2)}, lat: ${e.latlng.lat.toFixed(2)}`;
-    this.debug._tcrsCoord.innerHTML = `tcrs: x:${point.x.toFixed(2)}, y:${point.y.toFixed(2)}`;
-    this.debug._tileMatrixCoord.innerHTML = `tilematrix: column:${(point.x / 256).toFixed(2)}, row:${(point.y / 256).toFixed(2)}`;
+    this.debug._gcrsCoord.innerHTML = `gcrs: lon: ${e.latlng.lng.toFixed(6)}, lat: ${e.latlng.lat.toFixed(6)}`;
+    this.debug._tcrsCoord.innerHTML = `tcrs: x:${Math.trunc(point.x)}, y:${Math.trunc(point.y)}`;
+    this.debug._tileMatrixCoord.innerHTML = `tilematrix: column:${Math.trunc(point.x / 256)}, row:${Math.trunc(point.y / 256)}`;
     this.debug._pcrsCoord.innerHTML = `pcrs: easting:${pcrs.x.toFixed(2)}, northing:${pcrs.y.toFixed(2)}`;
   },
 
