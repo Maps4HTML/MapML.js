@@ -87,6 +87,15 @@ export class MapViewer extends HTMLElement {
     return (formattedExtent);
   }
 
+  get crs(){
+    return this._crs;
+  }
+
+  set crs(c){
+    this._crs = c;
+    this.dispatchEvent(new CustomEvent('createmap'));
+  }
+
   constructor() {
     // Always call super first in constructor
     super();
@@ -187,36 +196,44 @@ export class MapViewer extends HTMLElement {
       }
 
       // create the Leaflet map if this is the first time attached is called
-      if (!this._map) {
-        this._map = L.map(this._container, {
-          center: new L.LatLng(this.lat, this.lon),
-          projection: this.projection,
-          query: true,
-          contextMenu: true,
-          mapEl: this,
-          crs: M[this.projection],
-          zoom: this.zoom,
-          zoomControl: false,
-          // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
-          // the mapml response is received the screen tends to flash.  I'm sure
-          // there is a better configuration than that, but at this moment
-          // I'm not sure how to approach that issue.
-          // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
-          fadeAnimation: true
-        });
-        // the attribution control is not optional
-        this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
-
-        this.setControls(false,false,true);
-
-        // Make the Leaflet container element programmatically identifiable
-        // (https://github.com/Leaflet/Leaflet/issues/7193).
-        this._container.setAttribute('role', 'region');
-        this._container.setAttribute('aria-label', 'Interactive map');
-
-        this._setUpEvents();
-        // this.fire('load', {target: this});
+      this.addEventListener('createmap', ()=>{
+        if (!this._map) {
+          this._map = L.map(this._container, {
+            center: new L.LatLng(this.lat, this.lon),
+            projection: this._crs?this._crs.projection:this.projection,
+            query: true,
+            contextMenu: true,
+            mapEl: this,
+            crs: this._crs?this._crs.crs:M[this.projection],
+            zoom: this.zoom,
+            zoomControl: false,
+            // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
+            // the mapml response is received the screen tends to flash.  I'm sure
+            // there is a better configuration than that, but at this moment
+            // I'm not sure how to approach that issue.
+            // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
+            fadeAnimation: true
+          });
+          // the attribution control is not optional
+          this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+    
+          this.setControls(false,false,true);
+    
+          // Make the Leaflet container element programmatically identifiable
+          // (https://github.com/Leaflet/Leaflet/issues/7193).
+          this._container.setAttribute('role', 'region');
+          this._container.setAttribute('aria-label', 'Interactive map');
+    
+          this._setUpEvents();
+          // this.fire('load', {target: this});
+        }
+      });
+      if(!navigator.getUserMapTCRS || this.projection !== "custom"){
+        setTimeout(() => {
+          this.dispatchEvent(new CustomEvent('createmap'));
+        }, 0);
       }
+
     }
   }
   disconnectedCallback() {

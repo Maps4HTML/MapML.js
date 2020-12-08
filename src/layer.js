@@ -81,14 +81,16 @@ export class MapLayer extends HTMLElement {
     }
   }
   connectedCallback() {
-    this._ready();
-    // if the map has been attached, set this layer up wrt Leaflet map
-    if (this.parentNode._map) {
-        this._attachedToMap();
-    }
-    if (this._layerControl && !this.hidden) {
-      this._layerControl.addOrUpdateOverlay(this._layer, this.label);
-    }
+    this.parentNode.addEventListener('createmap', ()=>{
+      this._ready();
+      // if the map has been attached, set this layer up wrt Leaflet map
+      if (this.parentNode._map) {
+          this._attachedToMap();
+      }
+      if (this._layerControl && !this.hidden) {
+        this._layerControl.addOrUpdateOverlay(this._layer, this.label);
+      }
+    });
   }
   adoptedCallback() {
 //    console.log('Custom map element moved to new page.');
