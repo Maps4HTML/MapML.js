@@ -89,6 +89,7 @@ jest.setTimeout(50000);
           await page.waitForTimeout(1000);
           await page.click("body > mapml-viewer", { button: "right" });
           await page.click("div > div.mapml-contextmenu > a:nth-child(1)");
+          await page.waitForTimeout(1000);
           const extent = await page.$eval(
             "body > mapml-viewer",
             (map) => map.extent
@@ -104,6 +105,7 @@ jest.setTimeout(50000);
         test("[" + browserType + "]" + " Context menu, back item at intial location", async () => {
           await page.click("body > mapml-viewer", { button: "right" });
           await page.click("div > div.mapml-contextmenu > a:nth-child(1)");
+          await page.waitForTimeout(1000);
           const extent = await page.$eval(
             "body > mapml-viewer",
             (map) => map.extent
@@ -119,6 +121,7 @@ jest.setTimeout(50000);
         test("[" + browserType + "]" + " Context menu, forward item", async () => {
           await page.click("body > mapml-viewer", { button: "right" });
           await page.click("div > div.mapml-contextmenu > a:nth-child(2)");
+          await page.waitForTimeout(1000);
           const extent = await page.$eval(
             "body > mapml-viewer",
             (map) => map.extent
@@ -133,6 +136,7 @@ jest.setTimeout(50000);
         test("[" + browserType + "]" + " Context menu, forward item at most recent location", async () => {
           await page.click("body > mapml-viewer", { button: "right" });
           await page.click("div > div.mapml-contextmenu > a:nth-child(2)");
+          await page.waitForTimeout(1000);
           const extent = await page.$eval(
             "body > mapml-viewer",
             (map) => map.extent
