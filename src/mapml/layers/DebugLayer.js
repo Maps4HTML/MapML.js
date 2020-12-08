@@ -106,7 +106,7 @@ export var DebugPanel = L.Layer.extend({
     if (pointJ < 0) pointJ += 256;
 
     this.debug._tileCoord.innerHTML = `tile: i: ${Math.trunc(pointI)}, j: ${Math.trunc(pointJ)}`;
-    this.debug._mapCoord.innerHTML = `map: i: ${e.containerPoint.x}, j: ${e.containerPoint.y}`;
+    this.debug._mapCoord.innerHTML = `map: i: ${Math.trunc(e.containerPoint.x)}, j: ${Math.trunc(e.containerPoint.y)}`;
     this.debug._gcrsCoord.innerHTML = `gcrs: lon: ${e.latlng.lng.toFixed(6)}, lat: ${e.latlng.lat.toFixed(6)}`;
     this.debug._tcrsCoord.innerHTML = `tcrs: x:${Math.trunc(point.x)}, y:${Math.trunc(point.y)}`;
     this.debug._tileMatrixCoord.innerHTML = `tilematrix: column:${Math.trunc(point.x / 256)}, row:${Math.trunc(point.y / 256)}`;
