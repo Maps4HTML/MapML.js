@@ -196,7 +196,7 @@ export var MapMLLayer = L.Layer.extend({
         for(let template of this._templateVars)
           if(!template.projectionMatch) noLayer = true;
       }
-      if(noLayer || this.getProjection() !== map.options.projection)
+      if(noLayer || this.getProjection() !== map.options.projection.toUpperCase())
         return false;
       return true;
     },

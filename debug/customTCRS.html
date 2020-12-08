@@ -28,12 +28,20 @@
 </head>
 
 <body onload="newTCRS()">
-  <mapml-viewer projection="custom" zoom="2" lat="45" lon="-90" controls>
-    <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
+  <mapml-viewer projection="custo" zoom="2" lat="45" lon="-90" controls>
+    <!--     <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer-> -->
+    <layer- label="Static MapML with tiles" checked>
+      <meta name="zoom" content="min=1,max=4">
+      <meta name="projection" content="custo">
+
+      <tile zoom="2" row="-23" col="-9" src="data/cbmt/3/c17_r18.png"></tile>
+      <tile zoom="2" row="-23" col="-10" src="data/cbmt/2/c11_r10.png"></tile>
+    </layer->
   </mapml-viewer>
-  <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls>
+
+  <!--   <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls>
     <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
-  </mapml-viewer>
+  </mapml-viewer> -->
 </body>
 
 </html>

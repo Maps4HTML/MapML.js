@@ -228,7 +228,14 @@ export class MapViewer extends HTMLElement {
           // this.fire('load', {target: this});
         }
       });
-      if(!navigator.getUserMapTCRS || this.projection !== "custom"){
+      let custom = true;
+      for(let i of ["CBMTILE","APSTILE","OSMTILE","WGS84"]) {
+        if(this.projection === i){
+          custom = false;
+          break;
+        }
+      }
+      if(!navigator.getUserMapTCRS || !custom){
         setTimeout(() => {
           this.dispatchEvent(new CustomEvent('createmap'));
         }, 0);
