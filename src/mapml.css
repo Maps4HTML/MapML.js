@@ -38,19 +38,27 @@
 /*
  * Controls.
  */
+ 
+ .leaflet-top .leaflet-control {
+   margin-top: 5px;
+ }
+ 
+ .leaflet-left .leaflet-control {
+   margin-left: 5px;
+ }
 
 .leaflet-bar a {
   box-sizing: border-box;
-  width: 30px !important;
-  height: 30px !important;
-  line-height: 30px !important;
-  font-size: 24px !important;
+  width: 44px !important;
+  height: 44px !important;
+  line-height: 44px !important;
+  font-size: 34px !important;
   font-weight: normal;
 }
 
 .leaflet-control-layers-toggle {
-  width: 36px !important;
-  height: 36px !important;
+  width: 44px !important;
+  height: 44px !important;
 }
 
 .leaflet-bar a,
@@ -103,12 +111,12 @@
  */
 
 .leaflet-control-fullscreen a {
-  background-size: 30px 60px !important;
-  background-position: 0 0 !important;
+  background-size: 38px 76px !important;
+  background-position: 3px 3px !important;
 }
 .leaflet-fullscreen-on .leaflet-control-fullscreen a {
-  background-size: 30px 60px !important;
-  background-position: 0 -30px !important;
+  background-size: 38px 76px !important;
+  background-position: 3px -35px !important;
 }
 
 /*
@@ -116,8 +124,8 @@
  */
 
 .leaflet-control-layers.leaflet-control {
-  margin-right: 10px;
-  margin-left: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
   padding: 0;
 }
 
