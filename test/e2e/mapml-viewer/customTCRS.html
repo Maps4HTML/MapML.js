@@ -4,13 +4,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>index-map.html</title>
-  <script type="module" src="../dist/nav.js"></script>
-  <script type="module" src="../dist/mapml-viewer.js"></script>
+  <title>custom TCRS</title>
+  <script type="module" src="nav.js"></script>
+  <script type="module" src="mapml-viewer.js"></script>
   <script>
     function build() {
       let template = {
-        projection: "bestproj",
+        projection: "basic",
+        proj4string: "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+        code: "EPSG:3006",
+        definition: {
+          resolutions: [
+            8192, 4096, 2048, 1024, 512, 256, 128
+          ],
+          origin: [0, 0]
+        }
+      };
+      let cTCRS = navigator.getUserMapTCRS(template);
+      let map = document.querySelectorAll("mapml-viewer")[0];
+      map.crs = cTCRS;
+
+      let customCBM = {
+        projection: "other",
         proj4string: "+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs",
         code: "EPSG:3978",
         definition: {
@@ -49,30 +64,30 @@
               horizontal: {
                 name: "x",
                 min: 0,
-                max: zoom => (M.bestproj.options.bounds.getSize().x / M.bestproj.options.resolutions[zoom]).toFixed()
+                max: zoom => (M.other.options.bounds.getSize().x / M.other.options.resolutions[zoom]).toFixed()
               },
               vertical: {
                 name: "y",
                 min: 0,
-                max: zoom => (M.bestproj.options.bounds.getSize().y / M.bestproj.options.resolutions[zoom]).toFixed()
+                max: zoom => (M.other.options.bounds.getSize().y / M.other.options.resolutions[zoom]).toFixed()
               },
-              bounds: zoom => L.bounds([M.bestproj.options.crs.tcrs.horizontal.min,
-              M.bestproj.options.crs.tcrs.vertical.min],
-                [M.bestproj.options.crs.tcrs.horizontal.max(zoom),
-                M.bestproj.options.crs.tcrs.vertical.max(zoom)])
+              bounds: zoom => L.bounds([M.other.options.crs.tcrs.horizontal.min,
+              M.other.options.crs.tcrs.vertical.min],
+                [M.other.options.crs.tcrs.horizontal.max(zoom),
+                M.other.options.crs.tcrs.vertical.max(zoom)])
             },
             pcrs: {
               horizontal: {
                 name: "easting",
-                get min() { return M.bestproj.options.bounds.min.x; },
-                get max() { return M.bestproj.options.bounds.max.x; }
+                get min() { return M.other.options.bounds.min.x; },
+                get max() { return M.other.options.bounds.max.x; }
               },
               vertical: {
                 name: "northing",
-                get min() { return M.bestproj.options.bounds.min.y; },
-                get max() { return M.bestproj.options.bounds.max.y; }
+                get min() { return M.other.options.bounds.min.y; },
+                get max() { return M.other.options.bounds.max.y; }
               },
-              get bounds() { return M.bestproj.options.bounds; }
+              get bounds() { return M.other.options.bounds; }
             },
             gcrs: {
               horizontal: {
@@ -89,8 +104,8 @@
               },
               get bounds() {
                 return L.latLngBounds(
-                  [M.bestproj.options.crs.gcrs.vertical.min, M.bestproj.options.crs.gcrs.horizontal.min],
-                  [M.bestproj.options.crs.gcrs.vertical.max, M.bestproj.options.crs.gcrs.horizontal.max]);
+                  [M.other.options.crs.gcrs.vertical.min, M.other.options.crs.gcrs.horizontal.min],
+                  [M.other.options.crs.gcrs.vertical.max, M.other.options.crs.gcrs.horizontal.max]);
               }
             },
             map: {
@@ -119,40 +134,52 @@
               },
               get bounds() {
                 return L.bounds(
-                  [M.bestproj.options.crs.tile.horizontal.min, M.bestproj.options.crs.tile.vertical.min],
-                  [M.bestproj.options.crs.tile.horizontal.max, M.bestproj.options.crs.tile.vertical.max]);
+                  [M.other.options.crs.tile.horizontal.min, M.other.options.crs.tile.vertical.min],
+                  [M.other.options.crs.tile.horizontal.max, M.other.options.crs.tile.vertical.max]);
               }
             },
             tilematrix: {
               horizontal: {
                 name: "column",
                 min: 0,
-                max: zoom => (M.bestproj.options.crs.tcrs.horizontal.max(zoom) / M.bestproj.options.crs.tile.bounds.getSize().x).toFixed()
+                max: zoom => (M.other.options.crs.tcrs.horizontal.max(zoom) / M.other.options.crs.tile.bounds.getSize().x).toFixed()
               },
               vertical: {
                 name: "row",
                 min: 0,
-                max: zoom => (M.bestproj.options.crs.tcrs.vertical.max(zoom) / M.bestproj.options.crs.tile.bounds.getSize().y).toFixed()
+                max: zoom => (M.other.options.crs.tcrs.vertical.max(zoom) / M.other.options.crs.tile.bounds.getSize().y).toFixed()
               },
               bounds: zoom => L.bounds([0, 0],
-                [M.bestproj.options.crs.tilematrix.horizontal.max(zoom),
-                M.bestproj.options.crs.tilematrix.vertical.max(zoom)])
+                [M.other.options.crs.tilematrix.horizontal.max(zoom),
+                M.other.options.crs.tilematrix.vertical.max(zoom)])
             }
           }
         }
       };
-      let cTCRS = navigator.getUserMapTCRS(template);
-      let map = document.querySelector("mapml-viewer");
-      map.crs = cTCRS;
+
+      let otherTCRS = navigator.getUserMapTCRS(customCBM);
+      let mapTwo = document.querySelectorAll("mapml-viewer")[1];
+      mapTwo.crs = otherTCRS;
+
     }
   </script>
 </head>
 
 <body onload="build()">
-  <mapml-viewer style="width:500px;height:500px;" projection="bestproj" zoom="3" lat="45.5052040" lon="-75.2202344"
+  <mapml-viewer projection="basic" zoom="2" lat="45" lon="-90" controls>
+    <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
+    <layer- label="Static MapML with tiles" checked>
+      <meta name="zoom" content="min=1,max=4">
+      <meta name="projection" content="basic">
+
+      <tile zoom="2" row="-23" col="-9" src="data/cbmt/3/c17_r18.png"></tile>
+      <tile zoom="2" row="-23" col="-10" src="data/cbmt/3/c16_r18.png"></tile>
+    </layer->
+  </mapml-viewer>
+  <mapml-viewer style="width:500px;height:500px;" projection="other" zoom="3" lat="45.5052040" lon="-75.2202344"
     controls>
-    <!--     <layer- label="Arizona" checked>
-      <meta name="projection" content="bestproj" />
+    <layer- label="Arizona" checked>
+      <meta name="projection" content="other" />
       <meta name="zoom" content="min=1,max=5,value=0" />
       <meta name="cs" content="gcrs" />
       <meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
@@ -227,16 +254,16 @@
           </polygon>
         </geometry>
       </feature>
-    </layer-> -->
+    </layer->
     <layer- label="Alabama" checked>
       <meta name="zoom" content="min=1,max=5" />
-      <extent units="bestproj">
+      <extent units="other">
         <input name="z" type="zoom" min="2" max="18" value="0" />
         <input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" />
         <input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46" />
         <input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" />
         <input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" />
-        <link rel="features" tref="http://localhost:30001/data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
+        <link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
       </extent>
     </layer->
   </mapml-viewer>
