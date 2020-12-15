@@ -92,6 +92,15 @@ export class WebMap extends HTMLMapElement {
     return (formattedExtent);
   }
 
+  get crs(){
+    return this._crs;
+  }
+
+  set crs(c){
+    this._crs = c;
+    this.dispatchEvent(new CustomEvent('createmap'));
+  }
+
   constructor() {
     // Always call super first in constructor
     super();
@@ -202,14 +211,15 @@ export class WebMap extends HTMLMapElement {
       }
 
       // create the Leaflet map if this is the first time attached is called
+    this.addEventListener('createmap', ()=>{
       if (!this._map) {
         this._map = L.map(this._container, {
           center: new L.LatLng(this.lat, this.lon),
-          projection: this.projection,
+          projection: this._crs?this._crs.projection:this.projection,
           query: true,
           contextMenu: true,
           mapEl: this,
-          crs: M[this.projection],
+          crs: this._crs?this._crs.crs:M[this.projection],
           zoom: this.zoom,
           zoomControl: false,
           // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
@@ -254,6 +264,20 @@ export class WebMap extends HTMLMapElement {
         this._setUpEvents();
         // this.fire('load', {target: this});
       }
+    });
+    let custom = true;
+      for(let i of ["CBMTILE","APSTILE","OSMTILE","WGS84"]) {
+        if(this.projection === i){
+          custom = false;
+          break;
+        }
+      }
+      if(!navigator.getUserMapTCRS || !custom){
+        setTimeout(() => {
+          this.dispatchEvent(new CustomEvent('createmap'));
+        }, 0);
+      }
+
     }
   }
   disconnectedCallback() {

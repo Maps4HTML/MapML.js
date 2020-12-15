@@ -8,9 +8,15 @@
   <script type="module" src="../dist/nav.js"></script>
   <script type="module" src="../dist/mapml-viewer.js"></script>
   <script>
-    function newTCRS() {
+    function delayBuild() {
+      build(1);
+      setTimeout(() => {
+        build(0);
+      }, 5000);
+    }
+    function build(n) {
       let template = {
-        projection: "custo",
+        projection: n === 0 ? "custo" : "bestproj",
         proj4string: "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
         code: "EPSG:3006",
         definition: {
@@ -21,27 +27,49 @@
         }
       };
       let cTCRS = navigator.getUserMapTCRS(template);
-      let map = document.querySelector("mapml-viewer");
+      let map = document.querySelectorAll("mapml-viewer")[n];
       map.crs = cTCRS;
     }
   </script>
 </head>
 
-<body onload="newTCRS()">
+<body onload="delayBuild()">
   <mapml-viewer projection="custo" zoom="2" lat="45" lon="-90" controls>
-    <!--     <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer-> -->
+    <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
     <layer- label="Static MapML with tiles" checked>
       <meta name="zoom" content="min=1,max=4">
       <meta name="projection" content="custo">
 
-      <tile zoom="2" row="-23" col="-9" src="data/cbmt/3/c17_r18.png"></tile>
-      <tile zoom="2" row="-23" col="-10" src="data/cbmt/2/c11_r10.png"></tile>
+      <tile zoom="2" row="-23" col="-9" src="http://localhost:30001/data/cbmt/3/c17_r18.png"></tile>
+      <tile zoom="2" row="-23" col="-10" src="http://localhost:30001/data/cbmt/3/c16_r18.png"></tile>
     </layer->
   </mapml-viewer>
 
-  <!--   <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls>
+  <mapml-viewer projection="bestproj" zoom="2" lat="45" lon="-90" controls>
     <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
-  </mapml-viewer> -->
+    <layer- label="Static MapML with tiles" checked>
+      <meta name="zoom" content="min=1,max=4">
+      <meta name="projection" content="bestproj">
+
+      <tile zoom="2" row="-23" col="-9" src="http://localhost:30001/data/cbmt/3/c17_r18.png"></tile>
+      <tile zoom="2" row="-23" col="-10" src="http://localhost:30001/data/cbmt/3/c16_r18.png"></tile>
+    </layer->
+    <!--     <layer- label="Alabama" checked>
+      <meta name="zoom" content="min=2,max=5" />
+      <extent units="bestproj">
+        <input name="z" type="zoom" min="2" max="18" value="0" />
+        <input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" />
+        <input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46" />
+        <input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" />
+        <input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" />
+        <link rel="features" tref="http://localhost:30001/data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
+      </extent>
+    </layer-> -->
+  </mapml-viewer>
+
+  <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls>
+    <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
+  </mapml-viewer>
 </body>
 
 </html>

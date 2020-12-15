@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>index-map.html</title>
+  <script type="module" src="../dist/nav.js"></script>
+  <script type="module" src="../dist/mapml-viewer.js"></script>
+  <script>
+    function build() {
+      let template = {
+        projection: "bestproj",
+        proj4string: "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
+        code: "EPSG:4326",
+        definition: {
+          bounds: L.bounds([[-180, -90], [180, 90]]),
+          resolutions: [
+            0.703125,
+            0.3515625,
+            0.17578125,
+            0.087890625,
+            0.0439453125,
+            0.02197265625,
+            0.010986328125,
+            0.0054931640625,
+            0.00274658203125,
+            0.001373291015625,
+            0.0006866455078125,
+            0.0003433227539062,
+            0.0001716613769531,
+            0.0000858306884766,
+            0.0000429153442383,
+            0.0000214576721191,
+            0.0000107288360596,
+            0.0000053644180298,
+            0.0000026822090149,
+            0.0000013411045074,
+            0.0000006705522537,
+            0.0000003352761269
+          ],
+          origin: [-180, +90],
+          crs: {
+            tcrs: {
+              horizontal: {
+                name: "x",
+                min: 0,
+                max: zoom => (crs.options.bounds.getSize().x / crs.options.resolutions[zoom]).toFixed()
+              },
+              vertical: {
+                name: "y",
+                min: 0,
+                max: zoom => (crs.options.bounds.getSize().y / crs.options.resolutions[zoom]).toFixed()
+              },
+              bounds: zoom => L.bounds([crs.options.crs.tcrs.horizontal.min,
+              crs.options.crs.tcrs.vertical.min],
+                [crs.options.crs.tcrs.horizontal.max(zoom),
+                crs.options.crs.tcrs.vertical.max(zoom)])
+            },
+            pcrs: {
+              horizontal: {
+                name: "longitude",
+                get min() { return crs.options.crs.gcrs.horizontal.min; },
+                get max() { return crs.options.crs.gcrs.horizontal.max; }
+              },
+              vertical: {
+                name: "latitude",
+                get min() { return crs.options.crs.gcrs.vertical.min; },
+                get max() { return crs.options.crs.gcrs.vertical.max; }
+              },
+              get bounds() { return crs.options.bounds; }
+            },
+            gcrs: {
+              horizontal: {
+                name: "longitude",
+                // set min/max axis values from EPSG registry area of use, retrieved 2019-07-25
+                min: -180.0,
+                max: 180.0
+              },
+              vertical: {
+                name: "latitude",
+                // set min/max axis values from EPSG registry area of use, retrieved 2019-07-25
+                min: -90.0,
+                max: 90.0
+              },
+              get bounds() {
+                return L.latLngBounds(
+                  [crs.options.crs.gcrs.vertical.min, crs.options.crs.gcrs.horizontal.min],
+                  [crs.options.crs.gcrs.vertical.max, crs.options.crs.gcrs.horizontal.max]);
+              }
+            },
+            map: {
+              horizontal: {
+                name: "i",
+                min: 0,
+                max: map => map.getSize().x
+              },
+              vertical: {
+                name: "j",
+                min: 0,
+                max: map => map.getSize().y
+              },
+              bounds: map => L.bounds(L.point([0, 0]), map.getSize())
+            },
+            tile: {
+              horizontal: {
+                name: "i",
+                min: 0,
+                max: 256
+              },
+              vertical: {
+                name: "j",
+                min: 0,
+                max: 256
+              },
+              get bounds() {
+                return L.bounds(
+                  [crs.options.crs.tile.horizontal.min, crs.options.crs.tile.vertical.min],
+                  [crs.options.crs.tile.horizontal.max, crs.options.crs.tile.vertical.max]);
+              }
+            },
+            tilematrix: {
+              horizontal: {
+                name: "column",
+                min: 0,
+                max: zoom => (crs.options.crs.tcrs.horizontal.max(zoom) / crs.options.crs.tile.bounds.getSize().x).toFixed()
+              },
+              vertical: {
+                name: "row",
+                min: 0,
+                max: zoom => (crs.options.crs.tcrs.vertical.max(zoom) / crs.options.crs.tile.bounds.getSize().y).toFixed()
+              },
+              bounds: zoom => L.bounds(
+                [crs.options.crs.tilematrix.horizontal.min,
+                crs.options.crs.tilematrix.vertical.min],
+                [crs.options.crs.tilematrix.horizontal.max(zoom),
+                crs.options.crs.tilematrix.vertical.max(zoom)])
+            }
+          }
+        }
+      };
+      let cTCRS = navigator.getUserMapTCRS(template);
+      let map = document.querySelector("mapml-viewer");
+      map.crs = cTCRS;
+    }
+  </script>
+</head>
+
+<body onload="build()">
+  <mapml-viewer style="width:500px;height:500px;" projection="bestproj" zoom="1" lat="59.87304909" lon="-53.22587225"
+    controls>
+    <layer- label="Arizona" checked>
+      <meta name="projection" content="bestproj" />
+      <meta name="zoom" content="min=1,max=5,value=0" />
+      <meta name="cs" content="gcrs" />
+      <meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
+
+      <link id="first" rel="stylesheet" type="text/css" href="first.css">
+      <style>
+        .second {
+          stroke: aqua;
+        }
+      </style>
+      <style>
+        .third {
+          stroke: blue
+        }
+      </style>
+      <link id="forth" rel="stylesheet" type="text/css" href="forth.css">
+      <feature zoom="2" class="refDiff">
+        <properties>
+          <h1>Test</h1>
+        </properties>
+        <geometry cs="tilematrix">
+          <polygon>
+            <coordinates>11 11 12 11 12 12 11 12</coordinates>
+          </polygon>
+        </geometry>
+      </feature>
+
+      <feature zoom="2" class="refDiff">
+        <properties>
+          <h1>Test</h1>
+        </properties>
+        <geometry cs="pcrs">
+          <polygon>
+            <coordinates>257421 -3567196 -271745 1221771 -3896544 242811 -3183549 -2613313</coordinates>
+          </polygon>
+        </geometry>
+      </feature>
+
+      <feature zoom="2" class="refDiff">
+        <properties>
+          <h1>Test</h1>
+        </properties>
+        <geometry cs="tcrs">
+          <polygon>
+            <coordinates>2771 3106 2946 3113 2954 3210 2815 3192</coordinates>
+          </polygon>
+        </geometry>
+      </feature>
+
+      <feature zoom="2" class="refDiff">
+        <properties>
+          <h1>Arizona</h1>
+        </properties>
+        <geometry>
+          <polygon>
+            <coordinates>-109.042503 37.000263 -109.04798 31.331629 -111.074448 31.331629 -112.246513 31.704061
+              -114.815198 32.492741 -114.72209 32.717295 -114.524921 32.755634 -114.470151 32.843265 -114.524921
+              33.029481 -114.661844 33.034958 -114.727567 33.40739 -114.524921 33.54979 -114.497536 33.697668
+              -114.535874 33.933176 -114.415382 34.108438 -114.256551 34.174162 -114.136058 34.305608 -114.333228
+              34.448009 -114.470151 34.710902 -114.634459 34.87521 -114.634459 35.00118 -114.574213 35.138103
+              -114.596121 35.324319 -114.678275 35.516012 -114.738521 36.102045 -114.371566 36.140383 -114.251074
+              36.01989 -114.152489 36.025367 -114.048427 36.195153 -114.048427 37.000263 -110.499369 37.00574
+              -109.042503 37.000263</coordinates>
+          </polygon>
+        </geometry>
+      </feature>
+      <feature zoom="4" class="refDiff">
+        <properties>
+          <h1>Arfsdfsdizona</h1>
+        </properties>
+        <geometry>
+          <polygon>
+            <coordinates>-109.042503 37.000263 -109.04798 31.331629 -111.074448 31.331629 -112.246513 31.704061
+              -114.815198 32.492741 -114.72209 32.717295 -114.524921 32.755634 -114.470151 32.843265 -114.524921
+              33.029481 -114.661844 33.034958 -114.727567 33.40739 -114.524921 33.54979 -114.497536 33.697668
+              -114.535874 33.933176 -114.415382 34.108438 -114.256551 34.174162 -114.136058 34.305608 -114.333228
+              34.448009 -114.470151 34.710902 -114.634459 34.87521 -114.634459 35.00118 -114.574213 35.138103
+              -114.596121 35.324319 -114.678275 35.516012 -114.738521 36.102045 -114.371566 36.140383 -114.251074
+              36.01989 -114.152489 36.025367 -114.048427 36.195153 -114.048427 37.000263 -110.499369 37.00574
+              -109.042503 37.000263</coordinates>
+          </polygon>
+        </geometry>
+      </feature>
+      <feature zoom="3" class="all  _20-50">
+        <properties>
+          <h1>Colorado</h1>
+        </properties>
+        <geometry>
+          <polygon>
+            <coordinates>-107.919731 41.003906 -105.728954 40.998429 -104.053011 41.003906 -102.053927 41.003906
+              -102.053927 40.001626 -102.042974 36.994786 -103.001438 37.000263 -104.337812 36.994786 -106.868158
+              36.994786 -107.421329 37.000263 -109.042503 37.000263 -109.042503 38.166851 -109.058934 38.27639
+              -109.053457 39.125316 -109.04798 40.998429 -107.919731 41.003906</coordinates>
+          </polygon>
+        </geometry>
+      </feature>
+    </layer->
+    <layer- label="Alabama" checked>
+      <meta name="zoom" content="min=1,max=5" />
+      <extent units="bestproj">
+        <input name="z" type="zoom" min="2" max="18" value="0" />
+        <input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" />
+        <input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46" />
+        <input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" />
+        <input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" />
+        <link rel="features" tref="http://localhost:30001/data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
+      </extent>
+    </layer->
+  </mapml-viewer>
+</body>
+
+</html>
