@@ -619,9 +619,9 @@ export var MapMLLayer = L.Layer.extend({
             if (this.readyState === this.DONE && mapml.querySelector) {
                 var serverExtent = mapml.querySelector('extent') || mapml.querySelector('meta[name=projection]'),
                     projectionMatch = serverExtent && serverExtent.hasAttribute('units') && 
-                    serverExtent.getAttribute('units').toUpperCase() === layer.options.mapprojection || 
+                    serverExtent.getAttribute('units') === layer.options.mapprojection || 
                     serverExtent && serverExtent.hasAttribute('content') && 
-                    M.metaContentToObject(serverExtent.getAttribute('content')).content ===layer.options.mapprojection,
+                    M.metaContentToObject(serverExtent.getAttribute('content')).content === layer.options.mapprojection,
                     selectedAlternate = !projectionMatch && mapml.querySelector('head link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 

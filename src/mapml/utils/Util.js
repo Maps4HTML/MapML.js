@@ -77,7 +77,7 @@ export var Util = {
     };
   },
   extractInputBounds: function(template){
-    if(!template || !this[template.projection]) return undefined;
+    if(!template) return undefined;
 
     //sets variables with their respective fallback values incase content is missing from the template
     let inputs = template.values, projection = template.projection || FALLBACK_PROJECTION, value = 0, boundsUnit = FALLBACK_CS;
@@ -177,7 +177,7 @@ export var Util = {
   },
 
   boundsToPCRSBounds: function(bounds, zoom, projection,cs){
-    if(!bounds || !zoom && +zoom !== 0 || !cs || !this[projection]) return undefined;
+    if(!bounds || !zoom && +zoom !== 0 || !cs) return undefined;
     switch(cs.toUpperCase()){
       case "TILEMATRIX":
         let tileToPixelBounds = L.bounds(L.point(bounds.min.x*TILE_SIZE,bounds.min.y*TILE_SIZE),
@@ -199,7 +199,7 @@ export var Util = {
   //L.bounds have fixed point positions, where min is always topleft, max is always bottom right, and the values are always sorted by leaflet
   //important to consider when working with pcrs where the origin is not topleft but rather bottomleft, could lead to confusion
   pixelToPCRSBounds : function(bounds, zoom, projection){
-    if(!bounds || !bounds.max || !bounds.min ||zoom === undefined || zoom === null || zoom instanceof Object || !this[projection]) return undefined;
+    if(!bounds || !bounds.max || !bounds.min ||zoom === undefined || zoom === null || zoom instanceof Object) return undefined;
     let min = this[projection].transformation.untransform(bounds.min,this[projection].scale(zoom));
     let max = this[projection].transformation.untransform(bounds.max,this[projection].scale(zoom));
     return L.bounds(min,max);

@@ -11,12 +11,10 @@ export var MapMLStaticTileLayer = L.GridLayer.extend({
 
   onAdd: function(){
     this._bounds = this._getLayerBounds(this._groups,this._map.options.projection); //stores meter values of bounds
-    if(this.layerBounds){
-      this.layerBounds = this._bounds[Object.keys(this._bounds)[0]];
-      for(let key of Object.keys(this._bounds)){
-        this.layerBounds.extend(this._bounds[key].min);
-        this.layerBounds.extend(this._bounds[key].max);
-      }
+    this.layerBounds = this._bounds[Object.keys(this._bounds)[0]];
+    for(let key of Object.keys(this._bounds)){
+      this.layerBounds.extend(this._bounds[key].min);
+      this.layerBounds.extend(this._bounds[key].max);
     }
     L.GridLayer.prototype.onAdd.call(this,this._map);
     this._map.fire('moveend',true);
@@ -44,7 +42,6 @@ export var MapMLStaticTileLayer = L.GridLayer.extend({
                         this._map.getPixelBounds(),
                         this._map.getZoom(),
                         this._map.options.projection));
-    if(!this._bounds[zoomLevel]) this.isVisible = true;
     if(!(this.isVisible))return; //onMoveEnd still gets fired even when layer is out of bounds??, most likely need to overrride _onMoveEnd
     this._parentOnMoveEnd();
   },

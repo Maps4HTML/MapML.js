@@ -6,8 +6,7 @@ import './proj4leaflet.js';
   window.navigator.getUserMapTCRS =
     function (t) {
       if (!t.code || !t.proj4string || !t.projection || !t.definition) return {};
-      let crs = new L.Proj.CRS(t.code, t.proj4string, t.definition);
-      M[t.projection] = crs;
-      return { crs: crs, projection: t.projection, };
+      M[t.projection] = new L.Proj.CRS(t.code, t.proj4string, t.definition);
+      return { crs: M[t.projection], projection: t.projection, };
     };
 })();

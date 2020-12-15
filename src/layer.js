@@ -90,7 +90,8 @@ export class MapLayer extends HTMLElement {
       if (this._layerControl && !this.hidden) {
         this._layerControl.addOrUpdateOverlay(this._layer, this.label);
       }
-    });
+    }, {once:true});
+    if(this.parentNode._map)this.parentNode.dispatchEvent(new CustomEvent('createmap'));
   }
   adoptedCallback() {
 //    console.log('Custom map element moved to new page.');

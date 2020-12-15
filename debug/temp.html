@@ -11,82 +11,86 @@
     function build() {
       let template = {
         projection: "bestproj",
-        proj4string: "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
-        code: "EPSG:4326",
+        proj4string: "+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs",
+        code: "EPSG:3978",
         definition: {
-          bounds: L.bounds([[-180, -90], [180, 90]]),
+          origin: [-34655800, 39310000],
+          bounds: L.bounds([[-34655800, -39000000], [10000000, 39310000]]),
           resolutions: [
-            0.703125,
-            0.3515625,
-            0.17578125,
-            0.087890625,
-            0.0439453125,
-            0.02197265625,
-            0.010986328125,
-            0.0054931640625,
-            0.00274658203125,
-            0.001373291015625,
-            0.0006866455078125,
-            0.0003433227539062,
-            0.0001716613769531,
-            0.0000858306884766,
-            0.0000429153442383,
-            0.0000214576721191,
-            0.0000107288360596,
-            0.0000053644180298,
-            0.0000026822090149,
-            0.0000013411045074,
-            0.0000006705522537,
-            0.0000003352761269
+            38364.660062653464,
+            22489.62831258996,
+            13229.193125052918,
+            7937.5158750317505,
+            4630.2175937685215,
+            2645.8386250105837,
+            1587.5031750063501,
+            926.0435187537042,
+            529.1677250021168,
+            317.50063500127004,
+            185.20870375074085,
+            111.12522225044451,
+            66.1459656252646,
+            38.36466006265346,
+            22.48962831258996,
+            13.229193125052918,
+            7.9375158750317505,
+            4.6302175937685215,
+            2.6458386250105836,
+            1.5875031750063502,
+            0.92604351875370428,
+            0.52916772500211673,
+            0.31750063500127002,
+            0.18520870375074083,
+            0.11112522225044451,
+            0.066145965625264591
           ],
-          origin: [-180, +90],
           crs: {
             tcrs: {
               horizontal: {
                 name: "x",
                 min: 0,
-                max: zoom => (crs.options.bounds.getSize().x / crs.options.resolutions[zoom]).toFixed()
+                max: zoom => (M.bestproj.options.bounds.getSize().x / M.bestproj.options.resolutions[zoom]).toFixed()
               },
               vertical: {
                 name: "y",
                 min: 0,
-                max: zoom => (crs.options.bounds.getSize().y / crs.options.resolutions[zoom]).toFixed()
+                max: zoom => (M.bestproj.options.bounds.getSize().y / M.bestproj.options.resolutions[zoom]).toFixed()
               },
-              bounds: zoom => L.bounds([crs.options.crs.tcrs.horizontal.min,
-              crs.options.crs.tcrs.vertical.min],
-                [crs.options.crs.tcrs.horizontal.max(zoom),
-                crs.options.crs.tcrs.vertical.max(zoom)])
+              bounds: zoom => L.bounds([M.bestproj.options.crs.tcrs.horizontal.min,
+              M.bestproj.options.crs.tcrs.vertical.min],
+                [M.bestproj.options.crs.tcrs.horizontal.max(zoom),
+                M.bestproj.options.crs.tcrs.vertical.max(zoom)])
             },
             pcrs: {
               horizontal: {
-                name: "longitude",
-                get min() { return crs.options.crs.gcrs.horizontal.min; },
-                get max() { return crs.options.crs.gcrs.horizontal.max; }
+                name: "easting",
+                get min() { return M.bestproj.options.bounds.min.x; },
+                get max() { return M.bestproj.options.bounds.max.x; }
               },
               vertical: {
-                name: "latitude",
-                get min() { return crs.options.crs.gcrs.vertical.min; },
-                get max() { return crs.options.crs.gcrs.vertical.max; }
+                name: "northing",
+                get min() { return M.bestproj.options.bounds.min.y; },
+                get max() { return M.bestproj.options.bounds.max.y; }
               },
-              get bounds() { return crs.options.bounds; }
+              get bounds() { return M.bestproj.options.bounds; }
             },
             gcrs: {
               horizontal: {
                 name: "longitude",
                 // set min/max axis values from EPSG registry area of use, retrieved 2019-07-25
-                min: -180.0,
-                max: 180.0
+                min: -141.01,
+                max: -47.74
               },
               vertical: {
                 name: "latitude",
                 // set min/max axis values from EPSG registry area of use, retrieved 2019-07-25
-                min: -90.0,
-                max: 90.0
+                min: 40.04,
+                max: 86.46
               },
               get bounds() {
                 return L.latLngBounds(
-                  [crs.options.crs.gcrs.vertical.min, crs.options.crs.gcrs.horizontal.min],
-                  [crs.options.crs.gcrs.vertical.max, crs.options.crs.gcrs.horizontal.max]);
+                  [M.bestproj.options.crs.gcrs.vertical.min, M.bestproj.options.crs.gcrs.horizontal.min],
+                  [M.bestproj.options.crs.gcrs.vertical.max, M.bestproj.options.crs.gcrs.horizontal.max]);
               }
             },
             map: {
@@ -115,26 +119,24 @@
               },
               get bounds() {
                 return L.bounds(
-                  [crs.options.crs.tile.horizontal.min, crs.options.crs.tile.vertical.min],
-                  [crs.options.crs.tile.horizontal.max, crs.options.crs.tile.vertical.max]);
+                  [M.bestproj.options.crs.tile.horizontal.min, M.bestproj.options.crs.tile.vertical.min],
+                  [M.bestproj.options.crs.tile.horizontal.max, M.bestproj.options.crs.tile.vertical.max]);
               }
             },
             tilematrix: {
               horizontal: {
                 name: "column",
                 min: 0,
-                max: zoom => (crs.options.crs.tcrs.horizontal.max(zoom) / crs.options.crs.tile.bounds.getSize().x).toFixed()
+                max: zoom => (M.bestproj.options.crs.tcrs.horizontal.max(zoom) / M.bestproj.options.crs.tile.bounds.getSize().x).toFixed()
               },
               vertical: {
                 name: "row",
                 min: 0,
-                max: zoom => (crs.options.crs.tcrs.vertical.max(zoom) / crs.options.crs.tile.bounds.getSize().y).toFixed()
+                max: zoom => (M.bestproj.options.crs.tcrs.vertical.max(zoom) / M.bestproj.options.crs.tile.bounds.getSize().y).toFixed()
               },
-              bounds: zoom => L.bounds(
-                [crs.options.crs.tilematrix.horizontal.min,
-                crs.options.crs.tilematrix.vertical.min],
-                [crs.options.crs.tilematrix.horizontal.max(zoom),
-                crs.options.crs.tilematrix.vertical.max(zoom)])
+              bounds: zoom => L.bounds([0, 0],
+                [M.bestproj.options.crs.tilematrix.horizontal.max(zoom),
+                M.bestproj.options.crs.tilematrix.vertical.max(zoom)])
             }
           }
         }
@@ -147,9 +149,9 @@
 </head>
 
 <body onload="build()">
-  <mapml-viewer style="width:500px;height:500px;" projection="bestproj" zoom="1" lat="59.87304909" lon="-53.22587225"
+  <mapml-viewer style="width:500px;height:500px;" projection="bestproj" zoom="3" lat="45.5052040" lon="-75.2202344"
     controls>
-    <layer- label="Arizona" checked>
+    <!--     <layer- label="Arizona" checked>
       <meta name="projection" content="bestproj" />
       <meta name="zoom" content="min=1,max=5,value=0" />
       <meta name="cs" content="gcrs" />
@@ -173,29 +175,7 @@
         </properties>
         <geometry cs="tilematrix">
           <polygon>
-            <coordinates>11 11 12 11 12 12 11 12</coordinates>
-          </polygon>
-        </geometry>
-      </feature>
-
-      <feature zoom="2" class="refDiff">
-        <properties>
-          <h1>Test</h1>
-        </properties>
-        <geometry cs="pcrs">
-          <polygon>
-            <coordinates>257421 -3567196 -271745 1221771 -3896544 242811 -3183549 -2613313</coordinates>
-          </polygon>
-        </geometry>
-      </feature>
-
-      <feature zoom="2" class="refDiff">
-        <properties>
-          <h1>Test</h1>
-        </properties>
-        <geometry cs="tcrs">
-          <polygon>
-            <coordinates>2771 3106 2946 3113 2954 3210 2815 3192</coordinates>
+            <coordinates>1 1 2 1 2 2 1 2</coordinates>
           </polygon>
         </geometry>
       </feature>
@@ -247,7 +227,7 @@
           </polygon>
         </geometry>
       </feature>
-    </layer->
+    </layer-> -->
     <layer- label="Alabama" checked>
       <meta name="zoom" content="min=1,max=5" />
       <extent units="bestproj">
