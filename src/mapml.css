@@ -74,9 +74,12 @@
   border-style: inherit;
 }
 
+.mapml-contextmenu,
+.mapml-debug,
 .leaflet-bar,
 .leaflet-control-layers,
-.mapml-contextmenu,
+.leaflet-popup-content-wrapper,
+.leaflet-tooltip-pane .leaflet-tooltip,
 .leaflet-touch .leaflet-control-layers,
 .leaflet-touch .leaflet-bar {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgb(0, 0, 0, 0.3);
@@ -225,6 +228,45 @@
 }
 
 /*
+ * Debug mode.
+ */
+
+.mapml-debug {
+  contain: content;
+  max-height: 100%;
+  max-width: 100%;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: #fff;
+  cursor: default;
+}
+
+.mapml-debug-banner {
+  margin-left: 4px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.mapml-debug-panel,
+.mapml-debug-grid {
+  font-family: monospace;
+}
+
+.mapml-debug-panel {
+  margin-top: 4px;
+}
+
+.mapml-debug-tile {
+  text-indent: 6px;
+  line-height: 1.8;
+}
+
+.mapml-debug-coordinates {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+/*
  * User interaction.
  */
 
@@ -236,7 +278,8 @@
 
 /* Disable text selection in controls. */
 .leaflet-control,
-.mapml-contextmenu {
+.mapml-contextmenu,
+.mapml-debug {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -302,28 +345,4 @@ summary {
 .leaflet-container .mapml-contextmenu,
 .leaflet-container .leaflet-control-container {
   visibility: unset!important;
-}
-.mapml-debug-panel {
-  max-height: 100%;
-  max-width: 100%;
-  box-shadow: 0 1px 7px rgba(0,0,0,0.4);
-  -webkit-border-radius: 4px;
-          border-radius: 4px;
-  padding: 4px 0;
-  background-color: #fff;
-  cursor: default;
-  -webkit-user-select: none;
-     -moz-user-select: none;    
-      -ms-user-select: none;
-          user-select: none;
-}
-
-.mapml-debug-coordinates{
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-.mapml-debug-title{
-  padding-left: 4px;
-  padding-right: 4px;
 }
