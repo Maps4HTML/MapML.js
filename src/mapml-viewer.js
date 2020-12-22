@@ -54,8 +54,12 @@ export class MapViewer extends HTMLElement {
     return this.hasAttribute("projection") ? this.getAttribute("projection") : "OSMTILE";
   }
   set projection(val) {
-    if (val && (val === "OSMTILE" || val === "CBMTILE" || val === "APSTILE" || val === "WGS84")) {
+    if(val && M[val]){
       this.setAttribute('projection', val);
+      if(!(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(val.toUpperCase())))
+        this.dispatchEvent(new CustomEvent('createmap'));
+    } else {
+      throw new Error("Undefined Projection");
     }
   }
   get zoom() {
@@ -85,17 +89,6 @@ export class MapViewer extends HTMLElement {
       };
     }
     return (formattedExtent);
-  }
-
-  get crs(){
-    return this._crs;
-  }
-
-  set crs(c){
-    this._crs = c;
-    // once the crs of the map is set, the createmap event is dispatched
-    // this only happens for maps using custom TCRS
-    this.dispatchEvent(new CustomEvent('createmap'));
   }
 
   constructor() {
@@ -203,11 +196,11 @@ export class MapViewer extends HTMLElement {
         if (!this._map) {
           this._map = L.map(this._container, {
             center: new L.LatLng(this.lat, this.lon),
-            projection: this._crs?this._crs.projection:this.projection,
+            projection: this.projection,
             query: true,
             contextMenu: true,
             mapEl: this,
-            crs: this._crs?this._crs.crs:M[this.projection],
+            crs: M[this.projection],
             zoom: this.zoom,
             zoomControl: false,
             // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
@@ -233,16 +226,10 @@ export class MapViewer extends HTMLElement {
       }, {once:true});
 
       // checks if the projection is a custom projection or not
-      let custom = true;
-      for(let i of ["CBMTILE","APSTILE","OSMTILE","WGS84"]) {
-        if(this.projection === i){
-          custom = false;
-          break;
-        }
-      }
+      let custom = !(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(this.projection));
       
       // if the page doesn't use nav.js or isn't custom then dispatch createmap event
-      if(!navigator.getUserMapTCRS || !custom){
+      if(!custom){
         this.dispatchEvent(new CustomEvent('createmap'));
       }
 

@@ -571,6 +571,13 @@ window.M = M;
       }
     }
   });
+  M.defineCustomProjection = function(t){
+    if (t === undefined || !t.code || !t.proj4string || !t.projection || !t.definition) throw new Error('Incomplete TCRS Definition');
+    if (["CBMTILE", "APSTILE", "OSMTILE", "WGS84"].includes(t.projection.toUpperCase())) throw new Error('TCRS Override Attempt');
+    M[t.projection] = new L.Proj.CRS(t.code, t.proj4string, t.definition);      //creates crs using L.Proj
+    M[t.projection.toUpperCase()] = M[t.projection];                            //adds the projection uppercase to global M
+    return t.projection;
+  };
 }());
 
 M.csToAxes = Util.csToAxes;

@@ -56,8 +56,12 @@ export class WebMap extends HTMLMapElement {
     return this.hasAttribute("projection") ? this.getAttribute("projection") : "OSMTILE";
   }
   set projection(val) {
-    if (val && (val === "OSMTILE" || val === "CBMTILE" || val === "APSTILE" || val === "WGS84")) {
+    if(val && M[val]){
       this.setAttribute('projection', val);
+      if(!(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(val.toUpperCase())))
+        this.dispatchEvent(new CustomEvent('createmap'));
+    } else {
+      throw new Error("Undefined Projection");
     }
   }
   get zoom() {
@@ -90,15 +94,6 @@ export class WebMap extends HTMLMapElement {
       };
     }
     return (formattedExtent);
-  }
-
-  get crs(){
-    return this._crs;
-  }
-
-  set crs(c){
-    this._crs = c;
-    this.dispatchEvent(new CustomEvent('createmap'));
   }
 
   constructor() {
@@ -214,11 +209,11 @@ export class WebMap extends HTMLMapElement {
       if (!this._map) {
         this._map = L.map(this._container, {
           center: new L.LatLng(this.lat, this.lon),
-          projection: this._crs?this._crs.projection:this.projection,
+          projection: this.projection,
           query: true,
           contextMenu: true,
           mapEl: this,
-          crs: this._crs?this._crs.crs:M[this.projection],
+          crs: M[this.projection],
           zoom: this.zoom,
           zoomControl: false,
           // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
@@ -264,16 +259,12 @@ export class WebMap extends HTMLMapElement {
         // this.fire('load', {target: this});
       }
     }, {once:true});
-    let custom = true;
-      for(let i of ["CBMTILE","APSTILE","OSMTILE","WGS84"]) {
-        if(this.projection === i){
-          custom = false;
-          break;
-        }
-      }
-      if(!navigator.getUserMapTCRS || !custom){
-        this.dispatchEvent(new CustomEvent('createmap'));
-      }
+   
+    let custom = !(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(this.projection));
+      
+    if(!custom){
+      this.dispatchEvent(new CustomEvent('createmap'));
+    }
 
     }
   }

@@ -5,7 +5,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>custom TCRS</title>
-  <script type="module" src="nav.js"></script>
   <script type="module" src="mapml-viewer.js"></script>
   <script>
     function build() {
@@ -20,9 +19,9 @@
           origin: [0, 0]
         }
       };
-      let cTCRS = navigator.getUserMapTCRS(template);
+      let cProjection = M.defineCustomProjection(template);
       let map = document.querySelectorAll("mapml-viewer")[0];
-      map.crs = cTCRS;
+      map.projection = cProjection;
 
       let customCBM = {
         projection: "other",
@@ -157,9 +156,9 @@
         }
       };
 
-      let otherTCRS = navigator.getUserMapTCRS(customCBM);
+      let otherProjection = M.defineCustomProjection(customCBM);
       let mapTwo = document.querySelectorAll("mapml-viewer")[1];
-      mapTwo.crs = otherTCRS;
+      mapTwo.projection = otherProjection;
 
     }
   </script>
