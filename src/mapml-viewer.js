@@ -93,6 +93,8 @@ export class MapViewer extends HTMLElement {
 
   set crs(c){
     this._crs = c;
+    // once the crs of the map is set, the createmap event is dispatched
+    // this only happens for maps using custom TCRS
     this.dispatchEvent(new CustomEvent('createmap'));
   }
 
@@ -195,7 +197,8 @@ export class MapViewer extends HTMLElement {
         this._traversalCall = false;
       }
 
-      // create the Leaflet map if this is the first time attached is called
+      // wait for createmap event before creating leaflet map
+      // this allows a safeguard for the case where loading a custom TCRS takes longer than loading mapml-viewer.js/web-map.js
       this.addEventListener('createmap', ()=>{
         if (!this._map) {
           this._map = L.map(this._container, {
@@ -228,6 +231,8 @@ export class MapViewer extends HTMLElement {
           // this.fire('load', {target: this});
         }
       }, {once:true});
+
+      // checks if the projection is a custom projection or not
       let custom = true;
       for(let i of ["CBMTILE","APSTILE","OSMTILE","WGS84"]) {
         if(this.projection === i){
@@ -235,10 +240,10 @@ export class MapViewer extends HTMLElement {
           break;
         }
       }
+      
+      // if the page doesn't use nav.js or isn't custom then dispatch createmap event
       if(!navigator.getUserMapTCRS || !custom){
-        setTimeout(() => {
-          this.dispatchEvent(new CustomEvent('createmap'));
-        }, 0);
+        this.dispatchEvent(new CustomEvent('createmap'));
       }
 
     }

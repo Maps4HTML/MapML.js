@@ -210,7 +210,6 @@ export class WebMap extends HTMLMapElement {
         this._traversalCall = false;
       }
 
-      // create the Leaflet map if this is the first time attached is called
     this.addEventListener('createmap', ()=>{
       if (!this._map) {
         this._map = L.map(this._container, {
@@ -273,9 +272,7 @@ export class WebMap extends HTMLMapElement {
         }
       }
       if(!navigator.getUserMapTCRS || !custom){
-        setTimeout(() => {
-          this.dispatchEvent(new CustomEvent('createmap'));
-        }, 0);
+        this.dispatchEvent(new CustomEvent('createmap'));
       }
 
     }
