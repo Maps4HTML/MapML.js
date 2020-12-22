@@ -20,8 +20,8 @@ export var DebugOverlay = L.Layer.extend({
       this._container.style.zIndex = 10000;
       this._container.style.position = "absolute";
       this._container.style.top = "auto";
-      this._container.style.bottom = "10px";
-      this._container.style.left = "10px";
+      this._container.style.bottom = "5px";
+      this._container.style.left = "5px";
       this._container.style.right = "auto";
     }
 

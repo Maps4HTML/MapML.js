@@ -230,7 +230,9 @@ export class MapViewer extends HTMLElement {
   setControls(isToggle, toggleShow, setup){
     if (this.controls && this._map) {
       let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl"],
-          options = ["nozoom", "noreload", "nofullscreen", 'nolayer'];
+          options = ["nozoom", "noreload", "nofullscreen", 'nolayer'],
+          mapSize = this._map.getSize().y,
+          totalSize = 0;
 
       //removes the left hand controls, if not done they will be re-added in the incorrect order
       //better to just reset them
@@ -255,13 +257,16 @@ export class MapViewer extends HTMLElement {
           this._map.fire("validate");
         }
       }
-      if (!this.controlslist.toLowerCase().includes("nozoom") && !this._zoomControl){
+      if (!this.controlslist.toLowerCase().includes("nozoom") && !this._zoomControl && (totalSize + 93) <= mapSize){
+        totalSize += 93;
         this._zoomControl = L.control.zoom().addTo(this._map);
       }
-      if (!this.controlslist.toLowerCase().includes("noreload") && !this._reloadButton){
+      if (!this.controlslist.toLowerCase().includes("noreload") && !this._reloadButton && (totalSize + 49) <= mapSize){
+        totalSize += 49;
         this._reloadButton = M.reloadButton().addTo(this._map);
       }
-      if (!this.controlslist.toLowerCase().includes("nofullscreen") && !this._fullScreenControl){
+      if (!this.controlslist.toLowerCase().includes("nofullscreen") && !this._fullScreenControl && (totalSize + 49) <= mapSize){
+        totalSize += 49;
         this._fullScreenControl = L.control.fullscreen().addTo(this._map);
       }
       //removes any control layers that are not needed, either by the toggling or by the controlslist attribute
