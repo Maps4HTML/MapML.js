@@ -61,7 +61,6 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       this._parentOnMoveEnd();
     },
     createTile: function (coords) {
-      this._template.linkEl.dispatchEvent(new CustomEvent('tile'));
       if (this._template.type.startsWith('image/')) {
         return L.TileLayer.prototype.createTile.call(this, coords, function(){});
       } else {
@@ -69,13 +68,25 @@ export var TemplatedTileLayer = L.TileLayer.extend({
         // the tile here, unless there can be a callback associated to the element
         // that will render the content in the alread-placed tile
         // var tile = L.DomUtil.create('canvas', 'leaflet-tile');
+        let tileGroup = document.createElement("DIV");
+        L.DomUtil.addClass(tileGroup, "mapml-tile-group");
         var tile = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         tile.setAttribute("width", `${TILE_SIZE}`);
         tile.setAttribute("height", `${TILE_SIZE}`);
 //        tile.style.outline="1px solid red";
         L.DomUtil.addClass(tile, "leaflet-tile");
         this._fetchTile(coords, tile);
-        return tile;
+        tileGroup.appendChild(tile);
+        this._template.linkEl.dispatchEvent(new CustomEvent('tile', {
+          detail:{
+            x:coords.x,
+            y:coords.y,
+            zoom:coords.z,
+            appendTile: (elem)=>{tileGroup.appendChild(elem);},
+          },
+        }));
+
+        return tileGroup;
       }
     },
     _mapmlTileReady: function(tile) {
