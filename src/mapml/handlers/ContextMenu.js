@@ -293,7 +293,7 @@ export var ContextMenu = L.Handler.extend({
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
         point = mapEl._map.project(click.latlng),
-        tileSize = mapEl_map.options.crs.options.crs.tile.bounds.max.x;
+        tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x;
     this.contextMenu._copyData(`z:${mapEl.zoom}, column:${point.x/tileSize}, row:${point.y/tileSize}`);
   },
 
@@ -310,7 +310,7 @@ export var ContextMenu = L.Handler.extend({
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
         point = mapEl._map.options.crs.project(click.latlng),
-        tileSize = mapEl_map.options.crs.options.crs.tile.bounds.max.x,
+        tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x,
         pointX = point.x % tileSize, pointY = point.y % tileSize;
     if(pointX < 0) pointX+= tileSize;
     if(pointY < 0) pointY+= tileSize;
@@ -328,7 +328,7 @@ export var ContextMenu = L.Handler.extend({
     let mapEl = this.options.mapEl,
     click = this.contextMenu._clickEvent,
     point = mapEl._map.project(click.latlng),
-    tileSize = mapEl_map.options.crs.options.crs.tile.bounds.max.x,
+    tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x,
     pointX = point.x % tileSize, pointY = point.y % tileSize,
     scale = mapEl._map.options.crs.scale(+mapEl.zoom),
     pcrs = mapEl._map.options.crs.transformation.untransform(point,scale);
