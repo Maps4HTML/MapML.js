@@ -61,6 +61,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       this._parentOnMoveEnd();
     },
     createTile: function (coords) {
+      this._template.linkEl.dispatchEvent(new CustomEvent('tile'));
       if (this._template.type.startsWith('image/')) {
         return L.TileLayer.prototype.createTile.call(this, coords, function(){});
       } else {

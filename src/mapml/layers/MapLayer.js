@@ -713,6 +713,7 @@ export var MapMLLayer = L.Layer.extend({
                       // template has a matching input for every variable reference {varref}
                       layer._templateVars.push({
                         template:decodeURI(new URL(template, base)), 
+                        linkEl: t,
                         title:title, 
                         rel: trel, 
                         type: ttype, 
