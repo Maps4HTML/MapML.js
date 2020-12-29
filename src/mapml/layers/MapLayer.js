@@ -151,6 +151,7 @@ export var MapMLLayer = L.Layer.extend({
             className:"mapml-static-tile-layer",
             tileContainer:this._mapmlTileContainer,
             maxZoomBound:map.options.crs.options.resolutions.length - 1,
+            tileSize: map.options.crs.options.crs.tile.bounds.max.x,
           });
           map.addLayer(this._staticTileLayer);
         }
