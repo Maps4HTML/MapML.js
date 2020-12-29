@@ -1,5 +1,3 @@
-import { TILE_SIZE } from '../utils/Constants';
-
 export var MapMLStaticTileLayer = L.GridLayer.extend({
 
   initialize: function (options) {
@@ -66,20 +64,20 @@ export var MapMLStaticTileLayer = L.GridLayer.extend({
   },
 
   _getLayerBounds: function(tileGroups, projection){
-    let layerBounds = {};
+    let layerBounds = {}, tileSize = M[projection].options.crs.tile.bounds.max.x;
     for(let tile in tileGroups){
       let sCoords = tile.split(":"), pixelCoords = {};
-      pixelCoords.x = +sCoords[0] * TILE_SIZE;
-      pixelCoords.y = +sCoords[1] * TILE_SIZE;
+      pixelCoords.x = +sCoords[0] * tileSize;
+      pixelCoords.y = +sCoords[1] * tileSize;
       pixelCoords.z = +sCoords[2]; //+String same as parseInt(String)
       if(sCoords[2] in layerBounds){
 
         layerBounds[sCoords[2]].extend(L.point(pixelCoords.x ,pixelCoords.y ));
-        layerBounds[sCoords[2]].extend(L.point(((pixelCoords.x+TILE_SIZE) ),((pixelCoords.y+TILE_SIZE) )));
+        layerBounds[sCoords[2]].extend(L.point(((pixelCoords.x+tileSize) ),((pixelCoords.y+tileSize) )));
       } else{
         layerBounds[sCoords[2]] = L.bounds(
                                     L.point(pixelCoords.x ,pixelCoords.y ),
-                                    L.point(((pixelCoords.x+TILE_SIZE) ),((pixelCoords.y+TILE_SIZE) )));
+                                    L.point(((pixelCoords.x+tileSize) ),((pixelCoords.y+tileSize) )));
       }
     }
     // TODO: optimize by removing 2nd loop, add util function to convert point in pixels to point in pcrs, use that instead then this loop

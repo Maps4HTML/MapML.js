@@ -1,5 +1,3 @@
-import { TILE_SIZE } from '../utils/Constants';
-
 /*
 MIT License related to portions of M.ContextMenu 
 Copyright (c) 2017 adam.ratcliffe@gmail.com
@@ -294,8 +292,9 @@ export var ContextMenu = L.Handler.extend({
   _copyTileMatrix: function(e){
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
-        point = mapEl._map.project(click.latlng);
-    this.contextMenu._copyData(`z:${mapEl.zoom}, column:${point.x/TILE_SIZE}, row:${point.y/TILE_SIZE}`);
+        point = mapEl._map.project(click.latlng),
+        tileSize = mapEl_map.options.crs.options.crs.tile.bounds.max.x;
+    this.contextMenu._copyData(`z:${mapEl.zoom}, column:${point.x/tileSize}, row:${point.y/tileSize}`);
   },
 
   _copyPCRS: function(e){
@@ -311,9 +310,10 @@ export var ContextMenu = L.Handler.extend({
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
         point = mapEl._map.options.crs.project(click.latlng),
-        pointX = point.x % TILE_SIZE, pointY = point.y % TILE_SIZE;
-    if(pointX < 0) pointX+= TILE_SIZE;
-    if(pointY < 0) pointY+= TILE_SIZE;
+        tileSize = mapEl_map.options.crs.options.crs.tile.bounds.max.x,
+        pointX = point.x % tileSize, pointY = point.y % tileSize;
+    if(pointX < 0) pointX+= tileSize;
+    if(pointY < 0) pointY+= tileSize;
 
     this.contextMenu._copyData(`z:${mapEl.zoom}, i:${Math.round(pointX)}, j:${Math.round(pointY)}`);
   },
@@ -328,12 +328,13 @@ export var ContextMenu = L.Handler.extend({
     let mapEl = this.options.mapEl,
     click = this.contextMenu._clickEvent,
     point = mapEl._map.project(click.latlng),
-    pointX = point.x % TILE_SIZE, pointY = point.y % TILE_SIZE,
+    tileSize = mapEl_map.options.crs.options.crs.tile.bounds.max.x,
+    pointX = point.x % tileSize, pointY = point.y % tileSize,
     scale = mapEl._map.options.crs.scale(+mapEl.zoom),
     pcrs = mapEl._map.options.crs.transformation.untransform(point,scale);
     let allData = `z:${mapEl.zoom}\n`;
     allData += `tile: i:${Math.round(pointX)}, j:${Math.round(pointY)}\n`;
-    allData += `tilematrix: column:${point.x/TILE_SIZE}, row:${point.y/TILE_SIZE}\n`;
+    allData += `tilematrix: column:${point.x/tileSize}, row:${point.y/tileSize}\n`;
     allData += `map: i:${click.containerPoint.x}, j:${click.containerPoint.y}\n`;
     allData += `tcrs: x:${point.x}, y:${point.y}\n`;
     allData += `pcrs: easting:${pcrs.x}, northing:${pcrs.y}\n`;
