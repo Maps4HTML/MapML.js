@@ -56,8 +56,6 @@ export class MapViewer extends HTMLElement {
   set projection(val) {
     if(val && M[val]){
       this.setAttribute('projection', val);
-      if(!(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(val.toUpperCase())))
-        this.dispatchEvent(new CustomEvent('createmap'));
     } else {
       throw new Error("Undefined Projection");
     }
@@ -224,12 +222,9 @@ export class MapViewer extends HTMLElement {
           // this.fire('load', {target: this});
         }
       }, {once:true});
-
-      // checks if the projection is a custom projection or not
-      let custom = !(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(this.projection));
-      
-      // if the page doesn't use nav.js or isn't custom then dispatch createmap event
-      if(!custom){
+ 
+      //create map with if projection is defined
+      if(M[this.getAttribute("projection")]){
         this.dispatchEvent(new CustomEvent('createmap'));
       }
 
@@ -564,6 +559,119 @@ export class MapViewer extends HTMLElement {
         url = URL.createObjectURL(blob);
     window.open(url);
     URL.revokeObjectURL(url);
+  }
+
+  defineCustomProjection(jsonTemplate) {
+    let t = JSON.parse(jsonTemplate);
+    if (t === undefined || !t.code || !t.proj4string || !t.projection || !t.resolutions || !t.origin || !t.bounds) throw new Error('Incomplete TCRS Definition');
+    if (["CBMTILE", "APSTILE", "OSMTILE", "WGS84"].includes(t.projection.toUpperCase())) throw new Error('TCRS Override Attempt');
+    let tileSize = [256, 512, 1024, 2048, 4096].includes(t.tilesize)?t.tilesize:256;
+
+    M[t.projection] = new L.Proj.CRS(t.code, t.proj4string, {
+      origin: t.origin,
+      resolutions: t.resolutions,
+      bounds: L.bounds(t.bounds),
+      crs: {
+        tcrs: {
+          horizontal: {
+            name: "x",
+            min: 0, 
+            max: zoom => (M[t.projection].options.bounds.getSize().x / M[t.projection].options.resolutions[zoom]).toFixed()
+          },
+          vertical: {
+            name: "y",
+            min:0, 
+            max: zoom => (M[t.projection].options.bounds.getSize().y / M[t.projection].options.resolutions[zoom]).toFixed()
+          },
+          bounds: zoom => L.bounds([M[t.projection].options.crs.tcrs.horizontal.min,
+            M[t.projection].options.crs.tcrs.vertical.min],
+            [M[t.projection].options.crs.tcrs.horizontal.max(zoom),
+            M[t.projection].options.crs.tcrs.vertical.max(zoom)])
+        },
+        pcrs: {
+          horizontal: {
+            name: "easting",
+            get min() {return M[t.projection].options.bounds.min.x;},
+            get max() {return M[t.projection].options.bounds.max.x;}
+          }, 
+          vertical: {
+            name: "northing", 
+            get min() {return M[t.projection].options.bounds.min.y;},
+            get max() {return M[t.projection].options.bounds.max.y;}
+          },
+          get bounds() {return M[t.projection].options.bounds;}
+        }, 
+        gcrs: {
+          horizontal: {
+            name: "longitude",
+            // set min/max axis values from EPSG registry area of use, retrieved 2019-07-25
+            get min() {return M[t.projection].unproject(M.OSMTILE.options.bounds.min).lng;},
+            get max() {return M[t.projection].unproject(M.OSMTILE.options.bounds.max).lng;}
+          }, 
+          vertical: {
+            name: "latitude",
+            // set min/max axis values from EPSG registry area of use, retrieved 2019-07-25
+            get min() {return M[t.projection].unproject(M.OSMTILE.options.bounds.min).lat;},
+            get max() {return M[t.projection].unproject(M.OSMTILE.options.bounds.max).lat;}
+          },
+          get bounds() {return L.latLngBounds(
+                [M[t.projection].options.crs.gcrs.vertical.min,M[t.projection].options.crs.gcrs.horizontal.min],
+                [M[t.projection].options.crs.gcrs.vertical.max,M[t.projection].options.crs.gcrs.horizontal.max]);}
+        },
+        map: {
+          horizontal: {
+            name: "i",
+            min: 0,
+            max: map => map.getSize().x
+          },
+          vertical: {
+            name: "j",
+            min: 0,
+            max: map => map.getSize().y
+          },
+          bounds: map => L.bounds(L.point([0,0]),map.getSize())
+        },
+        tile: {
+          horizontal: {
+            name: "i",
+            min: 0,
+            max: tileSize,
+          },
+          vertical: {
+            name: "j",
+            min: 0,
+            max: tileSize,
+          },
+          get bounds() {return L.bounds(
+                    [M[t.projection].options.crs.tile.horizontal.min,M[t.projection].options.crs.tile.vertical.min],
+                    [M[t.projection].options.crs.tile.horizontal.max,M[t.projection].options.crs.tile.vertical.max]);}
+        },
+        tilematrix: {
+          horizontal: {
+            name: "column",
+            min: 0,
+            max: zoom => (M[t.projection].options.crs.tcrs.horizontal.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().x).toFixed()
+          },
+          vertical: {
+            name: "row",
+            min: 0,
+            max: zoom => (M[t.projection].options.crs.tcrs.vertical.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().y).toFixed()
+          },
+          bounds: zoom => L.bounds(
+                   [M[t.projection].options.crs.tilematrix.horizontal.min,
+                   M[t.projection].options.crs.tilematrix.vertical.min],
+                   [M[t.projection].options.crs.tilematrix.horizontal.max(zoom),
+                   M[t.projection].options.crs.tilematrix.vertical.max(zoom)])
+        }
+      },
+    });      //creates crs using L.Proj
+    M[t.projection.toUpperCase()] = M[t.projection]; //adds the projection uppercase to global M
+    this.setAttribute("projection", t.projection);  //sets projection attribute
+    let maps = document.querySelectorAll("mapml-viewer");
+    for (let m of maps){  //triggers map creation for all other maps in the case they use the same projection
+      if (m.projection == t.projection) m.dispatchEvent(new CustomEvent('createmap'));
+    }
+    return t.projection;
   }
   
   _ready() {
