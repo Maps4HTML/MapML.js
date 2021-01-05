@@ -31,7 +31,8 @@
           "tilesize":265
         }`
     let map = document.querySelectorAll("mapml-viewer")[0];
-    map.defineCustomProjection(template);
+    let custProj = map.defineCustomProjection(template);
+    map.projection = custProj;
   </script>
 
   <mapml-viewer style="width:500px;height:500px;" projection="other" zoom="3" lat="45.5052040" lon="-75.2202344"
@@ -165,7 +166,8 @@
           "tilesize":256
         }`
     let mapTwo = document.querySelectorAll("mapml-viewer")[1];
-    mapTwo.defineCustomProjection(customCBM);
+    let custProj = mapTwo.defineCustomProjection(customCBM);
+    mapTwo.projection = custProj;
   </script>
 </body>
 

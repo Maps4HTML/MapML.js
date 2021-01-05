@@ -51,11 +51,12 @@ export class MapViewer extends HTMLElement {
     }
   }
   get projection() {
-    return this.hasAttribute("projection") ? this.getAttribute("projection") : "OSMTILE";
+    return this.hasAttribute("projection") ? this.getAttribute("projection") : "";
   }
   set projection(val) {
     if(val && M[val]){
       this.setAttribute('projection', val);
+      this.dispatchEvent(new CustomEvent('createmap'));
     } else {
       throw new Error("Undefined Projection");
     }
@@ -666,11 +667,6 @@ export class MapViewer extends HTMLElement {
       },
     });      //creates crs using L.Proj
     M[t.projection.toUpperCase()] = M[t.projection]; //adds the projection uppercase to global M
-    this.setAttribute("projection", t.projection);  //sets projection attribute
-    let maps = document.querySelectorAll("mapml-viewer");
-    for (let m of maps){  //triggers map creation for all other maps in the case they use the same projection
-      if (m.projection == t.projection) m.dispatchEvent(new CustomEvent('createmap'));
-    }
     return t.projection;
   }
   
