@@ -224,11 +224,11 @@ export class MapViewer extends HTMLElement {
         }
       }, {once:true});
  
-      //create map with if projection is defined
-      if(M[this.getAttribute("projection")]){
+      let custom = !(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(this.projection));
+      // if the page doesn't use nav.js or isn't custom then dispatch createmap event	
+      if(!custom){	
         this.dispatchEvent(new CustomEvent('createmap'));
       }
-
     }
   }
   disconnectedCallback() {
@@ -565,7 +565,7 @@ export class MapViewer extends HTMLElement {
   defineCustomProjection(jsonTemplate) {
     let t = JSON.parse(jsonTemplate);
     if (t === undefined || !t.code || !t.proj4string || !t.projection || !t.resolutions || !t.origin || !t.bounds) throw new Error('Incomplete TCRS Definition');
-    if (["CBMTILE", "APSTILE", "OSMTILE", "WGS84"].includes(t.projection.toUpperCase())) throw new Error('TCRS Override Attempt');
+    if (M[t.projection.toUpperCase()]) return t.projection.toUpperCase();
     let tileSize = [256, 512, 1024, 2048, 4096].includes(t.tilesize)?t.tilesize:256;
 
     M[t.projection] = new L.Proj.CRS(t.code, t.proj4string, {

@@ -53,13 +53,12 @@ export class WebMap extends HTMLMapElement {
     }
   }
   get projection() {
-    return this.hasAttribute("projection") ? this.getAttribute("projection") : "OSMTILE";
+    return this.hasAttribute("projection") ? this.getAttribute("projection") : "";
   }
   set projection(val) {
     if(val && M[val]){
       this.setAttribute('projection', val);
-      if(!(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(val.toUpperCase())))
-        this.dispatchEvent(new CustomEvent('createmap'));
+      this.dispatchEvent(new CustomEvent('createmap'));
     } else {
       throw new Error("Undefined Projection");
     }
@@ -260,8 +259,9 @@ export class WebMap extends HTMLMapElement {
         }
       }, {once:true});
 
-      //create map with if projection is defined
-      if(M[this.getAttribute("projection")]){
+      let custom = !(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(this.projection));
+      // if the page doesn't use nav.js or isn't custom then dispatch createmap event	
+      if(!custom){	
         this.dispatchEvent(new CustomEvent('createmap'));
       }
     }
@@ -599,7 +599,7 @@ export class WebMap extends HTMLMapElement {
   defineCustomProjection(jsonTemplate) {
     let t = JSON.parse(jsonTemplate);
     if (t === undefined || !t.code || !t.proj4string || !t.projection || !t.resolutions || !t.origin || !t.bounds) throw new Error('Incomplete TCRS Definition');
-    if (["CBMTILE", "APSTILE", "OSMTILE", "WGS84"].includes(t.projection.toUpperCase())) throw new Error('TCRS Override Attempt');
+    if (M[t.projection.toUpperCase()]) return t.projection.toUpperCase();
     let tileSize = [256, 512, 1024, 2048, 4096].includes(t.tilesize)?t.tilesize:256;
 
     M[t.projection] = new L.Proj.CRS(t.code, t.proj4string, {
@@ -701,11 +701,6 @@ export class WebMap extends HTMLMapElement {
       },
     });      //creates crs using L.Proj
     M[t.projection.toUpperCase()] = M[t.projection]; //adds the projection uppercase to global M
-    this.setAttribute("projection", t.projection);  //sets projection attribute
-    let maps = document.querySelectorAll("map[is='web-map']");
-    for (let m of maps){  //triggers map creation for all other maps in the case they use the same projection
-      if (m.projection == t.projection) m.dispatchEvent(new CustomEvent('createmap'));
-    }
     return t.projection;
   }
 
