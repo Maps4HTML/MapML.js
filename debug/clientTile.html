@@ -42,7 +42,7 @@
   </mapml-viewer>
   <script>
     let layer = document.querySelector("body > mapml-viewer > layer- > extent > link");
-    layer.addEventListener("tile", (e) => {
+    layer.addEventListener("tileloadstart", (e) => {
       //let cust = document.createElement("IMG")
       //cust.src = "https://1000logos.net/wp-content/uploads/2018/11/GitHub-logo-500x452.png";
       //cust.width = 50;
