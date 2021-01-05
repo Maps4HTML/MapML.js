@@ -38,11 +38,11 @@ jest.setTimeout(50000);
         });
         test("[" + browserType + "]" + " Complex Custom TCRS, static features loaded, templated features loaded", async () => {
           const staticFeatures = await page.$eval(
-            "body > mapml-viewer:nth-child(2) > layer-:nth-child(1)",
+            "body > mapml-viewer:nth-child(3) > layer-:nth-child(1)",
             (layer) => layer.hasAttribute('disabled'));
 
           const templatedFeatures = await page.$eval(
-            "body > mapml-viewer:nth-child(2) > layer-:nth-child(2)",
+            "body > mapml-viewer:nth-child(3) > layer-:nth-child(2)",
             (layer) => layer.hasAttribute('disabled'));
 
 
