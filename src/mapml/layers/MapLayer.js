@@ -896,7 +896,7 @@ export var MapMLLayer = L.Layer.extend({
             zoom.setAttribute('max',this._map.getMaxZoom());
         }
         var lp = serverExtent.hasAttribute("units") ? serverExtent.getAttribute("units") : null;
-        if (lp && lp === "OSMTILE" || lp === "WGS84" || lp === "APSTILE" || lp === "CBMTILE") {
+        if (lp && M[lp]) {
           this.crs = M[lp];
         } else {
           this.crs = M.OSMTILE;
