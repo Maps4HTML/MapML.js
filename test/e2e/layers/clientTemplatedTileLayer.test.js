@@ -69,8 +69,6 @@ jest.setTimeout(50000);
           expect(eight).toEqual("311");
 
         });
-
-
       });
   }
 })();

@@ -61,39 +61,37 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       this._parentOnMoveEnd();
     },
     createTile: function (coords) {
+      let tileGroup = document.createElement("DIV");
+      L.DomUtil.addClass(tileGroup, "mapml-tile-group");
+      L.DomUtil.addClass(tileGroup, "leaflet-tile");
+      
+      tileGroup.setAttribute("width", `${TILE_SIZE}`);
+      tileGroup.setAttribute("height", `${TILE_SIZE}`);
+
+      this._template.linkEl.dispatchEvent(new CustomEvent('tileloadstart', {
+        detail:{
+          x:coords.x,
+          y:coords.y,
+          zoom:coords.z,
+          appendTile: (elem)=>{tileGroup.appendChild(elem);},
+        },
+      }));
+
       if (this._template.type.startsWith('image/')) {
-        return L.TileLayer.prototype.createTile.call(this, coords, function(){});
-      } else {
+        tileGroup.appendChild(L.TileLayer.prototype.createTile.call(this, coords, function(){}));
+      } else if(!this._url.includes(BLANK_TT_TREF)) {
         // tiles of type="text/mapml" will have to fetch content while creating
         // the tile here, unless there can be a callback associated to the element
         // that will render the content in the alread-placed tile
         // var tile = L.DomUtil.create('canvas', 'leaflet-tile');
-        let tileGroup = document.createElement("DIV");
-        L.DomUtil.addClass(tileGroup, "mapml-tile-group");
-        L.DomUtil.addClass(tileGroup, "leaflet-tile");
-        
-        tileGroup.setAttribute("width", `${TILE_SIZE}`);
-        tileGroup.setAttribute("height", `${TILE_SIZE}`);
-        if(!this._url.includes(BLANK_TT_TREF)){
-          var tile = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-          this._fetchTile(coords, tile);
-          tile.setAttribute("width", `${TILE_SIZE}`);
-          tile.setAttribute("height", `${TILE_SIZE}`);
-          L.DomUtil.addClass(tile, "leaflet-tile");
-          tileGroup.appendChild(tile);
-        }
-
-        this._template.linkEl.dispatchEvent(new CustomEvent('tileloadstart', {
-          detail:{
-            x:coords.x,
-            y:coords.y,
-            zoom:coords.z,
-            appendTile: (elem)=>{tileGroup.appendChild(elem);},
-          },
-        }));
-
-        return tileGroup;
+        var tile = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        this._fetchTile(coords, tile);
+        tile.setAttribute("width", `${TILE_SIZE}`);
+        tile.setAttribute("height", `${TILE_SIZE}`);
+        L.DomUtil.addClass(tile, "leaflet-tile");
+        tileGroup.appendChild(tile);
       }
+      return tileGroup;
     },
     _mapmlTileReady: function(tile) {
         L.DomUtil.addClass(tile,'leaflet-tile-loaded');
