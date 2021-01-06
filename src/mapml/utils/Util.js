@@ -1,4 +1,4 @@
-import { TILE_SIZE, FALLBACK_CS, FALLBACK_PROJECTION } from './Constants';
+import { FALLBACK_CS, FALLBACK_PROJECTION } from './Constants';
 
 export var Util = {
   convertAndFormatPCRS : function(pcrsBounds, map){
@@ -178,10 +178,11 @@ export var Util = {
 
   boundsToPCRSBounds: function(bounds, zoom, projection,cs){
     if(!bounds || !zoom && +zoom !== 0 || !cs) return undefined;
+    let tileSize = M[projection].options.crs.tile.bounds.max.x;
     switch(cs.toUpperCase()){
       case "TILEMATRIX":
-        let tileToPixelBounds = L.bounds(L.point(bounds.min.x*TILE_SIZE,bounds.min.y*TILE_SIZE),
-                                  L.point(bounds.max.x*TILE_SIZE,bounds.max.y*TILE_SIZE));
+        let tileToPixelBounds = L.bounds(L.point(bounds.min.x*tileSize,bounds.min.y*tileSize),
+                                  L.point(bounds.max.x*tileSize,bounds.max.y*tileSize));
         return M.pixelToPCRSBounds(tileToPixelBounds,zoom,projection);
       case "PCRS":
         return bounds;

@@ -1,4 +1,4 @@
-import { FALLBACK_CS, FALLBACK_PROJECTION, TILE_SIZE } from '../utils/Constants';
+import { FALLBACK_CS, FALLBACK_PROJECTION } from '../utils/Constants';
 
 export var MapMLFeatures = L.FeatureGroup.extend({
   /*
@@ -346,7 +346,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         break;
       case "TILEMATRIX":
         let pixels = coords.map((value)=>{
-          return value * TILE_SIZE;
+          return value * M[projection].options.crs.tile.bounds.max.x;
         });
         pcrs = M[projection].transformation.untransform(L.point(pixels),M[projection].scale(+zoom));
         break;
