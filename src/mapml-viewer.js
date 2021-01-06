@@ -51,11 +51,14 @@ export class MapViewer extends HTMLElement {
     }
   }
   get projection() {
-    return this.hasAttribute("projection") ? this.getAttribute("projection") : "OSMTILE";
+    return this.hasAttribute("projection") ? this.getAttribute("projection") : "";
   }
   set projection(val) {
-    if (val && (val === "OSMTILE" || val === "CBMTILE" || val === "APSTILE" || val === "WGS84")) {
+    if(val && M[val]){
       this.setAttribute('projection', val);
+      this.dispatchEvent(new CustomEvent('createmap'));
+    } else {
+      throw new Error("Undefined Projection");
     }
   }
   get zoom() {
@@ -186,36 +189,45 @@ export class MapViewer extends HTMLElement {
         this._traversalCall = false;
       }
 
-      // create the Leaflet map if this is the first time attached is called
-      if (!this._map) {
-        this._map = L.map(this._container, {
-          center: new L.LatLng(this.lat, this.lon),
-          projection: this.projection,
-          query: true,
-          contextMenu: true,
-          mapEl: this,
-          crs: M[this.projection],
-          zoom: this.zoom,
-          zoomControl: false,
-          // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
-          // the mapml response is received the screen tends to flash.  I'm sure
-          // there is a better configuration than that, but at this moment
-          // I'm not sure how to approach that issue.
-          // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
-          fadeAnimation: true
-        });
-        // the attribution control is not optional
-        this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
-
-        this.setControls(false,false,true);
-
-        // Make the Leaflet container element programmatically identifiable
-        // (https://github.com/Leaflet/Leaflet/issues/7193).
-        this._container.setAttribute('role', 'region');
-        this._container.setAttribute('aria-label', 'Interactive map');
-
-        this._setUpEvents();
-        // this.fire('load', {target: this});
+      // wait for createmap event before creating leaflet map
+      // this allows a safeguard for the case where loading a custom TCRS takes longer than loading mapml-viewer.js/web-map.js
+      this.addEventListener('createmap', ()=>{
+        if (!this._map) {
+          this._map = L.map(this._container, {
+            center: new L.LatLng(this.lat, this.lon),
+            projection: this.projection,
+            query: true,
+            contextMenu: true,
+            mapEl: this,
+            crs: M[this.projection],
+            zoom: this.zoom,
+            zoomControl: false,
+            // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
+            // the mapml response is received the screen tends to flash.  I'm sure
+            // there is a better configuration than that, but at this moment
+            // I'm not sure how to approach that issue.
+            // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
+            fadeAnimation: true
+          });
+          // the attribution control is not optional
+          this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+    
+          this.setControls(false,false,true);
+    
+          // Make the Leaflet container element programmatically identifiable
+          // (https://github.com/Leaflet/Leaflet/issues/7193).
+          this._container.setAttribute('role', 'region');
+          this._container.setAttribute('aria-label', 'Interactive map');
+    
+          this._setUpEvents();
+          // this.fire('load', {target: this});
+        }
+      }, {once:true});
+ 
+      let custom = !(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(this.projection));
+      // if the page doesn't use nav.js or isn't custom then dispatch createmap event	
+      if(!custom){	
+        this.dispatchEvent(new CustomEvent('createmap'));
       }
     }
   }
@@ -548,6 +560,114 @@ export class MapViewer extends HTMLElement {
         url = URL.createObjectURL(blob);
     window.open(url);
     URL.revokeObjectURL(url);
+  }
+
+  defineCustomProjection(jsonTemplate) {
+    let t = JSON.parse(jsonTemplate);
+    if (t === undefined || !t.code || !t.proj4string || !t.projection || !t.resolutions || !t.origin || !t.bounds) throw new Error('Incomplete TCRS Definition');
+    if (M[t.projection.toUpperCase()]) return t.projection.toUpperCase();
+    let tileSize = [256, 512, 1024, 2048, 4096].includes(t.tilesize)?t.tilesize:256;
+
+    M[t.projection] = new L.Proj.CRS(t.code, t.proj4string, {
+      origin: t.origin,
+      resolutions: t.resolutions,
+      bounds: L.bounds(t.bounds),
+      crs: {
+        tcrs: {
+          horizontal: {
+            name: "x",
+            min: 0, 
+            max: zoom => (M[t.projection].options.bounds.getSize().x / M[t.projection].options.resolutions[zoom]).toFixed()
+          },
+          vertical: {
+            name: "y",
+            min:0, 
+            max: zoom => (M[t.projection].options.bounds.getSize().y / M[t.projection].options.resolutions[zoom]).toFixed()
+          },
+          bounds: zoom => L.bounds([M[t.projection].options.crs.tcrs.horizontal.min,
+            M[t.projection].options.crs.tcrs.vertical.min],
+            [M[t.projection].options.crs.tcrs.horizontal.max(zoom),
+            M[t.projection].options.crs.tcrs.vertical.max(zoom)])
+        },
+        pcrs: {
+          horizontal: {
+            name: "easting",
+            get min() {return M[t.projection].options.bounds.min.x;},
+            get max() {return M[t.projection].options.bounds.max.x;}
+          }, 
+          vertical: {
+            name: "northing", 
+            get min() {return M[t.projection].options.bounds.min.y;},
+            get max() {return M[t.projection].options.bounds.max.y;}
+          },
+          get bounds() {return M[t.projection].options.bounds;}
+        }, 
+        gcrs: {
+          horizontal: {
+            name: "longitude",
+            // set min/max axis values from EPSG registry area of use, retrieved 2019-07-25
+            get min() {return M[t.projection].unproject(M.OSMTILE.options.bounds.min).lng;},
+            get max() {return M[t.projection].unproject(M.OSMTILE.options.bounds.max).lng;}
+          }, 
+          vertical: {
+            name: "latitude",
+            // set min/max axis values from EPSG registry area of use, retrieved 2019-07-25
+            get min() {return M[t.projection].unproject(M.OSMTILE.options.bounds.min).lat;},
+            get max() {return M[t.projection].unproject(M.OSMTILE.options.bounds.max).lat;}
+          },
+          get bounds() {return L.latLngBounds(
+                [M[t.projection].options.crs.gcrs.vertical.min,M[t.projection].options.crs.gcrs.horizontal.min],
+                [M[t.projection].options.crs.gcrs.vertical.max,M[t.projection].options.crs.gcrs.horizontal.max]);}
+        },
+        map: {
+          horizontal: {
+            name: "i",
+            min: 0,
+            max: map => map.getSize().x
+          },
+          vertical: {
+            name: "j",
+            min: 0,
+            max: map => map.getSize().y
+          },
+          bounds: map => L.bounds(L.point([0,0]),map.getSize())
+        },
+        tile: {
+          horizontal: {
+            name: "i",
+            min: 0,
+            max: tileSize,
+          },
+          vertical: {
+            name: "j",
+            min: 0,
+            max: tileSize,
+          },
+          get bounds() {return L.bounds(
+                    [M[t.projection].options.crs.tile.horizontal.min,M[t.projection].options.crs.tile.vertical.min],
+                    [M[t.projection].options.crs.tile.horizontal.max,M[t.projection].options.crs.tile.vertical.max]);}
+        },
+        tilematrix: {
+          horizontal: {
+            name: "column",
+            min: 0,
+            max: zoom => (M[t.projection].options.crs.tcrs.horizontal.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().x).toFixed()
+          },
+          vertical: {
+            name: "row",
+            min: 0,
+            max: zoom => (M[t.projection].options.crs.tcrs.vertical.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().y).toFixed()
+          },
+          bounds: zoom => L.bounds(
+                   [M[t.projection].options.crs.tilematrix.horizontal.min,
+                   M[t.projection].options.crs.tilematrix.vertical.min],
+                   [M[t.projection].options.crs.tilematrix.horizontal.max(zoom),
+                   M[t.projection].options.crs.tilematrix.vertical.max(zoom)])
+        }
+      },
+    });      //creates crs using L.Proj
+    M[t.projection.toUpperCase()] = M[t.projection]; //adds the projection uppercase to global M
+    return t.projection;
   }
   
   _ready() {

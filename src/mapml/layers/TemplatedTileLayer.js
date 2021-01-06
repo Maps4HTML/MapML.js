@@ -1,4 +1,4 @@
-import { TILE_SIZE, BLANK_TT_TREF } from '../utils/Constants';
+import { BLANK_TT_TREF } from '../utils/Constants';
 
 export var TemplatedTileLayer = L.TileLayer.extend({
     // a TemplateTileLayer is similar to a L.TileLayer except its templates are
@@ -61,12 +61,13 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       this._parentOnMoveEnd();
     },
     createTile: function (coords) {
-      let tileGroup = document.createElement("DIV");
+      let tileGroup = document.createElement("DIV"),
+          tileSize = this._map.options.crs.options.crs.tile.bounds.max.x;
       L.DomUtil.addClass(tileGroup, "mapml-tile-group");
       L.DomUtil.addClass(tileGroup, "leaflet-tile");
       
-      tileGroup.setAttribute("width", `${TILE_SIZE}`);
-      tileGroup.setAttribute("height", `${TILE_SIZE}`);
+      tileGroup.setAttribute("width", `${tileSize}`);
+      tileGroup.setAttribute("height", `${tileSize}`);
 
       this._template.linkEl.dispatchEvent(new CustomEvent('tileloadstart', {
         detail:{
@@ -86,8 +87,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
         // var tile = L.DomUtil.create('canvas', 'leaflet-tile');
         var tile = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         this._fetchTile(coords, tile);
-        tile.setAttribute("width", `${TILE_SIZE}`);
-        tile.setAttribute("height", `${TILE_SIZE}`);
+        tile.setAttribute("width", `${tileSize}`);
+        tile.setAttribute("height", `${tileSize}`);
         L.DomUtil.addClass(tile, "leaflet-tile");
         tileGroup.appendChild(tile);
       }
@@ -392,7 +393,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
         // transform to tcrs at tile.z
         // subtract the tcrs origin from tile.x,tile.y
         var tcrsCoords = crs.transformation.transform(coords,crs.scale(tile.z)),
-            tilePoint = L.point(tcrsCoords.x - (tile.x*TILE_SIZE), tcrsCoords.y - (tile.y*TILE_SIZE));
+            tileSize = crs.options.crs.tile.bounds.max.x,
+            tilePoint = L.point(tcrsCoords.x - (tile.x*tileSize), tcrsCoords.y - (tile.y*tileSize));
 
         return tilePoint;
       }
@@ -401,12 +403,13 @@ export var TemplatedTileLayer = L.TileLayer.extend({
      return new L.LatLng(coords[1], coords[0], coords[2]);
     },
     pcrs2tile: function (coords,tile) {
-      var crs = this.options.crs;
+      var crs = this.options.crs,
+          tileSize = crs.options.crs.tile.bounds.max.x;
       // look up the scale factor from the layer's crs for the tile.z
       // transform to tcrs at tile.z
       // subtract the tcrs origin from tile.x,tile.y
       var tcrsCoords = crs.transformation.transform(coords,crs.scale(tile.z)),
-          tilePoint = L.point(tcrsCoords.x - (tile.x*TILE_SIZE), tcrsCoords.y - (tile.y*TILE_SIZE));
+          tilePoint = L.point(tcrsCoords.x - (tile.x*tileSize), tcrsCoords.y - (tile.y*tileSize));
 
       return tilePoint;
     },
@@ -692,13 +695,14 @@ export var TemplatedTileLayer = L.TileLayer.extend({
           };
         }
       }
-      var transformation = this.options.crs.transformation, 
+      var transformation = this.options.crs.transformation,
+          tileSize = this.options.crs.options.crs.tile.bounds.max.x,
           scale = L.bind(this.options.crs.scale, this.options.crs),
       tilematrix2pcrs = function (c,zoom) {
-        return transformation.untransform(c.multiplyBy(TILE_SIZE),scale(zoom));
+        return transformation.untransform(c.multiplyBy(tileSize),scale(zoom));
       },
       pcrs2tilematrix = function(c,zoom) {
-        return transformation.transform(c, scale(zoom)).divideBy(TILE_SIZE).floor();
+        return transformation.transform(c, scale(zoom)).divideBy(tileSize).floor();
       };
       if (east && north) {
         

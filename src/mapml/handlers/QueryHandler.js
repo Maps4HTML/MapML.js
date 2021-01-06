@@ -1,5 +1,3 @@
-import { TILE_SIZE } from '../utils/Constants';
-
 export var QueryHandler = L.Handler.extend({
     addHooks: function() {
         // get a reference to the actual <map> element, so we can 
@@ -44,6 +42,7 @@ export var QueryHandler = L.Handler.extend({
           zoom = e.target.getZoom(),
           map = this._map,
           crs = layer.crs,
+          tileSize = map.options.crs.options.crs.tile.bounds.max.x,
           container = layer._container,
           popupOptions = {autoPan: true, maxHeight: (map.getSize().y * 0.5) - 50},
           tcrs2pcrs = function (c) {
@@ -53,13 +52,13 @@ export var QueryHandler = L.Handler.extend({
             return crs.unproject(crs.transformation.untransform(c,crs.scale(zoom)),zoom);
           };
       var tcrsClickLoc = crs.latLngToPoint(e.latlng, zoom),
-          tileMatrixClickLoc = tcrsClickLoc.divideBy(TILE_SIZE).floor(),
-          tileBounds = new L.Bounds(tcrsClickLoc.divideBy(TILE_SIZE).floor().multiplyBy(TILE_SIZE), 
-          tcrsClickLoc.divideBy(TILE_SIZE).ceil().multiplyBy(TILE_SIZE));
+          tileMatrixClickLoc = tcrsClickLoc.divideBy(tileSize).floor(),
+          tileBounds = new L.Bounds(tcrsClickLoc.divideBy(tileSize).floor().multiplyBy(tileSize), 
+          tcrsClickLoc.divideBy(tileSize).ceil().multiplyBy(tileSize));
   
       // all of the following are locations that might be used in a query, I think.
-      obj[template.query.tilei] = tcrsClickLoc.x.toFixed() - (tileMatrixClickLoc.x * TILE_SIZE);
-      obj[template.query.tilej] = tcrsClickLoc.y.toFixed() - (tileMatrixClickLoc.y * TILE_SIZE);
+      obj[template.query.tilei] = tcrsClickLoc.x.toFixed() - (tileMatrixClickLoc.x * tileSize);
+      obj[template.query.tilej] = tcrsClickLoc.y.toFixed() - (tileMatrixClickLoc.y * tileSize);
       
       // this forces the click to the centre of the map extent in the layer crs
       obj[template.query.mapi] = (map.getSize().divideBy(2)).x.toFixed();

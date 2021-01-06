@@ -1,9 +1,9 @@
 export var DebugOverlay = L.Layer.extend({
 
   onAdd: function (map) {
-    
+
     let mapSize = map.getSize();
-    
+
     //conditionally show container for debug panel/banner only when the map has enough space for it
     if (mapSize.x > 400 || mapSize.y > 300) {
       this._container = L.DomUtil.create("div", "mapml-debug", map._container);
@@ -15,7 +15,7 @@ export var DebugOverlay = L.Layer.extend({
           toggleGridBtn.overlay = this;
           L.DomEvent.on(toggleGridBtn, 'click',this._toggleGrid);
           this._controlPanel.appendChild(toggleGridBtn); */
-          
+
       this._container.style.width = 150;
       this._container.style.zIndex = 10000;
       this._container.style.position = "absolute";
@@ -29,6 +29,7 @@ export var DebugOverlay = L.Layer.extend({
       className: "mapml-debug-grid",
       pane: map._panes.mapPane,
       zIndex: 10000,
+      tileSize: map.options.crs.options.crs.tile.bounds.max.x,
     });
     map.addLayer(this._grid);
 
@@ -72,7 +73,7 @@ export var DebugPanel = L.Layer.extend({
     if (mapSize.x > 400 || mapSize.y > 300) {
       this._title = L.DomUtil.create("div", "mapml-debug-banner", this.options.pane);
       this._title.innerHTML = "Debug mode";
-      
+
       map.debug = {};
       map.debug._infoContainer = this._debugContainer = L.DomUtil.create("div", "mapml-debug-panel", this.options.pane);
 
@@ -102,16 +103,17 @@ export var DebugPanel = L.Layer.extend({
       point = mapEl._map.project(e.latlng),
       scale = mapEl._map.options.crs.scale(+mapEl.zoom),
       pcrs = mapEl._map.options.crs.transformation.untransform(point, scale),
-      pointI = point.x % 256, pointJ = point.y % 256;
+      tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x,
+      pointI = point.x % tileSize, pointJ = point.y % tileSize;
 
-    if (pointI < 0) pointI += 256;
-    if (pointJ < 0) pointJ += 256;
+    if (pointI < 0) pointI += tileSize;
+    if (pointJ < 0) pointJ += tileSize;
 
     this.debug._tileCoord.innerHTML = `tile: i: ${Math.trunc(pointI)}, j: ${Math.trunc(pointJ)}`;
     this.debug._mapCoord.innerHTML = `map: i: ${Math.trunc(e.containerPoint.x)}, j: ${Math.trunc(e.containerPoint.y)}`;
     this.debug._gcrsCoord.innerHTML = `gcrs: lon: ${e.latlng.lng.toFixed(6)}, lat: ${e.latlng.lat.toFixed(6)}`;
     this.debug._tcrsCoord.innerHTML = `tcrs: x:${Math.trunc(point.x)}, y:${Math.trunc(point.y)}`;
-    this.debug._tileMatrixCoord.innerHTML = `tilematrix: column:${Math.trunc(point.x / 256)}, row:${Math.trunc(point.y / 256)}`;
+    this.debug._tileMatrixCoord.innerHTML = `tilematrix: column:${Math.trunc(point.x / tileSize)}, row:${Math.trunc(point.y / tileSize)}`;
     this.debug._pcrsCoord.innerHTML = `pcrs: easting:${pcrs.x.toFixed(2)}, northing:${pcrs.y.toFixed(2)}`;
   },
 
