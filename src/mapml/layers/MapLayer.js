@@ -151,6 +151,7 @@ export var MapMLLayer = L.Layer.extend({
             className:"mapml-static-tile-layer",
             tileContainer:this._mapmlTileContainer,
             maxZoomBound:map.options.crs.options.resolutions.length - 1,
+            tileSize: map.options.crs.options.crs.tile.bounds.max.x,
           });
           map.addLayer(this._staticTileLayer);
         }
@@ -196,7 +197,7 @@ export var MapMLLayer = L.Layer.extend({
         for(let template of this._templateVars)
           if(!template.projectionMatch) noLayer = true;
       }
-      if(noLayer || this.getProjection() !== map.options.projection)
+      if(noLayer || this.getProjection() !== map.options.projection.toUpperCase())
         return false;
       return true;
     },
@@ -619,9 +620,9 @@ export var MapMLLayer = L.Layer.extend({
             if (this.readyState === this.DONE && mapml.querySelector) {
                 var serverExtent = mapml.querySelector('extent') || mapml.querySelector('meta[name=projection]'),
                     projectionMatch = serverExtent && serverExtent.hasAttribute('units') && 
-                    serverExtent.getAttribute('units').toUpperCase() === layer.options.mapprojection || 
+                    serverExtent.getAttribute('units') === layer.options.mapprojection || 
                     serverExtent && serverExtent.hasAttribute('content') && 
-                    M.metaContentToObject(serverExtent.getAttribute('content')).content ===layer.options.mapprojection,
+                    M.metaContentToObject(serverExtent.getAttribute('content')).content === layer.options.mapprojection,
                     selectedAlternate = !projectionMatch && mapml.querySelector('head link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 
@@ -895,7 +896,7 @@ export var MapMLLayer = L.Layer.extend({
             zoom.setAttribute('max',this._map.getMaxZoom());
         }
         var lp = serverExtent.hasAttribute("units") ? serverExtent.getAttribute("units") : null;
-        if (lp && lp === "OSMTILE" || lp === "WGS84" || lp === "APSTILE" || lp === "CBMTILE") {
+        if (lp && M[lp]) {
           this.crs = M[lp];
         } else {
           this.crs = M.OSMTILE;
