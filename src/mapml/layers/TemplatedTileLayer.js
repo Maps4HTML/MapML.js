@@ -1,4 +1,4 @@
-import { TILE_SIZE } from '../utils/Constants';
+import { TILE_SIZE, BLANK_TT_TREF } from '../utils/Constants';
 
 export var TemplatedTileLayer = L.TileLayer.extend({
     // a TemplateTileLayer is similar to a L.TileLayer except its templates are
@@ -70,13 +70,19 @@ export var TemplatedTileLayer = L.TileLayer.extend({
         // var tile = L.DomUtil.create('canvas', 'leaflet-tile');
         let tileGroup = document.createElement("DIV");
         L.DomUtil.addClass(tileGroup, "mapml-tile-group");
-        var tile = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        tile.setAttribute("width", `${TILE_SIZE}`);
-        tile.setAttribute("height", `${TILE_SIZE}`);
-//        tile.style.outline="1px solid red";
-        L.DomUtil.addClass(tile, "leaflet-tile");
-        this._fetchTile(coords, tile);
-        tileGroup.appendChild(tile);
+        L.DomUtil.addClass(tileGroup, "leaflet-tile");
+        
+        tileGroup.setAttribute("width", `${TILE_SIZE}`);
+        tileGroup.setAttribute("height", `${TILE_SIZE}`);
+        if(!this._url.includes(BLANK_TT_TREF)){
+          var tile = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          this._fetchTile(coords, tile);
+          tile.setAttribute("width", `${TILE_SIZE}`);
+          tile.setAttribute("height", `${TILE_SIZE}`);
+          L.DomUtil.addClass(tile, "leaflet-tile");
+          tileGroup.appendChild(tile);
+        }
+
         this._template.linkEl.dispatchEvent(new CustomEvent('tileloadstart', {
           detail:{
             x:coords.x,
