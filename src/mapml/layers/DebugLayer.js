@@ -28,7 +28,7 @@ export var DebugOverlay = L.Layer.extend({
     this._grid = debugGrid({
       className: "mapml-debug-grid",
       pane: map._panes.mapPane,
-      zIndex: 10000,
+      zIndex: 400,
       tileSize: map.options.crs.options.crs.tile.bounds.max.x,
     });
     map.addLayer(this._grid);
