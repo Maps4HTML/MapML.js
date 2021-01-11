@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-
+    if: github.repository == 'Maps4HTML/Web-Map-Custom-Element'
     runs-on: ubuntu-latest
 
     steps:
