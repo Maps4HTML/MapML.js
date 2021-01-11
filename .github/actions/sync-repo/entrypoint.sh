@@ -26,7 +26,7 @@ git config --global user.name "$INPUT_USER_NAME"
 git clone --single-branch --branch $INPUT_DESTINATION_BRANCH "https://$API_TOKEN_GITHUB@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
 
 echo "Copying contents to git repo"
-cp -r $INPUT_SOURCE_FOLDER/. $CLONE_DIR/$INPUT_DESTINATION_FOLDER/
+cp -rf $INPUT_SOURCE_FOLDER/. $CLONE_DIR/$INPUT_DESTINATION_FOLDER/
 cd "$CLONE_DIR"
 
 echo "Adding git commit"

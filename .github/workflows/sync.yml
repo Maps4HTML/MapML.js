@@ -1,6 +1,9 @@
 name: Sync Repositories
 
-on: [push, pull_request]
+on: 
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -22,9 +25,9 @@ jobs:
         API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
       with:
         source_folder: 'dist'
-        destination_repo: 'ahmadayubi/synctest'
-        destination_folder: 'build'
+        destination_repo: 'Maps4HTML/UCR-MapML-Matrix'
+        destination_folder: 'dist'
         user_email: aayub041@uottawa.ca
         user_name: 'ahmadayubi'
-        commit_msg: '[GHA] Update the build files.'
+        commit_msg: 'Sync MapML Build'
         destination_branch: main
