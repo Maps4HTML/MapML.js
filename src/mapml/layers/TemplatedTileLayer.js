@@ -29,7 +29,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     onAdd : function(){
       this._map._addZoomLimit(this);
       L.TileLayer.prototype.onAdd.call(this,this._map);
-      this._map.fire('moveend', true);
+      this._handleMoveEnd();
     },
 
     getEvents: function(){

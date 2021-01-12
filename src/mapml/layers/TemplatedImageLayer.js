@@ -19,7 +19,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
     onAdd: function () {
         this._map._addZoomLimit(this);  //used to set the zoom limit of the map
         this.setZIndex(this.options.zIndex);
-        this._map.fire('moveend',true);
+        this._onMoveEnd();
     },
     redraw: function() {
         this._onMoveEnd();
