@@ -279,7 +279,7 @@ export var ContextMenu = L.Handler.extend({
   _copyGCRS: function(e){
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent;
-    this.contextMenu._copyData(`z:${mapEl.zoom}, lon :${click.latlng.lng}, lat:${click.latlng.lat}`);
+    this.contextMenu._copyData(`z:${mapEl.zoom}, lon :${click.latlng.lng.toFixed(6)}, lat:${click.latlng.lat.toFixed(6)}`);
   },
 
   _copyTCRS: function(e){
@@ -294,7 +294,7 @@ export var ContextMenu = L.Handler.extend({
         click = this.contextMenu._clickEvent,
         point = mapEl._map.project(click.latlng),
         tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x;
-    this.contextMenu._copyData(`z:${mapEl.zoom}, column:${point.x/tileSize}, row:${point.y/tileSize}`);
+    this.contextMenu._copyData(`z:${mapEl.zoom}, column:${Math.trunc(point.x/tileSize)}, row:${Math.trunc(point.y/tileSize)}`);
   },
 
   _copyPCRS: function(e){
@@ -303,7 +303,7 @@ export var ContextMenu = L.Handler.extend({
         point = mapEl._map.project(click.latlng),
         scale = mapEl._map.options.crs.scale(+mapEl.zoom),
         pcrs = mapEl._map.options.crs.transformation.untransform(point,scale);
-    this.contextMenu._copyData(`z:${mapEl.zoom}, easting:${pcrs.x}, northing:${pcrs.y}`);
+    this.contextMenu._copyData(`z:${mapEl.zoom}, easting:${pcrs.x.toFixed(2)}, northing:${pcrs.y.toFixed(2)}`);
   },
 
   _copyTile: function(e){
@@ -315,13 +315,13 @@ export var ContextMenu = L.Handler.extend({
     if(pointX < 0) pointX+= tileSize;
     if(pointY < 0) pointY+= tileSize;
 
-    this.contextMenu._copyData(`z:${mapEl.zoom}, i:${Math.round(pointX)}, j:${Math.round(pointY)}`);
+    this.contextMenu._copyData(`z:${mapEl.zoom}, i:${Math.trunc(pointX)}, j:${Math.trunc(pointY)}`);
   },
 
   _copyMap: function(e){
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent;
-    this.contextMenu._copyData(`z:${mapEl.zoom}, i:${click.containerPoint.x}, j:${click.containerPoint.y}`);
+    this.contextMenu._copyData(`z:${mapEl.zoom}, i:${Math.trunc(click.containerPoint.x)}, j:${Math.trunc(click.containerPoint.y)}`);
   },
 
   _copyAllCoords: function(e){
@@ -333,12 +333,12 @@ export var ContextMenu = L.Handler.extend({
     scale = mapEl._map.options.crs.scale(+mapEl.zoom),
     pcrs = mapEl._map.options.crs.transformation.untransform(point,scale);
     let allData = `z:${mapEl.zoom}\n`;
-    allData += `tile: i:${Math.round(pointX)}, j:${Math.round(pointY)}\n`;
-    allData += `tilematrix: column:${point.x/tileSize}, row:${point.y/tileSize}\n`;
-    allData += `map: i:${click.containerPoint.x}, j:${click.containerPoint.y}\n`;
-    allData += `tcrs: x:${point.x}, y:${point.y}\n`;
-    allData += `pcrs: easting:${pcrs.x}, northing:${pcrs.y}\n`;
-    allData += `gcrs: lon :${click.latlng.lng}, lat:${click.latlng.lat}`;
+    allData += `tile: i:${Math.trunc(pointX)}, j:${Math.trunc(pointY)}\n`;
+    allData += `tilematrix: column:${Math.trunc(point.x/tileSize)}, row:${Math.trunc(point.y/tileSize)}\n`;
+    allData += `map: i:${Math.trunc(click.containerPoint.x)}, j:${Math.trunc(click.containerPoint.y)}\n`;
+    allData += `tcrs: x:${Math.trunc(point.x)}, y:${Math.trunc(point.y)}\n`;
+    allData += `pcrs: easting:${pcrs.x.toFixed(2)}, northing:${pcrs.y.toFixed(2)}\n`;
+    allData += `gcrs: lon :${click.latlng.lng.toFixed(6)}, lat:${click.latlng.lat.toFixed(6)}`;
     this.contextMenu._copyData(allData);
   },
 

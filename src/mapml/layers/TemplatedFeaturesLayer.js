@@ -66,7 +66,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       _pullFeatureFeed(this._getfeaturesUrl(), 10)
         .then(function() { 
               map.addLayer(features);
-              map.fire('moveend');
+              map.fire('moveend');  // TODO: replace with moveend handler for layer and not entire map
         })
         .catch(function (error) { console.log(error);});
     },
