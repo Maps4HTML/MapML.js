@@ -209,6 +209,7 @@ export class MapViewer extends HTMLElement {
             // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
             fadeAnimation: true
           });
+          this._addToHistory();
           // the attribution control is not optional
           this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
     
