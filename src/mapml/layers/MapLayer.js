@@ -618,11 +618,16 @@ export var MapMLLayer = L.Layer.extend({
             if(mapml.querySelector('feature'))layer._content = mapml;
             if(!this.responseXML && this.responseText) mapml = new DOMParser().parseFromString(this.responseText,'text/xml');
             if (this.readyState === this.DONE && mapml.querySelector) {
-                var serverExtent = mapml.querySelector('extent') || mapml.querySelector('meta[name=projection]'),
-                    projectionMatch = serverExtent && serverExtent.hasAttribute('units') && 
-                    serverExtent.getAttribute('units') === layer.options.mapprojection || 
-                    serverExtent && serverExtent.hasAttribute('content') && 
-                    M.metaContentToObject(serverExtent.getAttribute('content')).content === layer.options.mapprojection,
+                var serverExtent = mapml.querySelector('extent') || mapml.querySelector('meta[name=projection]'), projection;
+
+                if (serverExtent.tagName === "extent" && serverExtent.hasAttribute('units')){
+                  projection = serverExtent.getAttribute("units");
+                } else if (serverExtent.tagName === "meta" && serverExtent.hasAttribute('content')) {
+                  projection = M.metaContentToObject(serverExtent.getAttribute('content')).content;
+                }
+                    
+                var projectionMatch = projection && projection === layer.options.mapprojection,
+                    metaExtent = mapml.querySelector('meta[name=extent]'),
                     selectedAlternate = !projectionMatch && mapml.querySelector('head link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 
@@ -646,7 +651,31 @@ export var MapMLLayer = L.Layer.extend({
                   var tlist = serverExtent.querySelectorAll('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]'),
                       varNamesRe = (new RegExp('(?:\{)(.*?)(?:\})','g')),
                       zoomInput = serverExtent.querySelector('input[type="zoom" i]'),
-                      includesZoom = false;
+                      includesZoom = false, extentFallback = {};
+
+                  extentFallback.zoom = 0;
+                  if (metaExtent){
+                    let content = M.metaContentToObject(metaExtent.getAttribute("content")), cs;
+                    
+                    extentFallback.zoom = content.zoom || extentFallback.zoom;
+    
+                    let metaKeys = Object.keys(content);
+                    for(let i =0;i<metaKeys.length;i++){
+                      if(!metaKeys[i].includes("zoom")){
+                        cs = M.axisToCS(metaKeys[i].split("-")[2]);
+                        break;
+                      }
+                    }
+                    let axes = M.csToAxes(cs);
+                    extentFallback.bounds = M.boundsToPCRSBounds(
+                      L.bounds(L.point(+content[`top-left-${axes[0]}`],+content[`top-left-${axes[1]}`]),
+                      L.point(+content[`bottom-right-${axes[0]}`],+content[`bottom-right-${axes[1]}`])),
+                      extentFallback.zoom, projection, cs);
+                    
+                  } else {
+                    extentFallback.bounds = M[projection].options.crs.pcrs.bounds;
+                  }
+                    
                   for (var i=0;i< tlist.length;i++) {
                     var t = tlist[i],
                         template = t.getAttribute('tref'), v,
@@ -663,6 +692,16 @@ export var MapMLLayer = L.Layer.extend({
                       var varName = v[1],
                           inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
                       if (inp) {
+
+                        if ((inp.hasAttribute("type") && inp.getAttribute("type")==="location") && (!inp.hasAttribute("min" || !inp.hasAttribute("max")))){
+                          zoomInput.setAttribute("value", extentFallback.zoom);
+                          
+                          let axis = inp.getAttribute("axis"), 
+                              axisBounds = M.convertPCRSBounds(extentFallback.bounds, extentFallback.zoom, projection, M.axisToCS(axis));
+                          inp.setAttribute("min", axisBounds.min[M.axisToXY(axis)]);
+                          inp.setAttribute("max", axisBounds.max[M.axisToXY(axis)]);
+                        }
+
                         inputs.push(inp);
                         includesZoom = includesZoom || inp.hasAttribute("type") && inp.getAttribute("type").toLowerCase() === "zoom";
                         if (inp.hasAttribute('shard')) {

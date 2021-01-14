@@ -176,6 +176,49 @@ export var Util = {
     } catch (e) {return undefined;}
   },
 
+  axisToXY: function(axis){
+    try{
+      switch(axis.toLowerCase()){
+        case "i":
+        case "column":
+        case "longitude":
+        case "x":
+        case "easting":
+          return "x";
+        case "row":
+        case "j":
+        case "latitude":
+        case "y":
+        case "northing":
+          return "y";
+
+        default:
+          return undefined;
+      }
+    } catch (e) {return undefined;}
+  },
+
+  convertPCRSBounds: function(pcrsBounds, zoom, projection, cs){
+    if(!pcrsBounds || !zoom && +zoom !== 0 || !cs) return undefined;
+    switch (cs.toLowerCase()) {
+      case "pcrs":
+        return pcrsBounds;
+      case "tcrs": 
+      case "tilematrix":
+        let minPixel = this[projection].transformation.transform(pcrsBounds.min, this[projection].scale(+zoom)),
+            maxPixel = this[projection].transformation.transform(pcrsBounds.max, this[projection].scale(+zoom));
+        if (cs.toLowerCase() === "tcrs") return L.bounds(minPixel, maxPixel);
+        let tileSize = M[projection].options.crs.tile.bounds.max.x;
+        return L.bounds(L.point(minPixel.x / tileSize, minPixel.y / tileSize), L.point(maxPixel.x / tileSize,maxPixel.y / tileSize)); 
+      case "gcrs":
+        let minGCRS = this[projection].unproject(pcrsBounds.min),
+            maxGCRS = this[projection].unproject(pcrsBounds.max);
+        return L.bounds(L.point(minGCRS.lng, minGCRS.lat), L.point(maxGCRS.lng, maxGCRS.lat)); 
+      default:
+        return undefined;
+    }
+  },
+
   boundsToPCRSBounds: function(bounds, zoom, projection,cs){
     if(!bounds || !zoom && +zoom !== 0 || !cs) return undefined;
     let tileSize = M[projection].options.crs.tile.bounds.max.x;
