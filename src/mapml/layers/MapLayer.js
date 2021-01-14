@@ -620,9 +620,9 @@ export var MapMLLayer = L.Layer.extend({
             if (this.readyState === this.DONE && mapml.querySelector) {
                 var serverExtent = mapml.querySelector('extent') || mapml.querySelector('meta[name=projection]'), projection;
 
-                if (serverExtent.tagName === "extent" && serverExtent.hasAttribute('units')){
+                if (serverExtent.tagName.toLowerCase() === "extent" && serverExtent.hasAttribute('units')){
                   projection = serverExtent.getAttribute("units");
-                } else if (serverExtent.tagName === "meta" && serverExtent.hasAttribute('content')) {
+                } else if (serverExtent.tagName.toLowerCase() === "meta" && serverExtent.hasAttribute('content')) {
                   projection = M.metaContentToObject(serverExtent.getAttribute('content')).content;
                 }
                     

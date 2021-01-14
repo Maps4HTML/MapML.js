@@ -5,7 +5,8 @@ export var Util = {
     if(!pcrsBounds || !map) return {};
 
     let tcrsTopLeft = [], tcrsBottomRight = [],
-        tileMatrixTopLeft = [], tileMatrixBottomRight = [];
+        tileMatrixTopLeft = [], tileMatrixBottomRight = [],
+        tileSize = map.options.crs.options.crs.tile.bounds.max.y;
 
     for(let i = 0;i<map.options.crs.options.resolutions.length;i++){
       let scale = map.options.crs.scale(i),
@@ -23,12 +24,12 @@ export var Util = {
 
       //converts the tcrs values from earlier to tilematrix
       tileMatrixTopLeft.push({
-        horizontal: tcrsTopLeft[i].horizontal / 256,
-        vertical:tcrsTopLeft[i].vertical / 256,
+        horizontal: tcrsTopLeft[i].horizontal / tileSize,
+        vertical:tcrsTopLeft[i].vertical / tileSize,
       });
       tileMatrixBottomRight.push({
-        horizontal: tcrsBottomRight[i].horizontal / 256,
-        vertical: tcrsBottomRight[i].vertical / 256,
+        horizontal: tcrsBottomRight[i].horizontal / tileSize,
+        vertical: tcrsBottomRight[i].vertical / tileSize,
       });
     }
     
