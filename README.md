@@ -1,6 +1,7 @@
 # &lt;mapml-viewer&gt; custom element
 
 ![Build Status](https://api.travis-ci.com/Maps4HTML/Web-Map-Custom-Element.svg?branch=master)
+![Continuous Testing](https://github.com/Maps4HTML/Web-Map-Custom-Element/workflows/Continuous%20Testing/badge.svg)
 
 The `<mapml-viewer>` custom element is a prototype implementation of the
 [`<map>` media element](https://maps4html.org/MapML/spec/#web-maps)
