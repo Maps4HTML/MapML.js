@@ -258,7 +258,7 @@ export var MapMLLayer = L.Layer.extend({
     },
     _onZoomAnim: function(e) {
       var toZoom = e.zoom,
-          zoom = this._extent.querySelector("input[type=zoom]"),
+          zoom = this._extent ? this._extent.querySelector("input[type=zoom]") : null,
           min = zoom && zoom.hasAttribute("min") ? parseInt(zoom.getAttribute("min")) : this._map.getMinZoom(),
           max =  zoom && zoom.hasAttribute("max") ? parseInt(zoom.getAttribute("max")) : this._map.getMaxZoom(),
           canZoom = (toZoom < min && this._extent.zoomout) || (toZoom > max && this._extent.zoomin);
