@@ -1,0 +1,33 @@
+name: Sync Repositories
+
+on: 
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    if: github.repository == 'Maps4HTML/Web-Map-Custom-Element'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - run: npm install
+    - run: npm install -g grunt-cli
+    - run: grunt clean copy rollup
+    - name: Pushes to requirements repo
+      uses: ./.github/actions/sync-repo
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+      with:
+        source_folder: 'dist'
+        destination_repo: 'Maps4HTML/UCR-MapML-Matrix'
+        destination_folder: 'dist'
+        user_email: aayub041@uottawa.ca
+        user_name: 'ahmadayubi'
+        commit_msg: 'Sync MapML Build'
+        destination_branch: main

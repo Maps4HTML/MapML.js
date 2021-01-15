@@ -15,7 +15,7 @@ export var MapMLStaticTileLayer = L.GridLayer.extend({
       this.layerBounds.extend(this._bounds[key].max);
     }
     L.GridLayer.prototype.onAdd.call(this,this._map);
-    this._map.fire('moveend',true);
+    this._handleMoveEnd();
   },
   
   getEvents: function(){

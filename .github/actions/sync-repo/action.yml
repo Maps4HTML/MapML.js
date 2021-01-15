@@ -1,0 +1,38 @@
+name: 'sync-repo'
+description: 'Used for pushing a copy of a folder to another repository'
+inputs:
+  source_folder:
+    description: 'Source folder from the origin directory'
+    required: true
+  destination_repo:
+    description: 'Destination repository'
+    required: true
+  destination_folder:
+    description: 'Directory to push the folder contents to'
+    required: false
+  user_email:
+    description: 'Email for the git commit'
+    required: true
+  user_name:
+    description: 'GitHub username for the commit'
+    required: true
+  destination_branch:
+    description: 'branch to push folder to, defaults to master'
+    required: false
+  commit_msg:
+    description: 'The commit message'
+    required: false
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.source_folder }}
+    - ${{ inputs.destination_repo }}
+    - ${{ inputs.destination_folder }}
+    - ${{ inputs.user_email }}
+    - ${{ inputs.user_name }}
+    - ${{ inputs.destination_branch }}
+    - ${{ inputs.commit_msg }}
+branding:
+  icon: 'git-commit'
+  color: 'green'

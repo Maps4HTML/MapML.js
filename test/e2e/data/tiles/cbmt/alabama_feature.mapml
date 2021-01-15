@@ -1,4 +1,4 @@
-<mapml>
+<mapml xmlns="https://www.w3.org/1999/xhtml/">
     <head>
         <title>Natural Resources Canada's CanVec+ 031G - Map Markup Language</title>
         <meta http-equiv="Content-Type" content="text/mapml;projection=WGS84;zoom=2"/>
