@@ -75,15 +75,15 @@ jest.setTimeout(50000);
         //testing done on 2nd map in the page
         test("[" + browserType + "]" + " CSS from a retrieved MapML file added inorder inside svg within templated-tile-container", async () => {
           const firstStyle = await page.$eval(
-            "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg:nth-child(1) > style:nth-child(1)",
+            "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div > svg:nth-child(1) > style:nth-child(1)",
             (styleE) => styleE.innerHTML
           );
           const secondStyle = await page.$eval(
-            "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg:nth-child(1) > style:nth-child(2)",
+            "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div > svg:nth-child(1) > style:nth-child(2)",
             (styleE) => styleE.innerHTML
           );
           const foundStyleLink = await page.$(
-            "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg:nth-child(1) > link"
+            "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div > svg:nth-child(1) > link"
           );
           expect(firstStyle).toMatch("refStyleOne");
           expect(secondStyle).toMatch("refStyleTwo");
