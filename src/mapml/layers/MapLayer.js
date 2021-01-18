@@ -523,6 +523,7 @@ export var MapMLLayer = L.Layer.extend({
         opacity.value = this._container.style.opacity || '1.0';
 
         fieldset.setAttribute("draggable", true);
+        fieldset.setAttribute("aria-grabbed", "false");
         fieldset.draggable = true;
         fieldset.ondrag = (e) => {
           let control = e.target,
@@ -530,6 +531,8 @@ export var MapMLLayer = L.Layer.extend({
               x = e.clientX, y = e.clientY,
               swapControl = root.elementFromPoint(x, y).parentNode.parentNode && root.elementFromPoint(x, y).parentNode.parentNode.draggable === false ? control : root.elementFromPoint(x, y).parentNode.parentNode;
           control.classList.add("drag-active");
+          control.setAttribute("aria-grabbed", 'true');
+          control.setAttribute("aria-dropeffect", "move");
           if(swapControl && controls === swapControl.parentNode){
             swapControl = swapControl !== control.nextSibling? swapControl : swapControl.nextSibling;
             controls.insertBefore(control, swapControl);
@@ -537,6 +540,8 @@ export var MapMLLayer = L.Layer.extend({
         };
         fieldset.ondragend = (e) => {
           e.target.classList.remove("drag-active");
+          e.target.setAttribute("aria-grabbed", "false");
+          e.target.removeAttribute("aria-dropeffect");
         };
 
         L.DomEvent.on(opacity,'change', this._changeOpacity, this);
