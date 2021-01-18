@@ -1,4 +1,4 @@
-import { FALLBACK_PROJECTION } from '../utils/Constants';
+import { FALLBACK_PROJECTION, BLANK_TT_TREF } from '../utils/Constants';
 
 export var MapMLLayer = L.Layer.extend({
     // zIndex has to be set, for the case where the layer is added to the
@@ -677,8 +677,16 @@ export var MapMLLayer = L.Layer.extend({
                   }
                     
                   for (var i=0;i< tlist.length;i++) {
-                    var t = tlist[i],
-                        template = t.getAttribute('tref'), v,
+                    var t = tlist[i], template = t.getAttribute('tref'); 
+                    if(!template){
+                      template = BLANK_TT_TREF;
+                      let blankInputs = mapml.querySelectorAll('input');
+                      for (let i of blankInputs){
+                        template += `{${i.getAttribute("name")}}`;
+                      }
+                    }
+                    
+                    var v,
                         title = t.hasAttribute('title') ? t.getAttribute('title') : 'Query this layer',
                         vcount=template.match(varNamesRe),
                         trel = (!t.hasAttribute('rel') || t.getAttribute('rel').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('rel').toLowerCase(),
@@ -743,7 +751,7 @@ export var MapMLLayer = L.Layer.extend({
                         break;
                       }
                     }
-                    if (template && vcount.length === inputs.length) {
+                    if (template && vcount.length === inputs.length || template === BLANK_TT_TREF) {
                       if (trel === 'query') {
                         layer.queryable = true;
                       }
@@ -753,6 +761,7 @@ export var MapMLLayer = L.Layer.extend({
                       // template has a matching input for every variable reference {varref}
                       layer._templateVars.push({
                         template:decodeURI(new URL(template, base)), 
+                        linkEl: t,
                         title:title, 
                         rel: trel, 
                         type: ttype, 

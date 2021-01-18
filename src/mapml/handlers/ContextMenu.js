@@ -34,7 +34,7 @@ export var ContextMenu = L.Handler.extend({
         callback:this._toggleControls,
       },
       {
-        text:"Copy Coordinates (<kbd>C</kbd>) >", 
+        text:"Copy Coordinates (<kbd>C</kbd>) <span aria-hidden='true'>></span>", 
         callback:this._copyCoords,
         hideOnSelect:false,
         popup:true,
