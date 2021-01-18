@@ -487,12 +487,13 @@ export var MapMLLayer = L.Layer.extend({
         opacity = document.createElement('input'),
         opacityControl = document.createElement('details'),
         opacityControlSummary = document.createElement('summary'),
-        opacityControlSummaryLabel = document.createElement('label');
+        opacityControlSummaryLabel = document.createElement('label'),
+        root = this._layerEl.parentElement.shadowRoot;
 
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
         input.className = 'leaflet-control-layers-selector';
-        name.draggable = true;
+        //name.draggable = true;
         name.layer = this;
 
         if (this._legendUrl) {
@@ -521,8 +522,26 @@ export var MapMLLayer = L.Layer.extend({
         opacity.setAttribute('step','0.1');
         opacity.value = this._container.style.opacity || '1.0';
 
+        fieldset.setAttribute("draggable", true);
+        fieldset.draggable = true;
+        fieldset.ondrag = (e) => {
+          let control = e.target,
+              controls = e.target.parentNode,
+              x = e.clientX, y = e.clientY,
+              swapControl = root.elementFromPoint(x, y).parentNode.parentNode && root.elementFromPoint(x, y).parentNode.parentNode.draggable === false ? control : root.elementFromPoint(x, y).parentNode.parentNode;
+          control.classList.add("drag-active");
+          if(swapControl && controls === swapControl.parentNode){
+            swapControl = swapControl !== control.nextSibling? swapControl : swapControl.nextSibling;
+            controls.insertBefore(control, swapControl);
+          }
+        };
+        fieldset.ondragend = (e) => {
+          e.target.classList.remove("drag-active");
+        };
+
         L.DomEvent.on(opacity,'change', this._changeOpacity, this);
-        L.DomEvent.on(name,'dragstart', function(event) {
+/*         L.DomEvent.on(details,'ondrag', function(event) {
+          console.log("HERE2");
             // will have to figure out how to drag and drop a whole element
             // with its contents in the case where the <layer->content</layer-> 
             // has no src but does have inline content.  
@@ -533,7 +552,7 @@ export var MapMLLayer = L.Layer.extend({
               // See https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Recommended_drag_types#link
               event.dataTransfer.setData("text/plain", this._href); 
             }
-          }, this);
+          }, this); */
 
         fieldset.appendChild(details);
         details.appendChild(summary);

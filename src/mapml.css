@@ -354,3 +354,9 @@ summary {
 .leaflet-container .leaflet-control-container {
   visibility: unset!important;
 }
+
+.drag-active {
+  background: transparent;
+  color: transparent;
+  border: 1px solid #4ca1af;
+}
