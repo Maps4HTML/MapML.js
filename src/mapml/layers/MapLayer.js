@@ -488,7 +488,7 @@ export var MapMLLayer = L.Layer.extend({
         opacityControl = document.createElement('details'),
         opacityControlSummary = document.createElement('summary'),
         opacityControlSummaryLabel = document.createElement('label'),
-        root = this._layerEl.parentElement.shadowRoot;
+        root = this._layerEl.parentElement.shadowRoot, map = this._map;
 
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
@@ -542,6 +542,17 @@ export var MapMLLayer = L.Layer.extend({
           e.target.classList.remove("drag-active");
           e.target.setAttribute("aria-grabbed", "false");
           e.target.removeAttribute("aria-dropeffect");
+          let controls = e.target.parentNode.children,
+              layers = map.getPane("overlayPane").children,
+              zIndex = 1;
+          for(let control of controls){
+            for (let layer of layers){
+              if(control.querySelector("span").layer._container == layer){
+                layer.style["z-index"] = zIndex;
+                zIndex++;
+              }
+            }
+          }
         };
 
         L.DomEvent.on(opacity,'change', this._changeOpacity, this);
