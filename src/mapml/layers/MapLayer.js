@@ -488,7 +488,7 @@ export var MapMLLayer = L.Layer.extend({
         opacityControl = document.createElement('details'),
         opacityControlSummary = document.createElement('summary'),
         opacityControlSummaryLabel = document.createElement('label'),
-        root = this._layerEl.parentElement.shadowRoot, map = this._map;
+        root = this._layerEl.parentElement.shadowRoot, map = this._map, viewer = this._layerEl.parentNode;
 
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
@@ -554,6 +554,11 @@ export var MapMLLayer = L.Layer.extend({
               layers = map.getPane("overlayPane").children,
               zIndex = 1;
           for(let control of controls){
+            let layerEl = control.querySelector("span").layer._layerEl;
+            layerEl.setAttribute("moving","");
+            viewer.insertAdjacentElement("beforeend", layerEl);
+            layerEl.removeAttribute("moving");
+
             for (let layer of layers){
               if(control.querySelector("span").layer._container == layer){
                 layer.style["z-index"] = zIndex;
@@ -564,19 +569,6 @@ export var MapMLLayer = L.Layer.extend({
         };
 
         L.DomEvent.on(opacity,'change', this._changeOpacity, this);
-/*         L.DomEvent.on(details,'ondrag', function(event) {
-          console.log("HERE2");
-            // will have to figure out how to drag and drop a whole element
-            // with its contents in the case where the <layer->content</layer-> 
-            // has no src but does have inline content.  
-            // Should be do-able, I think.
-            if (this._href) {
-              event.dataTransfer.setData("text/uri-list",this._href);
-              // Why use a second .setData("text/plain"...) ? This is very important:
-              // See https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Recommended_drag_types#link
-              event.dataTransfer.setData("text/plain", this._href); 
-            }
-          }, this); */
 
         fieldset.appendChild(details);
         details.appendChild(summary);
