@@ -493,7 +493,6 @@ export var MapMLLayer = L.Layer.extend({
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
         input.className = 'leaflet-control-layers-selector';
-        //name.draggable = true;
         name.layer = this;
 
         if (this._legendUrl) {
@@ -522,14 +521,23 @@ export var MapMLLayer = L.Layer.extend({
         opacity.setAttribute('step','0.1');
         opacity.value = this._container.style.opacity || '1.0';
 
-        fieldset.setAttribute("draggable", true);
         fieldset.setAttribute("aria-grabbed", "false");
         fieldset.draggable = true;
+
+        fieldset.onmousedown = (e) => {
+          e.target.closest("fieldset").draggable = e.target.tagName.toLowerCase() !== "input";
+        };
+
+        fieldset.onmouseup = (e) => {
+          e.target.closest("fieldset").draggable = true;
+        };
+
         fieldset.ondrag = (e) => {
           let control = e.target,
               controls = e.target.parentNode,
               x = e.clientX, y = e.clientY,
-              swapControl = root.elementFromPoint(x, y).parentNode.parentNode && root.elementFromPoint(x, y).parentNode.parentNode.draggable === false ? control : root.elementFromPoint(x, y).parentNode.parentNode;
+              elementAt = root.elementFromPoint(x, y),
+              swapControl = !elementAt || !elementAt.closest("fieldset") || elementAt.closest("fieldset").draggable === false ? control : elementAt.closest("fieldset");
           control.classList.add("drag-active");
           control.setAttribute("aria-grabbed", 'true');
           control.setAttribute("aria-dropeffect", "move");

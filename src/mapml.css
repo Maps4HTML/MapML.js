@@ -356,7 +356,8 @@ summary {
 }
 
 .drag-active {
-  background: transparent;
-  color: transparent;
-  border: 1px solid #4ca1af;
+  opacity: 0;
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
 }
