@@ -71,7 +71,7 @@ export class MapLayer extends HTMLElement {
     // this is moved up here so that the layer control doesn't respond
     // to the layer being removed with the _onLayerChange execution
     // that is set up in _attached:
-    if(this.hasAttribute("moving")) return;
+    if(this.hasAttribute("data-moving")) return;
     this._removeEvents();
     if (this._layer._map) {
       this._layer._map.removeLayer(this._layer);
@@ -84,7 +84,7 @@ export class MapLayer extends HTMLElement {
   connectedCallback() {
     //creates listener that waits for createmap event, this allows for delayed builds of maps
     //this allows a safeguard for the case where loading a custom TCRS takes longer than loading mapml-viewer.js/web-map.js
-    if(this.hasAttribute("moving")) return;
+    if(this.hasAttribute("data-moving")) return;
     this.parentNode.addEventListener('createmap', ()=>{
       this._ready();
       // if the map has been attached, set this layer up wrt Leaflet map

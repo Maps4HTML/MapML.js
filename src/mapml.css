@@ -354,10 +354,3 @@ summary {
 .leaflet-container .leaflet-control-container {
   visibility: unset!important;
 }
-
-.drag-active {
-  opacity: 0;
-  cursor: grabbing;
-  cursor: -moz-grabbing;
-  cursor: -webkit-grabbing;
-}
