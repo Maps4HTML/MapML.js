@@ -237,9 +237,10 @@ export class MapLayer extends HTMLElement {
     for (var nodes = this.parentNode.children;i < nodes.length;i++) {
       if (this.parentNode.children[i].nodeName === "LAYER-") {
         if (this.parentNode.children[i] === this) {
-          break;
+          position = i + 1;
+        } else if (this.parentNode.children[i]._layer) {
+          this.parentNode.children[i]._layer.setZIndex(i+1);
         }
-        position++;
       }
     }
     var proj = this.parentNode.projection ? this.parentNode.projection : "OSMTILE";

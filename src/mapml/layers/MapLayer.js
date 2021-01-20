@@ -545,11 +545,10 @@ export var MapMLLayer = L.Layer.extend({
           
           // Fixes flickering by only moving element when there is enough space
           let offset = e.offsetY < 0 ? Math.abs(e.offsetY*2) : Math.abs(e.offsetY);
-          if(offset <= swapControl.offsetHeight){
-            swapControl = control;
-          } 
+          swapControl = offset <= swapControl.offsetHeight ? control : swapControl;
 
           control.style.opacity = "0";
+          control.classList.add("leaflet-dragging");
           control.setAttribute("aria-grabbed", 'true');
           control.setAttribute("aria-dropeffect", "move");
           if(swapControl && controls === swapControl.parentNode){
@@ -560,6 +559,7 @@ export var MapMLLayer = L.Layer.extend({
         fieldset.ondragend = (e) => {
           e.preventDefault();
           e.target.style.opacity = null;
+          e.target.classList.remove("leaflet-dragging");
           e.target.setAttribute("aria-grabbed", "false");
           e.target.removeAttribute("aria-dropeffect");
           let controls = e.target.parentNode.children,
