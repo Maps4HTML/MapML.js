@@ -7,6 +7,7 @@ jest.setTimeout(30000);
       beforeEach(async () => {
         browser = await playwright[browserType].launch({
           headless: ISHEADLESS,
+          slowMo: 50,
         });
         context = await browser.newContext();
         page = await context.newPage();
@@ -32,103 +33,79 @@ jest.setTimeout(30000);
           dataTransfer,
         });
         await page.hover(".leaflet-top.leaflet-right");
-        let vars = await page.$$("[draggable='true']");
-        expect(vars.length).toBe(1);
+        let vars = await page.$$("xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset");
+        expect(vars.length).toBe(3);
       });
 
       test("[" + browserType + "]" + " Drag and drop of layers", async () => {
-        const dataTransfer = await page.evaluateHandle(
-          () => new DataTransfer()
+        await page.hover(".leaflet-top.leaflet-right");
+        let control = await page.$("xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1)");
+        let controlBBox = await control.boundingBox();
+        await page.mouse.move(controlBBox.x + controlBBox.width / 2, controlBBox.y + controlBBox.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(50, 50);
+        await page.mouse.up();
+        await page.hover(".leaflet-top.leaflet-right");
+        let vars = await page.$$("xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset");
+        expect(vars.length).toBe(3);
+      });
+
+      test("[" + browserType + "]" + " Moving layer down one in control overlay", async () => {
+        await page.hover(".leaflet-top.leaflet-right");
+        let control = await page.$("xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1)");
+        let controlBBox = await control.boundingBox();
+        await page.mouse.move(controlBBox.x + controlBBox.width / 2, controlBBox.y + controlBBox.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(controlBBox.x + controlBBox.width / 2, (controlBBox.y + controlBBox.height / 2) + 45);
+        await page.mouse.up();
+        await page.hover(".leaflet-top.leaflet-right");
+
+        const controlText = await page.$eval(
+          "xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > details > summary > label > span",
+          (span) => span.innerText
         );
+        const layerIndex = await page.$eval(
+          "xpath=//html/body/map >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1)",
+          (div) => div.style.zIndex
+        );
+        const domLayer = await page.$eval(
+          "body > map > layer-:nth-child(4)",
+          (div) => div.label
+        );
+
+        expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
+        expect(layerIndex).toEqual("2");
+        expect(controlText).toBe(" Canada Base Map - Transportation (CBMT)");
+      });
+
+      test("[" + browserType + "]" + " Moving layer up one in control overlay", async () => {
         await page.hover(".leaflet-top.leaflet-right");
-        await page.dispatchEvent("[draggable='true']", "dragstart", {
-          dataTransfer,
-        });
-        await page.dispatchEvent(".leaflet-top.leaflet-right", "drop", {
-          dataTransfer,
-        });
+        let control = await page.$("xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2)");
+        let controlBBox = await control.boundingBox();
+        await page.mouse.move(controlBBox.x + controlBBox.width / 2, controlBBox.y + controlBBox.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(controlBBox.x + controlBBox.width / 2, (controlBBox.y + controlBBox.height / 2) - 45);
+        await page.mouse.up();
         await page.hover(".leaflet-top.leaflet-right");
-        let vars = await page.$$("[draggable='true']");
-        expect(vars.length).toBe(2);
+
+        const controlText = await page.$eval(
+          "xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > details > summary > label > span",
+          (span) => span.innerText
+        );
+        const layerIndex = await page.$eval(
+          "xpath=//html/body/map >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2)",
+          (div) => div.style.zIndex
+        );
+        const domLayer = await page.$eval(
+          "body > map > layer-:nth-child(3)",
+          (div) => div.label
+        );
+
+        expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
+        expect(layerIndex).toEqual("1");
+        expect(controlText).toBe(" Static MapML With Tiles");
       });
 
-      /* Comment in later on
-    test("drag and drop of null object", async () => {
-      const dataTransfer = await page.evaluateHandle(
-        () => new DataTransfer()
-      );
-      await page.hover(".leaflet-top.leaflet-right");
-      await page.dispatchEvent(".leaflet-control-zoom-in", "dragstart", {
-        dataTransfer,
-      });
-      await page.dispatchEvent(".leaflet-top.leaflet-right", "drop", {
-        dataTransfer,
-      });
-      await page.hover(".leaflet-top.leaflet-right");
-      let vars = await page.$$("[draggable='true']");
-      expect(vars.length).toBe(1);
-    });
-    */
-
-      //adding layer in html can add any type of layer the user wants,
-      //but how should that layer get treated by the map element,
-      //should it be ignored or shown as undefined
-      /*
-    test("HTML - add additional MapML Layer", async () => {
-      const { document } = new JSDOM(`
-          <!doctype html>
-              <html>
-              <head>
-                  <title>index-map.html</title>
-                  <meta charset="UTF-8">
-                  <script type="module" src="dist/web-map.js"></script>
-                  <style>
-                  html {height: 100%} body,map {height: inherit} * {margin: 0;padding: 0;}
-                  </style>
-              </head>
-              <body>
-                  <map is="web-map" projection="CBMTILE" zoom="2" lat="45" lon="-90" controls >
-                      <layer- label='CBMT' src='https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/' checked></layer->
-                      <layer- label='CBMT' src='https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/' checked></layer->
-                  </map>     
-              </body>
-              </html>
-          `).window;
-      const { select, update } = await domToPlaywright(page, document);
-
-      await update(document);
-      await page.hover(".leaflet-top.leaflet-right");
-      let vars = await page.$$("[draggable='true']");
-      expect(vars.length).toBe(2);
-    });
-    test("HTML - add additional non-MapML Layer", async () => {
-      const { document } = new JSDOM(`
-          <!doctype html>
-              <html>
-              <head>
-                  <title>index-map.html</title>
-                  <meta charset="UTF-8">
-                  <script type="module" src="dist/web-map.js"></script>
-                  <style>
-                  html {height: 100%} body,map {height: inherit} * {margin: 0;padding: 0;}
-                  </style>
-              </head>
-              <body>
-                  <map is="web-map" projection="CBMTILE" zoom="2" lat="45" lon="-90" controls >
-                      <layer- label='CBMT' src='https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/' checked></layer->
-                      <layer- label='CBMT' src='https://example.com/' checked></layer->
-                  </map>     
-              </body>
-              </html>
-          `).window;
-      const { select, update } = await domToPlaywright(page, document);
-
-      await update(document);
-      await page.hover(".leaflet-top.leaflet-right");
-      let vars = await page.$$("[draggable='true']");
-      expect(vars.length).toBe(1);
-    });
-    */
     });
   }
 })();
