@@ -126,15 +126,6 @@ export class MapViewer extends HTMLElement {
     `}` +
     `:host .leaflet-container {` +
     `contain: strict;` + // Contain size, layout and paint calculations within the leaflet container element.
-    `}` +
-    `:host(.leaflet-drag-target) .leaflet-control {` +
-    `pointer-events: none;` + // Prevent `:hover` styles from applying to controls when the user is panning the map display and the cursor happens to move over a control.
-    `}` +
-    `:host(.leaflet-drag-target) .leaflet-grab {` +
-    `cursor: move;` +
-  	`cursor: -webkit-grabbing;` +
-  	`cursor:    -moz-grabbing;` +
-  	`cursor:         grabbing;` +
     `}`;
     
     // Hide all (light DOM) children of the map element.
