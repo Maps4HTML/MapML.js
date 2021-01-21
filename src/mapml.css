@@ -277,6 +277,19 @@
 /*
  * User interaction.
  */
+ 
+ :host(.leaflet-drag-target) .leaflet-grab {
+   cursor: move;
+   cursor: -webkit-grabbing;
+   cursor:    -moz-grabbing;
+   cursor:         grabbing;
+ }
+ 
+ /* Prevent `:hover` styles from applying to controls when the user is panning
+ the map display and the cursor happens to move over a control. */
+:host(.leaflet-drag-target) .leaflet-control {
+  pointer-events: none;
+}
 
 /* Disable dragging of controls. */
 .leaflet-control :not([draggable="true"]),
@@ -353,4 +366,8 @@ summary {
 .leaflet-container .mapml-contextmenu,
 .leaflet-container .leaflet-control-container {
   visibility: unset!important;
+}
+
+.mapml-draggable * {
+  cursor: row-resize;
 }

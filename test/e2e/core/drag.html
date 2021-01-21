@@ -23,9 +23,18 @@
 </head>
 
 <body>
-	<map is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
+	<map is="web-map" style="width: 500px;height: 500px;" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344"
+		controls>
 		<layer- label="CBMT" src="data/cbmt.mapml" checked></layer->
-
+		<layer- label="Static MapML with tiles" checked>
+			<meta name="zoom" content="min=0,max=10">
+			<meta name="projection" content="CBMTILE">
+			<link rel="license"
+				href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
+				title="Canada Base Map © Natural Resources Canada">
+			<tile zoom="0" row="3" col="3" src="data/cbmt/0/c3_r3.png"></tile>
+		</layer->
+		<layer- label="vector states" src="data/us_pop_density.mapml" checked></layer->
 	</map>
 </body>
 
