@@ -488,8 +488,7 @@ export var MapMLLayer = L.Layer.extend({
         opacityControl = document.createElement('details'),
         opacityControlSummary = document.createElement('summary'),
         opacityControlSummaryLabel = document.createElement('label'),
-        root = this._layerEl.parentElement.shadowRoot, map = this._map,
-        viewer = this._layerEl.parentNode;
+        mapEl = this._layerEl.parentNode;
 
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
@@ -545,6 +544,7 @@ export var MapMLLayer = L.Layer.extend({
             
             controls.classList.add("mapml-draggable");
             let x = moveEvent.clientX, y = moveEvent.clientY,
+                root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".web-map").shadowRoot,
                 elementAt = root.elementFromPoint(x, y),
                 swapControl = !elementAt || !elementAt.closest("fieldset") ? control : elementAt.closest("fieldset");
       
@@ -568,7 +568,7 @@ export var MapMLLayer = L.Layer.extend({
               let layerEl = c.querySelector("span").layer._layerEl;
               
               layerEl.setAttribute("data-moving","");
-              viewer.insertAdjacentElement("beforeend", layerEl);
+              mapEl.insertAdjacentElement("beforeend", layerEl);
               layerEl.removeAttribute("data-moving");
 
               
