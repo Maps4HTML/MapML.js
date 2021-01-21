@@ -524,14 +524,13 @@ export var MapMLLayer = L.Layer.extend({
         opacity.value = this._container.style.opacity || '1.0';
 
         fieldset.setAttribute("aria-grabbed", "false");
-        //fieldset.draggable = true;
 
-        fieldset.onmousedown = (e) => {
-          e.preventDefault();
-          if(e.target.tagName.toLowerCase() === "input") return;
+        fieldset.onmousedown = (downEvent) => {
+          if(downEvent.target.tagName.toLowerCase() === "input") return;
+          downEvent.preventDefault();
           let control = fieldset,
               controls = fieldset.parentNode,
-              moving = false, yPos = e.clientY;
+              moving = false, yPos = downEvent.clientY;
 
           document.body.onmousemove = (moveEvent) => {
             moveEvent.preventDefault();
@@ -543,14 +542,17 @@ export var MapMLLayer = L.Layer.extend({
             if(controls && !moving || 
                 controls.getBoundingClientRect().top > control.getBoundingClientRect().top || 
                 controls.getBoundingClientRect().bottom < control.getBoundingClientRect().bottom) return;            
-           
+            
+            for(let c of controls.children){
+              c.querySelector("summary").classList.add("mapml-draggable");
+            }
+            
             let x = moveEvent.clientX, y = moveEvent.clientY,
                 elementAt = root.elementFromPoint(x, y),
                 swapControl = !elementAt || !elementAt.closest("fieldset") ? control : elementAt.closest("fieldset");
       
             swapControl = offset <= swapControl.offsetHeight ? control : swapControl;
-
-            control.querySelector("summary").classList.add("mapml-drag-active");
+            
             control.setAttribute("aria-grabbed", 'true');
             control.setAttribute("aria-dropeffect", "move");
             if(swapControl && controls === swapControl.parentNode){
@@ -561,78 +563,24 @@ export var MapMLLayer = L.Layer.extend({
           };
 
           document.body.onmouseup = () => {
-            control.querySelector("summary").classList.remove("mapml-drag-active");
             control.setAttribute("aria-grabbed", "false");
             control.removeAttribute("aria-dropeffect");
             let controlsElems = controls.children,
-                layers = map.getPane("overlayPane").children,
                 zIndex = 1;
             for(let c of controlsElems){
               let layerEl = c.querySelector("span").layer._layerEl;
+              
               layerEl.setAttribute("data-moving","");
               viewer.insertAdjacentElement("beforeend", layerEl);
               layerEl.removeAttribute("data-moving");
-  
-              for (let layer of layers){
-                if(c.querySelector("span").layer._container == layer){
-                  layer.style["z-index"] = zIndex;
-                  zIndex++;
-                }
-              }
+
+              c.querySelector("summary").classList.remove("mapml-draggable");
+              layerEl._layer.setZIndex(zIndex);
+              zIndex++;
             }
             document.body.onmousemove = document.body.onmouseup = null;
           };
         };
-
-        //old version of dragging
-        /* fieldset.onmouseup = (e) => {
-          //e.target.closest("fieldset").draggable = true;
-        };
-
-        fieldset.ondrag = (e) => {
-          e.preventDefault();
-          let control = e.target,
-              controls = e.target.parentNode,
-              x = e.clientX, y = e.clientY,
-              elementAt = root.elementFromPoint(x, y),
-              swapControl = !elementAt || !elementAt.closest("fieldset") || elementAt.closest("fieldset").draggable === false ? control : elementAt.closest("fieldset");
-          
-          // Fixes flickering by only moving element when there is enough space
-          let offset = e.offsetY < 0 ? Math.abs(e.offsetY*2) : Math.abs(e.offsetY);
-          swapControl = offset <= swapControl.offsetHeight ? control : swapControl;
-
-          control.style.opacity = "0";
-          control.classList.add("leaflet-dragging");
-          control.setAttribute("aria-grabbed", 'true');
-          control.setAttribute("aria-dropeffect", "move");
-          if(swapControl && controls === swapControl.parentNode){
-            swapControl = swapControl !== control.nextSibling? swapControl : swapControl.nextSibling;
-            controls.insertBefore(control, swapControl);
-          }
-        };
-        fieldset.ondragend = (e) => {
-          e.preventDefault();
-          e.target.style.opacity = null;
-          e.target.classList.remove("leaflet-dragging");
-          e.target.setAttribute("aria-grabbed", "false");
-          e.target.removeAttribute("aria-dropeffect");
-          let controls = e.target.parentNode.children,
-              layers = map.getPane("overlayPane").children,
-              zIndex = 1;
-          for(let control of controls){
-            let layerEl = control.querySelector("span").layer._layerEl;
-            layerEl.setAttribute("data-moving","");
-            viewer.insertAdjacentElement("beforeend", layerEl);
-            layerEl.removeAttribute("data-moving");
-
-            for (let layer of layers){
-              if(control.querySelector("span").layer._container == layer){
-                layer.style["z-index"] = zIndex;
-                zIndex++;
-              }
-            }
-          }
-        }; */
 
         L.DomEvent.on(opacity,'change', this._changeOpacity, this);
 
