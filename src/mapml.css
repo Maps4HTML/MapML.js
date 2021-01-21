@@ -367,3 +367,7 @@ summary {
 .leaflet-container .leaflet-control-container {
   visibility: unset!important;
 }
+
+.mapml-draggable * {
+  cursor: row-resize;
+}
