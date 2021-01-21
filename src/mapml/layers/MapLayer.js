@@ -487,12 +487,12 @@ export var MapMLLayer = L.Layer.extend({
         opacity = document.createElement('input'),
         opacityControl = document.createElement('details'),
         opacityControlSummary = document.createElement('summary'),
-        opacityControlSummaryLabel = document.createElement('label');
+        opacityControlSummaryLabel = document.createElement('label'),
+        mapEl = this._layerEl.parentNode;
 
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
         input.className = 'leaflet-control-layers-selector';
-        name.draggable = true;
         name.layer = this;
 
         if (this._legendUrl) {
@@ -500,6 +500,7 @@ export var MapMLLayer = L.Layer.extend({
           legendLink.text = ' ' + this._title;
           legendLink.href = this._legendUrl;
           legendLink.target = '_blank';
+          legendLink.draggable = false;
           name.appendChild(legendLink);
         } else {
           name.innerHTML = ' ' + this._title;
@@ -521,19 +522,65 @@ export var MapMLLayer = L.Layer.extend({
         opacity.setAttribute('step','0.1');
         opacity.value = this._container.style.opacity || '1.0';
 
-        L.DomEvent.on(opacity,'change', this._changeOpacity, this);
-        L.DomEvent.on(name,'dragstart', function(event) {
-            // will have to figure out how to drag and drop a whole element
-            // with its contents in the case where the <layer->content</layer-> 
-            // has no src but does have inline content.  
-            // Should be do-able, I think.
-            if (this._href) {
-              event.dataTransfer.setData("text/uri-list",this._href);
-              // Why use a second .setData("text/plain"...) ? This is very important:
-              // See https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Recommended_drag_types#link
-              event.dataTransfer.setData("text/plain", this._href); 
+        fieldset.setAttribute("aria-grabbed", "false");
+
+        fieldset.onmousedown = (downEvent) => {
+          if(downEvent.target.tagName.toLowerCase() === "input") return;
+          downEvent.preventDefault();
+          let control = fieldset,
+              controls = fieldset.parentNode,
+              moving = false, yPos = downEvent.clientY;
+
+          document.body.onmousemove = (moveEvent) => {
+            moveEvent.preventDefault();
+
+            // Fixes flickering by only moving element when there is enough space
+            let offset = Math.abs(yPos - moveEvent.clientY);
+            moving = Math.abs(offset) > 5 || moving;
+          
+            if(controls && !moving || 
+                controls.getBoundingClientRect().top > control.getBoundingClientRect().top || 
+                controls.getBoundingClientRect().bottom < control.getBoundingClientRect().bottom) return;            
+            
+            controls.classList.add("mapml-draggable");
+            let x = moveEvent.clientX, y = moveEvent.clientY,
+                root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".web-map").shadowRoot,
+                elementAt = root.elementFromPoint(x, y),
+                swapControl = !elementAt || !elementAt.closest("fieldset") ? control : elementAt.closest("fieldset");
+      
+            swapControl = offset <= swapControl.offsetHeight ? control : swapControl;
+            
+            control.setAttribute("aria-grabbed", 'true');
+            control.setAttribute("aria-dropeffect", "move");
+            if(swapControl && controls === swapControl.parentNode){
+              swapControl = swapControl !== control.nextSibling? swapControl : swapControl.nextSibling;
+              if(control !== swapControl) yPos = moveEvent.clientY;
+              controls.insertBefore(control, swapControl);
             }
-          }, this);
+          };
+
+          document.body.onmouseup = () => {
+            control.setAttribute("aria-grabbed", "false");
+            control.removeAttribute("aria-dropeffect");
+            let controlsElems = controls.children,
+                zIndex = 1;
+            for(let c of controlsElems){
+              let layerEl = c.querySelector("span").layer._layerEl;
+              
+              layerEl.setAttribute("data-moving","");
+              mapEl.insertAdjacentElement("beforeend", layerEl);
+              layerEl.removeAttribute("data-moving");
+
+              
+              layerEl._layer.setZIndex(zIndex);
+              zIndex++;
+            }
+            controls.classList.remove("mapml-draggable");
+            document.body.onmousemove = document.body.onmouseup = null;
+          };
+        };
+
+        L.DomEvent.on(opacity,'change', this._changeOpacity, this);
 
         fieldset.appendChild(details);
         details.appendChild(summary);
