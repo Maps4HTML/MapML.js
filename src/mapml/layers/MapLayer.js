@@ -543,10 +543,7 @@ export var MapMLLayer = L.Layer.extend({
                 controls.getBoundingClientRect().top > control.getBoundingClientRect().top || 
                 controls.getBoundingClientRect().bottom < control.getBoundingClientRect().bottom) return;            
             
-            for(let c of controls.children){
-              c.querySelector("summary").classList.add("mapml-draggable");
-            }
-            
+            controls.classList.add("mapml-draggable");
             let x = moveEvent.clientX, y = moveEvent.clientY,
                 elementAt = root.elementFromPoint(x, y),
                 swapControl = !elementAt || !elementAt.closest("fieldset") ? control : elementAt.closest("fieldset");
@@ -574,10 +571,11 @@ export var MapMLLayer = L.Layer.extend({
               viewer.insertAdjacentElement("beforeend", layerEl);
               layerEl.removeAttribute("data-moving");
 
-              c.querySelector("summary").classList.remove("mapml-draggable");
+              
               layerEl._layer.setZIndex(zIndex);
               zIndex++;
             }
+            controls.classList.remove("mapml-draggable");
             document.body.onmousemove = document.body.onmouseup = null;
           };
         };
