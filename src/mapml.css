@@ -320,7 +320,8 @@
 .mapml-contextmenu-item > *,
 .mapml-control-layers label[for^="o"],
 .leaflet-crosshair > *,
-.leaflet-crosshair .leaflet-control {
+.leaflet-crosshair .leaflet-control,
+.mapml-draggable [aria-grabbed="true"] .mapml-control-layers > * {
   pointer-events: none!important;
 }
 
