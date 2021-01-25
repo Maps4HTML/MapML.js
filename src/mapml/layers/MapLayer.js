@@ -523,6 +523,7 @@ export var MapMLLayer = L.Layer.extend({
         opacity.value = this._container.style.opacity || '1.0';
 
         fieldset.setAttribute("aria-grabbed", "false");
+        fieldset.style.position = "static";
 
         fieldset.onmousedown = (downEvent) => {
           if(downEvent.target.tagName.toLowerCase() === "input") return;
@@ -535,7 +536,7 @@ export var MapMLLayer = L.Layer.extend({
             moveEvent.preventDefault();
 
             // Fixes flickering by only moving element when there is enough space
-            let offset = Math.abs(yPos - moveEvent.clientY);
+            let offset = yPos - moveEvent.clientY;
             moving = Math.abs(offset) > 5 || moving;
           
             if(controls && !moving || 
@@ -543,12 +544,15 @@ export var MapMLLayer = L.Layer.extend({
                 controls.getBoundingClientRect().bottom < control.getBoundingClientRect().bottom) return;            
             
             controls.classList.add("mapml-draggable");
+            control.style.position = "relative";
+            control.style.top = (-1 * offset) +"px";
+
             let x = moveEvent.clientX, y = moveEvent.clientY,
                 root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".web-map").shadowRoot,
                 elementAt = root.elementFromPoint(x, y),
                 swapControl = !elementAt || !elementAt.closest("fieldset") ? control : elementAt.closest("fieldset");
       
-            swapControl = offset <= swapControl.offsetHeight ? control : swapControl;
+            swapControl =  Math.abs(offset) <= swapControl.offsetHeight ? control : swapControl;
             
             control.setAttribute("aria-grabbed", 'true');
             control.setAttribute("aria-dropeffect", "move");
@@ -562,6 +566,8 @@ export var MapMLLayer = L.Layer.extend({
           document.body.onmouseup = () => {
             control.setAttribute("aria-grabbed", "false");
             control.removeAttribute("aria-dropeffect");
+            control.style.position = "static";
+            control.style.top = null;
             let controlsElems = controls.children,
                 zIndex = 1;
             for(let c of controlsElems){
