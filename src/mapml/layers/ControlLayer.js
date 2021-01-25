@@ -75,10 +75,10 @@ export var MapMLLayerControl = L.Control.Layers.extend({
             input = this._layers[i].input.labels[0].getElementsByTagName("input");
         input[0].checked = this._layers[i].layer._layerEl.checked;
         if(this._layers[i].layer._layerEl.disabled && this._layers[i].layer._layerEl.checked){
-          input[0].parentElement.parentElement.parentElement.parentElement.disabled = true;
+          input[0].closest("fieldset").disabled = true;
           label[0].style.fontStyle = "italic";
         } else {
-          input[0].parentElement.parentElement.parentElement.parentElement.disabled = false;
+          input[0].closest("fieldset").disabled = false;
           label[0].style.fontStyle = "normal";
         }
       }

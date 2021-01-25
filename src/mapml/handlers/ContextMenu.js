@@ -447,11 +447,13 @@ export var ContextMenu = L.Handler.extend({
   _show: function (e) {
     if(this._mapMenuVisible) this._hide();
     this._clickEvent = e;
-    if(e.originalEvent.srcElement.tagName === "SPAN"){
-      if(!e.originalEvent.srcElement.layer.validProjection) return;
-      this._layerClicked = e.originalEvent.srcElement;
+    let elem = e.originalEvent.srcElement;
+    if(elem.closest("fieldset")){
+      elem = elem.closest("fieldset").querySelector("span");
+      if(!elem.layer.validProjection) return;
+      this._layerClicked = elem;
       this._showAtPoint(e.containerPoint, e, this._layerMenu);
-    } else if(e.originalEvent.srcElement.classList.contains("leaflet-container")) {
+    } else if(elem.classList.contains("leaflet-container")) {
       this._layerClicked = undefined;
       this._showAtPoint(e.containerPoint, e, this._container);
     }
