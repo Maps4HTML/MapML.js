@@ -320,7 +320,8 @@
 .mapml-contextmenu-item > *,
 .mapml-control-layers label[for^="o"],
 .leaflet-crosshair > *,
-.leaflet-crosshair .leaflet-control {
+.leaflet-crosshair .leaflet-control,
+.mapml-draggable [aria-grabbed="true"] .mapml-control-layers > * {
   pointer-events: none!important;
 }
 
@@ -357,6 +358,10 @@ summary {
   cursor: pointer;
 }
 
+.mapml-draggable * {
+  cursor: row-resize;
+}
+
 /*
  * Visibility hack – mitigates FOUC.
  * (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154)
@@ -366,8 +371,4 @@ summary {
 .leaflet-container .mapml-contextmenu,
 .leaflet-container .leaflet-control-container {
   visibility: unset!important;
-}
-
-.mapml-draggable * {
-  cursor: row-resize;
 }
