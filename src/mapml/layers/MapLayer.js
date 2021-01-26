@@ -546,6 +546,7 @@ export var MapMLLayer = L.Layer.extend({
             controls.classList.add("mapml-draggable");
             control.style.transform = "translateY("+ offset +"px)";
             control.style.pointerEvents = "none";
+            controls.style.cursor = "row-resize";
 
             let x = moveEvent.clientX, y = moveEvent.clientY,
                 root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".web-map").shadowRoot,
@@ -571,6 +572,7 @@ export var MapMLLayer = L.Layer.extend({
             control.removeAttribute("aria-dropeffect");
             control.style.pointerEvents = null;
             control.style.transform = null;
+            controls.style.cursor = null;
             let controlsElems = controls.children,
                 zIndex = 1;
             for(let c of controlsElems){
