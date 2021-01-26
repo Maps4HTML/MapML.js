@@ -358,8 +358,10 @@ summary {
   cursor: pointer;
 }
 
+.mapml-draggable,
 .mapml-draggable * {
   cursor: row-resize;
+  background-color: white;
 }
 
 /*
