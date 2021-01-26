@@ -360,6 +360,7 @@ summary {
 
 .mapml-draggable * {
   cursor: row-resize;
+  background-color: white;
 }
 
 /*
