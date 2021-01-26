@@ -523,7 +523,6 @@ export var MapMLLayer = L.Layer.extend({
         opacity.value = this._container.style.opacity || '1.0';
 
         fieldset.setAttribute("aria-grabbed", "false");
-        fieldset.style.position = "static";
 
         fieldset.onmousedown = (downEvent) => {
           if(downEvent.target.tagName.toLowerCase() === "input") return;
@@ -536,16 +535,17 @@ export var MapMLLayer = L.Layer.extend({
             moveEvent.preventDefault();
 
             // Fixes flickering by only moving element when there is enough space
-            let offset = yPos - moveEvent.clientY;
+            let offset = moveEvent.clientY - yPos;
             moving = Math.abs(offset) > 5 || moving;
-          
             if(controls && !moving || 
-                controls.getBoundingClientRect().top > control.getBoundingClientRect().top || 
-                controls.getBoundingClientRect().bottom < control.getBoundingClientRect().bottom) return;            
+                controls.getBoundingClientRect().top > control.getBoundingClientRect().bottom || 
+                controls.getBoundingClientRect().bottom < control.getBoundingClientRect().top){
+                  return;
+                }
             
             controls.classList.add("mapml-draggable");
-            control.style.position = "relative";
-            control.style.top = (-1 * offset) +"px";
+            control.style.transform = "translateY("+ offset +"px)";
+            control.style.pointerEvents = "none";
 
             let x = moveEvent.clientX, y = moveEvent.clientY,
                 root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".web-map").shadowRoot,
@@ -558,7 +558,10 @@ export var MapMLLayer = L.Layer.extend({
             control.setAttribute("aria-dropeffect", "move");
             if(swapControl && controls === swapControl.parentNode){
               swapControl = swapControl !== control.nextSibling? swapControl : swapControl.nextSibling;
-              if(control !== swapControl) yPos = moveEvent.clientY;
+              if(control !== swapControl){ 
+                yPos = moveEvent.clientY;
+                control.style.transform = null;
+              }
               controls.insertBefore(control, swapControl);
             }
           };
@@ -566,8 +569,8 @@ export var MapMLLayer = L.Layer.extend({
           document.body.onmouseup = () => {
             control.setAttribute("aria-grabbed", "false");
             control.removeAttribute("aria-dropeffect");
-            control.style.position = "static";
-            control.style.top = null;
+            control.style.pointerEvents = null;
+            control.style.transform = null;
             let controlsElems = controls.children,
                 zIndex = 1;
             for(let c of controlsElems){
