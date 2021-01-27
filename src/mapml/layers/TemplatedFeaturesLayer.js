@@ -87,6 +87,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
           parser = new DOMParser(),
           features = this._features,
           map = this._map,
+          context = this,
           MAX_PAGES = 10,
         _pullFeatureFeed = function (url, limit) {
           return (fetch (url,{redirect: 'follow',headers: headers})
@@ -111,6 +112,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       _pullFeatureFeed(this._getfeaturesUrl(), MAX_PAGES)
         .then(function() { 
           map.addLayer(features);
+          M.TemplatedFeaturesLayer.prototype._updateTabIndex(context);
         })
         .catch(function (error) { console.log(error);});
     },
@@ -118,6 +120,13 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
         this.options.zIndex = zIndex;
         this._updateZIndex();
         return this;
+    },
+    _updateTabIndex: function(context){
+      let c = context || this;
+      for(let layerNum in c._features._layers){
+        let layer = c._features._layers[layerNum];
+        if(layer._path && layer._path.getAttribute("d") !== "M0 0") layer._path.setAttribute("tabindex", 0);
+      }
     },
     _updateZIndex: function () {
         if (this._container && this.options.zIndex !== undefined && this.options.zIndex !== null) {

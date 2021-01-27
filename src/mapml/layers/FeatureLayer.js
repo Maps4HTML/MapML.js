@@ -36,6 +36,11 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       }
     },
 
+    onAdd: function(map){
+      L.FeatureGroup.prototype.onAdd.call(this, map);
+      this._updateTabIndex();
+    },
+
     getEvents: function(){
       if(this._staticFeature){
         return {
@@ -45,6 +50,14 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       return {
         'moveend':this._removeCSS
       };
+    },
+
+    _updateTabIndex: function(){
+      for(let feature in this._features){
+        for(let path of this._features[feature]){
+          if(path._path && path._path.getAttribute("d") !== "M0 0") path._path.setAttribute("tabindex", 0);
+        }
+      }
     },
 
     _handleMoveEnd : function(){
@@ -62,6 +75,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
                             this._map.getPixelBounds(),
                             mapZoom,this._map.options.projection));
       this._removeCSS();
+      this._updateTabIndex();
     },
 
     //sets default if any are missing, better to only replace ones that are missing
