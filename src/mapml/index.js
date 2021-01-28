@@ -52,6 +52,7 @@ import { QueryHandler } from './handlers/QueryHandler';
 import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
 import { ReloadButton, reloadButton } from './control/ReloadButton';
+import { Crosshair, crosshair } from "./layers/Crosshair";
 
 /* global L, Node */
 (function (window, document, undefined) {
@@ -624,5 +625,8 @@ M.mapMLStaticTileLayer = mapMLStaticTileLayer;
 
 M.DebugOverlay = DebugOverlay;
 M.debugOverlay = debugOverlay;
+
+M.Crosshair = Crosshair;
+M.crosshair = crosshair;
 
 }(window, document));

@@ -374,3 +374,19 @@ summary {
 .leaflet-container .leaflet-control-container {
   visibility: unset!important;
 }
+
+.mapml-crosshair-active {
+  margin: -18px 0 0 -18px;
+  width: 36px;
+  height: 36px;
+  left: 50%;
+  top: 50%;
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: 10000;
+}
+
+.mapml-crosshair-hidden * {
+  visibility: hidden;
+}

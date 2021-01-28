@@ -151,7 +151,7 @@ export var ContextMenu = L.Handler.extend({
 
     L.DomEvent
       .on(container, 'mouseleave', this._hide, this)
-      .on(document, 'keydown', this._onKeyDown, this);
+      .on(container, 'keydown', this._onKeyDown, this);
 
     if (L.Browser.touch) {
       L.DomEvent.on(document, this._touchstart, this._hide, this);
