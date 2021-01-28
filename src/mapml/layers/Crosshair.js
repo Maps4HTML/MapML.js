@@ -28,12 +28,12 @@ export var Crosshair = L.Layer.extend({
         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" /></g></svg>
  `;
 
-    this._container = L.DomUtil.create("div", "mapml-crosshair-hidden", map._container);
+    this._container = L.DomUtil.create("div", "mapml-crosshair", map._container);
     this._container.innerHTML = svgInnerHTML;
     this._mapFocused = false;
 
     map.on("viewreset move moveend layerchange layeradd layerremove overlayremove", this._addOrRemoveCrosshair, this);
-    L.DomEvent.on(map._container, "keyup mousedown", this._isMapFocused, this);
+    L.DomEvent.on(map._container, "keydown keyup mousedown", this._isMapFocused, this);
 
     this._addOrRemoveCrosshair();
   },
@@ -43,16 +43,18 @@ export var Crosshair = L.Layer.extend({
     if (this._mapFocused) {
       for (let layer of layers) {
         if (layer.checked && layer._layer.queryable) {
-          this._container.className = "mapml-crosshair-active";
+          this._container.style.visibility = null;
           return;
         }
       }
     }
-    this._container.className = "mapml-crosshair-hidden";
+    this._container.style.visibility = "hidden";
   },
 
   _isMapFocused: function (e) {
-    if (e.type === "keyup" && e.target.classList.contains("leaflet-container") && (+e.keyCode >= 37 && +e.keyCode <= 40 || +e.keyCode === 32)) {
+    if (["keydown", "keyup"].includes(e.type) && e.target.classList.contains("leaflet-container") && (+e.keyCode >= 37 && +e.keyCode <= 40 || +e.keyCode === 32)) {
+      this._mapFocused = true;
+    } else if (e.type === "keyup" && e.target.classList.contains("leaflet-container") && +e.keyCode === 9) {
       this._mapFocused = true;
     } else {
       this._mapFocused = false;

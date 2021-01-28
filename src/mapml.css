@@ -375,7 +375,7 @@ summary {
   visibility: unset!important;
 }
 
-.mapml-crosshair-active {
+.mapml-crosshair {
   margin: -18px 0 0 -18px;
   width: 36px;
   height: 36px;
@@ -385,8 +385,4 @@ summary {
   display: block;
   position: absolute;
   z-index: 10000;
-}
-
-.mapml-crosshair-hidden * {
-  visibility: hidden;
 }
