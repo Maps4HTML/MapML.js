@@ -31,28 +31,46 @@ export var Crosshair = L.Layer.extend({
     this._container = L.DomUtil.create("div", "mapml-crosshair", map._container);
     this._container.innerHTML = svgInnerHTML;
     this._mapFocused = false;
+    this._isQueryable = false;
 
-    map.on("viewreset move moveend layerchange layeradd layerremove overlayremove", this._addOrRemoveCrosshair, this);
+    map.on("layerchange layeradd layerremove overlayremove", this._toggleEvents, this);
     L.DomEvent.on(map._container, "keydown keyup mousedown", this._isMapFocused, this);
+
 
     this._addOrRemoveCrosshair();
   },
 
+  _toggleEvents: function () {
+    if (this._hasQueryableLayer()) {
+      this._map.on("viewreset move moveend", this._addOrRemoveCrosshair, this);
+    } else {
+      this._map.off("viewreset move moveend", this._addOrRemoveCrosshair, this);
+    }
+    this._addOrRemoveCrosshair();
+  },
+
   _addOrRemoveCrosshair: function (e) {
+    if (this._hasQueryableLayer()) {
+      this._container.style.visibility = null;
+    } else {
+      this._container.style.visibility = "hidden";
+    }
+  },
+
+  _hasQueryableLayer: function () {
     let layers = this._map.options.mapEl.layers;
     if (this._mapFocused) {
       for (let layer of layers) {
         if (layer.checked && layer._layer.queryable) {
-          this._container.style.visibility = null;
-          return;
+          return true;
         }
       }
     }
-    this._container.style.visibility = "hidden";
+    return false;
   },
 
   _isMapFocused: function (e) {
-    if (["keydown", "keyup"].includes(e.type) && e.target.classList.contains("leaflet-container") && (+e.keyCode >= 37 && +e.keyCode <= 40 || +e.keyCode === 32)) {
+    if (["keydown", "keyup"].includes(e.type) && e.target.classList.contains("leaflet-container") && [32, 37, 38, 39, 40, 187, 189].includes(+e.keyCode)) {
       this._mapFocused = true;
     } else if (e.type === "keyup" && e.target.classList.contains("leaflet-container") && +e.keyCode === 9) {
       this._mapFocused = true;
