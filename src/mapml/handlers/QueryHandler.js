@@ -101,24 +101,31 @@ export var QueryHandler = L.Handler.extend({
               obj[v] = template.query[v];
           }
       }
-      fetch(L.Util.template(template.template, obj),{redirect: 'follow'}).then(
-          function(response) {
-            if (response.status >= 200 && response.status < 300) {
-              return Promise.resolve(response);
-            } else {
-              console.log('Looks like there was a problem. Status Code: ' + response.status);
-              return Promise.reject(response);
-            }
-          }).then(function(response) {
-            var contenttype = response.headers.get("Content-Type");
-            if ( contenttype.startsWith("text/mapml")) {
-              return handleMapMLResponse(response, e.latlng);
-            } else {
-              return handleOtherResponse(response, layer, e.latlng);
-            }
-          }).catch(function(err) {
-            // no op
-          });
+
+      let point = this._map.project(e.latlng),
+          scale = this._map.options.crs.scale(this._map.getZoom()),
+          pcrsClick = this._map.options.crs.transformation.untransform(point,scale);
+
+      if(template.layerBounds.contains(pcrsClick)){
+        fetch(L.Util.template(template.template, obj),{redirect: 'follow'}).then(
+            function(response) {
+              if (response.status >= 200 && response.status < 300) {
+                return Promise.resolve(response);
+              } else {
+                console.log('Looks like there was a problem. Status Code: ' + response.status);
+                return Promise.reject(response);
+              }
+            }).then(function(response) {
+              var contenttype = response.headers.get("Content-Type");
+              if ( contenttype.startsWith("text/mapml")) {
+                return handleMapMLResponse(response, e.latlng);
+              } else {
+                return handleOtherResponse(response, layer, e.latlng);
+              }
+            }).catch(function(err) {
+              // no op
+            });
+      }
       function handleMapMLResponse(response, loc) {
           return response.text().then(mapml => {
               // bind the deprojection function of the layer's crs 
