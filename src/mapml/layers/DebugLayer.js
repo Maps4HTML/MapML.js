@@ -7,15 +7,6 @@ export var DebugOverlay = L.Layer.extend({
     //conditionally show container for debug panel/banner only when the map has enough space for it
     if (mapSize.x > 400 || mapSize.y > 300) {
       this._container = L.DomUtil.create("div", "mapml-debug", map._container);
-
-      //adds a control panel
-      /*  this._controlPanel = L.DomUtil.create("div", "mapml-debug-control mapml-debug-panel", this._container);
-          let toggleGridBtn = document.createElement('button'), gridBtnText = document.createTextNode("Toggle Grid");
-          toggleGridBtn.appendChild(gridBtnText);
-          toggleGridBtn.overlay = this;
-          L.DomEvent.on(toggleGridBtn, 'click',this._toggleGrid);
-          this._controlPanel.appendChild(toggleGridBtn); */
-
       this._container.style.width = 150;
       this._container.style.zIndex = 10000;
       this._container.style.position = "absolute";
@@ -23,6 +14,13 @@ export var DebugOverlay = L.Layer.extend({
       this._container.style.bottom = "5px";
       this._container.style.left = "5px";
       this._container.style.right = "auto";
+
+      this._panel = debugPanel({
+        className: "mapml-debug-panel",
+        pane: this._container,
+      });
+      map.addLayer(this._panel);
+
     }
 
     this._grid = debugGrid({
@@ -32,12 +30,6 @@ export var DebugOverlay = L.Layer.extend({
       tileSize: map.options.crs.options.crs.tile.bounds.max.x,
     });
     map.addLayer(this._grid);
-
-    this._panel = debugPanel({
-      className: "mapml-debug-panel",
-      pane: this._container,
-    });
-    map.addLayer(this._panel);
 
     this._vectors = debugVectors({
       className: "mapml-debug-vectors",
@@ -49,9 +41,11 @@ export var DebugOverlay = L.Layer.extend({
 
   onRemove: function (map) {
     map.removeLayer(this._grid);
-    map.removeLayer(this._panel);
     map.removeLayer(this._vectors);
-    L.DomUtil.remove(this._container);
+    if (this._panel) {  //conditionally remove the panel, as it's not always added
+      map.removeLayer(this._panel);
+      L.DomUtil.remove(this._container);
+    }
   },
 
 });
@@ -67,27 +61,23 @@ export var DebugPanel = L.Layer.extend({
   },
 
   onAdd: function (map) {
-    let mapSize = map.getSize();
 
-    //conditionally show debug panel only when the map has enough space for it
-    if (mapSize.x > 400 || mapSize.y > 300) {
-      this._title = L.DomUtil.create("div", "mapml-debug-banner", this.options.pane);
-      this._title.innerHTML = "Debug mode";
+    this._title = L.DomUtil.create("div", "mapml-debug-banner", this.options.pane);
+    this._title.innerHTML = "Debug mode";
 
-      map.debug = {};
-      map.debug._infoContainer = this._debugContainer = L.DomUtil.create("div", "mapml-debug-panel", this.options.pane);
+    map.debug = {};
+    map.debug._infoContainer = this._debugContainer = L.DomUtil.create("div", "mapml-debug-panel", this.options.pane);
 
-      let infoContainer = map.debug._infoContainer;
+    let infoContainer = map.debug._infoContainer;
 
-      map.debug._tileCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-      map.debug._tileMatrixCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-      map.debug._mapCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-      map.debug._tcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-      map.debug._pcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-      map.debug._gcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
+    map.debug._tileCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
+    map.debug._tileMatrixCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
+    map.debug._mapCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
+    map.debug._tcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
+    map.debug._pcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
+    map.debug._gcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
 
-      this._map.on("mousemove", this._updateCoords);
-    }
+    this._map.on("mousemove", this._updateCoords);
 
   },
   onRemove: function () {

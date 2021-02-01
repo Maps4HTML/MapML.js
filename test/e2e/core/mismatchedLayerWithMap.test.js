@@ -41,7 +41,7 @@ jest.setTimeout(30000);
             </body>
             </html>
         `);
-        await page.waitForTimeout(2000);
+        await page.waitForLoadState('networkidle');
         await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > a');
         const cbmtileLayer = await page.$eval("body > map > layer-:nth-child(1)",
           (controller) => controller.hasAttribute('disabled'));
@@ -72,7 +72,7 @@ jest.setTimeout(30000);
             </body>
             </html>
         `);
-        await page.waitForTimeout(2000);
+        await page.waitForLoadState('networkidle');
         await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > a');
         const cbmtileLayer = await page.$eval("#checkMe",
           (controller) => controller.hasAttribute('disabled'));

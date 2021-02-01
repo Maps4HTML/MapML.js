@@ -1,3 +1,5 @@
+import { BLANK_TT_TREF } from '../utils/Constants';
+
 export var TemplatedTileLayer = L.TileLayer.extend({
     // a TemplateTileLayer is similar to a L.TileLayer except its templates are
     // defined by the <extent><template/></extent>
@@ -59,22 +61,38 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       this._parentOnMoveEnd();
     },
     createTile: function (coords) {
-      let tileSize = this._map.options.crs.options.crs.tile.bounds.max.x;
+      let tileGroup = document.createElement("DIV"),
+          tileSize = this._map.options.crs.options.crs.tile.bounds.max.x;
+      L.DomUtil.addClass(tileGroup, "mapml-tile-group");
+      L.DomUtil.addClass(tileGroup, "leaflet-tile");
+      
+      tileGroup.setAttribute("width", `${tileSize}`);
+      tileGroup.setAttribute("height", `${tileSize}`);
+
+      this._template.linkEl.dispatchEvent(new CustomEvent('tileloadstart', {
+        detail:{
+          x:coords.x,
+          y:coords.y,
+          zoom:coords.z,
+          appendTile: (elem)=>{tileGroup.appendChild(elem);},
+        },
+      }));
+
       if (this._template.type.startsWith('image/')) {
-        return L.TileLayer.prototype.createTile.call(this, coords, function(){});
-      } else {
+        tileGroup.appendChild(L.TileLayer.prototype.createTile.call(this, coords, function(){}));
+      } else if(!this._url.includes(BLANK_TT_TREF)) {
         // tiles of type="text/mapml" will have to fetch content while creating
         // the tile here, unless there can be a callback associated to the element
         // that will render the content in the alread-placed tile
         // var tile = L.DomUtil.create('canvas', 'leaflet-tile');
         var tile = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        this._fetchTile(coords, tile);
         tile.setAttribute("width", `${tileSize}`);
         tile.setAttribute("height", `${tileSize}`);
-//        tile.style.outline="1px solid red";
         L.DomUtil.addClass(tile, "leaflet-tile");
-        this._fetchTile(coords, tile);
-        return tile;
+        tileGroup.appendChild(tile);
       }
+      return tileGroup;
     },
     _mapmlTileReady: function(tile) {
         L.DomUtil.addClass(tile,'leaflet-tile-loaded');

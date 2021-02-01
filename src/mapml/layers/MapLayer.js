@@ -1,4 +1,4 @@
-import { FALLBACK_PROJECTION } from '../utils/Constants';
+import { FALLBACK_PROJECTION, BLANK_TT_TREF } from '../utils/Constants';
 
 export var MapMLLayer = L.Layer.extend({
     // zIndex has to be set, for the case where the layer is added to the
@@ -487,12 +487,12 @@ export var MapMLLayer = L.Layer.extend({
         opacity = document.createElement('input'),
         opacityControl = document.createElement('details'),
         opacityControlSummary = document.createElement('summary'),
-        opacityControlSummaryLabel = document.createElement('label');
+        opacityControlSummaryLabel = document.createElement('label'),
+        mapEl = this._layerEl.parentNode;
 
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
         input.className = 'leaflet-control-layers-selector';
-        name.draggable = true;
         name.layer = this;
 
         if (this._legendUrl) {
@@ -500,6 +500,7 @@ export var MapMLLayer = L.Layer.extend({
           legendLink.text = ' ' + this._title;
           legendLink.href = this._legendUrl;
           legendLink.target = '_blank';
+          legendLink.draggable = false;
           name.appendChild(legendLink);
         } else {
           name.innerHTML = ' ' + this._title;
@@ -521,19 +522,74 @@ export var MapMLLayer = L.Layer.extend({
         opacity.setAttribute('step','0.1');
         opacity.value = this._container.style.opacity || '1.0';
 
-        L.DomEvent.on(opacity,'change', this._changeOpacity, this);
-        L.DomEvent.on(name,'dragstart', function(event) {
-            // will have to figure out how to drag and drop a whole element
-            // with its contents in the case where the <layer->content</layer-> 
-            // has no src but does have inline content.  
-            // Should be do-able, I think.
-            if (this._href) {
-              event.dataTransfer.setData("text/uri-list",this._href);
-              // Why use a second .setData("text/plain"...) ? This is very important:
-              // See https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Recommended_drag_types#link
-              event.dataTransfer.setData("text/plain", this._href); 
+        fieldset.setAttribute("aria-grabbed", "false");
+
+        fieldset.onmousedown = (downEvent) => {
+          if(downEvent.target.tagName.toLowerCase() === "input") return;
+          downEvent.preventDefault();
+          let control = fieldset,
+              controls = fieldset.parentNode,
+              moving = false, yPos = downEvent.clientY;
+
+          document.body.onmousemove = (moveEvent) => {
+            moveEvent.preventDefault();
+
+            // Fixes flickering by only moving element when there is enough space
+            let offset = moveEvent.clientY - yPos;
+            moving = Math.abs(offset) > 5 || moving;
+            if(controls && !moving || 
+                controls.getBoundingClientRect().top > control.getBoundingClientRect().bottom || 
+                controls.getBoundingClientRect().bottom < control.getBoundingClientRect().top){
+                  return;
+                }
+            
+            controls.classList.add("mapml-draggable");
+            control.style.transform = "translateY("+ offset +"px)";
+            control.style.pointerEvents = "none";
+
+            let x = moveEvent.clientX, y = moveEvent.clientY,
+                root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".web-map").shadowRoot,
+                elementAt = root.elementFromPoint(x, y),
+                swapControl = !elementAt || !elementAt.closest("fieldset") ? control : elementAt.closest("fieldset");
+      
+            swapControl =  Math.abs(offset) <= swapControl.offsetHeight ? control : swapControl;
+            
+            control.setAttribute("aria-grabbed", 'true');
+            control.setAttribute("aria-dropeffect", "move");
+            if(swapControl && controls === swapControl.parentNode){
+              swapControl = swapControl !== control.nextSibling? swapControl : swapControl.nextSibling;
+              if(control !== swapControl){ 
+                yPos = moveEvent.clientY;
+                control.style.transform = null;
+              }
+              controls.insertBefore(control, swapControl);
             }
-          }, this);
+          };
+
+          document.body.onmouseup = () => {
+            control.setAttribute("aria-grabbed", "false");
+            control.removeAttribute("aria-dropeffect");
+            control.style.pointerEvents = null;
+            control.style.transform = null;
+            let controlsElems = controls.children,
+                zIndex = 1;
+            for(let c of controlsElems){
+              let layerEl = c.querySelector("span").layer._layerEl;
+              
+              layerEl.setAttribute("data-moving","");
+              mapEl.insertAdjacentElement("beforeend", layerEl);
+              layerEl.removeAttribute("data-moving");
+
+              
+              layerEl._layer.setZIndex(zIndex);
+              zIndex++;
+            }
+            controls.classList.remove("mapml-draggable");
+            document.body.onmousemove = document.body.onmouseup = null;
+          };
+        };
+
+        L.DomEvent.on(opacity,'change', this._changeOpacity, this);
 
         fieldset.appendChild(details);
         details.appendChild(summary);
@@ -677,8 +733,16 @@ export var MapMLLayer = L.Layer.extend({
                   }
                     
                   for (var i=0;i< tlist.length;i++) {
-                    var t = tlist[i],
-                        template = t.getAttribute('tref'), v,
+                    var t = tlist[i], template = t.getAttribute('tref'); 
+                    if(!template){
+                      template = BLANK_TT_TREF;
+                      let blankInputs = mapml.querySelectorAll('input');
+                      for (let i of blankInputs){
+                        template += `{${i.getAttribute("name")}}`;
+                      }
+                    }
+                    
+                    var v,
                         title = t.hasAttribute('title') ? t.getAttribute('title') : 'Query this layer',
                         vcount=template.match(varNamesRe),
                         trel = (!t.hasAttribute('rel') || t.getAttribute('rel').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('rel').toLowerCase(),
@@ -745,7 +809,7 @@ export var MapMLLayer = L.Layer.extend({
                         break;
                       }
                     }
-                    if (template && vcount.length === inputs.length) {
+                    if (template && vcount.length === inputs.length || template === BLANK_TT_TREF) {
                       if (trel === 'query') {
                         layer.queryable = true;
                       }
@@ -755,6 +819,7 @@ export var MapMLLayer = L.Layer.extend({
                       // template has a matching input for every variable reference {varref}
                       layer._templateVars.push({
                         template:decodeURI(new URL(template, base)), 
+                        linkEl: t,
                         title:title, 
                         rel: trel, 
                         type: ttype, 
