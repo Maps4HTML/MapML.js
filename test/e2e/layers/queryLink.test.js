@@ -42,12 +42,36 @@ jest.setTimeout(50000);
         });
 
         test("[" + browserType + "]" + " Query link does not show when out of bounds", async () => {
-          await page.evaluateHandle(() => document.querySelector("mapml-viewer").zoomTo(-57, -4, 0));
+          await page.evaluateHandle(() => document.querySelector("mapml-viewer").zoomTo(-37.078210, -9.010487, 0));
           await page.waitForTimeout(1000);
           await page.click("div");
           await page.waitForSelector("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div", { state: "hidden" });
-          const popupNum = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane", (div) => div.childElementCount);
-          expect(popupNum).toEqual(0);
+          const popupNumRight = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane", (div) => div.childElementCount);
+
+          // z:0, lon :-93.041053, lat:-45.679787 
+          await page.evaluateHandle(() => document.querySelector("mapml-viewer").zoomTo(-45.679787, -93.041053, 0));
+          await page.waitForTimeout(1000);
+          await page.click("div");
+          await page.waitForTimeout(1000);
+          const popupNumBottom = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane", (div) => div.childElementCount);
+
+          // z:0, lon :177.152220, lat:-37.399782
+          await page.evaluateHandle(() => document.querySelector("mapml-viewer").zoomTo(-37.399782, 177.152220, 0));
+          await page.waitForTimeout(1000);
+          await page.click("div");
+          await page.waitForTimeout(1000);
+          const popupNumLeft = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane", (div) => div.childElementCount);
+
+          await page.evaluateHandle(() => document.querySelector("mapml-viewer").zoomTo(-32.240953, 94.969783, 0));
+          await page.waitForTimeout(1000);
+          await page.click("div");
+          await page.waitForTimeout(1000);
+          const popupNumTop = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane", (div) => div.childElementCount);
+
+          expect(popupNumRight).toEqual(0);
+          expect(popupNumBottom).toEqual(0);
+          expect(popupNumLeft).toEqual(0);
+          expect(popupNumTop).toEqual(0);
         });
 
       });
