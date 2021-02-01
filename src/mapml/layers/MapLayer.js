@@ -695,7 +695,7 @@ export var MapMLLayer = L.Layer.extend({
 
                         if ((inp.hasAttribute("type") && inp.getAttribute("type")==="location") && 
                             (!inp.hasAttribute("min" || !inp.hasAttribute("max"))) && 
-                            (inp.hasAttribute("units") && !["map","tile"].includes(inp.getAttribute("units").toLowerCase()))){
+                            (inp.hasAttribute("axis") && !["i","j"].includes(inp.getAttribute("axis").toLowerCase()))){
                           zoomInput.setAttribute("value", extentFallback.zoom);
                           
                           let axis = inp.getAttribute("axis"), 
