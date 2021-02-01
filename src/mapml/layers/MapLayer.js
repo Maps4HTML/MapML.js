@@ -693,7 +693,9 @@ export var MapMLLayer = L.Layer.extend({
                           inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
                       if (inp) {
 
-                        if ((inp.hasAttribute("type") && inp.getAttribute("type")==="location") && (!inp.hasAttribute("min" || !inp.hasAttribute("max")))){
+                        if ((inp.hasAttribute("type") && inp.getAttribute("type")==="location") && 
+                            (!inp.hasAttribute("min" || !inp.hasAttribute("max"))) && 
+                            (inp.hasAttribute("units") && !["map","tile"].includes(inp.getAttribute("units").toLowerCase()))){
                           zoomInput.setAttribute("value", extentFallback.zoom);
                           
                           let axis = inp.getAttribute("axis"), 
