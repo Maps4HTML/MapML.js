@@ -39,7 +39,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
             // need to parse as HTML to preserve semantics and styles
             var c = document.createElement('div');
             c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-            geometry.bindPopup(c, {autoPan:false});
+            geometry.bindPopup(c, {autoPan:false, closeButton: false});
           }
         });
       }

@@ -94,7 +94,7 @@ export var MapMLLayer = L.Layer.extend({
                 if (properties) {
                   var c = document.createElement('div');
                   c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                  geometry.bindPopup(c, {autoPan:false});
+                  geometry.bindPopup(c, {autoPan:false, closeButton: false});
                 }
               }
             });
@@ -123,7 +123,7 @@ export var MapMLLayer = L.Layer.extend({
                     if (properties) {
                       var c = document.createElement('div');
                       c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                      geometry.bindPopup(c, {autoPan:false});
+                      geometry.bindPopup(c, {autoPan:false, closeButton: false});
                     }
                   }
                 }).addTo(map);
