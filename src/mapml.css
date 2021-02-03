@@ -35,6 +35,11 @@
   font-size: 12px;
 }
 
+/* Remove opinionated color of links. */
+.leaflet-container a {
+  color: initial;
+}
+
 /*
  * Controls.
  */
@@ -93,8 +98,15 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgb(0, 0, 0, 0.3);
 }
 
+/* Increase contrast between the attribution container and the underlying content. */
 .leaflet-container .leaflet-control-attribution {
   background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Remove opinionated styles of attribution links. */
+.leaflet-control-attribution a {
+  color: revert;
+  text-decoration: revert;
 }
 
 /*
