@@ -38,6 +38,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
     onAdd: function(map){
       L.FeatureGroup.prototype.onAdd.call(this, map);
+      map.on("popupopen", this._attachSkipButtons, this);
       this._updateTabIndex();
     },
 
@@ -55,9 +56,72 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     _updateTabIndex: function(){
       for(let feature in this._features){
         for(let path of this._features[feature]){
-          if(path._path && path._path.getAttribute("d") !== "M0 0") path._path.setAttribute("tabindex", 0);
+          if(path._path){
+            if(path._path.getAttribute("d") !== "M0 0"){
+              path._path.setAttribute("tabindex", 0);
+            } else {
+              path._path.removeAttribute("tabindex");
+            }
+            if(path._path.childElementCount === 0) {
+              let title = document.createElement("title");
+              title.innerText = "Feature";
+              path._path.appendChild(title);
+            }
+          }
         }
       }
+    },
+
+    _attachSkipButtons: function(e){
+      if(!e.popup._container.querySelector('div[class="mapml-focus-buttons"]')){
+        //add when popopen event happens instead
+        let div = L.DomUtil.create("div", "mapml-focus-buttons");
+        let backButton = L.DomUtil.create('a',"mapml-popup-button", div);
+        backButton.href = '#';
+        backButton.role = "button";
+        backButton.title = "Skip Backwards";
+        backButton.innerHTML = '&#10094;';
+        L.DomEvent.disableClickPropagation(backButton);
+        L.DomEvent.on(backButton, 'click', L.DomEvent.stop);
+        L.DomEvent.on(backButton, 'click', this._skipBackward, this);
+        
+        let forwardButton = L.DomUtil.create('a',"mapml-popup-button", div);
+        forwardButton.href = '#';
+        forwardButton.role = "button";
+        forwardButton.title = "Skip Forwards";
+        forwardButton.innerHTML = '&#10095;';
+        L.DomEvent.disableClickPropagation(forwardButton);
+        L.DomEvent.on(forwardButton, 'click', L.DomEvent.stop);
+        L.DomEvent.on(forwardButton, 'click', this._skipForward, this);
+        e.popup._container.prepend(div);
+      }
+
+      function focusFeature(focusEvent){
+        if(focusEvent.originalEvent.path[0].title==="Skip Forwards" && e.popup._source._path.nextSibling && +focusEvent.originalEvent.keyCode === 9){
+          L.DomEvent.stopPropagation(focusEvent);
+          e.popup._source._path.nextSibling.focus();
+        }
+      };
+
+      this._map.on("keydown", focusFeature);
+      this._map.off("popupclose", (closeEvent)=>{
+        if (closeEvent.popup === e.popup){
+          this._map.off("keydown", focusFeature);
+        }
+      });
+
+      e.popup._container.querySelector("a").focus();
+
+    },
+
+    _skipBackward: function(e){
+      this._map.closePopup();
+      this._map._container.focus();
+    },
+        
+    _skipForward: function(e){
+      this._map.closePopup();
+      this._map._controlContainer.focus();
     },
 
     _handleMoveEnd : function(){

@@ -125,7 +125,18 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       let c = context || this;
       for(let layerNum in c._features._layers){
         let layer = c._features._layers[layerNum];
-        if(layer._path && layer._path.getAttribute("d") !== "M0 0") layer._path.setAttribute("tabindex", 0);
+        if(layer._path){
+          if(layer._path.getAttribute("d") !== "M0 0"){
+            layer._path.setAttribute("tabindex", 0);
+          } else {
+            layer._path.removeAttribute("tabindex");
+          }
+          if(layer._path.childElementCount === 0) {
+            let title = document.createElement("title");
+            title.innerText = "Feature";
+            layer._path.appendChild(title);
+          }
+        }
       }
     },
     _updateZIndex: function () {
