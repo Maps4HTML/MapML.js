@@ -138,6 +138,7 @@
   border: none;
   margin: 0;
   padding: 0;
+  min-height: 44px;
 }
 
 .leaflet-control-layers-overlays > fieldset > .mapml-control-layers > summary,
@@ -147,8 +148,8 @@
 }
 
 .leaflet-control-layers-overlays > fieldset > .mapml-control-layers > summary {
-  padding-top: 7.5px;
-  padding-bottom: 7.5px;
+  padding-top: 12.5px;
+  padding-bottom: 12.5px;
 }
 
 .leaflet-control-layers-overlays > fieldset > .mapml-control-layers details > summary {
