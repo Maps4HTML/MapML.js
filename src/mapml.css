@@ -35,6 +35,11 @@
   font-size: 12px;
 }
 
+/* Remove opinionated color of links. */
+.leaflet-container a {
+  color: initial;
+}
+
 /*
  * Controls.
  */
