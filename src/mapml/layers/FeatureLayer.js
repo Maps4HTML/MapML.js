@@ -73,6 +73,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     },
 
     _attachSkipButtons: function(e){
+      if(!e.popup._source._path) return;
       if(!e.popup._container.querySelector('div[class="mapml-focus-buttons"]')){
         //add when popopen event happens instead
         let div = L.DomUtil.create("div", "mapml-focus-buttons");

@@ -71,15 +71,6 @@ jest.setTimeout(50000);
           });
         });
         describe("Tab Navigable Tests in " + browserType, () => {
-          function findFocusedNode(node) {
-            if (node.focused)
-              return node;
-            for (const child of node.children || []) {
-              const foundNode = findFocusedNode(child);
-              return foundNode;
-            }
-            return null;
-          }
           test("[" + browserType + "]" + " Tab focuses inline features", async () => {
             await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.mapml-reload-button.leaflet-bar.leaflet-control > a");
             await page.waitForTimeout(1000);
