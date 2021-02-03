@@ -56,7 +56,7 @@ jest.setTimeout(30000);
         let controlBBox = await control.boundingBox();
         await page.mouse.move(controlBBox.x + controlBBox.width / 2, controlBBox.y + controlBBox.height / 2);
         await page.mouse.down();
-        await page.mouse.move(controlBBox.x + controlBBox.width / 2, (controlBBox.y + controlBBox.height / 2) + 45);
+        await page.mouse.move(controlBBox.x + controlBBox.width / 2, (controlBBox.y + controlBBox.height / 2) + 48);
         await page.mouse.up();
         await page.hover(".leaflet-top.leaflet-right");
 
@@ -84,7 +84,7 @@ jest.setTimeout(30000);
         let controlBBox = await control.boundingBox();
         await page.mouse.move(controlBBox.x + controlBBox.width / 2, controlBBox.y + controlBBox.height / 2);
         await page.mouse.down();
-        await page.mouse.move(controlBBox.x + controlBBox.width / 2, (controlBBox.y + controlBBox.height / 2) - 45);
+        await page.mouse.move(controlBBox.x + controlBBox.width / 2, (controlBBox.y + controlBBox.height / 2) - 48);
         await page.mouse.up();
         await page.hover(".leaflet-top.leaflet-right");
 

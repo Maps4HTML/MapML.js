@@ -20,6 +20,9 @@ export var TemplatedLayer = L.Layer.extend({
           if (!this._queries) {
             this._queries = [];
           }
+          let inputData = M.extractInputBounds(templates[i]);
+          templates[i].layerBounds = inputData.bounds;
+          templates[i].zoomBounds = inputData.zoomBounds;
           this._queries.push(L.extend(templates[i], this._setupQueryVars(templates[i])));
       }
     }
@@ -40,6 +43,7 @@ export var TemplatedLayer = L.Layer.extend({
   _onZoomStart: function() {
       this.closePopup();
   },
+
 
   _setupQueryVars: function(template) {
       // process the inputs associated to template and create an object named
