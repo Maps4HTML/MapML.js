@@ -415,9 +415,7 @@ summary {
 }
 
 .mapml-focus-buttons {
-  padding-left: -4px;
   white-space: nowrap;
-  overflow:auto;
   display: inline;
 }
 

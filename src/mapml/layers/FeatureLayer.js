@@ -87,13 +87,31 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         L.DomEvent.on(backButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(backButton, 'click', this._skipBackward, this);
 
-        let featureCount = L.DomUtil.create("p", "mapml-feature-count", div), currentFeature = 1;
+        let previousButton = L.DomUtil.create('a', "mapml-popup-button", div);
+        previousButton.href = '#';
+        previousButton.role = "button";
+        previousButton.title = "Previous Feature";
+        previousButton.innerHTML = "&#10094;";
+        L.DomEvent.disableClickPropagation(previousButton);
+        L.DomEvent.on(previousButton, 'click', L.DomEvent.stop);
+        L.DomEvent.on(previousButton, 'click', this._previousFeature, e.popup);
 
-        for(let feature of e.popup._source._path.parentNode.children){
-          if(feature === e.popup._source._path)break;
-          currentFeature++;
-        }
-        featureCount.innerText = currentFeature+"/"+e.popup._source._path.parentNode.childElementCount;
+        let featureCount = L.DomUtil.create("p", "mapml-feature-count", div), currentFeature = 1;
+        featureCount.innerText = currentFeature+"/1";
+        //for(let feature of e.popup._source._path.parentNode.children){
+        //  if(feature === e.popup._source._path)break;
+        //  currentFeature++;
+        //}
+        //featureCount.innerText = currentFeature+"/"+e.popup._source._path.parentNode.childElementCount;
+
+        let nextButton = L.DomUtil.create('a', "mapml-popup-button", div);
+        nextButton.href = '#';
+        nextButton.role = "button";
+        nextButton.title = "Next Feature";
+        nextButton.innerHTML = "&#10095;";
+        L.DomEvent.disableClickPropagation(nextButton);
+        L.DomEvent.on(nextButton, 'click', L.DomEvent.stop);
+        L.DomEvent.on(nextButton, 'click', this._nextFeature, e.popup);
         
         let forwardButton = L.DomUtil.create('a',"mapml-popup-button", div);
         forwardButton.href = '#';
@@ -129,6 +147,24 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     _skipBackward: function(e){
       this._map.closePopup();
       this._map._container.focus();
+    },
+
+    _previousFeature: function(e){
+      this._map.closePopup();
+      if(this._source._path.previousSibling){
+        this._source._path.previousSibling.focus();
+      } else {
+        this._source._path.focus();
+      }
+    },
+
+    _nextFeature: function(e){
+      this._map.closePopup();
+      if(this._source._path.nextSibling){
+        this._source._path.nextSibling.focus();
+      } else {
+        this._source._path.focus();
+      }
     },
         
     _skipForward: function(e){

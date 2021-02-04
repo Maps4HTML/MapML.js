@@ -95,7 +95,7 @@ export var MapMLLayer = L.Layer.extend({
                   var c = document.createElement('div');
                   c.classList.add("mapml-popup-content");
                   c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                  geometry.bindPopup(c, {autoPan:false, closeButton: false});
+                  geometry.bindPopup(c, {autoPan:false, closeButton: false, minWidth: 108});
                 }
               }
             });
@@ -125,7 +125,7 @@ export var MapMLLayer = L.Layer.extend({
                       var c = document.createElement('div');
                       c.classList.add("mapml-popup-content");
                       c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                      geometry.bindPopup(c, {autoPan:false, closeButton: false});
+                      geometry.bindPopup(c, {autoPan:false, closeButton: false, minWidth: 108});
                     }
                   }
                 }).addTo(map);
