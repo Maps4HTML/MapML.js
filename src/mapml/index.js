@@ -574,6 +574,8 @@ window.M = M;
   });
 }());
 
+M.convertPCRSBounds = Util.convertPCRSBounds;
+M.axisToXY = Util.axisToXY;
 M.csToAxes = Util.csToAxes;
 M.convertAndFormatPCRS = Util.convertAndFormatPCRS;
 M.axisToCS = Util.axisToCS;

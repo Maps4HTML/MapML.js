@@ -40,7 +40,7 @@ jest.setTimeout(50000);
           const popupNum = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane", (div) => div.childElementCount);
           expect(popupNum).toEqual(1);
         });
-
+        
         test("[" + browserType + "]" + " Query link does not show when out of bounds", async () => {
           await page.evaluateHandle(() => document.querySelector("mapml-viewer").zoomTo(-37.078210, -9.010487, 0));
           await page.waitForTimeout(1000);
@@ -71,7 +71,6 @@ jest.setTimeout(50000);
           expect(popupNumLeft).toEqual(0);
           expect(popupNumTop).toEqual(0);
         });
-
       });
   }
 })();
