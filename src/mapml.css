@@ -389,7 +389,7 @@ summary {
 }
 
 .mapml-popup-button {
-	padding: 4px 4px 0 0;
+	padding: 0 4px 0 4px;
 	border: none;
 	text-align: center;
 	width: 18px;
@@ -399,9 +399,19 @@ summary {
 	text-decoration: none;
 	font-weight: bold;
   background: transparent;
-  float: left;
+  white-space: nowrap;
 }
 
 .mapml-focus-buttons {
-  margin-left: 4px;
+  padding-left: -4px;
+  white-space: nowrap;
+  overflow:auto;
+  display: inline;
+}
+
+.mapml-feature-count {
+  display:inline;
+  white-space: nowrap;
+  text-align: center;
+  padding: 2px;
 }

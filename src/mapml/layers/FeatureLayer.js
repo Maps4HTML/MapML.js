@@ -77,32 +77,46 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       if(!e.popup._container.querySelector('div[class="mapml-focus-buttons"]')){
         //add when popopen event happens instead
         let div = L.DomUtil.create("div", "mapml-focus-buttons");
+
         let backButton = L.DomUtil.create('a',"mapml-popup-button", div);
         backButton.href = '#';
         backButton.role = "button";
-        backButton.title = "Skip Backwards";
-        backButton.innerHTML = '&#10094;';
+        backButton.title = "Focus Map";
+        backButton.innerHTML = '|&#10094;';
         L.DomEvent.disableClickPropagation(backButton);
         L.DomEvent.on(backButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(backButton, 'click', this._skipBackward, this);
+
+        let featureCount = L.DomUtil.create("p", "mapml-feature-count", div), currentFeature = 1;
+
+        for(let feature of e.popup._source._path.parentNode.children){
+          if(feature === e.popup._source._path)break;
+          currentFeature++;
+        }
+        featureCount.innerText = currentFeature+"/"+e.popup._source._path.parentNode.childElementCount;
         
         let forwardButton = L.DomUtil.create('a',"mapml-popup-button", div);
         forwardButton.href = '#';
         forwardButton.role = "button";
-        forwardButton.title = "Skip Forwards";
-        forwardButton.innerHTML = '&#10095;';
+        forwardButton.title = "Focus Controls";
+        forwardButton.innerHTML = '&#10095;|';
         L.DomEvent.disableClickPropagation(forwardButton);
         L.DomEvent.on(forwardButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(forwardButton, 'click', this._skipForward, this);
-        e.popup._container.prepend(div);
+    
+        let divider = L.DomUtil.create("hr");
+        divider.style.borderTop = "1px solid #bbb";
+
+        e.popup._content.appendChild(divider);
+        e.popup._content.appendChild(div);
       }
 
       function focusFeature(focusEvent){
-        if(focusEvent.originalEvent.path[0].title==="Skip Forwards" && e.popup._source._path.nextSibling && +focusEvent.originalEvent.keyCode === 9){
+        if(focusEvent.originalEvent.path[0].title==="Focus Controls" && e.popup._source._path.nextSibling && +focusEvent.originalEvent.keyCode === 9){
           L.DomEvent.stopPropagation(focusEvent);
-          e.popup._source._path.nextSibling.focus();
+          e.popup._source._path.focus();
         }
-      };
+      }
 
       this._map.on("keydown", focusFeature);
       this._map.off("popupclose", (closeEvent)=>{
@@ -110,9 +124,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
           this._map.off("keydown", focusFeature);
         }
       });
-
-      e.popup._container.querySelector("a").focus();
-
     },
 
     _skipBackward: function(e){
