@@ -78,15 +78,17 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         //add when popopen event happens instead
         let div = L.DomUtil.create("div", "mapml-focus-buttons");
 
-        let backButton = L.DomUtil.create('a',"mapml-popup-button", div);
-        backButton.href = '#';
-        backButton.role = "button";
-        backButton.title = "Focus Map";
-        backButton.innerHTML = '|&#10094;';
-        L.DomEvent.disableClickPropagation(backButton);
-        L.DomEvent.on(backButton, 'click', L.DomEvent.stop);
-        L.DomEvent.on(backButton, 'click', this._skipBackward, this);
+        // creates |< button, focuses map
+        let mapFocusButton = L.DomUtil.create('a',"mapml-popup-button", div);
+        mapFocusButton.href = '#';
+        mapFocusButton.role = "button";
+        mapFocusButton.title = "Focus Map";
+        mapFocusButton.innerHTML = '|&#10094;';
+        L.DomEvent.disableClickPropagation(mapFocusButton);
+        L.DomEvent.on(mapFocusButton, 'click', L.DomEvent.stop);
+        L.DomEvent.on(mapFocusButton, 'click', this._skipBackward, this);
 
+        // creates < button, focuses previous feature, if none exists focuses the current feature
         let previousButton = L.DomUtil.create('a', "mapml-popup-button", div);
         previousButton.href = '#';
         previousButton.role = "button";
@@ -96,6 +98,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         L.DomEvent.on(previousButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(previousButton, 'click', this._previousFeature, e.popup);
 
+        // static feature counter that 1/1
         let featureCount = L.DomUtil.create("p", "mapml-feature-count", div), currentFeature = 1;
         featureCount.innerText = currentFeature+"/1";
         //for(let feature of e.popup._source._path.parentNode.children){
@@ -104,6 +107,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         //}
         //featureCount.innerText = currentFeature+"/"+e.popup._source._path.parentNode.childElementCount;
 
+        // creates > button, focuses next feature, if none exists focuses the current feature
         let nextButton = L.DomUtil.create('a', "mapml-popup-button", div);
         nextButton.href = '#';
         nextButton.role = "button";
@@ -113,14 +117,15 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         L.DomEvent.on(nextButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(nextButton, 'click', this._nextFeature, e.popup);
         
-        let forwardButton = L.DomUtil.create('a',"mapml-popup-button", div);
-        forwardButton.href = '#';
-        forwardButton.role = "button";
-        forwardButton.title = "Focus Controls";
-        forwardButton.innerHTML = '&#10095;|';
-        L.DomEvent.disableClickPropagation(forwardButton);
-        L.DomEvent.on(forwardButton, 'click', L.DomEvent.stop);
-        L.DomEvent.on(forwardButton, 'click', this._skipForward, this);
+        // creates >| button, focuses map controls
+        let controlFocusButton = L.DomUtil.create('a',"mapml-popup-button", div);
+        controlFocusButton.href = '#';
+        controlFocusButton.role = "button";
+        controlFocusButton.title = "Focus Controls";
+        controlFocusButton.innerHTML = '&#10095;|';
+        L.DomEvent.disableClickPropagation(controlFocusButton);
+        L.DomEvent.on(controlFocusButton, 'click', L.DomEvent.stop);
+        L.DomEvent.on(controlFocusButton, 'click', this._skipForward, this);
     
         let divider = L.DomUtil.create("hr");
         divider.style.borderTop = "1px solid #bbb";
@@ -129,6 +134,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         e.popup._content.appendChild(div);
       }
 
+      // When popup is open, what gets focused with tab needs to be done using JS as the DOM order is not in an accessibility friendly manner
       function focusFeature(focusEvent){
         if(focusEvent.originalEvent.path[0].title==="Focus Controls" && +focusEvent.originalEvent.keyCode === 9){
           L.DomEvent.stop(focusEvent);
@@ -138,9 +144,13 @@ export var MapMLFeatures = L.FeatureGroup.extend({
           L.DomEvent.stop(focusEvent);
           e.popup._source._path.focus();
         }
-      }/*  */
+      }
 
+      // e.target = this._map
+      // Looks for keydown, more specifically tab and shift tab
       e.target.on("keydown", focusFeature);
+
+      // if popup closes then the focusFeature handler can be removed
       e.target.off("popupclose", (closeEvent)=>{
         if (closeEvent.popup === e.popup){
           e.target.off("keydown", focusFeature);
