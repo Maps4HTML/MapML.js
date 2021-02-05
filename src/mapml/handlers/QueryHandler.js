@@ -117,7 +117,7 @@ export var QueryHandler = L.Handler.extend({
               }
             }).then(function(response) {
               var contenttype = response.headers.get("Content-Type");
-              if ( contenttype.startsWith("text/mapml")) {
+              if ( true || contenttype.startsWith("text/mapml")) { //true condition is temporary MUST REMOVE
                 return handleMapMLResponse(response, e.latlng);
               } else {
                 return handleOtherResponse(response, layer, e.latlng);
@@ -147,7 +147,8 @@ export var QueryHandler = L.Handler.extend({
                   // a much smarter approach would be to scale at the current
                   // zoom
                   coordsToLatLng: _coordsToLatLng,
-                  imagePath: M.detectImagePath(map.getContainer())
+                  imagePath: M.detectImagePath(map.getContainer()),
+                  query: true,
               });
               f.addTo(map);
 

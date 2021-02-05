@@ -227,7 +227,20 @@ export var TemplatedLayer = L.Layer.extend({
         map.removeLayer(this._templates[i].layer);
       }
     }
-  }
+  },
+
+  _skipBackward: function(e){
+
+  },
+  _previousFeature: function(e){
+    console.log("HERE");
+  },
+  _nextFeature: function(e){
+    this._map.fire("featurepagination", {i:1});
+  },
+  _skipForward: function(e){
+
+  },
 });
 export var templatedLayer = function(templates, options) {
   // templates is an array of template objects

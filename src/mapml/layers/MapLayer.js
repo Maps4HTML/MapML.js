@@ -191,7 +191,7 @@ export var MapMLLayer = L.Layer.extend({
         setTimeout(() => {
           map.fire('checkdisabled');
         }, 0);
-        map.on("popupopen", this._focusPopup, this);
+        map.on("popupopen", this._attachSkipButtons, this);
     },
 
     _validProjection : function(map){
@@ -1156,10 +1156,106 @@ export var MapMLLayer = L.Layer.extend({
           return this._templatedLayer._queries;
         }
     },
-    _focusPopup: function(e){
-      let content = e.popup._container.getElementsByClassName("mapml-popup-content")[0];
+    _attachSkipButtons: function(e){
+      let popup = e.popup, map = e.target, layer, path,
+          content = popup._container.getElementsByClassName("mapml-popup-content")[0];
+
       content.setAttribute("tabindex", "-1");
       content.focus();
+
+      if(popup._source._eventParents){ // check if the popup is for a feature or query
+        layer = popup._source._eventParents[Object.keys(popup._source._eventParents)[0]]; // get first parent of feature, there should only be one
+        path = popup._source._path;
+      } else {
+        layer = popup._source._templatedLayer;
+      }
+
+      if(!popup._container.querySelector('div[class="mapml-focus-buttons"]')){
+        //add when popopen event happens instead
+        let div = L.DomUtil.create("div", "mapml-focus-buttons");
+
+        // creates |< button, focuses map
+        let mapFocusButton = L.DomUtil.create('a',"mapml-popup-button", div);
+        mapFocusButton.href = '#';
+        mapFocusButton.role = "button";
+        mapFocusButton.title = "Focus Map";
+        mapFocusButton.innerHTML = '|&#10094;';
+        L.DomEvent.disableClickPropagation(mapFocusButton);
+        L.DomEvent.on(mapFocusButton, 'click', L.DomEvent.stop);
+        L.DomEvent.on(mapFocusButton, 'click', layer._skipBackward, popup);
+
+        // creates < button, focuses previous feature, if none exists focuses the current feature
+        let previousButton = L.DomUtil.create('a', "mapml-popup-button", div);
+        previousButton.href = '#';
+        previousButton.role = "button";
+        previousButton.title = "Previous Feature";
+        previousButton.innerHTML = "&#10094;";
+        L.DomEvent.disableClickPropagation(previousButton);
+        L.DomEvent.on(previousButton, 'click', L.DomEvent.stop);
+        L.DomEvent.on(previousButton, 'click', layer._previousFeature, popup);
+
+        // static feature counter that 1/1
+        let featureCount = L.DomUtil.create("p", "mapml-feature-count", div), currentFeature = 1;
+        featureCount.innerText = currentFeature+"/1";
+        //for(let feature of e.popup._source._path.parentNode.children){
+        //  if(feature === e.popup._source._path)break;
+        //  currentFeature++;
+        //}
+        //featureCount.innerText = currentFeature+"/"+e.popup._source._path.parentNode.childElementCount;
+
+        // creates > button, focuses next feature, if none exists focuses the current feature
+        let nextButton = L.DomUtil.create('a', "mapml-popup-button", div);
+        nextButton.href = '#';
+        nextButton.role = "button";
+        nextButton.title = "Next Feature";
+        nextButton.innerHTML = "&#10095;";
+        L.DomEvent.disableClickPropagation(nextButton);
+        L.DomEvent.on(nextButton, 'click', L.DomEvent.stop);
+        L.DomEvent.on(nextButton, 'click', layer._nextFeature, popup);
+        
+        // creates >| button, focuses map controls
+        let controlFocusButton = L.DomUtil.create('a',"mapml-popup-button", div);
+        controlFocusButton.href = '#';
+        controlFocusButton.role = "button";
+        controlFocusButton.title = "Focus Controls";
+        controlFocusButton.innerHTML = '&#10095;|';
+        L.DomEvent.disableClickPropagation(controlFocusButton);
+        L.DomEvent.on(controlFocusButton, 'click', L.DomEvent.stop);
+        L.DomEvent.on(controlFocusButton, 'click', layer._skipForward, popup);
+    
+        let divider = L.DomUtil.create("hr");
+        divider.style.borderTop = "1px solid #bbb";
+
+        popup._content.appendChild(divider);
+        popup._content.appendChild(div);
+      }
+
+      if(path) {
+        // When popup is open, what gets focused with tab needs to be done using JS as the DOM order is not in an accessibility friendly manner
+        function focusFeature(focusEvent){
+          if(focusEvent.originalEvent.path[0].title==="Focus Controls" && +focusEvent.originalEvent.keyCode === 9){
+            L.DomEvent.stop(focusEvent);
+            path.focus();
+          } else if(focusEvent.originalEvent.shiftKey && +focusEvent.originalEvent.keyCode === 9){
+            map.closePopup(popup);
+            L.DomEvent.stop(focusEvent);
+            path.focus();
+          }
+        }
+
+        function removeHandlers(removeEvent){
+          if (removeEvent.popup === popup){
+            map.off("keydown", focusFeature);
+            map.off("popupclose", removeHandlers);
+          }
+        }
+        // e.target = this._map
+        // Looks for keydown, more specifically tab and shift tab
+        map.on("keydown", focusFeature);
+
+        // if popup closes then the focusFeature handler can be removed
+        map.on("popupclose", removeHandlers);
+      }
     },
 });
 export var mapMLLayer = function (url, node, options) {
