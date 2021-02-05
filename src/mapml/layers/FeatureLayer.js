@@ -130,16 +130,20 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       }
 
       function focusFeature(focusEvent){
-        if(focusEvent.originalEvent.path[0].title==="Focus Controls" && e.popup._source._path.nextSibling && +focusEvent.originalEvent.keyCode === 9){
-          L.DomEvent.stopPropagation(focusEvent);
+        if(focusEvent.originalEvent.path[0].title==="Focus Controls" && +focusEvent.originalEvent.keyCode === 9){
+          L.DomEvent.stop(focusEvent);
+          e.popup._source._path.focus();
+        } else if(focusEvent.originalEvent.shiftKey && +focusEvent.originalEvent.keyCode === 9){
+          e.target.closePopup(e.popup);
+          L.DomEvent.stop(focusEvent);
           e.popup._source._path.focus();
         }
-      }
+      }/*  */
 
-      this._map.on("keydown", focusFeature);
-      this._map.off("popupclose", (closeEvent)=>{
+      e.target.on("keydown", focusFeature);
+      e.target.off("popupclose", (closeEvent)=>{
         if (closeEvent.popup === e.popup){
-          this._map.off("keydown", focusFeature);
+          e.target.off("keydown", focusFeature);
         }
       });
     },

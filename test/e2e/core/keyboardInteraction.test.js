@@ -119,29 +119,109 @@ jest.setTimeout(50000);
           });
         });
 
-        /*         describe("Feature Popup Tab Navigation Tests in " + browserType, () => {
-                  test("[" + browserType + "]" + " Tab focuses inline features", async () => {
-                    await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.mapml-reload-button.leaflet-bar.leaflet-control > a");
-                    await page.evaluateHandle(() => document.getElementById("vector").removeAttribute("checked"));
-                    await page.click("body");
-                    await page.keyboard.press("Tab");
-        
-                    await page.keyboard.press("Tab");
-                    const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
-                    const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
-                    const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
-                    const focused = await (await page.evaluateHandle(elem => elem.getAttribute("d"), resultHandle)).jsonValue();
-        
-                    await page.keyboard.press("Tab");
-                    const aHandleNext = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
-                    const nextHandleNext = await page.evaluateHandle(doc => doc.shadowRoot, aHandleNext);
-                    const resultHandleNext = await page.evaluateHandle(root => root.activeElement, nextHandleNext);
-                    const focusedNext = await (await page.evaluateHandle(elem => elem.getAttribute("d"), resultHandleNext)).jsonValue();
-        
-                    expect(focused).toEqual("M330 83L553 83L553 339L330 339z");
-                    expect(focusedNext).toEqual("M-53 393L140 393L113 146L-53 191z");
-                  });
-                }); */
+        describe("Feature Popup Tab Navigation Tests in " + browserType, () => {
+          test("[" + browserType + "]" + " Inline features popup focus order", async () => {
+            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.mapml-reload-button.leaflet-bar.leaflet-control > a");
+            await page.evaluateHandle(() => document.getElementById("vector").removeAttribute("checked"));
+            await page.evaluateHandle(() => document.getElementById("query").removeAttribute("checked"));
+            await page.click("body");
+            await page.keyboard.press("Tab");
+
+            await page.keyboard.press("Tab");
+            await page.keyboard.press("Enter");
+            const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+            const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
+            const rh = await page.evaluateHandle(root => root.activeElement, nh);
+            const f = await (await page.evaluateHandle(elem => elem.className, rh)).jsonValue();
+
+            await page.keyboard.press("Tab");
+            const h2 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+            const nh2 = await page.evaluateHandle(doc => doc.shadowRoot, h2);
+            const rh2 = await page.evaluateHandle(root => root.activeElement, nh2);
+            const f2 = await (await page.evaluateHandle(elem => elem.tagName, rh2)).jsonValue();
+
+            await page.keyboard.press("Tab");
+            const h3 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+            const nh3 = await page.evaluateHandle(doc => doc.shadowRoot, h3);
+            const rh3 = await page.evaluateHandle(root => root.activeElement, nh3);
+            const f3 = await (await page.evaluateHandle(elem => elem.title, rh3)).jsonValue();
+
+            await page.keyboard.press("Tab");
+            const h4 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+            const nh4 = await page.evaluateHandle(doc => doc.shadowRoot, h4);
+            const rh4 = await page.evaluateHandle(root => root.activeElement, nh4);
+            const f4 = await (await page.evaluateHandle(elem => elem.title, rh4)).jsonValue();
+
+            await page.keyboard.press("Tab");
+            const h5 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+            const nh5 = await page.evaluateHandle(doc => doc.shadowRoot, h5);
+            const rh5 = await page.evaluateHandle(root => root.activeElement, nh5);
+            const f5 = await (await page.evaluateHandle(elem => elem.title, rh5)).jsonValue();
+
+            await page.keyboard.press("Tab");
+            const h6 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+            const nh6 = await page.evaluateHandle(doc => doc.shadowRoot, h6);
+            const rh6 = await page.evaluateHandle(root => root.activeElement, nh6);
+            const f6 = await (await page.evaluateHandle(elem => elem.title, rh6)).jsonValue();
+
+            expect(f).toEqual("mapml-popup-content");
+            expect(f2).toEqual("A");
+            expect(f3).toEqual("Focus Map");
+            expect(f4).toEqual("Previous Feature");
+            expect(f5).toEqual("Next Feature");
+            expect(f6).toEqual("Focus Controls");
+          });
+
+          test("[" + browserType + "]" + " Tab to next feature after tabbing out of popup", async () => {
+            await page.keyboard.press("Tab");
+            const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+            const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
+            const rh = await page.evaluateHandle(root => root.activeElement, nh);
+            const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
+
+            expect(f).toEqual("M-53 451L153 508L113 146L-53 191z");
+          });
+
+          test("[" + browserType + "]" + " Shift + Tab to previous feature while popup open", async () => {
+            await page.keyboard.press("Enter");
+            await page.keyboard.press("Shift+Tab");
+            const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+            const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
+            const rh = await page.evaluateHandle(root => root.activeElement, nh);
+            const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
+
+            expect(f).toEqual("M330 83L553 83L553 339L330 339z");
+          });
+
+          test("[" + browserType + "]" + " Previous feature button focuses previous feature", async () => {
+            await page.keyboard.press("Tab");
+            await page.keyboard.press("Enter");
+            await page.keyboard.press("Tab");
+            await page.keyboard.press("Tab");
+            await page.keyboard.press("Enter");
+            const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+            const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
+            const rh = await page.evaluateHandle(root => root.activeElement, nh);
+            const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
+
+            expect(f).toEqual("M330 83L553 83L553 339L330 339z");
+          });
+
+          test("[" + browserType + "]" + " Next feature button focuses next feature", async () => {
+            await page.keyboard.press("Tab");
+            await page.keyboard.press("Enter");
+            await page.keyboard.press("Tab");
+            await page.keyboard.press("Tab");
+            await page.keyboard.press("Tab");
+            await page.keyboard.press("Enter");
+            const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+            const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
+            const rh = await page.evaluateHandle(root => root.activeElement, nh);
+            const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
+
+            expect(f).toEqual("M285 373L460 380L468 477L329 459z");
+          });
+        });
       }
     );
   }
