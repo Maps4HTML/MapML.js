@@ -146,16 +146,18 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         }
       }
 
+      function removeHandlers(removeEvent){
+        if (removeEvent.popup === e.popup){
+          e.target.off("keydown", focusFeature);
+          e.target.off("popupclose", removeHandlers);
+        }
+      }
       // e.target = this._map
       // Looks for keydown, more specifically tab and shift tab
       e.target.on("keydown", focusFeature);
 
       // if popup closes then the focusFeature handler can be removed
-      e.target.off("popupclose", (closeEvent)=>{
-        if (closeEvent.popup === e.popup){
-          e.target.off("keydown", focusFeature);
-        }
-      });
+      e.target.on("popupclose", removeHandlers);
     },
 
     _skipBackward: function(e){
