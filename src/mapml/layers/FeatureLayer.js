@@ -43,8 +43,17 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
     onAdd: function(map){
       L.FeatureGroup.prototype.onAdd.call(this, map);
-      if(this._mapmlFeatures) map.on("featurepagination", this.showPaginationFeature, this);
+      if(this._mapmlFeatures)map.on("featurepagination", this.showPaginationFeature, this);
       this._updateTabIndex();
+    },
+
+    onRemove: function(map){
+      L.FeatureGroup.prototype.onRemove.call(this, map);
+      if(this._mapmlFeatures){
+        map.off("featurepagination", this.showPaginationFeature, this);
+        delete this._mapmlFeatures;
+      }
+      L.DomUtil.remove(this._container);
     },
 
     getEvents: function(){
@@ -79,15 +88,13 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
     showPaginationFeature: function(e){
       if(this.options.query && this._mapmlFeatures.querySelectorAll("feature")[e.i]){
+        let feature = this._mapmlFeatures.querySelectorAll("feature")[e.i];
         this.clearLayers();
-        this.addData(this._mapmlFeatures.querySelectorAll("feature")[e.i], 0, 0);
+        this.addData(feature, "gcrs", 0);
+        let count = e.popup._navigationBar.querySelector("p").innerText.split("/");
+        e.popup._navigationBar.querySelector("p").innerText = (e.i + 1)+"/"+count[1];
+        e.popup._content.querySelector("iframe").srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + feature.querySelector("properties").innerHTML;
       }
-    },
-
-    _skipBackward: function(e){
-      let map = this._map;
-      map.closePopup();
-      map._container.focus();
     },
 
     _previousFeature: function(e){
@@ -106,12 +113,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       } else {
         this._source._path.focus();
       }
-    },
-        
-    _skipForward: function(e){
-      let map = this._map;
-      map.closePopup();
-      map._controlContainer.focus();
     },
 
     _handleMoveEnd : function(){

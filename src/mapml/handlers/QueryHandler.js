@@ -142,11 +142,11 @@ export var QueryHandler = L.Handler.extend({
                   // pass the vector layer the container for the parent into which
                   // it will append its own container for rendering into
                   pane: container,
-                  color: 'yellow',
+                  //color: 'yellow',
                   // instead of unprojecting and then projecting and scaling,
                   // a much smarter approach would be to scale at the current
                   // zoom
-                  coordsToLatLng: _coordsToLatLng,
+                  //coordsToLatLng: _coordsToLatLng,
                   imagePath: M.detectImagePath(map.getContainer()),
                   query: true,
               });
@@ -156,14 +156,16 @@ export var QueryHandler = L.Handler.extend({
                   c = L.DomUtil.create("iframe");
               c.csp = "script-src 'none'";
               c.style = "border: none";
-              c.srcdoc = mapmldoc.querySelector('feature properties').innerHTML;
+              c.srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + mapmldoc.querySelector('feature properties').innerHTML;
               div.appendChild(c);
               // passing a latlng to the popup is necessary for when there is no
               // geometry / null geometry
+              layer._totalFeatureCount = mapmldoc.querySelectorAll("feature").length;
               layer.bindPopup(div, popupOptions).openPopup(loc);
               layer.on('popupclose', function() {
                   map.removeLayer(f);
               });
+              f.showPaginationFeature({i: 0, popup: layer._popup});
           });
       }
       function handleOtherResponse(response, layer, loc) {
@@ -172,7 +174,7 @@ export var QueryHandler = L.Handler.extend({
                   c = L.DomUtil.create("iframe");
               c.csp = "script-src 'none'";
               c.style = "border: none";
-              c.srcdoc = text;
+              c.srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + text;
               div.appendChild(c);
               layer.bindPopup(div, popupOptions).openPopup(loc);
           });
