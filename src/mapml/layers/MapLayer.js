@@ -296,6 +296,7 @@ export var MapMLLayer = L.Layer.extend({
         if (this._templatedLayer) {
             map.removeLayer(this._templatedLayer);
         }
+        map.off("popupopen", this._attachSkipButtons);
     },
     getZoomBounds: function () {
         var ext = this._extent;
@@ -1243,30 +1244,29 @@ export var MapMLLayer = L.Layer.extend({
     
 
       if(path) {
-        // When popup is open, what gets focused with tab needs to be done using JS as the DOM order is not in an accessibility friendly manner
-        function focusFeature(focusEvent){
-          if(focusEvent.originalEvent.path[0].title==="Focus Controls" && +focusEvent.originalEvent.keyCode === 9){
-            L.DomEvent.stop(focusEvent);
-            path.focus();
-          } else if(focusEvent.originalEvent.shiftKey && +focusEvent.originalEvent.keyCode === 9){
-            map.closePopup(popup);
-            L.DomEvent.stop(focusEvent);
-            path.focus();
-          }
-        }
-
-        function removeHandlers(removeEvent){
-          if (removeEvent.popup === popup){
-            map.off("keydown", focusFeature);
-            map.off("popupclose", removeHandlers);
-          }
-        }
         // e.target = this._map
         // Looks for keydown, more specifically tab and shift tab
         map.on("keydown", focusFeature);
-
         // if popup closes then the focusFeature handler can be removed
         map.on("popupclose", removeHandlers);
+      }
+      // When popup is open, what gets focused with tab needs to be done using JS as the DOM order is not in an accessibility friendly manner
+      function focusFeature(focusEvent){
+        if(focusEvent.originalEvent.path[0].title==="Focus Controls" && +focusEvent.originalEvent.keyCode === 9){
+          L.DomEvent.stop(focusEvent);
+          path.focus();
+        } else if(focusEvent.originalEvent.shiftKey && +focusEvent.originalEvent.keyCode === 9){
+          map.closePopup(popup);
+          L.DomEvent.stop(focusEvent);
+          path.focus();
+        }
+      }
+
+      function removeHandlers(removeEvent){
+        if (removeEvent.popup === popup){
+          map.off("keydown", focusFeature);
+          map.off("popupclose", removeHandlers);
+        }
       }
     },
 });

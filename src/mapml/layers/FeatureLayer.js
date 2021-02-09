@@ -91,8 +91,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         let feature = this._mapmlFeatures.querySelectorAll("feature")[e.i];
         this.clearLayers();
         this.addData(feature, "gcrs", 0);
-        let count = e.popup._navigationBar.querySelector("p").innerText.split("/");
-        e.popup._navigationBar.querySelector("p").innerText = (e.i + 1)+"/"+count[1];
+        e.popup._navigationBar.querySelector("p").innerText = (e.i + 1) + "/" + this.options._leafletLayer._totalFeatureCount;
         e.popup._content.querySelector("iframe").srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + feature.querySelector("properties").innerHTML;
       }
     },
