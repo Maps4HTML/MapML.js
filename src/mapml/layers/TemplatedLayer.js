@@ -227,7 +227,22 @@ export var TemplatedLayer = L.Layer.extend({
         map.removeLayer(this._templates[i].layer);
       }
     }
-  }
+  },
+
+  _previousFeature: function(e){
+    if(this._count + -1 >= 0){
+      this._count--;
+      this._map.fire("featurepagination", {i: this._count, popup: this});
+    }
+  },
+  
+  _nextFeature: function(e){
+    if(this._count + 1 < this._source._totalFeatureCount){
+      this._count++;
+      this._map.fire("featurepagination", {i: this._count, popup: this});
+    }
+  },
+
 });
 export var templatedLayer = function(templates, options) {
   // templates is an array of template objects

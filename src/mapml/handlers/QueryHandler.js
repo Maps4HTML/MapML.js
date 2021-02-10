@@ -104,77 +104,70 @@ export var QueryHandler = L.Handler.extend({
 
       let point = this._map.project(e.latlng),
           scale = this._map.options.crs.scale(this._map.getZoom()),
-          pcrsClick = this._map.options.crs.transformation.untransform(point,scale);
+          pcrsClick = this._map.options.crs.transformation.untransform(point,scale),
+          contenttype;
 
       if(template.layerBounds.contains(pcrsClick)){
-        fetch(L.Util.template(template.template, obj),{redirect: 'follow'}).then(
-            function(response) {
-              if (response.status >= 200 && response.status < 300) {
-                return Promise.resolve(response);
-              } else {
-                console.log('Looks like there was a problem. Status Code: ' + response.status);
-                return Promise.reject(response);
-              }
-            }).then(function(response) {
-              var contenttype = response.headers.get("Content-Type");
-              if ( contenttype.startsWith("text/mapml")) {
-                return handleMapMLResponse(response, e.latlng);
-              } else {
-                return handleOtherResponse(response, layer, e.latlng);
-              }
-            }).catch(function(err) {
-              // no op
-            });
+        fetch(L.Util.template(template.template, obj), { redirect: 'follow' }).then((response) => {
+          contenttype = response.headers.get("Content-Type");
+          if (response.status >= 200 && response.status < 300) {
+            return response.text();
+          } else {
+            throw new Error(response.status);
+          }
+        }).then((mapml) => {
+          if (contenttype.startsWith("text/mapml")) {
+            return handleMapMLResponse(mapml, e.latlng);
+          } else {
+            return handleOtherResponse(mapml, layer, e.latlng);
+          }
+        }).catch((err) => {
+          console.log('Looks like there was a problem. Status: ' + err.message);
+        });
       }
-      function handleMapMLResponse(response, loc) {
-          return response.text().then(mapml => {
-              // bind the deprojection function of the layer's crs 
-              var _unproject = L.bind(crs.unproject, crs);
-              function _coordsToLatLng(coords) {
-                  return _unproject(L.point(coords));
-              }
-              var parser = new DOMParser(),
-                  mapmldoc = parser.parseFromString(mapml, "application/xml"),
-                  f = M.mapMlFeatures(mapmldoc, {
-                  // pass the vector layer a renderer of its own, otherwise leaflet
-                  // puts everything into the overlayPane
-                  renderer: L.svg(),
-                  // pass the vector layer the container for the parent into which
-                  // it will append its own container for rendering into
-                  pane: container,
-                  color: 'yellow',
-                  // instead of unprojecting and then projecting and scaling,
-                  // a much smarter approach would be to scale at the current
-                  // zoom
-                  coordsToLatLng: _coordsToLatLng,
-                  imagePath: M.detectImagePath(map.getContainer())
-              });
-              f.addTo(map);
+      function handleMapMLResponse(mapml, loc) {
+        var parser = new DOMParser(),
+            mapmldoc = parser.parseFromString(mapml, "application/xml"),
+            f = M.mapMlFeatures(mapmldoc, {
+            // pass the vector layer a renderer of its own, otherwise leaflet
+            // puts everything into the overlayPane
+            renderer: L.svg(),
+            // pass the vector layer the container for the parent into which
+            // it will append its own container for rendering into
+            pane: container,
+            //color: 'yellow',
+            // instead of unprojecting and then projecting and scaling,
+            // a much smarter approach would be to scale at the current
+            // zoom
+            projection: map.options.projection,
+            _leafletLayer: layer,
+            imagePath: M.detectImagePath(map.getContainer()),
+            query: true,
+        });
+        f.addTo(map);
 
-              let div = L.DomUtil.create("div", "mapml-popup-content"),
-                  c = L.DomUtil.create("iframe");
-              c.csp = "script-src 'none'";
-              c.style = "border: none";
-              c.srcdoc = mapmldoc.querySelector('feature properties').innerHTML;
-              div.appendChild(c);
-              // passing a latlng to the popup is necessary for when there is no
-              // geometry / null geometry
-              layer.bindPopup(div, popupOptions).openPopup(loc);
-              layer.on('popupclose', function() {
-                  map.removeLayer(f);
-              });
-          });
+        let div = L.DomUtil.create("div", "mapml-popup-content"),
+            c = L.DomUtil.create("iframe");
+        c.style = "border: none";
+        c.srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + mapmldoc.querySelector('feature properties').innerHTML;
+        div.appendChild(c);
+        // passing a latlng to the popup is necessary for when there is no
+        // geometry / null geometry
+        layer._totalFeatureCount = mapmldoc.querySelectorAll("feature").length;
+        layer.bindPopup(div, popupOptions).openPopup(loc);
+        layer.on('popupclose', function() {
+            map.removeLayer(f);
+        });
+        f.showPaginationFeature({i: 0, popup: layer._popup});
+
       }
-      function handleOtherResponse(response, layer, loc) {
-          return response.text().then(text => {
-              let div = L.DomUtil.create("div", "mapml-popup-content"),
-                  c = L.DomUtil.create("iframe");
-              c.csp = "script-src 'none'";
-              c.style = "border: none";
-              c.srcdoc = text;
-              div.appendChild(c);
-              layer.bindPopup(div, popupOptions).openPopup(loc);
-          });
+      function handleOtherResponse(text, layer, loc) {
+        let div = L.DomUtil.create("div", "mapml-popup-content"),
+            c = L.DomUtil.create("iframe");
+        c.style = "border: none";
+        c.srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + text;
+        div.appendChild(c);
+        layer.bindPopup(div, popupOptions).openPopup(loc);
       }
     }
 });

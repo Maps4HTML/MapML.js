@@ -13,21 +13,25 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       L.DomUtil.addClass(this._container,'leaflet-pane mapml-vector-container');
       L.setOptions(this.options.renderer, {pane: this._container});
       this._layers = {};
-      if (mapml) {
-        let nativeZoom = mapml.querySelector("meta[name=zoom]") && 
-                          +M.metaContentToObject(mapml.querySelector("meta[name=zoom]").getAttribute("content")).value || 0;
-        let nativeCS = mapml.querySelector("meta[name=cs]") && 
-                        M.metaContentToObject(mapml.querySelector("meta[name=cs]").getAttribute("content")).content || "GCRS";
+      if(this.options.query){
+        this._mapmlFeatures = mapml;
+        this.isVisible = true;
+        let native = this._getNativeVariables(mapml);
+        this.options.nativeZoom = native.zoom;
+        this.options.nativeCS = native.cs;
+      }
+      if (mapml && !this.options.query) {
+        let native = this._getNativeVariables(mapml);
         //needed to check if the feature is static or not, since this method is used by templated also
         if(!mapml.querySelector('extent') && mapml.querySelector('feature')){
           this._features = {};
           this._staticFeature = true;
           this.isVisible = true; //placeholder for when this actually gets updated in the future
-          this.zoomBounds = this._getZoomBounds(mapml, nativeZoom);
+          this.zoomBounds = this._getZoomBounds(mapml, native.zoom);
           this.layerBounds = this._getLayerBounds(mapml);
           L.extend(this.options, this.zoomBounds);
         }
-        this.addData(mapml, nativeCS, nativeZoom);
+        this.addData(mapml, native.cs, native.zoom);
         if(this._staticFeature){
           this._resetFeatures(this._clampZoom(this.options._leafletLayer._map.getZoom()));
 
@@ -38,8 +42,17 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
     onAdd: function(map){
       L.FeatureGroup.prototype.onAdd.call(this, map);
-      map.on("popupopen", this._attachSkipButtons, this);
+      if(this._mapmlFeatures)map.on("featurepagination", this.showPaginationFeature, this);
       this._updateTabIndex();
+    },
+
+    onRemove: function(map){
+      L.FeatureGroup.prototype.onRemove.call(this, map);
+      if(this._mapmlFeatures){
+        map.off("featurepagination", this.showPaginationFeature, this);
+        delete this._mapmlFeatures;
+      }
+      L.DomUtil.remove(this._container);
     },
 
     getEvents: function(){
@@ -72,97 +85,14 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       }
     },
 
-    _attachSkipButtons: function(e){
-      if(!e.popup._source._path) return;
-      if(!e.popup._container.querySelector('div[class="mapml-focus-buttons"]')){
-        //add when popopen event happens instead
-        let div = L.DomUtil.create("div", "mapml-focus-buttons");
-
-        // creates |< button, focuses map
-        let mapFocusButton = L.DomUtil.create('a',"mapml-popup-button", div);
-        mapFocusButton.href = '#';
-        mapFocusButton.role = "button";
-        mapFocusButton.title = "Focus Map";
-        mapFocusButton.innerHTML = '|&#10094;';
-        L.DomEvent.disableClickPropagation(mapFocusButton);
-        L.DomEvent.on(mapFocusButton, 'click', L.DomEvent.stop);
-        L.DomEvent.on(mapFocusButton, 'click', this._skipBackward, this);
-
-        // creates < button, focuses previous feature, if none exists focuses the current feature
-        let previousButton = L.DomUtil.create('a', "mapml-popup-button", div);
-        previousButton.href = '#';
-        previousButton.role = "button";
-        previousButton.title = "Previous Feature";
-        previousButton.innerHTML = "&#10094;";
-        L.DomEvent.disableClickPropagation(previousButton);
-        L.DomEvent.on(previousButton, 'click', L.DomEvent.stop);
-        L.DomEvent.on(previousButton, 'click', this._previousFeature, e.popup);
-
-        // static feature counter that 1/1
-        let featureCount = L.DomUtil.create("p", "mapml-feature-count", div), currentFeature = 1;
-        featureCount.innerText = currentFeature+"/1";
-        //for(let feature of e.popup._source._path.parentNode.children){
-        //  if(feature === e.popup._source._path)break;
-        //  currentFeature++;
-        //}
-        //featureCount.innerText = currentFeature+"/"+e.popup._source._path.parentNode.childElementCount;
-
-        // creates > button, focuses next feature, if none exists focuses the current feature
-        let nextButton = L.DomUtil.create('a', "mapml-popup-button", div);
-        nextButton.href = '#';
-        nextButton.role = "button";
-        nextButton.title = "Next Feature";
-        nextButton.innerHTML = "&#10095;";
-        L.DomEvent.disableClickPropagation(nextButton);
-        L.DomEvent.on(nextButton, 'click', L.DomEvent.stop);
-        L.DomEvent.on(nextButton, 'click', this._nextFeature, e.popup);
-        
-        // creates >| button, focuses map controls
-        let controlFocusButton = L.DomUtil.create('a',"mapml-popup-button", div);
-        controlFocusButton.href = '#';
-        controlFocusButton.role = "button";
-        controlFocusButton.title = "Focus Controls";
-        controlFocusButton.innerHTML = '&#10095;|';
-        L.DomEvent.disableClickPropagation(controlFocusButton);
-        L.DomEvent.on(controlFocusButton, 'click', L.DomEvent.stop);
-        L.DomEvent.on(controlFocusButton, 'click', this._skipForward, this);
-    
-        let divider = L.DomUtil.create("hr");
-        divider.style.borderTop = "1px solid #bbb";
-
-        e.popup._content.appendChild(divider);
-        e.popup._content.appendChild(div);
+    showPaginationFeature: function(e){
+      if(this.options.query && this._mapmlFeatures.querySelectorAll("feature")[e.i]){
+        let feature = this._mapmlFeatures.querySelectorAll("feature")[e.i];
+        this.clearLayers();
+        this.addData(feature, this.options.nativeCS, this.options.nativeZoom);
+        e.popup._navigationBar.querySelector("p").innerText = (e.i + 1) + "/" + this.options._leafletLayer._totalFeatureCount;
+        e.popup._content.querySelector("iframe").srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + feature.querySelector("properties").innerHTML;
       }
-
-      // When popup is open, what gets focused with tab needs to be done using JS as the DOM order is not in an accessibility friendly manner
-      function focusFeature(focusEvent){
-        if(focusEvent.originalEvent.path[0].title==="Focus Controls" && +focusEvent.originalEvent.keyCode === 9){
-          L.DomEvent.stop(focusEvent);
-          e.popup._source._path.focus();
-        } else if(focusEvent.originalEvent.shiftKey && +focusEvent.originalEvent.keyCode === 9){
-          e.target.closePopup(e.popup);
-          L.DomEvent.stop(focusEvent);
-          e.popup._source._path.focus();
-        }
-      }
-
-      function removeHandlers(removeEvent){
-        if (removeEvent.popup === e.popup){
-          e.target.off("keydown", focusFeature);
-          e.target.off("popupclose", removeHandlers);
-        }
-      }
-      // e.target = this._map
-      // Looks for keydown, more specifically tab and shift tab
-      e.target.on("keydown", focusFeature);
-
-      // if popup closes then the focusFeature handler can be removed
-      e.target.on("popupclose", removeHandlers);
-    },
-
-    _skipBackward: function(e){
-      this._map.closePopup();
-      this._map._container.focus();
     },
 
     _previousFeature: function(e){
@@ -182,10 +112,13 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         this._source._path.focus();
       }
     },
-        
-    _skipForward: function(e){
-      this._map.closePopup();
-      this._map._controlContainer.focus();
+
+    _getNativeVariables: function(mapml){
+      let nativeZoom = mapml.querySelector("meta[name=zoom]") && 
+          +M.metaContentToObject(mapml.querySelector("meta[name=zoom]").getAttribute("content")).value || 0;
+      let nativeCS = mapml.querySelector("meta[name=cs]") && 
+          M.metaContentToObject(mapml.querySelector("meta[name=cs]").getAttribute("content")).content || "GCRS";
+      return {zoom:nativeZoom, cs: nativeCS};
     },
 
     _handleMoveEnd : function(){
