@@ -87,6 +87,7 @@
   border-style: inherit;
 }
 
+/* Less opinionated box-shadows. */
 .mapml-contextmenu,
 .mapml-debug,
 .leaflet-bar,
