@@ -93,8 +93,9 @@ export var MapMLLayer = L.Layer.extend({
                 // need to parse as HTML to preserve semantics and styles
                 if (properties) {
                   var c = document.createElement('div');
+                  c.classList.add("mapml-popup-content");
                   c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                  geometry.bindPopup(c, {autoPan:false});
+                  geometry.bindPopup(c, {autoPan:false, closeButton: false, minWidth: 108});
                 }
               }
             });
@@ -122,8 +123,9 @@ export var MapMLLayer = L.Layer.extend({
                     // need to parse as HTML to preserve semantics and styles
                     if (properties) {
                       var c = document.createElement('div');
+                      c.classList.add("mapml-popup-content");
                       c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                      geometry.bindPopup(c, {autoPan:false});
+                      geometry.bindPopup(c, {autoPan:false, closeButton: false, minWidth: 108});
                     }
                   }
                 }).addTo(map);
@@ -189,6 +191,7 @@ export var MapMLLayer = L.Layer.extend({
         setTimeout(() => {
           map.fire('checkdisabled');
         }, 0);
+        map.on("popupopen", this._focusPopup, this);
     },
 
     _validProjection : function(map){
@@ -1152,7 +1155,12 @@ export var MapMLLayer = L.Layer.extend({
         if (this._templatedLayer && this._templatedLayer._queries) {
           return this._templatedLayer._queries;
         }
-    }
+    },
+    _focusPopup: function(e){
+      let content = e.popup._container.getElementsByClassName("mapml-popup-content")[0];
+      content.setAttribute("tabindex", "-1");
+      content.focus();
+    },
 });
 export var mapMLLayer = function (url, node, options) {
   if (!url && !node) return null;

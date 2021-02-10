@@ -389,3 +389,41 @@ summary {
 .leaflet-container .leaflet-control-container {
   visibility: unset!important;
 }
+
+.mapml-crosshair {
+  margin: -18px 0 0 -18px;
+  width: 36px;
+  height: 36px;
+  left: 50%;
+  top: 50%;
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: 10000;
+}
+
+.mapml-popup-button {
+	padding: 0 4px 0 4px;
+	border: none;
+	text-align: center;
+	width: 18px;
+	height: 14px;
+	font: 16px/14px Tahoma, Verdana, sans-serif;
+	color: #c3c3c3;
+	text-decoration: none;
+	font-weight: bold;
+  background: transparent;
+  white-space: nowrap;
+}
+
+.mapml-focus-buttons {
+  white-space: nowrap;
+  display: inline;
+}
+
+.mapml-feature-count {
+  display:inline;
+  white-space: nowrap;
+  text-align: center;
+  padding: 2px;
+}

@@ -224,6 +224,7 @@ export class WebMap extends HTMLMapElement {
           this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
 
           this.setControls(false,false,true);
+          this._crosshair = M.crosshair().addTo(this._map);
           if (this.hasAttribute('name')) {
             var name = this.getAttribute('name');
             if (name) {

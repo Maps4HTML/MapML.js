@@ -211,6 +211,7 @@ export class MapViewer extends HTMLElement {
           this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
     
           this.setControls(false,false,true);
+          this._crosshair = M.crosshair().addTo(this._map);
     
           // Make the Leaflet container element programmatically identifiable
           // (https://github.com/Leaflet/Leaflet/issues/7193).
