@@ -139,7 +139,7 @@ export var QueryHandler = L.Handler.extend({
             // instead of unprojecting and then projecting and scaling,
             // a much smarter approach would be to scale at the current
             // zoom
-            //coordsToLatLng: _coordsToLatLng,
+            projection: map.options.projection,
             _leafletLayer: layer,
             imagePath: M.detectImagePath(map.getContainer()),
             query: true,
@@ -148,7 +148,6 @@ export var QueryHandler = L.Handler.extend({
 
         let div = L.DomUtil.create("div", "mapml-popup-content"),
             c = L.DomUtil.create("iframe");
-        c.csp = "script-src 'none'";
         c.style = "border: none";
         c.srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + mapmldoc.querySelector('feature properties').innerHTML;
         div.appendChild(c);
@@ -165,7 +164,6 @@ export var QueryHandler = L.Handler.extend({
       function handleOtherResponse(text, layer, loc) {
         let div = L.DomUtil.create("div", "mapml-popup-content"),
             c = L.DomUtil.create("iframe");
-        c.csp = "script-src 'none'";
         c.style = "border: none";
         c.srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + text;
         div.appendChild(c);
