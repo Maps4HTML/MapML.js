@@ -87,6 +87,7 @@
   border-style: inherit;
 }
 
+/* Less opinionated box-shadows. */
 .mapml-contextmenu,
 .mapml-debug,
 .leaflet-bar,
@@ -94,7 +95,8 @@
 .leaflet-popup-content-wrapper,
 .leaflet-tooltip-pane .leaflet-tooltip,
 .leaflet-touch .leaflet-control-layers,
-.leaflet-touch .leaflet-bar {
+.leaflet-touch .leaflet-bar,
+.leaflet-popup-tip {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgb(0, 0, 0, 0.3);
 }
 

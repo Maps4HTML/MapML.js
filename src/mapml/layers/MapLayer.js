@@ -191,7 +191,11 @@ export var MapMLLayer = L.Layer.extend({
         setTimeout(() => {
           map.fire('checkdisabled');
         }, 0);
+<<<<<<< HEAD
         map.on("popupopen", this._attachSkipButtons, this);
+=======
+        map.on("popupopen", this._focusPopup, this);
+>>>>>>> upstream/master
     },
 
     _validProjection : function(map){
@@ -1157,6 +1161,7 @@ export var MapMLLayer = L.Layer.extend({
           return this._templatedLayer._queries;
         }
     },
+<<<<<<< HEAD
     _attachSkipButtons: function(e){
       let popup = e.popup, map = e.target, layer, path,
           content = popup._container.getElementsByClassName("mapml-popup-content")[0];
@@ -1268,6 +1273,12 @@ export var MapMLLayer = L.Layer.extend({
           map.off("popupclose", removeHandlers);
         }
       }
+=======
+    _focusPopup: function(e){
+      let content = e.popup._container.getElementsByClassName("mapml-popup-content")[0];
+      content.setAttribute("tabindex", "-1");
+      content.focus();
+>>>>>>> upstream/master
     },
 });
 export var mapMLLayer = function (url, node, options) {

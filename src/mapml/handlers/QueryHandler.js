@@ -146,6 +146,7 @@ export var QueryHandler = L.Handler.extend({
         });
         f.addTo(map);
 
+<<<<<<< HEAD
         let div = L.DomUtil.create("div", "mapml-popup-content"),
             c = L.DomUtil.create("iframe");
         c.style = "border: none";
@@ -168,6 +169,32 @@ export var QueryHandler = L.Handler.extend({
         c.srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + text;
         div.appendChild(c);
         layer.bindPopup(div, popupOptions).openPopup(loc);
+=======
+              let div = L.DomUtil.create("div", "mapml-popup-content"),
+                  c = L.DomUtil.create("iframe");
+              c.csp = "script-src 'none'";
+              c.style = "border: none";
+              c.srcdoc = mapmldoc.querySelector('feature properties').innerHTML;
+              div.appendChild(c);
+              // passing a latlng to the popup is necessary for when there is no
+              // geometry / null geometry
+              layer.bindPopup(div, popupOptions).openPopup(loc);
+              layer.on('popupclose', function() {
+                  map.removeLayer(f);
+              });
+          });
+      }
+      function handleOtherResponse(response, layer, loc) {
+          return response.text().then(text => {
+              let div = L.DomUtil.create("div", "mapml-popup-content"),
+                  c = L.DomUtil.create("iframe");
+              c.csp = "script-src 'none'";
+              c.style = "border: none";
+              c.srcdoc = text;
+              div.appendChild(c);
+              layer.bindPopup(div, popupOptions).openPopup(loc);
+          });
+>>>>>>> upstream/master
       }
     }
 });
