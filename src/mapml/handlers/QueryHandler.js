@@ -116,7 +116,7 @@ export var QueryHandler = L.Handler.extend({
             throw new Error(response.status);
           }
         }).then((mapml) => {
-          if (true || contenttype.startsWith("text/mapml")) { //true condition is temporary MUST REMOVE
+          if (contenttype.startsWith("text/mapml")) {
             return handleMapMLResponse(mapml, e.latlng);
           } else {
             return handleOtherResponse(mapml, layer, e.latlng);
@@ -126,11 +126,6 @@ export var QueryHandler = L.Handler.extend({
         });
       }
       function handleMapMLResponse(mapml, loc) {
-        // bind the deprojection function of the layer's crs 
-        var _unproject = L.bind(crs.unproject, crs);
-        function _coordsToLatLng(coords) {
-            return _unproject(L.point(coords));
-        }
         var parser = new DOMParser(),
             mapmldoc = parser.parseFromString(mapml, "application/xml"),
             f = M.mapMlFeatures(mapmldoc, {

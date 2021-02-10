@@ -16,23 +16,22 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       if(this.options.query){
         this._mapmlFeatures = mapml;
         this.isVisible = true;
-
+        let native = this._getNativeVariables(mapml);
+        this.options.nativeZoom = native.zoom;
+        this.options.nativeCS = native.cs;
       }
       if (mapml && !this.options.query) {
-        let nativeZoom = mapml.querySelector("meta[name=zoom]") && 
-                          +M.metaContentToObject(mapml.querySelector("meta[name=zoom]").getAttribute("content")).value || 0;
-        let nativeCS = mapml.querySelector("meta[name=cs]") && 
-                        M.metaContentToObject(mapml.querySelector("meta[name=cs]").getAttribute("content")).content || "GCRS";
+        let native = this._getNativeVariables(mapml);
         //needed to check if the feature is static or not, since this method is used by templated also
         if(!mapml.querySelector('extent') && mapml.querySelector('feature')){
           this._features = {};
           this._staticFeature = true;
           this.isVisible = true; //placeholder for when this actually gets updated in the future
-          this.zoomBounds = this._getZoomBounds(mapml, nativeZoom);
+          this.zoomBounds = this._getZoomBounds(mapml, native.zoom);
           this.layerBounds = this._getLayerBounds(mapml);
           L.extend(this.options, this.zoomBounds);
         }
-        this.addData(mapml, nativeCS, nativeZoom);
+        this.addData(mapml, native.cs, native.zoom);
         if(this._staticFeature){
           this._resetFeatures(this._clampZoom(this.options._leafletLayer._map.getZoom()));
 
@@ -90,7 +89,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       if(this.options.query && this._mapmlFeatures.querySelectorAll("feature")[e.i]){
         let feature = this._mapmlFeatures.querySelectorAll("feature")[e.i];
         this.clearLayers();
-        this.addData(feature, "gcrs", 0);
+        this.addData(feature, this.options.nativeCS, this.options.nativeZoom);
         e.popup._navigationBar.querySelector("p").innerText = (e.i + 1) + "/" + this.options._leafletLayer._totalFeatureCount;
         e.popup._content.querySelector("iframe").srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + feature.querySelector("properties").innerHTML;
       }
@@ -112,6 +111,14 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       } else {
         this._source._path.focus();
       }
+    },
+
+    _getNativeVariables: function(mapml){
+      let nativeZoom = mapml.querySelector("meta[name=zoom]") && 
+          +M.metaContentToObject(mapml.querySelector("meta[name=zoom]").getAttribute("content")).value || 0;
+      let nativeCS = mapml.querySelector("meta[name=cs]") && 
+          M.metaContentToObject(mapml.querySelector("meta[name=cs]").getAttribute("content")).content || "GCRS";
+      return {zoom:nativeZoom, cs: nativeCS};
     },
 
     _handleMoveEnd : function(){

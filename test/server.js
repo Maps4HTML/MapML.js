@@ -8,6 +8,15 @@ app.use(express.static(path.join(__dirname, "../dist")));
 app.use(express.static(path.join(__dirname, "e2e/core")));
 app.use(express.static(path.join(__dirname, "e2e/layers")));
 app.use(express.static(path.join(__dirname, "e2e/mapml-viewer")));
+
+app.get('/data/query/us_map_query', (req, res, next) => {
+  res.sendFile(__dirname + "/e2e/data/tiles/cbmt/us_map_query.mapml", { headers: { "Content-Type": "text/mapml" } }, (err) => {
+    if (err) {
+      res.status(403).send("Error.");
+    }
+  });
+});
+
 app.use("/data", express.static(path.join(__dirname, "e2e/data/tiles/cbmt")));
 app.use("/data", express.static(path.join(__dirname, "e2e/data/tiles/wgs84")));
 app.use(

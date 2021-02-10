@@ -231,7 +231,7 @@ export var TemplatedLayer = L.Layer.extend({
 
   _previousFeature: function(e){
     if(this._count + -1 >= 0){
-      this._count--
+      this._count--;
       this._map.fire("featurepagination", {i: this._count, popup: this});
     }
   },
