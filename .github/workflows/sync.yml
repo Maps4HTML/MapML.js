@@ -31,3 +31,15 @@ jobs:
         user_name: 'ahmadayubi'
         commit_msg: '[AUTO] Sync MapML Build'
         destination_branch: main
+    - name: Pushes to documentation repo
+      uses: ./.github/actions/sync-repo
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+      with:
+        source_folder: 'dist'
+        destination_repo: 'Maps4HTML/web-map-doc'
+        destination_folder: 'static/dist'
+        user_email: aayub041@uottawa.ca
+        user_name: 'ahmadayubi'
+        commit_msg: '[AUTO] Sync MapML Build'
+        destination_branch: master
