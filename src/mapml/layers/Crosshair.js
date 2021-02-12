@@ -30,14 +30,20 @@ export var Crosshair = L.Layer.extend({
 
     this._container = L.DomUtil.create("div", "mapml-crosshair", map._container);
     this._container.innerHTML = svgInnerHTML;
-    this._mapFocused = false;
+    map.isFocused = false;
     this._isQueryable = false;
 
     map.on("layerchange layeradd layerremove overlayremove", this._toggleEvents, this);
-    L.DomEvent.on(map._container, "keydown keyup mousedown", this._onKey, this);
-
+    map.on("popupopen", this._isMapFocused, this);
+    L.DomEvent.on(map._container, "keydown keyup mousedown", this._isMapFocused, this);
 
     this._addOrRemoveCrosshair();
+  },
+
+  onRemove: function (map) {
+    map.off("layerchange layeradd layerremove overlayremove", this._toggleEvents);
+    map.off("popupopen", this._isMapFocused);
+    L.DomEvent.off(map._container, "keydown keyup mousedown", this._isMapFocused);
   },
 
   _toggleEvents: function () {
@@ -59,7 +65,7 @@ export var Crosshair = L.Layer.extend({
 
   _hasQueryableLayer: function () {
     let layers = this._map.options.mapEl.layers;
-    if (this._mapFocused) {
+    if (this._map.isFocused) {
       for (let layer of layers) {
         if (layer.checked && layer._layer.queryable) {
           return true;
@@ -69,20 +75,14 @@ export var Crosshair = L.Layer.extend({
     return false;
   },
 
-  _onKey: function (e) {
-    //set mapFocused = true if arrow buttons are used
-    if (["keydown", "keyup"].includes(e.type) && e.target.classList.contains("leaflet-container") && [32, 37, 38, 39, 40, 187, 189].includes(+e.keyCode)) {
-      this._mapFocused = true;
-    //set mapFocused = true if map is focued using tab
-    } else if (e.type === "keyup" && e.target.classList.contains("leaflet-container") && +e.keyCode === 9) {
-      this._mapFocused = true;
-    // set mapFocused = false and close all popups if tab or escape is used
-    } else if((e.type === "keyup" && e.target.classList.contains("leaflet-interactive") && +e.keyCode === 9) || +e.keyCode === 27){
-      this._mapFocused = false;
-      this._map.closePopup();
-    // set mapFocused = false if any other key is pressed
+  _isMapFocused: function (e) {
+    //set this._map.isFocused = true if arrow buttons are used
+    if (this._map._container.parentNode.activeElement.classList.contains("leaflet-container") && ["keydown"].includes(e.type) && (e.shiftKey && e.keyCode === 9)) {
+      this._map.isFocused = false;
+    } else if (this._map._container.parentNode.activeElement.classList.contains("leaflet-container") && ["keyup", "keydown"].includes(e.type)) {
+      this._map.isFocused = true;
     } else {
-      this._mapFocused = false;
+      this._map.isFocused = false;
     }
     this._addOrRemoveCrosshair();
   },
