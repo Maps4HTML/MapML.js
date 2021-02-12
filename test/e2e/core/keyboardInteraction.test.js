@@ -7,7 +7,7 @@ jest.setTimeout(50000);
       () => {
         beforeAll(async () => {
           browser = await playwright[browserType].launch({
-            headless: ISHEADLESS,
+            headless: false,//ISHEADLESS,
             slowMo: 50,
           });
           context = await browser.newContext();
@@ -30,7 +30,7 @@ jest.setTimeout(50000);
             expect(afterTab).toEqual("");
           });
 
-          test("[" + browserType + "]" + " Crosshair remains on map move with arrow keys + space", async () => {
+          test("[" + browserType + "]" + " Crosshair remains on map move with arrow keys", async () => {
             await page.keyboard.press("ArrowUp");
             await page.waitForTimeout(500);
             await page.keyboard.press("ArrowDown");
@@ -39,13 +39,11 @@ jest.setTimeout(50000);
             await page.waitForTimeout(500);
             await page.keyboard.press("ArrowRight");
             await page.waitForTimeout(500);
-            await page.keyboard.press(" ")
-            await page.waitForTimeout(500);
             const afterMove = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
             expect(afterMove).toEqual("");
           });
 
-          test("[" + browserType + "]" + " Crosshair hidden on esc + tab out", async () => {
+          test("[" + browserType + "]" + " Crosshair shows on esc but hidden on tab out", async () => {
             await page.keyboard.press("Escape");
             const afterEsc = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
             await page.click("body");
@@ -55,7 +53,7 @@ jest.setTimeout(50000);
             await page.keyboard.press("Tab");
             const afterTab = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
 
-            expect(afterEsc).toEqual("hidden");
+            expect(afterEsc).toEqual("");
             expect(afterTab).toEqual("hidden");
           });
 
@@ -132,47 +130,37 @@ jest.setTimeout(50000);
             const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
             const rh = await page.evaluateHandle(root => root.activeElement, nh);
-            const f = await (await page.evaluateHandle(elem => elem.className, rh)).jsonValue();
+            const f = await (await page.evaluateHandle(elem => elem.title, rh)).jsonValue();
 
             await page.keyboard.press("Tab");
             const h2 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nh2 = await page.evaluateHandle(doc => doc.shadowRoot, h2);
             const rh2 = await page.evaluateHandle(root => root.activeElement, nh2);
-            const f2 = await (await page.evaluateHandle(elem => elem.tagName, rh2)).jsonValue();
+            const f2 = await (await page.evaluateHandle(elem => elem.title, rh2)).jsonValue();
 
-            await page.keyboard.press("Tab");
+            await page.keyboard.press("Shift+Tab");
+            await page.keyboard.press("Shift+Tab");
             const h3 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nh3 = await page.evaluateHandle(doc => doc.shadowRoot, h3);
             const rh3 = await page.evaluateHandle(root => root.activeElement, nh3);
             const f3 = await (await page.evaluateHandle(elem => elem.title, rh3)).jsonValue();
 
-            await page.keyboard.press("Tab");
+            await page.keyboard.press("Shift+Tab");
             const h4 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nh4 = await page.evaluateHandle(doc => doc.shadowRoot, h4);
             const rh4 = await page.evaluateHandle(root => root.activeElement, nh4);
             const f4 = await (await page.evaluateHandle(elem => elem.title, rh4)).jsonValue();
 
-            await page.keyboard.press("Tab");
-            const h5 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
-            const nh5 = await page.evaluateHandle(doc => doc.shadowRoot, h5);
-            const rh5 = await page.evaluateHandle(root => root.activeElement, nh5);
-            const f5 = await (await page.evaluateHandle(elem => elem.title, rh5)).jsonValue();
-
-            await page.keyboard.press("Tab");
-            const h6 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
-            const nh6 = await page.evaluateHandle(doc => doc.shadowRoot, h6);
-            const rh6 = await page.evaluateHandle(root => root.activeElement, nh6);
-            const f6 = await (await page.evaluateHandle(elem => elem.title, rh6)).jsonValue();
-
-            expect(f).toEqual("mapml-popup-content");
-            expect(f2).toEqual("A");
-            expect(f3).toEqual("Focus Map");
-            expect(f4).toEqual("Previous Feature");
-            expect(f5).toEqual("Next Feature");
-            expect(f6).toEqual("Focus Controls");
+            expect(f).toEqual("Next Feature");
+            expect(f2).toEqual("Focus Controls");
+            expect(f3).toEqual("Previous Feature");
+            expect(f4).toEqual("Focus Map");
           });
 
           test("[" + browserType + "]" + " Tab to next feature after tabbing out of popup", async () => {
+            await page.keyboard.press("Tab");
+            await page.keyboard.press("Tab");
+            await page.keyboard.press("Tab");
             await page.keyboard.press("Tab");
             const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
@@ -185,6 +173,8 @@ jest.setTimeout(50000);
           test("[" + browserType + "]" + " Shift + Tab to previous feature while popup open", async () => {
             await page.keyboard.press("Enter");
             await page.keyboard.press("Shift+Tab");
+            await page.keyboard.press("Shift+Tab");
+            await page.keyboard.press("Shift+Tab");
             const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
             const rh = await page.evaluateHandle(root => root.activeElement, nh);
@@ -196,8 +186,7 @@ jest.setTimeout(50000);
           test("[" + browserType + "]" + " Previous feature button focuses previous feature", async () => {
             await page.keyboard.press("Tab");
             await page.keyboard.press("Enter");
-            await page.keyboard.press("Tab");
-            await page.keyboard.press("Tab");
+            await page.keyboard.press("Shift+Tab");
             await page.keyboard.press("Enter");
             const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
@@ -210,9 +199,6 @@ jest.setTimeout(50000);
           test("[" + browserType + "]" + " Next feature button focuses next feature", async () => {
             await page.keyboard.press("Tab");
             await page.keyboard.press("Enter");
-            await page.keyboard.press("Tab");
-            await page.keyboard.press("Tab");
-            await page.keyboard.press("Tab");
             await page.keyboard.press("Enter");
             const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);

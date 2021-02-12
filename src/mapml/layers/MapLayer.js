@@ -1258,13 +1258,11 @@ export var MapMLLayer = L.Layer.extend({
       map.once("popupclose", removeHandlers);
       // When popup is open, what gets focused with tab needs to be done using JS as the DOM order is not in an accessibility friendly manner
       function focusFeature(focusEvent){
-        if(focusEvent.originalEvent.path[0].title==="Focus Controls" && +focusEvent.originalEvent.keyCode === 9){
+        if((focusEvent.originalEvent.path[0].title==="Focus Controls" && focusEvent.originalEvent.keyCode === 9 && !focusEvent.originalEvent.shiftKey) ||
+            (focusEvent.originalEvent.path[0].title==="Focus Map" && focusEvent.originalEvent.keyCode === 9 && focusEvent.originalEvent.shiftKey) ||
+             focusEvent.originalEvent.keyCode === 27){
           L.DomEvent.stop(focusEvent);
           map.closePopup(popup);
-          path.focus();
-        } else if(focusEvent.originalEvent.shiftKey && +focusEvent.originalEvent.keyCode === 9){
-          map.closePopup(popup);
-          L.DomEvent.stop(focusEvent);
           path.focus();
         }
       }
