@@ -281,6 +281,10 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
         if (options.onEachFeature) {
          options.onEachFeature(layer.properties, layer);
+         layer._events.keypress.push({
+           "ctx": layer,
+           "fn": this._onSpacePress,
+         });
         }
         if(this._staticFeature){
           let featureZoom = mapml.getAttribute('zoom') || nativeZoom;
@@ -323,6 +327,11 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       let toDelete = this._container.querySelectorAll("link[rel=stylesheet],style");
       for(let i = 0; i < toDelete.length;i++){
         this._container.removeChild(toDelete[i]);
+      }
+    },
+    _onSpacePress: function(e){
+      if(e.originalEvent.keyCode === 32){
+        this._openPopup(e);
       }
     },
 	 geometryToLayer: function (mapml, pointToLayer, coordsToLatLng, vectorOptions, nativeCS, zoom) {
