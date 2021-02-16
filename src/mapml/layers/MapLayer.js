@@ -1245,7 +1245,7 @@ export var MapMLLayer = L.Layer.extend({
       popup._content.appendChild(divider);
       popup._content.appendChild(div);
       
-      nextButton.focus();
+      content.focus();
 
       if(path) {
         // e.target = this._map
@@ -1254,16 +1254,20 @@ export var MapMLLayer = L.Layer.extend({
       } else {
         map.on("keydown", focusMap);
       }
-      // if popup closes then the focusFeature handler can be removed
-      map.once("popupclose", removeHandlers);
       // When popup is open, what gets focused with tab needs to be done using JS as the DOM order is not in an accessibility friendly manner
       function focusFeature(focusEvent){
-        if((focusEvent.originalEvent.path[0].title==="Focus Controls" && focusEvent.originalEvent.keyCode === 9 && !focusEvent.originalEvent.shiftKey) ||
-            (focusEvent.originalEvent.path[0].title==="Focus Map" && focusEvent.originalEvent.keyCode === 9 && focusEvent.originalEvent.shiftKey) ||
-             focusEvent.originalEvent.keyCode === 27){
+        let isTab = focusEvent.originalEvent.keyCode === 9,
+            shiftPressed = focusEvent.originalEvent.shiftKey;
+        if((focusEvent.originalEvent.path[0].title==="Focus Controls" && isTab && !shiftPressed) || focusEvent.originalEvent.keyCode === 27){
           L.DomEvent.stop(focusEvent);
           map.closePopup(popup);
           path.focus();
+        } else if ((focusEvent.originalEvent.path[0].title==="Focus Map" || focusEvent.originalEvent.path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
+          setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
+            L.DomEvent.stop(focusEvent);
+            map.closePopup(popup);
+            path.focus();
+          }, 0);
         }
       }
 
@@ -1276,10 +1280,13 @@ export var MapMLLayer = L.Layer.extend({
         }
       }
 
+      // if popup closes then the focusFeature handler can be removed
+      map.on("popupclose", removeHandlers);
       function removeHandlers(removeEvent){
         if (removeEvent.popup === popup){
           map.off("keydown", focusFeature);
           map.off("keydown", focusMap);
+          map.off('popupclose', removeHandlers);
         }
       }
     },
