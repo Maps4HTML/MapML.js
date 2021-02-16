@@ -95,7 +95,7 @@ export var MapMLLayer = L.Layer.extend({
                   var c = document.createElement('div');
                   c.classList.add("mapml-popup-content");
                   c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                  geometry.bindPopup(c, {autoPan:false, closeButton: false, minWidth: 108});
+                  geometry.bindPopup(c, {autoPan:false, minWidth: 108});
                 }
               }
             });
@@ -125,7 +125,7 @@ export var MapMLLayer = L.Layer.extend({
                       var c = document.createElement('div');
                       c.classList.add("mapml-popup-content");
                       c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                      geometry.bindPopup(c, {autoPan:false, closeButton: false, minWidth: 108});
+                      geometry.bindPopup(c, {autoPan:false, minWidth: 108});
                     }
                   }
                 }).addTo(map);
@@ -1162,8 +1162,7 @@ export var MapMLLayer = L.Layer.extend({
           content = popup._container.getElementsByClassName("mapml-popup-content")[0];
 
       content.setAttribute("tabindex", "-1");
-      content.focus();
-      popup._count = 0;
+      popup._count = 0; // used for feature pagination
 
       if(popup._source._eventParents){ // check if the popup is for a feature or query
         layer = popup._source._eventParents[Object.keys(popup._source._eventParents)[0]]; // get first parent of feature, there should only be one
@@ -1232,7 +1231,11 @@ export var MapMLLayer = L.Layer.extend({
       L.DomEvent.on(controlFocusButton, 'click', L.DomEvent.stop);
       L.DomEvent.on(controlFocusButton, 'click', (e) => {
         map.closePopup();
-        map._controlContainer.focus();
+        if(map._controlContainer.firstElementChild.firstElementChild.firstElementChild){
+          map._controlContainer.firstElementChild.firstElementChild.firstElementChild.focus();
+        } else {
+          map._controlContainer.focus();
+        }
       }, popup);
   
       let divider = L.DomUtil.create("hr");
@@ -1241,31 +1244,60 @@ export var MapMLLayer = L.Layer.extend({
       popup._navigationBar = div;
       popup._content.appendChild(divider);
       popup._content.appendChild(div);
-    
+      
+      content.focus();
 
       if(path) {
         // e.target = this._map
         // Looks for keydown, more specifically tab and shift tab
         map.on("keydown", focusFeature);
-        // if popup closes then the focusFeature handler can be removed
-        map.on("popupclose", removeHandlers);
+      } else {
+        map.on("keydown", focusMap);
       }
       // When popup is open, what gets focused with tab needs to be done using JS as the DOM order is not in an accessibility friendly manner
       function focusFeature(focusEvent){
-        if(focusEvent.originalEvent.path[0].title==="Focus Controls" && +focusEvent.originalEvent.keyCode === 9){
+        let isTab = focusEvent.originalEvent.keyCode === 9,
+            shiftPressed = focusEvent.originalEvent.shiftKey;
+        if((focusEvent.originalEvent.path[0].classList.contains("leaflet-popup-close-button") && isTab && !shiftPressed) || focusEvent.originalEvent.keyCode === 27){
           L.DomEvent.stop(focusEvent);
-          path.focus();
-        } else if(focusEvent.originalEvent.shiftKey && +focusEvent.originalEvent.keyCode === 9){
           map.closePopup(popup);
-          L.DomEvent.stop(focusEvent);
           path.focus();
+        } else if ((focusEvent.originalEvent.path[0].title==="Focus Map" || focusEvent.originalEvent.path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
+          setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
+            L.DomEvent.stop(focusEvent);
+            map.closePopup(popup);
+            path.focus();
+          }, 0);
         }
       }
 
+      function focusMap(focusEvent){
+        let isTab = focusEvent.originalEvent.keyCode === 9,
+        shiftPressed = focusEvent.originalEvent.shiftKey;
+
+        if((focusEvent.originalEvent.keyCode === 13 && focusEvent.originalEvent.path[0].classList.contains("leaflet-popup-close-button")) || focusEvent.originalEvent.keyCode === 27 ){
+          L.DomEvent.stopPropagation(focusEvent);
+          map._container.focus();
+          map.closePopup(popup);
+          if(focusEvent.originalEvent.keyCode !== 27)map._popupClosed = true;
+        } else if (isTab && focusEvent.originalEvent.path[0].classList.contains("leaflet-popup-close-button")){
+          map.closePopup(popup);
+        } else if ((focusEvent.originalEvent.path[0].title==="Focus Map" || focusEvent.originalEvent.path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
+          setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
+            L.DomEvent.stop(focusEvent);
+            map.closePopup(popup);
+            map._container.focus();
+          }, 0);
+        }
+      }
+
+      // if popup closes then the focusFeature handler can be removed
+      map.on("popupclose", removeHandlers);
       function removeHandlers(removeEvent){
         if (removeEvent.popup === popup){
           map.off("keydown", focusFeature);
-          map.off("popupclose", removeHandlers);
+          map.off("keydown", focusMap);
+          map.off('popupclose', removeHandlers);
         }
       }
     },

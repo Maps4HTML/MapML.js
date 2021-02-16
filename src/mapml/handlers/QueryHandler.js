@@ -22,13 +22,17 @@ export var QueryHandler = L.Handler.extend({
         }
     },
     _queryTopLayerAtMapCenter: function (event) {
-        if (event.originalEvent.key === " ") {
+      setTimeout(() => {
+        if (this._map.isFocused && !this._map._popupClosed && (event.originalEvent.key === " " || +event.originalEvent.keyCode === 13)) {
           this._map.fire('click', { 
               latlng: this._map.getCenter(),
               layerPoint: this._map.latLngToLayerPoint(this._map.getCenter()),
               containerPoint: this._map.latLngToContainerPoint(this._map.getCenter())
           });
+        } else {
+          delete this._map._popupClosed;
         }
+      }, 0);
     },
     _queryTopLayer: function(event) {
         var layer = this._getTopQueryableLayer();
