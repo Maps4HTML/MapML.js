@@ -563,7 +563,7 @@ export var ContextMenu = L.Handler.extend({
     if(!this._mapMenuVisible) return;
     this._debounceKeyDown(function(){
       let key = e.keyCode;
-      if(key!== 9 && !(!this._layerClicked && key === 67) && e.path[0].innerText !== "Copy Coordinates (C) >")
+      if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && e.path[0].innerText !== "Copy Coordinates (C) >")
         this._hide();
       switch(key){
         case 32:  //SPACE KEY
