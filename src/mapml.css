@@ -431,7 +431,6 @@ summary {
 .mapml-outline {
   outline-style: auto;
   outline-offset: -1px;
-  outline-color: #44A7CB;
   z-index: 1000;
   pointer-events: none;
   position: relative;
