@@ -63,6 +63,20 @@ export var Crosshair = L.Layer.extend({
     }
   },
 
+  _addOrRemoveMapOutline: function (e) {
+    let mapContainer = this._map._container;
+    if (this._map.isFocused && !this._outline) {
+      this._outline = L.DomUtil.create("div", "mapml-outline", mapContainer);
+      this._outline.style.width = mapContainer.style.width;
+      this._outline.style.height = mapContainer.style.height;
+      //mapContainer.style.outlineStyle = "auto";
+      //.mapContainer.style.outlineColor = "#44A7CB";
+    } else if (!this._map.isFocused && this._outline) {
+      L.DomUtil.remove(this._outline);
+      delete this._outline;
+    }
+  },
+
   _hasQueryableLayer: function () {
     let layers = this._map.options.mapEl.layers;
     if (this._map.isFocused) {
@@ -84,6 +98,7 @@ export var Crosshair = L.Layer.extend({
     } else {
       this._map.isFocused = false;
     }
+    this._addOrRemoveMapOutline();
     this._addOrRemoveCrosshair();
   },
 

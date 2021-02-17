@@ -427,3 +427,11 @@ summary {
   text-align: center;
   padding: 2px;
 }
+
+.mapml-outline {
+  outline-style: auto;
+  outline-offset: -1px;
+  z-index: 1000;
+  pointer-events: none;
+  position: relative;
+}
