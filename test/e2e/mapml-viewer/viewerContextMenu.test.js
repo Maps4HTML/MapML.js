@@ -61,6 +61,18 @@ jest.setTimeout(50000);
           expect(name).toEqual("Forward (F)");
         });
 
+
+        test("[" + browserType + "]" + " Context menu shift + tab goes to previous item", async () => {
+          await page.keyboard.press("Shift+Tab");
+          const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+          const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
+          const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
+          const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
+          let name = await nameHandle.jsonValue();
+          await nameHandle.dispose();
+          expect(name).toEqual("Back (B)");
+        });
+
         test("[" + browserType + "]" + " Submenu opens on C with focus on first item", async () => {
           await page.keyboard.press("c");
           await page.keyboard.press("Tab");
