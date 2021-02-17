@@ -281,10 +281,12 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
         if (options.onEachFeature) {
          options.onEachFeature(layer.properties, layer);
-         layer._events.keypress.push({
-           "ctx": layer,
-           "fn": this._onSpacePress,
-         });
+         if(layer._events){
+            layer._events.keypress.push({
+              "ctx": layer,
+              "fn": this._onSpacePress,
+            });
+          }
         }
         if(this._staticFeature){
           let featureZoom = mapml.getAttribute('zoom') || nativeZoom;
