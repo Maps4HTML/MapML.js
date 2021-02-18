@@ -227,6 +227,24 @@ jest.setTimeout(50000);
 
             expect(f).toEqual("M285 373L460 380L468 477L329 459z");
           });
+
+          test("[" + browserType + "]" + " Focus Controls focuses the first <a> child in control div", async () => {
+            await page.click("body > mapml-viewer");
+            await page.keyboard.press("Shift+F10");
+            await page.keyboard.press("t");
+            await page.click("body");
+            await page.keyboard.press("Tab");
+            await page.keyboard.press("Tab");
+            await page.keyboard.press("Enter");
+            for (let i = 0; i < 5; i++)
+              await page.keyboard.press("Tab");
+            await page.keyboard.press("Enter");
+            const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+            const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
+            const rh = await page.evaluateHandle(root => root.activeElement, nh);
+            const f = await (await page.evaluateHandle(elem => elem.innerText, rh)).jsonValue();
+            expect(f).toEqual("Maps4HTML");
+          });
         });
       }
     );
