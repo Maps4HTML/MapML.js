@@ -1231,11 +1231,7 @@ export var MapMLLayer = L.Layer.extend({
       L.DomEvent.on(controlFocusButton, 'click', L.DomEvent.stop);
       L.DomEvent.on(controlFocusButton, 'click', (e) => {
         map.closePopup();
-        if(map._controlContainer.firstElementChild.firstElementChild.firstElementChild){
-          map._controlContainer.firstElementChild.firstElementChild.firstElementChild.focus();
-        } else {
-          map._controlContainer.focus();
-        }
+        map._controlContainer.querySelector("A").focus();
       }, popup);
   
       let divider = L.DomUtil.create("hr");
