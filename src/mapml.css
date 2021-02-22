@@ -436,7 +436,7 @@ summary {
   position: relative;
 }
 
-.mapml-context-close-button {
+.mapml-layer-remove-button {
   position: absolute;
   background-color: white;
   right: 15px;
