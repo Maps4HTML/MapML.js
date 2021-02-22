@@ -1183,7 +1183,7 @@ export var MapMLLayer = L.Layer.extend({
       mapFocusButton.href = '#';
       mapFocusButton.role = "button";
       mapFocusButton.title = "Focus Map";
-      mapFocusButton.innerHTML = '|&#10094;';
+      mapFocusButton.innerHTML = "<span aria-hidden='true'>|&#10094;</span>";
       L.DomEvent.disableClickPropagation(mapFocusButton);
       L.DomEvent.on(mapFocusButton, 'click', L.DomEvent.stop);
       L.DomEvent.on(mapFocusButton, 'click', (e)=>{
@@ -1196,7 +1196,7 @@ export var MapMLLayer = L.Layer.extend({
       previousButton.href = '#';
       previousButton.role = "button";
       previousButton.title = "Previous Feature";
-      previousButton.innerHTML = "&#10094;";
+      previousButton.innerHTML = "<span aria-hidden='true'>&#10094;</span>";
       L.DomEvent.disableClickPropagation(previousButton);
       L.DomEvent.on(previousButton, 'click', L.DomEvent.stop);
       L.DomEvent.on(previousButton, 'click', layer._previousFeature, popup);
@@ -1216,7 +1216,7 @@ export var MapMLLayer = L.Layer.extend({
       nextButton.href = '#';
       nextButton.role = "button";
       nextButton.title = "Next Feature";
-      nextButton.innerHTML = "&#10095;";
+      nextButton.innerHTML = "<span aria-hidden='true'>&#10095;</span>";
       L.DomEvent.disableClickPropagation(nextButton);
       L.DomEvent.on(nextButton, 'click', L.DomEvent.stop);
       L.DomEvent.on(nextButton, 'click', layer._nextFeature, popup);
@@ -1226,7 +1226,7 @@ export var MapMLLayer = L.Layer.extend({
       controlFocusButton.href = '#';
       controlFocusButton.role = "button";
       controlFocusButton.title = "Focus Controls";
-      controlFocusButton.innerHTML = '&#10095;|';
+      controlFocusButton.innerHTML = "<span aria-hidden='true'>&#10095;|</span>";
       L.DomEvent.disableClickPropagation(controlFocusButton);
       L.DomEvent.on(controlFocusButton, 'click', L.DomEvent.stop);
       L.DomEvent.on(controlFocusButton, 'click', (e) => {
