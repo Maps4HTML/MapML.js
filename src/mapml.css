@@ -435,3 +435,11 @@ summary {
   pointer-events: none;
   position: relative;
 }
+
+.mapml-context-close-button {
+  position: absolute;
+  background-color: white;
+  right: 15px;
+  padding-left: 3px;
+  text-decoration: none;
+}
