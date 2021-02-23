@@ -498,7 +498,7 @@ export var MapMLLayer = L.Layer.extend({
         removeButton.href = '#';
         removeButton.role = 'button';
         removeButton.title = 'Remove Layer';
-        removeButton.innerHTML = '&#10006;';
+        removeButton.innerHTML = "<span aria-hidden='true'>&#10006;</span>";
         removeButton.classList.add('mapml-layer-remove-button');
         L.DomEvent.disableClickPropagation(removeButton);
         L.DomEvent.on(removeButton, 'click', L.DomEvent.stop);

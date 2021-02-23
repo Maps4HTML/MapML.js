@@ -437,9 +437,6 @@ summary {
 }
 
 .mapml-layer-remove-button {
-  position: absolute;
-  background-color: white;
-  right: 15px;
-  padding-left: 3px;
+  margin-left: 15px;
   text-decoration: none;
 }
