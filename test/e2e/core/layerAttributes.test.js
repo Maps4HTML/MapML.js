@@ -26,7 +26,7 @@ jest.setTimeout(50000);
           await page.$eval("body > mapml-viewer > layer-",
             (layer) => layer.removeAttribute("checked"));
           await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > a');
-          const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > summary > label > input",
+          const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > summary > div > label > input",
             (controller) => controller.checked);
 
           expect(layerController).toEqual(false);
@@ -34,7 +34,7 @@ jest.setTimeout(50000);
         test("[" + browserType + "]" + " Check attribute added", async () => {
           await page.$eval("body > mapml-viewer > layer-",
             (layer) => layer.setAttribute("checked", ""));
-          const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > summary > label > input",
+          const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > summary > div > label > input",
             (controller) => controller.checked);
 
           expect(layerController).toEqual(true);
@@ -74,7 +74,7 @@ jest.setTimeout(50000);
             //        test("[" + browserType + "]" + " Initial map element extent", async () => {
             //          await page.$eval("body > mapml-viewer > layer-",
             //            (layer) => layer.setAttribute("checked", ""));
-            //          const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > summary > label > input",
+            //          const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > summary > div > label > input",
             //            (controller) => controller.checked);
             //
             //          expect(layerController).toEqual(true);
