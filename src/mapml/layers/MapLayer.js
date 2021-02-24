@@ -488,11 +488,16 @@ export var MapMLLayer = L.Layer.extend({
         name = document.createElement('span'),
         details = document.createElement('details'),
         summary = document.createElement('summary'),
+        summaryContainer = document.createElement('div'),
         opacity = document.createElement('input'),
         opacityControl = document.createElement('details'),
         opacityControlSummary = document.createElement('summary'),
         opacityControlSummaryLabel = document.createElement('label'),
         mapEl = this._layerEl.parentNode;
+
+        summary.style.display = 'flex';
+        summary.style.alignItems = 'center';
+        summaryContainer.classList.add('mapml-control-summary-container');
 
         let removeButton = document.createElement('a');
         removeButton.href = '#';
@@ -609,8 +614,9 @@ export var MapMLLayer = L.Layer.extend({
 
         fieldset.appendChild(details);
         details.appendChild(summary);
-        summary.appendChild(label);
-        summary.appendChild(removeButton);
+        summaryContainer.appendChild(label);
+        summaryContainer.appendChild(removeButton);
+        summary.appendChild(summaryContainer);
         details.appendChild(opacityControl);
 
         if (this._styles) {
