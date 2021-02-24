@@ -1,0 +1,819 @@
+<mapml xmlns="http://www.w3.org/1999/xhtml/">
+    <head>
+        <title>Restaurants</title>
+        <meta charset="utf-8" />
+        <meta content="text/mapml" http-equiv="Content-Type" />
+        <meta name="projection" content="CBMTILE"/>
+        <meta name="zoom" content="min=0,max=16,value=3" />
+        <meta name="cs" content="gcrs" />
+        <meta name="extent" content="top-left-easting=1509080.1964270622,top-left-northing=-169400.558801122,bottom-right-easting=1512094.3357886747,bottom-right-northing=-172702.5654051304" />
+    </head>
+    <body>
+        <feature id="restaurant_point.77" class="restaurant_point">
+            <geometry>
+                <point>
+                    <coordinates>-75.7153402 45.4081719</coordinates>
+                </point>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">amenity</th>
+                            <td itemprop="amenity">restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name</th>
+                            <td itemprop="name">Hung Sum Restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_stree</th>
+                            <td itemprop="addr_stree">Somerset Street West</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_house</th>
+                            <td itemprop="addr_house">939</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">cuisine</th>
+                            <td itemprop="cuisine">chinese</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">website</th>
+                            <td itemprop="website" />
+                        </tr>
+                        <tr>
+                            <th scope="row">phone</th>
+                            <td itemprop="phone" />
+                        </tr>
+                        <tr>
+                            <th scope="row">wheelchair</th>
+                            <td itemprop="wheelchair" />
+                        </tr>
+                        <tr>
+                            <th scope="row">opening_ho</th>
+                            <td itemprop="opening_ho" />
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_postc</th>
+                            <td itemprop="addr_postc" />
+                        </tr>
+                        <tr>
+                            <th scope="row">outdoor_se</th>
+                            <td itemprop="outdoor_se" />
+                        </tr>
+                        <tr>
+                            <th scope="row">takeaway</th>
+                            <td itemprop="takeaway" />
+                        </tr>
+                        <tr>
+                            <th scope="row">name_en</th>
+                            <td itemprop="name_en" />
+                        </tr>
+                        <tr>
+                            <th scope="row">smoking</th>
+                            <td itemprop="smoking" />
+                        </tr>
+                        <tr>
+                            <th scope="row">capacity</th>
+                            <td itemprop="capacity" />
+                        </tr>
+                        <tr>
+                            <th scope="row">delivery</th>
+                            <td itemprop="delivery" />
+                        </tr>
+                        <tr>
+                            <th scope="row">internet_a</th>
+                            <td itemprop="internet_a" />
+                        </tr>
+                        <tr>
+                            <th scope="row">name_zh</th>
+                            <td itemprop="name_zh" />
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="restaurant_point.2" class="restaurant_point">
+            <geometry>
+                <point>
+                    <coordinates>-75.690192 45.4186583</coordinates>
+                </point>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">amenity</th>
+                            <td itemprop="amenity">restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name</th>
+                            <td itemprop="name">Big Daddy's</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_stree</th>
+                            <td itemprop="addr_stree">Cooper Street</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_house</th>
+                            <td itemprop="addr_house">180</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">cuisine</th>
+                            <td itemprop="cuisine">seafood</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">website</th>
+                            <td itemprop="website" />
+                        </tr>
+                        <tr>
+                            <th scope="row">phone</th>
+                            <td itemprop="phone" />
+                        </tr>
+                        <tr>
+                            <th scope="row">wheelchair</th>
+                            <td itemprop="wheelchair" />
+                        </tr>
+                        <tr>
+                            <th scope="row">opening_ho</th>
+                            <td itemprop="opening_ho" />
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_postc</th>
+                            <td itemprop="addr_postc" />
+                        </tr>
+                        <tr>
+                            <th scope="row">outdoor_se</th>
+                            <td itemprop="outdoor_se" />
+                        </tr>
+                        <tr>
+                            <th scope="row">takeaway</th>
+                            <td itemprop="takeaway" />
+                        </tr>
+                        <tr>
+                            <th scope="row">name_en</th>
+                            <td itemprop="name_en" />
+                        </tr>
+                        <tr>
+                            <th scope="row">smoking</th>
+                            <td itemprop="smoking" />
+                        </tr>
+                        <tr>
+                            <th scope="row">capacity</th>
+                            <td itemprop="capacity" />
+                        </tr>
+                        <tr>
+                            <th scope="row">delivery</th>
+                            <td itemprop="delivery" />
+                        </tr>
+                        <tr>
+                            <th scope="row">internet_a</th>
+                            <td itemprop="internet_a" />
+                        </tr>
+                        <tr>
+                            <th scope="row">name_zh</th>
+                            <td itemprop="name_zh" />
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="restaurant_point.9" class="restaurant_point">
+            <geometry>
+                <point>
+                    <coordinates>-75.6910006 45.4078828</coordinates>
+                </point>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">amenity</th>
+                            <td itemprop="amenity">restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name</th>
+                            <td itemprop="name">Hareg Cafe &amp; Variety</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_stree</th>
+                            <td itemprop="addr_stree">Bank Street</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_house</th>
+                            <td itemprop="addr_house">587</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">cuisine</th>
+                            <td itemprop="cuisine">african</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">website</th>
+                            <td itemprop="website" />
+                        </tr>
+                        <tr>
+                            <th scope="row">phone</th>
+                            <td itemprop="phone" />
+                        </tr>
+                        <tr>
+                            <th scope="row">wheelchair</th>
+                            <td itemprop="wheelchair" />
+                        </tr>
+                        <tr>
+                            <th scope="row">opening_ho</th>
+                            <td itemprop="opening_ho" />
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_postc</th>
+                            <td itemprop="addr_postc" />
+                        </tr>
+                        <tr>
+                            <th scope="row">outdoor_se</th>
+                            <td itemprop="outdoor_se" />
+                        </tr>
+                        <tr>
+                            <th scope="row">takeaway</th>
+                            <td itemprop="takeaway" />
+                        </tr>
+                        <tr>
+                            <th scope="row">name_en</th>
+                            <td itemprop="name_en" />
+                        </tr>
+                        <tr>
+                            <th scope="row">smoking</th>
+                            <td itemprop="smoking" />
+                        </tr>
+                        <tr>
+                            <th scope="row">capacity</th>
+                            <td itemprop="capacity" />
+                        </tr>
+                        <tr>
+                            <th scope="row">delivery</th>
+                            <td itemprop="delivery" />
+                        </tr>
+                        <tr>
+                            <th scope="row">internet_a</th>
+                            <td itemprop="internet_a" />
+                        </tr>
+                        <tr>
+                            <th scope="row">name_zh</th>
+                            <td itemprop="name_zh" />
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="restaurant_point.13" class="restaurant_point">
+            <geometry>
+                <point>
+                    <coordinates>-75.7077782 45.4107226</coordinates>
+                </point>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">amenity</th>
+                            <td itemprop="amenity">restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name</th>
+                            <td itemprop="name">Phucket Royal</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_stree</th>
+                            <td itemprop="addr_stree">Somerset Street West</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_house</th>
+                            <td itemprop="addr_house">713</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">cuisine</th>
+                            <td itemprop="cuisine">thai</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">website</th>
+                            <td itemprop="website" />
+                        </tr>
+                        <tr>
+                            <th scope="row">phone</th>
+                            <td itemprop="phone" />
+                        </tr>
+                        <tr>
+                            <th scope="row">wheelchair</th>
+                            <td itemprop="wheelchair" />
+                        </tr>
+                        <tr>
+                            <th scope="row">opening_ho</th>
+                            <td itemprop="opening_ho" />
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_postc</th>
+                            <td itemprop="addr_postc" />
+                        </tr>
+                        <tr>
+                            <th scope="row">outdoor_se</th>
+                            <td itemprop="outdoor_se" />
+                        </tr>
+                        <tr>
+                            <th scope="row">takeaway</th>
+                            <td itemprop="takeaway" />
+                        </tr>
+                        <tr>
+                            <th scope="row">name_en</th>
+                            <td itemprop="name_en" />
+                        </tr>
+                        <tr>
+                            <th scope="row">smoking</th>
+                            <td itemprop="smoking" />
+                        </tr>
+                        <tr>
+                            <th scope="row">capacity</th>
+                            <td itemprop="capacity" />
+                        </tr>
+                        <tr>
+                            <th scope="row">delivery</th>
+                            <td itemprop="delivery" />
+                        </tr>
+                        <tr>
+                            <th scope="row">internet_a</th>
+                            <td itemprop="internet_a" />
+                        </tr>
+                        <tr>
+                            <th scope="row">name_zh</th>
+                            <td itemprop="name_zh" />
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="restaurant_point.18" class="restaurant_point">
+            <geometry>
+                <point>
+                    <coordinates>-75.7063457 45.4110604</coordinates>
+                </point>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">amenity</th>
+                            <td itemprop="amenity">restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name</th>
+                            <td itemprop="name">Sushi 88</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_stree</th>
+                            <td itemprop="addr_stree">Somerset Street West</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_house</th>
+                            <td itemprop="addr_house">690 B</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">cuisine</th>
+                            <td itemprop="cuisine">sushi</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">website</th>
+                            <td itemprop="website" />
+                        </tr>
+                        <tr>
+                            <th scope="row">phone</th>
+                            <td itemprop="phone">+1-613-233-3288</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">wheelchair</th>
+                            <td itemprop="wheelchair">no</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">opening_ho</th>
+                            <td itemprop="opening_ho" />
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_postc</th>
+                            <td itemprop="addr_postc">K1R 6P4</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">outdoor_se</th>
+                            <td itemprop="outdoor_se">no</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">takeaway</th>
+                            <td itemprop="takeaway">yes</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name_en</th>
+                            <td itemprop="name_en" />
+                        </tr>
+                        <tr>
+                            <th scope="row">smoking</th>
+                            <td itemprop="smoking" />
+                        </tr>
+                        <tr>
+                            <th scope="row">capacity</th>
+                            <td itemprop="capacity" />
+                        </tr>
+                        <tr>
+                            <th scope="row">delivery</th>
+                            <td itemprop="delivery">no</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">internet_a</th>
+                            <td itemprop="internet_a">no</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name_zh</th>
+                            <td itemprop="name_zh" />
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="restaurant_polygon.2" class="restaurant_polygon">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>-75.689609 45.405803 -75.68949 45.405836 -75.689486 45.405829 -75.689448 45.40584 -75.689352 45.405724 -75.689414 45.405706 -75.689411 45.405701 -75.689419 45.405698 -75.689414 45.405689 -75.689465 45.405675 -75.68947 45.405684 -75.68953 45.405667 -75.689535 45.405675 -75.68955 45.405671 -75.689562 45.405691 -75.689546 45.405695 -75.689609 45.405803</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">addr_house</th>
+                            <td itemprop="addr_house">683</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_stree</th>
+                            <td itemprop="addr_stree">Bank Street</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">amenity</th>
+                            <td itemprop="amenity">restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">building</th>
+                            <td itemprop="building">commercial</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name</th>
+                            <td itemprop="name">Banditos</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">cuisine</th>
+                            <td itemprop="cuisine">mexican</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">website</th>
+                            <td itemprop="website" />
+                        </tr>
+                        <tr>
+                            <th scope="row">phone</th>
+                            <td itemprop="phone" />
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_postc</th>
+                            <td itemprop="addr_postc" />
+                        </tr>
+                        <tr>
+                            <th scope="row">wheelchair</th>
+                            <td itemprop="wheelchair" />
+                        </tr>
+                        <tr>
+                            <th scope="row">building_l</th>
+                            <td itemprop="building_l" />
+                        </tr>
+                        <tr>
+                            <th scope="row">opening_ho</th>
+                            <td itemprop="opening_ho" />
+                        </tr>
+                        <tr>
+                            <th scope="row">mapillary</th>
+                            <td itemprop="mapillary" />
+                        </tr>
+                        <tr>
+                            <th scope="row">outdoor_se</th>
+                            <td itemprop="outdoor_se" />
+                        </tr>
+                        <tr>
+                            <th scope="row">brand</th>
+                            <td itemprop="brand" />
+                        </tr>
+                        <tr>
+                            <th scope="row">brand_wiki</th>
+                            <td itemprop="brand_wiki" />
+                        </tr>
+                        <tr>
+                            <th scope="row">brand_wi_1</th>
+                            <td itemprop="brand_wi_1" />
+                        </tr>
+                        <tr>
+                            <th scope="row">smoking</th>
+                            <td itemprop="smoking" />
+                        </tr>
+                        <tr>
+                            <th scope="row">takeaway</th>
+                            <td itemprop="takeaway" />
+                        </tr>
+                        <tr>
+                            <th scope="row">building_c</th>
+                            <td itemprop="building_c" />
+                        </tr>
+                        <tr>
+                            <th scope="row">building_m</th>
+                            <td itemprop="building_m" />
+                        </tr>
+                        <tr>
+                            <th scope="row">capacity</th>
+                            <td itemprop="capacity" />
+                        </tr>
+                        <tr>
+                            <th scope="row">delivery</th>
+                            <td itemprop="delivery" />
+                        </tr>
+                        <tr>
+                            <th scope="row">shop</th>
+                            <td itemprop="shop" />
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="restaurant_polygon.7" class="restaurant_polygon">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>-75.7019048 45.4191548 -75.7018285 45.4191868 -75.7016736 45.4190052 -75.7016464 45.4189734 -75.7017227 45.4189414 -75.7019048 45.4191548</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">addr_house</th>
+                            <td itemprop="addr_house">292</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_stree</th>
+                            <td itemprop="addr_stree">Albert Street</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">amenity</th>
+                            <td itemprop="amenity">restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">building</th>
+                            <td itemprop="building">yes</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name</th>
+                            <td itemprop="name">India Palace</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">cuisine</th>
+                            <td itemprop="cuisine">indian</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">website</th>
+                            <td itemprop="website">http://www.indiapalace.ca</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">phone</th>
+                            <td itemprop="phone">+1-613-234-5433</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_postc</th>
+                            <td itemprop="addr_postc" />
+                        </tr>
+                        <tr>
+                            <th scope="row">wheelchair</th>
+                            <td itemprop="wheelchair" />
+                        </tr>
+                        <tr>
+                            <th scope="row">building_l</th>
+                            <td itemprop="building_l" />
+                        </tr>
+                        <tr>
+                            <th scope="row">opening_ho</th>
+                            <td itemprop="opening_ho" />
+                        </tr>
+                        <tr>
+                            <th scope="row">mapillary</th>
+                            <td itemprop="mapillary" />
+                        </tr>
+                        <tr>
+                            <th scope="row">outdoor_se</th>
+                            <td itemprop="outdoor_se" />
+                        </tr>
+                        <tr>
+                            <th scope="row">brand</th>
+                            <td itemprop="brand" />
+                        </tr>
+                        <tr>
+                            <th scope="row">brand_wiki</th>
+                            <td itemprop="brand_wiki" />
+                        </tr>
+                        <tr>
+                            <th scope="row">brand_wi_1</th>
+                            <td itemprop="brand_wi_1" />
+                        </tr>
+                        <tr>
+                            <th scope="row">smoking</th>
+                            <td itemprop="smoking" />
+                        </tr>
+                        <tr>
+                            <th scope="row">takeaway</th>
+                            <td itemprop="takeaway" />
+                        </tr>
+                        <tr>
+                            <th scope="row">building_c</th>
+                            <td itemprop="building_c" />
+                        </tr>
+                        <tr>
+                            <th scope="row">building_m</th>
+                            <td itemprop="building_m" />
+                        </tr>
+                        <tr>
+                            <th scope="row">capacity</th>
+                            <td itemprop="capacity" />
+                        </tr>
+                        <tr>
+                            <th scope="row">delivery</th>
+                            <td itemprop="delivery" />
+                        </tr>
+                        <tr>
+                            <th scope="row">shop</th>
+                            <td itemprop="shop" />
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="restaurant_polygon.20" class="restaurant_polygon">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>-75.7093517 45.4005727 -75.7090062 45.400672 -75.7089022 45.4004936 -75.7088772 45.4005023 -75.7088336 45.4004303 -75.7088672 45.40042 -75.7089701 45.4003887 -75.7091934 45.4003223 -75.7093517 45.4005727</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">addr_house</th>
+                            <td itemprop="addr_house">379</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_stree</th>
+                            <td itemprop="addr_stree">Preston Street</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">amenity</th>
+                            <td itemprop="amenity">restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">building</th>
+                            <td itemprop="building">retail</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name</th>
+                            <td itemprop="name">The Prescott</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">cuisine</th>
+                            <td itemprop="cuisine" />
+                        </tr>
+                        <tr>
+                            <th scope="row">website</th>
+                            <td itemprop="website">http://www.theprescott.com/</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">phone</th>
+                            <td itemprop="phone" />
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_postc</th>
+                            <td itemprop="addr_postc" />
+                        </tr>
+                        <tr>
+                            <th scope="row">wheelchair</th>
+                            <td itemprop="wheelchair" />
+                        </tr>
+                        <tr>
+                            <th scope="row">building_l</th>
+                            <td itemprop="building_l" />
+                        </tr>
+                        <tr>
+                            <th scope="row">opening_ho</th>
+                            <td itemprop="opening_ho" />
+                        </tr>
+                        <tr>
+                            <th scope="row">mapillary</th>
+                            <td itemprop="mapillary" />
+                        </tr>
+                        <tr>
+                            <th scope="row">outdoor_se</th>
+                            <td itemprop="outdoor_se" />
+                        </tr>
+                        <tr>
+                            <th scope="row">brand</th>
+                            <td itemprop="brand" />
+                        </tr>
+                        <tr>
+                            <th scope="row">brand_wiki</th>
+                            <td itemprop="brand_wiki" />
+                        </tr>
+                        <tr>
+                            <th scope="row">brand_wi_1</th>
+                            <td itemprop="brand_wi_1" />
+                        </tr>
+                        <tr>
+                            <th scope="row">smoking</th>
+                            <td itemprop="smoking" />
+                        </tr>
+                        <tr>
+                            <th scope="row">takeaway</th>
+                            <td itemprop="takeaway" />
+                        </tr>
+                        <tr>
+                            <th scope="row">building_c</th>
+                            <td itemprop="building_c" />
+                        </tr>
+                        <tr>
+                            <th scope="row">building_m</th>
+                            <td itemprop="building_m" />
+                        </tr>
+                        <tr>
+                            <th scope="row">capacity</th>
+                            <td itemprop="capacity" />
+                        </tr>
+                        <tr>
+                            <th scope="row">delivery</th>
+                            <td itemprop="delivery" />
+                        </tr>
+                        <tr>
+                            <th scope="row">shop</th>
+                            <td itemprop="shop" />
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+    </body>
+</mapml>
