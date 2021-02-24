@@ -435,3 +435,8 @@ summary {
   pointer-events: none;
   position: relative;
 }
+
+.mapml-layer-remove-button {
+  margin-left: 15px;
+  text-decoration: none;
+}
