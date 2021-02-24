@@ -50,6 +50,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       if(this._mapmlFeatures){
         map.off("featurepagination", this.showPaginationFeature, this);
         delete this._mapmlFeatures;
+        L.DomUtil.remove(this._container);
       }
       L.FeatureGroup.prototype.onRemove.call(this, map);
     },
