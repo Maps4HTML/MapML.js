@@ -1265,6 +1265,7 @@ export var MapMLLayer = L.Layer.extend({
       if(path) {
         // e.target = this._map
         // Looks for keydown, more specifically tab and shift tab
+        path.setAttribute("aria-expanded", "true");
         map.on("keydown", focusFeature);
       } else {
         map.on("keydown", focusMap);
@@ -1313,6 +1314,7 @@ export var MapMLLayer = L.Layer.extend({
           map.off("keydown", focusFeature);
           map.off("keydown", focusMap);
           map.off('popupclose', removeHandlers);
+          path.setAttribute("aria-expanded", "false");
         }
       }
     },

@@ -80,6 +80,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
               title.innerText = "Feature";
               path._path.appendChild(title);
             }
+            path._path.setAttribute("aria-expanded", "false");
           }
         }
       }
