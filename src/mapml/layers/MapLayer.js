@@ -1314,7 +1314,7 @@ export var MapMLLayer = L.Layer.extend({
           map.off("keydown", focusFeature);
           map.off("keydown", focusMap);
           map.off('popupclose', removeHandlers);
-          path.setAttribute("aria-expanded", "false");
+          if(path) path.setAttribute("aria-expanded", "false");
         }
       }
     },
