@@ -296,6 +296,7 @@ export var MapMLLayer = L.Layer.extend({
         if (this._templatedLayer) {
             map.removeLayer(this._templatedLayer);
         }
+        map.fire("checkdisabled");
         map.off("popupopen", this._attachSkipButtons);
     },
     getZoomBounds: function () {
