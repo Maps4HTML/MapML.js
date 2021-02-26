@@ -361,7 +361,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(M.parseNumber,coordinates);
         latlng = coordsToLatLng(coordinates, cs, zoom, this.options.projection);
         return pointToLayer ? pointToLayer(mapml, latlng) : 
-                                    new L.Marker(latlng, pointOptions);
+                                    new L.CircleMarker(latlng, pointOptions);
 
       case 'MULTIPOINT':
         coordinates = [];
