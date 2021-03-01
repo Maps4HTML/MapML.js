@@ -50,7 +50,7 @@ jobs:
       with:
         source_folder: 'dist'
         destination_repo: 'Maps4HTML/experiments'
-        destination_folder: 'static/dist'
+        destination_folder: 'dist'
         user_email: aayub041@uottawa.ca
         user_name: 'ahmadayubi'
         commit_msg: '[AUTO] Sync MapML Build'
