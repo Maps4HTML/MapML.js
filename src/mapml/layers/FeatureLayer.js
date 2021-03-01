@@ -77,7 +77,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
             }
             if(path._path.childElementCount === 0) {
               let title = document.createElement("title");
-              title.innerText = "Feature";
+              title.innerText = path.accessibleTitle;
               path._path.appendChild(title);
             }
             path._path.setAttribute("aria-expanded", "false");
@@ -290,13 +290,16 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         this.resetStyle(layer);
 
         if (options.onEachFeature) {
-         options.onEachFeature(layer.properties, layer);
-         if(layer._events){
-            layer._events.keypress.push({
-              "ctx": layer,
-              "fn": this._onSpacePress,
-            });
-          }
+          layer.accessibleTitle = mapml.querySelector("title");
+          layer.accessibleTitle = layer.accessibleTitle ? layer.accessibleTitle.innerText : "Feature"; 
+          options.onEachFeature(layer.properties, layer);
+          layer.bindTooltip(layer.accessibleTitle, { interactive:true });
+          if(layer._events){
+              layer._events.keypress.push({
+                "ctx": layer,
+                "fn": this._onSpacePress,
+              });
+            }
         }
         if(this._staticFeature){
           let featureZoom = mapml.getAttribute('zoom') || nativeZoom;
