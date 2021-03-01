@@ -81,6 +81,15 @@ export var MapMLFeatures = L.FeatureGroup.extend({
               path._path.appendChild(title);
             }
             path._path.setAttribute("aria-expanded", "false");
+            /* jshint ignore:start */
+            L.DomEvent.on(path._path, "keyup keydown", (e)=>{
+              if((e.keyCode === 9 || e.keyCode === 16) && e.type === "keyup"){
+                path.openTooltip();
+              } else {
+                path.closeTooltip(); 
+              }
+            });
+            /* jshint ignore:end */
           }
         }
       }

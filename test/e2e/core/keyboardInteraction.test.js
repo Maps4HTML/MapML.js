@@ -82,12 +82,18 @@ jest.setTimeout(50000);
             const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
             const focused = await (await page.evaluateHandle(elem => elem.getAttribute("d"), resultHandle)).jsonValue();
 
+            let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
+
             await page.keyboard.press("Tab");
             const aHandleNext = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nextHandleNext = await page.evaluateHandle(doc => doc.shadowRoot, aHandleNext);
             const resultHandleNext = await page.evaluateHandle(root => root.activeElement, nextHandleNext);
             const focusedNext = await (await page.evaluateHandle(elem => elem.getAttribute("d"), resultHandleNext)).jsonValue();
 
+            let tooltipCountNext = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
+
+            expect(tooltipCount).toEqual(1);
+            expect(tooltipCountNext).toEqual(1);
             expect(focused).toEqual("M330 83L553 83L553 339L330 339z");
             expect(focusedNext).toEqual("M-53 393L140 393L113 146L-53 191z");
           });

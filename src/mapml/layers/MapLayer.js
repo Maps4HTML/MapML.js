@@ -96,6 +96,7 @@ export var MapMLLayer = L.Layer.extend({
                   c.classList.add("mapml-popup-content");
                   c.insertAdjacentHTML('afterbegin', properties.innerHTML);
                   geometry.bindPopup(c, {autoPan:false, minWidth: 108});
+                  geometry.bindTooltip("Feature", {interactive:true}); // TODO:change to accessbile name of feature, might need to move to addData function
                 }
               }
             });
@@ -126,6 +127,7 @@ export var MapMLLayer = L.Layer.extend({
                       c.classList.add("mapml-popup-content");
                       c.insertAdjacentHTML('afterbegin', properties.innerHTML);
                       geometry.bindPopup(c, {autoPan:false, minWidth: 108});
+                      geometry.bindTooltip("Feature",{interactive:true}); // TODO:change to accessbile name of feature, might need to move to addData function
                     }
                   }
                 }).addTo(map);
