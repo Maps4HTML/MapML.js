@@ -290,8 +290,8 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         this.resetStyle(layer);
 
         if (options.onEachFeature) {
-          layer.accessibleTitle = mapml.querySelector("title");
-          layer.accessibleTitle = layer.accessibleTitle ? layer.accessibleTitle.innerText : "Feature"; 
+          layer.accessibleTitle = mapml.querySelector("featurecaption");
+          layer.accessibleTitle = layer.accessibleTitle ? layer.accessibleTitle.innerHTML : "Feature"; 
           options.onEachFeature(layer.properties, layer);
           layer.bindTooltip(layer.accessibleTitle, { interactive:true });
           if(layer._events){
