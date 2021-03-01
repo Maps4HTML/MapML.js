@@ -1,4 +1,4 @@
-export var SVGMarker = L.CircleMarker.extend({
+export var SVGMarker = L.Path.extend({
   initialize: function (options) {
     setOptions(this, options);
     this._latlng = toLatLng(latlng);
@@ -12,7 +12,37 @@ export var SVGMarker = L.CircleMarker.extend({
                   </svg>`;
   },
 
+  _project: function () {
+    this._point = this._map.latLngToLayerPoint(this._latlng);
+    this._updateBounds();
+  },
 
+  _updateBounds: function () {
+    var r = this._radius,
+      r2 = this._radiusY || r,
+      w = this._clickTolerance(),
+      p = [r + w, r2 + w];
+    this._pxBounds = new Bounds(this._point.subtract(p), this._point.add(p));
+  },
+
+  _update: function () {
+    if (this._map) {
+      this._updatePath();
+    }
+  },
+
+  _updatePath: function () {
+    this._renderer._updateCircle(this);
+  },
+
+  _empty: function () {
+    return this._radius && !this._renderer._bounds.intersects(this._pxBounds);
+  },
+
+  // Needed by the `Canvas` renderer for interactivity
+  _containsPoint: function (p) {
+    return p.distanceTo(this._point) <= this._radius + this._clickTolerance();
+  }
 
 });
 
