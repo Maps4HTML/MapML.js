@@ -77,10 +77,20 @@ export var MapMLFeatures = L.FeatureGroup.extend({
             }
             if(path._path.childElementCount === 0) {
               let title = document.createElement("title");
-              title.innerText = "Feature";
+              title.innerText = path.accessibleTitle;
               path._path.appendChild(title);
             }
+            path._path.setAttribute("aria-label", path.accessibleTitle);
             path._path.setAttribute("aria-expanded", "false");
+            /* jshint ignore:start */
+            L.DomEvent.on(path._path, "keyup keydown", (e)=>{
+              if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup"){
+                path.openTooltip();
+              } else {
+                path.closeTooltip(); 
+              }
+            });
+            /* jshint ignore:end */
           }
         }
       }
@@ -97,21 +107,41 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     },
 
     _previousFeature: function(e){
-      this._map.closePopup();
-      if(this._source._path.previousSibling){
-        this._source._path.previousSibling.focus();
-      } else {
-        this._source._path.focus();
+      let path = this._source._path.previousSibling;
+      if(!path){
+        let currentIndex = this._source._path.closest("div.mapml-layer").style.zIndex;
+        let overlays = this._map.getPane("overlayPane").children;
+        for(let i = overlays.length - 1; i >= 0; i--){
+          let layer = overlays[i];
+          if(layer.style.zIndex >= currentIndex) continue;
+          path = layer.querySelector("path");
+          if(path){
+            path = path.parentNode.lastChild;
+            break;
+          }
+        }
+        if (!path) path = this._source._path; 
       }
+      path.focus();
+      this._map._targets[path._leaflet_id].openTooltip();
+      this._map.closePopup();
     },
 
     _nextFeature: function(e){
-      this._map.closePopup();
-      if(this._source._path.nextSibling){
-        this._source._path.nextSibling.focus();
-      } else {
-        this._source._path.focus();
+      let path = this._source._path.nextSibling;
+      if(!path){
+        let currentIndex = this._source._path.closest("div.mapml-layer").style.zIndex;
+
+        for(let layer of this._map.getPane("overlayPane").children){
+          if(layer.style.zIndex <= currentIndex) continue;
+          path = layer.querySelector("path");
+          if(path)break;
+        }
+        if (!path) path = this._source._path; 
       }
+      path.focus();
+      this._map._targets[path._leaflet_id].openTooltip();
+      this._map.closePopup();
     },
 
     _getNativeVariables: function(mapml){
@@ -281,13 +311,16 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         this.resetStyle(layer);
 
         if (options.onEachFeature) {
-         options.onEachFeature(layer.properties, layer);
-         if(layer._events){
-            layer._events.keypress.push({
-              "ctx": layer,
-              "fn": this._onSpacePress,
-            });
-          }
+          layer.accessibleTitle = mapml.querySelector("featurecaption");
+          layer.accessibleTitle = layer.accessibleTitle ? layer.accessibleTitle.innerHTML : "Feature"; 
+          options.onEachFeature(layer.properties, layer);
+          layer.bindTooltip(layer.accessibleTitle, { interactive:true });
+          if(layer._events){
+              layer._events.keypress.push({
+                "ctx": layer,
+                "fn": this._onSpacePress,
+              });
+            }
         }
         if(this._staticFeature){
           let featureZoom = mapml.getAttribute('zoom') || nativeZoom;
