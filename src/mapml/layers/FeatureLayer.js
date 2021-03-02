@@ -76,8 +76,8 @@ export var MapMLFeatures = L.FeatureGroup.extend({
               path._path.removeAttribute("tabindex");
             }
             if(path._path.childElementCount === 0) {
-              let title = document.createElement("title");
-              title.innerText = path.accessibleTitle;
+              let title = L.SVG.create("title");
+              title.innerHTML = path.accessibleTitle;
               path._path.appendChild(title);
             }
             path._path.setAttribute("aria-expanded", "false");
