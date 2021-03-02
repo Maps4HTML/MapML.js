@@ -106,14 +106,38 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     },
 
     _previousFeature: function(e){
-      let path = this._source._path.previousSibling ? this._source._path.previousSibling : this._source._path;
+      let path = this._source._path.previousSibling;
+      if(!path){
+        let currentIndex = this._source._path.closest("div.mapml-layer").style.zIndex;
+        let overlays = this._map.getPane("overlayPane").children;
+        for(let i = overlays.length - 1; i >= 0; i--){
+          let layer = overlays[i];
+          if(layer.style.zIndex >= currentIndex) continue;
+          path = layer.querySelector("path");
+          if(path){
+            path = path.parentNode.lastChild;
+            break;
+          }
+        }
+        if (!path) path = this._source._path; 
+      }
       path.focus();
       this._map._targets[path._leaflet_id].openTooltip();
       this._map.closePopup();
     },
 
     _nextFeature: function(e){
-      let path = this._source._path.nextSibling ? this._source._path.nextSibling : this._source._path;
+      let path = this._source._path.nextSibling;
+      if(!path){
+        let currentIndex = this._source._path.closest("div.mapml-layer").style.zIndex;
+
+        for(let layer of this._map.getPane("overlayPane").children){
+          if(layer.style.zIndex <= currentIndex) continue;
+          path = layer.querySelector("path");
+          if(path)break;
+        }
+        if (!path) path = this._source._path; 
+      }
       path.focus();
       this._map._targets[path._leaflet_id].openTooltip();
       this._map.closePopup();
