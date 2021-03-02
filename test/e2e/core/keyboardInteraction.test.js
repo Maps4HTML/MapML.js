@@ -191,6 +191,9 @@ jest.setTimeout(50000);
             const rh = await page.evaluateHandle(root => root.activeElement, nh);
             const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
 
+            let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
+
+            expect(tooltipCount).toEqual(1);
             expect(f).toEqual("M-53 451L153 508L113 146L-53 191z");
           });
 
@@ -203,6 +206,9 @@ jest.setTimeout(50000);
             const rh = await page.evaluateHandle(root => root.activeElement, nh);
             const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
 
+            let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
+
+            expect(tooltipCount).toEqual(1);
             expect(f).toEqual("M-53 451L153 508L113 146L-53 191z");
           });
 
@@ -216,6 +222,9 @@ jest.setTimeout(50000);
             const rh = await page.evaluateHandle(root => root.activeElement, nh);
             const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
 
+            let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
+
+            expect(tooltipCount).toEqual(1);
             expect(f).toEqual("M330 83L553 83L553 339L330 339z");
           });
 
@@ -231,6 +240,9 @@ jest.setTimeout(50000);
             const rh = await page.evaluateHandle(root => root.activeElement, nh);
             const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
 
+            let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
+
+            expect(tooltipCount).toEqual(1);
             expect(f).toEqual("M285 373L460 380L468 477L329 459z");
           });
 
