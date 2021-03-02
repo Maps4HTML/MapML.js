@@ -80,6 +80,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
               title.innerText = path.accessibleTitle;
               path._path.appendChild(title);
             }
+            path._path.setAttribute("aria-label", path.accessibleTitle);
             path._path.setAttribute("aria-expanded", "false");
             /* jshint ignore:start */
             L.DomEvent.on(path._path, "keyup keydown", (e)=>{
