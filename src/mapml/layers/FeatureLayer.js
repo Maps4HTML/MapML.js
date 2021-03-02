@@ -360,8 +360,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         coordinates = [];
         geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(M.parseNumber,coordinates);
         latlng = coordsToLatLng(coordinates, cs, zoom, this.options.projection);
-        return pointToLayer ? pointToLayer(mapml, latlng) : 
-                                    new L.CircleMarker(latlng, pointOptions);
+        return pointToLayer ? pointToLayer(mapml, latlng) : M.svgMarker(latlng, vectorOptions);
 
       case 'MULTIPOINT':
         coordinates = [];
@@ -369,7 +368,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng, cs, zoom);
         var points = new Array(latlngs.length);
         for(member=0;member<points.length;member++) {
-          points[member] = new L.Marker(latlngs[member],pointOptions);
+          points[member] = M.svgMarker(latlngs[member], vectorOptions);
         }
         return new L.featureGroup(points);
       case 'LINESTRING':
