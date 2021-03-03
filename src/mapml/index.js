@@ -53,6 +53,7 @@ import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
 import { ReloadButton, reloadButton } from './control/ReloadButton';
 import { Crosshair, crosshair } from "./layers/Crosshair";
+import {SVGMarker, svgMarker} from './layers/SVGMarker';
 
 /* global L, Node */
 (function (window, document, undefined) {
@@ -630,5 +631,8 @@ M.debugOverlay = debugOverlay;
 
 M.Crosshair = Crosshair;
 M.crosshair = crosshair;
+
+M.SVGMarker = SVGMarker;
+M.svgMarker = svgMarker;
 
 }(window, document));

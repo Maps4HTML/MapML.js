@@ -128,7 +128,7 @@ module.exports = function(grunt) {
             cwd: 'node_modules/leaflet/dist/images/',
             flatten: true,
             filter: 'isFile', 
-            src: ['layers.png','layers-2x.png','marker-icon.png','marker-icon-2x.png','marker-shadow.png'], 
+            src: ['layers.png','layers-2x.png'], 
             dest: 'dist/images/'
           }
         ]
