@@ -446,13 +446,30 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         console.log('Invalid GeoJSON object.');
         break;
     }
-    function coordinatesToArray(coordinates) {
-      var a = new Array(coordinates.length);
+    function coordinatesToArray(coordinates, first = true) {
+      var a = new Array(coordinates.length),
+      localParts = [];
       for (var i=0;i<a.length;i++) {
         a[i]=[];
-        (coordinates[i] || coordinates).textContent.match(/(\S+\s+\S+)/gim).forEach(M.splitCoordinate, a[i]);
+        let coords = (coordinates[i] || coordinates),
+            spans = coords.children;
+        for(let span of spans){
+          let subParts = coordinatesToArray(span, false),
+              spanLayer = new L.Polygon(ctx.coordsToLatLngs(subParts[0], 1, coordsToLatLng, cs, zoom), {...vectorOptions, color:'yellow',});
+              
+          spanLayer.subParts = subParts[1];
+          localParts.push(spanLayer);
+        }
+        coords.textContent = coords.textContent.replace( /(<([^>]+)>)/ig, '');
+        coords.textContent.match(/(\S+\s+\S+)/gim).forEach(M.splitCoordinate, a[i]);
       }
-      return a;
+      if (first){ 
+        parts = localParts;
+        return a;
+      } else {
+        return [a, localParts];
+      }
+    }
     }
   },
         
