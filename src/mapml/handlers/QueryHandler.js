@@ -48,7 +48,7 @@ export var QueryHandler = L.Handler.extend({
           crs = layer.crs,
           tileSize = map.options.crs.options.crs.tile.bounds.max.x,
           container = layer._container,
-          popupOptions = {autoPan: true, maxHeight: (map.getSize().y * 0.5) - 50},
+          popupOptions = {autoClose: false, autoPan: true, maxHeight: (map.getSize().y * 0.5) - 50},
           tcrs2pcrs = function (c) {
             return crs.transformation.untransform(c,crs.scale(zoom));
           },

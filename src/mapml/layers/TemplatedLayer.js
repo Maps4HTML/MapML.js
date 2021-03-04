@@ -33,7 +33,7 @@ export var TemplatedLayer = L.Layer.extend({
       };
   },
   redraw: function() {
-    this.closePopup();
+    //this.closePopup();
     for (var i=0;i<this._templates.length;i++) {
       if (this._templates[i].rel === 'tile' || this._templates[i].rel === 'image' || this._templates[i].rel === 'features') {
           this._templates[i].layer.redraw();
@@ -41,7 +41,7 @@ export var TemplatedLayer = L.Layer.extend({
     }
   },
   _onZoomStart: function() {
-      this.closePopup();
+      //this.closePopup();
   },
 
 
