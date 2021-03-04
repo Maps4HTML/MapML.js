@@ -167,8 +167,9 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     },
 
     _handleMoveEnd : function(){
-      let mapZoom = this._map.getZoom();      
-      this.isVisible = this._layers && this.layerBounds && 
+      let mapZoom = this._map.getZoom(),
+          withinZoom = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom;   
+      this.isVisible = withinZoom && this._layers && this.layerBounds && 
                         this.layerBounds.overlaps(
                           M.pixelToPCRSBounds(
                             this._map.getPixelBounds(),
@@ -181,7 +182,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       let mapZoom = this._map.getZoom();
       if(mapZoom > this.zoomBounds.maxZoom || mapZoom < this.zoomBounds.minZoom){
         this.clearLayers();
-        this.isVisible = false;
         return;
       }
       let clampZoom = this._clampZoom(mapZoom);

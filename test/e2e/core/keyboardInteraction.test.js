@@ -194,7 +194,7 @@ jest.setTimeout(50000);
             let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
 
             expect(tooltipCount).toEqual(1);
-            expect(f).toEqual("M-53 451L153 508L113 146L-53 191z");
+            expect(f).toEqual("M-16 461L153 508L113 146L-16 181z");
           });
 
           test("[" + browserType + "]" + " Shift + Tab to current feature while popup open", async () => {
@@ -209,7 +209,7 @@ jest.setTimeout(50000);
             let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
 
             expect(tooltipCount).toEqual(1);
-            expect(f).toEqual("M-53 451L153 508L113 146L-53 191z");
+            expect(f).toEqual("M153 508L113 146L-123 210L-123 372L-107 436z");
           });
 
           test("[" + browserType + "]" + " Previous feature button focuses previous feature", async () => {
@@ -225,7 +225,7 @@ jest.setTimeout(50000);
             let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
 
             expect(tooltipCount).toEqual(1);
-            expect(f).toEqual("M330 83L553 83L553 339L330 339z");
+            expect(f).toEqual("M330 83L480 83L480 339L330 339z");
           });
 
           test("[" + browserType + "]" + " Next feature button focuses next feature", async () => {
