@@ -470,7 +470,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         return [a, localParts];
       }
     }
-    }
+    
   },
         
 
