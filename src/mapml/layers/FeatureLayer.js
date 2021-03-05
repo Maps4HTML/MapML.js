@@ -387,6 +387,10 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     
     var cs = geometry.getAttribute("cs") || nativeCS;
 
+    // TODO: REMOVE, This is temporary for testing
+    let test = new M.Feature(mapml, {nativeCS: cs, nativeZoom: zoom, projection: this.options.projection});
+    console.log(test);
+
     switch (geometry.firstElementChild.tagName.toUpperCase()) {
       case 'POINT':
         coordinates = [];
@@ -447,28 +451,12 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         break;
     }
     function coordinatesToArray(coordinates, first = true) {
-      var a = new Array(coordinates.length),
-      localParts = [];
+      var a = new Array(coordinates.length);
       for (var i=0;i<a.length;i++) {
         a[i]=[];
-        let coords = (coordinates[i] || coordinates),
-            spans = coords.children;
-        for(let span of spans){
-          let subParts = coordinatesToArray(span, false),
-              spanLayer = new L.Polygon(ctx.coordsToLatLngs(subParts[0], 1, coordsToLatLng, cs, zoom), {...vectorOptions, color:'yellow',});
-              
-          spanLayer.subParts = subParts[1];
-          localParts.push(spanLayer);
-        }
-        coords.textContent = coords.textContent.replace( /(<([^>]+)>)/ig, '');
-        coords.textContent.match(/(\S+\s+\S+)/gim).forEach(M.splitCoordinate, a[i]);
+        (coordinates[i] || coordinates).textContent.match(/(\S+\s+\S+)/gim).forEach(M.splitCoordinate, a[i]);
       }
-      if (first){ 
-        parts = localParts;
-        return a;
-      } else {
-        return [a, localParts];
-      }
+      return a;
     }
     
   },

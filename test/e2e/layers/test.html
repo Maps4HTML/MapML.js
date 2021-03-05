@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Static Features Test</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module" src="web-map.js"></script>
+  <style>
+    [is=web-map] {
+      width: 100%;
+      height: 400px;
+      max-width: 100%;
+    }
+
+    .transparency {
+      opacity: 0.2;
+    }
+  </style>
+</head>
+
+<body>
+  <map style="height: 500px;width:500px;" is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344"
+    controls>
+
+    <layer- label="Arizona" checked>
+      <meta name="projection" content="CBMTILE" />
+      <meta name="zoom" content="min=1,max=5,value=0" />
+      <meta name="cs" content="gcrs" />
+      <meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
+
+      <link id="first" rel="stylesheet" type="text/css" href="first.css">
+      <style>
+        .second {
+          stroke: aqua;
+        }
+      </style>
+      <style>
+        .third {
+          stroke: blue
+        }
+      </style>
+      <link id="forth" rel="stylesheet" type="text/css" href="forth.css">
+      <feature zoom="2" class="refDiff">
+        <properties>
+          <h1>Test</h1>
+          <a href="www.example.com">test</a>
+        </properties>
+        <geometry cs="tilematrix">
+          <polygon>
+            <coordinates>11 11 13 11 <span class="TEST">13 13 11 13</span></coordinates>
+            <coordinates>11 11 12 11 12 12 11 12</coordinates>
+          </polygon>
+        </geometry>
+      </feature>
+      <feature zoom="2" class="refDiff">
+        <properties>
+          <h1>Test</h1>
+          <a href="www.example.com">test</a>
+        </properties>
+        <geometry cs="tilematrix">
+          <polygon>
+            <coordinates>11 11 13 11 <span class="TEST">13 13 11 13</span></coordinates>
+            <coordinates>11 11 12 11 12 12 11 12</coordinates>
+          </polygon>
+          <polygon>
+            <coordinates>11 11 13 11 <span class="TEST">13 13 11 13</span></coordinates>
+            <coordinates>11 11 12 11 12 12 11 12</coordinates>
+          </polygon>
+        </geometry>
+      </feature>
+      <feature zoom="2" class="refDiff">
+        <properties>
+          <h1>Test</h1>
+          <a href="www.example.com">test</a>
+        </properties>
+        <geometry cs="tilematrix">
+          <point>
+            <coordinates>11 11</coordinates>
+          </point>
+        </geometry>
+      </feature>
+      <feature zoom="2" class="refDiff">
+        <properties>
+          <h1>Test</h1>
+          <a href="www.example.com">test</a>
+        </properties>
+        <geometry cs="tilematrix">
+          <multipoint>
+            <coordinates>11 11 12 12</coordinates>
+          </multipoint>
+        </geometry>
+      </feature>
+
+      <feature zoom="2" class="refDiff">
+        <properties>
+          <h1>Test</h1>
+          <a href="www.example.com">test</a>
+        </properties>
+        <geometry cs="tilematrix">
+          <linestring>
+            <coordinates>11 11 12 12</coordinates>
+          </linestring>
+        </geometry>
+      </feature>
+
+      <feature zoom="2" class="refDiff">
+        <properties>
+          <h1>Test</h1>
+          <a href="www.example.com">test</a>
+        </properties>
+        <geometry cs="tilematrix">
+          <multilinestring>
+            <coordinates>13 13 14 14</coordinates>
+            <coordinates>12 12 13 13</coordinates>
+          </multilinestring>
+        </geometry>
+      </feature>
+    </layer->
+  </map>
+
+</body>
+
+</html>

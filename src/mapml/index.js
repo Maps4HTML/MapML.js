@@ -53,6 +53,7 @@ import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
 import { ReloadButton, reloadButton } from './control/ReloadButton';
 import { Crosshair, crosshair } from "./layers/Crosshair";
+import { Feature, feature} from "./features/feature";
 
 /* global L, Node */
 (function (window, document, undefined) {
@@ -587,6 +588,8 @@ M.pixelToPCRSBounds = Util.pixelToPCRSBounds;
 M.metaContentToObject = Util.metaContentToObject;
 M.coordsToArray = Util.coordsToArray;
 M.parseStylesheetAsHTML = Util.parseStylesheetAsHTML;
+M.pointToPCRSPoint = Util.pointToPCRSPoint;
+M.pixelToPCRSPoint = Util.pixelToPCRSPoint;
 
 M.QueryHandler = QueryHandler;
 M.ContextMenu = ContextMenu;
@@ -630,5 +633,8 @@ M.debugOverlay = debugOverlay;
 
 M.Crosshair = Crosshair;
 M.crosshair = crosshair;
+
+M.Feature = Feature;
+M.feature = feature;
 
 }(window, document));
