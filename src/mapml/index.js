@@ -53,7 +53,8 @@ import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
 import { ReloadButton, reloadButton } from './control/ReloadButton';
 import { Crosshair, crosshair } from "./layers/Crosshair";
-import { Feature, feature} from "./features/feature";
+import { Feature, feature } from "./features/feature";
+import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
 
 /* global L, Node */
 (function (window, document, undefined) {
@@ -636,5 +637,8 @@ M.crosshair = crosshair;
 
 M.Feature = Feature;
 M.feature = feature;
+
+M.FeatureRenderer = FeatureRenderer;
+M.featureRenderer = featureRenderer;
 
 }(window, document));

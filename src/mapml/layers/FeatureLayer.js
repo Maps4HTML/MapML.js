@@ -388,8 +388,8 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     var cs = geometry.getAttribute("cs") || nativeCS;
 
     // TODO: REMOVE, This is temporary for testing
-    let test = new M.Feature(mapml, {nativeCS: cs, nativeZoom: zoom, projection: this.options.projection});
-    console.log(test);
+    return M.feature(mapml, {...vectorOptions, nativeCS: cs, nativeZoom: zoom, projection: this.options.projection});
+    //console.log(test);
 
     switch (geometry.firstElementChild.tagName.toUpperCase()) {
       case 'POINT':

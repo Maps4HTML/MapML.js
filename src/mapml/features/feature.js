@@ -1,5 +1,4 @@
 export var Feature = L.Path.extend({
-
   initialize: function (markup, options) {
     L.setOptions(this, options);
     this._markup = markup;
@@ -15,27 +14,38 @@ export var Feature = L.Path.extend({
     this._subParts = [];              //not interactive, only lines
 
     for (let rings of this._geometry) {   //loops through the geometry children
+      let geo = [];
+
       for (let r of rings) {              //loops through the coordinates of the child
-        let interm = [];
-        for (let type of r) {             //loops through r.rings then r.subrings of the coordinates, max 2 loops 
-          for (let p of r[type]) {        //loops through the pcrs coords themselves
-            let point = map.options.crs.transformation.transform(p.point, scale);
-            if (this.type === "MULTIPOINT") {
-              this._mainParts.push({ point: L.point(point.x, point.y), cls: p.class });
-            } else {
-              interm.push({ point: L.point(point.x, point.y), cls: p.class });
+        let coords = [];
+
+        for (let type in r) {
+          let interm = [];                //loops through r.ring then r.subring of the coordinates, max 2 loops 
+          for (let p of r[type]) {
+            for (let c of p) {            //loops through the pcrs coords themselves
+
+              let point = map.options.crs.transformation.transform(c.point, scale);
+              if (this.type === "MULTIPOINT") {
+                coords.push({ point: L.point(point.x, point.y)._subtract(map.getPixelOrigin()), cls: p.class });
+              } else {
+                interm.push({ point: L.point(point.x, point.y)._subtract(map.getPixelOrigin()), cls: p.class });
+              }
             }
           }
-        }
-        if (this.type !== "MULTIPOINT") {
-          if (type === "ring") {
-            this._mainParts.push(interm);
-          } else {
-            this._subParts.push(interm);
+          if (this.type !== "MULTIPOINT") {
+            if (type === "ring") {
+              coords.push(interm);
+            } else {
+              this._subParts.push(interm);
+            }
+
           }
         }
+        geo.push(coords);
       }
+      this._mainParts.push(geo);
     }
+    console.log("HERE");
   },
 
   _update: function () {
@@ -56,7 +66,7 @@ export var Feature = L.Path.extend({
       for (let c of g.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
         let ring = [], subring = [];
         this.coordinateToArrays(c, ring, subring);                    //creates an array of pcrs points for the main ring and the subparts
-        rings.push({ rings: ring, subring: subring });
+        rings.push({ ring: ring, subring: subring });
       }
       this._geometry.push(rings);
     }
