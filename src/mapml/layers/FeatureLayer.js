@@ -387,12 +387,13 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     
     var cs = geometry.getAttribute("cs") || nativeCS;
 
-    // TODO: REMOVE, This is temporary for testing
-
-    for(let geo of geometry.children){
-      return M.feature(geo, {...vectorOptions, nativeCS: cs, nativeZoom: zoom, projection: this.options.projection});
+    let subFeatures = geometry, group =[];
+    if(geometry.firstElementChild.tagName === "GEOMETRYCOLLECTION" || geometry.firstElementChild.tagName === "MULTIPOLYGON")
+      subFeatures = geometry.firstElementChild;
+    for(let geo of subFeatures.children){
+      group.push(M.feature(geo, {...vectorOptions, nativeCS: cs, nativeZoom: zoom, projection: this.options.projection}));
     }
-    //console.log(test);
+    return L.featureGroup(group);
 
     switch (geometry.firstElementChild.tagName.toUpperCase()) {
       case 'POINT':

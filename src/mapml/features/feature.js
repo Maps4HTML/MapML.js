@@ -1,28 +1,35 @@
 export var Feature = L.Path.extend({
   initialize: function (markup, options) {
     L.setOptions(this, options);
+
+    this.type = markup.tagName.toUpperCase();
+    this._parts = [];
     this._markup = markup;
+
     this.convertMarkup();
     this.isClosed = this.isClosed();
   },
 
   _project: function () {
-    this._parts = [];
-    for (let coord of this._coords) {
-      this._parts.push({ rings: this._convertRing(coord.rings), subrings: this._convertRing(coord.rings) });
+    for (let p of this._parts) {
+      p.pixelRings = this._convertRing(p.rings);
+      for (let subP of p.subrings) {
+        subP.pixelSubrings = this._convertRing([subP]);
+      }
     }
   },
 
   _convertRing: function (r) {
-    let scale = this._map.options.crs.scale(this._map.getZoom()), map = this._map, interm = [];
+    let scale = this._map.options.crs.scale(this._map.getZoom()), map = this._map, parts = [];
     for (let sub of r) {
-      interm.subrings.push([]);
-      for (let p of sub) {
-        let conv = map.options.crs.transformation.transform(p.point, scale);
-        interm.subrings[count].push({ point: L.point(conv.x, conv.y)._subtract(map.getPixelOrigin()), cls: p.class });
+      let interm = [];
+      for (let p of sub.points) {
+        let conv = map.options.crs.transformation.transform(p, scale);
+        interm.push(L.point(conv.x, conv.y)._subtract(map.getPixelOrigin()));
       }
+      parts.push(interm);
     }
-    return interm;
+    return parts;
   },
 
   _update: function () {
@@ -35,13 +42,23 @@ export var Feature = L.Path.extend({
 
     this.options.zoom = this._markup.getAttribute('zoom') || this.options.nativeZoom;
     this.options.cs = this.options.nativeCS;
-    this._coords = [];
-    this.type = this._markup.tagName.toUpperCase();
 
+    let first = true;
     for (let c of this._markup.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
       let ring = [], subrings = [];
       this.coordinateToArrays(c, ring, subrings, this.options.className);                    //creates an array of pcrs points for the main ring and the subparts
-      this._coords.push({ rings: ring, subrings: subrings });
+      if (!first && this.type === "POLYGON") {
+        this._parts[0].rings.push(ring[0]);
+        if (subrings.length > 0)
+          this._parts[0].subrings.push(subrings);
+      } else if (this.type === "MULTIPOINT") {
+        for (let point of ring[0].points.concat(subrings)) {
+          this._parts.push({ rings: [{ points: [point] }], subrings: [], cls: point.cls || this.options.className });
+        }
+      } else {
+        this._parts.push({ rings: ring, subrings: subrings, cls: this.options.className });
+      }
+      first = false;
     }
   },
 
@@ -60,7 +77,7 @@ export var Feature = L.Path.extend({
       this._bounds = this._bounds ? this._bounds.extend(point) : L.bounds(point, point);
     }
     if (first) {
-      main.push({ points: local, cls: cls || this.options.className });
+      main.push({ points: local });
     } else {
       subparts.push({ points: local, cls: cls || this.options.className });
     }

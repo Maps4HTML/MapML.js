@@ -1,13 +1,15 @@
 export var FeatureRenderer = L.SVG.extend({
   _initPath: function (layer) {
-    for (let p of layer._coords) {
+    for (let p of layer._parts) {
 
       if (p.rings) {
-        this._createRingPaths(p.rings, layer.accessibleTitle, true);
+        this._createPath(p, layer.accessibleTitle, layer.options.className, true);
       }
 
       if (p.subrings) {
-        this._createRingPaths(p.subrings, layer.accessibleTitle, false);
+        for (let r of p.subrings) {
+          this._createPath(r, layer.accessibleTitle, layer.options.className, false);
+        }
       }
 
       this._updateStyle(layer);
@@ -15,52 +17,53 @@ export var FeatureRenderer = L.SVG.extend({
     }
   },
 
-  _createRingPaths: function (r, title = "Feature", interactive = false) {
-    for (let part of r) {
-      let p = L.SVG.create('path');
-      part.path = p;
-      p.setAttribute('aria-label', title);
-      if (part.cls || layer.options.className) {
-        L.DomUtil.addClass(p, part.cls || layer.options.className);
-      }
-      if (interactive) {
-        L.DomUtil.addClass(p, 'leaflet-interactive');
-      }
+  _createPath: function (obj, title = "Feature", cls, interactive = false) {
+    let p = L.SVG.create('path');
+    obj.path = p;
+    p.setAttribute('aria-label', title);
+    if (obj.cls || cls) {
+      L.DomUtil.addClass(p, obj.cls || cls);
+    }
+    if (interactive) {
+      L.DomUtil.addClass(p, 'leaflet-interactive');
+      p.setAttribute("tabindex", "0");
     }
   },
 
   _addPath: function (layer) {
     if (!this._rootGroup) { this._initContainer(); }
-    for (let path of layer._paths) {
-      this._rootGroup.appendChild(path);
-      layer.addInteractiveTarget(path);
+    for (let p of layer._parts) {
+      if (p.path) {
+        this._rootGroup.appendChild(p.path);
+        layer.addInteractiveTarget(p.path);
+      }
+      for (let subP of p.subrings) {
+        if (subP.path)
+          this._rootGroup.appendChild(subP.path);
+      }
     }
   },
 
   _removePath: function (layer) {
-    for (let path of layer._paths) {
-      this.remove(path);
-      layer.removeInteractiveTarget(path);
+    for (let p of layer._parts) {
+      if (p.path) {
+        this.remove(p.path);
+        layer.removeInteractiveTarget(p.path);
+      }
+      for (let subP of p.subrings) {
+        if (subP.path)
+          this.remove(subP.path);
+      }
       delete this._layers[L.stamp(layer)];
     }
   },
 
-  _iteratePaths: function (r, f) {
-    for ()
-      for (let part of r) {
-        f(part);
-      }
-  },
-
   _updateFeature: function (layer) {
-    let i = 0;
-    for (let geo of layer._parts) {
-      if (layer.type === "POINT" || layer.type === "MULTIPOINT") {
-        this._setPath(layer._paths[i], this.geometryToMarker(geo[0][0][0].point));
-      } else {
-        this._setPath(layer._paths[i], this.geometryToPaths(geo, layer.isClosed));
+    for (let p of layer._parts) {
+      this._setPath(p.path, this.geometryToPaths(p.pixelRings, layer.isClosed));
+      for (let subP of p.subrings) {
+        this._setPath(subP.path, this.geometryToPaths(subP.pixelSubrings, false));
       }
-      i++;
     }
   },
 
@@ -69,40 +72,48 @@ export var FeatureRenderer = L.SVG.extend({
   },
 
   _updateStyle: function (layer) {
-    for (let path of layer._paths) {
-      let options = layer.options;
+    for (let p of layer._parts) {
+      if (p.path) {
+        this._updatePathStyle(p.path, layer.options);
+      }
+      for (let subP of p.subrings) {
+        if (subP.path)
+          this._updatePathStyle(subP.path, layer.options);
+      }
+    }
+  },
 
-      if (!path) { return; }
+  _updatePathStyle: function (path, options) {
+    if (!path) { return; }
 
-      if (options.stroke) {
-        path.setAttribute('stroke', options.color);
-        path.setAttribute('stroke-opacity', options.opacity);
-        path.setAttribute('stroke-width', options.weight);
-        path.setAttribute('stroke-linecap', options.lineCap);
-        path.setAttribute('stroke-linejoin', options.lineJoin);
+    if (options.stroke) {
+      path.setAttribute('stroke', options.color);
+      path.setAttribute('stroke-opacity', options.opacity);
+      path.setAttribute('stroke-width', options.weight);
+      path.setAttribute('stroke-linecap', options.lineCap);
+      path.setAttribute('stroke-linejoin', options.lineJoin);
 
-        if (options.dashArray) {
-          path.setAttribute('stroke-dasharray', options.dashArray);
-        } else {
-          path.removeAttribute('stroke-dasharray');
-        }
-
-        if (options.dashOffset) {
-          path.setAttribute('stroke-dashoffset', options.dashOffset);
-        } else {
-          path.removeAttribute('stroke-dashoffset');
-        }
+      if (options.dashArray) {
+        path.setAttribute('stroke-dasharray', options.dashArray);
       } else {
-        path.setAttribute('stroke', 'none');
+        path.removeAttribute('stroke-dasharray');
       }
 
-      if (!options.fill) {
-        path.setAttribute('fill', options.fillColor || options.color);
-        path.setAttribute('fill-opacity', options.fillOpacity);
-        path.setAttribute('fill-rule', options.fillRule || 'evenodd');
+      if (options.dashOffset) {
+        path.setAttribute('stroke-dashoffset', options.dashOffset);
       } else {
-        path.setAttribute('fill', options.color);
+        path.removeAttribute('stroke-dashoffset');
       }
+    } else {
+      path.setAttribute('stroke', 'none');
+    }
+
+    if (!options.fill) {
+      path.setAttribute('fill', options.fillColor || options.color);
+      path.setAttribute('fill-opacity', options.fillOpacity);
+      path.setAttribute('fill-rule', options.fillRule || 'evenodd');
+    } else {
+      path.setAttribute('fill', options.color);
     }
   },
 
@@ -110,15 +121,18 @@ export var FeatureRenderer = L.SVG.extend({
     path.setAttribute('d', def);
   },
 
-  geometryToPaths: function (geo, closed) {
+  geometryToPaths: function (rings, closed) {
     var str = '',
       i, j, len, len2, points, p;
 
-    for (i = 0, len = geo.length; i < len; i++) {
-      points = geo[i];
+    for (i = 0, len = rings.length; i < len; i++) {
+      points = rings[i];
 
-      for (j = 0, len2 = points[0].length; j < len2; j++) {   //[0] -> unneeded nesting?
-        p = points[0][j].point;
+      if (points.length === 1) {
+        return this.geometryToMarker(points[0]);
+      }
+      for (j = 0, len2 = points.length; j < len2; j++) {   //[0] -> unneeded nesting?
+        p = points[j];
         str += (j ? 'L' : 'M') + p.x + ' ' + p.y;
       }
 
@@ -128,6 +142,11 @@ export var FeatureRenderer = L.SVG.extend({
 
     // SVG complains about empty path strings
     return str || 'M0 0';
+  },
+
+  geometryToOutlinePath: function (rings, subrings, closed) {
+
+
 
   },
 });
