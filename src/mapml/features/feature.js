@@ -7,45 +7,22 @@ export var Feature = L.Path.extend({
   },
 
   _project: function () {
-    let scale = this._map.options.crs.scale(this._map.getZoom()),
-      map = this._map;
-
-    this._mainParts = [];             //interactive, if interactive option is true and has fill if closed
-    this._subParts = [];              //not interactive, only lines
-
-    for (let rings of this._geometry) {   //loops through the geometry children
-      let geo = [];
-
-      for (let r of rings) {              //loops through the coordinates of the child
-        let coords = [];
-
-        for (let type in r) {
-          let interm = [];                //loops through r.ring then r.subring of the coordinates, max 2 loops 
-          for (let p of r[type]) {
-            for (let c of p) {            //loops through the pcrs coords themselves
-
-              let point = map.options.crs.transformation.transform(c.point, scale);
-              if (this.type === "MULTIPOINT") {
-                coords.push({ point: L.point(point.x, point.y)._subtract(map.getPixelOrigin()), cls: p.class });
-              } else {
-                interm.push({ point: L.point(point.x, point.y)._subtract(map.getPixelOrigin()), cls: p.class });
-              }
-            }
-          }
-          if (this.type !== "MULTIPOINT") {
-            if (type === "ring") {
-              coords.push(interm);
-            } else {
-              this._subParts.push(interm);
-            }
-
-          }
-        }
-        geo.push(coords);
-      }
-      this._mainParts.push(geo);
+    this._parts = [];
+    for (let coord of this._coords) {
+      this._parts.push({ rings: this._convertRing(coord.rings), subrings: this._convertRing(coord.rings) });
     }
-    console.log("HERE");
+  },
+
+  _convertRing: function (r) {
+    let scale = this._map.options.crs.scale(this._map.getZoom()), map = this._map, interm = [];
+    for (let sub of r) {
+      interm.subrings.push([]);
+      for (let p of sub) {
+        let conv = map.options.crs.transformation.transform(p.point, scale);
+        interm.subrings[count].push({ point: L.point(conv.x, conv.y)._subtract(map.getPixelOrigin()), cls: p.class });
+      }
+    }
+    return interm;
   },
 
   _update: function () {
@@ -57,18 +34,14 @@ export var Feature = L.Path.extend({
     if (!this._markup) return;
 
     this.options.zoom = this._markup.getAttribute('zoom') || this.options.nativeZoom;
-    this.options.cs = this._markup.querySelector('geometry').getAttribute("cs") || this.options.nativeCS;
+    this.options.cs = this.options.nativeCS;
+    this._coords = [];
+    this.type = this._markup.tagName.toUpperCase();
 
-    this._geometry = []
-    for (let g of this._markup.querySelector('geometry').children) {  //loops through geometry elements children
-      this.type = g.tagName.toUpperCase();
-      let rings = [];
-      for (let c of g.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
-        let ring = [], subring = [];
-        this.coordinateToArrays(c, ring, subring);                    //creates an array of pcrs points for the main ring and the subparts
-        rings.push({ ring: ring, subring: subring });
-      }
-      this._geometry.push(rings);
+    for (let c of this._markup.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
+      let ring = [], subrings = [];
+      this.coordinateToArrays(c, ring, subrings, this.options.className);                    //creates an array of pcrs points for the main ring and the subparts
+      this._coords.push({ rings: ring, subrings: subrings });
     }
   },
 
@@ -82,18 +55,19 @@ export var Feature = L.Path.extend({
     for (let p of pairs) {
       let numPair = [];
       p.split(/\s+/gim).forEach(M.parseNumber, numPair);
-
-      local.push({ point: M.pointToPCRSPoint(L.point(numPair), this.options.zoom, this.options.projection, this.options.cs), class: cls });
+      let point = M.pointToPCRSPoint(L.point(numPair), this.options.zoom, this.options.projection, this.options.cs)
+      local.push(point);
+      this._bounds = this._bounds ? this._bounds.extend(point) : L.bounds(point, point);
     }
     if (first) {
-      main.push(local);
+      main.push({ points: local, cls: cls || this.options.className });
     } else {
-      subparts.push(local);
+      subparts.push({ points: local, cls: cls || this.options.className });
     }
   },
 
   isClosed: function () {
-    let type = this._markup.querySelector('geometry').firstElementChild.tagName;
+    let type = this._markup.tagName;
     switch (type.toUpperCase()) {
       case 'POLYGON':
       case 'MULTIPOLYGON':
@@ -105,6 +79,11 @@ export var Feature = L.Path.extend({
       default:
         return false;
     }
+  },
+
+  getCenter: function () {
+    if (!this._bounds) return;
+    return this._map.options.crs.unproject(this._bounds.getCenter());
   },
 });
 

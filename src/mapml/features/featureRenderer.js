@@ -1,20 +1,31 @@
 export var FeatureRenderer = L.SVG.extend({
   _initPath: function (layer) {
-    layer._paths = []
-    for (let _ of layer._geometry) {
-      let path = L.SVG.create('path');
-      layer._paths.push(path);
+    for (let p of layer._coords) {
 
-      if (layer.options.className) {
-        L.DomUtil.addClass(path, layer.options.className);
+      if (p.rings) {
+        this._createRingPaths(p.rings, layer.accessibleTitle, true);
       }
 
-      if (layer.options.interactive) {
-        L.DomUtil.addClass(path, 'leaflet-interactive');
+      if (p.subrings) {
+        this._createRingPaths(p.subrings, layer.accessibleTitle, false);
       }
 
       this._updateStyle(layer);
       this._layers[L.stamp(layer)] = layer;
+    }
+  },
+
+  _createRingPaths: function (r, title = "Feature", interactive = false) {
+    for (let part of r) {
+      let p = L.SVG.create('path');
+      part.path = p;
+      p.setAttribute('aria-label', title);
+      if (part.cls || layer.options.className) {
+        L.DomUtil.addClass(p, part.cls || layer.options.className);
+      }
+      if (interactive) {
+        L.DomUtil.addClass(p, 'leaflet-interactive');
+      }
     }
   },
 
@@ -34,15 +45,26 @@ export var FeatureRenderer = L.SVG.extend({
     }
   },
 
+  _iteratePaths: function (r, f) {
+    for ()
+      for (let part of r) {
+        f(part);
+      }
+  },
+
   _updateFeature: function (layer) {
     let i = 0;
-    for (let geo of layer._mainParts) {
-      this._setPath(layer._paths[i], this.geometryToPaths(geo, layer.isClosed));
+    for (let geo of layer._parts) {
+      if (layer.type === "POINT" || layer.type === "MULTIPOINT") {
+        this._setPath(layer._paths[i], this.geometryToMarker(geo[0][0][0].point));
+      } else {
+        this._setPath(layer._paths[i], this.geometryToPaths(geo, layer.isClosed));
+      }
       i++;
     }
   },
 
-  _updateMarker: function (p) {
+  geometryToMarker: function (p) {
     return `M${p.x} ${p.y} L${p.x - 12.5} ${p.y - 30} C${p.x - 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 30} L${p.x} ${p.y}z`
   },
 
@@ -95,7 +117,7 @@ export var FeatureRenderer = L.SVG.extend({
     for (i = 0, len = geo.length; i < len; i++) {
       points = geo[i];
 
-      for (j = 0, len2 = points[0].length; j < len2; j++) {
+      for (j = 0, len2 = points[0].length; j < len2; j++) {   //[0] -> unneeded nesting?
         p = points[0][j].point;
         str += (j ? 'L' : 'M') + p.x + ' ' + p.y;
       }

@@ -111,7 +111,7 @@ export var MapMLLayer = L.Layer.extend({
               this._mapmlvectors = M.mapMlFeatures(this._content, {
                   // pass the vector layer a renderer of its own, otherwise leaflet
                   // puts everything into the overlayPane
-                  renderer: L.svg(),
+                  renderer: M.featureRenderer(),
                   // pass the vector layer the container for the parent into which
                   // it will append its own container for rendering into
                   pane: this._container,
@@ -119,6 +119,7 @@ export var MapMLLayer = L.Layer.extend({
                   imagePath: M.detectImagePath(this._map.getContainer()),
                   // each owned child layer gets a reference to the root layer
                   _leafletLayer: this,
+                  projection:map.options.projection,
                   onEachFeature: function(properties, geometry) {
                     // need to parse as HTML to preserve semantics and styles
                     if (properties) {
