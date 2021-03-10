@@ -378,6 +378,10 @@ summary {
   background-color: white;
 }
 
+.leaflet-crosshair {
+  cursor: crosshair;
+}
+
 /*
  * Visibility hack – mitigates FOUC.
  * (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154)
