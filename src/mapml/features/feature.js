@@ -1,12 +1,13 @@
 export var Feature = L.Path.extend({
   initialize: function (markup, options) {
-    L.setOptions(this, options);
-
     this.type = markup.tagName.toUpperCase();
+
+    L.setOptions(this, options);
     this._parts = [];
     this._markup = markup;
 
     this.convertMarkup();
+    this.generateOutlinePoints();
     this.isClosed = this.isClosed();
   },
 
@@ -16,6 +17,11 @@ export var Feature = L.Path.extend({
       for (let subP of p.subrings) {
         subP.pixelSubrings = this._convertRing([subP]);
       }
+    }
+    if (!this._outline) return;
+    this.pixelOutline = [];
+    for (let o of this._outline) {
+      this.pixelOutline = this.pixelOutline.concat(this._convertRing(o));
     }
   },
 
@@ -62,6 +68,42 @@ export var Feature = L.Path.extend({
     }
   },
 
+  generateOutlinePoints: function () {
+    if (this.type === "MULTIPOINT" || this.type === "POINT" || this.type === "LINESTRING" || this.type === "MULTILINESTRING") return;
+    let lines = [];
+    for (let coords of this._markup.querySelectorAll('coordinates')) {
+      let content = coords.textContent.split(/(<.*><\/.*>)/ig);
+      for (let c of content) {
+        let tempDiv = document.createElement('div'), line = [];
+        if (c[0] === "<") {
+          let p = c.textContent.replace(/(<([^>]+)>)/ig, '').split(' ');
+          tempDiv.textContent = `${p[0]} ${p[1]} ${p[p.length - 2]} ${p[p.length - 1]}`
+        } else {
+          tempDiv.textContent = c;
+        }
+        this.coordinateToArrays(tempDiv, line, [], true, this.options.className);
+        lines.push(line);
+      }
+
+    }
+    this._outline = lines;
+
+    /* 
+        let cur = 0;
+        for (let coords of this._markup.querySelectorAll('coordinates')) {
+          let ring = [], subring = [], tempDiv = document.createElement('div');
+          tempDiv.textContent = coords.textContent.replace(/(<.*>.*<\/.*>)/ig, '')
+          this.coordinateToArrays(tempDiv, ring, subring, true, this.options.className);
+          if (this.type === "POLYGON") {
+            if (!this._parts[0].outline) this._parts[0].outline = [];
+            this._parts[0].outline.push(ring);
+          } else {
+            this._parts[cur].outline = ring;
+          }
+          cur++;
+        } */
+  },
+
   coordinateToArrays: function (coords, main, subparts, first = true, cls = null) {
     let local = [];
     for (let span of coords.children) {
@@ -79,7 +121,7 @@ export var Feature = L.Path.extend({
     if (first) {
       main.push({ points: local });
     } else {
-      subparts.push({ points: local, cls: cls || this.options.className });
+      subparts.unshift({ points: local, cls: cls || this.options.className });
     }
   },
 

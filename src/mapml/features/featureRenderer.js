@@ -1,5 +1,12 @@
 export var FeatureRenderer = L.SVG.extend({
   _initPath: function (layer) {
+
+    let outlinePath = L.SVG.create('path');
+    L.DomUtil.addClass(outlinePath, layer.options.className);
+    L.DomUtil.addClass(outlinePath, 'mapml-feature-outline');
+    outlinePath.style.fill = 'none';
+    layer.outlinePath = outlinePath;
+
     for (let p of layer._parts) {
 
       if (p.rings) {
@@ -42,9 +49,11 @@ export var FeatureRenderer = L.SVG.extend({
           this._rootGroup.appendChild(subP.path);
       }
     }
+    if (layer.pixelOutline) this._rootGroup.appendChild(layer.outlinePath);
   },
 
   _removePath: function (layer) {
+    if (layer.pixelOutline) this.remove(layer.outlinePath);
     for (let p of layer._parts) {
       if (p.path) {
         this.remove(p.path);
@@ -59,6 +68,7 @@ export var FeatureRenderer = L.SVG.extend({
   },
 
   _updateFeature: function (layer) {
+    if (layer.pixelOutline) this._setPath(layer.outlinePath, this.geometryToPaths(layer.pixelOutline, true));
     for (let p of layer._parts) {
       this._setPath(p.path, this.geometryToPaths(p.pixelRings, layer.isClosed));
       for (let subP of p.subrings) {
@@ -72,21 +82,22 @@ export var FeatureRenderer = L.SVG.extend({
   },
 
   _updateStyle: function (layer) {
+    this._updatePathStyle(layer.outlinePath, layer.options, layer.isClosed, true);
     for (let p of layer._parts) {
       if (p.path) {
-        this._updatePathStyle(p.path, layer.options);
+        this._updatePathStyle(p.path, layer.options, layer.isClosed);
       }
       for (let subP of p.subrings) {
         if (subP.path)
-          this._updatePathStyle(subP.path, layer.options);
+          this._updatePathStyle(subP.path, layer.options, false);
       }
     }
   },
 
-  _updatePathStyle: function (path, options) {
+  _updatePathStyle: function (path, options, isClosed, isOutline = false) {
     if (!path) { return; }
 
-    if (options.stroke) {
+    if (options.stroke && (!isClosed || isOutline)) {
       path.setAttribute('stroke', options.color);
       path.setAttribute('stroke-opacity', options.opacity);
       path.setAttribute('stroke-width', options.weight);
@@ -142,12 +153,6 @@ export var FeatureRenderer = L.SVG.extend({
 
     // SVG complains about empty path strings
     return str || 'M0 0';
-  },
-
-  geometryToOutlinePath: function (rings, subrings, closed) {
-
-
-
   },
 });
 
