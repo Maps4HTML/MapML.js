@@ -5,9 +5,12 @@ export var Feature = L.Path.extend({
     L.setOptions(this, options);
     this._parts = [];
     this._markup = markup;
+    this.options.zoom = markup.getAttribute('zoom') || this.options.nativeZoom;
+    this.options.cs = this.options.nativeCS;
 
-    this.convertMarkup();
     this.generateOutlinePoints();
+    this.convertMarkup();
+
     this.isClosed = this.isClosed();
   },
 
@@ -46,9 +49,6 @@ export var Feature = L.Path.extend({
   convertMarkup: function () {
     if (!this._markup) return;
 
-    this.options.zoom = this._markup.getAttribute('zoom') || this.options.nativeZoom;
-    this.options.cs = this.options.nativeCS;
-
     let first = true;
     for (let c of this._markup.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
       let ring = [], subrings = [];
@@ -56,7 +56,7 @@ export var Feature = L.Path.extend({
       if (!first && this.type === "POLYGON") {
         this._parts[0].rings.push(ring[0]);
         if (subrings.length > 0)
-          this._parts[0].subrings.push(subrings);
+          this._parts[0].subrings = this._parts[0].subrings.concat(subrings);
       } else if (this.type === "MULTIPOINT") {
         for (let point of ring[0].points.concat(subrings)) {
           this._parts.push({ rings: [{ points: [point] }], subrings: [], cls: point.cls || this.options.className });
@@ -70,25 +70,51 @@ export var Feature = L.Path.extend({
 
   generateOutlinePoints: function () {
     if (this.type === "MULTIPOINT" || this.type === "POINT" || this.type === "LINESTRING" || this.type === "MULTILINESTRING") return;
-    let lines = [];
+
+    this._outline = [];
     for (let coords of this._markup.querySelectorAll('coordinates')) {
-      let content = coords.textContent.split(/(<.*><\/.*>)/ig);
-      for (let c of content) {
-        let tempDiv = document.createElement('div'), line = [];
-        if (c[0] === "<") {
-          let p = c.textContent.replace(/(<([^>]+)>)/ig, '').split(' ');
-          tempDiv.textContent = `${p[0]} ${p[1]} ${p[p.length - 2]} ${p[p.length - 1]}`
-        } else {
-          tempDiv.textContent = c;
+      let nodes = coords.childNodes, cur = 0, tempDiv = document.createElement('div'), nodeLength = nodes.length;
+      for (let n of nodes) {
+        let line = [];
+        if (!n.tagName) {  //no tagname means it's text content
+          let c = '';
+          if (cur - 1 > 0 && nodes[cur - 1].tagName) {
+            let prev = nodes[cur - 1].textContent.split(' ');
+            c += `${prev[prev.length - 2]} ${prev[prev.length - 1]} `;
+          }
+          c += n.textContent;
+          if (cur + 1 < nodeLength && nodes[cur + 1].tagName) {
+            let next = nodes[cur + 1].textContent.split(' ');
+            c += `${next[0]} ${next[1]} `;
+          }
+          tempDiv.innerHTML = c;
+          this.coordinateToArrays(tempDiv, line, [], true, this.options.className);
+          this._outline.push(line);
         }
-        this.coordinateToArrays(tempDiv, line, [], true, this.options.className);
-        lines.push(line);
+        cur++;
       }
-
     }
-    this._outline = lines;
 
-    /* 
+    /*
+        let lines = [];
+        for (let coords of this._markup.querySelectorAll('coordinates')) {
+          let content = coords.innerHTML.split(/(<.*><\/.*>)/ig);
+          for (let c of content) {
+            if (c === '') continue;
+            let tempDiv = document.createElement('div'), line = [];
+            if (c[0] === "<") {
+              let p = c.replace(/(<([^>]+)>)/ig, '').split(' ');
+              tempDiv.innerHTML = `${p[0]} ${p[1]} ${p[p.length - 2]} ${p[p.length - 1]}`
+            } else {
+              tempDiv.innerHTML = c;
+            }
+            this.coordinateToArrays(tempDiv, line, [], true, this.options.className);
+            lines.push(line);
+          }
+        }
+        this._outline = lines;
+    
+         
         let cur = 0;
         for (let coords of this._markup.querySelectorAll('coordinates')) {
           let ring = [], subring = [], tempDiv = document.createElement('div');

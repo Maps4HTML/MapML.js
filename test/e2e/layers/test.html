@@ -29,18 +29,24 @@
       <meta name="cs" content="gcrs" />
       <meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
 
-      <link id="first" rel="stylesheet" type="text/css" href="first.css">
       <style>
-        .second {
+        .TEST {
           stroke: aqua;
         }
-      </style>
-      <style>
-        .third {
-          stroke: blue
+
+        .TEST2 {
+          stroke: green;
+        }
+
+        .TEST3 {
+          stroke: red;
+        }
+
+        .NEXT {
+          stroke: blue;
+          fill: aqua;
         }
       </style>
-      <link id="forth" rel="stylesheet" type="text/css" href="forth.css">
 
       <feature zoom="2" class="refDiff">
         <properties>
@@ -49,9 +55,10 @@
         </properties>
         <geometry cs="tilematrix">
           <polygon>
-            <coordinates>11 11 13 11 <span class="TEST">13 13 <span class="NEXT">11 13</span></span></coordinates>
-            <coordinates>11 11 12 11 12 12 11 12</coordinates>
-            <coordinates>12.25 12.25 12.75 12.25 12.75 12.75 12.25 12.75</coordinates>
+            <coordinates>11 11 13 11 <span class="TEST">13 13 <span class="NEXT">11 13</span></span> 11 11</coordinates>
+            <coordinates>11 11 12 11 12 12 11 12 11 11</coordinates>
+            <coordinates><span class="TEST">12.25 12.25 <span class="NEXT">12.75 12.25</span></span> 12.75 12.75 12.25
+              12.75 12.25 12.25</coordinates>
           </polygon>
         </geometry>
       </feature>
@@ -64,11 +71,11 @@
         <geometry cs="tilematrix">
           <multipolygon>
             <polygon>
-              <coordinates>8 8 10 8 <span class="TEST">10 10 8 10</span></coordinates>
-              <coordinates>8 8 9 8 9 9 8 9</coordinates>
+              <coordinates>8 8 10 8 <span class="TEST2">10 10 8 10</span> 8 8</coordinates>
+              <coordinates>8 8 9 8 9 9 8 9 8 8</coordinates>
             </polygon>
             <polygon>
-              <coordinates>8 11 10 11 <span class="TEST">10 13 8 13</span></coordinates>
+              <coordinates>8 11 10 11 <span class="TEST3">10 13 8 13</span> 8 11</coordinates>
             </polygon>
           </multipolygon>
         </geometry>
@@ -117,7 +124,7 @@
         </properties>
         <geometry cs="tilematrix">
           <multilinestring>
-            <coordinates>12 8 13 9</coordinates>
+            <coordinates>12 8 <span class="NEXT">13 9</span></coordinates>
             <coordinates>12 9 13 8</coordinates>
           </multilinestring>
         </geometry>

@@ -39,17 +39,18 @@ export var FeatureRenderer = L.SVG.extend({
 
   _addPath: function (layer) {
     if (!this._rootGroup) { this._initContainer(); }
+    if (layer.pixelOutline) this._rootGroup.appendChild(layer.outlinePath);
     for (let p of layer._parts) {
       if (p.path) {
         this._rootGroup.appendChild(p.path);
         layer.addInteractiveTarget(p.path);
       }
+
       for (let subP of p.subrings) {
         if (subP.path)
           this._rootGroup.appendChild(subP.path);
       }
     }
-    if (layer.pixelOutline) this._rootGroup.appendChild(layer.outlinePath);
   },
 
   _removePath: function (layer) {
@@ -68,7 +69,7 @@ export var FeatureRenderer = L.SVG.extend({
   },
 
   _updateFeature: function (layer) {
-    if (layer.pixelOutline) this._setPath(layer.outlinePath, this.geometryToPaths(layer.pixelOutline, true));
+    if (layer.pixelOutline) this._setPath(layer.outlinePath, this.geometryToPaths(layer.pixelOutline, false));
     for (let p of layer._parts) {
       this._setPath(p.path, this.geometryToPaths(p.pixelRings, layer.isClosed));
       for (let subP of p.subrings) {
@@ -142,7 +143,7 @@ export var FeatureRenderer = L.SVG.extend({
       if (points.length === 1) {
         return this.geometryToMarker(points[0]);
       }
-      for (j = 0, len2 = points.length; j < len2; j++) {   //[0] -> unneeded nesting?
+      for (j = 0, len2 = points.length; j < len2; j++) {
         p = points[j];
         str += (j ? 'L' : 'M') + p.x + ' ' + p.y;
       }

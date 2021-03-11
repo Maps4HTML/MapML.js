@@ -313,7 +313,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
           layer.accessibleTitle = mapml.querySelector("featurecaption");
           layer.accessibleTitle = layer.accessibleTitle ? layer.accessibleTitle.innerHTML : "Feature"; 
           options.onEachFeature(layer.properties, layer);
-          layer.bindTooltip(layer.accessibleTitle, { interactive:true });
+          layer.bindTooltip(layer.accessibleTitle, { interactive:true, sticky: true, });
           if(layer._events){
               layer._events.keypress.push({
                 "ctx": layer,
