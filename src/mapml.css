@@ -36,7 +36,9 @@
 }
 
 /* Remove opinionated color of links. */
-.leaflet-container a {
+.leaflet-container a,
+.leaflet-container a.leaflet-popup-close-button,
+.leaflet-container a.leaflet-popup-close-button:hover {
   color: initial;
 }
 
