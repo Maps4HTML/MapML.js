@@ -37,7 +37,7 @@ export var Feature = L.Path.extend({
       let interm = [];
       for (let p of sub.points) {
         let conv = map.options.crs.transformation.transform(p, scale);
-        interm.push(L.point(conv.x, conv.y)._subtract(origin));
+        interm.push(L.point(conv.x, conv.y)._subtract(origin).round());
       }
       parts.push(interm);
     }

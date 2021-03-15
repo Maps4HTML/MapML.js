@@ -460,6 +460,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       let tileFeatures = M.mapMlFeatures(markup, {
         container: tile,
         projection: this._map.options.projection,
+        static: false,
       });
 
       for(let groupID in tileFeatures._layers){

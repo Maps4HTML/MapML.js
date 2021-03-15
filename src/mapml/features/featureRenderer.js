@@ -2,7 +2,8 @@ export var FeatureRenderer = L.SVG.extend({
   _initPath: function (layer, stamp = true) {
 
     let outlinePath = L.SVG.create('path');
-    L.DomUtil.addClass(outlinePath, layer.options.className);
+    if(layer.options.className) L.DomUtil.addClass(outlinePath, layer.options.className);
+    if(layer.options.featureID) outlinePath.setAttribute("data-fid", layer.options.featureID);
     L.DomUtil.addClass(outlinePath, 'mapml-feature-outline');
     outlinePath.style.fill = 'none';
     layer.outlinePath = outlinePath;
@@ -10,12 +11,12 @@ export var FeatureRenderer = L.SVG.extend({
     for (let p of layer._parts) {
 
       if (p.rings) {
-        this._createPath(p, layer.accessibleTitle, layer.options.className, true);
+        this._createPath(p, layer.accessibleTitle, layer.options.className, layer.options.featureID, true);
       }
 
       if (p.subrings) {
         for (let r of p.subrings) {
-          this._createPath(r, layer.accessibleTitle, layer.options.className, false);
+          this._createPath(r, layer.accessibleTitle, layer.options.className, layer.options.feature, false);
         }
       }
 
@@ -24,9 +25,10 @@ export var FeatureRenderer = L.SVG.extend({
     }
   },
 
-  _createPath: function (obj, title = "Feature", cls, interactive = false) {
+  _createPath: function (obj, title = "Feature", cls, id, interactive = false) {
     let p = L.SVG.create('path');
     obj.path = p;
+    if(id) p.setAttribute('data-fid', id);
     p.setAttribute('aria-label', title);
     if (obj.cls || cls) {
       L.DomUtil.addClass(p, obj.cls || cls);
@@ -121,12 +123,16 @@ export var FeatureRenderer = L.SVG.extend({
       path.setAttribute('stroke', 'none');
     }
 
-    if (!options.fill) {
-      path.setAttribute('fill', options.fillColor || options.color);
-      path.setAttribute('fill-opacity', options.fillOpacity);
-      path.setAttribute('fill-rule', options.fillRule || 'evenodd');
+    if(isClosed) {
+      if (!options.fill) {
+        path.setAttribute('fill', options.fillColor || options.color);
+        path.setAttribute('fill-opacity', options.fillOpacity);
+        path.setAttribute('fill-rule', options.fillRule || 'evenodd');
+      } else {
+        path.setAttribute('fill', options.color);
+      }
     } else {
-      path.setAttribute('fill', options.color);
+      path.setAttribute('fill', 'none');
     }
   },
 

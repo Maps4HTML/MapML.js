@@ -89,6 +89,7 @@ export var MapMLLayer = L.Layer.extend({
               projection:map.options.projection,
               // each owned child layer gets a reference to the root layer
               _leafletLayer: this,
+              static: true,
               onEachFeature: function(properties, geometry) {
                 // need to parse as HTML to preserve semantics and styles
                 if (properties) {
@@ -119,6 +120,7 @@ export var MapMLLayer = L.Layer.extend({
                   imagePath: M.detectImagePath(this._map.getContainer()),
                   // each owned child layer gets a reference to the root layer
                   _leafletLayer: this,
+                  static: true,
                   projection:map.options.projection,
                   onEachFeature: function(properties, geometry) {
                     // need to parse as HTML to preserve semantics and styles

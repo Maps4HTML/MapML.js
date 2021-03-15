@@ -25,7 +25,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       if (mapml && !this.options.query) {
         let native = this._getNativeVariables(mapml);
         //needed to check if the feature is static or not, since this method is used by templated also
-        if(!mapml.querySelector('extent') && mapml.querySelector('feature')){
+        if(this.options.static){
           this._features = {};
           this._staticFeature = true;
           this.isVisible = true; //placeholder for when this actually gets updated in the future
@@ -393,7 +393,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     if(geometry.firstElementChild.tagName === "GEOMETRYCOLLECTION" || geometry.firstElementChild.tagName === "MULTIPOLYGON")
       subFeatures = geometry.firstElementChild;
     for(let geo of subFeatures.children){
-      group.push(M.feature(geo, {...vectorOptions, nativeCS: cs, nativeZoom: zoom, projection: this.options.projection, }));
+      group.push(M.feature(geo, {...vectorOptions, nativeCS: cs, nativeZoom: zoom, projection: this.options.projection, featureID: mapml.id, }));
     }
     return L.featureGroup(group);
 
