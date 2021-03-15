@@ -85,12 +85,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
         // the tile here, unless there can be a callback associated to the element
         // that will render the content in the alread-placed tile
         // var tile = L.DomUtil.create('canvas', 'leaflet-tile');
-        var tile = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        this._fetchTile(coords, tile);
-        tile.setAttribute("width", `${tileSize}`);
-        tile.setAttribute("height", `${tileSize}`);
-        L.DomUtil.addClass(tile, "leaflet-tile");
-        tileGroup.appendChild(tile);
+        this._fetchTile(coords, tileGroup);
       }
       return tileGroup;
     },
@@ -453,9 +448,36 @@ export var TemplatedTileLayer = L.TileLayer.extend({
             var parser = new DOMParser();
                 return parser.parseFromString(text, "application/xml");
           }).then(mapml => {
-            this._drawTile(mapml, coords, tile);
-          }).catch(function(err) {});
+            this._createFeatures(mapml, tile)
+            //this._drawTile(mapml, coords, tile);
+          })
     },
+
+    _createFeatures: function(markup, tile){
+      let tileFeatures = M.mapMlFeatures(markup, {
+        container: tile,
+        imagePath: M.detectImagePath(this._map.getContainer()),
+        projection: this._map.options.projection,
+        // each owned child layer gets a reference to the root layer
+        _leafletLayer: this.options._leafletLayer,
+      });
+      let svg = L.SVG.create('svg'), g = L.SVG.create('g'), tileSize = this._map.options.crs.options.crs.tile.bounds.max.x;
+
+      for(let groupID in tileFeatures._layers){
+        for(let featureID in tileFeatures._layers[groupID]._layers){
+          let layer = tileFeatures._layers[groupID]._layers[featureID];
+          M.FeatureRenderer.prototype._initPath(layer, false);
+          layer._project(this._map);
+          M.FeatureRenderer.prototype._addPath(layer, g, false);
+          M.FeatureRenderer.prototype._updateFeature(layer);
+        }
+      }
+      svg.setAttribute('width', tileSize.toString());
+      svg.setAttribute('height', tileSize.toString());
+      svg.appendChild(g);
+      tile.appendChild(svg);
+    },
+
     getTileUrl: function (coords) {
         if (coords.z >= this._template.tilematrix.bounds.length || 
                 !this._template.tilematrix.bounds[coords.z].contains(coords)) {

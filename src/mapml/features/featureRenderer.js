@@ -1,5 +1,5 @@
 export var FeatureRenderer = L.SVG.extend({
-  _initPath: function (layer) {
+  _initPath: function (layer, stamp = true) {
 
     let outlinePath = L.SVG.create('path');
     L.DomUtil.addClass(outlinePath, layer.options.className);
@@ -20,8 +20,57 @@ export var FeatureRenderer = L.SVG.extend({
       }
 
       this._updateStyle(layer);
-      this._layers[L.stamp(layer)] = layer;
+      if(stamp) this._layers[L.stamp(layer)] = layer;
     }
+  },
+
+  _updateTransform: function (center, zoom) {
+    if(!this.options.tileSize){
+      L.Renderer.prototype._updateTransform.call(this, [center, zoom]);
+    }
+    return;
+    var scale = this._map.getZoomScale(zoom, this._zoom),
+        position = L.DomUtil.getPosition(this._container),
+        viewHalf = this._map.getSize().multiplyBy(0.5 + this.options.padding),
+        currentCenterPoint = this._map.project(this._center, zoom),
+        destCenterPoint = this._map.project(center, zoom),
+        centerOffset = destCenterPoint.subtract(currentCenterPoint),
+
+        topLeftOffset = viewHalf.multiplyBy(-scale).add(position).add(viewHalf).subtract(centerOffset);
+
+    if (L.Browser.any3d) {
+      L.DomUtil.setTransform(this._container, topLeftOffset, scale);
+    } else {
+      L.DomUtil.setPosition(this._container, topLeftOffset);
+    }
+  },
+
+  _update: function () {
+    if(!this.options.tileSize) {
+      L.SVG.prototype._update.call(this);
+      return;
+    }
+    this._container.setAttribute('width', this.options.tileSize);
+    this._container.setAttribute('height', this.options.tileSize);
+    this._container.setAttribute('viewBox', [-50,-50, 600, 600].join(' '));
+    this.fire('update');
+    return;
+    if (this._map._animatingZoom && this._bounds) { return; }
+
+    L.Renderer.prototype._update.call(this);
+
+    let b = this._bounds,
+        size = b.getSize(),
+        container = this._container;
+
+    // set size of svg-container if changed
+    if (!this._svgSize || !this._svgSize.equals(size)) {
+      this._svgSize = size;
+      container.setAttribute('width', this.options.tileSize);
+      container.setAttribute('height', this.options.tileSize);
+    }
+    container.setAttribute('viewBox', [-50,-50, 600, 600].join(' '));
+    this.fire('update');
   },
 
   _createPath: function (obj, title = "Feature", cls, interactive = false) {
@@ -37,18 +86,19 @@ export var FeatureRenderer = L.SVG.extend({
     }
   },
 
-  _addPath: function (layer) {
-    if (!this._rootGroup) { this._initContainer(); }
-    if (layer.pixelOutline) this._rootGroup.appendChild(layer.outlinePath);
+  _addPath: function (layer, container = undefined, interactive = true) {
+    if (!this._rootGroup && !container) { this._initContainer(); }
+    let c = container || this._rootGroup;
+    if (layer.pixelOutline) c.appendChild(layer.outlinePath);
     for (let p of layer._parts) {
       if (p.path) {
-        this._rootGroup.appendChild(p.path);
-        layer.addInteractiveTarget(p.path);
+        c.appendChild(p.path);
+        if(interactive) layer.addInteractiveTarget(p.path);
       }
 
       for (let subP of p.subrings) {
         if (subP.path)
-          this._rootGroup.appendChild(subP.path);
+          c.appendChild(subP.path);
       }
     }
   },
@@ -134,12 +184,11 @@ export var FeatureRenderer = L.SVG.extend({
   },
 
   geometryToPaths: function (rings, closed) {
-    var str = '',
+    let str = '',
       i, j, len, len2, points, p;
 
     for (i = 0, len = rings.length; i < len; i++) {
       points = rings[i];
-
       if (points.length === 1) {
         return this.geometryToMarker(points[0]);
       }
@@ -147,12 +196,8 @@ export var FeatureRenderer = L.SVG.extend({
         p = points[j];
         str += (j ? 'L' : 'M') + p.x + ' ' + p.y;
       }
-
-      // closes the ring for polygons; "x" is VML syntax
-      str += closed ? (true ? 'z' : 'x') : '';
+      str += closed ? 'z' : '';
     }
-
-    // SVG complains about empty path strings
     return str || 'M0 0';
   },
 });

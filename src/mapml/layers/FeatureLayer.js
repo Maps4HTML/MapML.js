@@ -7,11 +7,13 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     initialize: function (mapml, options) {
     
       L.setOptions(this, options);
-      this._container = L.DomUtil.create('div','leaflet-layer', this.options.pane);
-      // must have leaflet-pane class because of new/changed rule in leaflet.css
-      // info: https://github.com/Leaflet/Leaflet/pull/4597 
-      L.DomUtil.addClass(this._container,'leaflet-pane mapml-vector-container');
-      L.setOptions(this.options.renderer, {pane: this._container});
+      this._container = this.options.container;
+      if(!this.options.container) {
+        this._container = L.DomUtil.create('div', 'leaflet-layer', this.options.pane);
+        // must have leaflet-pane class because of new/changed rule in leaflet.css
+        // info: https://github.com/Leaflet/Leaflet/pull/4597
+        L.DomUtil.addClass(this._container, 'leaflet-pane mapml-vector-container');
+      }
       this._layers = {};
       if(this.options.query){
         this._mapmlFeatures = mapml;
@@ -391,7 +393,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     if(geometry.firstElementChild.tagName === "GEOMETRYCOLLECTION" || geometry.firstElementChild.tagName === "MULTIPOLYGON")
       subFeatures = geometry.firstElementChild;
     for(let geo of subFeatures.children){
-      group.push(M.feature(geo, {...vectorOptions, nativeCS: cs, nativeZoom: zoom, projection: this.options.projection}));
+      group.push(M.feature(geo, {...vectorOptions, nativeCS: cs, nativeZoom: zoom, projection: this.options.projection, }));
     }
     return L.featureGroup(group);
 
