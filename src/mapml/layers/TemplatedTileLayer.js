@@ -448,12 +448,15 @@ export var TemplatedTileLayer = L.TileLayer.extend({
             var parser = new DOMParser();
                 return parser.parseFromString(text, "application/xml");
           }).then(mapml => {
-            this._createFeatures(mapml, tile)
+            this._createFeatures(mapml, coords, tile);
             //this._drawTile(mapml, coords, tile);
           })
     },
 
-    _createFeatures: function(markup, tile){
+    _createFeatures: function(markup, coords, tile){
+      let svg = L.SVG.create('svg'), g = L.SVG.create('g'), tileSize = this._map.options.crs.options.crs.tile.bounds.max.x,
+          xOffset = coords.x * tileSize, yOffset = coords.y * tileSize;
+
       let tileFeatures = M.mapMlFeatures(markup, {
         container: tile,
         imagePath: M.detectImagePath(this._map.getContainer()),
@@ -461,13 +464,12 @@ export var TemplatedTileLayer = L.TileLayer.extend({
         // each owned child layer gets a reference to the root layer
         _leafletLayer: this.options._leafletLayer,
       });
-      let svg = L.SVG.create('svg'), g = L.SVG.create('g'), tileSize = this._map.options.crs.options.crs.tile.bounds.max.x;
 
       for(let groupID in tileFeatures._layers){
         for(let featureID in tileFeatures._layers[groupID]._layers){
           let layer = tileFeatures._layers[groupID]._layers[featureID];
           M.FeatureRenderer.prototype._initPath(layer, false);
-          layer._project(this._map);
+          layer._project(this._map, L.point([xOffset, yOffset]));
           M.FeatureRenderer.prototype._addPath(layer, g, false);
           M.FeatureRenderer.prototype._updateFeature(layer);
         }

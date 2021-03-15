@@ -14,28 +14,28 @@ export var Feature = L.Path.extend({
     this.isClosed = this.isClosed();
   },
 
-  _project: function (m) {
-    let map = m || this._map;
+  _project: function (m, tile = undefined) {
+    let map = m || this._map, origin = tile || map.getPixelOrigin();
     for (let p of this._parts) {
-      p.pixelRings = this._convertRing(p.rings, map);
+      p.pixelRings = this._convertRing(p.rings, map, origin);
       for (let subP of p.subrings) {
-        subP.pixelSubrings = this._convertRing([subP], map);
+        subP.pixelSubrings = this._convertRing([subP], map, origin);
       }
     }
     if (!this._outline) return;
     this.pixelOutline = [];
     for (let o of this._outline) {
-      this.pixelOutline = this.pixelOutline.concat(this._convertRing(o, map));
+      this.pixelOutline = this.pixelOutline.concat(this._convertRing(o, map, origin));
     }
   },
 
-  _convertRing: function (r, map) {
+  _convertRing: function (r, map, origin) {
     let scale = map.options.crs.scale(map.getZoom()), parts = [];
     for (let sub of r) {
       let interm = [];
       for (let p of sub.points) {
         let conv = map.options.crs.transformation.transform(p, scale);
-        interm.push(L.point(conv.x, conv.y)._subtract(map.getPixelOrigin()));
+        interm.push(L.point(conv.x, conv.y)._subtract(origin));
       }
       parts.push(interm);
     }
