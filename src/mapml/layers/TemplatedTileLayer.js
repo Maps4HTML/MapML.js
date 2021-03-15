@@ -459,17 +459,14 @@ export var TemplatedTileLayer = L.TileLayer.extend({
 
       let tileFeatures = M.mapMlFeatures(markup, {
         container: tile,
-        imagePath: M.detectImagePath(this._map.getContainer()),
         projection: this._map.options.projection,
-        // each owned child layer gets a reference to the root layer
-        _leafletLayer: this.options._leafletLayer,
       });
 
       for(let groupID in tileFeatures._layers){
         for(let featureID in tileFeatures._layers[groupID]._layers){
           let layer = tileFeatures._layers[groupID]._layers[featureID];
           M.FeatureRenderer.prototype._initPath(layer, false);
-          layer._project(this._map, L.point([xOffset, yOffset]));
+          layer._project(this._map, L.point([xOffset, yOffset]), coords.z);
           M.FeatureRenderer.prototype._addPath(layer, g, false);
           M.FeatureRenderer.prototype._updateFeature(layer);
         }
