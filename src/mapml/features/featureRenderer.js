@@ -82,7 +82,7 @@ export var FeatureRenderer = L.SVG.extend({
   },
 
   geometryToMarker: function (p) {
-    return `M${p.x} ${p.y} L${p.x - 12.5} ${p.y - 30} C${p.x - 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 30} L${p.x} ${p.y}z`
+    return `M${p.x} ${p.y} L${p.x - 12.5} ${p.y - 30} C${p.x - 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 30} L${p.x} ${p.y}z`;
   },
 
   _updateStyle: function (layer) {
@@ -141,8 +141,7 @@ export var FeatureRenderer = L.SVG.extend({
   },
 
   geometryToPaths: function (rings, closed) {
-    let str = '',
-      i, j, len, len2, points, p;
+    let str = '', i, j, len, len2, points, p;
 
     for (i = 0, len = rings.length; i < len; i++) {
       points = rings[i];

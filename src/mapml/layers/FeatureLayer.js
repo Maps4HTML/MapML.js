@@ -299,7 +299,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       }
       let zoom = mapml.getAttribute("zoom") || nativeZoom;
 
-      var layer = this.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options, nativeCS, +zoom);
+      var layer = this.geometryToLayer(mapml, options.pointToLayer, options, nativeCS, +zoom);
       if (layer) {
         layer.properties = mapml.getElementsByTagName('properties')[0];
         
@@ -371,139 +371,17 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         this._openPopup(e);
       }
     },
-	 geometryToLayer: function (mapml, pointToLayer, coordsToLatLng, vectorOptions, nativeCS, zoom) {
-    var geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
-        latlng, latlngs, coordinates, member, members, linestrings;
+  geometryToLayer: function (mapml, pointToLayer, vectorOptions, nativeCS, zoom) {
+    let geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
+        cs = geometry.getAttribute("cs") || nativeCS, subFeatures = geometry, group =[];
 
-    coordsToLatLng = coordsToLatLng || this.coordsToLatLng;
-    var pointOptions = {  opacity: vectorOptions.opacity ? vectorOptions.opacity : null,
-                          icon: L.icon(
-                            { iconUrl: vectorOptions.imagePath+"marker-icon.png",
-                              iconRetinaUrl: vectorOptions.imagePath+"marker-icon-2x.png",
-                              shadowUrl: vectorOptions.imagePath+"marker-shadow.png",
-                              iconSize: [25, 41],
-                              iconAnchor: [12, 41],
-                              popupAnchor: [1, -34],
-                              shadowSize: [41, 41]
-                            })};
-    
-    var cs = geometry.getAttribute("cs") || nativeCS;
-
-    let subFeatures = geometry, group =[];
     if(geometry.firstElementChild.tagName === "GEOMETRYCOLLECTION" || geometry.firstElementChild.tagName === "MULTIPOLYGON")
       subFeatures = geometry.firstElementChild;
     for(let geo of subFeatures.children){
       group.push(M.feature(geo, {...vectorOptions, nativeCS: cs, nativeZoom: zoom, projection: this.options.projection, featureID: mapml.id, }));
     }
     return L.featureGroup(group);
-
-    switch (geometry.firstElementChild.tagName.toUpperCase()) {
-      case 'POINT':
-        coordinates = [];
-        geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(M.parseNumber,coordinates);
-        latlng = coordsToLatLng(coordinates, cs, zoom, this.options.projection);
-        return pointToLayer ? pointToLayer(mapml, latlng) : 
-                                    new L.Marker(latlng, pointOptions);
-
-      case 'MULTIPOINT':
-        coordinates = [];
-        geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-        latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng, cs, zoom);
-        var points = new Array(latlngs.length);
-        for(member=0;member<points.length;member++) {
-          points[member] = new L.Marker(latlngs[member],pointOptions);
-        }
-        return new L.featureGroup(points);
-      case 'LINESTRING':
-        coordinates = [];
-        geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-        latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng, cs, zoom);
-        return new L.Polyline(latlngs, vectorOptions);
-      case 'MULTILINESTRING':
-        members = geometry.getElementsByTagName('coordinates');
-        linestrings = new Array(members.length);
-        for (member=0;member<members.length;member++) {
-          linestrings[member] = coordinatesToArray(members[member]);
-        }
-        latlngs = this.coordsToLatLngs(linestrings, 2, coordsToLatLng, cs, zoom);
-        return new L.Polyline(latlngs, vectorOptions);
-      case 'POLYGON':
-        var rings = geometry.getElementsByTagName('coordinates');
-        latlngs = this.coordsToLatLngs(coordinatesToArray(rings), 1, coordsToLatLng, cs, zoom);
-        return new L.Polygon(latlngs, vectorOptions);
-      case 'MULTIPOLYGON':
-        members = geometry.getElementsByTagName('polygon');
-        var polygons = new Array(members.length);
-        for (member=0;member<members.length;member++) {
-          polygons[member] = coordinatesToArray(members[member].querySelectorAll('coordinates'));
-        }
-        latlngs = this.coordsToLatLngs(polygons, 2, coordsToLatLng, cs, zoom);
-        return new L.Polygon(latlngs, vectorOptions);
-      case 'GEOMETRYCOLLECTION':
-        console.log('GEOMETRYCOLLECTION Not implemented yet');
-        break;
-    //			for (i = 0, len = geometry.geometries.length; i < len; i++) {
-    //
-    //				layers.push(this.geometryToLayer({
-    //					geometry: geometry.geometries[i],
-    //					type: 'Feature',
-    //					properties: geojson.properties
-    //				}, pointToLayer, coordsToLatLng, vectorOptions));
-    //			}
-    //			return new L.FeatureGroup(layers);
-
-      default:
-        console.log('Invalid GeoJSON object.');
-        break;
-    }
-    function coordinatesToArray(coordinates, first = true) {
-      var a = new Array(coordinates.length);
-      for (var i=0;i<a.length;i++) {
-        a[i]=[];
-        (coordinates[i] || coordinates).textContent.match(/(\S+\s+\S+)/gim).forEach(M.splitCoordinate, a[i]);
-      }
-      return a;
-    }
-    
   },
-        
-
-  coordsToLatLng: function (coords, cs, zoom, projection) { // (Array[, Boolean]) -> LatLng
-    let pcrs;
-    switch(cs.toUpperCase()){
-      case "PCRS":
-        pcrs = coords;
-        break;
-      case "TILEMATRIX":
-        let pixels = coords.map((value)=>{
-          return value * M[projection].options.crs.tile.bounds.max.x;
-        });
-        pcrs = M[projection].transformation.untransform(L.point(pixels),M[projection].scale(+zoom));
-        break;
-      case "TCRS":
-        pcrs = M[projection].transformation.untransform(L.point(coords),M[projection].scale(+zoom));
-        break;
-      default:
-        return new L.LatLng(coords[1], coords[0], coords[2]);
-    }
-
-    return M[projection].unproject(L.point(pcrs), +zoom);
-  },
-
-  coordsToLatLngs: function (coords, levelsDeep, coordsToLatLng, cs, zoom) { // (Array[, Number, Function]) -> Array
-    var latlng, i, len,
-        latlngs = [];
-
-    for (i = 0, len = coords.length; i < len; i++) {
-     latlng = levelsDeep ?
-             this.coordsToLatLngs(coords[i], levelsDeep - 1, coordsToLatLng, cs, zoom) :
-             (coordsToLatLng || this.coordsToLatLng)(coords[i], cs, zoom, this.options.projection);
-
-     latlngs.push(latlng);
-    }
-
-    return latlngs;
-  }
 });
 export var mapMlFeatures = function (mapml, options) {
 	return new MapMLFeatures(mapml, options);
