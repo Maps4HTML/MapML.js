@@ -18,10 +18,10 @@ export var FeatureRenderer = L.SVG.extend({
 
     //creates the main parts and sub parts paths
     for (let p of layer._parts) {
-      if (p.rings) this._createPath(p, layer.accessibleTitle, layer.options.className, layer.options.featureID, true);
+      if (p.rings) this._createPath(p, layer.options.className, layer.options.featureID, layer.accessibleTitle, true);
       if (p.subrings) {
         for (let r of p.subrings) {
-          this._createPath(r, layer.accessibleTitle, layer.options.className, layer.options.featureID, false);
+          this._createPath(r, layer.options.className, layer.options.featureID, layer.accessibleTitle, false);
         }
       }
       this._updateStyle(layer);
@@ -38,7 +38,7 @@ export var FeatureRenderer = L.SVG.extend({
    * @param {boolean} interactive - The boolean representing whether a feature is interactive or not
    * @private
    */
-  _createPath: function (ring, title = "Feature", cls, id, interactive = false) {
+  _createPath: function (ring, cls, id, title = "Feature", interactive = false) {
     let p = L.SVG.create('path');
     ring.path = p;
     if(id) p.setAttribute('data-fid', id);

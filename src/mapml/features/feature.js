@@ -166,7 +166,7 @@ export var Feature = L.Path.extend({
     for (let p of pairs) {
       let numPair = [];
       p.split(/\s+/gim).forEach(M.parseNumber, numPair);
-      let point = M.pointToPCRSPoint(L.point(numPair), this.options.zoom, this.options.projection, this.options.cs)
+      let point = M.pointToPCRSPoint(L.point(numPair), this.options.zoom, this.options.projection, this.options.cs);
       local.push(point);
       this._bounds = this._bounds ? this._bounds.extend(point) : L.bounds(point, point);
     }

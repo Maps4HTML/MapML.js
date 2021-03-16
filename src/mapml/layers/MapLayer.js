@@ -122,7 +122,6 @@ export var MapMLLayer = L.Layer.extend({
                   // each owned child layer gets a reference to the root layer
                   _leafletLayer: this,
                   static: true,
-                  projection:map.options.projection,
                   onEachFeature: function(properties, geometry) {
                     // need to parse as HTML to preserve semantics and styles
                     if (properties) {

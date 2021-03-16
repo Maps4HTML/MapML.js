@@ -115,7 +115,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
           }).then(mapml => {
             this._createFeatures(mapml, coords, tile);
             this._mapmlTileReady(tile);
-          }).catch(err => {console.log(err)});
+          }).catch(err => {console.log("Error Creating Tile");});
     },
 
     _createFeatures: function(markup, coords, tile){

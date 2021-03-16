@@ -27,7 +27,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         }`;
       }
 
-      L.setOptions(this.options.renderer, {pane: this._container});
       this._layers = {};
       if(this.options.query){
         this._mapmlFeatures = mapml;
@@ -398,7 +397,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     if(geometry.firstElementChild.tagName === "GEOMETRYCOLLECTION" || geometry.firstElementChild.tagName === "MULTIPOLYGON")
       subFeatures = geometry.firstElementChild;
     for(let geo of subFeatures.children){
-      group.push(M.feature(geo, {...vectorOptions, nativeCS: cs, nativeZoom: zoom, projection: this.options.projection, featureID: mapml.id, }));
+      group.push(M.feature(geo, Object.assign(vectorOptions, { nativeCS: cs, nativeZoom: zoom, projection: this.options.projection, featureID: mapml.id, })));
     }
     return L.featureGroup(group);
   },
