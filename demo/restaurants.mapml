@@ -4,12 +4,13 @@
         <meta charset="utf-8" />
         <meta content="text/mapml" http-equiv="Content-Type" />
         <meta name="projection" content="CBMTILE"/>
-        <meta name="zoom" content="min=0,max=16,value=3" />
+        <meta name="zoom" content="min=0,max=22" />
         <meta name="cs" content="gcrs" />
-        <meta name="extent" content="top-left-easting=1509080.1964270622,top-left-northing=-169400.558801122,bottom-right-easting=1512094.3357886747,bottom-right-northing=-172702.5654051304" />
+        <meta name="extent" content="top-left-easting=1509464,top-left-northing=-169644,bottom-right-easting=1511925,bottom-right-northing=-172467" />
     </head>
     <body>
         <feature id="restaurant_point.77" class="restaurant_point">
+          <featurecaption>Hung Sum Restaurant</featurecaption>
             <geometry>
                 <point>
                     <coordinates>-75.7153402 45.4081719</coordinates>
@@ -101,6 +102,7 @@
             </properties>
         </feature>
         <feature id="restaurant_point.2" class="restaurant_point">
+          <featurecaption>Big Daddy's</featurecaption>
             <geometry>
                 <point>
                     <coordinates>-75.690192 45.4186583</coordinates>
@@ -192,6 +194,7 @@
             </properties>
         </feature>
         <feature id="restaurant_point.9" class="restaurant_point">
+          <featurecaption>Hareg Cafe &amp; Variety</featurecaption>
             <geometry>
                 <point>
                     <coordinates>-75.6910006 45.4078828</coordinates>
@@ -283,6 +286,7 @@
             </properties>
         </feature>
         <feature id="restaurant_point.13" class="restaurant_point">
+          <featurecaption>Phucket Royal</featurecaption>
             <geometry>
                 <point>
                     <coordinates>-75.7077782 45.4107226</coordinates>
@@ -374,6 +378,7 @@
             </properties>
         </feature>
         <feature id="restaurant_point.18" class="restaurant_point">
+          <featurecaption>Sushi 88</featurecaption>
             <geometry>
                 <point>
                     <coordinates>-75.7063457 45.4110604</coordinates>
@@ -465,6 +470,7 @@
             </properties>
         </feature>
         <feature id="restaurant_polygon.2" class="restaurant_polygon">
+          <featurecaption>Banditos</featurecaption>
             <geometry>
                 <multipolygon>
                     <polygon>
@@ -582,7 +588,8 @@
             </properties>
         </feature>
         <feature id="restaurant_polygon.7" class="restaurant_polygon">
-            <geometry>
+          <featurecaption>India Palace</featurecaption>
+          <geometry>
                 <multipolygon>
                     <polygon>
                         <coordinates>-75.7019048 45.4191548 -75.7018285 45.4191868 -75.7016736 45.4190052 -75.7016464 45.4189734 -75.7017227 45.4189414 -75.7019048 45.4191548</coordinates>
@@ -699,6 +706,7 @@
             </properties>
         </feature>
         <feature id="restaurant_polygon.20" class="restaurant_polygon">
+          <featurecaption>The Prescott</featurecaption>
             <geometry>
                 <multipolygon>
                     <polygon>

@@ -36,7 +36,9 @@
 }
 
 /* Remove opinionated color of links. */
-.leaflet-container a {
+.leaflet-container a,
+.leaflet-container a.leaflet-popup-close-button,
+.leaflet-container a.leaflet-popup-close-button:hover {
   color: initial;
 }
 
@@ -332,10 +334,9 @@
 }
 
 /* Disable pointer events where they'd interfere with the intended action. */
+.leaflet-crosshair *,
 .mapml-contextmenu-item > *,
 .mapml-control-layers label[for^="o"],
-.leaflet-crosshair > *,
-.leaflet-crosshair .leaflet-control,
 .mapml-draggable [aria-grabbed="true"] .mapml-control-layers > * {
   pointer-events: none!important;
 }
@@ -377,6 +378,10 @@ summary {
 .mapml-draggable * {
   cursor: row-resize;
   background-color: white;
+}
+
+.leaflet-crosshair {
+  cursor: crosshair;
 }
 
 /*
@@ -446,4 +451,13 @@ summary {
 .mapml-layer-remove-button {
   margin-left: 15px;
   text-decoration: none;
+}
+ 
+ /* Force printers to include background-images of controls for printing.
+   (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/294) */
+@media print {
+  .leaflet-control {
+    -webkit-print-color-adjust: exact;
+                  color-adjust: exact;
+  }
 }

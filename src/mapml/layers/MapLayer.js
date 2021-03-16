@@ -96,7 +96,7 @@ export var MapMLLayer = L.Layer.extend({
                   var c = document.createElement('div');
                   c.classList.add("mapml-popup-content");
                   c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                  geometry.bindPopup(c, {autoPan:false, minWidth: 108});
+                  geometry.bindPopup(c, {autoClose: false, minWidth: 108});
                 }
               }
             });
@@ -118,6 +118,7 @@ export var MapMLLayer = L.Layer.extend({
                   pane: this._container,
                   opacity: this.options.opacity,
                   imagePath: M.detectImagePath(this._map.getContainer()),
+                  projection:map.options.projection,
                   // each owned child layer gets a reference to the root layer
                   _leafletLayer: this,
                   static: true,
@@ -128,7 +129,7 @@ export var MapMLLayer = L.Layer.extend({
                       var c = document.createElement('div');
                       c.classList.add("mapml-popup-content");
                       c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                      geometry.bindPopup(c, {autoPan:false, minWidth: 108});
+                      geometry.bindPopup(c, {autoClose: false, minWidth: 108});
                     }
                   }
                 }).addTo(map);
