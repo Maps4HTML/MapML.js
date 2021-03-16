@@ -1,4 +1,26 @@
+/**
+ * M.Feature is a extention of L.Path that understands mapml feature markup
+ * It converts the markup to the following structure (abstract enough to encompass all feature types) for example:
+ *  this._outlinePath = HTMLElement;
+ *  this._parts = [
+ *    {
+ *      path: HTMLElement,
+ *      rings:[
+ *        {points:[{x:1,y:1}]}
+ *      ],
+ *      subrings:[
+ *        {points:[{x:2, y:2}], cls:"Span Class Name", path: HTMLElement,}
+ *      ],
+ *      cls:"className",
+ *    },
+ *  ];
+ */
 export var Feature = L.Path.extend({
+  /**
+   * Initializes the M.Feature
+   * @param {HTMLElement} markup - The markup representation of the feature
+   * @param {Object} options - The options of the feature
+   */
   initialize: function (markup, options) {
     this.type = markup.tagName.toUpperCase();
 
@@ -8,14 +30,21 @@ export var Feature = L.Path.extend({
     this.options.zoom = markup.getAttribute('zoom') || this.options.nativeZoom;
     this.options.cs = this.options.nativeCS;
 
-    this.generateOutlinePoints();
-    this.convertMarkup();
+    this._generateOutlinePoints();
+    this._convertMarkup();
 
-    this.isClosed = this.isClosed();
+    this.isClosed = this._isClosed();
   },
 
-  _project: function (m, tileOrigin = undefined, z = undefined) {
-    let map = m || this._map, origin = tileOrigin || map.getPixelOrigin(), zoom = z === undefined ? map.getZoom() : z;
+  /**
+   * Updates internal structure of the feature to the new map state, the structure can be found in this._parts
+   * @param {L.Map} addedMap - The map that the feature is part of, can be left blank in the case of static features
+   * @param {L.Point} tileOrigin - The tile origin for the feature, if blank then it takes the maps pixel origin in the function
+   * @param {int} zoomingTo - The zoom the map is animating to, if left blank then it takes the map zoom, its provided because in templated tiles zoom is delayed
+   * @private
+   */
+  _project: function (addedMap, tileOrigin = undefined, zoomingTo = undefined) {
+    let map = addedMap || this._map, origin = tileOrigin || map.getPixelOrigin(), zoom = zoomingTo === undefined ? map.getZoom() : zoomingTo;
     for (let p of this._parts) {
       p.pixelRings = this._convertRing(p.rings, map, origin, zoom);
       for (let subP of p.subrings) {
@@ -29,9 +58,17 @@ export var Feature = L.Path.extend({
     }
   },
 
+  /**
+   * Converts the PCRS points to pixel points that can be used to create the SVG
+   * @param {L.Point[][]} r - Is the rings of a feature, either the mainParts, subParts or outline
+   * @param {L.Map} map - The map that the feature is part of
+   * @param {L.Point} origin - The origin used to calculate the pixel points
+   * @param {int} zoom - The current zoom level of the map
+   * @returns {L.Point[][]}
+   * @private
+   */
   _convertRing: function (r, map, origin, zoom) {
     // TODO: Implement Ramer-Douglas-Peucer Algo for simplifying points
-    // TODO: Round points to a given tolerance
     let scale = map.options.crs.scale(zoom), parts = [];
     for (let sub of r) {
       let interm = [];
@@ -44,18 +81,26 @@ export var Feature = L.Path.extend({
     return parts;
   },
 
+  /**
+   * Updates the features
+   * @private
+   */
   _update: function () {
     if (!this._map) return;
     this._renderer._updateFeature(this, this.options.isClosed);
   },
 
-  convertMarkup: function () {
+  /**
+   * Converts this._markup to the internal structure of features
+   * @private
+   */
+  _convertMarkup: function () {
     if (!this._markup) return;
 
     let first = true;
     for (let c of this._markup.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
       let ring = [], subrings = [];
-      this.coordinateToArrays(c, ring, subrings, this.options.className);                    //creates an array of pcrs points for the main ring and the subparts
+      this._coordinateToArrays(c, ring, subrings, this.options.className);              //creates an array of pcrs points for the main ring and the subparts
       if (!first && this.type === "POLYGON") {
         this._parts[0].rings.push(ring[0]);
         if (subrings.length > 0)
@@ -71,7 +116,11 @@ export var Feature = L.Path.extend({
     }
   },
 
-  generateOutlinePoints: function () {
+  /**
+   * Generates the feature outline, subtracting the spans to generate those separately
+   * @private
+   */
+  _generateOutlinePoints: function () {
     if (this.type === "MULTIPOINT" || this.type === "POINT" || this.type === "LINESTRING" || this.type === "MULTILINESTRING") return;
 
     this._outline = [];
@@ -79,7 +128,7 @@ export var Feature = L.Path.extend({
       let nodes = coords.childNodes, cur = 0, tempDiv = document.createElement('div'), nodeLength = nodes.length;
       for (let n of nodes) {
         let line = [];
-        if (!n.tagName) {  //no tagname means it's text content
+        if (!n.tagName) {  //no tagName means it's text content
           let c = '';
           if (cur - 1 > 0 && nodes[cur - 1].tagName) {
             let prev = nodes[cur - 1].textContent.split(' ');
@@ -91,55 +140,29 @@ export var Feature = L.Path.extend({
             c += `${next[0]} ${next[1]} `;
           }
           tempDiv.innerHTML = c;
-          this.coordinateToArrays(tempDiv, line, [], true, this.options.className);
+          this._coordinateToArrays(tempDiv, line, [], true, this.options.className);
           this._outline.push(line);
         }
         cur++;
       }
     }
-
-    /*
-        let lines = [];
-        for (let coords of this._markup.querySelectorAll('coordinates')) {
-          let content = coords.innerHTML.split(/(<.*><\/.*>)/ig);
-          for (let c of content) {
-            if (c === '') continue;
-            let tempDiv = document.createElement('div'), line = [];
-            if (c[0] === "<") {
-              let p = c.replace(/(<([^>]+)>)/ig, '').split(' ');
-              tempDiv.innerHTML = `${p[0]} ${p[1]} ${p[p.length - 2]} ${p[p.length - 1]}`
-            } else {
-              tempDiv.innerHTML = c;
-            }
-            this.coordinateToArrays(tempDiv, line, [], true, this.options.className);
-            lines.push(line);
-          }
-        }
-        this._outline = lines;
-    
-         
-        let cur = 0;
-        for (let coords of this._markup.querySelectorAll('coordinates')) {
-          let ring = [], subring = [], tempDiv = document.createElement('div');
-          tempDiv.textContent = coords.textContent.replace(/(<.*>.*<\/.*>)/ig, '')
-          this.coordinateToArrays(tempDiv, ring, subring, true, this.options.className);
-          if (this.type === "POLYGON") {
-            if (!this._parts[0].outline) this._parts[0].outline = [];
-            this._parts[0].outline.push(ring);
-          } else {
-            this._parts[cur].outline = ring;
-          }
-          cur++;
-        } */
   },
 
-  coordinateToArrays: function (coords, main, subparts, first = true, cls = null) {
-    let local = [];
+  /**
+   * Converts coordinates element to an object representing the parts and subParts
+   * @param {HTMLElement} coords - A single coordinates element
+   * @param {[]} main - An empty array representing the main parts
+   * @param {[]} subParts - An empty array representing the sub parts
+   * @param {bool} isFirst - A true | false representing if the current HTML element is the parent coordinates element or not
+   * @param {string} cls - The class of the coordinate/span
+   * @private
+   */
+  _coordinateToArrays: function (coords, main, subParts, isFirst = true, cls = null) {
     for (let span of coords.children) {
-      this.coordinateToArrays(span, main, subparts, false, span.getAttribute("class"));
+      this._coordinateToArrays(span, main, subParts, false, span.getAttribute("class"));
     }
-    coords.textContent = coords.textContent.replace(/(<([^>]+)>)/ig, '');
-    let pairs = coords.textContent.match(/(\S+\s+\S+)/gim);
+    let noSpan = coords.textContent.replace(/(<([^>]+)>)/ig, ''),
+        pairs = noSpan.match(/(\S+\s+\S+)/gim), local = [];
     for (let p of pairs) {
       let numPair = [];
       p.split(/\s+/gim).forEach(M.parseNumber, numPair);
@@ -147,16 +170,20 @@ export var Feature = L.Path.extend({
       local.push(point);
       this._bounds = this._bounds ? this._bounds.extend(point) : L.bounds(point, point);
     }
-    if (first) {
+    if (isFirst) {
       main.push({ points: local });
     } else {
-      subparts.unshift({ points: local, cls: cls || this.options.className });
+      subParts.unshift({ points: local, cls: cls || this.options.className });
     }
   },
 
-  isClosed: function () {
-    let type = this._markup.tagName;
-    switch (type.toUpperCase()) {
+  /**
+   * Returns if the feature is closed or open, useful when styling
+   * @returns {boolean}
+   * @private
+   */
+  _isClosed: function () {
+    switch (this.type) {
       case 'POLYGON':
       case 'MULTIPOLYGON':
         return true;
@@ -169,12 +196,22 @@ export var Feature = L.Path.extend({
     }
   },
 
+  /**
+   * Returns the center of the entire feature
+   * @returns {L.Point}
+   */
   getCenter: function () {
     if (!this._bounds) return;
     return this._map.options.crs.unproject(this._bounds.getCenter());
   },
 });
 
+/**
+ *
+ * @param {HTMLElement} markup - The markup of the feature
+ * @param {Object} options - Options of the feature
+ * @returns {M.Feature}
+ */
 export var feature = function (markup, options) {
   return new Feature(markup, options);
 };

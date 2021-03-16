@@ -5,14 +5,14 @@ export var MapMLFeatures = L.FeatureGroup.extend({
    * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.
    */
     initialize: function (mapml, options) {
-    
+
       L.setOptions(this, options);
-      this._container = this.options.container;
-      if(!this.options.container) {
+      if(this.options.static) {
         this._container = L.DomUtil.create('div', 'leaflet-layer', this.options.pane);
         // must have leaflet-pane class because of new/changed rule in leaflet.css
         // info: https://github.com/Leaflet/Leaflet/pull/4597
         L.DomUtil.addClass(this._container, 'leaflet-pane mapml-vector-container');
+        L.setOptions(this.options.renderer, {pane: this._container});
       }
       this._layers = {};
       if(this.options.query){
@@ -25,7 +25,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       if (mapml && !this.options.query) {
         let native = this._getNativeVariables(mapml);
         //needed to check if the feature is static or not, since this method is used by templated also
-        if(this.options.static){
+        if(!mapml.querySelector('extent') && mapml.querySelector('feature') && this.options.static){
           this._features = {};
           this._staticFeature = true;
           this.isVisible = true; //placeholder for when this actually gets updated in the future

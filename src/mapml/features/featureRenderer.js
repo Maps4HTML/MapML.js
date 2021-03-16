@@ -1,6 +1,14 @@
 export var FeatureRenderer = L.SVG.extend({
-  _initPath: function (layer, stamp = true) {
 
+  /**
+   * Creates all the appropriate path elements for a M.Feature
+   * @param {M.Feature} layer - The M.Feature that needs paths generated
+   * @param {boolean} stampLayer - Whether or not a layer should be stamped and stored in the renderer layers
+   * @private
+   */
+  _initPath: function (layer, stampLayer = true) {
+
+    // creates the outline path
     let outlinePath = L.SVG.create('path');
     if(layer.options.className) L.DomUtil.addClass(outlinePath, layer.options.className);
     if(layer.options.featureID) outlinePath.setAttribute("data-fid", layer.options.featureID);
@@ -8,30 +16,35 @@ export var FeatureRenderer = L.SVG.extend({
     outlinePath.style.fill = 'none';
     layer.outlinePath = outlinePath;
 
+    //creates the main parts and sub parts paths
     for (let p of layer._parts) {
-
-      if (p.rings) {
-        this._createPath(p, layer.accessibleTitle, layer.options.className, layer.options.featureID, true);
-      }
-
+      if (p.rings) this._createPath(p, layer.accessibleTitle, layer.options.className, layer.options.featureID, true);
       if (p.subrings) {
         for (let r of p.subrings) {
-          this._createPath(r, layer.accessibleTitle, layer.options.className, layer.options.feature, false);
+          this._createPath(r, layer.accessibleTitle, layer.options.className, layer.options.featureID, false);
         }
       }
-
       this._updateStyle(layer);
-      if(stamp) this._layers[L.stamp(layer)] = layer;
+      if(stampLayer) this._layers[L.stamp(layer)] = layer;
     }
   },
 
-  _createPath: function (obj, title = "Feature", cls, id, interactive = false) {
+  /**
+   * Creates paths for either mainParts, subParts or outline of a feature
+   * @param {Object} ring - The ring the current path is being generated for
+   * @param {string} title - The accessible aria-label of a path
+   * @param {string} cls - The class of the path
+   * @param {string} id - The fid of a path
+   * @param {boolean} interactive - The boolean representing whether a feature is interactive or not
+   * @private
+   */
+  _createPath: function (ring, title = "Feature", cls, id, interactive = false) {
     let p = L.SVG.create('path');
-    obj.path = p;
+    ring.path = p;
     if(id) p.setAttribute('data-fid', id);
     p.setAttribute('aria-label', title);
-    if (obj.cls || cls) {
-      L.DomUtil.addClass(p, obj.cls || cls);
+    if (ring.cls || cls) {
+      L.DomUtil.addClass(p, ring.cls || cls);
     }
     if (interactive) {
       L.DomUtil.addClass(p, 'leaflet-interactive');
@@ -39,6 +52,13 @@ export var FeatureRenderer = L.SVG.extend({
     }
   },
 
+  /**
+   * Adds all the paths needed for a feature
+   * @param {M.Feature} layer - The feature that needs it's paths added
+   * @param {HTMLElement} container - The location the paths need to be added to
+   * @param {boolean} interactive - Whether a feature is interactive or not
+   * @private
+   */
   _addPath: function (layer, container = undefined, interactive = true) {
     if (!this._rootGroup && !container) { this._initContainer(); }
     let c = container || this._rootGroup;
@@ -56,6 +76,11 @@ export var FeatureRenderer = L.SVG.extend({
     }
   },
 
+  /**
+   * Removes all the paths related to a feature
+   * @param {M.Feature} layer - The feature who's paths need to be removed
+   * @private
+   */
   _removePath: function (layer) {
     if (layer.pixelOutline) this.remove(layer.outlinePath);
     for (let p of layer._parts) {
@@ -71,6 +96,11 @@ export var FeatureRenderer = L.SVG.extend({
     }
   },
 
+  /**
+   * Updates the d attribute of all paths of a feature
+   * @param {M.Feature} layer - The Feature that needs updating
+   * @private
+   */
   _updateFeature: function (layer) {
     if (layer.pixelOutline) this._setPath(layer.outlinePath, this.geometryToPaths(layer.pixelOutline, false));
     for (let p of layer._parts) {
@@ -81,10 +111,20 @@ export var FeatureRenderer = L.SVG.extend({
     }
   },
 
+  /**
+   * Generates the marker d attribute for a given point
+   * @param {L.Point} p - The point of the marker
+   * @returns {string}
+   */
   geometryToMarker: function (p) {
     return `M${p.x} ${p.y} L${p.x - 12.5} ${p.y - 30} C${p.x - 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 30} L${p.x} ${p.y}z`;
   },
 
+  /**
+   * Updates the styles of all paths of a feature
+   * @param {M.Feature} layer - The feature that needs styles updated
+   * @private
+   */
   _updateStyle: function (layer) {
     this._updatePathStyle(layer.outlinePath, layer.options, layer.isClosed, true);
     for (let p of layer._parts) {
@@ -98,6 +138,14 @@ export var FeatureRenderer = L.SVG.extend({
     }
   },
 
+  /**
+   * Updates the style of a single path
+   * @param {HTMLElement} path - The path that needs updating
+   * @param {Object} options - The options of a feature
+   * @param {boolean} isClosed - Whether a feature is closed or not
+   * @param {boolean} isOutline - Whether a path is an outline or not
+   * @private
+   */
   _updatePathStyle: function (path, options, isClosed, isOutline = false) {
     if (!path) { return; }
 
@@ -136,10 +184,22 @@ export var FeatureRenderer = L.SVG.extend({
     }
   },
 
+  /**
+   * Sets the d attribute of a path
+   * @param {HTMLElement} path - The path that is being updated
+   * @param {string} def - The new d attribute of the path
+   * @private
+   */
   _setPath: function (path, def) {
     path.setAttribute('d', def);
   },
 
+  /**
+   * Generates the d string of a feature part
+   * @param {L.Point[]} rings - The points making up a given part of a feature
+   * @param {boolean} closed - Whether a feature is closed or not
+   * @returns {string}
+   */
   geometryToPaths: function (rings, closed) {
     let str = '', i, j, len, len2, points, p;
 
@@ -158,6 +218,11 @@ export var FeatureRenderer = L.SVG.extend({
   },
 });
 
+/**
+ * Returns a new Feature Renderer
+ * @param {Object} options - Options for the renderer
+ * @returns {*}
+ */
 export var featureRenderer = function (options) {
   return new FeatureRenderer(options);
 };
