@@ -193,9 +193,10 @@ export var Feature = L.Path.extend({
     switch (this.type) {
       case 'POLYGON':
       case 'MULTIPOLYGON':
+      case 'POINT':
+      case 'MULTIPOINT':
         return true;
       case 'LINESTRING':
-      case 'POINT':
       case 'MULTILINESTRING':
         return false;
       default:

@@ -1,3 +1,8 @@
+/**
+ * Returns a new Feature Renderer
+ * @param {Object} options - Options for the renderer
+ * @returns {*}
+ */
 export var FeatureRenderer = L.SVG.extend({
 
   /**
@@ -10,7 +15,8 @@ export var FeatureRenderer = L.SVG.extend({
 
     let outlinePath = L.SVG.create('path');
     if(layer.options.className) L.DomUtil.addClass(outlinePath, layer.options.className);
-    if(layer.options.featureID) outlinePath.setAttribute("data-fid", layer.options.featureID);
+    if(layer.options.featureID) layer.group.setAttribute("data-fid", layer.options.featureID);
+    layer.group.setAttribute('aria-label', layer.accessibleTitle || "Feature");
     L.DomUtil.addClass(outlinePath, 'mapml-feature-outline');
     outlinePath.style.fill = 'none';
     layer.outlinePath = outlinePath;
@@ -28,7 +34,6 @@ export var FeatureRenderer = L.SVG.extend({
     if(stampLayer){
       let stamp = L.stamp(layer);
       this._layers[stamp] = layer;
-      if(!layer.options.multiGroup) layer.group._stamp = stamp;
       layer.group.setAttribute('tabindex', '0');
       L.DomUtil.addClass(layer.group, "leaflet-interactive");
     }
@@ -88,9 +93,19 @@ export var FeatureRenderer = L.SVG.extend({
    */
   _removePath: function (layer) {
     for (let p of layer._parts) {
-      this.remove(layer.group);
-      delete this._layers[L.stamp(layer)];
+      if (p.path) {
+        layer.removeInteractiveTarget(p.path);
+        L.DomUtil.remove(p.path);
+      }
+      for (let subP of p.subrings) {
+        if (subP.path)
+          L.DomUtil.remove(subP.path);
+      }
     }
+    if(layer.outlinePath) L.DomUtil.remove(layer.outlinePath);
+    layer.removeInteractiveTarget(layer.group);
+    L.DomUtil.remove(layer.group);
+    delete this._layers[L.stamp(layer)];
   },
 
   /**
@@ -215,11 +230,6 @@ export var FeatureRenderer = L.SVG.extend({
   },
 });
 
-/**
- * Returns a new Feature Renderer
- * @param {Object} options - Options for the renderer
- * @returns {*}
- */
 export var featureRenderer = function (options) {
   return new FeatureRenderer(options);
 };
