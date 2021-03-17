@@ -29,6 +29,19 @@ export var Feature = L.Path.extend({
       this.group = this.options.multiGroup;
     } else {
       this.group = L.SVG.create('g');
+      if(this.options.interactive) this.group.setAttribute("aria-expanded", "false");
+      this.group.setAttribute('aria-label', this.accessibleTitle || "Feature");
+      if(this.options.featureID) this.group.setAttribute("data-fid", this.options.featureID);
+
+      L.DomEvent.on(this.group, "keyup keydown", (e)=>{
+        if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup"){
+          this.group.classList.add("mapml-feature-selected");
+          this.openTooltip();
+        } else {
+          this.group.classList.remove("mapml-feature-selected");
+          this.closeTooltip();
+        }
+      });
     }
 
 

@@ -1181,7 +1181,7 @@ export var MapMLLayer = L.Layer.extend({
         }
     },
     _attachSkipButtons: function(e){
-      let popup = e.popup, map = e.target, layer, path,
+      let popup = e.popup, map = e.target, layer, group,
           content = popup._container.getElementsByClassName("mapml-popup-content")[0];
 
       content.setAttribute("tabindex", "-1");
@@ -1189,7 +1189,7 @@ export var MapMLLayer = L.Layer.extend({
 
       if(popup._source._eventParents){ // check if the popup is for a feature or query
         layer = popup._source._eventParents[Object.keys(popup._source._eventParents)[0]]; // get first parent of feature, there should only be one
-        path = popup._source._path;
+        group = popup._source.group;
       } else {
         layer = popup._source._templatedLayer;
       }
@@ -1228,11 +1228,6 @@ export var MapMLLayer = L.Layer.extend({
       let featureCount = L.DomUtil.create("p", "mapml-feature-count", div),
           totalFeatures = this._totalFeatureCount ? this._totalFeatureCount : 1;
       featureCount.innerText = (popup._count + 1)+"/"+totalFeatures;
-      //for(let feature of e.popup._source._path.parentNode.children){
-      //  if(feature === e.popup._source._path)break;
-      //  currentFeature++;
-      //}
-      //featureCount.innerText = currentFeature+"/"+e.popup._source._path.parentNode.childElementCount;
 
       // creates > button, focuses next feature, if none exists focuses the current feature
       let nextButton = L.DomUtil.create('a', "mapml-popup-button", div);
@@ -1266,10 +1261,10 @@ export var MapMLLayer = L.Layer.extend({
       
       content.focus();
 
-      if(path) {
+      if(group) {
         // e.target = this._map
         // Looks for keydown, more specifically tab and shift tab
-        path.setAttribute("aria-expanded", "true");
+        group.setAttribute("aria-expanded", "true");
         map.on("keydown", focusFeature);
       } else {
         map.on("keydown", focusMap);
@@ -1281,12 +1276,12 @@ export var MapMLLayer = L.Layer.extend({
         if((focusEvent.originalEvent.path[0].classList.contains("leaflet-popup-close-button") && isTab && !shiftPressed) || focusEvent.originalEvent.keyCode === 27){
           L.DomEvent.stop(focusEvent);
           map.closePopup(popup);
-          path.focus();
+          group.focus();
         } else if ((focusEvent.originalEvent.path[0].title==="Focus Map" || focusEvent.originalEvent.path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
           setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
             L.DomEvent.stop(focusEvent);
             map.closePopup(popup);
-            path.focus();
+            group.focus();
           }, 0);
         }
       }
@@ -1318,7 +1313,7 @@ export var MapMLLayer = L.Layer.extend({
           map.off("keydown", focusFeature);
           map.off("keydown", focusMap);
           map.off('popupclose', removeHandlers);
-          if(path) path.setAttribute("aria-expanded", "false");
+          if(group) group.setAttribute("aria-expanded", "false");
         }
       }
     },

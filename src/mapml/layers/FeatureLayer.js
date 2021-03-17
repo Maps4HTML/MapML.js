@@ -19,7 +19,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
           50% {stroke: black;}
         }
         
-        .mapml-path-selected {
+        .mapml-feature-selected {
           animation-name: pathSelect;
           animation-duration: 1s;
           stroke-width: 5;
@@ -58,7 +58,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     onAdd: function(map){
       L.FeatureGroup.prototype.onAdd.call(this, map);
       if(this._mapmlFeatures)map.on("featurepagination", this.showPaginationFeature, this);
-      this._updateTabIndex();
     },
 
     onRemove: function(map){
@@ -82,34 +81,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       };
     },
 
-    _updateTabIndex: function(){
-      for(let feature in this._features){
-        for(let path of this._features[feature]){
-          if(path._path){
-            if(path._path.getAttribute("d") !== "M0 0"){
-              path._path.setAttribute("tabindex", 0);
-            } else {
-              path._path.removeAttribute("tabindex");
-            }
-            path._path.setAttribute("aria-label", path.accessibleTitle);
-            path._path.setAttribute("aria-expanded", "false");
-            /* jshint ignore:start */
-            L.DomEvent.on(path._path, "keyup keydown", (e)=>{
-              if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup"){
-                path._path.classList.add("mapml-path-selected");
-                path.openTooltip();
-              } else {
-                path._path.classList.remove("mapml-path-selected");
-                path.closeTooltip(); 
-              }
-            });
-            path._path.classList.remove("mapml-path-selected");
-            if(path.isTooltipOpen())path.closeTooltip(); 
-            /* jshint ignore:end */
-          }
-        }
-      }
-    },
 
     showPaginationFeature: function(e){
       if(this.options.query && this._mapmlFeatures.querySelectorAll("feature")[e.i]){
@@ -138,7 +109,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
                             this._map.getPixelBounds(),
                             mapZoom,this._map.options.projection));
       this._removeCSS();
-      this._updateTabIndex();
     },
 
     _handleZoomEnd: function(e){
@@ -355,7 +325,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     },
   geometryToLayer: function (mapml, pointToLayer, vectorOptions, nativeCS, zoom) {
     let geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
-        cs = geometry.getAttribute("cs") || nativeCS, subFeatures = geometry, group = [], multiGroup = undefined;
+        cs = geometry.getAttribute("cs") || nativeCS, subFeatures = geometry, group = [], multiGroup;
 
     if(geometry.firstElementChild.tagName === "GEOMETRYCOLLECTION" || geometry.firstElementChild.tagName === "MULTIPOLYGON")
       subFeatures = geometry.firstElementChild;

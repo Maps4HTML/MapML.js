@@ -15,8 +15,6 @@ export var FeatureRenderer = L.SVG.extend({
 
     let outlinePath = L.SVG.create('path');
     if(layer.options.className) L.DomUtil.addClass(outlinePath, layer.options.className);
-    if(layer.options.featureID) layer.group.setAttribute("data-fid", layer.options.featureID);
-    layer.group.setAttribute('aria-label', layer.accessibleTitle || "Feature");
     L.DomUtil.addClass(outlinePath, 'mapml-feature-outline');
     outlinePath.style.fill = 'none';
     layer.outlinePath = outlinePath;
