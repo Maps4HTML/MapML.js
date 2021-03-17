@@ -55,6 +55,7 @@ import { ReloadButton, reloadButton } from './control/ReloadButton';
 import { Crosshair, crosshair } from "./layers/Crosshair";
 import { Feature, feature } from "./features/feature";
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
+import { FeatureGroup, featureGroup} from './features/featureGroup';
 
 /* global L, Node */
 (function (window, document, undefined) {
@@ -640,5 +641,8 @@ M.feature = feature;
 
 M.FeatureRenderer = FeatureRenderer;
 M.featureRenderer = featureRenderer;
+
+M.FeatureGroup = FeatureGroup;
+M.featureGroup = featureGroup;
 
 }(window, document));

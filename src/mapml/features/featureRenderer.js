@@ -9,12 +9,13 @@ export var FeatureRenderer = L.SVG.extend({
   _initPath: function (layer, stampLayer = true) {
 
     // creates the outline path
-    let outlinePath = L.SVG.create('path');
+    let group = L.SVG.create('g'), outlinePath = L.SVG.create('path');
     if(layer.options.className) L.DomUtil.addClass(outlinePath, layer.options.className);
     if(layer.options.featureID) outlinePath.setAttribute("data-fid", layer.options.featureID);
     L.DomUtil.addClass(outlinePath, 'mapml-feature-outline');
     outlinePath.style.fill = 'none';
     layer.outlinePath = outlinePath;
+    layer.group = group;
 
     //creates the main parts and sub parts paths
     for (let p of layer._parts) {
@@ -25,7 +26,13 @@ export var FeatureRenderer = L.SVG.extend({
         }
       }
       this._updateStyle(layer);
-      if(stampLayer) this._layers[L.stamp(layer)] = layer;
+    }
+    if(stampLayer){
+      let stamp = L.stamp(layer);
+      this._layers[stamp] = layer;
+      layer.group._stamp = stamp;
+      group.setAttribute('tabindex', '0');
+      L.DomUtil.addClass(group, "leaflet-interactive");
     }
   },
 
@@ -48,7 +55,6 @@ export var FeatureRenderer = L.SVG.extend({
     }
     if (interactive) {
       L.DomUtil.addClass(p, 'leaflet-interactive');
-      p.setAttribute("tabindex", "0");
     }
   },
 
@@ -62,18 +68,19 @@ export var FeatureRenderer = L.SVG.extend({
   _addPath: function (layer, container = undefined, interactive = true) {
     if (!this._rootGroup && !container) { this._initContainer(); }
     let c = container || this._rootGroup;
-    if (layer.pixelOutline) c.appendChild(layer.outlinePath);
+    if (layer.pixelOutline) layer.group.appendChild(layer.outlinePath);
+    if(interactive) layer.addInteractiveTarget(layer.group);
     for (let p of layer._parts) {
       if (p.path) {
-        c.appendChild(p.path);
-        if(interactive) layer.addInteractiveTarget(p.path);
+        layer.group.appendChild(p.path);
       }
 
       for (let subP of p.subrings) {
         if (subP.path)
-          c.appendChild(subP.path);
+          layer.group.appendChild(subP.path);
       }
     }
+    c.appendChild(layer.group);
   },
 
   /**
@@ -82,16 +89,8 @@ export var FeatureRenderer = L.SVG.extend({
    * @private
    */
   _removePath: function (layer) {
-    if (layer.pixelOutline) this.remove(layer.outlinePath);
     for (let p of layer._parts) {
-      if (p.path) {
-        this.remove(p.path);
-        layer.removeInteractiveTarget(p.path);
-      }
-      for (let subP of p.subrings) {
-        if (subP.path)
-          this.remove(subP.path);
-      }
+      this.remove(layer.group);
       delete this._layers[L.stamp(layer)];
     }
   },

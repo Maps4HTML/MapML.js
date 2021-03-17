@@ -147,6 +147,7 @@ export var QueryHandler = L.Handler.extend({
             _leafletLayer: layer,
             imagePath: M.detectImagePath(map.getContainer()),
             query: true,
+            static:true,
         });
         f.addTo(map);
 
