@@ -354,12 +354,15 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     },
   geometryToLayer: function (mapml, pointToLayer, vectorOptions, nativeCS, zoom) {
     let geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
-        cs = geometry.getAttribute("cs") || nativeCS, subFeatures = geometry, group = [];
+        cs = geometry.getAttribute("cs") || nativeCS, subFeatures = geometry, group = [], multiGroup = undefined, isMulti = false;
 
-    if(geometry.firstElementChild.tagName === "GEOMETRYCOLLECTION" || geometry.firstElementChild.tagName === "MULTIPOLYGON")
+    if(geometry.firstElementChild.tagName === "GEOMETRYCOLLECTION" || geometry.firstElementChild.tagName === "MULTIPOLYGON"){
       subFeatures = geometry.firstElementChild;
+      isMulti = true;
+    }
     for(let geo of subFeatures.children){
-      group.push(M.feature(geo, Object.assign(vectorOptions, { nativeCS: cs, nativeZoom: zoom, projection: this.options.projection, featureID: mapml.id, })));
+      if(isMulti && group.length > 0) multiGroup = group[group.length - 1].group;
+      group.push(M.feature(geo, Object.assign(vectorOptions, { nativeCS: cs, nativeZoom: zoom, projection: this.options.projection, featureID: mapml.id, multiGroup: multiGroup,})));
     }
     return M.featureGroup(group);
   },

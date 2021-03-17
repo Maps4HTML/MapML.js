@@ -8,14 +8,12 @@ export var FeatureRenderer = L.SVG.extend({
    */
   _initPath: function (layer, stampLayer = true) {
 
-    // creates the outline path
-    let group = L.SVG.create('g'), outlinePath = L.SVG.create('path');
+    let outlinePath = L.SVG.create('path');
     if(layer.options.className) L.DomUtil.addClass(outlinePath, layer.options.className);
     if(layer.options.featureID) outlinePath.setAttribute("data-fid", layer.options.featureID);
     L.DomUtil.addClass(outlinePath, 'mapml-feature-outline');
     outlinePath.style.fill = 'none';
     layer.outlinePath = outlinePath;
-    layer.group = group;
 
     //creates the main parts and sub parts paths
     for (let p of layer._parts) {
@@ -30,9 +28,9 @@ export var FeatureRenderer = L.SVG.extend({
     if(stampLayer){
       let stamp = L.stamp(layer);
       this._layers[stamp] = layer;
-      layer.group._stamp = stamp;
-      group.setAttribute('tabindex', '0');
-      L.DomUtil.addClass(group, "leaflet-interactive");
+      if(!layer.options.multiGroup) layer.group._stamp = stamp;
+      layer.group.setAttribute('tabindex', '0');
+      L.DomUtil.addClass(layer.group, "leaflet-interactive");
     }
   },
 

@@ -23,8 +23,15 @@ export var Feature = L.Path.extend({
    */
   initialize: function (markup, options) {
     this.type = markup.tagName.toUpperCase();
-
     L.setOptions(this, options);
+
+    if(this.options.multiGroup){
+      this.group = this.options.multiGroup;
+    } else {
+      this.group = L.SVG.create('g');
+    }
+
+
     this._parts = [];
     this._markup = markup;
     this.options.zoom = markup.getAttribute('zoom') || this.options.nativeZoom;
