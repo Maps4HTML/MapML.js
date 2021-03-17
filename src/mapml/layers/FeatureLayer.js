@@ -297,11 +297,12 @@ export var MapMLFeatures = L.FeatureGroup.extend({
           options.onEachFeature(layer.properties, layer);
           layer.bindTooltip(layer.accessibleTitle, { interactive:true, sticky: true, });
           if(layer._events){
-              layer._events.keypress.push({
-                "ctx": layer,
-                "fn": this._onSpacePress,
-              });
-            }
+            if(!layer._events.keypress) layer._events.keypress = [];
+            layer._events.keypress.push({
+              "ctx": layer,
+              "fn": this._onSpacePress,
+            });
+          }
         }
         if(this._staticFeature){
           let featureZoom = mapml.getAttribute('zoom') || nativeZoom;
@@ -354,14 +355,13 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     },
   geometryToLayer: function (mapml, pointToLayer, vectorOptions, nativeCS, zoom) {
     let geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
-        cs = geometry.getAttribute("cs") || nativeCS, subFeatures = geometry, group = [], multiGroup = undefined, isMulti = false;
+        cs = geometry.getAttribute("cs") || nativeCS, subFeatures = geometry, group = [], multiGroup = undefined;
 
-    if(geometry.firstElementChild.tagName === "GEOMETRYCOLLECTION" || geometry.firstElementChild.tagName === "MULTIPOLYGON"){
+    if(geometry.firstElementChild.tagName === "GEOMETRYCOLLECTION" || geometry.firstElementChild.tagName === "MULTIPOLYGON")
       subFeatures = geometry.firstElementChild;
-      isMulti = true;
-    }
+
     for(let geo of subFeatures.children){
-      if(isMulti && group.length > 0) multiGroup = group[group.length - 1].group;
+      if(group.length > 0) multiGroup = group[group.length - 1].group;
       group.push(M.feature(geo, Object.assign(vectorOptions, { nativeCS: cs, nativeZoom: zoom, projection: this.options.projection, featureID: mapml.id, multiGroup: multiGroup,})));
     }
     return M.featureGroup(group);

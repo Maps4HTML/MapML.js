@@ -135,7 +135,7 @@ export var QueryHandler = L.Handler.extend({
             f = M.mapMlFeatures(mapmldoc, {
             // pass the vector layer a renderer of its own, otherwise leaflet
             // puts everything into the overlayPane
-            renderer: L.svg(),
+            renderer: M.featureRenderer(),
             // pass the vector layer the container for the parent into which
             // it will append its own container for rendering into
             pane: container,
