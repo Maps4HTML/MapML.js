@@ -1,18 +1,21 @@
 /**
- * M.Feature is a extention of L.Path that understands mapml feature markup
+ * M.Feature is a extension of L.Path that understands mapml feature markup
  * It converts the markup to the following structure (abstract enough to encompass all feature types) for example:
  *  this._outlinePath = HTMLElement;
  *  this._parts = [
  *    {
  *      path: HTMLElement,
  *      rings:[
- *        {points:[{x:1,y:1}]}
+ *        {points:[{x:1,y:1}, ...]},
+ *        ...
  *      ],
  *      subrings:[
- *        {points:[{x:2, y:2}], cls:"Span Class Name", path: HTMLElement,}
+ *        {points:[{x:2, y:2}, ...], cls:"Span Class Name", path: HTMLElement,},
+ *        ...
  *      ],
  *      cls:"className",
  *    },
+ *    ...
  *  ];
  */
 export var Feature = L.Path.extend({
@@ -25,6 +28,31 @@ export var Feature = L.Path.extend({
     this.type = markup.tagName.toUpperCase();
     L.setOptions(this, options);
 
+    this._createGroup();  // creates the <g> element for the feature, or sets the one passed in options as the <g>
+
+    this._parts = [];
+    this._markup = markup;
+    this.options.zoom = markup.getAttribute('zoom') || this.options.nativeZoom;
+
+    this._generateOutlinePoints();
+    this._convertMarkup();
+
+    this.isClosed = this._isClosed();
+  },
+
+  /**
+   * Removes the focus handler, and calls the leaflet L.Path.onRemove
+   */
+  onRemove: function () {
+    L.DomEvent.off(this.group, "keyup keydown mousedown", this._handleFocus, this);
+    L.Path.prototype.onRemove.call(this);
+  },
+
+  /**
+   * Creates the <g> conditionally and also applies event handlers
+   * @private
+   */
+  _createGroup: function(){
     if(this.options.multiGroup){
       this.group = this.options.multiGroup;
     } else {
@@ -32,28 +60,26 @@ export var Feature = L.Path.extend({
       if(this.options.interactive) this.group.setAttribute("aria-expanded", "false");
       this.group.setAttribute('aria-label', this.accessibleTitle || "Feature");
       if(this.options.featureID) this.group.setAttribute("data-fid", this.options.featureID);
-
-      L.DomEvent.on(this.group, "keyup keydown", (e)=>{
-        if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup"){
-          this.group.classList.add("mapml-feature-selected");
-          this.openTooltip();
-        } else {
-          this.group.classList.remove("mapml-feature-selected");
-          this.closeTooltip();
-        }
-      });
+      L.DomEvent.on(this.group, "keyup keydown mousedown", this._handleFocus, this);
     }
+  },
 
-
-    this._parts = [];
-    this._markup = markup;
-    this.options.zoom = markup.getAttribute('zoom') || this.options.nativeZoom;
-    this.options.cs = this.options.nativeCS;
-
-    this._generateOutlinePoints();
-    this._convertMarkup();
-
-    this.isClosed = this._isClosed();
+  /**
+   * Handler for focus events
+   * @param {L.DOMEvent} e - Event that occured
+   * @private
+   */
+  _handleFocus: function(e) {
+    if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup"){
+      this.group.classList.add("mapml-feature-selected");
+      this.openTooltip();
+      this._map.once('mousedown', () => {
+        this.group.classList.remove("mapml-feature-selected");
+      });
+    } else {
+      this.group.classList.remove("mapml-feature-selected");
+      this.closeTooltip();
+    }
   },
 
   /**
@@ -107,7 +133,7 @@ export var Feature = L.Path.extend({
    */
   _update: function () {
     if (!this._map) return;
-    this._renderer._updateFeature(this, this.options.isClosed);
+    this._renderer._updateFeature(this);
   },
 
   /**
@@ -171,13 +197,13 @@ export var Feature = L.Path.extend({
   /**
    * Converts coordinates element to an object representing the parts and subParts
    * @param {HTMLElement} coords - A single coordinates element
-   * @param {[]} main - An empty array representing the main parts
-   * @param {[]} subParts - An empty array representing the sub parts
-   * @param {bool} isFirst - A true | false representing if the current HTML element is the parent coordinates element or not
+   * @param {Object[]} main - An empty array representing the main parts
+   * @param {Object[]} subParts - An empty array representing the sub parts
+   * @param {boolean} isFirst - A true | false representing if the current HTML element is the parent coordinates element or not
    * @param {string} cls - The class of the coordinate/span
    * @private
    */
-  _coordinateToArrays: function (coords, main, subParts, isFirst = true, cls = null) {
+  _coordinateToArrays: function (coords, main, subParts, isFirst = true, cls = undefined) {
     for (let span of coords.children) {
       this._coordinateToArrays(span, main, subParts, false, span.getAttribute("class"));
     }
@@ -186,7 +212,7 @@ export var Feature = L.Path.extend({
     for (let p of pairs) {
       let numPair = [];
       p.split(/\s+/gim).forEach(M.parseNumber, numPair);
-      let point = M.pointToPCRSPoint(L.point(numPair), this.options.zoom, this.options.projection, this.options.cs);
+      let point = M.pointToPCRSPoint(L.point(numPair), this.options.zoom, this.options.projection, this.options.nativeCS);
       local.push(point);
       this._bounds = this._bounds ? this._bounds.extend(point) : L.bounds(point, point);
     }
@@ -222,7 +248,7 @@ export var Feature = L.Path.extend({
    * @returns {L.Point}
    */
   getCenter: function () {
-    if (!this._bounds) return;
+    if (!this._bounds) return null;
     return this._map.options.crs.unproject(this._bounds.getCenter());
   },
 });

@@ -112,11 +112,11 @@ export var FeatureRenderer = L.SVG.extend({
    * @private
    */
   _updateFeature: function (layer) {
-    if (layer.pixelOutline) this._setPath(layer.outlinePath, this.geometryToPaths(layer.pixelOutline, false));
+    if (layer.pixelOutline) this._setPath(layer.outlinePath, this.geometryToPath(layer.pixelOutline, false));
     for (let p of layer._parts) {
-      this._setPath(p.path, this.geometryToPaths(p.pixelRings, layer.isClosed));
+      this._setPath(p.path, this.geometryToPath(p.pixelRings, layer.isClosed));
       for (let subP of p.subrings) {
-        this._setPath(subP.path, this.geometryToPaths(subP.pixelSubrings, false));
+        this._setPath(subP.path, this.geometryToPath(subP.pixelSubrings, false));
       }
     }
   },
@@ -125,8 +125,9 @@ export var FeatureRenderer = L.SVG.extend({
    * Generates the marker d attribute for a given point
    * @param {L.Point} p - The point of the marker
    * @returns {string}
+   * @private
    */
-  geometryToMarker: function (p) {
+  _pointToMarker: function (p) {
     return `M${p.x} ${p.y} L${p.x - 12.5} ${p.y - 30} C${p.x - 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 30} L${p.x} ${p.y}z`;
   },
 
@@ -210,13 +211,13 @@ export var FeatureRenderer = L.SVG.extend({
    * @param {boolean} closed - Whether a feature is closed or not
    * @returns {string}
    */
-  geometryToPaths: function (rings, closed) {
+  geometryToPath: function (rings, closed) {
     let str = '', i, j, len, len2, points, p;
 
     for (i = 0, len = rings.length; i < len; i++) {
       points = rings[i];
       if (points.length === 1) {
-        return this.geometryToMarker(points[0]);
+        return this._pointToMarker(points[0]);
       }
       for (j = 0, len2 = points.length; j < len2; j++) {
         p = points[j];
@@ -228,6 +229,11 @@ export var FeatureRenderer = L.SVG.extend({
   },
 });
 
+/**
+ * Returns new M.FeatureRenderer
+ * @param {Object} options - Options for the renderer
+ * @returns {M.FeatureRenderer}
+ */
 export var featureRenderer = function (options) {
   return new FeatureRenderer(options);
 };

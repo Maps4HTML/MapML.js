@@ -4,8 +4,8 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @param {M.Feature} layer - The layer to be added
    */
   addLayer: function (layer) {
-    layer.openTooltip = ()=>{this.openTooltip()};         // needed to open tooltip of child features
-    layer.closeTooltip = ()=>{this.closeTooltip()};       // needed to close tooltip of child features
+    layer.openTooltip = () => { this.openTooltip(); };         // needed to open tooltip of child features
+    layer.closeTooltip = () => { this.closeTooltip(); };       // needed to close tooltip of child features
     L.FeatureGroup.prototype.addLayer.call(this, layer);
   },
 
