@@ -334,6 +334,7 @@
 }
 
 /* Disable pointer events where they'd interfere with the intended action. */
+.leaflet-tooltip,
 .leaflet-crosshair *,
 .mapml-contextmenu-item > *,
 .mapml-control-layers label[for^="o"],
