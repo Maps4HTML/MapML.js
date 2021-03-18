@@ -57,6 +57,7 @@ export var Feature = L.Path.extend({
       this.group = this.options.multiGroup;
     } else {
       this.group = L.SVG.create('g');
+      this.group.setAttribute('role', 'region');
       if(this.options.interactive) this.group.setAttribute("aria-expanded", "false");
       this.group.setAttribute('aria-label', this.accessibleTitle || "Feature");
       if(this.options.featureID) this.group.setAttribute("data-fid", this.options.featureID);
@@ -70,14 +71,9 @@ export var Feature = L.Path.extend({
    * @private
    */
   _handleFocus: function(e) {
-    if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup"){
-      this.group.classList.add("mapml-feature-selected");
+    if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup" && e.target.tagName === "g"){
       this.openTooltip();
-      this._map.once('mousedown', () => {
-        this.group.classList.remove("mapml-feature-selected");
-      });
     } else {
-      this.group.classList.remove("mapml-feature-selected");
       this.closeTooltip();
     }
   },
@@ -219,7 +215,13 @@ export var Feature = L.Path.extend({
     if (isFirst) {
       main.push({ points: local });
     } else {
-      subParts.unshift({ points: local, cls: cls || this.options.className });
+      let attrMap = {}, attr = coords.attributes;
+      for(let i = 0; i < attr.length; i++){
+        if(attr[i].name === "class") continue;
+        attrMap[attr[i].name] = attr[i].value;
+      }
+
+      subParts.unshift({ points: local, cls: cls || this.options.className, attr: attrMap});
     }
   },
 

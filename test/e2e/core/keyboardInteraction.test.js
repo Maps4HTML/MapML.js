@@ -79,7 +79,7 @@ jest.setTimeout(50000);
             await page.keyboard.press("Tab");
             const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
-            const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
+            const resultHandle = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nextHandle);
             const focused = await (await page.evaluateHandle(elem => elem.getAttribute("d"), resultHandle)).jsonValue();
 
             let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
@@ -87,15 +87,15 @@ jest.setTimeout(50000);
             await page.keyboard.press("Tab");
             const aHandleNext = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nextHandleNext = await page.evaluateHandle(doc => doc.shadowRoot, aHandleNext);
-            const resultHandleNext = await page.evaluateHandle(root => root.activeElement, nextHandleNext);
+            const resultHandleNext = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nextHandleNext);
             const focusedNext = await (await page.evaluateHandle(elem => elem.getAttribute("d"), resultHandleNext)).jsonValue();
 
             let tooltipCountNext = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
 
             expect(tooltipCount).toEqual(1);
             expect(tooltipCountNext).toEqual(1);
-            expect(focused).toEqual("M330 83L553 83L553 339L330 339z");
-            expect(focusedNext).toEqual("M-53 393L140 393L113 146L-53 191z");
+            expect(focused).toEqual("M330 83L586 83L586 339L330 339z");
+            expect(focusedNext).toEqual("M153 508L113 146L-161 220L-107 436z");
           });
 
           test("[" + browserType + "]" + " Tab focuses fetched features", async () => {
@@ -109,17 +109,17 @@ jest.setTimeout(50000);
             await page.keyboard.press("Tab");
             const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
-            const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
+            const resultHandle = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nextHandle);
             const focused = await (await page.evaluateHandle(elem => elem.getAttribute("d"), resultHandle)).jsonValue();
 
             await page.keyboard.press("Tab");
             const aHandleNext = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nextHandleNext = await page.evaluateHandle(doc => doc.shadowRoot, aHandleNext);
-            const resultHandleNext = await page.evaluateHandle(root => root.activeElement, nextHandleNext);
+            const resultHandleNext = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nextHandleNext);
             const focusedNext = await (await page.evaluateHandle(elem => elem.getAttribute("d"), resultHandleNext)).jsonValue();
 
-            expect(focused).toEqual("M190 357L203 355L209 374L213 379L211 380L213 391L186 393L184 357z");
-            expect(focusedNext).toEqual("M-30 139L-29 138L-31 140zM-30 136L-29 138L-31 138zM-29 126L-28 127L-30 127zM-32 125L-30 131L-32 137L-31 138L-34 141L-34 138L-36 136L-36 139L-37 136L-34 132L-35 131L-33 126zM-36 130L-35 131L-37 132zM-31 121L-30 120L-28 122L-28 127L-31 125L-31 121zM-33 123L-34 122L-32 120L-31 124L-32 123L-35 126L-35 124zM-36 123L-37 124L-37 118L-35 113L-32 114L-34 120zM-27 110L-26 115L-27 114L-28 118L-32 119L-33 118L-30 115L-27 108zM-36 113L-36 114zM-33 106L-29 110L-31 112L-31 115L-33 111L-34 113L-35 112L-35 108L-33 105zM3 6L7 13L11 15L13 23L-37 80L-35 84L-31 85L-33 86L-33 99L-29 99L-27 97L-22 98L-22 117L-24 128L-20 136L-23 142L-28 144L-29 143L-26 140L-29 139L-30 136L-28 135L-30 136L-30 134L-28 132L-30 132L-26 127L-28 120L-26 117L-27 107L-25 102L-29 109L-29 103L-31 100L-31 106L-35 103L-36 92L-38 89L-34 86L-38 86L-40 84L-43 77L-48 74L-48 69L-50 69L-50 66L-53 64L-50 65L-50 60L-53 58L-53 -20L-49 -17L-53 -14L-47 -7L-48 -10L-45 -14L-44 -13L-47 -9L-43 -12L-45 -18L-42 -20L-40 -31L-36 -31L-33 -26L-30 -25L-19 -26L-20 -25L-18 -23L-13 -23L-12 -20L-5 -18L-4 -15L-7 -14L-5 -14L-5 -11L-1 -7L-3 -6L-2 -2L2 1L3 5z");
+            expect(focused).toEqual("M190 357L203 355L206 363L209 374L211 376L212 377L212 378L213 379L211 380L212 381L211 383L212 386L212 388L213 391L210 391L193 393L193 395L195 396L195 398L195 398L194 400L193 400L191 399L191 397L190 397L189 398L189 400L187 400L185 386L185 368L185 358L184 357L190 357z");
+            expect(focusedNext).toEqual("M-30 139L-29 138L-29 139L-30 140L-31 140L-30 139z");
           });
         });
 
@@ -188,13 +188,13 @@ jest.setTimeout(50000);
 
             const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
-            const rh = await page.evaluateHandle(root => root.activeElement, nh);
+            const rh = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nh);
             const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
 
             let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
 
             expect(tooltipCount).toEqual(1);
-            expect(f).toEqual("M-16 461L153 508L113 146L-16 181z");
+            expect(f).toEqual("M153 508L113 146L-161 220L-107 436z");
           });
 
           test("[" + browserType + "]" + " Shift + Tab to current feature while popup open", async () => {
@@ -203,13 +203,13 @@ jest.setTimeout(50000);
 
             const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
-            const rh = await page.evaluateHandle(root => root.activeElement, nh);
+            const rh = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nh);
             const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
 
             let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
 
             expect(tooltipCount).toEqual(1);
-            expect(f).toEqual("M153 508L113 146L-123 210L-123 372L-107 436z");
+            expect(f).toEqual("M153 508L113 146L-161 220L-107 436z");
           });
 
           test("[" + browserType + "]" + " Previous feature button focuses previous feature", async () => {
@@ -219,13 +219,13 @@ jest.setTimeout(50000);
             await page.keyboard.press("Enter");
             const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
-            const rh = await page.evaluateHandle(root => root.activeElement, nh);
+            const rh = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nh);
             const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
 
             let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
 
             expect(tooltipCount).toEqual(1);
-            expect(f).toEqual("M330 83L480 83L480 339L330 339z");
+            expect(f).toEqual("M330 83L586 83L586 339L330 339z");
           });
 
           test("[" + browserType + "]" + " Next feature button focuses next feature", async () => {
@@ -237,7 +237,7 @@ jest.setTimeout(50000);
             await page.keyboard.press("Enter");
             const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
             const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
-            const rh = await page.evaluateHandle(root => root.activeElement, nh);
+            const rh = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nh);
             const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
 
             let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);

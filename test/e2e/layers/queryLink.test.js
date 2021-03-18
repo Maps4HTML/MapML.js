@@ -80,7 +80,7 @@ jest.setTimeout(50000);
             await page.click("div");
             await page.waitForSelector("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div");
             const feature = await page.$eval(
-              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > path",
+              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path.leaflet-interactive",
               (tile) => tile.getAttribute("d")
             );
             const popup = await page.$eval(
@@ -88,14 +88,14 @@ jest.setTimeout(50000);
               (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
             );
 
-            expect(feature).toEqual("M259 279L263 279L267 287L267 291L260 292L260 294L258 294L257 280z");
+            expect(feature).toEqual("M259 279L263 279L264 281L265 285L266 286L266 287L266 287L267 287L266 288L266 288L266 288L266 289L266 290L267 291L266 291L260 292L260 293L260 293L260 294L261 294L260 294L260 294L259 294L259 293L259 293L259 294L259 294L258 294L257 289L257 283L257 280L257 280L259 279z");
             expect(popup).toEqual("Alabama");
           });
 
           test("[" + browserType + "]" + " Next feature added + popup content updated ", async () => {
             await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > div > a:nth-child(4)");
             const feature = await page.$eval(
-              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > path",
+              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path.leaflet-interactive",
               (tile) => tile.getAttribute("d")
             );
             const popup = await page.$eval(
@@ -103,14 +103,14 @@ jest.setTimeout(50000);
               (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
             );
 
-            expect(feature).toEqual("M205 271L201 288L196 287L187 280L190 276L190 272L193 267L201 270z");
+            expect(feature).toEqual("M205 271L201 288L196 287L193 285L187 280L187 280L188 280L188 279L188 279L188 279L188 278L189 277L189 277L189 276L189 276L190 276L190 275L190 275L190 274L190 273L190 273L190 273L190 272L190 271L191 270L191 270L192 270L192 270L192 270L193 267L201 270L205 271z");
             expect(popup).toEqual("Arizona");
           });
 
           test("[" + browserType + "]" + " Previous feature added + popup content updated ", async () => {
             await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > div > a:nth-child(2)");
             const feature = await page.$eval(
-              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > path",
+              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path.leaflet-interactive",
               (tile) => tile.getAttribute("d")
             );
             const popup = await page.$eval(
@@ -118,7 +118,7 @@ jest.setTimeout(50000);
               (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
             );
 
-            expect(feature).toEqual("M259 279L263 279L267 287L267 291L260 292L260 294L258 294L257 280z");
+            expect(feature).toEqual("M259 279L263 279L264 281L265 285L266 286L266 287L266 287L267 287L266 288L266 288L266 288L266 289L266 290L267 291L266 291L260 292L260 293L260 293L260 294L261 294L260 294L260 294L259 294L259 293L259 293L259 294L259 294L258 294L257 289L257 283L257 280L257 280L259 279z");
             expect(popup).toEqual("Alabama");
           });
 
@@ -126,7 +126,7 @@ jest.setTimeout(50000);
             for (let i = 0; i < 2; i++)
               await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > div > a:nth-child(4)");
             const feature = await page.$eval(
-              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > path",
+              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path.leaflet-interactive",
               (tile) => tile.getAttribute("d")
             );
             const popup = await page.$eval(
@@ -141,7 +141,7 @@ jest.setTimeout(50000);
           test("[" + browserType + "]" + " TCRS feature added + popup content updated ", async () => {
             await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > div > a:nth-child(4)");
             const feature = await page.$eval(
-              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > path",
+              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path.leaflet-interactive",
               (tile) => tile.getAttribute("d")
             );
             const popup = await page.$eval(
@@ -156,7 +156,7 @@ jest.setTimeout(50000);
           test("[" + browserType + "]" + " Tilematrix feature added + popup content updated ", async () => {
             await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > div > a:nth-child(4)");
             const feature = await page.$eval(
-              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > path",
+              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path.leaflet-interactive",
               (tile) => tile.getAttribute("d")
             );
             const popup = await page.$eval(

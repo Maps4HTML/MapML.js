@@ -35,6 +35,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
           opacity: opacity,
           imagePath: this.options.imagePath,
           projection:map.options.projection,
+          static: true,
           onEachFeature: function(properties, geometry) {
             // need to parse as HTML to preserve semantics and styles
             var c = document.createElement('div');

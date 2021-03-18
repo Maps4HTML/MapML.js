@@ -24,7 +24,10 @@ export var FeatureRenderer = L.SVG.extend({
       if (p.rings) this._createPath(p, layer.options.className, layer.options.featureID, layer.accessibleTitle, true);
       if (p.subrings) {
         for (let r of p.subrings) {
-          this._createPath(r, layer.options.className, layer.options.featureID, layer.accessibleTitle, false);
+          this._createPath(r, layer.options.className, layer.options.featureID, layer.accessibleTitle, false, r.attr);
+          if(r.attr && r.attr['aria-label'] && r.attr['tabindex']){
+            p.path.setAttribute('tabindex', '0');
+          }
         }
       }
       this._updateStyle(layer);
@@ -44,13 +47,23 @@ export var FeatureRenderer = L.SVG.extend({
    * @param {string} cls - The class of the path
    * @param {string} id - The fid of a path
    * @param {boolean} interactive - The boolean representing whether a feature is interactive or not
+   * @param {Object} attr - Attributes map
    * @private
    */
-  _createPath: function (ring, cls, id, title = "Feature", interactive = false) {
+  _createPath: function (ring, cls, id, title = "Feature", interactive = false, attr = undefined) {
     let p = L.SVG.create('path');
     ring.path = p;
-    if(id) p.setAttribute('data-fid', id);
-    p.setAttribute('aria-label', title);
+    if(!attr) {
+      if (id) p.setAttribute('data-fid', id);
+      p.setAttribute('aria-label', title);
+    } else {
+      for(let [name, value] of Object.entries(attr)){
+        if(name === "id") continue;
+        p.setAttribute(name, value);
+      }
+      if(id || attr['id']) p.setAttribute('data-fid', attr['id'] || id);
+      p.setAttribute('tabindex', '0');
+    }
     if (ring.cls || cls) {
       L.DomUtil.addClass(p, ring.cls || cls);
     }

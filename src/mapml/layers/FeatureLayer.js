@@ -18,8 +18,8 @@ export var MapMLFeatures = L.FeatureGroup.extend({
           0% {stroke: white;}
           50% {stroke: black;}
         }
-        
-        g.mapml-feature-selected > path {
+        g:focus > path,
+        path:focus {
           animation-name: pathSelect;
           animation-duration: 1s;
           stroke-width: 5;

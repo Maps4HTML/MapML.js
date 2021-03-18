@@ -49,7 +49,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
         group = layer.querySelectorAll("g.leaflet-interactive");
         if(group.length > 0)break;
       }
-      group = group.length > 0 ? group[0] : group;
+      group = group && group.length > 0 ? group[0] : this._source.group;
     }
     group.focus();
     this._map.closePopup();
