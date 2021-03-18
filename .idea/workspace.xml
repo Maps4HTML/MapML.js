@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f139e21e-1935-4647-8173-c762becb0cee" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mapml/features/featureRenderer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/mapml/features/featureRenderer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/e2e/layers/test.html" beforeDir="false" afterPath="$PROJECT_DIR$/test/e2e/layers/test.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +28,7 @@
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.JavaScript" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
-  <component name="RunManager" selected="Grunt.js.Build">
+  <component name="RunManager" selected="npm.test">
     <configuration name="Build" type="js.build_tools.grunt">
       <node-interpreter value="project" />
       <gruntfile value="$PROJECT_DIR$/Gruntfile.js" />
@@ -77,7 +76,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1616076811622</updated>
-      <workItem from="1616076814116" duration="12183000" />
+      <workItem from="1616076814116" duration="12330000" />
     </task>
     <servers />
   </component>
