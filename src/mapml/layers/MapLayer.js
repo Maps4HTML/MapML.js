@@ -496,11 +496,9 @@ export var MapMLLayer = L.Layer.extend({
         opacityControlSummary = document.createElement('summary'),
         opacityControlSummaryLabel = document.createElement('label'),
         mapEl = this._layerEl.parentNode;
-
-        summary.style.display = 'flex';
-        summary.style.alignItems = 'center';
+        
         summaryContainer.classList.add('mapml-control-summary-container');
-
+        
         let removeButton = document.createElement('a');
         removeButton.href = '#';
         removeButton.role = 'button';
