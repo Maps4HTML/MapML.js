@@ -442,17 +442,22 @@ summary {
   position: relative;
 }
 
+/* Quick fix for https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/358,
+   refactor TBD in https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/263. */
 .mapml-control-summary-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+  display: contents;
+}
+.mapml-control-summary-container .mapml-layer-remove-button {
+  text-decoration: none;
+  float: right;
+}
+.mapml-control-summary-container * {
+  display: inline;
+}
+.mapml-control-summary-container label {
+  margin-right: 15px;
 }
 
-.mapml-layer-remove-button {
-  margin-left: 15px;
-  text-decoration: none;
-}
  
  /* Force printers to include background-images of controls for printing.
    (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/294) */
