@@ -62,7 +62,6 @@ export var FeatureRenderer = L.SVG.extend({
         p.setAttribute(name, value);
       }
       if(id || attr['id']) p.setAttribute('data-fid', attr['id'] || id);
-      p.setAttribute('tabindex', '0');
     }
     if (ring.cls || cls) {
       L.DomUtil.addClass(p, ring.cls || cls);

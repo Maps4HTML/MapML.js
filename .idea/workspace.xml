@@ -2,16 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f139e21e-1935-4647-8173-c762becb0cee" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mapml/features/feature.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/mapml/features/feature.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mapml/features/featureGroup.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/mapml/features/featureGroup.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mapml/features/featureRenderer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/mapml/features/featureRenderer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mapml/layers/FeatureLayer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/mapml/layers/FeatureLayer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mapml/layers/TemplatedFeaturesLayer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/mapml/layers/TemplatedFeaturesLayer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/e2e/core/keyboardInteraction.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/e2e/core/keyboardInteraction.test.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/e2e/layers/mapMLFeatures.html" beforeDir="false" afterPath="$PROJECT_DIR$/test/e2e/layers/mapMLFeatures.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/e2e/layers/queryLink.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/e2e/layers/queryLink.test.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/e2e/layers/test.html" beforeDir="false" afterPath="$PROJECT_DIR$/test/e2e/layers/test.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -85,7 +77,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1616076811622</updated>
-      <workItem from="1616076814116" duration="10853000" />
+      <workItem from="1616076814116" duration="12183000" />
     </task>
     <servers />
   </component>
