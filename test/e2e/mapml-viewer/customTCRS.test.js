@@ -47,29 +47,31 @@ jest.setTimeout(50000);
 
 
           const featureOne = await page.$eval(
-            "xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > path:nth-child(1)",
+            "xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(1) > path.leaflet-interactive",
             (tile) => tile.getAttribute("d")
           );
           const featureTwo = await page.$eval(
-            "xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > path:nth-child(2)",
+            "xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(2) > path.leaflet-interactive",
             (tile) => tile.getAttribute("d")
           );
 
           const featureThree = await page.$eval(
-            "xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > path:nth-child(3)",
+            "xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(3) > path.leaflet-interactive",
             (tile) => tile.getAttribute("d")
           );
           const featureFour = await page.$eval(
-            "xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > path:nth-child(4)",
+            "xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(4) > path.leaflet-interactive",
             (tile) => tile.getAttribute("d")
           );
 
 
-          expect(featureOne).toEqual("M-53 553L74 553L21 78L-53 98z");
-          expect(featureTwo).toEqual("M357 553L307 456L553 465L553 553z");
+          expect(featureOne).toEqual("M88 681L21 78L-436 201L-346 561z");
+          expect(featureTwo).toEqual("M307 456L599 467L612 629L381 599z");
 
-          expect(featureThree).toEqual("M382 -28L553 -28L553 399L382 399z");
-          expect(featureFour).toEqual("M150 429L171 426L181 457L185 465L187 465L184 472L188 485L154 490L158 498L156 501L151 499L150 495L148 501L144 501L141 477L141 431L139 430z");
+          expect(featureThree).toEqual("M382 -28L809 -28L809 399L382 399z");
+          expect(featureFour).toEqual("M150 429L171 426L175 438L181 457L183 461L185 463L185 465L187 465L185 468L185 470L184 472L186 477L186 4" +
+            "81L188 485L182 486L154 490L154 492L157 494L157 497L158 498L156 501L154 501L151 499L150 495L149 495L148 498L148 501L14" +
+            "4 501L141 477L141 448L141 431L139 430L150 429z");
 
           expect(staticFeatures).toEqual(false);
           expect(templatedFeatures).toEqual(false);

@@ -119,6 +119,14 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     },
 
     _createFeatures: function(markup, coords, tile){
+      let stylesheets = markup.querySelector('link[rel=stylesheet],style');
+      if (stylesheets) {
+        let base = markup.querySelector('base') && markup.querySelector('base').hasAttribute('href') ?
+          new URL(markup.querySelector('base').getAttribute('href')).href :
+          markup.URL;
+        M.parseStylesheetAsHTML(markup,base,tile);
+      }
+
       let svg = L.SVG.create('svg'), g = L.SVG.create('g'), tileSize = this._map.options.crs.options.crs.tile.bounds.max.x,
           xOffset = coords.x * tileSize, yOffset = coords.y * tileSize;
 

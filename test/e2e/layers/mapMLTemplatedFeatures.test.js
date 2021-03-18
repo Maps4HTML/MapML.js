@@ -52,26 +52,26 @@ jest.setTimeout(50000);
 
           test("[" + browserType + "]" + " Loading in tilematrix feature", async () => {
             const feature = await page.$eval(
-              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > path:nth-child(3)",
+              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(3) > path.leaflet-interactive",
               (tile) => tile.getAttribute("d")
             );
-            expect(feature).toEqual("M382 -28L553 -28L553 399L382 399z");
+            expect(feature).toEqual("M382 -28L809 -28L809 399L382 399z");
           });
 
           test("[" + browserType + "]" + " Loading in pcrs feature", async () => {
             const feature = await page.$eval(
-              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > path:nth-child(1)",
+              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(1) > path.leaflet-interactive",
               (tile) => tile.getAttribute("d")
             );
-            expect(feature).toEqual("M-53 553L74 553L21 78L-53 98z");
+            expect(feature).toEqual("M88 681L21 78L-436 201L-346 561z");
           });
 
           test("[" + browserType + "]" + " Loading in tcrs feature", async () => {
             const feature = await page.$eval(
-              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > path:nth-child(2)",
+              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(2) > path.leaflet-interactive",
               (tile) => tile.getAttribute("d")
             );
-            expect(feature).toEqual("M357 553L307 456L553 465L553 553z");
+            expect(feature).toEqual("M307 456L599 467L612 629L381 599z");
           });
         });
       }

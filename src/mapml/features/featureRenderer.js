@@ -25,8 +25,8 @@ export var FeatureRenderer = L.SVG.extend({
       if (p.subrings) {
         for (let r of p.subrings) {
           this._createPath(r, layer.options.className, layer.options.featureID, layer.accessibleTitle, false, r.attr);
-          if(r.attr && r.attr['aria-label'] && r.attr['tabindex']){
-            p.path.setAttribute('tabindex', '0');
+          if(r.attr && r.attr['aria-label'] && r.attr.tabindex){
+            p.path.setAttribute('tabindex', r.attr.tabindex || '0');
           }
         }
       }
@@ -61,7 +61,7 @@ export var FeatureRenderer = L.SVG.extend({
         if(name === "id") continue;
         p.setAttribute(name, value);
       }
-      if(id || attr['id']) p.setAttribute('data-fid', attr['id'] || id);
+      if(id || attr.id) p.setAttribute('data-fid', attr.id || id);
     }
     if (ring.cls || cls) {
       L.DomUtil.addClass(p, ring.cls || cls);
