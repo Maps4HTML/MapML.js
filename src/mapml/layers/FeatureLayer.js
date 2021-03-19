@@ -247,9 +247,10 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       if (mapml.classList.length) {
         options.className = mapml.classList.value;
       }
-      let zoom = mapml.getAttribute("zoom") || nativeZoom;
+      let zoom = mapml.getAttribute("zoom") || nativeZoom, title = mapml.querySelector("featurecaption");
+      title = title ? title.innerHTML : "Feature";
 
-      var layer = this.geometryToLayer(mapml, options.pointToLayer, options, nativeCS, +zoom);
+      let layer = this.geometryToLayer(mapml, options.pointToLayer, options, nativeCS, +zoom, title);
       if (layer) {
         layer.properties = mapml.getElementsByTagName('properties')[0];
         
@@ -262,8 +263,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         this.resetStyle(layer);
 
         if (options.onEachFeature) {
-          layer.accessibleTitle = mapml.querySelector("featurecaption");
-          layer.accessibleTitle = layer.accessibleTitle ? layer.accessibleTitle.innerHTML : "Feature"; 
           options.onEachFeature(layer.properties, layer);
           layer.bindTooltip(layer.accessibleTitle, { interactive:true, sticky: true, });
           if(layer._events){
@@ -323,7 +322,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         this._openPopup(e);
       }
     },
-  geometryToLayer: function (mapml, pointToLayer, vectorOptions, nativeCS, zoom) {
+  geometryToLayer: function (mapml, pointToLayer, vectorOptions, nativeCS, zoom, title) {
     let geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
         cs = geometry.getAttribute("cs") || nativeCS, subFeatures = geometry, group = [], multiGroup;
 
@@ -332,7 +331,14 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
     for(let geo of subFeatures.children){
       if(group.length > 0) multiGroup = group[group.length - 1].group;
-      group.push(M.feature(geo, Object.assign(vectorOptions, { nativeCS: cs, nativeZoom: zoom, projection: this.options.projection, featureID: mapml.id, multiGroup: multiGroup,})));
+      group.push(M.feature(geo, Object.assign(vectorOptions,
+        { nativeCS: cs,
+          nativeZoom: zoom,
+          projection: this.options.projection,
+          featureID: mapml.id,
+          multiGroup: multiGroup,
+          accessibleTitle: title,
+        })));
     }
     return M.featureGroup(group);
   },

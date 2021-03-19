@@ -19,6 +19,10 @@
  *  ];
  */
 export var Feature = L.Path.extend({
+  options: {
+    accessibleTitle: "Feature",
+  },
+
   /**
    * Initializes the M.Feature
    * @param {HTMLElement} markup - The markup representation of the feature
@@ -59,7 +63,7 @@ export var Feature = L.Path.extend({
       this.group = L.SVG.create('g');
       this.group.setAttribute('role', 'region');
       if(this.options.interactive) this.group.setAttribute("aria-expanded", "false");
-      this.group.setAttribute('aria-label', this.accessibleTitle || "Feature");
+      this.group.setAttribute('aria-label', this.options.accessibleTitle);
       if(this.options.featureID) this.group.setAttribute("data-fid", this.options.featureID);
       L.DomEvent.on(this.group, "keyup keydown mousedown", this._handleFocus, this);
     }

@@ -21,10 +21,10 @@ export var FeatureRenderer = L.SVG.extend({
 
     //creates the main parts and sub parts paths
     for (let p of layer._parts) {
-      if (p.rings) this._createPath(p, layer.options.className, layer.options.featureID, layer.accessibleTitle, true);
+      if (p.rings) this._createPath(p, layer.options.className, layer.options.featureID, layer.options.accessibleTitle, true);
       if (p.subrings) {
         for (let r of p.subrings) {
-          this._createPath(r, layer.options.className, layer.options.featureID, layer.accessibleTitle, false, r.attr);
+          this._createPath(r, layer.options.className, layer.options.featureID, layer.options.accessibleTitle, false, r.attr);
           if(r.attr && r.attr['aria-label'] && r.attr.tabindex){
             p.path.setAttribute('tabindex', r.attr.tabindex || '0');
           }

@@ -2,30 +2,30 @@
    <head>
       <title>ne_10m_admin_0_countries</title>
 
-      <meta charset="utf-8"/>
-      <meta content="text/mapml" http-equiv="Content-Type"/>
+      <meta charset="utf-8" />
+      <meta content="text/mapml" http-equiv="Content-Type" />
    </head>
    <body>
       <extent units="WGS84">
-         <input name="zoomLevel" type="zoom" value="1" min="0" max="6"/>
-         <input name="minLon" type="location" value="-180" units="gcrs" axis="longitude" position="top-left" min="-180" max="180"/>
-         <input name="minLat" type="location" value="-45" units="gcrs" axis="latitude" position="bottom-right" min="-90" max="90.0002058236639"/>
-         <input name="maxLon" type="location" value="-135" units="gcrs" axis="longitude" position="bottom-right" min="-180" max="180"/>
-         <input name="maxLat" type="location" value="0" units="gcrs" axis="latitude" position="top-left" min="-90" max="90.0002058236639"/>
+         <input name="zoomLevel" type="zoom" value="1" min="0" max="6" />
+         <input name="minLon" type="location" value="-180" units="gcrs" axis="longitude" position="top-left" min="-180" max="180" />
+         <input name="minLat" type="location" value="-45" units="gcrs" axis="latitude" position="bottom-right" min="-90" max="90.0002058236639" />
+         <input name="maxLon" type="location" value="-135" units="gcrs" axis="longitude" position="bottom-right" min="-180" max="180" />
+         <input name="maxLat" type="location" value="0" units="gcrs" axis="latitude" position="top-left" min="-90" max="90.0002058236639" />
 
-         <link rel='features' type='text/mapml' title='ne_10m_admin_0_countries (as MapML)' tref='./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}'/>
+         <link rel="features" type="text/mapml" title="ne_10m_admin_0_countries (as MapML)" tref="./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}" />
       </extent>
-      <feature id="fclass.6" class="fclass">
+      <feature id="fclass.6" class="fclass _6">
          <geometry>
             <multipolygon>
                <polygon>
-                  <coordinates>-179.8976835744369 -16.6823841787218 <span class='noline'>-180 -16.7867606665446 -180 -16.9639260208753</span> -179.8207745834096 -16.778520417506 -179.8976835744369 -16.6823841787218</coordinates>
+                  <coordinates>-179.8976835744369 -16.6823841787218 <span class="noline">-180 -16.7867606665446 -180 -16.9639260208753</span> -179.8207745834096 -16.778520417506 -179.8976835744369 -16.6823841787218</coordinates>
                </polygon>
                <polygon>
-                  <coordinates>-180 -16.5409265702252 -179.9244643838125 -16.5086522614906 -179.9230910089727 -16.4379234572423 <span class='noline'>-180 -16.4901117011536 -180 -16.5409265702252</span></coordinates>
+                  <coordinates>-180 -16.5409265702252 -179.9244643838125 -16.5086522614906 -179.9230910089727 -16.4379234572423 <span class="noline">-180 -16.4901117011536 -180 -16.5409265702252</span></coordinates>
                </polygon>
                <polygon>
-                  <coordinates>-180 -16.1694286760667 -179.9553653177074 -16.1529481779894 -179.9423182567295 -16.1213605566746 <span class='noline'>-180 -16.1488280534701 -180 -16.1694286760667</span></coordinates>
+                  <coordinates>-180 -16.1694286760667 -179.9553653177074 -16.1529481779894 -179.9423182567295 -16.1213605566746 <span class="noline">-180 -16.1488280534701 -180 -16.1694286760667</span></coordinates>
                </polygon>
             </multipolygon>
          </geometry>
@@ -96,7 +96,7 @@
             </table>
          </properties>
       </feature>
-      <feature id="fclass.9" class="fclass">
+      <feature id="fclass.9" class="fclass _9">
          <geometry>
             <polygon>
                <coordinates>-176.5905969602637 -44.1176066654459 -176.3447628639443 -44.0406976744186 -176.5775498992859 -43.766022706464 -176.564502838308 -43.9569218091925 -176.5905969602637 -44.1176066654459</coordinates>
@@ -169,7 +169,7 @@
             </table>
          </properties>
       </feature>
-      <feature id="fclass.11" class="fclass">
+      <feature id="fclass.11" class="fclass _11">
          <geometry>
             <polygon>
                <coordinates>-149.6202618568028 -17.5235762680828 -149.5818073612891 -17.746062992126 -149.3359732649698 -17.7357626808277 -149.3572605749863 -17.5077824574254 -149.6202618568028 -17.5235762680828</coordinates>
@@ -243,7 +243,7 @@
             </table>
          </properties>
       </feature>
-      <feature id="fclass.15" class="fclass">
+      <feature id="fclass.15" class="fclass _15">
          <geometry>
             <multipolygon>
                <polygon>
