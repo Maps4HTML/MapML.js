@@ -30,6 +30,8 @@ export var Feature = L.Path.extend({
    */
   initialize: function (markup, options) {
     this.type = markup.tagName.toUpperCase();
+
+    if(this.type === "POINT" || this.type === "MULTIPOINT") options.fillOpacity = 1;
     L.setOptions(this, options);
 
     this._createGroup();  // creates the <g> element for the feature, or sets the one passed in options as the <g>
