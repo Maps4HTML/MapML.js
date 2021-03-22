@@ -16,15 +16,16 @@ export var FeatureRenderer = L.SVG.extend({
     let outlinePath = L.SVG.create('path');
     if(layer.options.className) L.DomUtil.addClass(outlinePath, layer.options.className);
     L.DomUtil.addClass(outlinePath, 'mapml-feature-outline');
+    outlinePath.style.fill = "none";
     layer.outlinePath = outlinePath;
 
     //creates the main parts and sub parts paths
     for (let p of layer._parts) {
-      if (p.rings) this._createPath(p, layer.options.className, layer.options.featureID, layer.options.accessibleTitle, true);
+      if (p.rings) this._createPath(p, layer.options.className, layer.featureAttributes['aria-label'], true, layer.featureAttributes);
       if (p.subrings) {
         for (let r of p.subrings) {
-          this._createPath(r, layer.options.className, layer.options.featureID, layer.options.accessibleTitle, false, r.attr);
-          if(r.attr && r.attr['aria-label'] && r.attr.tabindex){
+          this._createPath(r, layer.options.className, r.attr['aria-label'], false, r.attr);
+          if(r.attr && r.attr.tabindex){
             p.path.setAttribute('tabindex', r.attr.tabindex || '0');
           }
         }
@@ -44,23 +45,20 @@ export var FeatureRenderer = L.SVG.extend({
    * @param {Object} ring - The ring the current path is being generated for
    * @param {string} title - The accessible aria-label of a path
    * @param {string} cls - The class of the path
-   * @param {string} id - The fid of a path
    * @param {boolean} interactive - The boolean representing whether a feature is interactive or not
    * @param {Object} attr - Attributes map
    * @private
    */
-  _createPath: function (ring, cls, id, title = "Feature", interactive = false, attr = undefined) {
+  _createPath: function (ring, cls, title, interactive = false, attr = undefined) {
     let p = L.SVG.create('path');
     ring.path = p;
     if(!attr) {
-      if (id) p.setAttribute('data-fid', id);
-      p.setAttribute('aria-label', title);
+      if (title) p.setAttribute('aria-label', title);
     } else {
       for(let [name, value] of Object.entries(attr)){
         if(name === "id") continue;
         p.setAttribute(name, value);
       }
-      if(id || attr.id) p.setAttribute('data-fid', attr.id || id);
     }
     if (ring.cls || cls) {
       L.DomUtil.addClass(p, ring.cls || cls);
@@ -81,7 +79,10 @@ export var FeatureRenderer = L.SVG.extend({
     if (!this._rootGroup && !container) { this._initContainer(); }
     let c = container || this._rootGroup;
     if (layer.pixelOutline) layer.group.appendChild(layer.outlinePath);
-    if(interactive) layer.addInteractiveTarget(layer.group);
+    if(interactive) {
+      layer.addInteractiveTarget(layer.group);
+      layer.group.style.stroke = "none";
+    }
     for (let p of layer._parts) {
       if (p.path) {
         layer.group.appendChild(p.path);

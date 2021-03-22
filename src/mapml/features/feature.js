@@ -142,7 +142,13 @@ export var Feature = L.Path.extend({
    */
   _convertMarkup: function () {
     if (!this._markup) return;
+    let attrMap = {}, attr = this._markup.attributes;
+    for(let i = 0; i < attr.length; i++){
+      if(attr[i].name === "class") continue;
+      attrMap[attr[i].name] = attr[i].value;
+    }
 
+    this.featureAttributes = attrMap;
     let first = true;
     for (let c of this._markup.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
       let ring = [], subrings = [];
@@ -224,7 +230,6 @@ export var Feature = L.Path.extend({
         if(attr[i].name === "class") continue;
         attrMap[attr[i].name] = attr[i].value;
       }
-
       subParts.unshift({ points: local, cls: cls || this.options.className, attr: attrMap});
     }
   },
