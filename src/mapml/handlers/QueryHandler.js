@@ -130,12 +130,24 @@ export var QueryHandler = L.Handler.extend({
         });
       }
       function handleMapMLResponse(mapml, loc) {
-        var parser = new DOMParser(),
-            mapmldoc = parser.parseFromString(mapml, "application/xml"),
-            f = M.mapMlFeatures(mapmldoc, {
+        let parser = new DOMParser(),
+          mapmldoc = parser.parseFromString(mapml, "application/xml");
+
+        for(let feature of mapmldoc.querySelectorAll('feature')){
+          if(!feature.querySelector('geometry')){
+            let geo = document.createElement('geometry'), point = document.createElement('point'),
+              coords = document.createElement('coordinates');
+            coords.innerHTML = `${loc.lng} ${loc.lat}`;
+            point.appendChild(coords);
+            geo.appendChild(point);
+            feature.appendChild(geo);
+          }
+        }
+
+        let f = M.mapMlFeatures(mapmldoc, {
             // pass the vector layer a renderer of its own, otherwise leaflet
             // puts everything into the overlayPane
-            renderer: L.svg(),
+            renderer: M.featureRenderer(),
             // pass the vector layer the container for the parent into which
             // it will append its own container for rendering into
             pane: container,
@@ -147,6 +159,7 @@ export var QueryHandler = L.Handler.extend({
             _leafletLayer: layer,
             imagePath: M.detectImagePath(map.getContainer()),
             query: true,
+            static:true,
         });
         f.addTo(map);
 

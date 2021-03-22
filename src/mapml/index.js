@@ -53,7 +53,9 @@ import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
 import { ReloadButton, reloadButton } from './control/ReloadButton';
 import { Crosshair, crosshair } from "./layers/Crosshair";
-import {SVGMarker, svgMarker} from './layers/SVGMarker';
+import { Feature, feature } from "./features/feature";
+import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
+import { FeatureGroup, featureGroup} from './features/featureGroup';
 
 /* global L, Node */
 (function (window, document, undefined) {
@@ -588,6 +590,8 @@ M.pixelToPCRSBounds = Util.pixelToPCRSBounds;
 M.metaContentToObject = Util.metaContentToObject;
 M.coordsToArray = Util.coordsToArray;
 M.parseStylesheetAsHTML = Util.parseStylesheetAsHTML;
+M.pointToPCRSPoint = Util.pointToPCRSPoint;
+M.pixelToPCRSPoint = Util.pixelToPCRSPoint;
 
 M.QueryHandler = QueryHandler;
 M.ContextMenu = ContextMenu;
@@ -632,7 +636,13 @@ M.debugOverlay = debugOverlay;
 M.Crosshair = Crosshair;
 M.crosshair = crosshair;
 
-M.SVGMarker = SVGMarker;
-M.svgMarker = svgMarker;
+M.Feature = Feature;
+M.feature = feature;
+
+M.FeatureRenderer = FeatureRenderer;
+M.featureRenderer = featureRenderer;
+
+M.FeatureGroup = FeatureGroup;
+M.featureGroup = featureGroup;
 
 }(window, document));

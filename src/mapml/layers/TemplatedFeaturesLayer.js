@@ -28,13 +28,14 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
         this._features = M.mapMlFeatures( null, {
           // pass the vector layer a renderer of its own, otherwise leaflet
           // puts everything into the overlayPane
-          renderer: L.svg(),
+          renderer: M.featureRenderer(),
           // pass the vector layer the container for the parent into which
           // it will append its own container for rendering into
           pane: container,
           opacity: opacity,
           imagePath: this.options.imagePath,
           projection:map.options.projection,
+          static: true,
           onEachFeature: function(properties, geometry) {
             // need to parse as HTML to preserve semantics and styles
             var c = document.createElement('div');

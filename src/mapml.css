@@ -467,3 +467,9 @@ summary {
                   color-adjust: exact;
   }
 }
+
+.leaflet-pane > svg g.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive g {
+  pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+  pointer-events: auto;
+}

@@ -58,23 +58,23 @@ jest.setTimeout(50000);
 
           test("[" + browserType + "]" + " Loading in tilematrix feature", async () => {
             const feature = await page.$eval(
-              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > path:nth-child(1)",
+              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > g:nth-child(1) > path.leaflet-interactive",
               (tile) => tile.getAttribute("d")
             );
-            expect(feature).toEqual("M330 83L553 83L553 339L330 339z");
+            expect(feature).toEqual("M330 83L586 83L586 339L330 339L330 83z");
           });
 
           test("[" + browserType + "]" + " Loading in pcrs feature", async () => {
             const feature = await page.$eval(
-              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > path:nth-child(2)",
+              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > g:nth-child(2) > path.leaflet-interactive",
               (tile) => tile.getAttribute("d")
             );
-            expect(feature).toEqual("M-53 451L153 508L113 146L-53 191z");
+            expect(feature).toEqual("M153 508L113 146L-161 220L-107 436z");
           });
 
           test("[" + browserType + "]" + " Loading in tcrs feature", async () => {
             const feature = await page.$eval(
-              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > path:nth-child(3)",
+              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > g:nth-child(3) > path.leaflet-interactive",
               (tile) => tile.getAttribute("d")
             );
             expect(feature).toEqual("M285 373L460 380L468 477L329 459z");

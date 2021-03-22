@@ -5,27 +5,28 @@ export var MapMLFeatures = L.FeatureGroup.extend({
    * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.
    */
     initialize: function (mapml, options) {
-    
+
       L.setOptions(this, options);
-      this._container = L.DomUtil.create('div','leaflet-layer', this.options.pane);
-      // must have leaflet-pane class because of new/changed rule in leaflet.css
-      // info: https://github.com/Leaflet/Leaflet/pull/4597 
-      L.DomUtil.addClass(this._container,'leaflet-pane mapml-vector-container');
-
-      let anim = L.DomUtil.create("style", "mapml-feature-animation", this._container);
-      anim.innerHTML = `@keyframes pathSelect {
-        0% {stroke: white;}
-        50% {stroke: black;}
+      if(this.options.static) {
+        this._container = L.DomUtil.create('div', 'leaflet-layer', this.options.pane);
+        // must have leaflet-pane class because of new/changed rule in leaflet.css
+        // info: https://github.com/Leaflet/Leaflet/pull/4597
+        L.DomUtil.addClass(this._container, 'leaflet-pane mapml-vector-container');
+        L.setOptions(this.options.renderer, {pane: this._container});
+        let anim = L.DomUtil.create("style", "mapml-feature-animation", this._container);
+        anim.innerHTML = `@keyframes pathSelect {
+          0% {stroke: white;}
+          50% {stroke: black;}
+        }
+        g:focus > path,
+        path:focus {
+          animation-name: pathSelect;
+          animation-duration: 1s;
+          stroke-width: 5;
+          stroke: black;
+        }`;
       }
-      
-      .mapml-path-selected {
-        animation-name: pathSelect;
-        animation-duration: 1s;
-        stroke-width: 5;
-        stroke: black;
-      }`;
 
-      L.setOptions(this.options.renderer, {pane: this._container});
       this._layers = {};
       if(this.options.query){
         this._mapmlFeatures = mapml;
@@ -37,7 +38,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       if (mapml && !this.options.query) {
         let native = this._getNativeVariables(mapml);
         //needed to check if the feature is static or not, since this method is used by templated also
-        if(!mapml.querySelector('extent') && mapml.querySelector('feature')){
+        if(!mapml.querySelector('extent') && mapml.querySelector('feature') && this.options.static){
           this._features = {};
           this._staticFeature = true;
           this.isVisible = true; //placeholder for when this actually gets updated in the future
@@ -57,7 +58,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     onAdd: function(map){
       L.FeatureGroup.prototype.onAdd.call(this, map);
       if(this._mapmlFeatures)map.on("featurepagination", this.showPaginationFeature, this);
-      this._updateTabIndex();
     },
 
     onRemove: function(map){
@@ -81,34 +81,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       };
     },
 
-    _updateTabIndex: function(){
-      for(let feature in this._features){
-        for(let path of this._features[feature]){
-          if(path._path){
-            if(path._path.getAttribute("d") !== "M0 0"){
-              path._path.setAttribute("tabindex", 0);
-            } else {
-              path._path.removeAttribute("tabindex");
-            }
-            path._path.setAttribute("aria-label", path.accessibleTitle);
-            path._path.setAttribute("aria-expanded", "false");
-            /* jshint ignore:start */
-            L.DomEvent.on(path._path, "keyup keydown", (e)=>{
-              if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup"){
-                path._path.classList.add("mapml-path-selected");
-                path.openTooltip();
-              } else {
-                path._path.classList.remove("mapml-path-selected");
-                path.closeTooltip(); 
-              }
-            });
-            path._path.classList.remove("mapml-path-selected");
-            if(path.isTooltipOpen())path.closeTooltip(); 
-            /* jshint ignore:end */
-          }
-        }
-      }
-    },
 
     showPaginationFeature: function(e){
       if(this.options.query && this._mapmlFeatures.querySelectorAll("feature")[e.i]){
@@ -118,44 +90,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         e.popup._navigationBar.querySelector("p").innerText = (e.i + 1) + "/" + this.options._leafletLayer._totalFeatureCount;
         e.popup._content.querySelector("iframe").srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + feature.querySelector("properties").innerHTML;
       }
-    },
-
-    _previousFeature: function(e){
-      let path = this._source._path.previousSibling;
-      if(!path){
-        let currentIndex = this._source._path.closest("div.mapml-layer").style.zIndex;
-        let overlays = this._map.getPane("overlayPane").children;
-        for(let i = overlays.length - 1; i >= 0; i--){
-          let layer = overlays[i];
-          if(layer.style.zIndex >= currentIndex) continue;
-          path = layer.querySelector("path");
-          if(path){
-            path = path.parentNode.lastChild;
-            break;
-          }
-        }
-        if (!path) path = this._source._path; 
-      }
-      path.focus();
-      this._map._targets[path._leaflet_id].openTooltip();
-      this._map.closePopup();
-    },
-
-    _nextFeature: function(e){
-      let path = this._source._path.nextSibling;
-      if(!path){
-        let currentIndex = this._source._path.closest("div.mapml-layer").style.zIndex;
-
-        for(let layer of this._map.getPane("overlayPane").children){
-          if(layer.style.zIndex <= currentIndex) continue;
-          path = layer.querySelector("path");
-          if(path)break;
-        }
-        if (!path) path = this._source._path; 
-      }
-      path.focus();
-      this._map._targets[path._leaflet_id].openTooltip();
-      this._map.closePopup();
     },
 
     _getNativeVariables: function(mapml){
@@ -175,7 +109,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
                             this._map.getPixelBounds(),
                             mapZoom,this._map.options.projection));
       this._removeCSS();
-      this._updateTabIndex();
     },
 
     _handleZoomEnd: function(e){
@@ -314,9 +247,10 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       if (mapml.classList.length) {
         options.className = mapml.classList.value;
       }
-      let zoom = mapml.getAttribute("zoom") || nativeZoom;
+      let zoom = mapml.getAttribute("zoom") || nativeZoom, title = mapml.querySelector("featurecaption");
+      title = title ? title.innerHTML : "Feature";
 
-      var layer = this.geometryToLayer(mapml, options.pointToLayer, options.coordsToLatLng, options, nativeCS, +zoom);
+      let layer = this.geometryToLayer(mapml, options.pointToLayer, options, nativeCS, +zoom, title);
       if (layer) {
         layer.properties = mapml.getElementsByTagName('properties')[0];
         
@@ -329,16 +263,15 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         this.resetStyle(layer);
 
         if (options.onEachFeature) {
-          layer.accessibleTitle = mapml.querySelector("featurecaption");
-          layer.accessibleTitle = layer.accessibleTitle ? layer.accessibleTitle.innerHTML : "Feature"; 
           options.onEachFeature(layer.properties, layer);
-          layer.bindTooltip(layer.accessibleTitle, { interactive:true });
+          layer.bindTooltip(title, { interactive:true, sticky: true, });
           if(layer._events){
-              layer._events.keypress.push({
-                "ctx": layer,
-                "fn": this._onSpacePress,
-              });
-            }
+            if(!layer._events.keypress) layer._events.keypress = [];
+            layer._events.keypress.push({
+              "ctx": layer,
+              "fn": this._onSpacePress,
+            });
+          }
         }
         if(this._staticFeature){
           let featureZoom = mapml.getAttribute('zoom') || nativeZoom;
@@ -389,119 +322,26 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         this._openPopup(e);
       }
     },
-	 geometryToLayer: function (mapml, pointToLayer, coordsToLatLng, vectorOptions, nativeCS, zoom) {
-    var geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
-        latlng, latlngs, coordinates, member, members, linestrings;
+  geometryToLayer: function (mapml, pointToLayer, vectorOptions, nativeCS, zoom, title) {
+    let geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
+        cs = geometry.getAttribute("cs") || nativeCS, subFeatures = geometry, group = [], multiGroup;
 
-    coordsToLatLng = coordsToLatLng || this.coordsToLatLng;
-    
-    var cs = geometry.getAttribute("cs") || nativeCS;
+    if(geometry.firstElementChild.tagName === "GEOMETRYCOLLECTION" || geometry.firstElementChild.tagName === "MULTIPOLYGON")
+      subFeatures = geometry.firstElementChild;
 
-    switch (geometry.firstElementChild.tagName.toUpperCase()) {
-      case 'POINT':
-        coordinates = [];
-        geometry.getElementsByTagName('coordinates')[0].textContent.split(/\s+/gim).forEach(M.parseNumber,coordinates);
-        latlng = coordsToLatLng(coordinates, cs, zoom, this.options.projection);
-        return pointToLayer ? pointToLayer(mapml, latlng) : M.svgMarker(latlng, vectorOptions);
-
-      case 'MULTIPOINT':
-        coordinates = [];
-        geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-        latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng, cs, zoom);
-        var points = new Array(latlngs.length);
-        for(member=0;member<points.length;member++) {
-          points[member] = M.svgMarker(latlngs[member], vectorOptions);
-        }
-        return new L.featureGroup(points);
-      case 'LINESTRING':
-        coordinates = [];
-        geometry.getElementsByTagName('coordinates')[0].textContent.match(/(\S+ \S+)/gim).forEach(M.splitCoordinate, coordinates);
-        latlngs = this.coordsToLatLngs(coordinates, 0, coordsToLatLng, cs, zoom);
-        return new L.Polyline(latlngs, vectorOptions);
-      case 'MULTILINESTRING':
-        members = geometry.getElementsByTagName('coordinates');
-        linestrings = new Array(members.length);
-        for (member=0;member<members.length;member++) {
-          linestrings[member] = coordinatesToArray(members[member]);
-        }
-        latlngs = this.coordsToLatLngs(linestrings, 2, coordsToLatLng, cs, zoom);
-        return new L.Polyline(latlngs, vectorOptions);
-      case 'POLYGON':
-        var rings = geometry.getElementsByTagName('coordinates');
-        latlngs = this.coordsToLatLngs(coordinatesToArray(rings), 1, coordsToLatLng, cs, zoom);
-        return new L.Polygon(latlngs, vectorOptions);
-      case 'MULTIPOLYGON':
-        members = geometry.getElementsByTagName('polygon');
-        var polygons = new Array(members.length);
-        for (member=0;member<members.length;member++) {
-          polygons[member] = coordinatesToArray(members[member].querySelectorAll('coordinates'));
-        }
-        latlngs = this.coordsToLatLngs(polygons, 2, coordsToLatLng, cs, zoom);
-        return new L.Polygon(latlngs, vectorOptions);
-      case 'GEOMETRYCOLLECTION':
-        console.log('GEOMETRYCOLLECTION Not implemented yet');
-        break;
-    //			for (i = 0, len = geometry.geometries.length; i < len; i++) {
-    //
-    //				layers.push(this.geometryToLayer({
-    //					geometry: geometry.geometries[i],
-    //					type: 'Feature',
-    //					properties: geojson.properties
-    //				}, pointToLayer, coordsToLatLng, vectorOptions));
-    //			}
-    //			return new L.FeatureGroup(layers);
-
-      default:
-        console.log('Invalid GeoJSON object.');
-        break;
+    for(let geo of subFeatures.children){
+      if(group.length > 0) multiGroup = group[group.length - 1].group;
+      group.push(M.feature(geo, Object.assign(vectorOptions,
+        { nativeCS: cs,
+          nativeZoom: zoom,
+          projection: this.options.projection,
+          featureID: mapml.id,
+          multiGroup: multiGroup,
+          accessibleTitle: title,
+        })));
     }
-    function coordinatesToArray(coordinates) {
-      var a = new Array(coordinates.length);
-      for (var i=0;i<a.length;i++) {
-        a[i]=[];
-        (coordinates[i] || coordinates).textContent.match(/(\S+\s+\S+)/gim).forEach(M.splitCoordinate, a[i]);
-      }
-      return a;
-    }
+    return M.featureGroup(group);
   },
-        
-
-  coordsToLatLng: function (coords, cs, zoom, projection) { // (Array[, Boolean]) -> LatLng
-    let pcrs;
-    switch(cs.toUpperCase()){
-      case "PCRS":
-        pcrs = coords;
-        break;
-      case "TILEMATRIX":
-        let pixels = coords.map((value)=>{
-          return value * M[projection].options.crs.tile.bounds.max.x;
-        });
-        pcrs = M[projection].transformation.untransform(L.point(pixels),M[projection].scale(+zoom));
-        break;
-      case "TCRS":
-        pcrs = M[projection].transformation.untransform(L.point(coords),M[projection].scale(+zoom));
-        break;
-      default:
-        return new L.LatLng(coords[1], coords[0], coords[2]);
-    }
-
-    return M[projection].unproject(L.point(pcrs), +zoom);
-  },
-
-  coordsToLatLngs: function (coords, levelsDeep, coordsToLatLng, cs, zoom) { // (Array[, Number, Function]) -> Array
-    var latlng, i, len,
-        latlngs = [];
-
-    for (i = 0, len = coords.length; i < len; i++) {
-     latlng = levelsDeep ?
-             this.coordsToLatLngs(coords[i], levelsDeep - 1, coordsToLatLng, cs, zoom) :
-             (coordsToLatLng || this.coordsToLatLng)(coords[i], cs, zoom, this.options.projection);
-
-     latlngs.push(latlng);
-    }
-
-    return latlngs;
-  }
 });
 export var mapMlFeatures = function (mapml, options) {
 	return new MapMLFeatures(mapml, options);

@@ -220,34 +220,38 @@ export var Util = {
     }
   },
 
-  boundsToPCRSBounds: function(bounds, zoom, projection,cs){
-    if(!bounds || !zoom && +zoom !== 0 || !cs) return undefined;
+  pointToPCRSPoint: function(p, zoom, projection, cs){
+    if(!p || !zoom && +zoom !== 0 || !cs || !projection) return undefined;
     let tileSize = M[projection].options.crs.tile.bounds.max.x;
     switch(cs.toUpperCase()){
       case "TILEMATRIX":
-        let tileToPixelBounds = L.bounds(L.point(bounds.min.x*tileSize,bounds.min.y*tileSize),
-                                  L.point(bounds.max.x*tileSize,bounds.max.y*tileSize));
-        return M.pixelToPCRSBounds(tileToPixelBounds,zoom,projection);
+        return M.pixelToPCRSPoint(L.point(p.x*tileSize,p.y*tileSize),zoom,projection);
       case "PCRS":
-        return bounds;
+        return p;
       case "TCRS" || "TILE":
-        return M.pixelToPCRSBounds(bounds,zoom,projection);
+        return M.pixelToPCRSPoint(p,zoom,projection);
       case "GCRS":
-        let minPoint = this[projection].project(L.latLng(bounds.min.y,bounds.min.x));
-        let maxPoint = this[projection].project(L.latLng(bounds.max.y,bounds.max.x));
-        return L.bounds(minPoint,maxPoint);
+        return this[projection].project(L.latLng(p.y,p.x));
       default:
         return undefined;
     }
+  },
+
+  pixelToPCRSPoint: function(p, zoom, projection){
+    if(!p || !zoom && +zoom !== 0) return undefined;
+    return this[projection].transformation.untransform(p,this[projection].scale(zoom));
+  },
+
+  boundsToPCRSBounds: function(bounds, zoom, projection, cs){
+    if(!bounds || !zoom && +zoom !== 0 || !cs) return undefined;
+    return L.bounds(M.pointToPCRSPoint(bounds.min, zoom, projection, cs), M.pointToPCRSPoint(bounds.max, zoom, projection, cs));
   },
 
   //L.bounds have fixed point positions, where min is always topleft, max is always bottom right, and the values are always sorted by leaflet
   //important to consider when working with pcrs where the origin is not topleft but rather bottomleft, could lead to confusion
   pixelToPCRSBounds : function(bounds, zoom, projection){
     if(!bounds || !bounds.max || !bounds.min ||zoom === undefined || zoom === null || zoom instanceof Object) return undefined;
-    let min = this[projection].transformation.untransform(bounds.min,this[projection].scale(zoom));
-    let max = this[projection].transformation.untransform(bounds.max,this[projection].scale(zoom));
-    return L.bounds(min,max);
+    return L.bounds(M.pixelToPCRSPoint(bounds.min, zoom, projection), M.pixelToPCRSPoint(bounds.max, zoom, projection));
   },
   //meta content is the content attribute of meta
   // input "max=5,min=4" => [[max,5][min,5]]

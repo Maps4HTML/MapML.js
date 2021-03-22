@@ -2,20 +2,20 @@
    <head>
       <title>ne_10m_admin_0_countries</title>
 
-      <meta charset="utf-8"/>
-      <meta content="text/mapml" http-equiv="Content-Type"/>
+      <meta charset="utf-8" />
+      <meta content="text/mapml" http-equiv="Content-Type" />
    </head>
    <body>
       <extent units="WGS84">
-         <input name="zoomLevel" type="zoom" value="1" min="0" max="6"/>
-         <input name="minLon" type="location" value="-180" units="gcrs" axis="longitude" position="top-left" min="-180" max="180"/>
-         <input name="minLat" type="location" value="0" units="gcrs" axis="latitude" position="bottom-right" min="-90" max="90.0002058236639"/>
-         <input name="maxLon" type="location" value="-135" units="gcrs" axis="longitude" position="bottom-right" min="-180" max="180"/>
-         <input name="maxLat" type="location" value="45" units="gcrs" axis="latitude" position="top-left" min="-90" max="90.0002058236639"/>
+         <input name="zoomLevel" type="zoom" value="1" min="0" max="6" />
+         <input name="minLon" type="location" value="-180" units="gcrs" axis="longitude" position="top-left" min="-180" max="180" />
+         <input name="minLat" type="location" value="0" units="gcrs" axis="latitude" position="bottom-right" min="-90" max="90.0002058236639" />
+         <input name="maxLon" type="location" value="-135" units="gcrs" axis="longitude" position="bottom-right" min="-180" max="180" />
+         <input name="maxLat" type="location" value="45" units="gcrs" axis="latitude" position="top-left" min="-90" max="90.0002058236639" />
 
-         <link rel='features' type='text/mapml' title='ne_10m_admin_0_countries (as MapML)' tref='./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}'/>
+         <link rel="features" type="text/mapml" title="ne_10m_admin_0_countries (as MapML)" tref="./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}" />
       </extent>
-      <feature id="fclass.7" class="fclass">
+      <feature id="fclass.7" class="fclass _7">
          <geometry>
             <polygon>
                <coordinates>-157.1813770371727 1.7098516755173 -157.3722761399011 1.9089910272844 -157.5109869987182 1.8210950375389 -157.1813770371727 1.7098516755173</coordinates>
@@ -88,7 +88,7 @@
             </table>
          </properties>
       </feature>
-      <feature id="fclass.74" class="fclass">
+      <feature id="fclass.74" class="fclass _74">
          <geometry>
             <multipolygon>
                <polygon>
