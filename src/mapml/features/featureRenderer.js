@@ -21,7 +21,10 @@ export var FeatureRenderer = L.SVG.extend({
 
     //creates the main parts and sub parts paths
     for (let p of layer._parts) {
-      if (p.rings) this._createPath(p, layer.options.className, layer.featureAttributes['aria-label'], true, layer.featureAttributes);
+      if (p.rings){
+        this._createPath(p, layer.options.className, layer.featureAttributes['aria-label'], true, layer.featureAttributes);
+        p.path.style.stroke = "none";
+      }
       if (p.subrings) {
         for (let r of p.subrings) {
           this._createPath(r, layer.options.className, r.attr['aria-label'], false, r.attr);
@@ -81,12 +84,10 @@ export var FeatureRenderer = L.SVG.extend({
     if (layer.pixelOutline) layer.group.appendChild(layer.outlinePath);
     if(interactive) {
       layer.addInteractiveTarget(layer.group);
-      layer.group.style.stroke = "none";
     }
     for (let p of layer._parts) {
-      if (p.path) {
+      if (p.path)
         layer.group.appendChild(p.path);
-      }
 
       for (let subP of p.subrings) {
         if (subP.path)
