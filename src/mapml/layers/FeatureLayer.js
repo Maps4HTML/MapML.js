@@ -264,7 +264,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
         if (options.onEachFeature) {
           options.onEachFeature(layer.properties, layer);
-          layer.bindTooltip(layer.accessibleTitle, { interactive:true, sticky: true, });
+          layer.bindTooltip(title, { interactive:true, sticky: true, });
           if(layer._events){
             if(!layer._events.keypress) layer._events.keypress = [];
             layer._events.keypress.push({

@@ -16,7 +16,6 @@ export var FeatureRenderer = L.SVG.extend({
     let outlinePath = L.SVG.create('path');
     if(layer.options.className) L.DomUtil.addClass(outlinePath, layer.options.className);
     L.DomUtil.addClass(outlinePath, 'mapml-feature-outline');
-    outlinePath.style.fill = 'none';
     layer.outlinePath = outlinePath;
 
     //creates the main parts and sub parts paths
@@ -194,7 +193,7 @@ export var FeatureRenderer = L.SVG.extend({
       path.setAttribute('stroke', 'none');
     }
 
-    if(isClosed) {
+    if(isClosed && !isOutline) {
       if (!options.fill) {
         path.setAttribute('fill', options.fillColor || options.color);
         path.setAttribute('fill-opacity', options.fillOpacity);
