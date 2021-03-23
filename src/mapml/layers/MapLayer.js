@@ -35,6 +35,8 @@ export var MapMLLayer = L.Layer.extend({
         this._mapmlTileContainer = L.DomUtil.create('div', 'mapml-tile-container', this._container);
         // hit the service to determine what its extent might be
         // OR use the extent of the content provided
+
+        if (!mapml && content.hasAttribute('label')) this._title = content.getAttribute('label');
         this._initCount = 0;
         this._initExtent(mapml ? content : null);
         
@@ -918,7 +920,7 @@ export var MapMLLayer = L.Layer.extend({
                 
                 if (mapml.querySelector('title')) {
                   layer._title = mapml.querySelector('title').textContent.trim();
-                } else if (mapml.hasAttribute('label')) {
+                } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
                   layer._title = mapml.getAttribute('label').trim();
                 }
                 if (layer._map) {
