@@ -36,7 +36,7 @@ export var MapMLLayer = L.Layer.extend({
         // hit the service to determine what its extent might be
         // OR use the extent of the content provided
 
-        if (!mapml && content.hasAttribute('label')) this._title = content.getAttribute('label');
+        if (!mapml && content && content.hasAttribute('label')) this._title = content.getAttribute('label');
         this._initCount = 0;
         this._initExtent(mapml ? content : null);
         
