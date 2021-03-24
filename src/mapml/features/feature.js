@@ -66,7 +66,6 @@ export var Feature = L.Path.extend({
       this.group = this.options.multiGroup;
     } else {
       this.group = L.SVG.create('g');
-      this.group.setAttribute('role', 'region');
       if(this.options.interactive) this.group.setAttribute("aria-expanded", "false");
       this.group.setAttribute('aria-label', this.options.accessibleTitle);
       if(this.options.featureID) this.group.setAttribute("data-fid", this.options.featureID);
