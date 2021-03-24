@@ -40,8 +40,11 @@ export var Feature = L.Path.extend({
     this._markup = markup;
     this.options.zoom = markup.getAttribute('zoom') || this.options.nativeZoom;
 
-    this._generateOutlinePoints();
     this._convertMarkup();
+
+    if(markup.querySelector('span') || markup.querySelector('a')){
+      this._generateOutlinePoints();
+    }
 
     this.isClosed = this._isClosed();
   },
@@ -144,13 +147,13 @@ export var Feature = L.Path.extend({
    */
   _convertMarkup: function () {
     if (!this._markup) return;
-    let attrMap = {}, attr = this._markup.attributes;
+
+    let attr = this._markup.attributes;
+    this.featureAttributes = {};
     for(let i = 0; i < attr.length; i++){
-      if(attr[i].name === "class") continue;
-      attrMap[attr[i].name] = attr[i].value;
+      this.featureAttributes[attr[i].name] = attr[i].value;
     }
 
-    this.featureAttributes = attrMap;
     let first = true;
     for (let c of this._markup.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
       let ring = [], subrings = [];
@@ -164,7 +167,7 @@ export var Feature = L.Path.extend({
           this._parts.push({ rings: [{ points: [point] }], subrings: [], cls: point.cls || this.options.className });
         }
       } else {
-        this._parts.push({ rings: ring, subrings: subrings, cls: this.options.className });
+        this._parts.push({ rings: ring, subrings: subrings, cls: this.featureAttributes.class || this.options.className });
       }
       first = false;
     }
@@ -194,7 +197,7 @@ export var Feature = L.Path.extend({
             c += `${next[0]} ${next[1]} `;
           }
           tempDiv.innerHTML = c;
-          this._coordinateToArrays(tempDiv, line, [], true, this.options.className);
+          this._coordinateToArrays(tempDiv, line, [], true, this.featureAttributes.class || this.options.className);
           this._outline.push(line);
         }
         cur++;
