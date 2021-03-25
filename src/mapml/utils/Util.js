@@ -257,7 +257,7 @@ export var Util = {
   // input "max=5,min=4" => [[max,5][min,5]]
   metaContentToObject: function(input){
     if(!input || input instanceof Object)return {};
-    let content = input.split(" ").join("");
+    let content = input.split(/\s+/).join("");
     let contentArray = {};
     let stringSplit = content.split(',');
 
