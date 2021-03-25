@@ -185,14 +185,15 @@ export var Feature = L.Path.extend({
       for (let n of nodes) {
         let line = [];
         if (!n.tagName) {  //no tagName means it's text content
-          let c = '';
-          if (cur - 1 > 0 && nodes[cur - 1].tagName) {
-            let prev = nodes[cur - 1].textContent.split(' ');
+          let c = '', ind = (((cur - 1)%nodes.length) + nodes.length) % nodes.length; // this equation turns Javascript's % to how it behaves in C for example
+          if (nodes[ind].tagName) {
+            let prev = nodes[ind].textContent.trim().split(/\s+/);
             c += `${prev[prev.length - 2]} ${prev[prev.length - 1]} `;
           }
           c += n.textContent;
-          if (cur + 1 < nodeLength && nodes[cur + 1].tagName) {
-            let next = nodes[cur + 1].textContent.split(' ');
+          ind = (((cur + 1)%nodes.length) + nodes.length) % nodes.length; // this is equivalent to C/C++'s (cur + 1) % nodes.length
+          if (nodes[ind].tagName) {
+            let next = nodes[ind].textContent.trim().split(/\s+/);
             c += `${next[0]} ${next[1]} `;
           }
           tempDiv.innerHTML = c;
