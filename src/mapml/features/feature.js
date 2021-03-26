@@ -40,6 +40,7 @@ export var Feature = L.Path.extend({
     this._markup = markup;
     this.options.zoom = markup.getAttribute('zoom') || this.options.nativeZoom;
 
+    this._convertWrappers();
     this._convertMarkup();
 
     if(markup.querySelector('span') || markup.querySelector('a')){
@@ -141,6 +142,30 @@ export var Feature = L.Path.extend({
   },
 
   /**
+   * Converts the spans, a and divs around a geometry subtype into options for the feature
+   * @private
+   */
+  _convertWrappers: function () {
+    if(!this.options.wrappers) return;
+    let classList = '';
+    for(let elem of this.options.wrappers){
+      if(elem.tagName.toUpperCase() !== "A" && elem.className){
+        // Useful if getting other attributes off spans and divs is useful
+/*        let attr = elem.attributes;
+        for(let i = 0; i < attr.length; i++){
+          if(attr[i].name === "class" || attributes[attr[i].name]) continue;
+          attributes[attr[i].name] = attr[i].value;
+        }*/
+        classList +=`${elem.className} `;
+      } else if(!this.options.link && elem.href) {
+        this.options.link = elem.href;
+        this.options.linkType = elem.target;
+      }
+    }
+    this.options.className = `${classList} ${this.options.className}`.trim();
+  },
+
+  /**
    * Converts this._markup to the internal structure of features
    * @private
    */
@@ -163,10 +188,10 @@ export var Feature = L.Path.extend({
           this._parts[0].subrings = this._parts[0].subrings.concat(subrings);
       } else if (this.type === "MULTIPOINT") {
         for (let point of ring[0].points.concat(subrings)) {
-          this._parts.push({ rings: [{ points: [point] }], subrings: [], cls: point.cls || this.options.className });
+          this._parts.push({ rings: [{ points: [point] }], subrings: [], cls:`${point.cls || ""} ${this.options.className || ""}`.trim() });
         }
       } else {
-        this._parts.push({ rings: ring, subrings: subrings, cls: this.featureAttributes.class || this.options.className });
+        this._parts.push({ rings: ring, subrings: subrings, cls: `${this.featureAttributes.class || ""} ${this.options.className || ""}`.trim() });
       }
       first = false;
     }

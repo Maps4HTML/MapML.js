@@ -250,7 +250,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       let zoom = mapml.getAttribute("zoom") || nativeZoom, title = mapml.querySelector("featurecaption");
       title = title ? title.innerHTML : "Feature";
 
-      let layer = this.geometryToLayer(mapml, options.pointToLayer, options, nativeCS, +zoom, title);
+      let layer = this.geometryToLayer(mapml, options, nativeCS, +zoom, title);
       if (layer) {
         layer.properties = mapml.getElementsByTagName('properties')[0];
         
@@ -322,14 +322,11 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         this._openPopup(e);
       }
     },
-  geometryToLayer: function (mapml, pointToLayer, vectorOptions, nativeCS, zoom, title) {
+  geometryToLayer: function (mapml, vectorOptions, nativeCS, zoom, title) {
     let geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
-        cs = geometry.getAttribute("cs") || nativeCS, subFeatures = geometry, group = [], multiGroup;
+        cs = geometry.getAttribute("cs") || nativeCS, group = [], multiGroup;
 
-    if(geometry.firstElementChild.tagName === "GEOMETRYCOLLECTION" || geometry.firstElementChild.tagName === "MULTIPOLYGON")
-      subFeatures = geometry.firstElementChild;
-
-    for(let geo of subFeatures.children){
+    for(let geo of geometry.querySelectorAll('polygon, linestring, multilinestring, point, multipoint')){
       if(group.length > 0) multiGroup = group[group.length - 1].group;
       group.push(M.feature(geo, Object.assign(vectorOptions,
         { nativeCS: cs,
@@ -338,9 +335,18 @@ export var MapMLFeatures = L.FeatureGroup.extend({
           featureID: mapml.id,
           multiGroup: multiGroup,
           accessibleTitle: title,
+          wrappers: this._getGeometryParents(geo.parentElement),
         })));
     }
     return M.featureGroup(group);
+  },
+
+  _getGeometryParents: function(subType, elems = []){
+    if(subType && subType.tagName.toUpperCase() !== "GEOMETRY"){
+      return this._getGeometryParents(subType.parentElement, elems.concat([subType]));
+    } else {
+      return elems;
+    }
   },
 });
 export var mapMlFeatures = function (mapml, options) {

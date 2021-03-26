@@ -21,7 +21,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       this._map._addZoomLimit(this);
       var mapml, headers = new Headers({'Accept': 'text/mapml'});
           var parser = new DOMParser(),
-          opacity = this.options.opacity,
+          opacity = this.options.opacity || 1,
           container = this._container,
           map = this._map;
       if (!this._features) {
