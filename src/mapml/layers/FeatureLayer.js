@@ -250,10 +250,10 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       let zoom = mapml.getAttribute("zoom") || nativeZoom, title = mapml.querySelector("featurecaption");
       title = title ? title.innerHTML : "Feature";
 
+      options.properties = mapml.getElementsByTagName('properties')[0];
+
       let layer = this.geometryToLayer(mapml, options, nativeCS, +zoom, title);
       if (layer) {
-        layer.properties = mapml.getElementsByTagName('properties')[0];
-        
         // if the layer is being used as a query handler output, it will have
         // a color option set.  Otherwise, copy classes from the feature
         if (!layer.options.color && mapml.hasAttribute('class')) {
@@ -263,15 +263,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         this.resetStyle(layer);
 
         if (options.onEachFeature) {
-          options.onEachFeature(layer.properties, layer);
           layer.bindTooltip(title, { interactive:true, sticky: true, });
-          if(layer._events){
-            if(!layer._events.keypress) layer._events.keypress = [];
-            layer._events.keypress.push({
-              "ctx": layer,
-              "fn": this._onSpacePress,
-            });
-          }
         }
         if(this._staticFeature){
           let featureZoom = mapml.getAttribute('zoom') || nativeZoom;
@@ -317,11 +309,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         this._container.removeChild(toDelete[i]);
       }
     },
-    _onSpacePress: function(e){
-      if(e.originalEvent.keyCode === 32){
-        this._openPopup(e);
-      }
-    },
   geometryToLayer: function (mapml, vectorOptions, nativeCS, zoom, title) {
     let geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
         cs = geometry.getAttribute("cs") || nativeCS, group = [], multiGroup;
@@ -336,6 +323,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
           multiGroup: multiGroup,
           accessibleTitle: title,
           wrappers: this._getGeometryParents(geo.parentElement),
+          featureLayer: this,
         })));
     }
     return M.featureGroup(group);

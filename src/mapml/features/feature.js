@@ -43,6 +43,16 @@ export var Feature = L.Path.extend({
     this._convertWrappers();
     this._convertMarkup();
 
+    if(this.options.link){
+      this.on({
+        click: this._handleLinkClick,
+        keypress: this._handleLinkKeypress,
+      }, this);
+    } else if(this.options.onEachFeature) {
+      this.options.onEachFeature(this.options.properties, this);
+      this.on('keypress', this._handleSpaceDown, this);
+    }
+
     if(markup.querySelector('span') || markup.querySelector('a')){
       this._generateOutlinePoints();
     }
@@ -55,6 +65,16 @@ export var Feature = L.Path.extend({
    */
   onRemove: function () {
     L.DomEvent.off(this.group, "keyup keydown mousedown", this._handleFocus, this);
+
+    if(this.options.link) {
+      this.off({
+        click: this._handleLinkClick,
+        keypress: this._handleLinkKeypress,
+      });
+    }
+
+    if(this.options.onEachFeature) this.off('keypress', this._handleSpaceDown);
+
     L.Path.prototype.onRemove.call(this);
   },
 
@@ -71,6 +91,43 @@ export var Feature = L.Path.extend({
       this.group.setAttribute('aria-label', this.options.accessibleTitle);
       if(this.options.featureID) this.group.setAttribute("data-fid", this.options.featureID);
       L.DomEvent.on(this.group, "keyup keydown mousedown", this._handleFocus, this);
+    }
+  },
+
+  _handleLinkClick: function(e){
+    L.DomEvent.stop(e);
+    let layer = document.createElement('layer-');
+    layer.setAttribute('src', this.options.link);
+    layer.setAttribute('checked', '');
+    switch (this.options.linkType) {
+      case "_blank":
+        this._map.options.mapEl.appendChild(layer);
+        break;
+      case "_parent":
+        for(let l of this._map.options.mapEl.querySelectorAll("layer-"))
+          if(l._layer !== this.options.featureLayer.options._leafletLayer) this._map.options.mapEl.removeChild(l);
+        this._map.options.mapEl.appendChild(layer);
+        this._map.options.mapEl.removeChild(this.options.featureLayer.options._leafletLayer._layerEl);
+        break;
+      case "_top":
+        console.log("Need to implement");
+        break;
+      case "_self":
+      default:
+        this.options.featureLayer.options._leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
+        this._map.options.mapEl.removeChild(this.options.featureLayer.options._leafletLayer._layerEl);
+    }
+  },
+
+  _handleLinkKeypress: function(e){
+    if (e.originalEvent.keyCode === 13 || e.originalEvent.keyCode === 32) {
+      this._handleLinkClick(e)
+    }
+  },
+
+  _handleSpaceDown: function (e){
+    if(e.originalEvent.keyCode === 32){
+      this._openPopup(e);
     }
   },
 
@@ -159,7 +216,7 @@ export var Feature = L.Path.extend({
         classList +=`${elem.className} `;
       } else if(!this.options.link && elem.href) {
         this.options.link = elem.href;
-        this.options.linkType = elem.target;
+        if(elem.hasAttribute("target")) this.options.linkType = elem.getAttribute("target");
       }
     }
     this.options.className = `${classList} ${this.options.className}`.trim();
