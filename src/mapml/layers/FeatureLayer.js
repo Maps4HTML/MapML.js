@@ -323,12 +323,11 @@ export var MapMLFeatures = L.FeatureGroup.extend({
           projection: this.options.projection,
           featureID: mapml.id,
           group: svgGroup,
-          accessibleTitle: title,
           wrappers: this._getGeometryParents(geo.parentElement),
           featureLayer: this,
         })));
     }
-    return M.featureGroup(group, {group:svgGroup, featureID: mapml.id, accessibleTitle: title, interactive: true, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties});
+    return M.featureGroup(group, {group:svgGroup, featureID: mapml.id, accessibleTitle: title, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties});
   },
 
   _getGeometryParents: function(subType, elems = []){

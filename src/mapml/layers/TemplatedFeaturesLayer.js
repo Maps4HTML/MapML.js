@@ -38,7 +38,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
           static: true,
           onEachFeature: function(properties, geometry) {
             // need to parse as HTML to preserve semantics and styles
-            geometry.bindPopup(c, {autoClose: false, minWidth: 108});
+            geometry.bindPopup(properties, {autoClose: false, minWidth: 108});
           }
         });
       }

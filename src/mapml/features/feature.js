@@ -19,9 +19,6 @@
  *  ];
  */
 export var Feature = L.Path.extend({
-  options: {
-    accessibleTitle: "Feature",
-  },
 
   /**
    * Initializes the M.Feature
@@ -91,7 +88,7 @@ export var Feature = L.Path.extend({
         this._map.options.mapEl.removeChild(this.options.featureLayer.options._leafletLayer._layerEl);
         break;
       case "_top":
-        console.log("Need to implement");
+        window.location.href = this.options.link;
         break;
       case "_self":
       default:

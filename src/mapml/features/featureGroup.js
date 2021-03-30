@@ -8,15 +8,16 @@ export var FeatureGroup = L.FeatureGroup.extend({
   initialize: function (layers, options) {
     L.LayerGroup.prototype.initialize.call(this, layers, options);
 
-    if(this.options.interactive){
+    if(this.options.onEachFeature) {
       this.options.group.setAttribute("aria-expanded", "false");
       this.options.group.setAttribute('tabindex', '0');
       L.DomUtil.addClass(this.options.group, "leaflet-interactive");
       this.options.onEachFeature(this.options.properties, this);
+      L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
     }
+
     this.options.group.setAttribute('aria-label', this.options.accessibleTitle);
     if(this.options.featureID) this.options.group.setAttribute("data-fid", this.options.featureID);
-    L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
   },
 
   /**
@@ -37,7 +38,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
   },
 
   addLayer: function (layer) {
-    if(!layer.options.link) {
+    if(!layer.options.link && this.options.onEachFeature) {
       this.options.onEachFeature(this.options.properties, layer);
     }
     L.FeatureGroup.prototype.addLayer.call(this, layer);

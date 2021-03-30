@@ -87,7 +87,7 @@ export var FeatureRenderer = L.SVG.extend({
     for (let p of layer._parts) {
       if (p.path)
         layer.group.appendChild(p.path);
-      if (p.path.classList.contains("leaflet-interactive"))
+      if (interactive)
         layer.addInteractiveTarget(p.path)
 
       if(!outlineAdded && layer.pixelOutline) {
