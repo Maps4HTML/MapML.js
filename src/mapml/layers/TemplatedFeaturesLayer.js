@@ -38,9 +38,6 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
           static: true,
           onEachFeature: function(properties, geometry) {
             // need to parse as HTML to preserve semantics and styles
-            var c = document.createElement('div');
-            c.classList.add("mapml-popup-content");
-            c.insertAdjacentHTML('afterbegin', properties.innerHTML);
             geometry.bindPopup(c, {autoClose: false, minWidth: 108});
           }
         });

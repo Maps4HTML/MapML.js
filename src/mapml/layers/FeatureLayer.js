@@ -250,7 +250,11 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       let zoom = mapml.getAttribute("zoom") || nativeZoom, title = mapml.querySelector("featurecaption");
       title = title ? title.innerHTML : "Feature";
 
-      options.properties = mapml.getElementsByTagName('properties')[0];
+      let propertyContainer = document.createElement('div');
+      propertyContainer.classList.add("mapml-popup-content");
+      propertyContainer.insertAdjacentHTML('afterbegin', mapml.querySelector("properties").innerHTML);
+
+      options.properties = propertyContainer;
 
       let layer = this.geometryToLayer(mapml, options, nativeCS, +zoom, title);
       if (layer) {
@@ -311,26 +315,26 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     },
   geometryToLayer: function (mapml, vectorOptions, nativeCS, zoom, title) {
     let geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
-        cs = geometry.getAttribute("cs") || nativeCS, group = [], multiGroup;
-
+        cs = geometry.getAttribute("cs") || nativeCS, group = [], svgGroup = L.SVG.create('g');
     for(let geo of geometry.querySelectorAll('polygon, linestring, multilinestring, point, multipoint')){
-      if(group.length > 0) multiGroup = group[group.length - 1].group;
       group.push(M.feature(geo, Object.assign(vectorOptions,
         { nativeCS: cs,
           nativeZoom: zoom,
           projection: this.options.projection,
           featureID: mapml.id,
-          multiGroup: multiGroup,
+          group: svgGroup,
           accessibleTitle: title,
           wrappers: this._getGeometryParents(geo.parentElement),
           featureLayer: this,
         })));
     }
-    return M.featureGroup(group);
+    return M.featureGroup(group, {group:svgGroup, featureID: mapml.id, accessibleTitle: title, interactive: true, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties});
   },
 
   _getGeometryParents: function(subType, elems = []){
     if(subType && subType.tagName.toUpperCase() !== "GEOMETRY"){
+      if(subType.tagName.toUpperCase() === "MULTIPOLYGON" || subType.tagName.toUpperCase() === "GEOMETRYCOLLECTION")
+        return this._getGeometryParents(subType.parentElement, elems);
       return this._getGeometryParents(subType.parentElement, elems.concat([subType]));
     } else {
       return elems;

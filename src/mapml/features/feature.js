@@ -34,7 +34,7 @@ export var Feature = L.Path.extend({
     if(this.type === "POINT" || this.type === "MULTIPOINT") options.fillOpacity = 1;
     L.setOptions(this, options);
 
-    this._createGroup();  // creates the <g> element for the feature, or sets the one passed in options as the <g>
+    this.group = this.options.group;
 
     this._parts = [];
     this._markup = markup;
@@ -48,10 +48,9 @@ export var Feature = L.Path.extend({
         click: this._handleLinkClick,
         keypress: this._handleLinkKeypress,
       }, this);
-    } else if(this.options.onEachFeature) {
-      this.options.onEachFeature(this.options.properties, this);
-      this.on('keypress', this._handleSpaceDown, this);
     }
+
+    this.on('keypress', this._handleSpaceDown, this);
 
     if(markup.querySelector('span') || markup.querySelector('a')){
       this._generateOutlinePoints();
@@ -64,8 +63,6 @@ export var Feature = L.Path.extend({
    * Removes the focus handler, and calls the leaflet L.Path.onRemove
    */
   onRemove: function () {
-    L.DomEvent.off(this.group, "keyup keydown mousedown", this._handleFocus, this);
-
     if(this.options.link) {
       this.off({
         click: this._handleLinkClick,
@@ -73,25 +70,9 @@ export var Feature = L.Path.extend({
       });
     }
 
-    if(this.options.onEachFeature) this.off('keypress', this._handleSpaceDown);
+    if(this.options.interactive) this.off('keypress', this._handleSpaceDown);
 
     L.Path.prototype.onRemove.call(this);
-  },
-
-  /**
-   * Creates the <g> conditionally and also applies event handlers
-   * @private
-   */
-  _createGroup: function(){
-    if(this.options.multiGroup){
-      this.group = this.options.multiGroup;
-    } else {
-      this.group = L.SVG.create('g');
-      if(this.options.interactive) this.group.setAttribute("aria-expanded", "false");
-      this.group.setAttribute('aria-label', this.options.accessibleTitle);
-      if(this.options.featureID) this.group.setAttribute("data-fid", this.options.featureID);
-      L.DomEvent.on(this.group, "keyup keydown mousedown", this._handleFocus, this);
-    }
   },
 
   _handleLinkClick: function(e){
@@ -127,20 +108,11 @@ export var Feature = L.Path.extend({
 
   _handleSpaceDown: function (e){
     if(e.originalEvent.keyCode === 32){
-      this._openPopup(e);
-    }
-  },
-
-  /**
-   * Handler for focus events
-   * @param {L.DOMEvent} e - Event that occured
-   * @private
-   */
-  _handleFocus: function(e) {
-    if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup" && e.target.tagName === "g"){
-      this.openTooltip();
-    } else {
-      this.closeTooltip();
+      if(this.options.link){
+        this._handleLinkClick(e);
+      } else {
+        this._openPopup(e);
+      }
     }
   },
 
@@ -203,7 +175,7 @@ export var Feature = L.Path.extend({
    * @private
    */
   _convertWrappers: function () {
-    if(!this.options.wrappers) return;
+    if(!this.options.wrappers || this.options.wrappers.length === 0) return;
     let classList = '';
     for(let elem of this.options.wrappers){
       if(elem.tagName.toUpperCase() !== "A" && elem.className){

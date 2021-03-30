@@ -1,4 +1,48 @@
 export var FeatureGroup = L.FeatureGroup.extend({
+
+  /**
+   * Initialize the feature group
+   * @param {M.Feature[]} layers
+   * @param {Object} options
+   */
+  initialize: function (layers, options) {
+    L.LayerGroup.prototype.initialize.call(this, layers, options);
+
+    if(this.options.interactive){
+      this.options.group.setAttribute("aria-expanded", "false");
+      this.options.group.setAttribute('tabindex', '0');
+      L.DomUtil.addClass(this.options.group, "leaflet-interactive");
+      this.options.onEachFeature(this.options.properties, this);
+    }
+    this.options.group.setAttribute('aria-label', this.options.accessibleTitle);
+    if(this.options.featureID) this.options.group.setAttribute("data-fid", this.options.featureID);
+    L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
+  },
+
+  /**
+   * Handler for focus events
+   * @param {L.DOMEvent} e - Event that occured
+   * @private
+   */
+  _handleFocus: function(e) {
+    if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup" && e.target.tagName === "g") {
+      this.openTooltip();
+    } else if (e.keyCode === 13 || e.keyCode === 32){
+      L.DomEvent.stop(e);
+      this.closeTooltip();
+      this.openPopup();
+    } else {
+      this.closeTooltip();
+    }
+  },
+
+  addLayer: function (layer) {
+    if(!layer.options.link) {
+      this.options.onEachFeature(this.options.properties, layer);
+    }
+    L.FeatureGroup.prototype.addLayer.call(this, layer);
+  },
+
   /**
    * Focuses the previous function in the sequence on previous button press
    * @param e
