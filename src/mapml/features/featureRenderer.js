@@ -29,7 +29,7 @@ export var FeatureRenderer = L.SVG.extend({
       }
       if (p.subrings) {
         for (let r of p.subrings) {
-          this._createPath(r, layer.options.className, r.attr['aria-label'], false, r.attr);
+          this._createPath(r, layer.options.className, r.attr['aria-label'], (r.link !== undefined), r.attr);
           if(r.attr && r.attr.tabindex){
             p.path.setAttribute('tabindex', r.attr.tabindex || '0');
           }
@@ -87,8 +87,10 @@ export var FeatureRenderer = L.SVG.extend({
     for (let p of layer._parts) {
       if (p.path)
         layer.group.appendChild(p.path);
-      if (interactive)
+      if (interactive){
+        if(layer.options.link) layer.attachLinkHandler(p.path, layer.options.link, layer.options.linkType);
         layer.addInteractiveTarget(p.path)
+      }
 
       if(!outlineAdded && layer.pixelOutline) {
         layer.group.appendChild(layer.outlinePath);
@@ -96,8 +98,13 @@ export var FeatureRenderer = L.SVG.extend({
       }
 
       for (let subP of p.subrings) {
-        if (subP.path)
+        if (subP.path) {
+          if (subP.link){
+            layer.attachLinkHandler(subP.path, subP.link, subP.linkType);
+            layer.addInteractiveTarget(subP.path);
+          }
           layer.group.appendChild(subP.path);
+        }
       }
     }
     c.appendChild(layer.group);

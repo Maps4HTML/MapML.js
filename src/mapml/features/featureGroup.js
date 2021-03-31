@@ -26,6 +26,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @private
    */
   _handleFocus: function(e) {
+    if(e.target.tagName.toUpperCase() !== "G") return;
     if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup" && e.target.tagName === "g") {
       this.openTooltip();
     } else if (e.keyCode === 13 || e.keyCode === 32){
