@@ -36,6 +36,13 @@ jest.setTimeout(50000);
           expect(tilesLoaded).toEqual(2);
           expect(misMatchedLayerDisabled).toEqual(true);
         });
+        test("[" + browserType + "]" + " A projection name containing a colon is invalid", async () => {
+          const message = await page.$eval(
+            "body > p",
+            (message) => message.innerHTML
+          ); 
+          expect(message).toEqual("passing");
+        });
         test("[" + browserType + "]" + " Complex Custom TCRS, static features loaded, templated features loaded", async () => {
           const staticFeatures = await page.$eval(
             "body > mapml-viewer:nth-child(3) > layer-:nth-child(1)",
