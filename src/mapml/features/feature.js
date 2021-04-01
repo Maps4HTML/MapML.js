@@ -104,7 +104,6 @@ export var Feature = L.Path.extend({
       case "_top":
         window.location.href = link;
         break;
-      case "_self":
       default:
         this.options.featureLayer.options._leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
         this._map.options.mapEl.removeChild(this.options.featureLayer.options._leafletLayer._layerEl);
