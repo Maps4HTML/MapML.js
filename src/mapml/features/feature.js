@@ -77,7 +77,7 @@ export var Feature = L.Path.extend({
     }, this);
     L.DomEvent.on(path, "keypress", (e) => {
       if (e.keyCode === 13 || e.keyCode === 32)
-        this._handleLink(link, linkType)
+        this._handleLink(link, linkType);
     }, this);
   },
 

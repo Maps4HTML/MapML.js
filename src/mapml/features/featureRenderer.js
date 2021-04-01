@@ -89,7 +89,7 @@ export var FeatureRenderer = L.SVG.extend({
         layer.group.appendChild(p.path);
       if (interactive){
         if(layer.options.link) layer.attachLinkHandler(p.path, layer.options.link, layer.options.linkType);
-        layer.addInteractiveTarget(p.path)
+        layer.addInteractiveTarget(p.path);
       }
 
       if(!outlineAdded && layer.pixelOutline) {
