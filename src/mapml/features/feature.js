@@ -73,6 +73,12 @@ export var Feature = L.Path.extend({
    */
   attachLinkHandler: function (path, link, linkType) {
     L.DomEvent.on(path, "click", (e) => {
+      this._map.once('movestart', (e) => {
+        this._moving = true;
+        this._map.once('moveend', (e) => {
+          this._moving = false;
+        });
+      });
       this._handleLink(link, linkType);
     }, this);
     L.DomEvent.on(path, "keypress", (e) => {
@@ -88,6 +94,7 @@ export var Feature = L.Path.extend({
    * @private
    */
   _handleLink: function (link, linkType) {
+    if (this._moving) return;
     let layer = document.createElement('layer-');
     layer.setAttribute('src', link);
     layer.setAttribute('checked', '');
@@ -199,6 +206,7 @@ export var Feature = L.Path.extend({
 
     let attr = this._markup.attributes;
     this.featureAttributes = {};
+    if (this.options.link) this.featureAttributes.tabindex = "0";
     for(let i = 0; i < attr.length; i++){
       this.featureAttributes[attr[i].name] = attr[i].value;
     }
