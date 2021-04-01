@@ -563,11 +563,12 @@ export class MapViewer extends HTMLElement {
 
   defineCustomProjection(jsonTemplate) {
     let t = JSON.parse(jsonTemplate);
-    if (t === undefined || !t.code || !t.proj4string || !t.projection || !t.resolutions || !t.origin || !t.bounds) throw new Error('Incomplete TCRS Definition');
+    if (t === undefined || !t.proj4string || !t.projection || !t.resolutions || !t.origin || !t.bounds) throw new Error('Incomplete TCRS Definition');
+    if (t.projection.indexOf(":") >= 0) throw new Error('":" is not permitted in projection name');
     if (M[t.projection.toUpperCase()]) return t.projection.toUpperCase();
     let tileSize = [256, 512, 1024, 2048, 4096].includes(t.tilesize)?t.tilesize:256;
 
-    M[t.projection] = new L.Proj.CRS(t.code, t.proj4string, {
+    M[t.projection] = new L.Proj.CRS(t.projection, t.proj4string, {
       origin: t.origin,
       resolutions: t.resolutions,
       bounds: L.bounds(t.bounds),
