@@ -442,7 +442,9 @@ summary {
   outline-offset: -1px;
   z-index: 1000;
   pointer-events: none;
-  position: relative;
+  position: absolute;
+  height: 100%;
+  width: 100%;
 }
 
 /* Quick fix for https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/358,
