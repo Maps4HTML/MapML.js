@@ -571,7 +571,7 @@ export var MapMLLayer = L.Layer.extend({
             control.style.pointerEvents = "none";
 
             let x = moveEvent.clientX, y = moveEvent.clientY,
-                root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".web-map").shadowRoot,
+                root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".mapml-web-map").shadowRoot,
                 elementAt = root.elementFromPoint(x, y),
                 swapControl = !elementAt || !elementAt.closest("fieldset") ? control : elementAt.closest("fieldset");
       
