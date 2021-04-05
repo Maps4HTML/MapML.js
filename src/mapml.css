@@ -261,24 +261,33 @@
   max-height: 100%;
   max-width: 100%;
   border-radius: 4px;
-  padding: 10px;
+  padding: 5px 10px;
   background-color: #fff;
   cursor: default;
+  z-index: 1000;
+  position: absolute;
+  display: block;
+  top: auto;
+  right: 5px;
+  bottom: 5px;
+  left: 5px;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content
 }
 
 .mapml-debug-banner {
-  margin-left: 4px;
   font-weight: bold;
   text-transform: uppercase;
+  display: inline-block;
+  text-align: left;
+  text-align: inline-start;
+  line-height: 2;
 }
 
 .mapml-debug-panel,
 .mapml-debug-grid {
   font-family: monospace;
-}
-
-.mapml-debug-panel {
-  margin-top: 4px;
 }
 
 .mapml-debug-tile {
@@ -289,6 +298,20 @@
 .mapml-debug-coordinates {
   padding-left: 4px;
   padding-right: 4px;
+}
+
+.mapml-debug,
+.mapml-debug * {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.mapml-debug-coordinates:empty {
+  display: none;
+}
+
+.mapml-debug-coordinates > * {
+  display: inline;
 }
 
 /*

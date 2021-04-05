@@ -6,14 +6,7 @@ export var DebugOverlay = L.Layer.extend({
 
     //conditionally show container for debug panel/banner only when the map has enough space for it
     if (mapSize.x > 400 || mapSize.y > 300) {
-      this._container = L.DomUtil.create("div", "mapml-debug", map._container);
-      this._container.style.width = 150;
-      this._container.style.zIndex = 10000;
-      this._container.style.position = "absolute";
-      this._container.style.top = "auto";
-      this._container.style.bottom = "5px";
-      this._container.style.left = "5px";
-      this._container.style.right = "auto";
+      this._container = L.DomUtil.create("table", "mapml-debug", map._container);
 
       this._panel = debugPanel({
         className: "mapml-debug-panel",
@@ -62,20 +55,20 @@ export var DebugPanel = L.Layer.extend({
 
   onAdd: function (map) {
 
-    this._title = L.DomUtil.create("div", "mapml-debug-banner", this.options.pane);
+    this._title = L.DomUtil.create("caption", "mapml-debug-banner", this.options.pane);
     this._title.innerHTML = "Debug mode";
 
     map.debug = {};
-    map.debug._infoContainer = this._debugContainer = L.DomUtil.create("div", "mapml-debug-panel", this.options.pane);
+    map.debug._infoContainer = this._debugContainer = L.DomUtil.create("tbody", "mapml-debug-panel", this.options.pane);
 
     let infoContainer = map.debug._infoContainer;
 
-    map.debug._tileCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-    map.debug._tileMatrixCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-    map.debug._mapCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-    map.debug._tcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-    map.debug._pcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
-    map.debug._gcrsCoord = L.DomUtil.create("div", "mapml-debug-coordinates", infoContainer);
+    map.debug._tileCoord = L.DomUtil.create("tr", "mapml-debug-coordinates", infoContainer);
+    map.debug._tileMatrixCoord = L.DomUtil.create("tr", "mapml-debug-coordinates", infoContainer);
+    map.debug._mapCoord = L.DomUtil.create("tr", "mapml-debug-coordinates", infoContainer);
+    map.debug._tcrsCoord = L.DomUtil.create("tr", "mapml-debug-coordinates", infoContainer);
+    map.debug._pcrsCoord = L.DomUtil.create("tr", "mapml-debug-coordinates", infoContainer);
+    map.debug._gcrsCoord = L.DomUtil.create("tr", "mapml-debug-coordinates", infoContainer);
 
     this._map.on("mousemove", this._updateCoords);
 
@@ -99,12 +92,36 @@ export var DebugPanel = L.Layer.extend({
     if (pointI < 0) pointI += tileSize;
     if (pointJ < 0) pointJ += tileSize;
 
-    this.debug._tileCoord.innerHTML = `tile: i: ${Math.trunc(pointI)}, j: ${Math.trunc(pointJ)}`;
-    this.debug._mapCoord.innerHTML = `map: i: ${Math.trunc(e.containerPoint.x)}, j: ${Math.trunc(e.containerPoint.y)}`;
-    this.debug._gcrsCoord.innerHTML = `gcrs: lon: ${e.latlng.lng.toFixed(6)}, lat: ${e.latlng.lat.toFixed(6)}`;
-    this.debug._tcrsCoord.innerHTML = `tcrs: x:${Math.trunc(point.x)}, y:${Math.trunc(point.y)}`;
-    this.debug._tileMatrixCoord.innerHTML = `tilematrix: column:${Math.trunc(point.x / tileSize)}, row:${Math.trunc(point.y / tileSize)}`;
-    this.debug._pcrsCoord.innerHTML = `pcrs: easting:${pcrs.x.toFixed(2)}, northing:${pcrs.y.toFixed(2)}`;
+    this.debug._tileCoord.innerHTML = `
+      <th scope="row">tile: </th>
+      <td>i: ${Math.trunc(pointI)}, </td>
+      <td>j: ${Math.trunc(pointJ)}</td>
+      `;
+    this.debug._mapCoord.innerHTML = `
+      <th scope="row">map: </th>
+      <td>i: ${Math.trunc(e.containerPoint.x)}, </td>
+      <td>j: ${Math.trunc(e.containerPoint.y)}</td>
+      `;
+    this.debug._gcrsCoord.innerHTML = `
+      <th scope="row">gcrs: </th>
+      <td>lon: ${e.latlng.lng.toFixed(6)}, </td>
+      <td>lat: ${e.latlng.lat.toFixed(6)}</td>
+      `;
+    this.debug._tcrsCoord.innerHTML = `
+      <th scope="row">tcrs: </th>
+      <td>x: ${Math.trunc(point.x)}, </td>
+      <td>y: ${Math.trunc(point.y)}</td>
+      `;
+    this.debug._tileMatrixCoord.innerHTML = `
+      <th scope="row">tilematrix: </th>
+      <td>column: ${Math.trunc(point.x / tileSize)}, </td>
+      <td>row: ${Math.trunc(point.y / tileSize)}</td>
+      `;
+    this.debug._pcrsCoord.innerHTML = `
+      <th scope="row">pcrs: </th>
+      <td>easting: ${pcrs.x.toFixed(2)}, </td>
+      <td>northing: ${pcrs.y.toFixed(2)}</td>
+      `;
   },
 
 });

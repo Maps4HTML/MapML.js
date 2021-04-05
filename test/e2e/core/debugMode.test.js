@@ -31,12 +31,12 @@ jest.setTimeout(50000);
           );
 
           const panel = await page.$eval(
-            "div > div.mapml-debug > div.mapml-debug-panel",
+            "div > table.mapml-debug > tbody.mapml-debug-panel",
             (panelElem) => panelElem.childElementCount
           );
 
           const banner = await page.$eval(
-            "div > div.mapml-debug > div.mapml-debug-banner",
+            "div > table.mapml-debug > caption.mapml-debug-banner",
             (bannerElem) => bannerElem.innerText
           );
 
@@ -78,35 +78,35 @@ jest.setTimeout(50000);
         test("[" + browserType + "]" + " Accurate debug coordinates", async () => {
           await page.hover("body > mapml-viewer");
           const tile = await page.$eval(
-            "div > div.mapml-debug > div.mapml-debug-panel > div:nth-child(1)",
+            "div > table.mapml-debug > tbody.mapml-debug-panel > tr:nth-child(1)",
             (tileElem) => tileElem.innerText
           );
           const matrix = await page.$eval(
-            "div > div.mapml-debug > div.mapml-debug-panel > div:nth-child(2)",
+            "div > table.mapml-debug > tbody.mapml-debug-panel > tr:nth-child(2)",
             (matrixElem) => matrixElem.innerText
           );
           const map = await page.$eval(
-            "div > div.mapml-debug > div.mapml-debug-panel > div:nth-child(3)",
+            "div > table.mapml-debug > tbody.mapml-debug-panel > tr:nth-child(3)",
             (mapElem) => mapElem.innerText
           );
           const tcrs = await page.$eval(
-            "div > div.mapml-debug > div.mapml-debug-panel > div:nth-child(4)",
+            "div > table.mapml-debug > tbody.mapml-debug-panel > tr:nth-child(4)",
             (tcrsElem) => tcrsElem.innerText
           );
           const pcrs = await page.$eval(
-            "div > div.mapml-debug > div.mapml-debug-panel > div:nth-child(5)",
+            "div > table.mapml-debug > tbody.mapml-debug-panel > tr:nth-child(5)",
             (pcrsElem) => pcrsElem.innerText
           );
           const gcrs = await page.$eval(
-            "div > div.mapml-debug > div.mapml-debug-panel > div:nth-child(6)",
+            "div > table.mapml-debug > tbody.mapml-debug-panel > tr:nth-child(6)",
             (gcrsElem) => gcrsElem.innerText
           );
 
           expect(tile).toEqual("tile: i: 141, j: 6");
-          expect(matrix).toEqual("tilematrix: column:3, row:4");
+          expect(matrix).toEqual("tilematrix: column: 3, row: 4");
           expect(map).toEqual("map: i: 250, j: 250");
-          expect(tcrs).toEqual("tcrs: x:909, y:1030");
-          expect(pcrs).toEqual("pcrs: easting:217676.00, northing:-205599.86");
+          expect(tcrs).toEqual("tcrs: x: 909, y: 1030");
+          expect(pcrs).toEqual("pcrs: easting: 217676.00, northing: -205599.86");
           expect(gcrs).toEqual("gcrs: lon: -92.152897, lat: 47.114275");
         });
 
@@ -142,12 +142,12 @@ jest.setTimeout(50000);
           );
 
           const panel = await page.$eval(
-            "div > div.mapml-debug > div.mapml-debug-panel",
+            "div > table.mapml-debug > tbody.mapml-debug-panel",
             (panelElem) => panelElem.childElementCount
           );
 
           const banner = await page.$eval(
-            "div > div.mapml-debug > div.mapml-debug-banner",
+            "div > table.mapml-debug > caption.mapml-debug-banner",
             (bannerElem) => bannerElem.innerText
           );
 
