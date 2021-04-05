@@ -273,7 +273,8 @@
   left: 5px;
   width: -webkit-fit-content;
   width: -moz-fit-content;
-  width: fit-content
+  width: fit-content;
+  font: inherit;
 }
 
 .mapml-debug-banner {
