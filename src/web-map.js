@@ -143,7 +143,7 @@ export class WebMap extends HTMLMapElement {
     `}`;
     
     // Hide all (light DOM) children of the map element except for the
-    // `<area>` and `<div class="web-map">` (shadow root host) elements.
+    // `<area>` and `<div class="mapml-web-map">` (shadow root host) elements.
     let hideElementsCSS = document.createElement('style');
     hideElementsCSS.innerHTML =
     `[is="web-map"] > :not(area):not(.mapml-web-map) {` +
