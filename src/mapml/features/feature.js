@@ -69,31 +69,42 @@ export var Feature = L.Path.extend({
    * Attaches link handler to the sub parts' paths
    * @param path
    * @param link
+   * @param linkTarget
    * @param linkType
    */
-  attachLinkHandler: function (path, link, linkType) {
-    L.DomEvent.on(path, "click", (e) => {
-      this._handleLink(link, linkType);
+  attachLinkHandler: function (path, link, linkTarget, linkType) {
+    let drag = false; //prevents click from happening on drags
+    L.DomEvent.on(path, 'mousedown', () =>{ drag = false;}, this);
+    L.DomEvent.on(path, 'mousemove', () =>{ drag = true;}, this);
+    L.DomEvent.on(path, "mouseup", (e) => {
+      L.DomEvent.stop(e);
+      if(!drag) this._handleLink(link, linkTarget, linkType);
     }, this);
     L.DomEvent.on(path, "keypress", (e) => {
       if (e.keyCode === 13 || e.keyCode === 32)
-        this._handleLink(link, linkType);
+        this._handleLink(link, linkTarget, linkType);
     }, this);
   },
 
   /**
    * Handles the different behaviors for link target types
    * @param link
+   * @param linkTarget
    * @param linkType
    * @private
    */
-  _handleLink: function (link, linkType) {
+  _handleLink: function (link, linkTarget, linkType) {
     let layer = document.createElement('layer-');
+    if(linkType === "text/html" && linkTarget !== "_blank") linkTarget = "_top";
     layer.setAttribute('src', link);
     layer.setAttribute('checked', '');
-    switch (linkType) {
+    switch (linkTarget) {
       case "_blank":
-        this._map.options.mapEl.appendChild(layer);
+        if(linkType === "text/html"){
+          window.open(link);
+        } else {
+          this._map.options.mapEl.appendChild(layer);
+        }
         break;
       case "_parent":
         for(let l of this._map.options.mapEl.querySelectorAll("layer-"))
@@ -107,6 +118,7 @@ export var Feature = L.Path.extend({
       default:
         this.options.featureLayer.options._leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
         this._map.options.mapEl.removeChild(this.options.featureLayer.options._leafletLayer._layerEl);
+
     }
   },
 
@@ -182,7 +194,8 @@ export var Feature = L.Path.extend({
         classList +=`${elem.className} `;
       } else if(!output.link && elem.getAttribute("href")) {
         output.link = elem.getAttribute("href");
-        if(elem.hasAttribute("target")) output.linkType = elem.getAttribute("target");
+        if(elem.hasAttribute("target")) output.linkTarget = elem.getAttribute("target");
+        if(elem.hasAttribute("type")) output.linkType = elem.getAttribute("type");
       }
     }
     output.className = `${classList} ${this.options.className}`.trim();
@@ -287,7 +300,7 @@ export var Feature = L.Path.extend({
         if(attr[i].name === "class") continue;
         attrMap[attr[i].name] = attr[i].value;
       }
-      subParts.unshift({ points: local, cls: `${cls || ""} ${wrapperAttr.className || ""}`.trim(), attr: attrMap, link: wrapperAttr.link, linkType: wrapperAttr.linkType});
+      subParts.unshift({ points: local, cls: `${cls || ""} ${wrapperAttr.className || ""}`.trim(), attr: attrMap, link: wrapperAttr.link, linkTarget: wrapperAttr.linkTarget, linkType: wrapperAttr.linkType});
     }
   },
 

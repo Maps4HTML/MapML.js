@@ -91,13 +91,15 @@ export var Crosshair = L.Layer.extend({
 
   _isMapFocused: function (e) {
     //set this._map.isFocused = true if arrow buttons are used
-    if (this._map._container.parentNode.activeElement.classList.contains("leaflet-container") && ["keydown"].includes(e.type) && (e.shiftKey && e.keyCode === 9)) {
+    if(!this._map._container.parentNode.activeElement){
       this._map.isFocused = false;
-    } else if (this._map._container.parentNode.activeElement.classList.contains("leaflet-container") && ["keyup", "keydown"].includes(e.type)) {
-      this._map.isFocused = true;
-    } else {
-      this._map.isFocused = false;
+      return;
     }
+    let isLeafletContainer = this._map._container.parentNode.activeElement.classList.contains("leaflet-container");
+    if (isLeafletContainer && ["keydown"].includes(e.type) && (e.shiftKey && e.keyCode === 9)) {
+      this._map.isFocused = false;
+    } else this._map.isFocused = isLeafletContainer && ["keyup", "keydown"].includes(e.type);
+
     this._addOrRemoveMapOutline();
     this._addOrRemoveCrosshair();
   },
