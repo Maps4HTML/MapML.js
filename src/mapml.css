@@ -309,6 +309,8 @@
 }
 
 /* Disable dragging of controls. */
+.mapml-popup-button,
+.leaflet-popup-close-button,
 .leaflet-control :not([draggable="true"]),
 .mapml-contextmenu :not([draggable="true"]) {
   -webkit-user-drag: none;
@@ -317,7 +319,8 @@
 /* Disable text selection in controls. */
 .leaflet-control,
 .mapml-contextmenu,
-.mapml-debug {
+.mapml-debug,
+.mapml-focus-buttons {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -439,7 +442,9 @@ summary {
   outline-offset: -1px;
   z-index: 1000;
   pointer-events: none;
-  position: relative;
+  position: absolute;
+  height: 100%;
+  width: 100%;
 }
 
 /* Quick fix for https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/358,
