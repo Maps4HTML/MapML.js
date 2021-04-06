@@ -107,7 +107,7 @@ export class WebMap extends HTMLMapElement {
     `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`;
 
     const rootDiv = document.createElement('div');
-    rootDiv.classList.add('web-map');
+    rootDiv.classList.add('mapml-web-map');
 
     let shadowRoot = rootDiv.attachShadow({mode: 'open'});
     this._container = document.createElement('div');
@@ -128,7 +128,7 @@ export class WebMap extends HTMLMapElement {
     `[is="web-map"][frameborder="0"] {` +
   	`border-width: 0;` +
   	`}` +
-    `[is="web-map"] .web-map {` +
+    `[is="web-map"] .mapml-web-map {` +
     `display: contents;` + // This div doesn't have to participate in layout by generating its own box.
     `}`;
     
@@ -143,10 +143,10 @@ export class WebMap extends HTMLMapElement {
     `}`;
     
     // Hide all (light DOM) children of the map element except for the
-    // `<area>` and `<div class="web-map">` (shadow root host) elements.
+    // `<area>` and `<div class="mapml-web-map">` (shadow root host) elements.
     let hideElementsCSS = document.createElement('style');
     hideElementsCSS.innerHTML =
-    `[is="web-map"] > :not(area):not(.web-map) {` +
+    `[is="web-map"] > :not(area):not(.mapml-web-map) {` +
     `display: none!important;` +
     `}`;
     
