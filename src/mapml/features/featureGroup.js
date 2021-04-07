@@ -15,16 +15,18 @@ export var FeatureGroup = L.FeatureGroup.extend({
       this.options.group.setAttribute("aria-expanded", "false");
       this.options.group.setAttribute('tabindex', '0');
       L.DomUtil.addClass(this.options.group, "leaflet-interactive");
-      if(!this.options.link && layers.length > 1) {
-        this.options.onEachFeature(this.options.properties, this);
-        L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
-        this.off("click", this._openPopup);
+      L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
+      let firstLayer = layers[Object.keys(layers)[0]];
+      if(layers.length === 1 && firstLayer.options.link){ //if it's the only layer and it has a link, take it's link
+        this.options.link = firstLayer.options.link;
+        this.options.linkTarget = firstLayer.options.linkTarget;
+        this.options.linkType = firstLayer.options.linkType;
+      }
+      if(this.options.link){
+        M.Feature.prototype.attachLinkHandler.call(this, this.options.group, this.options.link, this.options.linkTarget, this.options.linkType, this.options._leafletLayer);
       } else {
-        if(layers.length === 1){
-          let singleLayer = layers[Object.keys(layers)[0]];
-          M.Feature.prototype.attachLinkHandler.call(this, this.options.group, singleLayer.options.link, singleLayer.options.linkTarget, singleLayer.options.linkType, this.options._leafletLayer);
-        } else
-          M.Feature.prototype.attachLinkHandler.call(this, this.options.group, this.options.link, this.options.linkTarget, this.options.linkType, this.options._leafletLayer);
+        this.options.onEachFeature(this.options.properties, this);
+        this.off("click", this._openPopup);
       }
     }
 
@@ -42,9 +44,11 @@ export var FeatureGroup = L.FeatureGroup.extend({
     if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup") {
       this.openTooltip();
     } else if (e.keyCode === 13 || e.keyCode === 32){
-      L.DomEvent.stop(e);
       this.closeTooltip();
-      this.openPopup();
+      if(!this.options.link && this.options.onEachFeature){
+        L.DomEvent.stop(e);
+        this.openPopup();
+      }
     } else {
       this.closeTooltip();
     }
