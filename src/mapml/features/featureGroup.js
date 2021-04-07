@@ -6,17 +6,23 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @param {Object} options
    */
   initialize: function (layers, options) {
+    if(options.wrappers && options.wrappers.length > 0)
+      options = Object.assign(M.Feature.prototype._convertWrappers(options.wrappers), options);
     L.LayerGroup.prototype.initialize.call(this, layers, options);
 
-    if(this.options.onEachFeature) {
+
+    if(this.options.onEachFeature || this.options.link) {
       this.options.group.setAttribute("aria-expanded", "false");
       this.options.group.setAttribute('tabindex', '0');
       L.DomUtil.addClass(this.options.group, "leaflet-interactive");
-      this.options.onEachFeature(this.options.properties, this);
-      L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
+      if(!this.options.link) {
+        this.options.onEachFeature(this.options.properties, this);
+        L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
+        this.off("click", this._openPopup);
+      } else {
+        M.Feature.prototype.attachLinkHandler(this.options.group, this.options.link, this.options.linkTarget, this.options.linkType, this.options._leafletLayer);
+      }
     }
-
-    this.off("click", this._openPopup)
 
     this.options.group.setAttribute('aria-label', this.options.accessibleTitle);
     if(this.options.featureID) this.options.group.setAttribute("data-fid", this.options.featureID);
@@ -29,7 +35,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
    */
   _handleFocus: function(e) {
     if(e.target.tagName.toUpperCase() !== "G") return;
-    if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup" && e.target.tagName === "g") {
+    if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup") {
       this.openTooltip();
     } else if (e.keyCode === 13 || e.keyCode === 32){
       L.DomEvent.stop(e);

@@ -325,9 +325,15 @@ export var MapMLFeatures = L.FeatureGroup.extend({
           group: svgGroup,
           wrappers: this._getGeometryParents(geo.parentElement),
           featureLayer: this,
+          _leafletLayer: this.options._leafletLayer,
         })));
     }
-    return M.featureGroup(group, {group:svgGroup, featureID: mapml.id, accessibleTitle: title, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties});
+    let groupOptions = {group:svgGroup, featureID: mapml.id, accessibleTitle: title, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties, _leafletLayer: this.options._leafletLayer,},
+      collections = geometry.querySelector('multipolygon') || geometry.querySelector('geometrycollection');
+    if(collections){
+      groupOptions = Object.assign(groupOptions, { wrappers:this._getGeometryParents(collections.parentElement) });
+    }
+    return M.featureGroup(group, groupOptions);
   },
 
   _getGeometryParents: function(subType, elems = []){
