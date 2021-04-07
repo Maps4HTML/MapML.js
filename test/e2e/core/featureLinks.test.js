@@ -7,7 +7,7 @@ jest.setTimeout(50000);
       () => {
         beforeAll(async () => {
           browser = await playwright[browserType].launch({
-            headless: ISHEADLESS,
+            headless: false,//ISHEADLESS,
             slowMo: 50,
           });
           context = await browser.newContext();
@@ -38,7 +38,7 @@ jest.setTimeout(50000);
             await page.hover(".leaflet-top.leaflet-right");
             await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > details > summary > div > a");
             await page.click("body > map");
-            for(let i = 0; i < 8; i++)
+            for(let i = 0; i < 6; i++)
               await page.keyboard.press("Tab");
             await page.keyboard.press("Enter");
             const layers = await page.$eval(
@@ -59,7 +59,7 @@ jest.setTimeout(50000);
             await page.hover(".leaflet-top.leaflet-right");
             await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > details > summary > div > a");
             await page.click("body > map");
-            for(let i = 0; i < 7; i++)
+            for(let i = 0; i < 5; i++)
               await page.keyboard.press("Tab");
             await page.keyboard.press("Enter");
             const layers = await page.$eval(

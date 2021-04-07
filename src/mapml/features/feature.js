@@ -79,50 +79,13 @@ export var Feature = L.Path.extend({
     L.DomEvent.on(path, 'mousemove', () =>{ drag = true;}, this);
     L.DomEvent.on(path, "mouseup", (e) => {
       L.DomEvent.stop(e);
-      if(!drag) this._handleLink(link, linkTarget, linkType, leafletLayer);
+      if(!drag) M.handleLink(link, linkTarget, linkType, leafletLayer);
     }, this);
     L.DomEvent.on(path, "keypress", (e) => {
       L.DomEvent.stop(e);
       if(e.keyCode === 13 || e.keyCode === 32)
-        this._handleLink(link, linkTarget, linkType, leafletLayer);
+        M.handleLink(link, linkTarget, linkType, leafletLayer);
     }, this);
-  },
-
-  /**
-   * Handles the different behaviors for link target types
-   * @param link
-   * @param linkTarget
-   * @param linkType
-   * @param leafletLayer
-   * @private
-   */
-  _handleLink: function (link, linkTarget, linkType, leafletLayer) {
-    let layer = document.createElement('layer-');
-    if(linkType === "text/html" && linkTarget !== "_blank") linkTarget = "_top";
-    layer.setAttribute('src', link);
-    layer.setAttribute('checked', '');
-    switch (linkTarget) {
-      case "_blank":
-        if(linkType === "text/html"){
-          window.open(link);
-        } else {
-          leafletLayer._map.options.mapEl.appendChild(layer);
-        }
-        break;
-      case "_parent":
-        for(let l of leafletLayer._map.options.mapEl.querySelectorAll("layer-"))
-          if(l._layer !== leafletLayer) leafletLayer._map.options.mapEl.removeChild(l);
-        leafletLayer._map.options.mapEl.appendChild(layer);
-        leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
-        break;
-      case "_top":
-        window.location.href = link;
-        break;
-      default:
-        leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
-        leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
-
-    }
   },
 
   /**
@@ -214,7 +177,8 @@ export var Feature = L.Path.extend({
 
     let attr = this._markup.attributes;
     this.featureAttributes = {};
-    if(this.options.link && this._markup.parentElement.tagName.toUpperCase() === "MAP-A") this.featureAttributes.tabindex = "0";
+    if(this.options.link && this._markup.parentElement.tagName.toUpperCase() === "MAP-A" && this._markup.parentElement.parentElement.tagName.toUpperCase() !== "GEOMETRY")
+      this.featureAttributes.tabindex = "0";
     for(let i = 0; i < attr.length; i++){
       this.featureAttributes[attr[i].name] = attr[i].value;
     }

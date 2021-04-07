@@ -8,19 +8,23 @@ export var FeatureGroup = L.FeatureGroup.extend({
   initialize: function (layers, options) {
     if(options.wrappers && options.wrappers.length > 0)
       options = Object.assign(M.Feature.prototype._convertWrappers(options.wrappers), options);
-    L.LayerGroup.prototype.initialize.call(this, layers, options);
 
+    L.LayerGroup.prototype.initialize.call(this, layers, options);
 
     if(this.options.onEachFeature || this.options.link) {
       this.options.group.setAttribute("aria-expanded", "false");
       this.options.group.setAttribute('tabindex', '0');
       L.DomUtil.addClass(this.options.group, "leaflet-interactive");
-      if(!this.options.link) {
+      if(!this.options.link && layers.length > 1) {
         this.options.onEachFeature(this.options.properties, this);
         L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
         this.off("click", this._openPopup);
       } else {
-        M.Feature.prototype.attachLinkHandler(this.options.group, this.options.link, this.options.linkTarget, this.options.linkType, this.options._leafletLayer);
+        if(layers.length === 1){
+          let singleLayer = layers[Object.keys(layers)[0]];
+          M.Feature.prototype.attachLinkHandler.call(this, this.options.group, singleLayer.options.link, singleLayer.options.linkTarget, singleLayer.options.linkType, this.options._leafletLayer);
+        } else
+          M.Feature.prototype.attachLinkHandler.call(this, this.options.group, this.options.link, this.options.linkTarget, this.options.linkType, this.options._leafletLayer);
       }
     }
 
