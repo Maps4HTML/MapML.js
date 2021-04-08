@@ -12,7 +12,6 @@ export var FeatureGroup = L.FeatureGroup.extend({
     L.LayerGroup.prototype.initialize.call(this, layers, options);
 
     if(this.options.onEachFeature || this.options.link) {
-      this.options.group.setAttribute("aria-expanded", "false");
       this.options.group.setAttribute('tabindex', '0');
       L.DomUtil.addClass(this.options.group, "leaflet-interactive");
       L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
@@ -25,6 +24,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
       if(this.options.link){
         M.Feature.prototype.attachLinkHandler.call(this, this.options.group, this.options.link, this.options.linkTarget, this.options.linkType, this.options._leafletLayer);
       } else {
+        this.options.group.setAttribute("aria-expanded", "false");
         this.options.onEachFeature(this.options.properties, this);
         this.off("click", this._openPopup);
       }
