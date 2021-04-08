@@ -323,30 +323,41 @@ export var Util = {
   },
 
   handleLink: function (link, linkTarget, linkType, leafletLayer) {
-    let layer = document.createElement('layer-');
-    if(linkType === "text/html" && linkTarget !== "_blank") linkTarget = "_top";
-    layer.setAttribute('src', link);
-    layer.setAttribute('checked', '');
-    switch (linkTarget) {
-      case "_blank":
-        if(linkType === "text/html"){
-          window.open(link);
-        } else {
-          leafletLayer._map.options.mapEl.appendChild(layer);
-        }
-        break;
-      case "_parent":
-        for(let l of leafletLayer._map.options.mapEl.querySelectorAll("layer-"))
-          if(l._layer !== leafletLayer) leafletLayer._map.options.mapEl.removeChild(l);
-        leafletLayer._map.options.mapEl.appendChild(layer);
-        leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
-        break;
-      case "_top":
-        window.location.href = link;
-        break;
-      default:
-        leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
-        leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
+    let zoomTo, justPan = false;
+    if(linkType === "text/html" && linkTarget !== "_blank"){
+      linkTarget = "_top";
+    } else if (linkType !== "text/html" && link.includes("#")){
+      let hash = link.split("#"), loc = (hash[1] || hash[1]).split(",");
+      zoomTo = {z: loc[0] || 0, lng: loc[1] || 0, lat: loc[2] || 0};
+      justPan = hash.length > 1;
     }
+    if(!justPan) {
+      let layer = document.createElement('layer-');
+      layer.setAttribute('src', link);
+      layer.setAttribute('checked', '');
+      switch (linkTarget) {
+        case "_blank":
+          if (linkType === "text/html") {
+            window.open(link);
+          } else {
+            leafletLayer._map.options.mapEl.appendChild(layer);
+          }
+          break;
+        case "_parent":
+          for (let l of leafletLayer._map.options.mapEl.querySelectorAll("layer-"))
+            if (l._layer !== leafletLayer) leafletLayer._map.options.mapEl.removeChild(l);
+          leafletLayer._map.options.mapEl.appendChild(layer);
+          leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
+          break;
+        case "_top":
+          window.location.href = link;
+          break;
+        default:
+          leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
+          leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
+      }
+      if(!zoomTo) setTimeout(()=>{layer.focus();},0);
+    }
+    if(zoomTo)leafletLayer._map.options.mapEl.zoomTo(zoomTo.lat, zoomTo.lng, zoomTo.z);
   },
 };
