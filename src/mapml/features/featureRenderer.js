@@ -29,7 +29,7 @@ export var FeatureRenderer = L.SVG.extend({
       }
       if (p.subrings) {
         for (let r of p.subrings) {
-          this._createPath(r, layer.options.className, r.attr['aria-label'], false, r.attr);
+          this._createPath(r, layer.options.className, r.attr['aria-label'], (r.link !== undefined), r.attr);
           if(r.attr && r.attr.tabindex){
             p.path.setAttribute('tabindex', r.attr.tabindex || '0');
           }
@@ -40,8 +40,6 @@ export var FeatureRenderer = L.SVG.extend({
     if(stampLayer){
       let stamp = L.stamp(layer);
       this._layers[stamp] = layer;
-      layer.group.setAttribute('tabindex', '0');
-      L.DomUtil.addClass(layer.group, "leaflet-interactive");
     }
   },
 
@@ -89,6 +87,10 @@ export var FeatureRenderer = L.SVG.extend({
     for (let p of layer._parts) {
       if (p.path)
         layer.group.appendChild(p.path);
+      if (interactive){
+        if(layer.options.link) layer.attachLinkHandler(p.path, layer.options.link, layer.options.linkTarget, layer.options.linkType, layer.options._leafletLayer);
+        layer.addInteractiveTarget(p.path);
+      }
 
       if(!outlineAdded && layer.pixelOutline) {
         layer.group.appendChild(layer.outlinePath);
@@ -96,8 +98,13 @@ export var FeatureRenderer = L.SVG.extend({
       }
 
       for (let subP of p.subrings) {
-        if (subP.path)
+        if (subP.path) {
+          if (subP.link){
+            layer.attachLinkHandler(subP.path, subP.link, subP.linkTarget, subP.linkType, layer.options._leafletLayer);
+            layer.addInteractiveTarget(subP.path);
+          }
           layer.group.appendChild(subP.path);
+        }
       }
     }
     c.appendChild(layer.group);
@@ -180,6 +187,13 @@ export var FeatureRenderer = L.SVG.extend({
     if (!path || !layer) { return; }
     let options = layer.options, isClosed = layer.isClosed;
     if ((options.stroke && (!isClosed || isOutline)) || (isMain && !layer.outlinePath)) {
+      if (options.link){
+        path.style.stroke = "#0000EE";
+        path.style.strokeOpacity = "1";
+        path.style.strokeWidth = "1px";
+        path.style.strokeDasharray = "none";
+
+      }
       path.setAttribute('stroke', options.color);
       path.setAttribute('stroke-opacity', options.opacity);
       path.setAttribute('stroke-width', options.weight);

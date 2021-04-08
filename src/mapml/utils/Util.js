@@ -321,4 +321,32 @@ export var Util = {
   parseNumber : function(element, index, array){
     this.push(parseFloat(element));
   },
+
+  handleLink: function (link, linkTarget, linkType, leafletLayer) {
+    let layer = document.createElement('layer-');
+    if(linkType === "text/html" && linkTarget !== "_blank") linkTarget = "_top";
+    layer.setAttribute('src', link);
+    layer.setAttribute('checked', '');
+    switch (linkTarget) {
+      case "_blank":
+        if(linkType === "text/html"){
+          window.open(link);
+        } else {
+          leafletLayer._map.options.mapEl.appendChild(layer);
+        }
+        break;
+      case "_parent":
+        for(let l of leafletLayer._map.options.mapEl.querySelectorAll("layer-"))
+          if(l._layer !== leafletLayer) leafletLayer._map.options.mapEl.removeChild(l);
+        leafletLayer._map.options.mapEl.appendChild(layer);
+        leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
+        break;
+      case "_top":
+        window.location.href = link;
+        break;
+      default:
+        leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
+        leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
+    }
+  },
 };

@@ -19,9 +19,6 @@
  *  ];
  */
 export var Feature = L.Path.extend({
-  options: {
-    accessibleTitle: "Feature",
-  },
 
   /**
    * Initializes the M.Feature
@@ -32,9 +29,12 @@ export var Feature = L.Path.extend({
     this.type = markup.tagName.toUpperCase();
 
     if(this.type === "POINT" || this.type === "MULTIPOINT") options.fillOpacity = 1;
+
+    if(options.wrappers.length > 0)
+      options = Object.assign(this._convertWrappers(options.wrappers), options);
     L.setOptions(this, options);
 
-    this._createGroup();  // creates the <g> element for the feature, or sets the one passed in options as the <g>
+    this.group = this.options.group;
 
     this._parts = [];
     this._markup = markup;
@@ -42,7 +42,7 @@ export var Feature = L.Path.extend({
 
     this._convertMarkup();
 
-    if(markup.querySelector('span') || markup.querySelector('a')){
+    if(markup.querySelector('span') || markup.querySelector('map-a')){
       this._generateOutlinePoints();
     }
 
@@ -53,37 +53,39 @@ export var Feature = L.Path.extend({
    * Removes the focus handler, and calls the leaflet L.Path.onRemove
    */
   onRemove: function () {
-    L.DomEvent.off(this.group, "keyup keydown mousedown", this._handleFocus, this);
+    if(this.options.link) {
+      this.off({
+        click: this._handleLinkClick,
+        keypress: this._handleLinkKeypress,
+      });
+    }
+
+    if(this.options.interactive) this.off('keypress', this._handleSpaceDown);
+
     L.Path.prototype.onRemove.call(this);
   },
 
   /**
-   * Creates the <g> conditionally and also applies event handlers
-   * @private
+   * Attaches link handler to the sub parts' paths
+   * @param path
+   * @param link
+   * @param linkTarget
+   * @param linkType
+   * @param leafletLayer
    */
-  _createGroup: function(){
-    if(this.options.multiGroup){
-      this.group = this.options.multiGroup;
-    } else {
-      this.group = L.SVG.create('g');
-      if(this.options.interactive) this.group.setAttribute("aria-expanded", "false");
-      this.group.setAttribute('aria-label', this.options.accessibleTitle);
-      if(this.options.featureID) this.group.setAttribute("data-fid", this.options.featureID);
-      L.DomEvent.on(this.group, "keyup keydown mousedown", this._handleFocus, this);
-    }
-  },
-
-  /**
-   * Handler for focus events
-   * @param {L.DOMEvent} e - Event that occured
-   * @private
-   */
-  _handleFocus: function(e) {
-    if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup" && e.target.tagName === "g"){
-      this.openTooltip();
-    } else {
-      this.closeTooltip();
-    }
+  attachLinkHandler: function (path, link, linkTarget, linkType, leafletLayer) {
+    let drag = false; //prevents click from happening on drags
+    L.DomEvent.on(path, 'mousedown', () =>{ drag = false;}, this);
+    L.DomEvent.on(path, 'mousemove', () =>{ drag = true;}, this);
+    L.DomEvent.on(path, "mouseup", (e) => {
+      L.DomEvent.stop(e);
+      if(!drag) M.handleLink(link, linkTarget, linkType, leafletLayer);
+    }, this);
+    L.DomEvent.on(path, "keypress", (e) => {
+      L.DomEvent.stop(e);
+      if(e.keyCode === 13 || e.keyCode === 32)
+        M.handleLink(link, linkTarget, linkType, leafletLayer);
+    }, this);
   },
 
   /**
@@ -141,6 +143,32 @@ export var Feature = L.Path.extend({
   },
 
   /**
+   * Converts the spans, a and divs around a geometry subtype into options for the feature
+   * @private
+   */
+  _convertWrappers: function (elems) {
+    if(!elems || elems.length === 0) return;
+    let classList = '', output = {};
+    for(let elem of elems){
+      if(elem.tagName.toUpperCase() !== "MAP-A" && elem.className){
+        // Useful if getting other attributes off spans and divs is useful
+/*        let attr = elem.attributes;
+        for(let i = 0; i < attr.length; i++){
+          if(attr[i].name === "class" || attributes[attr[i].name]) continue;
+          attributes[attr[i].name] = attr[i].value;
+        }*/
+        classList +=`${elem.className} `;
+      } else if(!output.link && elem.getAttribute("href")) {
+        output.link = elem.getAttribute("href");
+        if(elem.hasAttribute("target")) output.linkTarget = elem.getAttribute("target");
+        if(elem.hasAttribute("type")) output.linkType = elem.getAttribute("type");
+      }
+    }
+    output.className = `${classList} ${this.options.className}`.trim();
+    return output;
+  },
+
+  /**
    * Converts this._markup to the internal structure of features
    * @private
    */
@@ -149,6 +177,8 @@ export var Feature = L.Path.extend({
 
     let attr = this._markup.attributes;
     this.featureAttributes = {};
+    if(this.options.link && this._markup.parentElement.tagName.toUpperCase() === "MAP-A" && this._markup.parentElement.parentElement.tagName.toUpperCase() !== "GEOMETRY")
+      this.featureAttributes.tabindex = "0";
     for(let i = 0; i < attr.length; i++){
       this.featureAttributes[attr[i].name] = attr[i].value;
     }
@@ -163,10 +193,10 @@ export var Feature = L.Path.extend({
           this._parts[0].subrings = this._parts[0].subrings.concat(subrings);
       } else if (this.type === "MULTIPOINT") {
         for (let point of ring[0].points.concat(subrings)) {
-          this._parts.push({ rings: [{ points: [point] }], subrings: [], cls: point.cls || this.options.className });
+          this._parts.push({ rings: [{ points: [point] }], subrings: [], cls:`${point.cls || ""} ${this.options.className || ""}`.trim() });
         }
       } else {
-        this._parts.push({ rings: ring, subrings: subrings, cls: this.featureAttributes.class || this.options.className });
+        this._parts.push({ rings: ring, subrings: subrings, cls: `${this.featureAttributes.class || ""} ${this.options.className || ""}`.trim() });
       }
       first = false;
     }
@@ -212,11 +242,12 @@ export var Feature = L.Path.extend({
    * @param {Object[]} subParts - An empty array representing the sub parts
    * @param {boolean} isFirst - A true | false representing if the current HTML element is the parent coordinates element or not
    * @param {string} cls - The class of the coordinate/span
+   * @param parents
    * @private
    */
-  _coordinateToArrays: function (coords, main, subParts, isFirst = true, cls = undefined) {
+  _coordinateToArrays: function (coords, main, subParts, isFirst = true, cls = undefined, parents = []) {
     for (let span of coords.children) {
-      this._coordinateToArrays(span, main, subParts, false, span.getAttribute("class"));
+      this._coordinateToArrays(span, main, subParts, false, span.getAttribute("class"), parents.concat([span]));
     }
     let noSpan = coords.textContent.replace(/(<([^>]+)>)/ig, ''),
         pairs = noSpan.match(/(\S+\s+\S+)/gim), local = [];
@@ -230,12 +261,13 @@ export var Feature = L.Path.extend({
     if (isFirst) {
       main.push({ points: local });
     } else {
-      let attrMap = {}, attr = coords.attributes;
+      let attrMap = {}, attr = coords.attributes, wrapperAttr = this._convertWrappers(parents);
+      if(wrapperAttr.link) attrMap.tabindex = "0";
       for(let i = 0; i < attr.length; i++){
         if(attr[i].name === "class") continue;
         attrMap[attr[i].name] = attr[i].value;
       }
-      subParts.unshift({ points: local, cls: cls || this.options.className, attr: attrMap});
+      subParts.unshift({ points: local, cls: `${cls || ""} ${wrapperAttr.className || ""}`.trim(), attr: attrMap, link: wrapperAttr.link, linkTarget: wrapperAttr.linkTarget, linkType: wrapperAttr.linkType});
     }
   },
 
