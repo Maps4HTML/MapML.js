@@ -75,6 +75,39 @@ jest.setTimeout(50000);
             expect(layerName).toEqual("Canada Base Map - Geometry");
           });
         });
+        describe("HTML Link Type Tests in " + browserType, () => {
+          test("[" + browserType + "]" + " HTML _self target navigates to new page", async () => {
+            await page.click("body > map");
+            for(let i = 0; i < 7; i++)
+              await page.keyboard.press("Tab");
+            await page.keyboard.press("Enter");
+            await page.waitForTimeout(500);
+            const url = await page.url();
+            expect(url).toEqual("http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/");
+          });
+          test("[" + browserType + "]" + " HTML _top target point navigates to new page", async () => {
+            await page.goBack();
+            await page.waitForTimeout(500);
+            await page.click("body > map");
+            for(let i = 0; i < 8; i++)
+              await page.keyboard.press("Tab");
+            await page.keyboard.press("Enter");
+            await page.waitForTimeout(500);
+            const url = await page.url();
+            expect(url).toEqual("http://geogratis.gc.ca/mapml/en/cbmtile/fdi/");
+          });
+          test("[" + browserType + "]" + " HTML _parent target point navigates to new page", async () => {
+            await page.goBack();
+            await page.waitForTimeout(500);
+            await page.click("body > map");
+            for(let i = 0; i < 9; i++)
+              await page.keyboard.press("Tab");
+            await page.keyboard.press("Enter");
+            await page.waitForTimeout(500);
+            const url = await page.url();
+            expect(url).toEqual("http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/");
+          });
+        });
       }
     );
   }
