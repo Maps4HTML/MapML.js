@@ -361,16 +361,16 @@ export var Util = {
           newLayer = true;
       }
       if(!zoomTo && !link.inPlace && newLayer) {
-        leafletLayer._map.on('layeradd', focusOnLoad);
+        leafletLayer._map.on('layeradd', focusOnLoad);  // need to wait for the leaflet layer to be created, this is done on layeradd
       }
     }
     if(zoomTo && !link.inPlace)leafletLayer._map.options.mapEl.zoomTo(zoomTo.lat, zoomTo.lng, zoomTo.z);
 
     function focusOnLoad() {
       if (eventAdded || !layer._layer) return;
-      else if (layer._layer.error) leafletLayer._map.off('layeradd', focusOnLoad);
+      else if (layer._layer.error) leafletLayer._map.off('layeradd', focusOnLoad);  // if there was an error creating the layer then remove the handler
       else {
-        layer._layer.once('extentload', () => {
+        layer._layer.once('extentload', () => { // once the layer is created (layer._layer) then wait for extentload event before calling focus()
           layer.focus();
           leafletLayer._map.off('layeradd', focusOnLoad);
         });
