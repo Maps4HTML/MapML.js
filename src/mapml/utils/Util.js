@@ -356,7 +356,7 @@ export var Util = {
           leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
           leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
       }
-      if(!zoomTo) setTimeout(()=>{layer.focus();},0);
+      if(!zoomTo && !link.inPlace) setTimeout(()=>{layer.focus();},0);
     }
     if(zoomTo && !link.inPlace)leafletLayer._map.options.mapEl.zoomTo(zoomTo.lat, zoomTo.lng, zoomTo.z);
   },
