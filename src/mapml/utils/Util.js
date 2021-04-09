@@ -323,7 +323,7 @@ export var Util = {
   },
 
   handleLink: function (link, leafletLayer) {
-    let zoomTo, justPan = false;
+    let zoomTo, justPan = false, eventAdded = false, layer;
     if(link.type === "text/html" && link.target !== "_blank"){
       link.target = "_top";
     } else if (link.type !== "text/html" && link.url.includes("#")){
@@ -332,7 +332,8 @@ export var Util = {
       justPan = hash.length > 1;
     }
     if(!justPan) {
-      let layer = document.createElement('layer-');
+      let newLayer = false;
+      layer = document.createElement('layer-');
       layer.setAttribute('src', link.url);
       layer.setAttribute('checked', '');
       switch (link.target) {
@@ -341,6 +342,7 @@ export var Util = {
             window.open(link.url);
           } else {
             leafletLayer._map.options.mapEl.appendChild(layer);
+            newLayer = true;
           }
           break;
         case "_parent":
@@ -348,6 +350,7 @@ export var Util = {
             if (l._layer !== leafletLayer) leafletLayer._map.options.mapEl.removeChild(l);
           leafletLayer._map.options.mapEl.appendChild(layer);
           leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
+          newLayer = true;
           break;
         case "_top":
           window.location.href = link.url;
@@ -355,9 +358,24 @@ export var Util = {
         default:
           leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
           leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
+          newLayer = true;
       }
-      if(!zoomTo && !link.inPlace) setTimeout(()=>{layer.focus();},0);
+      if(!zoomTo && !link.inPlace && newLayer) {
+        leafletLayer._map.on('layeradd', focusOnLoad);
+      }
     }
     if(zoomTo && !link.inPlace)leafletLayer._map.options.mapEl.zoomTo(zoomTo.lat, zoomTo.lng, zoomTo.z);
+
+    function focusOnLoad() {
+      if (eventAdded || !layer._layer) return;
+      else if (layer._layer.error) leafletLayer._map.off('layeradd', focusOnLoad);
+      else {
+        layer._layer.once('extentload', () => {
+          layer.focus();
+          leafletLayer._map.off('layeradd', focusOnLoad);
+        });
+        eventAdded = true;
+      }
+    }
   },
 };

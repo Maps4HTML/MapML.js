@@ -303,6 +303,7 @@ export class MapLayer extends HTMLElement {
         },this);
   }
   focus(){
+    if(!this.extent) return;
     let map = this._layer._map,
       tL = this.extent.topLeft.pcrs,
       bR = this.extent.bottomRight.pcrs,
