@@ -88,7 +88,7 @@ export var FeatureRenderer = L.SVG.extend({
       if (p.path)
         layer.group.appendChild(p.path);
       if (interactive){
-        if(layer.options.link) layer.attachLinkHandler(p.path, layer.options.link, layer.options.linkTarget, layer.options.linkType, layer.options._leafletLayer);
+        if(layer.options.link) layer.attachLinkHandler(p.path, layer.options.link, layer.options._leafletLayer);
         layer.addInteractiveTarget(p.path);
       }
 
@@ -100,7 +100,7 @@ export var FeatureRenderer = L.SVG.extend({
       for (let subP of p.subrings) {
         if (subP.path) {
           if (subP.link){
-            layer.attachLinkHandler(subP.path, subP.link, subP.linkTarget, subP.linkType, layer.options._leafletLayer);
+            layer.attachLinkHandler(subP.path, subP.link, layer.options._leafletLayer);
             layer.addInteractiveTarget(subP.path);
           }
           layer.group.appendChild(subP.path);

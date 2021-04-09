@@ -34,12 +34,16 @@ jest.setTimeout(50000);
             expect(layers).toEqual(4);
           });
 
-          test("[" + browserType + "]" + " Sub-point link adds new layer, parent feature has separate link", async () => {
+          test("[" + browserType + "]" + " Sub-point inplace link adds new layer, parent feature has separate link", async () => {
             await page.hover(".leaflet-top.leaflet-right");
             await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > details > summary > div > a");
             await page.click("body > map");
             for(let i = 0; i < 6; i++)
               await page.keyboard.press("Tab");
+            const extentBeforeLink = await page.$eval(
+              "body > map",
+              (map) => map.extent
+            );
             await page.keyboard.press("Enter");
             const layers = await page.$eval(
               "body > map",
@@ -50,6 +54,13 @@ jest.setTimeout(50000);
               "//html/body/map/layer-[2]",
               (layer) => layer.label
             )
+            const extentAfterLink = await page.$eval(
+              "body > map",
+              (map) => map.extent
+            );
+
+            expect(extentAfterLink.topLeft.gcrs).toEqual(extentBeforeLink.topLeft.gcrs);
+            expect(extentAfterLink.bottomRight.gcrs).toEqual(extentBeforeLink.bottomRight.gcrs);
             expect(layers).toEqual(4);
             expect(layerName).toEqual("Fire Danger (forecast)");
           });
@@ -71,6 +82,13 @@ jest.setTimeout(50000);
               "//html/body/map/layer-[2]",
               (layer) => layer.label
             )
+            const extent = await page.$eval(
+              "body > map",
+              (map) => map.extent
+            );
+
+            expect(extent.topLeft.gcrs).toEqual({horizontal:-129.071567338887, vertical:36.4112695268206});
+            expect(extent.bottomRight.gcrs).toEqual({horizontal:26.18468754289824, vertical:2.850936151427951});
             expect(layers).toEqual(4);
             expect(layerName).toEqual("Canada Base Map - Geometry");
           });

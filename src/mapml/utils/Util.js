@@ -322,23 +322,23 @@ export var Util = {
     this.push(parseFloat(element));
   },
 
-  handleLink: function (link, linkTarget, linkType, leafletLayer) {
+  handleLink: function (link, leafletLayer) {
     let zoomTo, justPan = false;
-    if(linkType === "text/html" && linkTarget !== "_blank"){
-      linkTarget = "_top";
-    } else if (linkType !== "text/html" && link.includes("#")){
-      let hash = link.split("#"), loc = (hash[1] || hash[1]).split(",");
+    if(link.type === "text/html" && link.target !== "_blank"){
+      link.target = "_top";
+    } else if (link.type !== "text/html" && link.url.includes("#")){
+      let hash = link.url.split("#"), loc = (hash[1] || hash[1]).split(",");
       zoomTo = {z: loc[0] || 0, lng: loc[1] || 0, lat: loc[2] || 0};
       justPan = hash.length > 1;
     }
     if(!justPan) {
       let layer = document.createElement('layer-');
-      layer.setAttribute('src', link);
+      layer.setAttribute('src', link.url);
       layer.setAttribute('checked', '');
-      switch (linkTarget) {
+      switch (link.target) {
         case "_blank":
-          if (linkType === "text/html") {
-            window.open(link);
+          if (link.type === "text/html") {
+            window.open(link.url);
           } else {
             leafletLayer._map.options.mapEl.appendChild(layer);
           }
@@ -350,7 +350,7 @@ export var Util = {
           leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
           break;
         case "_top":
-          window.location.href = link;
+          window.location.href = link.url;
           break;
         default:
           leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
@@ -358,6 +358,6 @@ export var Util = {
       }
       if(!zoomTo) setTimeout(()=>{layer.focus();},0);
     }
-    if(zoomTo)leafletLayer._map.options.mapEl.zoomTo(zoomTo.lat, zoomTo.lng, zoomTo.z);
+    if(zoomTo && !link.inPlace)leafletLayer._map.options.mapEl.zoomTo(zoomTo.lat, zoomTo.lng, zoomTo.z);
   },
 };
