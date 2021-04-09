@@ -15,12 +15,19 @@ export class MapLayer extends HTMLElement {
     if (val) {
       this.setAttribute('src', val);
       if (this._layer) {
+        let focusOnLoad;
+        if(this._layer._events.extentload)
+          for(let e of this._layer._events.extentload)
+            if(e.name === "focusOnLoad")
+              focusOnLoad = e;
+
         // go through the same sequence as if the layer had been removed from
         // the DOM and re-attached with a new URL source.
         this.disconnectedCallback();
         var base = this.baseURI ? this.baseURI : document.baseURI;
         this._layer = M.mapMLLayer(val ? (new URL(val, base)).href: null, this);
         this._layer.on('extentload', this._onLayerExtentLoad, this);
+        if(focusOnLoad) this._layer._events.extentload.push(focusOnLoad);
         this._setUpEvents();
         if (this.parentNode) {
           this.connectedCallback();
