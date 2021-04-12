@@ -323,13 +323,13 @@ export var Util = {
   },
 
   handleLink: function (link, leafletLayer) {
-    let zoomTo, justPan = false, eventAdded = false, layer;
-    if(link.type === "text/html" && link.target !== "_blank"){
+    let zoomTo, justPan = false, layer;
+    if(link.type === "text/html" && link.target !== "_blank"){  // all other target values other than blank behave as _top
       link.target = "_top";
     } else if (link.type !== "text/html" && link.url.includes("#")){
-      let hash = link.url.split("#"), loc = (hash[1] || hash[1]).split(",");
+      let hash = link.url.split("#"), loc = hash[1].split(",");
       zoomTo = {z: loc[0] || 0, lng: loc[1] || 0, lat: loc[2] || 0};
-      justPan = hash.length > 1;
+      justPan = !hash[0]; // if the first half of the array is an empty string then the link is just for panning
     }
     if(!justPan) {
       let newLayer = false;
@@ -360,23 +360,13 @@ export var Util = {
           leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
           newLayer = true;
       }
-      if(!zoomTo && !link.inPlace && newLayer) {
-        if(layer._layer) layer._layer.once('extentload', () => {layer.focus();});
-        else leafletLayer._map.on('layeradd', focusOnLoad);  // need to wait for the leaflet layer to be created, this is done on layeradd
-      }
-    }
-    if(zoomTo && !link.inPlace)leafletLayer._map.options.mapEl.zoomTo(zoomTo.lat, zoomTo.lng, zoomTo.z);
-
-    function focusOnLoad() {
-      if (eventAdded || !layer._layer) return;
-      else if (layer._layer.error) leafletLayer._map.off('layeradd', focusOnLoad);  // if there was an error creating the layer then remove the handler
-      else {
-        layer._layer.once('extentload', () => { // once the layer is created (layer._layer) then wait for extentload event before calling focus()
-          leafletLayer._map.off('layeradd', focusOnLoad);
-          layer.focus();
-        });
-        eventAdded = true;
-      }
-    }
+      if(!link.inPlace && newLayer) L.DomEvent.on(layer,'extentload', function focusOnLoad() {
+        if(layer.extent){
+          if(zoomTo) leafletLayer._map.options.mapEl.zoomTo(zoomTo.lat, zoomTo.lng, zoomTo.z);
+          else layer.focus();
+          L.DomEvent.off(layer, 'extentload', focusOnLoad);
+        }
+      });
+    } else if (zoomTo && !link.inPlace && justPan) leafletLayer._map.options.mapEl.zoomTo(zoomTo.lat, zoomTo.lng, zoomTo.z);
   },
 };

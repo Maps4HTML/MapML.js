@@ -936,6 +936,7 @@ export var MapMLLayer = L.Layer.extend({
                 layer.error = true;
             }
             layer.fire('extentload', layer, false);
+            layer._layerEl.dispatchEvent(new CustomEvent('extentload', {details: layer,}));
         }
     },
     _createExtent: function () {
