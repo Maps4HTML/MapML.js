@@ -360,9 +360,9 @@ export var Util = {
           leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
           newLayer = true;
       }
-      if(!link.inPlace && newLayer) L.DomEvent.on(layer,'extentload', function focusOnLoad() {
+      if(!link.inPlace && newLayer) L.DomEvent.on(layer,'extentload', function focusOnLoad(e) {
         if(layer.extent){
-          if(zoomTo) leafletLayer._map.options.mapEl.zoomTo(zoomTo.lat, zoomTo.lng, zoomTo.z);
+          if(zoomTo) layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
           else layer.focus();
           L.DomEvent.off(layer, 'extentload', focusOnLoad);
         }
