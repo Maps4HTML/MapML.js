@@ -125,6 +125,21 @@ jest.setTimeout(50000);
             const url = await page.url();
             expect(url).toEqual("http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/");
           });
+          test("[" + browserType + "]" + " HTML _blank target projection negotiation with hash", async () => {
+            await page.goBack();
+            await page.waitForTimeout(500);
+            await page.click("body > map");
+            for(let i = 0; i < 11; i++)
+              await page.keyboard.press("Tab");
+            await page.keyboard.press("Enter");
+            await page.waitForTimeout(500);
+            const extent = await page.$eval(
+              "body > map",
+              (map) => map.extent
+            );
+            expect(extent.topLeft.gcrs).toEqual({horizontal:-118.38250407225894, vertical:54.364895138267244});
+            expect(extent.bottomRight.gcrs).toEqual({horizontal:-41.67362559864071, vertical:7.463862967414659});
+          });
         });
       }
     );
