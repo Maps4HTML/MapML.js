@@ -50,41 +50,23 @@ export var Feature = L.Path.extend({
   },
 
   /**
-   * Removes the focus handler, and calls the leaflet L.Path.onRemove
-   */
-  onRemove: function () {
-    if(this.options.link) {
-      this.off({
-        click: this._handleLinkClick,
-        keypress: this._handleLinkKeypress,
-      });
-    }
-
-    if(this.options.interactive) this.off('keypress', this._handleSpaceDown);
-
-    L.Path.prototype.onRemove.call(this);
-  },
-
-  /**
    * Attaches link handler to the sub parts' paths
    * @param path
    * @param link
-   * @param linkTarget
-   * @param linkType
    * @param leafletLayer
    */
-  attachLinkHandler: function (path, link, linkTarget, linkType, leafletLayer) {
+  attachLinkHandler: function (path, link, leafletLayer) {
     let drag = false; //prevents click from happening on drags
     L.DomEvent.on(path, 'mousedown', () =>{ drag = false;}, this);
     L.DomEvent.on(path, 'mousemove', () =>{ drag = true;}, this);
     L.DomEvent.on(path, "mouseup", (e) => {
       L.DomEvent.stop(e);
-      if(!drag) M.handleLink(link, linkTarget, linkType, leafletLayer);
+      if(!drag) M.handleLink(link, leafletLayer);
     }, this);
     L.DomEvent.on(path, "keypress", (e) => {
       L.DomEvent.stop(e);
       if(e.keyCode === 13 || e.keyCode === 32)
-        M.handleLink(link, linkTarget, linkType, leafletLayer);
+        M.handleLink(link, leafletLayer);
     }, this);
   },
 
@@ -159,9 +141,12 @@ export var Feature = L.Path.extend({
         }*/
         classList +=`${elem.className} `;
       } else if(!output.link && elem.getAttribute("href")) {
-        output.link = elem.getAttribute("href");
-        if(elem.hasAttribute("target")) output.linkTarget = elem.getAttribute("target");
-        if(elem.hasAttribute("type")) output.linkType = elem.getAttribute("type");
+        let link = {};
+        link.url = elem.getAttribute("href");
+        if(elem.hasAttribute("target")) link.target = elem.getAttribute("target");
+        if(elem.hasAttribute("type")) link.type = elem.getAttribute("type");
+        if(elem.hasAttribute("inplace")) link.inPlace = true;
+        output.link = link;
       }
     }
     output.className = `${classList} ${this.options.className}`.trim();

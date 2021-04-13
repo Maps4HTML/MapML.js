@@ -8,6 +8,7 @@
       <meta name="extent"
         content="zoom = 0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
     <link rel="license" href="https://leafletjs.com/examples/choropleth/" title=" CC-BY-SA Vladimir Agafonkin"/>
+    <link href="vector-tile-test.mapml" rel="alternate" projection="WGS84" />
     <style> .all { fill-opacity: 0.7; stroke-width: 2; stroke: white; stroke-opacity: 1; stroke-dasharray: 3; } ._1000plus { fill: #800026; } ._500-1000 { fill: #BD0026; } ._200-500 { fill: #E31A1C; } ._100-200 { fill: #FC4E2A; } ._50-100 { fill: #FD8D3C; } ._20-50 { fill: #FEB24C; } ._10-20 { fill: #FED976; } ._0-10 { fill: #FFEDA0; } </style>
   </head>
   <body>

@@ -527,8 +527,8 @@ export class WebMap extends HTMLMapElement {
     }
   }
   zoomTo(lat, lon, zoom) {
-    zoom = Number.isInteger(zoom)? zoom:this.zoom;
-    var location = new L.LatLng(lat,lon);
+    zoom = Number.isInteger(+zoom) ? +zoom : this.zoom;
+    let location = new L.LatLng(+lat, +lon);
     this._map.setView(location, zoom);
     this.zoom = zoom;
     this.lat = location.lat;

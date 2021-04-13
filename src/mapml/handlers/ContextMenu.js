@@ -195,41 +195,8 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _zoomToLayer: function (e) {
-    let map = e instanceof KeyboardEvent ? this._map : this,
-        layerElem = map.contextMenu._layerClicked.layer._layerEl,
-        tL = layerElem.extent.topLeft.pcrs,
-        bR = layerElem.extent.bottomRight.pcrs,
-        layerBounds = L.bounds(L.point(tL.horizontal, tL.vertical), L.point(bR.horizontal, bR.vertical)),
-        center = map.options.crs.unproject(layerBounds.getCenter(true)),
-        currentZoom = map.getZoom();
-
-    map.setView(center, currentZoom, {animate:false});
-    let mapBounds = M.pixelToPCRSBounds(
-      map.getPixelBounds(),
-      map.getZoom(),
-      map.options.projection);
-    
-    //fits the bounds to the map view
-    if(mapBounds.contains(layerBounds)){
-      while(mapBounds.contains(layerBounds) && (currentZoom + 1) <= layerElem.extent.zoom.maxZoom){
-        currentZoom++;
-        map.setView(center, currentZoom, {animate:false});
-        mapBounds = M.pixelToPCRSBounds(
-          map.getPixelBounds(),
-          map.getZoom(),
-          map.options.projection);
-      }
-      if(currentZoom - 1 >= 0) map.flyTo(center, (currentZoom - 1));
-    } else {
-      while(!(mapBounds.contains(layerBounds)) && (currentZoom - 1) >= layerElem.extent.zoom.minZoom){
-        currentZoom--;
-        map.setView(center, currentZoom, {animate:false});
-        mapBounds = M.pixelToPCRSBounds(
-          map.getPixelBounds(),
-          map.getZoom(),
-          map.options.projection);
-      }
-    }
+    let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu;
+    context._layerClicked.layer._layerEl.focus();
   },
 
   _goForward: function(e){

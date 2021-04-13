@@ -16,13 +16,9 @@ export var FeatureGroup = L.FeatureGroup.extend({
       L.DomUtil.addClass(this.options.group, "leaflet-interactive");
       L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
       let firstLayer = layers[Object.keys(layers)[0]];
-      if(layers.length === 1 && firstLayer.options.link){ //if it's the only layer and it has a link, take it's link
-        this.options.link = firstLayer.options.link;
-        this.options.linkTarget = firstLayer.options.linkTarget;
-        this.options.linkType = firstLayer.options.linkType;
-      }
+      if(layers.length === 1 && firstLayer.options.link) this.options.link = firstLayer.options.link;
       if(this.options.link){
-        M.Feature.prototype.attachLinkHandler.call(this, this.options.group, this.options.link, this.options.linkTarget, this.options.linkType, this.options._leafletLayer);
+        M.Feature.prototype.attachLinkHandler.call(this, this.options.group, this.options.link, this.options._leafletLayer);
       } else {
         this.options.group.setAttribute("aria-expanded", "false");
         this.options.onEachFeature(this.options.properties, this);
