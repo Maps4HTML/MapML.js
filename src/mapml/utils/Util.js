@@ -330,6 +330,7 @@ export var Util = {
       let hash = link.url.split("#"), loc = hash[1].split(",");
       zoomTo = {z: loc[0] || 0, lng: loc[1] || 0, lat: loc[2] || 0};
       justPan = !hash[0]; // if the first half of the array is an empty string then the link is just for panning
+      if(["/", ".","#"].includes(link.url[0])) link.target = "_self";
     }
     if(!justPan) {
       let newLayer = false;
@@ -367,6 +368,6 @@ export var Util = {
           L.DomEvent.off(layer, 'extentload', focusOnLoad);
         }
       });
-    } else if (zoomTo && !link.inPlace && justPan) leafletLayer._map.options.mapEl.zoomTo(zoomTo.lat, zoomTo.lng, zoomTo.z);
+    } else if (zoomTo && !link.inPlace && justPan) leafletLayer._map.options.mapEl.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
   },
 };
