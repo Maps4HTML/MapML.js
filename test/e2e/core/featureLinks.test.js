@@ -26,7 +26,7 @@ jest.setTimeout(50000);
             for(let i = 0; i < 4; i++)
               await page.keyboard.press("Tab");
             await page.keyboard.press("Enter");
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             const layers = await page.$eval(
               "body > map",
               (map) => map.childElementCount
@@ -49,7 +49,7 @@ jest.setTimeout(50000);
               "body > map",
               (map) => map.childElementCount
             );
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             const layerName = await page.$eval(
               "//html/body/map/layer-[2]",
               (layer) => layer.label
@@ -77,7 +77,7 @@ jest.setTimeout(50000);
               "body > map",
               (map) => map.childElementCount
             );
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             const layerName = await page.$eval(
               "//html/body/map/layer-[2]",
               (layer) => layer.label
@@ -99,40 +99,40 @@ jest.setTimeout(50000);
             for(let i = 0; i < 7; i++)
               await page.keyboard.press("Tab");
             await page.keyboard.press("Enter");
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             const url = await page.url();
             expect(url).toEqual("http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/");
           });
           test("[" + browserType + "]" + " HTML _top target point navigates to new page", async () => {
             await page.goBack();
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             await page.click("body > map");
             for(let i = 0; i < 8; i++)
               await page.keyboard.press("Tab");
             await page.keyboard.press("Enter");
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             const url = await page.url();
             expect(url).toEqual("http://geogratis.gc.ca/mapml/en/cbmtile/fdi/");
           });
           test("[" + browserType + "]" + " HTML _parent target point navigates to new page", async () => {
             await page.goBack();
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             await page.click("body > map");
             for(let i = 0; i < 9; i++)
               await page.keyboard.press("Tab");
             await page.keyboard.press("Enter");
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             const url = await page.url();
             expect(url).toEqual("http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/");
           });
           test("[" + browserType + "]" + " HTML _blank target projection negotiation with hash", async () => {
             await page.goBack();
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             await page.click("body > map");
             for(let i = 0; i < 11; i++)
               await page.keyboard.press("Tab");
             await page.keyboard.press("Enter");
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             const extent = await page.$eval(
               "body > map",
               (map) => map.extent
