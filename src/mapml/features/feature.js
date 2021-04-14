@@ -56,19 +56,19 @@ export var Feature = L.Path.extend({
    * @param leafletLayer
    */
   attachLinkHandler: function (path, link, leafletLayer) {
-    let drag = false; //prevents click from happening on drags
-    L.DomEvent.on(path, 'mousedown', () =>{ drag = false;}, this);
-    L.DomEvent.on(path, 'mousemove', () =>{ drag = true;}, this);
+    let dragStart; //prevents click from happening on drags
+    L.DomEvent.on(path, 'mousedown', e => dragStart = {x:e.clientX, y:e.clientY}, this);
     L.DomEvent.on(path, "mouseup", (e) => {
       let onTop = true, nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
-      while(nextLayer){
+      while(nextLayer && onTop){
         if(nextLayer.tagName && nextLayer.tagName.toUpperCase() === "LAYER-")
           onTop = !(nextLayer.checked && nextLayer._layer.queryable);
         nextLayer = nextLayer.nextElementSibling;
       }
-      if(onTop) {
+      if(onTop && dragStart) {
         L.DomEvent.stop(e);
-        if (!drag) M.handleLink(link, leafletLayer);
+        let dist = Math.sqrt(Math.pow(dragStart.x - e.clientX, 2) + Math.pow(dragStart.y - e.clientY, 2));
+        if (dist <= 5) M.handleLink(link, leafletLayer);
       }
     }, this);
     L.DomEvent.on(path, "keypress", (e) => {
