@@ -203,11 +203,9 @@ export var MapMLLayer = L.Layer.extend({
       let noLayer = false;
       if(this._templateVars){
         for(let template of this._templateVars)
-          if(!template.projectionMatch) noLayer = true;
+          if(!template.projectionMatch && template.projection !== map.options.projection) noLayer = true;
       }
-      if(noLayer || this.getProjection() !== map.options.projection.toUpperCase())
-        return false;
-      return true;
+      return !(noLayer || this.getProjection() !== map.options.projection.toUpperCase());
     },
 
     //sets the <layer-> elements .bounds property 

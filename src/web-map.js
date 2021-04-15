@@ -58,10 +58,20 @@ export class WebMap extends HTMLMapElement {
   set projection(val) {
     if(val && M[val]){
       this.setAttribute('projection', val);
-      this.dispatchEvent(new CustomEvent('createmap'));
-    } else {
-      throw new Error("Undefined Projection");
-    }
+      if (this._map && this._map.options.projection !== val){
+        this._map.options.crs = M[val];
+        this._map.options.projection = val;
+        for(let layer of this.querySelectorAll("layer-")){
+          let checked = layer.hasAttribute("checked");
+          layer._layer.options.mapprojection = val;
+          layer._layer.validProjection = layer._layer._validProjection(this._map);
+          layer.removeAttribute("checked");
+          if(layer._layer.validProjection && checked) layer.setAttribute("checked","");
+          else layer.removeAttribute("disabled");
+        }
+        this._map.fire("checkdisabled");
+      } else this.dispatchEvent(new CustomEvent('createmap'));
+    } else throw new Error("Undefined Projection");
   }
   get zoom() {
     return this.hasAttribute("zoom") ? this.getAttribute("zoom") : 0;
