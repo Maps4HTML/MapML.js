@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Change Projection Test</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module" src="web-map.js"></script>
+  <style>
+      [is=web-map] {
+          width: 100%;
+          height: 400px;
+          max-width: 100%;
+      }
+
+      .transparency {
+          opacity: 0.2;
+      }
+  </style>
+</head>
+
+<body>
+<map style="height: 500px;width:500px;" is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344"
+     controls>
+
+  <layer- label="Change Proj" checked>
+    <meta name="projection" content="CBMTILE" />
+    <meta name="zoom" content="min=1,max=5,value=0" />
+    <meta name="cs" content="gcrs" />
+    <meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
+    <feature zoom="2" class="refDiff">
+      <properties>
+        <h1>Test</h1>
+      </properties>
+      <geometry cs="tilematrix">
+        <map-a href="http://geogratis.gc.ca/mapml/en/osmtile/cbmt/" target="_self">
+          <polygon>
+            <coordinates>10.5 11 10.75 11 10.75 11.25 10.5 11.25 10.5 11</coordinates>
+          </polygon>
+        </map-a>
+      </geometry>
+    </feature>
+  </layer->
+</map>
+
+<map style="height: 500px;width:500px;" is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344"
+     controls>
+
+  <layer- label="Change Proj" checked>
+    <meta name="projection" content="CBMTILE" />
+    <meta name="zoom" content="min=1,max=5,value=0" />
+    <meta name="cs" content="gcrs" />
+    <meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
+    <feature zoom="2" class="refDiff">
+      <properties>
+        <h1>Test</h1>
+      </properties>
+      <geometry cs="tilematrix">
+        <map-a href="http://geogratis.gc.ca/mapml/en/osmtile/cbmt/" target="_parent">
+          <polygon>
+            <coordinates>10.5 11 10.75 11 10.75 11.25 10.5 11.25 10.5 11</coordinates>
+          </polygon>
+        </map-a>
+      </geometry>
+    </feature>
+  </layer->
+  <layer- label="Change Proj" checked>
+    <meta name="projection" content="CBMTILE" />
+    <meta name="zoom" content="min=1,max=5,value=0" />
+    <meta name="cs" content="gcrs" />
+    <meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
+    <feature zoom="2" class="refDiff">
+      <properties>
+        <h1>Test</h1>
+      </properties>
+      <geometry cs="tilematrix">
+        <polygon>
+          <coordinates>11 11.5 11.25 11.5 11.25 11.75 11 11.75 11 11.5</coordinates>
+        </polygon>
+      </geometry>
+    </feature>
+  </layer->
+</map>
+
+</body>
+
+</html>
