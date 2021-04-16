@@ -1,0 +1,22 @@
+<mapml xmlns="http://www.w3.org/1999/xhtml/">
+  <head>
+    <meta charset="utf-8"/>
+    <title>OpenStreetMap</title>
+    <link rel="license" href="https://www.openstreetmap.org/copyright" title="© OpenStreetMap contributors CC BY-SA"/>
+    <link rel="zoomout" href="cbmt-changeProjection.mapml" type="text/mapml" />
+  </head>
+  <body>
+    <extent units="OSMTILE">
+      <input name="z" type="zoom" min="9" max="18"/>
+      <input name="s" type="hidden" shard="true" list="servers"/>
+      <datalist id="servers">
+        <option value="a"/>
+        <option value="b"/>
+        <option value="c"/>
+      </datalist>
+      <input name="x" type="location" units="tilematrix" axis="column"/>
+      <input name="y" type="location" units="tilematrix" axis="row"/>
+      <link rel="tile" tref="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+    </extent>
+  </body>
+</mapml>

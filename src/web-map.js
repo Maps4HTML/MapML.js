@@ -35,7 +35,6 @@ export class WebMap extends HTMLMapElement {
     if (this.controlslist.includes(lowerVal) || !options.includes(lowerVal))return;
     this.setAttribute("controlslist", this.controlslist+` ${lowerVal}`);
   }
-  
   get lat() {
     return this.hasAttribute("lat") ? this.getAttribute("lat") : "0";
   }
@@ -278,6 +277,7 @@ export class WebMap extends HTMLMapElement {
   adoptedCallback() {
 //    console.log('Custom map element moved to new page.');
   }
+
   setControls(isToggle, toggleShow, setup){
     if (this.controls && this._map) {
       let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl"],
@@ -603,11 +603,12 @@ export class WebMap extends HTMLMapElement {
 
   defineCustomProjection(jsonTemplate) {
     let t = JSON.parse(jsonTemplate);
-    if (t === undefined || !t.code || !t.proj4string || !t.projection || !t.resolutions || !t.origin || !t.bounds) throw new Error('Incomplete TCRS Definition');
+    if (t === undefined || !t.proj4string || !t.projection || !t.resolutions || !t.origin || !t.bounds) throw new Error('Incomplete TCRS Definition');
+    if (t.projection.indexOf(":") >= 0) throw new Error('":" is not permitted in projection name');
     if (M[t.projection.toUpperCase()]) return t.projection.toUpperCase();
     let tileSize = [256, 512, 1024, 2048, 4096].includes(t.tilesize)?t.tilesize:256;
 
-    M[t.projection] = new L.Proj.CRS(t.code, t.proj4string, {
+    M[t.projection] = new L.Proj.CRS(t.projection, t.proj4string, {
       origin: t.origin,
       resolutions: t.resolutions,
       bounds: L.bounds(t.bounds),
