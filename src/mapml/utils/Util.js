@@ -362,6 +362,8 @@ export var Util = {
           newLayer = true;
       }
       if(!link.inPlace && newLayer) L.DomEvent.on(layer,'extentload', function focusOnLoad(e) {
+        if(newLayer && ["_parent", "_self"].includes(link.target) && layer.parentElement.querySelectorAll("layer-").length === 1)
+          layer.parentElement.projection = layer._layer.getProjection();
         if(layer.extent){
           if(zoomTo) layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
           else layer.focus();
