@@ -1,0 +1,24 @@
+<mapml xmlns="http://www.w3.org/1999/xhtml/">
+    <head>
+        <meta charset="utf-8" />
+        <title>Arctic SDI for Canada</title>
+        <meta content="text/mapml" http-equiv="Content-Type" />
+        <link rel="license" title="&amp;copy; Arctic Council" href="http://catalogue.arctic-sdi.org/geonetwork/srv/eng/catalog.search#/metadata/8b4f2b34-2d0d-4744-ae0f-d7989b9f7a02/formatters/xsl-view?root=div&amp;view=advanced">></link>
+        <link rel="zoomin" href="cbmt-changeProjection.mapml" type="text/mapml" />
+        <meta name="projection" content="EPSG3573"/>
+        <meta name="cs" content="pcrs"/>
+        <style>
+          .asdi-countries {
+            fill: #efefd5; fill-opacity: 0.2; stroke-width: 1; stroke: #d2c2c1; stroke-opacity: 1; stroke-dasharray: 3;
+          }
+        </style>
+    </head>
+    <body>
+        <extent units="EPSG3573">
+          <input type="zoom" name="TileMatrix" min="0" max="4" value="0"/>
+          <input type="location" name="TileCol" axis="column" units="tilematrix" min="0" max="1"/>
+          <input type="location" name="TileRow" axis="row" units="tilematrix" min="0" max="1"/>
+          <link rel="tile" tref="http://basemap.arctic-sdi.org/mapcache/wmts/1.0.0/arctic_cascading/default/3573/{TileMatrix}/{TileRow}/{TileCol}.png"/>
+        </extent>
+    </body>
+</mapml>

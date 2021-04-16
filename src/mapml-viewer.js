@@ -56,10 +56,16 @@ export class MapViewer extends HTMLElement {
   set projection(val) {
     if(val && M[val]){
       this.setAttribute('projection', val);
-      this.dispatchEvent(new CustomEvent('createmap'));
-    } else {
-      throw new Error("Undefined Projection");
-    }
+      if (this._map && this._map.options.projection !== val){
+        this._map.options.crs = M[val];
+        this._map.options.projection = val;
+        for(let layer of this.querySelectorAll("layer-")){
+          layer.removeAttribute("disabled");
+          let reAttach = this.removeChild(layer);
+          this.appendChild(reAttach);
+        }
+      } else this.dispatchEvent(new CustomEvent('createmap'));
+    } else throw new Error("Undefined Projection");
   }
   get zoom() {
     return this.hasAttribute("zoom") ? this.getAttribute("zoom") : 0;
