@@ -4,7 +4,7 @@
         <title>Arctic SDI for Canada</title>
         <meta content="text/mapml" http-equiv="Content-Type" />
         <link rel="license" title="&amp;copy; Arctic Council" href="http://catalogue.arctic-sdi.org/geonetwork/srv/eng/catalog.search#/metadata/8b4f2b34-2d0d-4744-ae0f-d7989b9f7a02/formatters/xsl-view?root=div&amp;view=advanced">></link>
-        <meta name="projection" content="EPSG3573"/>
+        <meta name="projection" content="ATLAS_POLAR_MAP"/>
         <meta name="cs" content="pcrs"/>
         <meta name="zoom" content="min=0,max=6" />
         <style>
