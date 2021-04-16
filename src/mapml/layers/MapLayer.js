@@ -274,17 +274,20 @@ export var MapMLLayer = L.Layer.extend({
           // since we are following a zoom link we will be getting a new
           // layer almost, resetting child content as appropriate
           this._href = this._extent.zoomin;
+          this._layerEl.src = this._extent.zoomin;
           // this.href is the "public" property. When a dynamic layer is
           // accessed, this value changes with every new extent received
           this.href = this._extent.zoomin;
+          this._layerEl.src = this._extent.zoomin;
         } else if (this._extent.zoomout && toZoom < min) {
           this._href = this._extent.zoomout;
           this.href = this._extent.zoomout;
+          this._layerEl.src = this._extent.zoomout;
         }
       }
       if (this._templatedLayer && canZoom ) {
         // get the new extent
-        this._initExtent();
+        //this._initExtent();
       }
     },
     onRemove: function (map) {
@@ -720,6 +723,9 @@ export var MapMLLayer = L.Layer.extend({
                      
                     layer.fire('changeprojection', {href:  (new URL(selectedAlternate.getAttribute('href'), base)).href}, false);
                     return;
+                } else if (!projectionMatch && layer._map && layer._map.options.mapEl.querySelectorAll("layer-").length === 1){
+                  layer._map.options.mapEl.projection = projection;
+                  return;
                 } else if (serverExtent.querySelector('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]') &&
                         serverExtent.hasAttribute("units")) {
                   layer._templateVars = [];
