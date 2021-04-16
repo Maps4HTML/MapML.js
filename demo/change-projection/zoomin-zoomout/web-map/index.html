@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Change projection at z=9</title>
+    <script type="module" src="../../../../dist/web-map.js"></script>
+    <style>
+      html,
+      body {
+        height: 100%;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      
+      /* Specifying the `:defined` selector is recommended to style the map
+      element, such that styles don't apply when fallback content is in use
+      (e.g. when scripting is disabled or when custom/built-in elements isn't
+      supported in the browser). */
+      map[is="web-map"]:defined {
+        /* Responsive map. */
+/*         max-width: 100%; */
+        
+        /* Full viewport. */
+         width: 100%; 
+         height: 100%; 
+        
+        /* Remove default (native-like) border. */
+         border: none; 
+      }
+      
+      /* Pre-style to avoid FOUC of inline layer- and fallback content. */
+      map[is="web-map"]:not(:defined) + img[usemap],
+      map[is="web-map"]:not(:defined) > :not(area):not(.mapml-web-map) {
+        display: none;
+      }
+      /* Ensure inline layer content is hidden if custom/built-in elements isn't
+      supported, or if javascript is disabled. This needs to be defined separately
+      from the above, because the `:not(:defined)` selector invalidates the entire
+      declaration in browsers that do not support it. */
+      layer- {
+        display: none;
+      }
+    </style>
+    <noscript>
+      <style>
+        /* Ensure client-side image map fallbacks are displayed if custom/built-in
+        elements is supported but javascript is disabled. */
+        map[is="web-map"]:not(:defined) + img[usemap] {
+          display: initial;
+        }
+      </style>
+    </noscript>
+    <script type="module">
+      let customProjectionDefinition = `{
+            "projection": "EPSG3573", 
+            "proj4string" : "+proj=laea +lat_0=90 +lon_0=-100 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs", 
+            "origin" : [-4889334.802955,4889334.802955], 
+            "resolutions" : [38197.92815,19098.96407,9549.482037,4774.741019,2387.370509,1193.685255,596.8426273,298.4213137,149.2106568,74.60532841,37.30266421],  
+            "bounds" : [[-4594983,4507258],[4655569,-4562485]],  
+            "tilesize" : 256 
+        }`;
+      let map = document.querySelector("map[is='web-map']");
+      let cProjection = map.defineCustomProjection(customProjectionDefinition);    
+    </script>
+  </head>
+  <body>
+    <map is="web-map" projection="CBMTILE" zoom="8" lat="48.840422" lon="-101.219978" controls>
+      <layer- label="CBMT" src="../cbmt-changeProjection.mapml" checked></layer->
+    </map>
+  </body>
+</html>
