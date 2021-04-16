@@ -289,16 +289,11 @@ export var MapMLLayer = L.Layer.extend({
     },
     onRemove: function (map) {
         L.DomUtil.remove(this._container);
-        if(this._staticTileLayer){
-          map.removeLayer(this._staticTileLayer);
-        }
-        if(this._mapmlvectors){
-          map.removeLayer(this._mapmlvectors);
-        }
-        map.removeLayer(this._imageLayer);
-        if (this._templatedLayer) {
-            map.removeLayer(this._templatedLayer);
-        }
+        if(this._staticTileLayer) map.removeLayer(this._staticTileLayer);
+        if(this._mapmlvectors) map.removeLayer(this._mapmlvectors);
+        if(this._imageLayer) map.removeLayer(this._imageLayer);
+        if (this._templatedLayer) map.removeLayer(this._templatedLayer);
+
         map.fire("checkdisabled");
         map.off("popupopen", this._attachSkipButtons);
     },
