@@ -60,14 +60,10 @@ export class MapViewer extends HTMLElement {
         this._map.options.crs = M[val];
         this._map.options.projection = val;
         for(let layer of this.querySelectorAll("layer-")){
-          let checked = layer.hasAttribute("checked");
-          layer._layer.options.mapprojection = val;
-          layer._layer.validProjection = layer._layer._validProjection(this._map);
-          layer.removeAttribute("checked");
-          if(layer._layer.validProjection && checked) layer.setAttribute("checked","");
-          else layer.removeAttribute("disabled");
+          layer.removeAttribute("disabled");
+          let reAttach = this.removeChild(layer);
+          this.appendChild(reAttach);
         }
-        this._map.fire("checkdisabled");
       } else this.dispatchEvent(new CustomEvent('createmap'));
     } else throw new Error("Undefined Projection");
   }
