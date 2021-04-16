@@ -196,6 +196,7 @@ export var DebugVectors = L.LayerGroup.extend({
         if (layers[i].options._leafletLayer)
           boundsRect.bindTooltip(layers[i].options._leafletLayer._title, { sticky: true });
         this.addLayer(boundsRect);
+        boundsRect.on('contextmenu', this._openContextMenu, this);
         j++;
       }
     }
@@ -204,6 +205,11 @@ export var DebugVectors = L.LayerGroup.extend({
   _mapLayerUpdate: function (e) {
     this.clearLayers();
     this._addBounds(e.target);
+  },
+
+  _openContextMenu: function (e) {
+    L.DomEvent.stop(e);
+    this._map.contextMenu._showAtPoint(e.containerPoint, e, this._map.contextMenu._container);
   },
 });
 
