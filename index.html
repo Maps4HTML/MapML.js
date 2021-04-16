@@ -52,11 +52,35 @@
          } 
        </style> 
      </noscript> 
+    <script type="module">
+      let customProjectionDefinition = `{
+            "projection": "ATLAS_POLAR_MAP",
+            "proj4string" : "+proj=aeqd +lat_0=90 +lon_0=-90 +x_0=0 +y_0=0 +ellps=sphere +units=m +no_defs +type=crs",
+            "code" : "ATLAS_POLAR_MAP",
+            "origin" : [-20015200,20015200],
+            "resolutions" :  [33073,16536.5,8268.246,4134.123,2067.061,1033.531,516.765],
+            "bounds" : [[4979939,-4846977],[-5139071,3980038]],
+            "tilesize" : 256
+        }`;
+      let map = document.querySelector("mapml-viewer");
+      let cProjection = map.defineCustomProjection(customProjectionDefinition);
+    </script>
+    <script type="module">
+      let customProjectionDefinition = `{
+            "projection": "EPSG3573", 
+            "proj4string" : "+proj=laea +lat_0=90 +lon_0=-100 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs", 
+            "origin" : [-4889334.802955,4889334.802955], 
+            "resolutions" : [38197.92815,19098.96407,9549.482037,4774.741019,2387.370509,1193.685255,596.8426273,298.4213137,149.2106568,74.60532841,37.30266421],  
+            "bounds" : [[-4594983,4507258],[4655569,-4562485]],  
+            "tilesize" : 256 
+        }`;
+      let map = document.querySelector("mapml-viewer");
+      let cProjection = map.defineCustomProjection(customProjectionDefinition);    
+    </script>
   </head>
   <body>
     <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls>
       <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
-      <layer- label="Restaurants" src="demo/restaurants.mapml" checked></layer->
       <layer- label="Links Testing" src="demo/canada.mapml" checked></layer->
     </mapml-viewer>
   </body>
