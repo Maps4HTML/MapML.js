@@ -59,6 +59,16 @@ export class MapLayer extends HTMLElement {
       this.removeAttribute('hidden');
     }
   }
+
+  get opacity(){
+    return this._layer._container.style.opacity || this._layer.options.opacity;
+  }
+
+  set opacity(val) {
+    if(+val > 1 || +val < 0) return;
+    this._layer.changeOpacity(val);
+  }
+
   constructor() {
     // Always call super first in constructor
     super();

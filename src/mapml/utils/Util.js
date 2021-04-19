@@ -323,7 +323,7 @@ export var Util = {
   },
 
   handleLink: function (link, leafletLayer) {
-    let zoomTo, justPan = false, layer;
+    let zoomTo, justPan = false, layer, opacity;
     if(link.type === "text/html" && link.target !== "_blank"){  // all other target values other than blank behave as _top
       link.target = "_top";
     } else if (link.type !== "text/html" && link.url.includes("#")){
@@ -357,6 +357,7 @@ export var Util = {
           window.location.href = link.url;
           break;
         default:
+          opacity = leafletLayer._layerEl.opacity;
           leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
           leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
           newLayer = true;
@@ -369,7 +370,11 @@ export var Util = {
           else layer.focus();
           L.DomEvent.off(layer, 'extentload', focusOnLoad);
         }
+        if(opacity) layer.opacity = opacity;
       });
-    } else if (zoomTo && !link.inPlace && justPan) leafletLayer._map.options.mapEl.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
+    } else if (zoomTo && !link.inPlace && justPan){
+      leafletLayer._map.options.mapEl.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
+      if(opacity) layer.opacity = opacity;
+    }
   },
 };
