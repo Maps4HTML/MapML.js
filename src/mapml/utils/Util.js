@@ -323,7 +323,7 @@ export var Util = {
   },
 
   handleLink: function (link, leafletLayer) {
-    let zoomTo, justPan = false, layer, map = leafletLayer._map;
+    let zoomTo, justPan = false, layer, map = leafletLayer._map, opacity;
     if(link.type === "text/html" && link.target !== "_blank"){  // all other target values other than blank behave as _top
       link.target = "_top";
     } else if (link.type !== "text/html" && link.url.includes("#")){
