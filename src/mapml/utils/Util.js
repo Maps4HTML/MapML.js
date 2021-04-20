@@ -323,7 +323,7 @@ export var Util = {
   },
 
   handleLink: function (link, leafletLayer) {
-    let zoomTo, justPan = false, layer, opacity;
+    let zoomTo, justPan = false, layer, map = leafletLayer._map;
     if(link.type === "text/html" && link.target !== "_blank"){  // all other target values other than blank behave as _top
       link.target = "_top";
     } else if (link.type !== "text/html" && link.url.includes("#")){
@@ -342,15 +342,15 @@ export var Util = {
           if (link.type === "text/html") {
             window.open(link.url);
           } else {
-            leafletLayer._map.options.mapEl.appendChild(layer);
+            map.options.mapEl.appendChild(layer);
             newLayer = true;
           }
           break;
         case "_parent":
-          for (let l of leafletLayer._map.options.mapEl.querySelectorAll("layer-"))
-            if (l._layer !== leafletLayer) leafletLayer._map.options.mapEl.removeChild(l);
-          leafletLayer._map.options.mapEl.appendChild(layer);
-          leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
+          for (let l of map.options.mapEl.querySelectorAll("layer-"))
+            if (l._layer !== leafletLayer) map.options.mapEl.removeChild(l);
+          map.options.mapEl.appendChild(layer);
+          map.options.mapEl.removeChild(leafletLayer._layerEl);
           newLayer = true;
           break;
         case "_top":
@@ -359,7 +359,7 @@ export var Util = {
         default:
           opacity = leafletLayer._layerEl.opacity;
           leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
-          leafletLayer._map.options.mapEl.removeChild(leafletLayer._layerEl);
+          map.options.mapEl.removeChild(leafletLayer._layerEl);
           newLayer = true;
       }
       if(!link.inPlace && newLayer) L.DomEvent.on(layer,'extentload', function focusOnLoad(e) {
@@ -370,11 +370,14 @@ export var Util = {
           else layer.focus();
           L.DomEvent.off(layer, 'extentload', focusOnLoad);
         }
+
         if(opacity) layer.opacity = opacity;
+        map.getContainer().focus();
       });
     } else if (zoomTo && !link.inPlace && justPan){
       leafletLayer._map.options.mapEl.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
       if(opacity) layer.opacity = opacity;
+      map.getContainer().focus();
     }
   },
 };
