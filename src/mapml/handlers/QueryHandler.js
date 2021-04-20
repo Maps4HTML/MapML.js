@@ -166,8 +166,8 @@ export var QueryHandler = L.Handler.extend({
         let div = L.DomUtil.create("div", "mapml-popup-content"),
             c = L.DomUtil.create("iframe");
         c.style = "border: none";
-        c.srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + mapmldoc.querySelector('feature properties').innerHTML;
-        c.setAttribute("sandbox","allow-same-origin");
+        c.srcdoc = mapmldoc.querySelector('feature properties').innerHTML;
+        c.setAttribute("sandbox","allow-same-origin allow-forms");
         div.appendChild(c);
         // passing a latlng to the popup is necessary for when there is no
         // geometry / null geometry
@@ -183,8 +183,8 @@ export var QueryHandler = L.Handler.extend({
         let div = L.DomUtil.create("div", "mapml-popup-content"),
             c = L.DomUtil.create("iframe");
         c.style = "border: none";
-        c.srcdoc = `<meta http-equiv="content-security-policy" content="script-src 'none';">` + text;
-        c.setAttribute("sandbox","allow-same-origin");
+        c.srcdoc = text;
+        c.setAttribute("sandbox","allow-same-origin allow-forms");
         div.appendChild(c);
         layer.bindPopup(div, popupOptions).openPopup(loc);
       }
