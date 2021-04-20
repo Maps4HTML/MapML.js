@@ -502,3 +502,8 @@ svg.leaflet-image-layer.leaflet-interactive g {
   pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
   pointer-events: auto;
 }
+
+:fullscreen .mapml-debug-grid {
+  color: #fff;
+  text-shadow: 1px 1px 1px #000, 1px 1px 1px #000;
+}
