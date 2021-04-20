@@ -70,6 +70,7 @@ export var MapMLLayer = L.Layer.extend({
     },
     changeOpacity: function(opacity) {
         this._container.style.opacity = opacity;
+        if(this.opacityEl) this.opacityEl.value = opacity;
     },
     onAdd: function (map) {
         if(this._extent && !this._validProjection(map)){
@@ -496,6 +497,7 @@ export var MapMLLayer = L.Layer.extend({
         opacityControlSummary = document.createElement('summary'),
         opacityControlSummaryLabel = document.createElement('label'),
         mapEl = this._layerEl.parentNode;
+        this.opacityEl = opacity;
         
         summaryContainer.classList.add('mapml-control-summary-container');
         
