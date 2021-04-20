@@ -82,7 +82,6 @@ jest.setTimeout(50000);
           }
         );
 
-
         describe(
           "Disabled attributes test in " + browserType,
           () => {
@@ -96,6 +95,26 @@ jest.setTimeout(50000);
               let disabled = await page.$eval("body > mapml-viewer > layer-",
                 (layer) => layer.hasAttribute("disabled", ""));
               expect(disabled).toEqual(false);
+            });
+          }
+        );
+
+        describe(
+          "Opacity setters & getters test in " + browserType,
+          () => {
+            test("[" + browserType + "]" + " Setting opacity", async () => {
+              await page.reload();
+              await page.$eval("body > mapml-viewer > layer-",
+                (layer) => layer.opacity = 0.4);
+              let value = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input[type=range]",
+                (input) => input.value);
+              expect(value).toEqual("0.4");
+            });
+
+            test("[" + browserType + "]" + " Getting appropriate opacity", async () => {
+              let value = await page.$eval("body > mapml-viewer > layer-",
+                (layer) => layer.opacity);
+              expect(value).toEqual("0.4");
             });
           }
         );
