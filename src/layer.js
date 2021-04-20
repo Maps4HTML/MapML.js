@@ -15,6 +15,7 @@ export class MapLayer extends HTMLElement {
     if (val) {
       this.setAttribute('src', val);
       if (this._layer) {
+        let oldOpacity = this.opacity;
         // go through the same sequence as if the layer had been removed from
         // the DOM and re-attached with a new URL source.
         this.disconnectedCallback();
@@ -25,6 +26,7 @@ export class MapLayer extends HTMLElement {
         if (this.parentNode) {
           this.connectedCallback();
         }
+        this.opacity = oldOpacity;
       }
     }
   }
