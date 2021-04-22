@@ -62,12 +62,12 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     },
     createTile: function (coords) {
       let tileGroup = document.createElement("DIV"),
-          tileSize = this._map.options.crs.options.crs.tile.bounds.max.x;
+          tileSize = this.getTileSize();
       L.DomUtil.addClass(tileGroup, "mapml-tile-group");
       L.DomUtil.addClass(tileGroup, "leaflet-tile");
       
-      tileGroup.setAttribute("width", `${tileSize}`);
-      tileGroup.setAttribute("height", `${tileSize}`);
+      tileGroup.setAttribute("width", `${tileSize.x}`);
+      tileGroup.setAttribute("height", `${tileSize.y}`);
 
       this._template.linkEl.dispatchEvent(new CustomEvent('tileloadstart', {
         detail:{
@@ -79,7 +79,10 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       }));
 
       if (this._template.type.startsWith('image/')) {
-        tileGroup.appendChild(L.TileLayer.prototype.createTile.call(this, coords, function(){}));
+        let tile = L.TileLayer.prototype.createTile.call(this, coords, function(){});
+        tile.width = tileSize.x;
+        tile.height = tileSize.y;
+        tileGroup.appendChild(tile);
       } else if(!this._url.includes(BLANK_TT_TREF)) {
         // tiles of type="text/mapml" will have to fetch content while creating
         // the tile here, unless there can be a callback associated to the element
