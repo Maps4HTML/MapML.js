@@ -65,9 +65,6 @@ export var TemplatedTileLayer = L.TileLayer.extend({
           tileSize = this.getTileSize();
       L.DomUtil.addClass(tileGroup, "mapml-tile-group");
       L.DomUtil.addClass(tileGroup, "leaflet-tile");
-      
-      tileGroup.setAttribute("width", `${tileSize.x}`);
-      tileGroup.setAttribute("height", `${tileSize.y}`);
 
       this._template.linkEl.dispatchEvent(new CustomEvent('tileloadstart', {
         detail:{
