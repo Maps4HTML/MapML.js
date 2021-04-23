@@ -100,7 +100,7 @@ export var Feature = L.Path.extend({
       hovered = false;
       this._map.getContainer().removeChild(container);
     }, this);
-    leafletLayer._map.on('mouseout mouseover', (e) => {
+    L.DomEvent.on(leafletLayer._map.getContainer(),'mouseout mouseenter click', (e) => { //adds a lot of event handlers
       if(!container.parentElement) return;
       hovered = false;
       this._map.getContainer().removeChild(container);
