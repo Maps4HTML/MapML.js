@@ -95,7 +95,7 @@ export var Feature = L.Path.extend({
         if(hovered) p.innerHTML = resolver.href;
       }, 1000);
     }, this);
-    L.DomEvent.on(path, 'mouseout keydown', (e) => {
+    L.DomEvent.on(path, 'mouseout keydown mousedown', (e) => {
       if(e.target !== e.currentTarget || !container.parentElement) return;
       hovered = false;
       this._map.getContainer().removeChild(container);
