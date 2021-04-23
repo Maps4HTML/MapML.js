@@ -59,6 +59,7 @@ export var Feature = L.Path.extend({
     let dragStart, container = document.createElement('div'), p = document.createElement('p'), hovered = false;
     container.classList.add('mapml-link-preview');
     container.appendChild(p);
+    path.classList.add('map-a');
     L.DomEvent.on(path, 'mousedown', e => dragStart = {x:e.clientX, y:e.clientY}, this);
     L.DomEvent.on(path, "mouseup", (e) => {
       let onTop = true, nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
@@ -78,7 +79,7 @@ export var Feature = L.Path.extend({
       if(e.keyCode === 13 || e.keyCode === 32)
         M.handleLink(link, leafletLayer);
     }, this);
-    L.DomEvent.on(path, 'mouseenter', (e) => {
+    L.DomEvent.on(path, 'mouseenter keyup', (e) => {
       if(e.target !== e.currentTarget) return;
       hovered = true;
       let resolver = document.createElement('a'), mapWidth = this._map.getContainer().clientWidth;
@@ -94,8 +95,13 @@ export var Feature = L.Path.extend({
         if(hovered) p.innerHTML = resolver.href;
       }, 1000);
     }, this);
-    L.DomEvent.on(path, 'mouseout', (e) => {
-      if(e.target !== e.currentTarget) return;
+    L.DomEvent.on(path, 'mouseout keydown', (e) => {
+      if(e.target !== e.currentTarget || !container.parentElement) return;
+      hovered = false;
+      this._map.getContainer().removeChild(container);
+    }, this);
+    leafletLayer._map.on('mouseout mouseover', (e) => {
+      if(!container.parentElement) return;
       hovered = false;
       this._map.getContainer().removeChild(container);
     }, this);
