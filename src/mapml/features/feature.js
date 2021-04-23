@@ -79,7 +79,7 @@ export var Feature = L.Path.extend({
         M.handleLink(link, leafletLayer);
     }, this);
     L.DomEvent.on(path, 'mouseenter', (e) => {
-      L.DomEvent.stop(e);
+      if(e.target !== e.currentTarget) return;
       hovered = true;
       let resolver = document.createElement('a'), mapWidth = this._map.getContainer().clientWidth;
       resolver.href = link.url;
@@ -95,7 +95,7 @@ export var Feature = L.Path.extend({
       }, 1000);
     }, this);
     L.DomEvent.on(path, 'mouseout', (e) => {
-      L.DomEvent.stop(e);
+      if(e.target !== e.currentTarget) return;
       hovered = false;
       this._map.getContainer().removeChild(container);
     }, this);
