@@ -316,9 +316,9 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     },
   geometryToLayer: function (mapml, vectorOptions, nativeCS, zoom, title) {
     let geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
-        cs = geometry.getAttribute("cs") || nativeCS, group = [], svgGroup = L.SVG.create('g');
+        cs = geometry.getAttribute("cs") || nativeCS, group = [], svgGroup = L.SVG.create('g'), copyOptions = Object.assign({}, vectorOptions);
     for(let geo of geometry.querySelectorAll('polygon, linestring, multilinestring, point, multipoint')){
-      group.push(M.feature(geo, Object.assign(
+      group.push(M.feature(geo, Object.assign(copyOptions,
         { nativeCS: cs,
           nativeZoom: zoom,
           projection: this.options.projection,
@@ -327,7 +327,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
           wrappers: this._getGeometryParents(geo.parentElement),
           featureLayer: this,
           _leafletLayer: this.options._leafletLayer,
-        }, vectorOptions)));
+        })));
     }
     let groupOptions = {group:svgGroup, featureID: mapml.id, accessibleTitle: title, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties, _leafletLayer: this.options._leafletLayer,},
       collections = geometry.querySelector('multipolygon') || geometry.querySelector('geometrycollection');
