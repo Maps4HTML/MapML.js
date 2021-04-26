@@ -137,6 +137,7 @@ export var QueryHandler = L.Handler.extend({
           if(!feature.querySelector('geometry')){
             let geo = document.createElement('geometry'), point = document.createElement('point'),
               coords = document.createElement('coordinates');
+            geo.setAttribute("cs", "gcrs");
             coords.innerHTML = `${loc.lng} ${loc.lat}`;
             point.appendChild(coords);
             geo.appendChild(point);
