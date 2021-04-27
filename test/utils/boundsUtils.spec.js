@@ -94,6 +94,40 @@ describe("M.Util Bounds Related Tests", () => {
   });
 
   describe("M.boundsToPCRSBounds utility function tests", () => {
+
+    let expected = [
+      [
+        {"max": {"x": 358198319.04157144, "y": -58903529.76039286}, "min": {"x": 63557729.76039286, "y": -549971178.5623572}},
+        {"max": {"x": 1582963159.0803504, "y": -380712658.51299566}, "min": {"x": 380712658.51299566, "y": -2384463492.79192}},
+        {"max": {"x": 7020, "y": -1710}, "min": {"x": 1620, "y": -10710}},
+      ],
+      [
+        {"max": {"x": 40, "y": 60}, "min": {"x": 10, "y": 10}},
+        {"max": {"x": 40, "y": 60}, "min": {"x": 10, "y": 10}},
+        {"max": {"x": 40, "y": 60}, "min": {"x": 10, "y": 10}},
+      ],
+      [
+        {"max": {"x": 9575762.405264193, "y": 6462207.673340187}, "min": {"x": 2938149.2363012433, "y": 5421756.419812092}},
+        {"max": {"x": 4452779.631730943, "y": 8399737.88981836}, "min": {"x": 1113194.9079327357, "y": 1118889.974857959}},
+        {"max": {"x": 40, "y": 59.99999999999999}, "min": {"x": 10, "y": 10}},
+      ],
+      [
+        {"max": {"x": -33121213.59749386, "y": 38926353.399373464}, "min": {"x": -34272153.399373464, "y": 37008120.39624079}},
+        {"max": {"x": -13775786.985667607, "y": 18472078.003508836}, "min": {"x": -18472078.003508836, "y": 10644926.307106787}},
+        {"max": {"x": -151.875, "y": 82.96875}, "min": {"x": -172.96875, "y": 47.8125}},
+      ]
+    ], p1 = L.point(10, 10), p2 = L.point(40, 60), bounds = L.bounds(p1, p2), csArray = ["tilematrix", "pcrs", "gcrs", "tcrs"], projArray = ["CBMTILE", "OSMTILE", "WGS84"];
+    /* jshint ignore:start */
+    for(let i in csArray ){
+      for(let j in projArray ){
+        test(`Valid conversion in ${projArray[j]} + ${csArray[i]}`, () => {
+          let output = M.boundsToPCRSBounds(bounds, 0, projArray[j], csArray[i]);
+          expect(output).toEqual(expected[i][j]);
+        });
+      }
+    }
+    /* jshint ignore:end */
+
     test("Null bounds", () => {
       let output = M.boundsToPCRSBounds(null, 3, "CBMTILE", "TILEMATRIX");
       expect(output).toEqual(undefined);
@@ -304,4 +338,55 @@ describe("M.Util Bounds Related Tests", () => {
     }
   });
   /* jshint ignore:end */
+
+  describe("M.convertPCRSBounds() utility function tests", () => {
+    let expected = [
+      [
+        {"max": {"x": 3.528621777931034, "y": 4.002502516293103}, "min": {"x": 3.5286187233620687, "y": 4.002497425344827}},
+        {"max": {"x": 0.5000009981280935, "y": 0.4999997504679766}, "min": {"x": 0.5000002495320234, "y": 0.4999985028078598}},
+        {"max": {"x": 1.2222222222222223, "y": 0.4444444444444445}, "min": {"x": 1.0555555555555556, "y": 0.16666666666666669}},
+      ],
+      [
+        {"max": {"x": 40, "y": 60}, "min": {"x": 10, "y": 10}},
+        {"max": {"x": 40, "y": 60}, "min": {"x": 10, "y": 10}},
+        {"max": {"x": 40, "y": 60}, "min": {"x": 10, "y": 10}},
+      ],
+      [
+        {"max": {"x": -94.99945333421749, "y": 49.000539520078}, "min": {"x": -94.9998633350226, "y": 49.000089920088065}},
+        {"max": {"x": 0.0003593261136478086, "y": 0.0005389891704723513}, "min": {"x": 0.00008983152841195215, "y": 0.00008983152840993817}},
+        {"max": {"x": 40, "y": 59.99999999999999}, "min": {"x": 10, "y": 10}},
+      ],
+      [
+        {"max": {"x": 903.3271751503447, "y": 1024.6406441710344}, "min": {"x": 903.3263931806896, "y": 1024.6393408882757}},
+        {"max": {"x": 128.00025552079194, "y": 127.99993611980202}, "min": {"x": 128.00006388019798, "y": 127.9996167188121}},
+        {"max": {"x": 312.8888888888889, "y": 113.77777777777779}, "min": {"x": 270.22222222222223, "y": 42.66666666666667}},
+      ]
+    ], p1 = L.point(10, 10), p2 = L.point(40, 60), bounds = L.bounds(p1, p2), csArray = ["tilematrix", "pcrs", "gcrs", "tcrs"], projArray = ["CBMTILE", "OSMTILE", "WGS84"];
+    /* jshint ignore:start */
+    for(let i in csArray ){
+      for(let j in projArray ){
+        test(`Valid conversion in ${projArray[j]} + ${csArray[i]}`, () => {
+          let output = M.convertPCRSBounds(bounds, 0, projArray[j], csArray[i]);
+          expect(output).toEqual(expected[i][j]);
+        });
+      }
+    }
+    /* jshint ignore:end */
+    test("Null bounds", () => {
+      let output = M.convertPCRSBounds(null, 0, "CBMTILE", "tilematrix");
+      expect(output).toEqual(undefined);
+    });
+    test("Null zoom", () => {
+      let output = M.convertPCRSBounds(bounds, null, "CBMTILE", "tilematrix");
+      expect(output).toEqual(undefined);
+    });
+    test("Null projection", () => {
+      let output = M.convertPCRSBounds(bounds, 1, null, "tilematrix");
+      expect(output).toEqual(undefined);
+    });
+    test("Null cs", () => {
+      let output = M.convertPCRSBounds(bounds, 1, "CBMTILE", null);
+      expect(output).toEqual(undefined);
+    });
+  });
 });

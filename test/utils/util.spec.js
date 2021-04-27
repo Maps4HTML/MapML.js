@@ -347,5 +347,109 @@ describe("M.Util Tests", () => {
       expect(output).toEqual(["i", "j"]);
     });
   });
-});
 
+  describe("M.pixelToPCRSPoint() utility function tests", () => {
+    let point = L.point(10, 10);
+    test("Null point", () => {
+      let output = M.pixelToPCRSPoint(null, 0, "CBMTILE");
+      expect(output).toEqual(undefined);
+    });
+    test("Null zoom", () => {
+      let output = M.pixelToPCRSPoint(point, null, "CBMTILE");
+      expect(output).toEqual(undefined);
+    });
+    test("Null projection", () => {
+      let output = M.pixelToPCRSPoint(point, 1, null);
+      expect(output).toEqual(undefined);
+    });
+    test("Valid point conversion in CBMTILE", () => {
+      let output = M.pixelToPCRSPoint(point, 1, "CBMTILE");
+      expect(output).toEqual({"x": -34430903.7168741, "y": 39085103.7168741});
+    });
+    test("Valid point conversion in OSMTILE", () => {
+      let output = M.pixelToPCRSPoint(point, 1, "OSMTILE");
+      expect(output).toEqual({"x": -19254793.17314904, "y": 19254793.17314904});
+    });
+    test("Valid point conversion in WGS84", () => {
+      let output = M.pixelToPCRSPoint(point, 1, "WGS84");
+      expect(output).toEqual({"x": -176.484375, "y": 86.484375});
+    });
+  });
+
+  describe("M.pointToPCRSPoint() utility function tests", () => {
+    let expected = [
+      [
+        {"x": 63557729.76039286, "y": -58903529.76039286},
+        {"x": 380712658.51299566, "y": -380712658.51299566},
+        {"x": 1620, "y": -1710},
+      ],
+      [
+        {"x": 10, "y": 10},
+        {"x": 10, "y": 10},
+        {"x": 10, "y": 10},
+      ],
+      [
+        {"x": 9575762.405264193, "y": 5421756.419812092},
+        {"x": 1113194.9079327357, "y": 1118889.974857959},
+        {"x": 10, "y": 10},
+      ],
+      [
+        {"x": -34272153.399373464, "y": 38926353.399373464},
+        {"x": -18472078.003508836, "y": 18472078.003508836},
+        {"x": -172.96875, "y": 82.96875},
+      ]
+    ],point = L.point(10, 10), csArray = ["tilematrix", "pcrs", "gcrs", "tcrs"], projArray = ["CBMTILE", "OSMTILE", "WGS84"];
+
+    /* jshint ignore:start */
+    for(let i in csArray ){
+      for(let j in projArray ){
+        test(`Valid conversion in ${projArray[j]} + ${csArray[i]}`, () => {
+          let output = M.pointToPCRSPoint(point, 0, projArray[j], csArray[i]);
+          expect(output).toEqual(expected[i][j]);
+        });
+      }
+    }
+    /* jshint ignore:end */
+
+    test("Null point", () => {
+      let output = M.pointToPCRSPoint(null, 0, "CBMTILE");
+      expect(output).toEqual(undefined);
+    });
+    test("Null zoom", () => {
+      let output = M.pointToPCRSPoint(point, null, "CBMTILE");
+      expect(output).toEqual(undefined);
+    });
+    test("Null projection", () => {
+      let output = M.pointToPCRSPoint(point, 1, null);
+      expect(output).toEqual(undefined);
+    });
+    test("Null cs", () => {
+      let output = M.pointToPCRSPoint(point, 1, "CBMTILE", null);
+      expect(output).toEqual(undefined);
+    });
+  });
+
+  describe("M.axisToXY() utility function tests", () => {
+    let expectX = ["i", "column", "longitude", "x", "easting"], expectY = ["row", "j", "latitude", "y", "northing"];
+    test("Null axis", () => {
+      let output = M.axisToXY(null);
+      expect(output).toEqual(undefined);
+    });
+    /* jshint ignore:start */
+    for(let i in expectX ){
+      test(`Expect X for ${expectX[i]}`, () => {
+        let output = M.axisToXY(expectX[i]);
+        expect(output).toEqual("x");
+      });
+    }
+    /* jshint ignore:end */
+    /* jshint ignore:start */
+    for(let i in expectY ){
+      test(`Expect X for ${expectY[i]}`, () => {
+        let output = M.axisToXY(expectY[i]);
+        expect(output).toEqual("y");
+      });
+    }
+    /* jshint ignore:end */
+  });
+});
