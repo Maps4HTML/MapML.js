@@ -414,13 +414,13 @@ export var ContextMenu = L.Handler.extend({
   _show: function (e) {
     if(this._mapMenuVisible) this._hide();
     this._clickEvent = e;
-    let elem = e.originalEvent.srcElement;
+    let elem = e.originalEvent.target;
     if(elem.closest("fieldset")){
       elem = elem.closest("fieldset").querySelector("span");
       if(!elem.layer.validProjection) return;
       this._layerClicked = elem;
       this._showAtPoint(e.containerPoint, e, this._layerMenu);
-    } else if(elem.classList.contains("leaflet-container")) {
+    } else if(elem.classList.contains("leaflet-container") || elem.classList.contains("mapml-debug-extent")) {
       this._layerClicked = undefined;
       this._showAtPoint(e.containerPoint, e, this._container);
     }

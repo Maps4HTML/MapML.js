@@ -196,7 +196,6 @@ export var DebugVectors = L.LayerGroup.extend({
         if (layers[i].options._leafletLayer)
           boundsRect.bindTooltip(layers[i].options._leafletLayer._title, { sticky: true });
         this.addLayer(boundsRect);
-        boundsRect.on('contextmenu', this._openContextMenu, this);
         j++;
       }
     }
@@ -206,11 +205,6 @@ export var DebugVectors = L.LayerGroup.extend({
     this.clearLayers();
     this._addBounds(e.target);
   },
-
-  _openContextMenu: function (e) {
-    L.DomEvent.stop(e);
-    this._map.contextMenu._showAtPoint(e.containerPoint, e, this._map.contextMenu._container);
-  },
 });
 
 export var debugVectors = function (options) {
@@ -219,7 +213,9 @@ export var debugVectors = function (options) {
 
 
 var ProjectedExtent = L.Path.extend({
-
+  options: {
+    className: "mapml-debug-extent",
+  },
   initialize: function (locations, options) {
     //locations passed in as pcrs coordinates
     this._locations = locations;
