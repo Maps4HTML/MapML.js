@@ -187,13 +187,6 @@ export var FeatureRenderer = L.SVG.extend({
     if (!path || !layer) { return; }
     let options = layer.options, isClosed = layer.isClosed;
     if ((options.stroke && (!isClosed || isOutline)) || (isMain && !layer.outlinePath)) {
-      if (options.link){
-        path.style.stroke = "#0000EE";
-        path.style.strokeOpacity = "1";
-        path.style.strokeWidth = "1px";
-        path.style.strokeDasharray = "none";
-
-      }
       path.setAttribute('stroke', options.color);
       path.setAttribute('stroke-opacity', options.opacity);
       path.setAttribute('stroke-width', options.weight);
@@ -210,6 +203,13 @@ export var FeatureRenderer = L.SVG.extend({
         path.setAttribute('stroke-dashoffset', options.dashOffset);
       } else {
         path.removeAttribute('stroke-dashoffset');
+      }
+
+      if (options.link){
+        path.setAttribute("stroke", options.link.visited?"#6c00a2":"#0000EE");
+        path.setAttribute("stroke-opacity", "1");
+        path.setAttribute("stroke-width", "1px");
+        path.setAttribute("stroke-dasharray", "none");
       }
     } else {
       path.setAttribute('stroke', 'none');
