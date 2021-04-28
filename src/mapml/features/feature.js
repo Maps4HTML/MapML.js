@@ -56,7 +56,10 @@ export var Feature = L.Path.extend({
    * @param leafletLayer
    */
   attachLinkHandler: function (elem, link, leafletLayer) {
-    let dragStart; //prevents click from happening on drags
+    let dragStart, container = document.createElement('div'), p = document.createElement('p'), hovered = false;
+    container.classList.add('mapml-link-preview');
+    container.appendChild(p);
+    elem.classList.add('map-a');
     L.DomEvent.on(elem, 'mousedown', e => dragStart = {x:e.clientX, y:e.clientY}, this);
     L.DomEvent.on(elem, "mouseup", (e) => {
       let onTop = true, nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
@@ -75,6 +78,32 @@ export var Feature = L.Path.extend({
       L.DomEvent.stop(e);
       if(e.keyCode === 13 || e.keyCode === 32)
         M.handleLink(link, leafletLayer);
+    }, this);
+    L.DomEvent.on(elem, 'mouseenter keyup', (e) => {
+      if(e.target !== e.currentTarget) return;
+      hovered = true;
+      let resolver = document.createElement('a'), mapWidth = this._map.getContainer().clientWidth;
+      resolver.href = link.url;
+      p.innerHTML = resolver.href;
+
+      this._map.getContainer().appendChild(container);
+
+      while(p.clientWidth > mapWidth/2){
+        p.innerHTML = p.innerHTML.substring(0, p.innerHTML.length - 5) + "...";
+      }
+      setTimeout(()=>{
+        if(hovered) p.innerHTML = resolver.href;
+      }, 1000);
+    }, this);
+    L.DomEvent.on(elem, 'mouseout keydown mousedown', (e) => {
+      if(e.target !== e.currentTarget || !container.parentElement) return;
+      hovered = false;
+      this._map.getContainer().removeChild(container);
+    }, this);
+    L.DomEvent.on(leafletLayer._map.getContainer(),'mouseout mouseenter click', (e) => { //adds a lot of event handlers
+      if(!container.parentElement) return;
+      hovered = false;
+      this._map.getContainer().removeChild(container);
     }, this);
   },
 
