@@ -2,7 +2,7 @@
 
   <head>
     <title>Canada Base Map - Transportation (CBMT)</title>
-    <meta http-equiv="Content-Type" content="text/mapml;projection=CBMTILE" />
+    <meta http-equiv="Content-Type" content="text/mapml"/>
     <meta charset="utf-8" />
     <base href="" />
     <link rel="license"

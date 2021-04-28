@@ -1,7 +1,7 @@
 <mapml xmlns="https://www.w3.org/1999/xhtml/">
     <head>
         <title>Natural Resources Canada's CanVec+ 031G - Map Markup Language</title>
-        <meta http-equiv="Content-Type" content="text/mapml;projection=WGS84;zoom=2"/>
+        <meta http-equiv="Content-Type" content="text/mapml"/>
         <link rel="stylesheet" href="canvec_cantopo_svg.css" type="text/css"/>
         <link rel="stylesheet" href="canvec_feature_properties.css" type="text/css"/>
         <style>
