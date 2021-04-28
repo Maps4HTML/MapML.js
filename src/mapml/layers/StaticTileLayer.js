@@ -50,13 +50,17 @@ export var MapMLStaticTileLayer = L.GridLayer.extend({
 
   createTile: function (coords) {
     let tileGroup = this._groups[this._tileCoordsToKey(coords)] || [],
-        tileElem = document.createElement('tile');
+        tileElem = document.createElement('tile'), tileSize = this.getTileSize();
     tileElem.setAttribute("col",coords.x);
     tileElem.setAttribute("row",coords.y);
     tileElem.setAttribute("zoom",coords.z);
     
     for(let i = 0;i<tileGroup.length;i++){
       let tile= document.createElement('img');
+      tile.width = tileSize.x;
+      tile.height = tileSize.y;
+      tile.alt = '';
+      tile.setAttribute("role","presentation");
       tile.src = tileGroup[i].src;
       tileElem.appendChild(tile);
     }
