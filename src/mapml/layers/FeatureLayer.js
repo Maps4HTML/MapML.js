@@ -251,11 +251,11 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       let zoom = mapml.getAttribute("zoom") || nativeZoom, title = mapml.querySelector("featurecaption");
       title = title ? title.innerHTML : "Feature";
 
-      let propertyContainer = document.createElement('div');
-      propertyContainer.classList.add("mapml-popup-content");
-      propertyContainer.insertAdjacentHTML('afterbegin', mapml.querySelector("properties").innerHTML);
-
-      options.properties = propertyContainer;
+      if(mapml.querySelector("properties")) {
+        options.properties = document.createElement('div');
+        options.properties.classList.add("mapml-popup-content");
+        options.properties.insertAdjacentHTML('afterbegin', mapml.querySelector("properties").innerHTML);
+      }
 
       let layer = this.geometryToLayer(mapml, options, nativeCS, +zoom, title);
       if (layer) {

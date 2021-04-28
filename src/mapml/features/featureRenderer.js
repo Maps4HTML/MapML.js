@@ -24,7 +24,7 @@ export var FeatureRenderer = L.SVG.extend({
     //creates the main parts and sub parts paths
     for (let p of layer._parts) {
       if (p.rings){
-        this._createPath(p, layer.options.className, layer.featureAttributes['aria-label'], true, layer.featureAttributes);
+        this._createPath(p, layer.options.className, layer.featureAttributes['aria-label'], layer.options.interactive, layer.featureAttributes);
         if(layer.outlinePath) p.path.style.stroke = "none";
       }
       if (p.subrings) {

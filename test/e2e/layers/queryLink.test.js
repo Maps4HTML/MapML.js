@@ -80,7 +80,7 @@ jest.setTimeout(50000);
             await page.click("div");
             await page.waitForSelector("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div");
             const feature = await page.$eval(
-              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path.leaflet-interactive",
+              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
               (tile) => tile.getAttribute("d")
             );
             const popup = await page.$eval(
@@ -95,7 +95,7 @@ jest.setTimeout(50000);
           test("[" + browserType + "]" + " Next feature added + popup content updated ", async () => {
             await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > div > a:nth-child(4)");
             const feature = await page.$eval(
-              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path.leaflet-interactive",
+              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
               (tile) => tile.getAttribute("d")
             );
             const popup = await page.$eval(
@@ -110,7 +110,7 @@ jest.setTimeout(50000);
           test("[" + browserType + "]" + " Previous feature added + popup content updated ", async () => {
             await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > div > a:nth-child(2)");
             const feature = await page.$eval(
-              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path.leaflet-interactive",
+              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
               (tile) => tile.getAttribute("d")
             );
             const popup = await page.$eval(
@@ -126,7 +126,7 @@ jest.setTimeout(50000);
             for (let i = 0; i < 2; i++)
               await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > div > a:nth-child(4)");
             const feature = await page.$eval(
-              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path.leaflet-interactive",
+              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
               (tile) => tile.getAttribute("d")
             );
             const popup = await page.$eval(
@@ -141,7 +141,7 @@ jest.setTimeout(50000);
           test("[" + browserType + "]" + " TCRS feature added + popup content updated ", async () => {
             await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > div > a:nth-child(4)");
             const feature = await page.$eval(
-              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path.leaflet-interactive",
+              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
               (tile) => tile.getAttribute("d")
             );
             const popup = await page.$eval(
@@ -156,7 +156,7 @@ jest.setTimeout(50000);
           test("[" + browserType + "]" + " Tilematrix feature added + popup content updated ", async () => {
             await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > div > a:nth-child(4)");
             const feature = await page.$eval(
-              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path.leaflet-interactive",
+              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
               (tile) => tile.getAttribute("d")
             );
             const popup = await page.$eval(
@@ -170,7 +170,7 @@ jest.setTimeout(50000);
           test("[" + browserType + "]" + " Synthesized point, valid location ", async () => {
             await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > div > a:nth-child(4)");
             const feature = await page.$eval(
-              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path.leaflet-interactive",
+              "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
               (tile) => tile.getAttribute("d")
             );
             const popup = await page.$eval(
