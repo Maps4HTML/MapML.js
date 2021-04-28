@@ -507,3 +507,17 @@ svg.leaflet-image-layer.leaflet-interactive g {
   color: #fff;
   text-shadow: 1px 1px 1px #000, 1px 1px 1px #000;
 }
+
+.mapml-link-preview {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background-color: rgb(222,225,230);
+  border-radius: 0 5px 0 0 ;
+  z-index: 1050;
+}
+
+.mapml-link-preview > p {
+  margin: 3px 5px 2px 3px;
+  color: rgb(60,64,67);
+}
