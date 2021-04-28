@@ -11,7 +11,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
 
     L.LayerGroup.prototype.initialize.call(this, layers, options);
 
-    if(this.options.onEachFeature || this.options.link) {
+    if((this.options.onEachFeature && this.options.properties) || this.options.link) {
       this.options.group.setAttribute('tabindex', '0');
       L.DomUtil.addClass(this.options.group, "leaflet-interactive");
       L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
@@ -55,7 +55,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @param layer
    */
   addLayer: function (layer) {
-    if(!layer.options.link && this.options.onEachFeature) {
+    if(!layer.options.link && layer.options.interactive) {
       this.options.onEachFeature(this.options.properties, layer);
     }
     L.FeatureGroup.prototype.addLayer.call(this, layer);

@@ -35,6 +35,7 @@ export var Feature = L.Path.extend({
     L.setOptions(this, options);
 
     this.group = this.options.group;
+    this.options.interactive = this.options.link || (this.options.properties && this.options.onEachFeature);
 
     this._parts = [];
     this._markup = markup;
