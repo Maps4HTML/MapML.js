@@ -60,6 +60,7 @@ export var Feature = L.Path.extend({
     container.classList.add('mapml-link-preview');
     container.appendChild(p);
     elem.classList.add('map-a');
+    if (link.visited) elem.classList.add("map-a-visited");
     L.DomEvent.on(elem, 'mousedown', e => dragStart = {x:e.clientX, y:e.clientY}, this);
     L.DomEvent.on(elem, "mouseup", (e) => {
       let onTop = true, nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
@@ -71,13 +72,22 @@ export var Feature = L.Path.extend({
       if(onTop && dragStart) {
         L.DomEvent.stop(e);
         let dist = Math.sqrt(Math.pow(dragStart.x - e.clientX, 2) + Math.pow(dragStart.y - e.clientY, 2));
-        if (dist <= 5) M.handleLink(link, leafletLayer);
+        if (dist <= 5){
+          link.visited = true;
+          elem.setAttribute("stroke", "#6c00a2");
+          elem.classList.add("map-a-visited");
+          M.handleLink(link, leafletLayer);
+        }
       }
     }, this);
     L.DomEvent.on(elem, "keypress", (e) => {
       L.DomEvent.stop(e);
-      if(e.keyCode === 13 || e.keyCode === 32)
+      if(e.keyCode === 13 || e.keyCode === 32) {
+        link.visited = true;
+        elem.setAttribute("stroke", "#6c00a2");
+        elem.classList.add("map-a-visited");
         M.handleLink(link, leafletLayer);
+      }
     }, this);
     L.DomEvent.on(elem, 'mouseenter keyup', (e) => {
       if(e.target !== e.currentTarget) return;
