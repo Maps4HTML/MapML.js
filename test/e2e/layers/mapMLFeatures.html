@@ -133,6 +133,17 @@
       <tile zoom="0" row="3" col="3" src="data/cbmt/0/c3_r3.png"></tile>
     </layer->
     <layer- label="vector states" src="data/us_pop_density.mapml" checked></layer->
+    <layer- label="Inline Feature" checked>
+      <meta name="projection" content="CBMTILE" />
+      <meta name="zoom" content="min=2,max=2" />
+      <feature zoom="2">
+        <geometry cs="tilematrix">
+          <polygon>
+            <coordinates>10 10 11 10 11 11 10 11 10 10</coordinates>
+          </polygon>
+        </geometry>
+      </feature>
+    </layer->
   </map>
 
 </body>

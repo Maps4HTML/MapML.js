@@ -93,6 +93,37 @@ jest.setTimeout(50000);
             expect(layerExtent.projection).toEqual("CBMTILE");
           });
         });
+        describe("Inline Static Features Tests", () => {
+          beforeAll(async () => {
+            browser = await playwright[browserType].launch({
+              headless: ISHEADLESS,
+              slowMo: 50,
+            });
+            context = await browser.newContext();
+            page = await context.newPage();
+            if (browserType === "firefox") {
+              await page.waitForNavigation();
+            }
+            await page.goto(PATH + "mapMLFeatures.html");
+          });
+
+          afterAll(async function () {
+            await browser.close();
+          });
+
+          test("[" + browserType + "]" + " Feature without properties renders & is not interactable", async () => {
+            const feature = await page.$eval(
+              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(4) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > g > path",
+              (path) => path.getAttribute("d")
+            );
+            const classList = await page.$eval(
+              "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(4) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > g",
+              (g) => g.getAttribute("class")
+            );
+            expect(feature).toEqual("M74 -173L330 -173L330 83L74 83L74 -173z");
+            expect(classList).toBeFalsy();
+          });
+        });
       }
     );
   }
