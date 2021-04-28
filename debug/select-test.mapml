@@ -1,7 +1,7 @@
 <mapml>
   <head>
     <title>Territorial Evolution 1867-Present</title>
-    <meta http-equiv="Content-Type" content="text/mapml;projection=CBMTILE"/>
+    <meta http-equiv="Content-Type" content="text/mapml"/>
     <meta charset="utf-8"/>
     <link rel="license" href="http://open.canada.ca/en/open-government-licence-canada" title="Open Government Licence - Canada"/>
     <link rel="legend" href="http://s-bsc-geoappint.nrn.nrcan.gc.ca/arcgis/rest/services/ESS/TEByYear/MapServer/legend"/>
