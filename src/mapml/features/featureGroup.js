@@ -32,7 +32,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
 
   /**
    * Handler for focus events
-   * @param {L.DOMEvent} e - Event that occured
+   * @param {L.DOMEvent} e - Event that occurred
    * @private
    */
   _handleFocus: function(e) {
@@ -50,6 +50,10 @@ export var FeatureGroup = L.FeatureGroup.extend({
     }
   },
 
+  /**
+   * Add a M.Feature to the M.FeatureGroup
+   * @param layer
+   */
   addLayer: function (layer) {
     if(!layer.options.link && this.options.onEachFeature) {
       this.options.onEachFeature(this.options.properties, layer);

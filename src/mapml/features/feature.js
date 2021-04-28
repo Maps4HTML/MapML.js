@@ -51,17 +51,17 @@ export var Feature = L.Path.extend({
 
   /**
    * Attaches link handler to the sub parts' paths
-   * @param path
-   * @param link
+   * @param {SVGElement} elem - The element to add listeners to, either path or g elements
+   * @param {Object} link - The link object that contains the url, type and target data
    * @param leafletLayer
    */
-  attachLinkHandler: function (path, link, leafletLayer) {
+  attachLinkHandler: function (elem, link, leafletLayer) {
     let dragStart, container = document.createElement('div'), p = document.createElement('p'), hovered = false;
     container.classList.add('mapml-link-preview');
     container.appendChild(p);
-    path.classList.add('map-a');
-    L.DomEvent.on(path, 'mousedown', e => dragStart = {x:e.clientX, y:e.clientY}, this);
-    L.DomEvent.on(path, "mouseup", (e) => {
+    elem.classList.add('map-a');
+    L.DomEvent.on(elem, 'mousedown', e => dragStart = {x:e.clientX, y:e.clientY}, this);
+    L.DomEvent.on(elem, "mouseup", (e) => {
       let onTop = true, nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
       while(nextLayer && onTop){
         if(nextLayer.tagName && nextLayer.tagName.toUpperCase() === "LAYER-")
@@ -74,12 +74,12 @@ export var Feature = L.Path.extend({
         if (dist <= 5) M.handleLink(link, leafletLayer);
       }
     }, this);
-    L.DomEvent.on(path, "keypress", (e) => {
+    L.DomEvent.on(elem, "keypress", (e) => {
       L.DomEvent.stop(e);
       if(e.keyCode === 13 || e.keyCode === 32)
         M.handleLink(link, leafletLayer);
     }, this);
-    L.DomEvent.on(path, 'mouseenter keyup', (e) => {
+    L.DomEvent.on(elem, 'mouseenter keyup', (e) => {
       if(e.target !== e.currentTarget) return;
       hovered = true;
       let resolver = document.createElement('a'), mapWidth = this._map.getContainer().clientWidth;
@@ -95,7 +95,7 @@ export var Feature = L.Path.extend({
         if(hovered) p.innerHTML = resolver.href;
       }, 1000);
     }, this);
-    L.DomEvent.on(path, 'mouseout keydown mousedown', (e) => {
+    L.DomEvent.on(elem, 'mouseout keydown mousedown', (e) => {
       if(e.target !== e.currentTarget || !container.parentElement) return;
       hovered = false;
       this._map.getContainer().removeChild(container);
@@ -163,6 +163,7 @@ export var Feature = L.Path.extend({
 
   /**
    * Converts the spans, a and divs around a geometry subtype into options for the feature
+   * @param {HTMLElement[]} elems - The current zoom level of the map
    * @private
    */
   _convertWrappers: function (elems) {
@@ -170,12 +171,6 @@ export var Feature = L.Path.extend({
     let classList = '', output = {};
     for(let elem of elems){
       if(elem.tagName.toUpperCase() !== "MAP-A" && elem.className){
-        // Useful if getting other attributes off spans and divs is useful
-/*        let attr = elem.attributes;
-        for(let i = 0; i < attr.length; i++){
-          if(attr[i].name === "class" || attributes[attr[i].name]) continue;
-          attributes[attr[i].name] = attr[i].value;
-        }*/
         classList +=`${elem.className} `;
       } else if(!output.link && elem.getAttribute("href")) {
         let link = {};
@@ -207,18 +202,18 @@ export var Feature = L.Path.extend({
 
     let first = true;
     for (let c of this._markup.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
-      let ring = [], subrings = [];
-      this._coordinateToArrays(c, ring, subrings, this.options.className);              //creates an array of pcrs points for the main ring and the subparts
+      let ring = [], subRings = [];
+      this._coordinateToArrays(c, ring, subRings, this.options.className);              //creates an array of pcrs points for the main ring and the subparts
       if (!first && this.type === "POLYGON") {
         this._parts[0].rings.push(ring[0]);
-        if (subrings.length > 0)
-          this._parts[0].subrings = this._parts[0].subrings.concat(subrings);
+        if (subRings.length > 0)
+          this._parts[0].subrings = this._parts[0].subrings.concat(subRings);
       } else if (this.type === "MULTIPOINT") {
-        for (let point of ring[0].points.concat(subrings)) {
+        for (let point of ring[0].points.concat(subRings)) {
           this._parts.push({ rings: [{ points: [point] }], subrings: [], cls:`${point.cls || ""} ${this.options.className || ""}`.trim() });
         }
       } else {
-        this._parts.push({ rings: ring, subrings: subrings, cls: `${this.featureAttributes.class || ""} ${this.options.className || ""}`.trim() });
+        this._parts.push({ rings: ring, subrings: subRings, cls: `${this.featureAttributes.class || ""} ${this.options.className || ""}`.trim() });
       }
       first = false;
     }
@@ -289,7 +284,13 @@ export var Feature = L.Path.extend({
         if(attr[i].name === "class") continue;
         attrMap[attr[i].name] = attr[i].value;
       }
-      subParts.unshift({ points: local, cls: `${cls || ""} ${wrapperAttr.className || ""}`.trim(), attr: attrMap, link: wrapperAttr.link, linkTarget: wrapperAttr.linkTarget, linkType: wrapperAttr.linkType});
+      subParts.unshift({
+        points: local,
+        cls: `${cls || ""} ${wrapperAttr.className || ""}`.trim(),
+        attr: attrMap,
+        link: wrapperAttr.link,
+        linkTarget: wrapperAttr.linkTarget,
+        linkType: wrapperAttr.linkType});
     }
   },
 

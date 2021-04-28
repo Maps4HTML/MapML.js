@@ -200,18 +200,18 @@ export var Util = {
   },
 
   convertPCRSBounds: function(pcrsBounds, zoom, projection, cs){
-    if(!pcrsBounds || !zoom && +zoom !== 0 || !cs) return undefined;
-    switch (cs.toLowerCase()) {
-      case "pcrs":
+    if(!pcrsBounds || (!zoom && zoom !== 0) || !Number.isFinite(+zoom) || !projection || !cs) return undefined;
+    switch (cs.toUpperCase()) {
+      case "PCRS":
         return pcrsBounds;
-      case "tcrs": 
-      case "tilematrix":
+      case "TCRS":
+      case "TILEMATRIX":
         let minPixel = this[projection].transformation.transform(pcrsBounds.min, this[projection].scale(+zoom)),
             maxPixel = this[projection].transformation.transform(pcrsBounds.max, this[projection].scale(+zoom));
-        if (cs.toLowerCase() === "tcrs") return L.bounds(minPixel, maxPixel);
+        if (cs.toUpperCase() === "TCRS") return L.bounds(minPixel, maxPixel);
         let tileSize = M[projection].options.crs.tile.bounds.max.x;
         return L.bounds(L.point(minPixel.x / tileSize, minPixel.y / tileSize), L.point(maxPixel.x / tileSize,maxPixel.y / tileSize)); 
-      case "gcrs":
+      case "GCRS":
         let minGCRS = this[projection].unproject(pcrsBounds.min),
             maxGCRS = this[projection].unproject(pcrsBounds.max);
         return L.bounds(L.point(minGCRS.lng, minGCRS.lat), L.point(maxGCRS.lng, maxGCRS.lat)); 
@@ -220,37 +220,37 @@ export var Util = {
     }
   },
 
-  pointToPCRSPoint: function(p, zoom, projection, cs){
-    if(!p || !zoom && +zoom !== 0 || !cs || !projection) return undefined;
+  pointToPCRSPoint: function(point, zoom, projection, cs){
+    if(!point || (!zoom && zoom !== 0) || !Number.isFinite(+zoom) || !cs || !projection) return undefined;
     let tileSize = M[projection].options.crs.tile.bounds.max.x;
     switch(cs.toUpperCase()){
       case "TILEMATRIX":
-        return M.pixelToPCRSPoint(L.point(p.x*tileSize,p.y*tileSize),zoom,projection);
+        return M.pixelToPCRSPoint(L.point(point.x*tileSize,point.y*tileSize),zoom,projection);
       case "PCRS":
-        return p;
+        return point;
       case "TCRS" || "TILE":
-        return M.pixelToPCRSPoint(p,zoom,projection);
+        return M.pixelToPCRSPoint(point,zoom,projection);
       case "GCRS":
-        return this[projection].project(L.latLng(p.y,p.x));
+        return this[projection].project(L.latLng(point.y,point.x));
       default:
         return undefined;
     }
   },
 
-  pixelToPCRSPoint: function(p, zoom, projection){
-    if(!p || !zoom && +zoom !== 0) return undefined;
-    return this[projection].transformation.untransform(p,this[projection].scale(zoom));
+  pixelToPCRSPoint: function(point, zoom, projection){
+    if(!point || (!zoom && zoom !== 0) || !Number.isFinite(+zoom) || !projection) return undefined;
+    return this[projection].transformation.untransform(point,this[projection].scale(zoom));
   },
 
   boundsToPCRSBounds: function(bounds, zoom, projection, cs){
-    if(!bounds || !zoom && +zoom !== 0 || !cs) return undefined;
+    if(!bounds || !bounds.max || !bounds.min || (!zoom && zoom !== 0) || !Number.isFinite(+zoom) || !projection || !cs) return undefined;
     return L.bounds(M.pointToPCRSPoint(bounds.min, zoom, projection, cs), M.pointToPCRSPoint(bounds.max, zoom, projection, cs));
   },
 
   //L.bounds have fixed point positions, where min is always topleft, max is always bottom right, and the values are always sorted by leaflet
   //important to consider when working with pcrs where the origin is not topleft but rather bottomleft, could lead to confusion
   pixelToPCRSBounds : function(bounds, zoom, projection){
-    if(!bounds || !bounds.max || !bounds.min ||zoom === undefined || zoom === null || zoom instanceof Object) return undefined;
+    if(!bounds || !bounds.max || !bounds.min || (!zoom && zoom !== 0) || !Number.isFinite(+zoom) || !projection) return undefined;
     return L.bounds(M.pixelToPCRSPoint(bounds.min, zoom, projection), M.pixelToPCRSPoint(bounds.max, zoom, projection));
   },
   //meta content is the content attribute of meta
