@@ -63,7 +63,6 @@ jest.setTimeout(50000);
 
         test("[" + browserType + "]" + " Submenu opens on C with focus on first item", async () => {
           await page.keyboard.press("c");
-          await page.keyboard.press("Tab");
           const aHandle = await page.evaluateHandle(() => document.querySelector(".mapml-web-map"));
           const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
           const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
