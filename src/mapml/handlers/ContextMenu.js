@@ -83,6 +83,10 @@ export var ContextMenu = L.Handler.extend({
         callback:this._toggleDebug,
       },
       {
+        text:"Copy MapML (<kbd>M</kbd>)",
+        callback:this._copyMapML,
+      },
+      {
         text:"View Map Source (<kbd>V</kbd>)",
         callback:this._viewSource,
       },
@@ -126,6 +130,7 @@ export var ContextMenu = L.Handler.extend({
 
     this._items[6].el = this._createItem(this._container, this._items[6]);
     this._items[7].el = this._createItem(this._container, this._items[7]);
+    this._items[8].el = this._createItem(this._container, this._items[8]);
 
     this._layerMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-layer-menu", map._container);
     this._layerMenu.style.zIndex = 10001;
@@ -188,9 +193,7 @@ export var ContextMenu = L.Handler.extend({
         tL = layerElem.extent.topLeft.pcrs,
         bR = layerElem.extent.bottomRight.pcrs;
 
-    let data = `top-left-easting,${tL.horizontal}\ntop-left-northing,${tL.vertical}\n`;
-    data += `bottom-right-easting,${bR.horizontal}\nbottom-right-northing,${bR.vertical}`;
-
+    let data = `<meta name="extent" content="top-left-easting,${tL.horizontal}, top-left-northing,${tL.vertical}, bottom-right-easting,${bR.horizontal}, bottom-right-northing,${bR.vertical}">`;
     context._copyData(data);
   },
 
@@ -217,6 +220,12 @@ export var ContextMenu = L.Handler.extend({
   _toggleControls: function(e){
     let mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
     mapEl._toggleControls();
+  },
+
+  _copyMapML: function(e){
+    let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
+      mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
+    context._copyData(mapEl.outerHTML.replace(/<div class="mapml-web-map">.*?<\/div>|<style>\[is="web-map"].*?<\/style>|<style>mapml-viewer.*?<\/style>/gm, ""));
   },
 
   _viewSource: function(e){
@@ -460,6 +469,7 @@ export var ContextMenu = L.Handler.extend({
           this._coordMenu.style.display = 'none';
           this._layerMenu.style.display = 'none';
           this._map.fire('contextmenu.hide', {contextmenu: this});
+          setTimeout(() => this._map._container.focus(), 0);
       }
   },
 
@@ -515,64 +525,55 @@ export var ContextMenu = L.Handler.extend({
       return size;
   },
 
-   _debounceKeyDown: function(func, wait, immediate) {
-    let timeout;
-    let context = this, args = arguments;
-    clearTimeout(timeout);
-    timeout = setTimeout(function() {
-      timeout = null;
-      if (!immediate) func.apply(context, args);
-    }, wait);
-    if (immediate && !timeout) func.apply(context, args);
-  },
-
   _onKeyDown: function (e) {
     if(!this._mapMenuVisible) return;
-    this._debounceKeyDown(function(){
-      let key = e.keyCode;
-      if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && e.path[0].innerText !== "Copy Coordinates (C) >")
+
+    let key = e.keyCode;
+    if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && e.path[0].innerText !== "Copy Coordinates (C) >")
+      this._hide();
+    switch(key){
+      case 32:  //SPACE KEY
+        if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
+          this._map._container.parentNode.activeElement.click();
+        break;
+      case 66: //B KEY
+        this._goBack(e);
+        break;
+      case 67: //C KEY
+        if(this._layerClicked){
+          this._copyLayerExtent(e);
+        } else {
+          this._copyCoords({
+            latlng:this._map.getCenter()
+          });
+        }
+        break;
+      case 68: //D KEY
+        this._toggleDebug(e);
+        break;
+      case 77: //M KEY
+        this._copyMapML(e);
+        break;
+      case 70: //F KEY
+        this._goForward(e);
+        break;
+      case 82: //R KEY
+        this._reload(e);
+        break;
+      case 84: //T KEY
+        this._toggleControls(e);
+        break;
+      case 86: //V KEY
+        this._viewSource(e);
+        break;
+      case 27: //H KEY
         this._hide();
-      switch(key){
-        case 32:  //SPACE KEY
-          if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
-            this._map._container.parentNode.activeElement.click();
-          break;
-        case 66: //B KEY
-          this._goBack(e);
-          break;
-        case 67: //C KEY
-          if(this._layerClicked){
-            this._copyLayerExtent(e);
-          } else {
-            this._copyCoords({
-              latlng:this._map.getCenter()
-            });
-          }
-          break;
-        case 68:
-          this._toggleDebug(e);
-          break;
-        case 70:
-          this._goForward(e);
-          break;
-        case 82: //R KEY
-          this._reload(e);
-          break;
-        case 84: //T KEY
-          this._toggleControls(e);
-          break;
-        case 86: //V KEY
-          this._viewSource(e);
-          break;
-        case 27: //H KEY
-          this._hide();
-          break;
-        case 90: //Z KEY
-          if(this._layerClicked)
-            this._zoomToLayer(e);
-          break;
-      }
-    },250);
+        break;
+      case 90: //Z KEY
+        if(this._layerClicked)
+          this._zoomToLayer(e);
+        break;
+    }
   },
 
   _showCoordMenu: function(e){
