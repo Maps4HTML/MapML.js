@@ -64,6 +64,7 @@ export class MapViewer extends HTMLElement {
           let reAttach = this.removeChild(layer);
           this.appendChild(reAttach);
         }
+        if(this._debug) for(let i = 0; i<2;i++) this.toggleDebug();
       } else this.dispatchEvent(new CustomEvent('createmap'));
     } else throw new Error("Undefined Projection");
   }
@@ -475,8 +476,7 @@ export class MapViewer extends HTMLElement {
   }
 
   toggleDebug(){
-    let mapEl = this;
-    if(mapEl._debug){
+    if(this._debug){
       this._debug.remove();
       this._debug = undefined;
     } else {
