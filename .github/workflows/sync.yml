@@ -27,8 +27,8 @@ jobs:
         source_folder: 'dist'
         destination_repo: 'Maps4HTML/UCR-MapML-Matrix'
         destination_folder: 'dist'
-        user_email: aayub041@uottawa.ca
-        user_name: 'ahmadayubi'
+        user_email: peter.rushforth@gmail.com
+        user_name: 'prushforth'
         commit_msg: '[AUTO] Sync MapML Build'
         destination_branch: main
     - name: Pushes to documentation repo
@@ -39,8 +39,8 @@ jobs:
         source_folder: 'dist'
         destination_repo: 'Maps4HTML/web-map-doc'
         destination_folder: 'static/dist'
-        user_email: aayub041@uottawa.ca
-        user_name: 'ahmadayubi'
+        user_email: peter.rushforth@gmail.com
+        user_name: 'prushforth'
         commit_msg: '[AUTO] Sync MapML Build'
         destination_branch: master
     - name: Pushes to experiments repo
@@ -51,7 +51,7 @@ jobs:
         source_folder: 'dist'
         destination_repo: 'Maps4HTML/experiments'
         destination_folder: 'dist'
-        user_email: aayub041@uottawa.ca
-        user_name: 'ahmadayubi'
+        user_email: peter.rushforth@gmail.com
+        user_name: 'prushforth'
         commit_msg: '[AUTO] Sync MapML Build'
         destination_branch: main
