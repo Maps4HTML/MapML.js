@@ -382,6 +382,12 @@
 .leaflet-active:not(:focus) {
   outline: unset !important;
 }
+.leaflet-container:not(:focus-within) .mapml-outline {
+  outline: 0;
+}
+.leaflet-container:not(:focus-within) .mapml-crosshair {
+  visibility: hidden;
+}
 
 /* Restore the default UA tap highlight color by overriding the opinionated tap
    highlight color inherited from leaflet.css. */
