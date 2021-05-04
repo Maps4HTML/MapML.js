@@ -194,6 +194,20 @@ describe("M.Util Bounds Related Tests", () => {
 
       expect(extractedBounds).toEqual({ bounds: { max: { x: 10, y: 10 }, min: { x: 5, y: 5 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
     });
+    test("Test defaulting maxNativeZoom to TCRS max", () => {
+      let template = {};
+      let inputContainer = document.createElement("div");
+      inputContainer.innerHTML = '<input name="zoomLevel" type="zoom" value="2" min="1">';
+      inputContainer.innerHTML += '<input name="row" type="location" axis="northing" units="pcrs" min="5" max="10">';
+      inputContainer.innerHTML += '<input name="col" type="location" axis="easting" units="pcrs" min="5" max="10">';
+      template.values = inputContainer.querySelectorAll("input");
+      template.zoomBounds = { min: "1", max: "16" };
+      template.projection = "OSMTILE";
+
+      let extractedBounds = M.extractInputBounds(template);
+
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 10, y: 10 }, min: { x: 5, y: 5 } }, zoomBounds: { maxNativeZoom: 24, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
+    });
     test("Valid template with 7 inputs, pcrs", () => {
       let template = {};
       let inputContainer = document.createElement("div");

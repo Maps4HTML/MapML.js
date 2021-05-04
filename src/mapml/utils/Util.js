@@ -92,7 +92,7 @@ export var Util = {
       switch(inputs[i].getAttribute("type")){
         case "zoom":
           nMinZoom = +inputs[i].getAttribute("min");
-          nMaxZoom = +inputs[i].getAttribute("max");
+          nMaxZoom = +(inputs[i].hasAttribute("max") ? inputs[i].getAttribute("max") : nMaxZoom);
           value = +inputs[i].getAttribute("value");
         break;
         case "location":
