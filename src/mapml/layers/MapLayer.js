@@ -88,7 +88,6 @@ export var MapMLLayer = L.Layer.extend({
               // it will append its own container for rendering into
               pane: this._container,
               opacity: this.options.opacity,
-              imagePath: M.detectImagePath(this._map.getContainer()),
               projection:map.options.projection,
               // each owned child layer gets a reference to the root layer
               _leafletLayer: this,
@@ -120,7 +119,6 @@ export var MapMLLayer = L.Layer.extend({
                   // it will append its own container for rendering into
                   pane: this._container,
                   opacity: this.options.opacity,
-                  imagePath: M.detectImagePath(this._map.getContainer()),
                   projection:map.options.projection,
                   // each owned child layer gets a reference to the root layer
                   _leafletLayer: this,
@@ -169,7 +167,6 @@ export var MapMLLayer = L.Layer.extend({
             if (this._templateVars) {
               this._templatedLayer = M.templatedLayer(this._templateVars, 
               { pane: this._container,
-                imagePath: M.detectImagePath(this._map.getContainer()),
                 _leafletLayer: this,
                 crs: this.crs
               }).addTo(map);
@@ -183,7 +180,6 @@ export var MapMLLayer = L.Layer.extend({
                 if (this._templateVars) {
                   this._templatedLayer = M.templatedLayer(this._templateVars, 
                   { pane: this._container,
-                    imagePath: M.detectImagePath(this._map.getContainer()),
                     _leafletLayer: this,
                     crs: this.crs
                   }).addTo(map);
