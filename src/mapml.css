@@ -189,9 +189,6 @@
   display: inline;
 }
 
-.mapml-control-layers summary::-webkit-details-marker {
-  margin-right: 5px;
-}
 .mapml-control-layers summary::marker {
   margin-right: 5px;
 }
