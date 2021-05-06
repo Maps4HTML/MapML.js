@@ -346,7 +346,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
             default:
               // unsuportted axis value
           }
-        } else if (type.toLowerCase() === "zoom") {
+        } else if (type && type.toLowerCase() === "zoom") {
           //<input name="..." type="zoom" value="0" min="0" max="17">
            zoom = {
              name: name,
