@@ -279,11 +279,11 @@ export var TemplatedTileLayer = L.TileLayer.extend({
                 min: crs.crs.tilematrix.horizontal.min,
                 max: crs.crs.tilematrix.horizontal.max(crs.resolutions.length-1)
               };
-              if (!isNaN(Number.parseInt(min,10))) {
-                col.min = Number.parseInt(min,10);
+              if (!isNaN(Number.parseFloat(min))) {
+                col.min = Number.parseFloat(min);
               }
-              if (!isNaN(Number.parseInt(max,10))) {
-                col.max = Number.parseInt(max,10);
+              if (!isNaN(Number.parseFloat(max))) {
+                col.max = Number.parseFloat(max);
               }
               break;
             case("row"):
@@ -292,11 +292,11 @@ export var TemplatedTileLayer = L.TileLayer.extend({
                 min: crs.crs.tilematrix.vertical.min,
                 max:  crs.crs.tilematrix.vertical.max(crs.resolutions.length-1)
               };
-              if (!isNaN(Number.parseInt(min,10))) {
-                row.min = Number.parseInt(min,10);
+              if (!isNaN(Number.parseFloat(min))) {
+                row.min = Number.parseFloat(min);
               }
-              if (!isNaN(Number.parseInt(max,10))) {
-                row.max = Number.parseInt(max,10);
+              if (!isNaN(Number.parseFloat(max))) {
+                row.max = Number.parseFloat(max);
               }
               break;
             case('longitude'):
@@ -418,10 +418,10 @@ export var TemplatedTileLayer = L.TileLayer.extend({
             template.pcrs.northing = '';
           }
           
-          template.pcrs.bounds = L.bounds(
-            tilematrix2pcrs(L.point([col.min,row.min]),zoom.value),
-            tilematrix2pcrs(L.point([col.max,row.max]),zoom.value)
-          );
+          template.pcrs.bounds =  M.boundsToPCRSBounds(
+                      L.bounds(L.point([col.min,row.min]),
+                      L.point([col.max,row.max])),
+                      zoom.value, this.options.crs, M.axisToCS("column"));
           
           template.tilematrix = {};
           template.tilematrix.col = col;
