@@ -675,28 +675,6 @@ export class MapViewer extends HTMLElement {
     M[t.projection.toUpperCase()] = M[t.projection]; //adds the projection uppercase to global M
     return t.projection;
   }
-  
-  _ready() {
-    // when used in a custom element, the leaflet script element is hidden inside
-    // the import's shadow dom.
-    // this might not work and may not be necessary in standard custom elements
-    L.Icon.Default.imagePath = (function () {
-      var imp = document.querySelector('link[rel="import"][href*="web-map.html"]'),
-        doc = imp ? imp.import : document,
-        scripts = doc.getElementsByTagName('script'),
-        leafletRe = /[\/^]leaflet[\-\._]?([\w\-\._]*)\.js\??/;
-
-      var i, len, src, path;
-
-      for (i = 0, len = scripts.length; i < len; i++) {
-        src = scripts[i].src;
-        if (src.match(leafletRe)) {
-          path = src.split(leafletRe)[0];
-          return (path ? path + '/' : '') + 'images';
-        }
-      }
-    }());
-  }
 }
 // need to provide options { extends: ... }  for custom built-in elements
 window.customElements.define('mapml-viewer', MapViewer);

@@ -158,7 +158,6 @@ export var QueryHandler = L.Handler.extend({
             // zoom
             projection: map.options.projection,
             _leafletLayer: layer,
-            imagePath: M.detectImagePath(map.getContainer()),
             query: true,
             static:true,
         });

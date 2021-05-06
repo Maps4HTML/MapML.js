@@ -711,25 +711,6 @@ export class WebMap extends HTMLMapElement {
   }
 
   _ready() {
-    // when used in a custom element, the leaflet script element is hidden inside
-    // the import's shadow dom.
-    // this might not work and may not be necessary in standard custom elements
-    L.Icon.Default.imagePath = (function () {
-      var imp = document.querySelector('link[rel="import"][href*="web-map.html"]'),
-        doc = imp ? imp.import : document,
-        scripts = doc.getElementsByTagName('script'),
-        leafletRe = /[\/^]leaflet[\-\._]?([\w\-\._]*)\.js\??/;
-
-      var i, len, src, path;
-
-      for (i = 0, len = scripts.length; i < len; i++) {
-        src = scripts[i].src;
-        if (src.match(leafletRe)) {
-          path = src.split(leafletRe)[0];
-          return (path ? path + '/' : '') + 'images';
-        }
-      }
-    }());
     if (this.hasAttribute('name')) {
       var name = this.getAttribute('name');
       if (name) {

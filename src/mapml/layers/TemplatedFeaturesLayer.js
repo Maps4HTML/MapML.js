@@ -33,7 +33,6 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
           // it will append its own container for rendering into
           pane: container,
           opacity: opacity,
-          imagePath: this.options.imagePath,
           projection:map.options.projection,
           static: true,
           onEachFeature: function(properties, geometry) {
