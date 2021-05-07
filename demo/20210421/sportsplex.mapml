@@ -1,0 +1,3702 @@
+<mapml xmlns="http://www.w3.org/1999/xhtml/">
+  <head>
+    <title>sportsplex-outline</title>
+    <base href="http://localhost:8081/geoserver/mapml/"/>
+    <meta charset="utf-8"/>
+    <meta name="projection" content="CBMTILE"/>
+    <meta name="cs" content="pcrs"/>
+    <meta content="text/mapml;projection=CBMTILE" http-equiv="Content-Type"/>
+    <link href="https://www.arcgis.com/home/item.html?id=4be6c94b65ee408999d2d4483a30febf" rel="license" title="Â© Salt Lake County Assessor"/>
+    <link href="http://localhost:8081/geoserver/mapml/nrcan:sportsplex-outline/cbmtile?style=" rel="self style" title="polygon"/>
+  </head>
+  <body>
+    <extent units="CBMTILE">
+      <input name="z" type="zoom" value="25" min="0" max="25"/>
+      <input name="x" type="location" axis="column" units="tilematrix" min="2135775" max="2135782"/>
+      <input name="y" type="location" axis="row" units="tilematrix" min="2332146" max="2332152"/>
+      <link tref="http://localhost:8081/geoserver/gwc/service/wmts?request=GetTile&amp;tilematrixset=CBMTILE&amp;tilematrix={z}&amp;TileRow={y}&amp;service=WMTS&amp;format=image/png&amp;style=&amp;TileCol={x}&amp;version=1.0.0&amp;layer=nrcan:sportsplex-outline" rel="tile"/>
+      <link tref="http://localhost:8081/geoserver/gwc/service/wmts?request=GetTile&amp;tilematrixset=CBMTILE&amp;tilematrix={z}&amp;TileRow={y}&amp;service=WMTS&amp;format=image/png&amp;style=&amp;TileCol={x}&amp;version=1.0.0&amp;layer=nrcan:sportsplex-details" rel="tile"/>
+    </extent>     
+        <feature id="sportsplex-rooms.1" class="sportsplex-rooms">
+            <featurecaption>NW Stairs</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510099.8 -181136.5 1510106.0 -181134.6 1510107.0 -181137.8 1510100.8 -181139.7 1510099.8 -181136.5</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">NW Stairs</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">42.19140625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">27.3972651425253</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">42.19140625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">27.3972651406759</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.2" class="sportsplex-rooms">
+            <featurecaption>NE Stairs</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510163.6 -181116.5 1510164.5 -181119.7 1510159.9 -181121.1 1510158.4 -181121.6 1510157.4 -181118.5 1510163.6 -181116.5</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">2</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">NE Stairs</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">41.5234375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">27.2182583033596</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">41.52734375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">27.2182583070905</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.3" class="sportsplex-rooms">
+            <featurecaption>Elevators</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510120.6 -181146.8 1510126.6 -181150.2 1510125.7 -181152.0 1510119.7 -181148.7 1510120.6 -181146.8</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">3</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Elevators</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">28.171875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">25.1586859500819</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">28.16796875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">25.1586859473815</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.4" class="sportsplex-rooms">
+            <featurecaption>Central Stairs</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510119.3 -181148.8 1510125.6 -181152.3 1510124.3 -181154.9 1510118.0 -181151.4 1510119.3 -181148.8</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">4</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Central Stairs</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">40.47265625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">28.1788332192079</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">40.4765625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">28.1788332151601</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.5" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510118.1 -181151.7 1510124.3 -181155.1 1510123.6 -181156.5 1510117.4 -181153.1 1510118.1 -181151.7</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">5</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">21.625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">24.2182497233009</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">21.625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">24.2182497220927</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.6" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510105.2 -181138.4 1510107.3 -181137.8 1510108.3 -181141.2 1510106.2 -181141.8 1510105.2 -181138.4</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">6</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">15.3046875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">16.1082154262893</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">15.3046875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">16.1082154207101</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.7" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510129.8 -181133.9 1510130.6 -181134.4 1510129.9 -181135.8 1510129.1 -181135.3 1510129.8 -181133.9</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">7</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">2.8515625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">7.00118246604764</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">2.84765625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">7.00118246469686</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.8" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510128.6 -181135.2 1510128.0 -181136.5 1510126.3 -181135.5 1510127.3 -181133.5 1510128.7 -181130.7 1510129.2 -181129.5 1510130.7 -181130.3 1510129.9 -181131.9 1510131.2 -181132.6 1510130.4 -181134.1 1510129.2 -181133.5 1510129.2 -181133.6 1510129.7 -181133.9 1510129.0 -181135.3 1510128.0 -181134.7 1510127.9 -181134.9 1510128.6 -181135.2</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">8</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">29.6015625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">31.3398398880569</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">29.59765625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">31.3398398957172</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.9" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510131.7 -181130.7 1510133.6 -181131.8 1510132.8 -181133.4 1510130.9 -181132.3 1510131.7 -181130.7</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">9</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">7.7421875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">11.2124814765281</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">7.75</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">11.2124814738255</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.10" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510133.7 -181132.0 1510135.2 -181132.8 1510132.2 -181138.8 1510130.5 -181137.9 1510131.1 -181136.6 1510131.8 -181137.0 1510131.9 -181136.9 1510130.1 -181135.9 1510131.7 -181132.8 1510132.9 -181133.5 1510133.7 -181132.0</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">10</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">32.53125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">29.7530306307438</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">32.53125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">29.7530306347925</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.11" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510160.3 -181121.3 1510162.5 -181120.6 1510163.5 -181123.8 1510162.4 -181124.1 1510160.9 -181123.3 1510160.3 -181121.3</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">11</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">13.671875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">14.8240925803073</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">13.671875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">14.8240925771015</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.12" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510162.6 -181120.6 1510164.6 -181119.9 1510165.6 -181123.1 1510163.6 -181123.8 1510162.6 -181120.6</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">12</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">13.9140625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">15.3040322927119</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">13.91015625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">15.3040322964143</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.13" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510148.7 -181115.8 1510149.6 -181118.6 1510147.5 -181119.3 1510146.6 -181116.5 1510148.7 -181115.8</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">13</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">12.94921875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">14.527816955729</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">12.9453125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">14.5278169622497</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.14" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510144.0 -181120.5 1510146.1 -181119.8 1510147.0 -181122.6 1510144.9 -181123.3 1510144.0 -181120.5</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">14</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">12.9296875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">14.5188277711599</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">12.9375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">14.5188277767514</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.15" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510135.5 -181127.1 1510132.4 -181128.0 1510131.9 -181126.4 1510135.0 -181125.4 1510135.5 -181127.1</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">16</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">10.93359375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">13.8849468999863</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">10.9296875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">13.884946900988</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.16" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510131.5 -181119.0 1510132.2 -181121.2 1510130.6 -181121.8 1510129.9 -181119.5 1510131.5 -181119.0</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">17</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">7.77734375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">11.3129478380308</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">7.7734375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">11.3129478417777</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.17" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510132.2 -181121.3 1510132.9 -181123.6 1510131.3 -181124.1 1510130.6 -181121.8 1510132.2 -181121.3</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">18</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">7.78125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">11.3112475573372</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">7.7734375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">11.3112475554746</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.18" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510122.3 -181122.0 1510123.4 -181125.3 1510120.1 -181126.3 1510119.1 -181123.0 1510122.3 -181122.0</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">19</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">22.71484375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">19.0644569518252</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">22.7109375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">19.0644569536924</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.19" class="sportsplex-rooms">
+            <featurecaption>Admin Reception</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510119.3 -181133.9 1510120.3 -181137.3 1510115.1 -181139.0 1510114.0 -181135.6 1510119.3 -181133.9</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">21</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Admin Reception</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">38.75</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">25.4603676666813</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">38.73828125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">25.460367668531</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.20" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510108.4 -181141.2 1510106.3 -181134.5 1510109.2 -181133.6 1510111.3 -181140.2 1510108.4 -181141.2</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">23</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">41.9765625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">28.1944432768635</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">41.98046875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">28.1944432787261</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.21" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510168.2 -181144.7 1510169.6 -181144.2 1510171.8 -181150.9 1510168.6 -181151.9 1510167.2 -181147.8 1510169.5 -181147.1 1510169.5 -181147.0 1510169.0 -181147.2 1510168.2 -181144.7</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">24</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">35.51171875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">30.4131302986374</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">35.50390625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">30.4131302995012</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.22" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510168.1 -181144.7 1510168.9 -181147.2 1510167.2 -181147.7 1510166.3 -181145.2 1510168.1 -181144.7</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">25</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">9.2578125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">12.3866524771432</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">9.26171875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">12.3866524809231</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.23" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510166.3 -181145.3 1510167.1 -181147.8 1510165.4 -181148.3 1510164.5 -181145.8 1510166.3 -181145.3</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">26</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">9.36328125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">12.4588734045381</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">9.37109375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">12.458873406437</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.24" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510163.1 -181146.2 1510164.4 -181145.8 1510165.3 -181148.3 1510164.8 -181148.4 1510164.8 -181148.6 1510167.1 -181147.9 1510168.5 -181151.9 1510165.3 -181152.9 1510163.1 -181146.2</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">27</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">35.28125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">30.3530861832085</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">35.27734375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">30.3530861954728</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.25" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510165.4 -181153.1 1510171.8 -181151.1 1510175.0 -181160.6 1510172.8 -181161.3 1510173.4 -181163.0 1510175.6 -181162.4 1510175.7 -181162.6 1510175.5 -181162.7 1510175.7 -181163.0 1510175.8 -181163.0 1510176.1 -181163.9 1510176.0 -181164.0 1510176.1 -181164.4 1510171.6 -181165.7 1510171.0 -181164.0 1510168.6 -181162.7 1510165.4 -181153.1</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">28</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">164.640625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">63.2505684800396</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">164.640625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">63.2505684827459</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.26" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510175.0 -181160.7 1510175.6 -181162.3 1510173.4 -181162.9 1510172.9 -181161.4 1510175.0 -181160.7</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">29</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">7.0078125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">10.7106633950205</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">7.0078125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">10.7106633857277</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.27" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510182.6 -181160.9 1510183.7 -181160.5 1510183.8 -181160.6 1510184.8 -181160.3 1510185.3 -181161.7 1510183.1 -181162.4 1510182.6 -181160.9</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">32</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">7.05859375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">10.990549443039</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">7.0546875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">10.9905494383793</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.28" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510184.9 -181160.0 1510188.9 -181158.8 1510189.5 -181160.4 1510185.4 -181161.7 1510184.9 -181160.0</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">33</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">14.76953125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">16.8681902221874</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">14.765625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">16.8681902184459</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.29" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510189.7 -181149.7 1510192.7 -181148.8 1510194.9 -181155.5 1510191.9 -181156.4 1510189.7 -181149.7</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">34</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">43.38671875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">28.5317233836326</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">43.3828125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">28.5317233798612</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.30" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510192.0 -181156.5 1510195.0 -181155.6 1510195.9 -181158.4 1510192.9 -181159.3 1510192.0 -181156.5</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">35</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">17.96875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">16.9642323233136</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">17.97265625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">16.9642323205002</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.31" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510192.8 -181159.3 1510189.6 -181160.3 1510186.9 -181152.4 1510190.1 -181151.5 1510190.8 -181153.4 1510192.8 -181159.3</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">36</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">54.18359375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">32.581428489963</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">54.18359375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">32.5814284797484</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.32" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510185.7 -181148.8 1510189.4 -181147.7 1510190.4 -181147.4 1510192.6 -181148.6 1510192.6 -181148.7 1510189.5 -181149.6 1510190.1 -181151.4 1510186.9 -181152.3 1510185.7 -181148.8</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">37</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">33.60546875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">27.5472362187943</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">33.60546875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">27.547236224847</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.33" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510184.0 -181143.8 1510188.7 -181142.4 1510189.8 -181145.6 1510189.9 -181145.6 1510190.4 -181147.1 1510190.3 -181147.1 1510190.3 -181147.3 1510185.7 -181148.7 1510184.0 -181143.8</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">38</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">49.4453125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">28.3040837726255</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">49.44140625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">28.3040837769276</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.34" class="sportsplex-rooms">
+            <featurecaption>Break Room</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510154.8 -181134.5 1510155.9 -181132.5 1510156.3 -181131.7 1510156.3 -181131.7 1510158.8 -181133.0 1510158.9 -181132.9 1510160.5 -181133.9 1510160.5 -181133.9 1510160.8 -181134.1 1510161.9 -181132.0 1510171.5 -181129.1 1510172.0 -181130.8 1510169.5 -181135.9 1510169.8 -181136.6 1510168.9 -181136.9 1510163.5 -181138.5 1510163.5 -181138.5 1510162.7 -181138.8 1510154.9 -181134.6 1510154.8 -181134.5</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">42</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Break Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">171.76171875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">63.5964281294957</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">171.76171875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">63.5964281277247</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.35" class="sportsplex-rooms">
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510162.4 -181150.9 1510163.0 -181152.6 1510162.3 -181152.8 1510161.7 -181151.1 1510162.4 -181150.9</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">45</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">2.55078125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">7.06394269008744</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">2.55078125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">7.0639426985433</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.36" class="sportsplex-rooms">
+            <featurecaption>New</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510159.4 -181143.2 1510160.0 -181143.5 1510161.5 -181148.3 1510161.4 -181148.3 1510160.4 -181148.6 1510158.7 -181149.2 1510158.4 -181148.2 1510158.2 -181147.7 1510158.2 -181147.7 1510158.3 -181147.7 1510157.6 -181145.7 1510157.1 -181144.2 1510156.6 -181142.7 1510157.9 -181142.4 1510159.4 -181143.2</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">47</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">New</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">36.109375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">25.8834492260344</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">36.09765625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">25.8834492265911</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.37" class="sportsplex-rooms">
+            <featurecaption>Administration</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510116.2 -181121.3 1510114.8 -181116.8 1510117.8 -181115.8 1510119.3 -181120.4 1510116.2 -181121.3</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510116.6 -181127.4 1510115.8 -181124.9 1510119.2 -181123.8 1510120.0 -181126.3 1510116.6 -181127.4</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510111.7 -181128.6 1510110.9 -181126.1 1510114.2 -181125.1 1510115.0 -181127.6 1510111.7 -181128.6</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510108.4 -181129.6 1510107.6 -181127.1 1510110.8 -181126.1 1510111.6 -181128.6 1510108.4 -181129.6</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510149.7 -181118.6 1510148.8 -181115.8 1510150.9 -181115.1 1510151.8 -181117.9 1510149.7 -181118.6</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510113.2 -181139.5 1510112.8 -181138.0 1510114.5 -181137.5 1510115.0 -181138.9 1510113.2 -181139.5</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510111.7 -181140.0 1510111.3 -181138.5 1510112.8 -181138.0 1510112.8 -181138.0 1510112.8 -181138.0 1510113.2 -181139.5 1510111.7 -181140.0</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">218</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Administration</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Administration</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">12.9375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">14.5210285617813</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">107.49609375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">106.570140768237</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.38" class="sportsplex-rooms">
+            <featurecaption>Attorney General</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510122.5 -181119.4 1510119.4 -181120.3 1510118.0 -181115.8 1510121.1 -181114.8 1510122.5 -181119.4</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510122.6 -181119.3 1510121.2 -181114.8 1510124.3 -181113.8 1510125.7 -181118.3 1510122.6 -181119.3</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510137.6 -181122.5 1510138.5 -181125.3 1510136.4 -181125.9 1510135.5 -181123.1 1510137.6 -181122.5</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">217</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Attorney General</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Attorney General</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">12.94140625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">14.5286225543785</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">73.40234375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">59.3544679149574</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.39" class="sportsplex-rooms">
+            <featurecaption>Communications</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510113.0 -181122.4 1510111.6 -181117.8 1510114.7 -181116.8 1510116.1 -181121.4 1510113.0 -181122.4</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510126.4 -181120.7 1510127.9 -181125.5 1510125.1 -181126.4 1510123.6 -181121.6 1510126.4 -181120.7</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510125.2 -181126.5 1510127.9 -181125.6 1510129.0 -181129.1 1510127.6 -181132.1 1510126.8 -181131.7 1510125.2 -181126.5</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510130.9 -181123.5 1510127.7 -181124.5 1510126.5 -181120.8 1510126.5 -181120.7 1510129.7 -181119.7 1510130.9 -181123.5</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510119.4 -181126.6 1510119.9 -181128.3 1510117.1 -181129.2 1510116.6 -181127.5 1510119.4 -181126.6</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510122.2 -181125.8 1510122.7 -181127.4 1510120.0 -181128.3 1510119.5 -181126.6 1510122.2 -181125.8</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510120.8 -181131.5 1510121.3 -181133.1 1510118.6 -181134.0 1510118.1 -181132.3 1510120.8 -181131.5</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510120.9 -181131.4 1510123.4 -181130.6 1510123.9 -181132.3 1510121.4 -181133.1 1510120.9 -181131.4</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">220</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Communications</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Communications</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">28.578125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">22.6189115722735</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">152.41015625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">138.968903671164</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.40" class="sportsplex-rooms">
+            <featurecaption>Comptroller</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510140.6 -181113.8 1510139.6 -181110.7 1510142.3 -181109.9 1510145.0 -181109.0 1510146.0 -181112.1 1510143.3 -181113.0 1510140.6 -181113.8</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510129.1 -181117.3 1510127.6 -181112.7 1510130.7 -181111.8 1510132.1 -181116.3 1510129.1 -181117.3</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510154.9 -181109.7 1510153.7 -181105.9 1510156.7 -181104.9 1510157.9 -181108.8 1510154.9 -181109.7</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510155.9 -181113.1 1510154.9 -181109.8 1510157.9 -181108.8 1510159.0 -181112.1 1510155.9 -181113.1</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510157.0 -181116.7 1510155.9 -181113.2 1510159.0 -181112.2 1510159.6 -181114.0 1510158.5 -181116.2 1510157.0 -181116.7</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510146.0 -181112.1 1510145.1 -181109.0 1510147.7 -181108.2 1510148.7 -181111.3 1510146.0 -181112.1</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510137.8 -181114.7 1510136.8 -181111.6 1510139.5 -181110.8 1510140.5 -181113.8 1510137.8 -181114.7</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510135.1 -181115.6 1510134.1 -181112.5 1510136.8 -181111.6 1510137.7 -181114.7 1510135.1 -181115.6</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510132.3 -181116.4 1510131.4 -181113.3 1510134.0 -181112.5 1510135.0 -181115.6 1510132.3 -181116.4</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510143.0 -181117.5 1510142.2 -181114.7 1510144.3 -181114.0 1510145.2 -181116.8 1510143.0 -181117.5</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510152.9 -181117.5 1510152.2 -181115.3 1510154.9 -181114.4 1510155.6 -181116.7 1510152.9 -181117.5</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510153.5 -181126.7 1510152.8 -181124.5 1510155.5 -181123.7 1510156.2 -181125.9 1510153.5 -181126.7</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510152.2 -181115.2 1510151.5 -181112.9 1510154.2 -181112.1 1510154.9 -181114.4 1510152.2 -181115.2</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510144.0 -181120.4 1510143.1 -181117.6 1510145.2 -181116.9 1510146.1 -181119.7 1510144.0 -181120.4</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510141.7 -181121.1 1510140.9 -181118.3 1510143.0 -181117.6 1510143.9 -181120.4 1510141.7 -181121.1</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510142.6 -181124.0 1510141.8 -181121.2 1510143.9 -181120.5 1510144.8 -181123.3 1510142.6 -181124.0</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510148.8 -181115.7 1510147.9 -181112.9 1510150.0 -181112.2 1510150.9 -181115.0 1510148.8 -181115.7</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510140.8 -181118.2 1510140.0 -181115.4 1510142.1 -181114.7 1510143.0 -181117.5 1510140.8 -181118.2</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510151.5 -181112.9 1510150.8 -181110.6 1510153.5 -181109.8 1510154.2 -181112.0 1510151.5 -181112.9</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510152.0 -181122.1 1510151.3 -181119.9 1510154.0 -181119.0 1510154.7 -181121.3 1510152.0 -181122.1</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510146.6 -181116.4 1510145.7 -181113.6 1510147.8 -181112.9 1510148.7 -181115.7 1510146.6 -181116.4</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510152.8 -181124.4 1510152.1 -181122.2 1510154.7 -181121.3 1510155.4 -181123.6 1510152.8 -181124.4</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510150.8 -181110.6 1510150.1 -181108.3 1510152.7 -181107.5 1510153.4 -181109.7 1510150.8 -181110.6</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510148.8 -181123.1 1510148.1 -181120.9 1510150.3 -181120.2 1510151.0 -181122.4 1510148.8 -181123.1</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510150.3 -181127.8 1510149.6 -181125.5 1510151.7 -181124.8 1510152.4 -181127.1 1510150.3 -181127.8</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510149.5 -181125.4 1510148.8 -181123.2 1510151.0 -181122.5 1510151.7 -181124.7 1510149.5 -181125.4</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">215</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Comptroller</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Comptroller</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">20.27734375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">17.9424977409949</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">No</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">417.18359375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">413.365249552588</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.41" class="sportsplex-rooms">
+            <featurecaption>Comptroler&amp;apos;s Conference Room</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510147.4 -181127.4 1510146.3 -181127.8 1510145.9 -181128.7 1510141.0 -181130.2 1510140.1 -181129.7 1510139.0 -181130.1 1510138.1 -181127.1 1510146.5 -181124.4 1510147.4 -181127.4</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">15</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Comptroler's Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">62.4765625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">34.2568477540158</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">62.47265625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">34.256847765295</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.42" class="sportsplex-rooms">
+            <featurecaption>Sand Stone Conference Room</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510119.4 -181133.9 1510125.1 -181132.0 1510126.5 -181131.6 1510127.5 -181132.2 1510125.9 -181135.5 1510125.8 -181135.5 1510124.5 -181135.9 1510124.5 -181135.8 1510124.0 -181135.9 1510124.0 -181136.2 1510120.5 -181137.3 1510119.4 -181133.9</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">20</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Sand Stone Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">50.140625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">30.7380874047392</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">50.140625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">30.7380874087764</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.43" class="sportsplex-rooms">
+            <featurecaption>John Njord Conference Room</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510114.7 -181127.8 1510116.9 -181134.5 1510110.2 -181136.6 1510108.1 -181129.9 1510114.7 -181127.8</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">22</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">John Njord Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">96.19921875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">39.235319902107</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">96.203125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">39.2353199048987</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.44" class="sportsplex-rooms">
+            <featurecaption>Redwood A</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510175.8 -181162.6 1510171.1 -181148.3 1510172.4 -181147.9 1510172.2 -181147.3 1510174.1 -181146.8 1510175.2 -181147.7 1510177.3 -181147.1 1510176.9 -181145.9 1510177.4 -181145.8 1510182.4 -181160.6 1510175.8 -181162.6</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">30</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Redwood A</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">203.0625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">65.7503934591925</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">203.06640625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">65.7503934505279</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.45" class="sportsplex-rooms">
+            <featurecaption>Redwood B</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510177.4 -181145.8 1510178.1 -181145.5 1510178.5 -181146.7 1510180.6 -181146.0 1510180.9 -181144.7 1510183.9 -181143.8 1510187.2 -181153.7 1510188.9 -181158.6 1510183.6 -181160.2 1510182.6 -181160.6 1510182.4 -181160.6 1510177.4 -181145.8</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">31</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Redwood B</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">199.8671875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">65.2066713199545</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">199.85546875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">65.2066713200856</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.46" class="sportsplex-rooms">
+            <featurecaption>UDOT Training Room</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510172.2 -181130.9 1510172.3 -181131.0 1510180.4 -181135.4 1510186.5 -181138.7 1510186.9 -181138.9 1510186.7 -181139.0 1510183.0 -181140.1 1510173.9 -181142.8 1510172.9 -181143.1 1510172.2 -181143.3 1510169.7 -181135.9 1510172.2 -181130.9</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">39</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">UDOT Training Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">209.9609375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">63.8940542658586</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">209.96875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">63.8940542645922</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.47" class="sportsplex-rooms">
+            <featurecaption>Orange Room</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510158.0 -181136.4 1510162.5 -181138.8 1510159.0 -181139.9 1510159.0 -181139.9 1510158.9 -181139.8 1510157.7 -181139.2 1510156.9 -181138.7 1510158.0 -181136.4</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">40</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Orange Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">18.91796875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">19.163705722191</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">18.9140625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">19.1637057168473</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.48" class="sportsplex-rooms">
+            <featurecaption>Blue Room</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510157.9 -181136.3 1510156.8 -181138.7 1510155.8 -181138.1 1510153.7 -181137.0 1510154.7 -181134.8 1510154.8 -181134.8 1510154.9 -181134.7 1510157.9 -181136.3</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">41</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Blue Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">17.9765625</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">17.175334554187</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">17.98828125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">17.1753345660567</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.49" class="sportsplex-rooms">
+            <featurecaption>Antelope</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510158.8 -181149.3 1510161.4 -181148.5 1510162.2 -181150.8 1510161.5 -181151.0 1510161.8 -181151.9 1510158.2 -181153.0 1510157.7 -181151.5 1510158.8 -181149.3</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">43</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Antelope</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">25.6796875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">20.6735526595924</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">25.68359375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">20.6735526528215</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.50" class="sportsplex-rooms">
+            <featurecaption>Timpanogos</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510158.3 -181153.1 1510161.9 -181152.1 1510162.2 -181153.0 1510162.9 -181152.8 1510163.4 -181154.2 1510163.7 -181155.1 1510159.4 -181156.4 1510158.3 -181153.1</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">44</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Timpanogos</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">28.71484375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">22.100334082004</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">28.71484375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">22.1003340949377</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.51" class="sportsplex-rooms">
+            <featurecaption>Lester Wire Conference Room</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510159.4 -181156.5 1510164.9 -181154.9 1510165.7 -181154.6 1510168.4 -181162.6 1510164.4 -181160.4 1510161.1 -181161.4 1510159.4 -181156.5</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">46</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Lester Wire Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">76.99609375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">39.5633728503254</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView">YES</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">76.9921875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">39.5633728534116</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.52" class="sportsplex-rooms">
+            <featurecaption>Conference Room</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510127.7 -181124.6 1510130.9 -181123.6 1510132.5 -181128.7 1510131.8 -181129.0 1510131.7 -181129.1 1510131.2 -181130.1 1510129.1 -181128.9 1510127.7 -181124.6</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">219</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Conference Room</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">35.71875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">24.7532353540476</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">429.24609375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">229.680103776071</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.53" class="sportsplex-rooms">
+            <featurecaption>Executive</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                      <coordinates>
+                        1510099.2 -181123.3 1510100.4 -181122.9 1510101.1 -181122.7 1510101.1 -181122.8 1510101.4 -181122.7 1510101.4 -181122.5 1510101.3 -181122.3 1510103.8 -181121.6 
+                        <span class="door leaflet-interactive" aria-label="door" style="stroke: yellow; stroke-width: 4px">1510104.9 -181125.0 1510105.20 -181126</span> 1510106.1 -181129.0 1510107.1 -181132.3 1510104.1 -181133.3 1510102.0 -181132.1 1510099.2 -181123.3</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510108.2 -181118.9 1510109.7 -181123.4 1510104.9 -181124.9 1510103.9 -181121.5 1510105.3 -181121.0 1510105.4 -181121.4 1510105.7 -181121.3 1510105.3 -181119.8 1510108.2 -181118.9</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510112.9 -181122.4 1510109.8 -181123.4 1510108.4 -181118.8 1510111.5 -181117.9 1510112.9 -181122.4</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">221</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Executive</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Executive</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">30.26953125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">22.40876774076</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">174.45703125</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">94.6295165385013</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+        <feature id="sportsplex-rooms.54" class="sportsplex-rooms">
+            <featurecaption>Human Resources</featurecaption>
+            <geometry>
+                <multipolygon>
+                    <polygon>
+                        <coordinates>1510128.9 -181117.3 1510125.8 -181118.3 1510124.4 -181113.8 1510127.5 -181112.8 1510128.9 -181117.3</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510136.7 -181130.8 1510135.6 -181131.1 1510132.9 -181129.7 1510132.5 -181128.1 1510135.6 -181127.2 1510136.7 -181130.8</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510132.9 -181117.6 1510135.8 -181116.7 1510136.7 -181119.5 1510133.8 -181120.4 1510132.9 -181117.6</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510136.8 -181119.6 1510139.7 -181118.6 1510140.6 -181121.4 1510137.7 -181122.4 1510136.8 -181119.6</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510133.8 -181120.5 1510136.7 -181119.6 1510137.6 -181122.4 1510134.7 -181123.3 1510133.8 -181120.5</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510136.0 -181116.7 1510138.8 -181115.8 1510139.7 -181118.6 1510136.9 -181119.5 1510136.0 -181116.7</coordinates>
+                    </polygon>
+                    <polygon>
+                        <coordinates>1510137.7 -181122.4 1510139.8 -181121.8 1510140.7 -181124.6 1510138.6 -181125.2 1510137.7 -181122.4</coordinates>
+                    </polygon>
+                </multipolygon>
+            </geometry>
+            <properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">OBJECTID</th>
+                            <td itemprop="OBJECTID">216</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Floor</th>
+                            <td itemprop="Floor">1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Group_</th>
+                            <td itemprop="Group_">Human Resources</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td itemprop="Name">Human Resources</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Evacuation</th>
+                            <td itemprop="Evacuation" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Computer_A</th>
+                            <td itemprop="Computer_A" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Are</th>
+                            <td itemprop="Shape__Are">17.3046875</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__Len</th>
+                            <td itemprop="Shape__Len">16.6414500132689</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">PublicView</th>
+                            <td itemprop="PublicView" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__A_1</th>
+                            <td itemprop="Shape__A_1">133.52734375</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shape__L_1</th>
+                            <td itemprop="Shape__L_1">122.167291816967</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </properties>
+        </feature>
+  </body>
+</mapml>

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>index-map.html</title>
+    <script type="module" src="../../dist/mapml-viewer.js"></script>
+     <style> 
+       html, 
+       body { 
+         height: 100%; 
+       } 
+       * { 
+         margin: 0; 
+         padding: 0; 
+       } 
+        
+       /* Specifying the `:defined` selector is recommended to style the map 
+       element, such that styles don't apply when fallback content is in use 
+       (e.g. when scripting is disabled or when custom/built-in elements isn't 
+       supported in the browser). */ 
+       mapml-viewer:defined { 
+         /* Responsive map. */ 
+          max-width: 100%;  
+          
+         /* Full viewport. */ 
+          width: 100%;  
+          height: 100%;  
+          
+         /* Remove default (native-like) border. */ 
+         /* border: none; */ 
+       } 
+        
+       /* Pre-style to avoid FOUC of inline layer- and fallback content. */ 
+       mapml-viewer:not(:defined) > * { 
+         display: none; 
+       } 
+       /* Ensure inline layer content is hidden if custom/built-in elements isn't 
+       supported, or if javascript is disabled. This needs to be defined separately 
+       from the above, because the `:not(:defined)` selector invalidates the entire 
+       declaration in browsers that do not support it. */ 
+       layer- { 
+         display: none; 
+       } 
+     </style> 
+     <noscript> 
+       <style> 
+         /* Ensure fallback content (children of the map element) is displayed if 
+         custom/built-in elements is supported but javascript is disabled. */ 
+         mapml-viewer:not(:defined) > :not(layer-) { 
+           display: initial; 
+         } 
+       </style> 
+     </noscript> 
+    <script type="module">
+      let customProjectionDefinition = `{
+            "projection": "ATLAS_POLAR_MAP",
+            "proj4string" : "+proj=aeqd +lat_0=90 +lon_0=-90 +x_0=0 +y_0=0 +ellps=sphere +units=m +no_defs +type=crs",
+            "code" : "ATLAS_POLAR_MAP",
+            "origin" : [-20015200,20015200],
+            "resolutions" :  [33073,16536.5,8268.246,4134.123,2067.061,1033.531,516.765],
+            "bounds" : [[4979939,-4846977],[-5139071,3980038]],
+            "tilesize" : 256
+        }`;
+      let map = document.querySelector("mapml-viewer");
+      let cProjection = map.defineCustomProjection(customProjectionDefinition);
+    </script>
+    <script type="module">
+      let customProjectionDefinition = `{
+            "projection": "EPSG3573", 
+            "proj4string" : "+proj=laea +lat_0=90 +lon_0=-100 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs", 
+            "origin" : [-4889334.802955,4889334.802955], 
+            "resolutions" : [38197.92815,19098.96407,9549.482037,4774.741019,2387.370509,1193.685255,596.8426273,298.4213137,149.2106568,74.60532841,37.30266421],  
+            "bounds" : [[-4594983,4507258],[4655569,-4562485]],  
+            "tilesize" : 256 
+        }`;
+      let map = document.querySelector("mapml-viewer");
+      let cProjection = map.defineCustomProjection(customProjectionDefinition);    
+    </script>
+    <script type="module">
+    /* EPSG:3005 */
+      let customProjectionDefinition = `{
+            "projection": "BCTILE",
+            "proj4string" : "+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs",
+            "origin" : [-13239300, 19868500],
+            "resolutions" :  [9783.9400003175,4891.969998835831,2445.9849999470835,1222.9925001058336,611.4962500529168,305.74812489416644,152.8740625,76.4370312632292,38.2185156316146,19.10925781316146,9.554628905257811,4.7773144526289055,2.3886572265790367,1.1943286131572264],
+            "bounds" : [[-219204, 93819], [2191523, 2065365]],
+            "tilesize" : 256
+        }`;
+      let map = document.querySelector("mapml-viewer");
+      let cProjection = map.defineCustomProjection(customProjectionDefinition);
+    </script>
+  </head>
+  <body>
+    <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls>
+      <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
+      <layer- label="Links Testing" src="canada.mapml" checked></layer->
+    </mapml-viewer>
+  </body>
+</html>
