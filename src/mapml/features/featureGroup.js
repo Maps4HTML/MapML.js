@@ -27,6 +27,8 @@ export var FeatureGroup = L.FeatureGroup.extend({
     }
 
     this.options.group.setAttribute('aria-label', this.options.accessibleTitle);
+    // fix issue https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/423
+    this.options.group.setAttribute('role', 'application');
     if(this.options.featureID) this.options.group.setAttribute("data-fid", this.options.featureID);
   },
 
