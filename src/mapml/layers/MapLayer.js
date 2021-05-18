@@ -1182,6 +1182,7 @@ export var MapMLLayer = L.Layer.extend({
       let popup = e.popup, map = e.target, layer, group,
           content = popup._container.getElementsByClassName("mapml-popup-content")[0];
 
+      popup._container.setAttribute("role", "dialog");
       content.setAttribute("tabindex", "-1");
       popup._count = 0; // used for feature pagination
 
