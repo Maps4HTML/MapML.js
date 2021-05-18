@@ -254,6 +254,8 @@ export class WebMap extends HTMLMapElement {
             this.poster.style.display = 'none';
           }
           
+          // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
+          this.setAttribute('role', 'application');
           // Make the Leaflet container element programmatically identifiable
           // (https://github.com/Leaflet/Leaflet/issues/7193).
           this._container.setAttribute('role', 'region');
