@@ -1184,6 +1184,7 @@ export var MapMLLayer = L.Layer.extend({
 
       popup._container.setAttribute("role", "dialog");
       content.setAttribute("tabindex", "-1");
+      content.setAttribute("role", "document");
       popup._count = 0; // used for feature pagination
 
       if(popup._source._eventParents){ // check if the popup is for a feature or query
