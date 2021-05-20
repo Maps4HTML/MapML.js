@@ -22,7 +22,6 @@ export var FeatureGroup = L.FeatureGroup.extend({
         this.options.group.setAttribute('role', 'link');
       } else {
         this.options.group.setAttribute("aria-expanded", "false");
-        // fix issue https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/423
         this.options.group.setAttribute('role', 'button');
         this.options.onEachFeature(this.options.properties, this);
         this.off("click", this._openPopup);
