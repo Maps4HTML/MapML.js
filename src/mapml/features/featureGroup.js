@@ -19,8 +19,10 @@ export var FeatureGroup = L.FeatureGroup.extend({
       if(layers.length === 1 && firstLayer.options.link) this.options.link = firstLayer.options.link;
       if(this.options.link){
         M.Feature.prototype.attachLinkHandler.call(this, this.options.group, this.options.link, this.options._leafletLayer);
+        this.options.group.setAttribute('role', 'link');
       } else {
         this.options.group.setAttribute("aria-expanded", "false");
+        this.options.group.setAttribute('role', 'button');
         this.options.onEachFeature(this.options.properties, this);
         this.off("click", this._openPopup);
       }

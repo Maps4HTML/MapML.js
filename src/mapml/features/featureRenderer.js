@@ -4,7 +4,25 @@
  * @returns {*}
  */
 export var FeatureRenderer = L.SVG.extend({
+  
 
+  /**
+   * Override method of same name from L.SVG, use the this._container property
+   * to set up the role="none presentation" on featureGroupu container,
+   * per this recommendation: 
+   * https://github.com/Maps4HTML/Web-Map-Custom-Element/pull/471#issuecomment-845192246
+   * @private overrides ancestor method so that we have a _container to work with
+   */
+  _initContainer: function () {
+    // call the method we're overriding, per https://leafletjs.com/examples/extending/extending-1-classes.html#methods-of-the-parent-class
+    // note you have to pass 'this' as the first arg
+    L.SVG.prototype._initContainer.call(this);
+    // knowing that the previous method call creates the this._container, we
+    // access it and set the role="none presetation" which suppresses the 
+    // announcement of "Graphic" on each feature focus.
+    this._container.setAttribute('role', 'none presentation');
+  },
+  
   /**
    * Creates all the appropriate path elements for a M.Feature
    * @param {M.Feature} layer - The M.Feature that needs paths generated
