@@ -98,7 +98,7 @@ export var MapMLLayer = L.Layer.extend({
                   var c = document.createElement('div');
                   c.classList.add("mapml-popup-content");
                   c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                  geometry.bindPopup(c, {autoClose: false, minWidth: 108});
+                  geometry.bindPopup(c, {autoClose: false, minWidth: 165});
                 }
               }
             });
@@ -129,7 +129,7 @@ export var MapMLLayer = L.Layer.extend({
                       var c = document.createElement('div');
                       c.classList.add("mapml-popup-content");
                       c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                      geometry.bindPopup(c, {autoClose: false, minWidth: 108});
+                      geometry.bindPopup(c, {autoClose: false, minWidth: 165});
                     }
                   }
                 }).addTo(map);
@@ -1182,7 +1182,10 @@ export var MapMLLayer = L.Layer.extend({
       let popup = e.popup, map = e.target, layer, group,
           content = popup._container.getElementsByClassName("mapml-popup-content")[0];
 
+      popup._container.setAttribute("role", "dialog");
       content.setAttribute("tabindex", "-1");
+      // https://github.com/Maps4HTML/Web-Map-Custom-Element/pull/467#issuecomment-844307818
+      content.setAttribute("role", "document");
       popup._count = 0; // used for feature pagination
 
       if(popup._source._eventParents){ // check if the popup is for a feature or query
@@ -1192,12 +1195,12 @@ export var MapMLLayer = L.Layer.extend({
         layer = popup._source._templatedLayer;
       }
 
-      if(popup._container.querySelector('div[class="mapml-focus-buttons"]')){
-        L.DomUtil.remove(popup._container.querySelector('div[class="mapml-focus-buttons"]'));
+      if(popup._container.querySelector('nav[class="mapml-focus-buttons"]')){
+        L.DomUtil.remove(popup._container.querySelector('nav[class="mapml-focus-buttons"]'));
         L.DomUtil.remove(popup._container.querySelector('hr'));
       }
       //add when popopen event happens instead
-      let div = L.DomUtil.create("div", "mapml-focus-buttons");
+      let div = L.DomUtil.create("nav", "mapml-focus-buttons");
 
       // creates |< button, focuses map
       let mapFocusButton = L.DomUtil.create('a',"mapml-popup-button", div);
@@ -1251,7 +1254,6 @@ export var MapMLLayer = L.Layer.extend({
       }, popup);
   
       let divider = L.DomUtil.create("hr");
-      divider.style.borderTop = "1px solid #bbb";
 
       popup._navigationBar = div;
       popup._content.appendChild(divider);
