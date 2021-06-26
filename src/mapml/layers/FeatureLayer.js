@@ -28,7 +28,8 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         .mapml-vector-container g[role="button"]:focus path,
         .mapml-vector-container g[role="button"]:hover path {
           outline: 0!important;
-          stroke: black;
+          stroke: #000;
+          stroke: LinkText;
         }`;
       }
 
