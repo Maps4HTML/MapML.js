@@ -15,18 +15,18 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         L.setOptions(this.options.renderer, {pane: this._container});
         let style = L.DomUtil.create("style", "mapml-feature-style", this._container);
         style.innerHTML = `
-        .mapml-vector-container g[role="link"]:focus,
-        .mapml-vector-container g[role="link"]:hover,
-        .mapml-vector-container g[role="button"]:focus,
-        .mapml-vector-container g[role="button"]:hover,
-        .mapml-vector-container g[role="link"] path:focus,
-        .mapml-vector-container g[role="link"] path:hover,
-        .mapml-vector-container g[role="button"] path:focus,
-        .mapml-vector-container g[role="button"] path:hover,
-        .mapml-vector-container g[role="link"]:focus path,
-        .mapml-vector-container g[role="link"]:hover path,
-        .mapml-vector-container g[role="button"]:focus path,
-        .mapml-vector-container g[role="button"]:hover path {
+        g[role="link"]:focus,
+        g[role="link"]:hover,
+        g[role="button"]:focus,
+        g[role="button"]:hover,
+        g[role="link"] path:focus,
+        g[role="link"] path:hover,
+        g[role="button"] path:focus,
+        g[role="button"] path:hover,
+        g[role="link"]:focus path,
+        g[role="link"]:hover path,
+        g[role="button"]:focus path,
+        g[role="button"]:hover path {
           outline: 0!important;
           stroke: #000;
           stroke: LinkText;
