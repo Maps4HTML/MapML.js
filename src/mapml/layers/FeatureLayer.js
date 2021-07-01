@@ -28,7 +28,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         g[role="button"]:focus path,
         g[role="button"]:hover path {
           outline: 0!important;
-          stroke: #000;
+          stroke: #0000EE;
           stroke: LinkText;
         }`;
       }
