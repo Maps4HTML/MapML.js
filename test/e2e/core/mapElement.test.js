@@ -90,7 +90,17 @@ jest.setTimeout(50000);
           expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
           expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
         });
-      }
+
+        test("[" + browserType + "]" + " Default projection, when no projection attribute, is OSMTILE", async () => {
+          const projection = await page.$eval(
+            "body > map[id=default-projection]",
+            (map) => map.projection
+          );
+  
+          expect(projection).toEqual("OSMTILE");
+          });
+
+    }
     );
   }
 })();
