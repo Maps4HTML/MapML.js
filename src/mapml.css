@@ -46,6 +46,29 @@
  * Controls.
  */
  
+ /* Generic class for seamless buttons */
+ .mapml-button {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  text-align: left;
+  text-align: inline-start;
+  text-transform: none;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+}
+.mapml-button:disabled,
+.mapml-button[aria-disabled="true"] {
+  opacity: .3;
+}
+ 
  .leaflet-top .leaflet-control {
    margin-top: 5px;
  }
