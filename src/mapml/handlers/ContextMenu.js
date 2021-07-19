@@ -324,13 +324,13 @@ export var ContextMenu = L.Handler.extend({
     }
 
     var itemCls = 'mapml-contextmenu-item',
-        el = this._insertElementAt('a', itemCls, container, index),
+        el = this._insertElementAt('button', itemCls, container, index),
         callback = this._createEventHandler(el, options.callback, options.context, options.hideOnSelect),
         html = '';
 
     el.innerHTML = html + options.text;
-    el.href = "#";
-    el.setAttribute("role","button");
+    el.setAttribute("type", "button");
+    el.classList.add("mapml-button");
     if(options.popup){
       el.setAttribute("aria-haspopup", "true");
       el.setAttribute("aria-expanded", "false");

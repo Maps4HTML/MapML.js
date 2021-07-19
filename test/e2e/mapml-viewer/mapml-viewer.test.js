@@ -90,9 +90,9 @@ jest.setTimeout(50000);
               });
               test("[" + browserType + "]" + " toggle controls, controls aren't re-enabled", async () => {
                 await page.click("body > mapml-viewer", { button: "right" });
-                await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+                await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
                 await page.click("body > mapml-viewer", { button: "right" });
-                await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+                await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
 
                 let children = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-left", (div) => div.children),
                   found = false;
@@ -114,9 +114,9 @@ jest.setTimeout(50000);
             });
             test("[" + browserType + "]" + " toggle controls, controls aren't re-enabled", async () => {
               await page.click("body > mapml-viewer", { button: "right" });
-              await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+              await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
               await page.click("body > mapml-viewer", { button: "right" });
-              await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+              await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
 
               let children = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right", (div) => div.childElementCount);
               expect(children).toEqual(0);

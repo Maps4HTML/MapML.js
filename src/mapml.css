@@ -249,7 +249,7 @@
   cursor: default;
 }
 
-.mapml-contextmenu a.mapml-contextmenu-item {
+.mapml-contextmenu button.mapml-contextmenu-item {
   display: block;
   color: #222;
   font-size: 12px;
@@ -259,9 +259,10 @@
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
   cursor: default;
+  width: 100%;
 }
 
-.mapml-contextmenu a.mapml-contextmenu-item.over {
+.mapml-contextmenu button.mapml-contextmenu-item.over {
   background-color: #f4f4f4;
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
