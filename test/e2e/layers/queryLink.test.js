@@ -76,7 +76,7 @@ jest.setTimeout(50000);
         });
         describe("Queried Feature Tests in " + browserType, () => {
           test("[" + browserType + "]" + " First feature added + popup content updated ", async () => {
-            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.mapml-reload-button.leaflet-bar.leaflet-control > a");
+            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.mapml-reload-button.leaflet-bar.leaflet-control > button");
             await page.click("div");
             await page.waitForSelector("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div");
             const feature = await page.$eval(

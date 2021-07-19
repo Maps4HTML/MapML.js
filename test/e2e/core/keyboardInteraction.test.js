@@ -125,7 +125,7 @@ jest.setTimeout(50000);
 
         describe("Feature Popup Tab Navigation Tests in " + browserType, () => {
           test("[" + browserType + "]" + " Inline features popup focus order", async () => {
-            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.mapml-reload-button.leaflet-bar.leaflet-control > a");
+            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.mapml-reload-button.leaflet-bar.leaflet-control > button");
             await page.evaluateHandle(() => document.getElementById("vector").removeAttribute("checked"));
             await page.evaluateHandle(() => document.getElementById("query").removeAttribute("checked"));
             await page.click("body");
