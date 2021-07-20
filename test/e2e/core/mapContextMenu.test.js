@@ -87,7 +87,7 @@ jest.setTimeout(50000);
           );
           await page.waitForTimeout(1000);
           await page.click("body > map", { button: "right" });
-          await page.click("div > div.mapml-contextmenu > a:nth-child(1)");
+          await page.click("div > div.mapml-contextmenu > button:nth-child(1)");
           await page.waitForTimeout(1000);
           const extent = await page.$eval(
             "body > map",
@@ -103,7 +103,7 @@ jest.setTimeout(50000);
         });
         test("[" + browserType + "]" + " Context menu, back item at intial location", async () => {
           await page.click("body > map", { button: "right" });
-          await page.click("div > div.mapml-contextmenu > a:nth-child(1)");
+          await page.click("div > div.mapml-contextmenu > button:nth-child(1)");
           await page.waitForTimeout(1000);
           const extent = await page.$eval(
             "body > map",
@@ -119,7 +119,7 @@ jest.setTimeout(50000);
         });
         test("[" + browserType + "]" + " Context menu, forward item", async () => {
           await page.click("body > map", { button: "right" });
-          await page.click("div > div.mapml-contextmenu > a:nth-child(2)");
+          await page.click("div > div.mapml-contextmenu > button:nth-child(2)");
           await page.waitForTimeout(1000);
           const extent = await page.$eval(
             "body > map",
@@ -134,7 +134,7 @@ jest.setTimeout(50000);
         });
         test("[" + browserType + "]" + " Context menu, forward item at most recent location", async () => {
           await page.click("body > map", { button: "right" });
-          await page.click("div > div.mapml-contextmenu > a:nth-child(2)");
+          await page.click("div > div.mapml-contextmenu > button:nth-child(2)");
           await page.waitForTimeout(1000);
           const extent = await page.$eval(
             "body > map",
@@ -156,7 +156,7 @@ jest.setTimeout(50000);
             );
 
             await page.click("body > map", { button: "right" });
-            await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+            await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
 
             const controlsOff = await page.$eval(
               "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
@@ -174,7 +174,7 @@ jest.setTimeout(50000);
             );
 
             await page.click("body > map", { button: "right" });
-            await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+            await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
 
             const controlsOff = await page.$eval(
               "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
@@ -203,9 +203,9 @@ jest.setTimeout(50000);
             expect(valueBefore).toEqual("0.5");
 
             await page.click("body > map", { button: "right" });
-            await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+            await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
             await page.click("body > map", { button: "right" });
-            await page.click("div > div.mapml-contextmenu > a:nth-child(5)");
+            await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
 
             const valueAfter = await page.$eval(
               "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input",
@@ -224,7 +224,7 @@ jest.setTimeout(50000);
             await page.keyboard.press("Tab");
 
           await page.keyboard.press("Enter");
-          await page.click("#mapml-copy-submenu > a:nth-child(10)");
+          await page.click("#mapml-copy-submenu > button:nth-child(10)");
 
           await page.click("body > textarea");
           await page.keyboard.press("Control+v");

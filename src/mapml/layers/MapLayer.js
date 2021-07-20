@@ -497,12 +497,11 @@ export var MapMLLayer = L.Layer.extend({
         
         summaryContainer.classList.add('mapml-control-summary-container');
         
-        let removeButton = document.createElement('a');
-        removeButton.href = '#';
-        removeButton.role = 'button';
+        let removeButton = document.createElement('button');
+        removeButton.type = 'button';
         removeButton.title = 'Remove Layer';
         removeButton.innerHTML = "<span aria-hidden='true'>&#10006;</span>";
-        removeButton.classList.add('mapml-layer-remove-button');
+        removeButton.classList.add('mapml-layer-remove-button', 'mapml-button');
         L.DomEvent.disableClickPropagation(removeButton);
         L.DomEvent.on(removeButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(removeButton, 'click', (e)=>{
@@ -1203,9 +1202,8 @@ export var MapMLLayer = L.Layer.extend({
       let div = L.DomUtil.create("nav", "mapml-focus-buttons");
 
       // creates |< button, focuses map
-      let mapFocusButton = L.DomUtil.create('a',"mapml-popup-button", div);
-      mapFocusButton.href = '#';
-      mapFocusButton.role = "button";
+      let mapFocusButton = L.DomUtil.create("button", "mapml-popup-button", div);
+      mapFocusButton.type = "button";
       mapFocusButton.title = "Focus Map";
       mapFocusButton.innerHTML = "<span aria-hidden='true'>|&#10094;</span>";
       L.DomEvent.disableClickPropagation(mapFocusButton);
@@ -1216,9 +1214,8 @@ export var MapMLLayer = L.Layer.extend({
       }, popup);
 
       // creates < button, focuses previous feature, if none exists focuses the current feature
-      let previousButton = L.DomUtil.create('a', "mapml-popup-button", div);
-      previousButton.href = '#';
-      previousButton.role = "button";
+      let previousButton = L.DomUtil.create("button", "mapml-popup-button", div);
+      previousButton.type = "button";
       previousButton.title = "Previous Feature";
       previousButton.innerHTML = "<span aria-hidden='true'>&#10094;</span>";
       L.DomEvent.disableClickPropagation(previousButton);
@@ -1231,9 +1228,8 @@ export var MapMLLayer = L.Layer.extend({
       featureCount.innerText = (popup._count + 1)+"/"+totalFeatures;
 
       // creates > button, focuses next feature, if none exists focuses the current feature
-      let nextButton = L.DomUtil.create('a', "mapml-popup-button", div);
-      nextButton.href = '#';
-      nextButton.role = "button";
+      let nextButton = L.DomUtil.create("button", "mapml-popup-button", div);
+      nextButton.type = "button";
       nextButton.title = "Next Feature";
       nextButton.innerHTML = "<span aria-hidden='true'>&#10095;</span>";
       L.DomEvent.disableClickPropagation(nextButton);
@@ -1241,9 +1237,8 @@ export var MapMLLayer = L.Layer.extend({
       L.DomEvent.on(nextButton, 'click', layer._nextFeature, popup);
       
       // creates >| button, focuses map controls
-      let controlFocusButton = L.DomUtil.create('a',"mapml-popup-button", div);
-      controlFocusButton.href = '#';
-      controlFocusButton.role = "button";
+      let controlFocusButton = L.DomUtil.create("button", "mapml-popup-button", div);
+      controlFocusButton.type = "button";
       controlFocusButton.title = "Focus Controls";
       controlFocusButton.innerHTML = "<span aria-hidden='true'>&#10095;|</span>";
       L.DomEvent.disableClickPropagation(controlFocusButton);

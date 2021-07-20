@@ -6,11 +6,11 @@ export var ReloadButton = L.Control.extend({
   onAdd: function (map) {
     let container = L.DomUtil.create("div", "mapml-reload-button leaflet-bar");
 
-    let link = L.DomUtil.create("a", "mapml-reload-button", container);
-    link.innerHTML = "&#x021BA";
-    link.href = "#";
+    let link = L.DomUtil.create("button", "mapml-reload-button", container);
+    link.innerHTML = "<span aria-hidden='true'>&#x021BA</span>";
     link.title = "Reload";
-    link.setAttribute('role', 'button');
+    link.setAttribute("type", "button");
+    link.classList.add("mapml-button");
     link.setAttribute('aria-label', "Reload");
 
     L.DomEvent.disableClickPropagation(link);
