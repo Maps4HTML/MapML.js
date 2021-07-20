@@ -1,4 +1,4 @@
-<mapml xmlns="https://www.w3.org/1999/xhtml/">
+<mapml xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <title>ne_10m_admin_0_countries</title>
 
@@ -1223,24 +1223,24 @@
                   <tr><th scope="row">adm0_dif</th><td itemprop="adm0_dif">1</td></tr>
                   <tr><th scope="row">level</th><td itemprop="level">2</td></tr>
                   <tr><th scope="row">type</th><td itemprop="type">Country</td></tr>
-                  <tr><th scope="row">admin</th><td itemprop="admin">Curaçao</td></tr>
+                  <tr><th scope="row">admin</th><td itemprop="admin">Curaï¿½ao</td></tr>
                   <tr><th scope="row">adm0_a3</th><td itemprop="adm0_a3">CUW</td></tr>
                   <tr><th scope="row">geou_dif</th><td itemprop="geou_dif">0</td></tr>
-                  <tr><th scope="row">geounit</th><td itemprop="geounit">Curaçao</td></tr>
+                  <tr><th scope="row">geounit</th><td itemprop="geounit">Curaï¿½ao</td></tr>
                   <tr><th scope="row">gu_a3</th><td itemprop="gu_a3">CUW</td></tr>
                   <tr><th scope="row">su_dif</th><td itemprop="su_dif">0</td></tr>
-                  <tr><th scope="row">subunit</th><td itemprop="subunit">Curaçao</td></tr>
+                  <tr><th scope="row">subunit</th><td itemprop="subunit">Curaï¿½ao</td></tr>
                   <tr><th scope="row">su_a3</th><td itemprop="su_a3">CUW</td></tr>
                   <tr><th scope="row">brk_diff</th><td itemprop="brk_diff">0</td></tr>
-                  <tr><th scope="row">name</th><td itemprop="name">Curaçao</td></tr>
-                  <tr><th scope="row">name_long</th><td itemprop="name_long">Curaçao</td></tr>
+                  <tr><th scope="row">name</th><td itemprop="name">Curaï¿½ao</td></tr>
+                  <tr><th scope="row">name_long</th><td itemprop="name_long">Curaï¿½ao</td></tr>
                   <tr><th scope="row">brk_a3</th><td itemprop="brk_a3">CUW</td></tr>
-                  <tr><th scope="row">brk_name</th><td itemprop="brk_name">Curaçao</td></tr>
+                  <tr><th scope="row">brk_name</th><td itemprop="brk_name">Curaï¿½ao</td></tr>
                   <tr><th scope="row">abbrev</th><td itemprop="abbrev">Cur.</td></tr>
                   <tr><th scope="row">postal</th><td itemprop="postal">CW</td></tr>
-                  <tr><th scope="row">formal_en</th><td itemprop="formal_en">Curaçao</td></tr>
+                  <tr><th scope="row">formal_en</th><td itemprop="formal_en">Curaï¿½ao</td></tr>
                   <tr><th scope="row">note_adm0</th><td itemprop="note_adm0">Neth.</td></tr>
-                  <tr><th scope="row">name_sort</th><td itemprop="name_sort">Curaçao</td></tr>
+                  <tr><th scope="row">name_sort</th><td itemprop="name_sort">Curaï¿½ao</td></tr>
                   <tr><th scope="row">mapcolor7</th><td itemprop="mapcolor7">4</td></tr>
                   <tr><th scope="row">mapcolor8</th><td itemprop="mapcolor8">2</td></tr>
                   <tr><th scope="row">mapcolor9</th><td itemprop="mapcolor9">2</td></tr>
@@ -2282,7 +2282,7 @@
                   <tr><th scope="row">abbrev</th><td itemprop="abbrev">Ven.</td></tr>
                   <tr><th scope="row">postal</th><td itemprop="postal">VE</td></tr>
                   <tr><th scope="row">formal_en</th><td itemprop="formal_en">Bolivarian Republic of Venezuela</td></tr>
-                  <tr><th scope="row">formal_fr</th><td itemprop="formal_fr">República Bolivariana de Venezuela</td></tr>
+                  <tr><th scope="row">formal_fr</th><td itemprop="formal_fr">Repï¿½blica Bolivariana de Venezuela</td></tr>
                   <tr><th scope="row">name_sort</th><td itemprop="name_sort">Venezuela, RB</td></tr>
                   <tr><th scope="row">mapcolor7</th><td itemprop="mapcolor7">1</td></tr>
                   <tr><th scope="row">mapcolor8</th><td itemprop="mapcolor8">3</td></tr>

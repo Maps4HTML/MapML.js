@@ -1,4 +1,4 @@
-<mapml xmlns="https://www.w3.org/1999/xhtml/">
+<mapml xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <title>ne_10m_admin_0_countries</title>
 
@@ -192,15 +192,15 @@
                   <tr><th scope="row">subunit</th><td itemprop="subunit">Ivory Coast</td></tr>
                   <tr><th scope="row">su_a3</th><td itemprop="su_a3">CIV</td></tr>
                   <tr><th scope="row">brk_diff</th><td itemprop="brk_diff">0</td></tr>
-                  <tr><th scope="row">name</th><td itemprop="name">Côte d'Ivoire</td></tr>
-                  <tr><th scope="row">name_long</th><td itemprop="name_long">Côte d'Ivoire</td></tr>
+                  <tr><th scope="row">name</th><td itemprop="name">Cï¿½te d'Ivoire</td></tr>
+                  <tr><th scope="row">name_long</th><td itemprop="name_long">Cï¿½te d'Ivoire</td></tr>
                   <tr><th scope="row">brk_a3</th><td itemprop="brk_a3">CIV</td></tr>
-                  <tr><th scope="row">brk_name</th><td itemprop="brk_name">Côte d'Ivoire</td></tr>
+                  <tr><th scope="row">brk_name</th><td itemprop="brk_name">Cï¿½te d'Ivoire</td></tr>
                   <tr><th scope="row">abbrev</th><td itemprop="abbrev">I.C.</td></tr>
                   <tr><th scope="row">postal</th><td itemprop="postal">CI</td></tr>
                   <tr><th scope="row">formal_en</th><td itemprop="formal_en">Republic of Ivory Coast</td></tr>
                   <tr><th scope="row">formal_fr</th><td itemprop="formal_fr">Republic of Cote D'Ivoire</td></tr>
-                  <tr><th scope="row">name_sort</th><td itemprop="name_sort">Côte d'Ivoire</td></tr>
+                  <tr><th scope="row">name_sort</th><td itemprop="name_sort">Cï¿½te d'Ivoire</td></tr>
                   <tr><th scope="row">mapcolor7</th><td itemprop="mapcolor7">4</td></tr>
                   <tr><th scope="row">mapcolor8</th><td itemprop="mapcolor8">6</td></tr>
                   <tr><th scope="row">mapcolor9</th><td itemprop="mapcolor9">3</td></tr>
@@ -1443,7 +1443,7 @@
                   <tr><th scope="row">abbrev</th><td itemprop="abbrev">Togo</td></tr>
                   <tr><th scope="row">postal</th><td itemprop="postal">TG</td></tr>
                   <tr><th scope="row">formal_en</th><td itemprop="formal_en">Togolese Republic</td></tr>
-                  <tr><th scope="row">formal_fr</th><td itemprop="formal_fr">République Togolaise</td></tr>
+                  <tr><th scope="row">formal_fr</th><td itemprop="formal_fr">Rï¿½publique Togolaise</td></tr>
                   <tr><th scope="row">name_sort</th><td itemprop="name_sort">Togo</td></tr>
                   <tr><th scope="row">mapcolor7</th><td itemprop="mapcolor7">3</td></tr>
                   <tr><th scope="row">mapcolor8</th><td itemprop="mapcolor8">1</td></tr>
