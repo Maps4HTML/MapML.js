@@ -28,13 +28,23 @@
           height: 100%;  
           
          /* Remove default (native-like) border. */ 
-         /* border: none; */ 
+         border: none;
+         
+         vertical-align: middle;
        } 
         
        /* Pre-style to avoid FOUC of inline layer- and fallback content. */ 
        mapml-viewer:not(:defined) > * { 
          display: none; 
        } 
+       
+       /* Pre-style to avoid Layout Shift. */
+       mapml-viewer:not(:defined) {
+         display: inline-block;
+         contain: size;
+         contain-intrinsic-size: 304px 154px;
+       }
+       
        /* Ensure inline layer content is hidden if custom/built-in elements isn't 
        supported, or if javascript is disabled. This needs to be defined separately 
        from the above, because the `:not(:defined)` selector invalidates the entire 
@@ -50,6 +60,14 @@
          mapml-viewer:not(:defined) > :not(layer-) { 
            display: initial; 
          } 
+         
+         /* "Reset" the properties used to pre-style (to avoid Layout Shift) if
+         custom/built-in elements is supported but javascript is disabled. */
+         mapml-viewer:not(:defined) {
+           display: initial;
+           contain: initial;
+           contain-intrinsic-size: initial;
+         }
        </style> 
      </noscript> 
   </head>
