@@ -1,4 +1,4 @@
-<mapml xmlns="https://www.w3.org/1999/xhtml/">
+<mapml xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <title>ne_10m_admin_0_countries</title>
 
@@ -564,7 +564,7 @@
                   <tr><th scope="row">abbrev</th><td itemprop="abbrev">New C.</td></tr>
                   <tr><th scope="row">postal</th><td itemprop="postal">NC</td></tr>
                   <tr><th scope="row">formal_en</th><td itemprop="formal_en">New Caledonia</td></tr>
-                  <tr><th scope="row">formal_fr</th><td itemprop="formal_fr">Nouvelle-Calédonie</td></tr>
+                  <tr><th scope="row">formal_fr</th><td itemprop="formal_fr">Nouvelle-Calï¿½donie</td></tr>
                   <tr><th scope="row">note_adm0</th><td itemprop="note_adm0">Fr.</td></tr>
                   <tr><th scope="row">name_sort</th><td itemprop="name_sort">New Caledonia</td></tr>
                   <tr><th scope="row">mapcolor7</th><td itemprop="mapcolor7">7</td></tr>
