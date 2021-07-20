@@ -13,17 +13,23 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         // info: https://github.com/Leaflet/Leaflet/pull/4597
         L.DomUtil.addClass(this._container, 'leaflet-pane mapml-vector-container');
         L.setOptions(this.options.renderer, {pane: this._container});
-        let anim = L.DomUtil.create("style", "mapml-feature-animation", this._container);
-        anim.innerHTML = `@keyframes pathSelect {
-          0% {stroke: white;}
-          50% {stroke: black;}
-        }
-        g:focus > path,
-        path:focus {
-          animation-name: pathSelect;
-          animation-duration: 1s;
-          stroke-width: 5;
-          stroke: black;
+        let style = L.DomUtil.create("style", "mapml-feature-style", this._container);
+        style.innerHTML = `
+        g[role="link"]:focus,
+        g[role="link"]:hover,
+        g[role="button"]:focus,
+        g[role="button"]:hover,
+        g[role="link"] path:focus,
+        g[role="link"] path:hover,
+        g[role="button"] path:focus,
+        g[role="button"] path:hover,
+        g[role="link"]:focus path,
+        g[role="link"]:hover path,
+        g[role="button"]:focus path,
+        g[role="button"]:hover path {
+          outline: 0!important;
+          stroke: #0000EE;
+          stroke: LinkText;
         }`;
       }
 
@@ -310,7 +316,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     _removeCSS: function(){
       let toDelete = this._container.querySelectorAll("link[rel=stylesheet],style");
       for(let i = 0; i < toDelete.length;i++){
-        if(toDelete[i].classList.contains("mapml-feature-animation")) continue;
+        if(toDelete[i].classList.contains("mapml-feature-style")) continue;
         this._container.removeChild(toDelete[i]);
       }
     },
