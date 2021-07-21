@@ -248,10 +248,12 @@ export class WebMap extends HTMLMapElement {
             }
           }
 
-          // undisplay the img in the image map, because it's not needed now
-          // gives a slight fouc, not optimal
+          // undisplay the img in the image map, because it's not needed now.
+          // gives a slight FOUC, unless:
+          // 1) the img is pre-styled (https://github.com/Maps4HTML/Web-Map-Custom-Element/blob/80a4a4e372d2ef61bb7cad6a111e17e396b8e908/index-map-area.html#L35)
+          // 2) placed after the map element
           if (this.poster) {
-            this.poster.style.display = 'none';
+            this.poster.setAttribute('hidden', '');
           }
           
           // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
