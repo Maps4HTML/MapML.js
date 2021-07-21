@@ -395,7 +395,7 @@
 .leaflet-tooltip,
 .leaflet-crosshair *,
 .mapml-contextmenu-item > *,
-.mapml-control-layers label[for^="o"],
+.mapml-control-layers .mapml-control-layers summary label,
 .mapml-draggable [aria-grabbed="true"] .mapml-control-layers > * {
   pointer-events: none!important;
 }

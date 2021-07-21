@@ -543,7 +543,7 @@ export var MapMLLayer = L.Layer.extend({
         fieldset.setAttribute("aria-grabbed", "false");
 
         fieldset.onmousedown = (downEvent) => {
-          if(downEvent.target.tagName.toLowerCase() === "input") return;
+          if(downEvent.target.tagName.toLowerCase() === "input" || downEvent.target.tagName.toLowerCase() === "select") return;
           downEvent.preventDefault();
           let control = fieldset,
               controls = fieldset.parentNode,
@@ -630,9 +630,8 @@ export var MapMLLayer = L.Layer.extend({
                     id = '#'+mapmlInput.getAttribute('id');
                 // don't add it again if it is referenced > once
                 if (mapmlInput.tagName.toLowerCase() === 'select' && !frag.querySelector(id)) {
-                  // generate a <details><summary></summary><input...></details>
-                  var userfieldset = document.createElement('fieldset'),
-                      selectdetails = document.createElement('details'),
+                  // generate a <details><summary></summary><select...></details>
+                  var selectdetails = document.createElement('details'),
                       selectsummary = document.createElement('summary'),
                       selectSummaryLabel = document.createElement('label');
                       selectSummaryLabel.innerText = mapmlInput.getAttribute('name');
@@ -641,8 +640,7 @@ export var MapMLLayer = L.Layer.extend({
                       selectsummary.appendChild(selectSummaryLabel);
                       selectdetails.appendChild(selectsummary);
                       selectdetails.appendChild(mapmlInput.htmlselect);
-                      userfieldset.appendChild(selectdetails);
-                  frag.appendChild(userfieldset);
+                  frag.appendChild(selectdetails);
                 }
               }
             }
