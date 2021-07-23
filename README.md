@@ -50,7 +50,7 @@ mapml-viewer:defined {
 }
 ```
 
-## A parellel customized built-in element
+## A parallel customized built-in element
 
 The `<map is="web-map">` customized built-in element is developed in parallel
 to the `<mapml-viewer>` autonomous custom element.
