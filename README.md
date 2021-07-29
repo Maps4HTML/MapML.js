@@ -11,7 +11,7 @@ defined in the MapML (Map Markup Language)
 ## Installation
 
 Beginning with `v0.8.2`, &lt;mapml-viewer&gt; can be loaded from the [UNPKG content delivery network](https://unpkg.com/) –
-```bash
+```html
 <script type="module" src="https://unpkg.com/@maps4html/web-map-custom-element@0.8.2/dist/mapml-viewer.js"></script>
 ```
 
