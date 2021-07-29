@@ -8,7 +8,19 @@ The `<mapml-viewer>` custom element is a prototype implementation of the
 defined in the MapML (Map Markup Language)
 [specification](https://maps4html.org/MapML/spec/).
 
-<!-- ## Installation -->
+## Installation
+
+Beginning with `v0.8.2`, &lt;mapml-viewer&gt; can be loaded from the [UNPKG content delivery network](https://unpkg.com/) –
+```bash
+<script type="module" src="https://unpkg.com/@maps4html/web-map-custom-element@0.8.2/dist/mapml-viewer.js"></script>
+```
+
+– or installed using npm.
+```bash
+npm install @maps4html/web-map-custom-element
+```
+
+Note: `v0.8.X` npm releases are functionally equivalent to [standalone release`v0.8.0`](https://github.com/Maps4HTML/Web-Map-Custom-Element/releases/tag/v0.8.0).
 
 ## Usage
 
