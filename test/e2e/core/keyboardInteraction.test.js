@@ -32,13 +32,13 @@ jest.setTimeout(50000);
 
           test("[" + browserType + "]" + " Crosshair remains on map move with arrow keys", async () => {
             await page.keyboard.press("ArrowUp");
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             await page.keyboard.press("ArrowDown");
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             await page.keyboard.press("ArrowLeft");
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             await page.keyboard.press("ArrowRight");
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(1000);
             const afterMove = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
             expect(afterMove).toEqual("");
           });
