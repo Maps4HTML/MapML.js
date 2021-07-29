@@ -1,6 +1,6 @@
 {
   "name": "@maps4html/web-map-custom-element",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "web-map customized built-in HTML <map> or custom <mapml-viewer>",
   "keywords": [
     "web-components",
