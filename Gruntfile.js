@@ -87,7 +87,7 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             filter: 'isFile',
-            src: ['index.html','package.json'],
+            src: ['*.js','index.html','package.json'],
             dest: 'dist/'
           }
         ],
