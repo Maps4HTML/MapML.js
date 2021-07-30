@@ -33,7 +33,7 @@ module.exports = function(grunt) {
         // ensure that jshint keeps processing after an error
         force: true,
         esversion: 6
-        
+
       }
     },
     watch: {
@@ -47,47 +47,47 @@ module.exports = function(grunt) {
             expand: true,
             cwd: 'node_modules/leaflet/dist/',
             flatten: true,
-            filter: 'isFile', 
-            src: ['leaflet.css','leaflet-src.js'], 
+            filter: 'isFile',
+            src: ['leaflet.css','leaflet-src.js'],
             dest: 'dist/'
           },
           {
             expand: true,
             cwd: 'node_modules/proj4/dist/',
             flatten: true,
-            filter: 'isFile', 
-            src: ['proj4-src.js'], 
+            filter: 'isFile',
+            src: ['proj4-src.js'],
             dest: 'dist/'
           },
           {
             expand: true,
             cwd: 'node_modules/proj4leaflet/src/',
             flatten: true,
-            filter: 'isFile', 
-            src: ['proj4leaflet.js'], 
+            filter: 'isFile',
+            src: ['proj4leaflet.js'],
             dest: 'dist/'
           },
           {
             expand: true,
             cwd: 'node_modules/@runette/leaflet-fullscreen/dist/',
             flatten: true,
-            filter: 'isFile', 
-            src: ['Leaflet.fullscreen.js','leaflet.fullscreen.css'], 
+            filter: 'isFile',
+            src: ['Leaflet.fullscreen.js','leaflet.fullscreen.css'],
             dest: 'dist/'
           },
           {
             expand: true,
             cwd: 'src',
             flatten: true,
-            filter: 'isFile', 
-            src: ['*.js','*.css','*.md','index.html','package.json'], 
+            filter: 'isFile',
+            src: ['*.js','*.css','*.md','index.html','package.json'],
             dest: 'dist/'
           },
           {
             expand: true,
             flatten: true,
-            filter: 'isFile', 
-            src: ['*.md','index.html','package.json'], 
+            filter: 'isFile',
+            src: ['index.html'],
             dest: 'dist/'
           }
         ],
@@ -128,7 +128,7 @@ module.exports = function(grunt) {
           }
         }
       },
-      images: { 
+      images: {
         // if you pass images through the process function, it corrupts them,
         // so you have to do this in a separate grunt 'target' ('main' being the
         // default one, I believe).
@@ -137,8 +137,8 @@ module.exports = function(grunt) {
             expand: true,
             cwd: 'node_modules/leaflet/dist/images/',
             flatten: true,
-            filter: 'isFile', 
-            src: ['layers.png','layers-2x.png'], 
+            filter: 'isFile',
+            src: ['layers.png','layers-2x.png'],
             dest: 'dist/images/'
           }
         ]

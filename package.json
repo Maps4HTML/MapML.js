@@ -1,6 +1,6 @@
 {
   "name": "@maps4html/web-map-custom-element",
-  "version": "0.8.0",
+  "version": "0.8.2",
   "description": "web-map customized built-in HTML <map> or custom <mapml-viewer>",
   "keywords": [
     "web-components",
@@ -55,5 +55,6 @@
     "proj4": "^2.6.2",
     "proj4leaflet": "^1.0.2",
     "rollup": "^2.23.1"
-  }
+  },
+  "files": [ "dist", "*.md" ]
 }
