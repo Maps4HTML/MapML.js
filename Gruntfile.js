@@ -1,3 +1,5 @@
+const webpackConfig = require('./webpack.config.js');
+
 module.exports = function(grunt) {
 
   grunt.initConfig({
@@ -156,6 +158,9 @@ module.exports = function(grunt) {
         src: 'src/mapml/index.js', // Only one source file is permitted
       },
     },
+    webpack: {
+      myConfig: webpackConfig,
+    }
   });
 
   /*grunt.loadNpmTasks('grunt-html');*/
@@ -166,13 +171,14 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-rollup');
+  grunt.loadNpmTasks('grunt-webpack');
 
 /* grunt.loadNpmTasks('grunt-processhtml'); */
 
 
   grunt.registerTask('test', ['jshint']);
 
-  grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'rollup', 'uglify']);
+  grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'rollup', 'uglify','webpack']);
   grunt.registerTask('build', ['rollup']);
 
 };
