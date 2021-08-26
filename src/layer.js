@@ -1,7 +1,7 @@
-import './leaflet-src.js';  // a lightly modified version of Leaflet for use as browser module
-import './proj4-src.js';        // modified version of proj4; could be stripped down for mapml
-import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use. 
-import './mapml.js';       // modified URI to make the function a property of window scope (possibly a bad thing to do).
+import 'leaflet/dist/leaflet-src';      // a (very slightly) modified version of Leaflet for use as browser module
+import 'proj4/dist/proj4-src';          // modified version of proj4; could be stripped down for mapml
+import 'proj4leaflet/src/proj4leaflet'; // not modified, seems to adapt proj4 for leaflet use.
+import './mapml/index';       // refactored URI usage, replaced with URL standard
 
 export class MapLayer extends HTMLElement {
   static get observedAttributes() {
@@ -41,7 +41,7 @@ export class MapLayer extends HTMLElement {
   get checked() {
     return this.hasAttribute('checked');
   }
-  
+
   set checked(val) {
     if (val) {
       this.setAttribute('checked', '');
@@ -49,7 +49,7 @@ export class MapLayer extends HTMLElement {
       this.removeAttribute('checked');
     }
   }
-  
+
   get hidden() {
     return this.hasAttribute('hidden');
   }
@@ -78,7 +78,7 @@ export class MapLayer extends HTMLElement {
   disconnectedCallback() {
 //    console.log('Custom map element removed from page.');
     // if the map-layer node is removed from the dom, the layer should be
-    // removed from the map and the layer control 
+    // removed from the map and the layer control
 
     // this is moved up here so that the layer control doesn't respond
     // to the layer being removed with the _onLayerChange execution
@@ -115,13 +115,13 @@ export class MapLayer extends HTMLElement {
   }
   attributeChangedCallback(name, oldValue, newValue) {
     switch(name) {
-      case 'label': 
+      case 'label':
         if (oldValue !== newValue) {
-          this.dispatchEvent(new CustomEvent('labelchanged', {detail: 
+          this.dispatchEvent(new CustomEvent('labelchanged', {detail:
             {target: this}}));
         }
       break;
-      case 'checked': 
+      case 'checked':
         if (this._layer) {
           if (typeof newValue === "string") {
             this.parentElement._map.addLayer(this._layer);
@@ -153,7 +153,7 @@ export class MapLayer extends HTMLElement {
     // currently only support a single link, don't care about type, lang etc.
     // TODO: add support for full LayerLegend object, and > one link.
     if (this._layer._legendUrl) {
-      this.legendLinks = 
+      this.legendLinks =
         [{ type: 'application/octet-stream',
            href: this._layer._legendUrl,
            rel: 'legend',
@@ -178,10 +178,10 @@ export class MapLayer extends HTMLElement {
       // re-use 'loadedmetadata' event from HTMLMediaElement inteface, applied
       // to MapML extent as metadata
       // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/loadedmetadata_event
-      this.dispatchEvent(new CustomEvent('loadedmetadata', {detail: 
+      this.dispatchEvent(new CustomEvent('loadedmetadata', {detail:
                 {target: this}}));
     } else {
-      this.dispatchEvent(new CustomEvent('error', {detail: 
+      this.dispatchEvent(new CustomEvent('error', {detail:
                 {target: this}}));
     }
   }
@@ -265,7 +265,7 @@ export class MapLayer extends HTMLElement {
     if (this.checked) {
       this._layer.addTo(this._layer._map);
     }
-    
+
     // add the handler which toggles the 'checked' property based on the
     // user checking/unchecking the layer from the layer control
     // this must be done *after* the layer is actually added to the map
@@ -283,7 +283,7 @@ export class MapLayer extends HTMLElement {
     this._layer._map.on('checkdisabled', this._validateDisabled, this);
     // this is necessary to get the layer control to compare the layer
     // extents with the map extent & zoom, but it needs to be rethought TODO
-    // for one thing, layers which are checked by the author before 
+    // for one thing, layers which are checked by the author before
     // adding to the map are displayed despite that they are not visible
     // See issue #26
 //        this._layer._map.fire('moveend');
@@ -296,21 +296,21 @@ export class MapLayer extends HTMLElement {
     }
   }
   _setUpEvents() {
-    this._layer.on('loadstart', 
+    this._layer.on('loadstart',
         function () {
-            this.dispatchEvent(new CustomEvent('loadstart', {detail: 
+            this.dispatchEvent(new CustomEvent('loadstart', {detail:
               {target: this}}));
-        }, this);      
+        }, this);
     this._layer.on('changestyle',
         function(e) {
           this.src = e.src;
-          this.dispatchEvent(new CustomEvent('changestyle', {detail: 
+          this.dispatchEvent(new CustomEvent('changestyle', {detail:
               {target: this}}));
         },this);
     this._layer.on('changeprojection',
         function(e) {
           this.src = e.href;
-          this.dispatchEvent(new CustomEvent('changeprojection', {detail: 
+          this.dispatchEvent(new CustomEvent('changeprojection', {detail:
               {target: this}}));
         },this);
   }

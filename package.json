@@ -35,7 +35,10 @@
     "test:watch": "jest --detectOpenHandles --watch"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
     "@runette/leaflet-fullscreen": "1.0.4",
+    "babel-loader": "^8.2.2",
     "css-loader": "^6.2.0",
     "express": "^4.17.1",
     "file-loader": "^6.2.0",
@@ -58,7 +61,7 @@
     "proj4": "^2.6.2",
     "proj4leaflet": "^1.0.2",
     "rollup": "^2.23.1",
-    "webpack": "^5.48.0",
+    "webpack": "^5.50.0",
     "webpack-uglify-js-plugin": "^1.1.9"
   },
   "files": [

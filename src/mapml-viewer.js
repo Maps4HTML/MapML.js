@@ -1,8 +1,10 @@
-import './leaflet-src.js';  // a (very slightly) modified version of Leaflet for use as browser module
-import './proj4-src.js';        // modified version of proj4; could be stripped down for mapml
-import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use.
-import './mapml.js';       // refactored URI usage, replaced with URL standard
-import './Leaflet.fullscreen.js';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet/dist/leaflet-src';      // a (very slightly) modified version of Leaflet for use as browser module
+import 'proj4/dist/proj4-src';          // modified version of proj4; could be stripped down for mapml
+import 'proj4leaflet/src/proj4leaflet'; // not modified, seems to adapt proj4 for leaflet use.
+import './mapml/index';                 // refactored URI usage, replaced with URL standard
+import '@runette/leaflet-fullscreen/dist/Leaflet.fullscreen';
+import '@runette/leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import { MapLayer } from './layer.js';
 
 export class MapViewer extends HTMLElement {
@@ -100,17 +102,17 @@ export class MapViewer extends HTMLElement {
   constructor() {
     // Always call super first in constructor
     super();
-    
+
     this._source = this.outerHTML;
     let tmpl = document.createElement('template');
-    tmpl.innerHTML =
-    `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
-    `<link rel="stylesheet" href="${new URL("leaflet.fullscreen.css", import.meta.url).href}">` +
-    `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`;
-    
+    // tmpl.innerHTML =
+    // `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
+    // `<link rel="stylesheet" href="${new URL("leaflet.fullscreen.css", import.meta.url).href}">` +
+    // `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`;
+
     let shadowRoot = this.attachShadow({mode: 'open'});
     this._container = document.createElement('div');
-    
+
     // Set default styles for the map element.
     let mapDefaultCSS = document.createElement('style');
     mapDefaultCSS.innerHTML =
@@ -134,7 +136,7 @@ export class MapViewer extends HTMLElement {
     `:host .leaflet-container {` +
     `contain: strict;` + // Contain size, layout and paint calculations within the leaflet container element.
     `}`;
-    
+
     // Hide all (light DOM) children of the map element.
     let hideElementsCSS = document.createElement('style');
     hideElementsCSS.innerHTML =
@@ -216,25 +218,25 @@ export class MapViewer extends HTMLElement {
           this._addToHistory();
           // the attribution control is not optional
           this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
-    
+
           this.setControls(false,false,true);
           this._crosshair = M.crosshair().addTo(this._map);
-          
+
           // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
           this.setAttribute('role', 'application');
           // Make the Leaflet container element programmatically identifiable
           // (https://github.com/Leaflet/Leaflet/issues/7193).
           this._container.setAttribute('role', 'region');
           this._container.setAttribute('aria-label', 'Interactive map');
-    
+
           this._setUpEvents();
           // this.fire('load', {target: this});
         }
       }, {once:true});
- 
+
       let custom = !(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(this.projection));
-      // if the page doesn't use nav.js or isn't custom then dispatch createmap event	
-      if(!custom){	
+      // if the page doesn't use nav.js or isn't custom then dispatch createmap event
+      if(!custom){
         this.dispatchEvent(new CustomEvent('createmap'));
       }
     }
@@ -485,7 +487,7 @@ export class MapViewer extends HTMLElement {
       this._debug = M.debugOverlay().addTo(this._map);
     }
   }
-  
+
   _widthChanged(width) {
     this.style.width = width+"px";
     this._container.style.width = width+"px";
@@ -584,12 +586,12 @@ export class MapViewer extends HTMLElement {
         tcrs: {
           horizontal: {
             name: "x",
-            min: 0, 
+            min: 0,
             max: zoom => (M[t.projection].options.bounds.getSize().x / M[t.projection].options.resolutions[zoom]).toFixed()
           },
           vertical: {
             name: "y",
-            min:0, 
+            min:0,
             max: zoom => (M[t.projection].options.bounds.getSize().y / M[t.projection].options.resolutions[zoom]).toFixed()
           },
           bounds: zoom => L.bounds([M[t.projection].options.crs.tcrs.horizontal.min,
@@ -602,21 +604,21 @@ export class MapViewer extends HTMLElement {
             name: "easting",
             get min() {return M[t.projection].options.bounds.min.x;},
             get max() {return M[t.projection].options.bounds.max.x;}
-          }, 
+          },
           vertical: {
-            name: "northing", 
+            name: "northing",
             get min() {return M[t.projection].options.bounds.min.y;},
             get max() {return M[t.projection].options.bounds.max.y;}
           },
           get bounds() {return M[t.projection].options.bounds;}
-        }, 
+        },
         gcrs: {
           horizontal: {
             name: "longitude",
             // set min/max axis values from EPSG registry area of use, retrieved 2019-07-25
             get min() {return M[t.projection].unproject(M.OSMTILE.options.bounds.min).lng;},
             get max() {return M[t.projection].unproject(M.OSMTILE.options.bounds.max).lng;}
-          }, 
+          },
           vertical: {
             name: "latitude",
             // set min/max axis values from EPSG registry area of use, retrieved 2019-07-25
