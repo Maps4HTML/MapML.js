@@ -251,12 +251,13 @@
 
 .mapml-contextmenu {
   display: none;
-  max-width: 100%;
-  -webkit-border-radius: 4px;
-          border-radius: 4px;
+  border-radius: 4px;
   padding: 4px 0;
   background-color: #fff;
   cursor: default;
+  position: absolute;
+  width: 150px;
+  z-index: 10001;
 }
 
 .mapml-contextmenu button.mapml-contextmenu-item {
@@ -281,6 +282,20 @@
 .mapml-contextmenu-separator {
   border-bottom: 1px solid #e3e3e3;
   margin: 5px 0;
+}
+
+.mapml-contextmenu.mapml-submenu {
+  width: 80px;
+  margin-bottom: -2rem;
+}
+
+@supports (contain: layout) {
+  .mapml-contextmenu {
+    position: fixed;
+  }
+  .mapml-contextmenu.mapml-submenu {
+    position: absolute;
+  }
 }
 
 /*

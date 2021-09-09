@@ -106,20 +106,12 @@ export var ContextMenu = L.Handler.extend({
     this._keyboardEvent = false;
 
     this._container = L.DomUtil.create("div", "mapml-contextmenu", map._container);
-    this._container.style.zIndex = 10001;
-    this._container.style.position = "absolute";
-
-    this._container.style.width = "150px";
     
     for (let i = 0; i < 6; i++) {
       this._items[i].el = this._createItem(this._container, this._items[i]);
     }
 
     this._coordMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-submenu", this._container);
-    this._coordMenu.style.zIndex = 10001;
-    this._coordMenu.style.position = "absolute";
-
-    this._coordMenu.style.width = "80px";
     this._coordMenu.id = "mapml-copy-submenu";
 
     this._clickEvent = null;
@@ -133,9 +125,6 @@ export var ContextMenu = L.Handler.extend({
     this._items[8].el = this._createItem(this._container, this._items[8]);
 
     this._layerMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-layer-menu", map._container);
-    this._layerMenu.style.zIndex = 10001;
-    this._layerMenu.style.position = "absolute";
-    this._layerMenu.style.width = "150px";
     for (let i = 0; i < this._layerItems.length; i++) {
       this._createItem(this._layerMenu, this._layerItems[i]);
     }
