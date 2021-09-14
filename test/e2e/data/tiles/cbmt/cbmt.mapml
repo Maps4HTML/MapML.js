@@ -1,4 +1,4 @@
-<mapml xmlns="http://www.w3.org/1999/xhtml">
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
 
   <head>
     <title>Canada Base Map - Transportation (CBMT)</title>
@@ -19,4 +19,4 @@
       <link rel="tile" tref="cbmt/{z}/c{x}_r{y}.png" />
     </extent>
   </body>
-</mapml>
+</mapml->

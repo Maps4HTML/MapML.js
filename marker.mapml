@@ -1,4 +1,4 @@
-<mapml lang="en">
+<mapml- lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/mapml">
@@ -34,4 +34,4 @@
       </geometry>
     </feature>
   </body>
-</mapml>
+</mapml->

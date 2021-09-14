@@ -1,4 +1,4 @@
-<mapml>
+<mapml->
   <head>
     <title>Territorial Evolution 1867-Present</title>
     <meta http-equiv="Content-Type" content="text/mapml"/>
@@ -43,4 +43,4 @@
       <link rel="image" tref="http://geoappext.nrcan.gc.ca/arcgis/services/FGP/TE/MapServer/WMSServer?SERVICE=WMS&amp;VERSION=1.3.0&amp;CRS=EPSG:3978&amp;LAYERS={date}&amp;BBOX={xmin},{ymin},{xmax},{ymax}&amp;REQUEST=GetMap&amp;FORMAT=image/png&amp;TRANSPARENT=FALSE&amp;WIDTH={w}&amp;HEIGHT={h}&amp;STYLES=&amp;m4h=t"/>
     </extent>
   </body>
-</mapml>
+</mapml->

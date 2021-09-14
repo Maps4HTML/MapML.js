@@ -1,4 +1,4 @@
-<mapml xmlns="http://www.w3.org/1999/xhtml">
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>Canada Base Map - Transportation (CBMT)</title>
         <meta http-equiv="Content-Type" content="text/mapml"/>
@@ -13,4 +13,4 @@
           <link rel="tile" tref="../test/e2e/data/tiles/cbmt/{zoomLevel}/c{col}_r{row}.png" />
         </extent>
     </body>
-</mapml>
+</mapml->

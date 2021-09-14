@@ -1,4 +1,4 @@
-<mapml lang="en">
+<mapml- lang="en">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/mapml">
@@ -24,4 +24,4 @@
     <template type="tile" tref="http://maps.nofc.cfs.nrcan.gc.ca/geoserver/public/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=public:fdr_current&amp;styles=&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;width=256&amp;height=256&amp;srs=EPSG:3978&amp;FORMAT=image/png&amp;TRANSPARENT=TRUE&amp;m4h=t">
   </extent>
 </body>
-</mapml>
+</mapml->

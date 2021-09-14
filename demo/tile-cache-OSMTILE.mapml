@@ -1,4 +1,4 @@
-<mapml lang="en">
+<mapml- lang="en">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/mapml">
@@ -20,4 +20,4 @@
     <template type="tile" tref="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">
   </extent>
 </body>
-</mapml>
+</mapml->
