@@ -12,7 +12,7 @@
             }
         </style>
     </map-head>
-    <body>
+    <map-body>
         <extent units="WGS84">
             <input name="zoomLevel" type="zoom" min="0" max="2" value="0"/>
 
@@ -22,5 +22,5 @@
             <link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)' tref='wgs84/{zoomLevel}/r{row}_c{col}.mapml'/>
 
         </extent>
-    </body>
+    </map-body>
 </mapml->

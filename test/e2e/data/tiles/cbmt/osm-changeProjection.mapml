@@ -5,7 +5,7 @@
     <link rel="license" href="https://www.openstreetmap.org/copyright" title="© OpenStreetMap contributors CC BY-SA"/>
     <link rel="zoomout" href="cbmt-changeProjection.mapml" type="text/mapml" />
   </map-head>
-  <body>
+  <map-body>
   <extent units="OSMTILE">
     <input name="z" type="zoom" min="9" max="18"/>
     <input name="s" type="hidden" shard="true" list="servers"/>
@@ -18,5 +18,5 @@
     <input name="y" type="location" units="tilematrix" axis="row"/>
     <link rel="tile" tref="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
   </extent>
-  </body>
+  </map-body>
 </mapml->

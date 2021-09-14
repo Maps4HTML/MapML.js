@@ -13,7 +13,7 @@
           }
         </style>
     </map-head>
-    <body>
+    <map-body>
         <extent units="EPSG3573">
           <input type="zoom" name="TileMatrix" min="0" max="11" value="0"/>
           <input type="location" name="TileCol" axis="column" units="tilematrix" min="0" max="1"/>
@@ -4190,5 +4190,5 @@
         </table>
       </properties>
     </feature>
-    </body>
+    </map-body>
 </mapml->

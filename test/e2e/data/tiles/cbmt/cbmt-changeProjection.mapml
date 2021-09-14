@@ -5,12 +5,12 @@
     <meta charset="utf-8"/>
     <link rel="zoomin" href="osm-changeProjection.mapml" type="text/mapml"/>
   </map-head>
-  <body>
+  <map-body>
   <extent units="CBMTILE" >
     <input name="z" type="zoom" min="0" max="8"/>
     <input name="y" type="location" units="tilematrix" axis="row"/>
     <input name="x" type="location" units="tilematrix" axis="column"/>
     <link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}?m4h=t" />
   </extent>
-  </body>
+  </map-body>
 </mapml->

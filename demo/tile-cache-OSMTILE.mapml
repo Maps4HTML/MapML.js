@@ -6,7 +6,7 @@
   <meta name="projection" content="OSMTILE">
   <link rel="license" href="https://www.openstreetmap.org/copyright" title="© Open Street Map Contributors">
 </map-head>
-<body>
+<map-body>
   <extent units="OSMTILE">
     <input name="z" type="zoom" value="0" min="0" max="18">
     <input name="x" type="location" units="tilematrix" axis="column">
@@ -19,5 +19,5 @@
     <input name="s" type="hidden">
     <template type="tile" tref="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">
   </extent>
-</body>
+</map-body>
 </mapml->

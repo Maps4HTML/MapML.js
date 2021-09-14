@@ -16,7 +16,7 @@
       </style>
       <link rel="stylesheet" href="" />
    </map-head>
-   <body>
+   <map-body>
       <feature id="fclass.2" class="fclass _2">
          <geometry>
             <multipolygon>
@@ -4711,5 +4711,5 @@
             </table>
          </properties>
       </feature>
-   </body>
+   </map-body>
 </mapml->

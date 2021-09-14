@@ -8,7 +8,7 @@
     <meta name="zoom" content="min=0,max=22,value=3" />
     <link rel="license" href="foo" title="Foo © Natural Resources Canada" />
   </map-head>
-  <body>
+  <map-body>
     <!-- zoom is a property of static features, represents "native" zoom concept -->
     <feature id="palais" zoom="3">
       <properties>
@@ -21,5 +21,5 @@
         </point>
       </geometry>
     </feature>
-  </body>
+  </map-body>
 </mapml->

@@ -8,7 +8,7 @@
         <meta name="cs" content="gcrs" />
         <meta name="extent" content="top-left-easting=1509464,top-left-northing=-169644,bottom-right-easting=1511925,bottom-right-northing=-172467" />
     </map-head>
-    <body>
+    <map-body>
         <feature id="restaurant_point.77" class="restaurant_point">
           <featurecaption>Hung Sum Restaurant</featurecaption>
             <geometry>
@@ -823,5 +823,5 @@
                 </table>
             </properties>
         </feature>
-    </body>
+    </map-body>
 </mapml->

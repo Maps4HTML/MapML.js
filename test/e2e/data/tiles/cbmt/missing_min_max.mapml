@@ -8,12 +8,12 @@
     <link rel="zoomin" href="/mapml/en/cbmtile/cbmt/?z=18" type="text/mapml"/>
     <meta name="extent" content="zoom=17,top-left-row=29750,top-left-column=26484,bottom-right-row=34475,bottom-right-column=32463" />
   </map-head>
-  <body>
+  <map-body>
     <extent units="CBMTILE">
     <input name="z" type="zoom" value="17" min="0" max="17"/>
     <input name="y" type="location" units="tilematrix" axis="row"/>
     <input name="x" type="location" units="tilematrix" axis="column"/>
     <link rel="tile" tref="cbmt/{z}/c{x}_r{y}.png" />
     </extent>
-  </body>
+  </map-body>
 </mapml->

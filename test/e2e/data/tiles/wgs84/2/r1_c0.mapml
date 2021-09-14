@@ -5,7 +5,7 @@
       <meta charset="utf-8" />
       <meta content="text/mapml" http-equiv="Content-Type" />
    </map-head>
-   <body>
+   <map-body>
       <extent units="WGS84">
          <input name="zoomLevel" type="zoom" value="1" min="0" max="6" />
          <input name="minLon" type="location" value="-180" units="gcrs" axis="longitude" position="top-left" min="-180" max="180" />
@@ -178,5 +178,5 @@
             </table>
          </properties>
       </feature>
-   </body>
+   </map-body>
 </mapml->
