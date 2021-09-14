@@ -701,7 +701,7 @@ export var MapMLLayer = L.Layer.extend({
                 }
                     
                 var projectionMatch = projection && projection === layer.options.mapprojection,
-                    metaExtent = mapml.querySelector('meta[name=map-extent]'),
+                    metaExtent = mapml.querySelector('meta[name=extent]'),
                     selectedAlternate = !projectionMatch && mapml.querySelector('head link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 
@@ -935,7 +935,7 @@ export var MapMLLayer = L.Layer.extend({
     },
     _createExtent: function () {
     
-        var extent = document.createElement('extent'),
+        var extent = document.createElement('map-extent'),
             xminInput = document.createElement('input'),
             yminInput = document.createElement('input'),
             xmaxInput = document.createElement('input'),
@@ -1120,7 +1120,7 @@ export var MapMLLayer = L.Layer.extend({
       let extent = this._extent;
       if(!extent) return FALLBACK_PROJECTION;
       switch (extent.tagName.toUpperCase()) {
-        case "EXTENT":
+        case "MAP-EXTENT":
           if(extent.hasAttribute('units'))
             return extent.getAttribute('units').toUpperCase();
           break;

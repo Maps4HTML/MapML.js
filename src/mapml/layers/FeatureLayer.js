@@ -138,9 +138,9 @@ export var MapMLFeatures = L.FeatureGroup.extend({
                       .content.toUpperCase() || FALLBACK_PROJECTION;
       try{
 
-        let meta = container.querySelector('meta[name=map-extent]') &&
+        let meta = container.querySelector('meta[name=extent]') &&
                     M.metaContentToObject(
-                      container.querySelector('meta[name=map-extent]').getAttribute('content'));
+                      container.querySelector('meta[name=extent]').getAttribute('content'));
 
         let zoom = meta.zoom || 0;
         
