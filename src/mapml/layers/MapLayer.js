@@ -261,7 +261,11 @@ export var MapMLLayer = L.Layer.extend({
     },
     _onZoomAnim: function(e) {
       var toZoom = e.zoom,
+<<<<<<< HEAD
           zoom = this._extent ? this._extent.querySelector("input[type=zoom]") : null,
+=======
+          zoom = this._extent ? this._extent.querySelector("map-input[type=zoom]") : null, 
+>>>>>>> changed the input elements from mapml-input to map-input
           min = zoom && zoom.hasAttribute("min") ? parseInt(zoom.getAttribute("min")) : this._map.getMinZoom(),
           max =  zoom && zoom.hasAttribute("max") ? parseInt(zoom.getAttribute("max")) : this._map.getMaxZoom(),
           canZoom = (toZoom < min && this._extent.zoomout) || (toZoom > max && this._extent.zoomin);
@@ -727,7 +731,11 @@ export var MapMLLayer = L.Layer.extend({
                   // set up the URL template and associated inputs (which yield variable values when processed)
                   var tlist = serverExtent.querySelectorAll('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]'),
                       varNamesRe = (new RegExp('(?:\{)(.*?)(?:\})','g')),
+<<<<<<< HEAD
                       zoomInput = serverExtent.querySelector('input[type="zoom" i]'),
+=======
+                      zoomInput = serverExtent.querySelector('map-input[type="zoom" i]'),
+>>>>>>> changed the input elements from mapml-input to map-input
                       includesZoom = false, extentFallback = {};
 
                   extentFallback.zoom = 0;
@@ -757,7 +765,11 @@ export var MapMLLayer = L.Layer.extend({
                     var t = tlist[i], template = t.getAttribute('tref'); 
                     if(!template){
                       template = BLANK_TT_TREF;
+<<<<<<< HEAD
                       let blankInputs = mapml.querySelectorAll('input');
+=======
+                      let blankInputs = mapml.querySelectorAll('map-input');
+>>>>>>> changed the input elements from mapml-input to map-input
                       for (let i of blankInputs){
                         template += `{${i.getAttribute("name")}}`;
                       }
@@ -775,7 +787,11 @@ export var MapMLLayer = L.Layer.extend({
                                           undefined;
                     while ((v = varNamesRe.exec(template)) !== null) {
                       var varName = v[1],
+<<<<<<< HEAD
                           inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
+=======
+                          inp = serverExtent.querySelector('map-input[name='+varName+'],select[name='+varName+']');
+>>>>>>> changed the input elements from mapml-input to map-input
                       if (inp) {
 
                         if ((inp.hasAttribute("type") && inp.getAttribute("type")==="location") && 
@@ -872,7 +888,11 @@ export var MapMLLayer = L.Layer.extend({
                 }
                 if (mapml.querySelector('tile')) {
                   var tiles = document.createElement("tiles"),
+<<<<<<< HEAD
                     zoom = mapml.querySelector('map-meta[name=zoom][content]') || mapml.querySelector('input[type=zoom][value]');
+=======
+                    zoom = mapml.querySelector('meta[name=zoom][content]') || mapml.querySelector('map-input[type=zoom][value]');
+>>>>>>> changed the input elements from mapml-input to map-input
                   tiles.setAttribute("zoom", zoom && zoom.getAttribute('content') || zoom && zoom.getAttribute('value') || "0");
                   var newTiles = mapml.getElementsByTagName('tile');
                   for (var nt=0;nt<newTiles.length;nt++) {
@@ -1033,12 +1053,21 @@ export var MapMLLayer = L.Layer.extend({
     _getMapMLExtent: function (bounds, zooms, proj) {
         
         var extent = this._createExtent(),
+<<<<<<< HEAD
             zoom = extent.querySelector('input[type=zoom]'),
             xminInput = extent.querySelector('input[type=xmin]'),
             yminInput = extent.querySelector('input[type=ymin]'),
             xmaxInput = extent.querySelector('input[type=xmax]'),
             ymaxInput = extent.querySelector('input[type=ymax]'),
             projection = extent.querySelector('input[type=projection]'),
+=======
+            zoom = extent.querySelector('map-input[type=zoom]'),
+            xminInput = extent.querySelector('map-input[type=xmin]'),
+            yminInput = extent.querySelector('map-input[type=ymin]'),
+            xmaxInput = extent.querySelector('map-input[type=xmax]'),
+            ymaxInput = extent.querySelector('map-input[type=ymax]'),
+            projection = extent.querySelector('map-input[type=projection]'),
+>>>>>>> changed the input elements from mapml-input to map-input
             zmin = zooms[0] !== undefined && zooms[1] !== undefined ? Math.min(zooms[0],zooms[1]) : '',
             zmax = zooms[0] !== undefined && zooms[1] !== undefined ? Math.max(zooms[0],zooms[1]) : '',
             xmin = bounds ? bounds._southWest ? bounds.getWest() : bounds.getBottomLeft().x : '',

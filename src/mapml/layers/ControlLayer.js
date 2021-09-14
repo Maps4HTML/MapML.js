@@ -90,7 +90,11 @@ export var MapMLLayerControl = L.Control.Layers.extend({
     _addItem: function (obj) {
       var layercontrols  =  obj.layer.getLayerUserControlsHTML();
       // the input is required by Leaflet...
+<<<<<<< HEAD
       obj.input = layercontrols.querySelector('input');
+=======
+      obj.input = layercontrols.querySelector('map-input');
+>>>>>>> changed the input elements from mapml-input to map-input
 
       this._layerControlInputs.push(obj.input);
     		obj.input.layerId = L.stamp(obj.layer);
