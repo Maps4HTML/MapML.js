@@ -1,11 +1,11 @@
 <mapml- lang="en">
-<head>
+<map-head>
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/mapml">
   <title>An OSMTILE tile cache in Map Markup Language</title>
   <meta name="projection" content="OSMTILE">
   <link rel="license" href="https://www.openstreetmap.org/copyright" title="© Open Street Map Contributors">
-</head>
+</map-head>
 <body>
   <extent units="OSMTILE">
     <input name="z" type="zoom" value="0" min="0" max="18">

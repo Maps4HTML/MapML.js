@@ -1,5 +1,5 @@
 <mapml- xmlns="http://www.w3.org/1999/xhtml">
-    <head>
+    <map-head>
         <title>Restaurants</title>
         <meta charset="utf-8" />
         <meta content="text/mapml" http-equiv="Content-Type" />
@@ -7,7 +7,7 @@
         <meta name="zoom" content="min=0,max=22" />
         <meta name="cs" content="gcrs" />
         <meta name="extent" content="top-left-easting=1509464,top-left-northing=-169644,bottom-right-easting=1511925,bottom-right-northing=-172467" />
-    </head>
+    </map-head>
     <body>
         <feature id="restaurant_point.77" class="restaurant_point">
           <featurecaption>Hung Sum Restaurant</featurecaption>

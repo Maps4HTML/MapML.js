@@ -1,11 +1,11 @@
 <mapml->
-  <head>
+  <map-head>
     <title>Toporama</title>
     <meta charset="utf-8"/>
     <meta name="zoom" content="min=0,max=23" />
     <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/atlas-canada/read-about-topographic-maps/16840#topolicensing" title="Toporama © Natural Resources Canada"/>
     <link rel="legend" href="http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&amp;REQUEST=GetLegendGraphic&amp;LAYER=WMS-Toporama&amp;VERSION=1.1&amp;FORMAT=image/png"/>
-  </head>
+  </map-head>
   <body>
     <extent units="CBMTILE">
       <input name="z" type="zoom" value="19" min="0" max="19"/>

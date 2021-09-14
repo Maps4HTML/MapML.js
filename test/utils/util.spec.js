@@ -3,7 +3,7 @@
 describe("M.Util Tests", () => {
   describe("M.parseStylesheetToHTML(mapml,base,container) utility function tests", () => {
 
-    var mapmlString = "<mapml-><head><style>.css {property:cool}</style></head><body></body></mapml->",
+    var mapmlString = "<mapml-><map-head><style>.css {property:cool}</style></map-head><body></body></mapml->",
       parser = new DOMParser(),
       base = "https://example.org/mapml/is/awesome/",
       link = parser.parseFromString('<doc><link rel="stylesheet" href="./remote.css" /></doc>', 'application/xml').firstChild.firstChild;
@@ -31,7 +31,7 @@ describe("M.Util Tests", () => {
 
       // we expect both the link and the inline style to be copied
       M.parseStylesheetAsHTML(mapml, base, testcontainer);
-      expect(mapml.firstChild.firstChild.nodeName).toEqual("head");
+      expect(mapml.firstChild.firstChild.nodeName).toEqual("map-head");
       expect(testcontainer.querySelector('link')).toBeTruthy();
       expect(testcontainer.querySelector('style')).toBeTruthy();
       expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}');

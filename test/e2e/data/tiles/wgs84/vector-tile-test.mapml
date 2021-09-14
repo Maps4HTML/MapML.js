@@ -1,5 +1,5 @@
 <mapml- xmlns="http://www.w3.org/1999/xhtml">
-    <head>
+    <map-head>
         <title>World Countries - WGS84</title>
         <meta charset="utf-8" />
         <meta name="zoom" content="min=0,max=5" />
@@ -11,7 +11,7 @@
                 color:black;
             }
         </style>
-    </head>
+    </map-head>
     <body>
         <extent units="WGS84">
             <input name="zoomLevel" type="zoom" min="0" max="2" value="0"/>

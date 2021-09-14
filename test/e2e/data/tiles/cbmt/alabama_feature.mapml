@@ -1,5 +1,5 @@
 <mapml- xmlns="http://www.w3.org/1999/xhtml">
-    <head>
+    <map-head>
         <title>Natural Resources Canada's CanVec+ 031G - Map Markup Language</title>
         <meta http-equiv="Content-Type" content="text/mapml"/>
         <link rel="stylesheet" href="canvec_cantopo_svg.css" type="text/css"/>
@@ -8,7 +8,7 @@
         .all { fill-opacity: 0.7; stroke-width: 2; stroke: white; stroke-opacity: 1; stroke-dasharray: 3; }
         </style>
         <link rel="license" href="http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="CanVec+ © Natural Resources Canada"/>
-    </head>
+    </map-head>
     <body>
         <feature zoom="2" class="refDiff">
             <properties>

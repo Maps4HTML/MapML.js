@@ -1,10 +1,10 @@
 <mapml- xmlns="http://www.w3.org/1999/xhtml">
-  <head>
+  <map-head>
     <title>Canada Base Map - Transportation (CBMT)</title>
     <meta http-equiv="Content-Type" content="text/mapml"/>
     <meta charset="utf-8"/>
     <link rel="zoomin" href="osm-changeProjection.mapml" type="text/mapml"/>
-  </head>
+  </map-head>
   <body>
   <extent units="CBMTILE" >
     <input name="z" type="zoom" min="0" max="8"/>

@@ -702,7 +702,7 @@ export var MapMLLayer = L.Layer.extend({
                     
                 var projectionMatch = projection && projection === layer.options.mapprojection,
                     metaExtent = mapml.querySelector('meta[name=extent]'),
-                    selectedAlternate = !projectionMatch && mapml.querySelector('head link[rel=alternate][projection='+layer.options.mapprojection+']'),
+                    selectedAlternate = !projectionMatch && mapml.querySelector('map-head link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 
       (new URL(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : mapml.baseURI || this.responseURL, this.responseURL)).href;

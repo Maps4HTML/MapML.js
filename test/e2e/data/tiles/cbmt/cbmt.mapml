@@ -1,6 +1,6 @@
 <mapml- xmlns="http://www.w3.org/1999/xhtml">
 
-  <head>
+  <map-head>
     <title>Canada Base Map - Transportation (CBMT)</title>
     <meta http-equiv="Content-Type" content="text/mapml"/>
     <meta charset="utf-8" />
@@ -9,7 +9,7 @@
       href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
       title="Canada Base Map © Natural Resources Canada" />
     <link rel="zoomin" href="/mapml/en/cbmtile/cbmt/?z=18" type="text/mapml" />
-  </head>
+  </map-head>
 
   <body>
     <extent units="CBMTILE">

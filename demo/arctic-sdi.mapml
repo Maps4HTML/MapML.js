@@ -1,5 +1,5 @@
 <mapml- xmlns="http://www.w3.org/1999/xhtml">
-    <head>
+    <map-head>
         <meta charset="utf-8" />
         <title>Arctic SDI for Canada</title>
         <meta content="text/mapml" http-equiv="Content-Type" />
@@ -12,7 +12,7 @@
             fill: #efefd5; fill-opacity: 0.2; stroke-width: 1; stroke: #d2c2c1; stroke-opacity: 1; stroke-dasharray: 3;
           }
         </style>
-    </head>
+    </map-head>
     <body>
         <extent units="EPSG3573">
           <input type="zoom" name="TileMatrix" min="0" max="11" value="0"/>
