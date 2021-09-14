@@ -44,7 +44,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       if (mapml && !this.options.query) {
         let native = this._getNativeVariables(mapml);
         //needed to check if the feature is static or not, since this method is used by templated also
-        if(!mapml.querySelector('extent') && mapml.querySelector('feature') && this.options.static){
+        if(!mapml.querySelector('map-extent') && mapml.querySelector('feature') && this.options.static){
           this._features = {};
           this._staticFeature = true;
           this.isVisible = true; //placeholder for when this actually gets updated in the future
@@ -138,9 +138,9 @@ export var MapMLFeatures = L.FeatureGroup.extend({
                       .content.toUpperCase() || FALLBACK_PROJECTION;
       try{
 
-        let meta = container.querySelector('meta[name=extent]') && 
+        let meta = container.querySelector('meta[name=map-extent]') &&
                     M.metaContentToObject(
-                      container.querySelector('meta[name=extent]').getAttribute('content'));
+                      container.querySelector('meta[name=map-extent]').getAttribute('content'));
 
         let zoom = meta.zoom || 0;
         

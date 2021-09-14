@@ -19,7 +19,7 @@ export var MapMLLayer = L.Layer.extend({
         }
         if (content) {
           this._layerEl = content;
-          mapml = content.querySelector('image,feature,tile,extent') ? true : false;
+          mapml = content.querySelector('image,feature,tile,map-extent') ? true : false;
           if (!href && mapml) {
               this._content = content;
           }
@@ -692,16 +692,16 @@ export var MapMLLayer = L.Layer.extend({
             if(mapml.querySelector && mapml.querySelector('feature'))layer._content = mapml;
             if(!this.responseXML && this.responseText) mapml = new DOMParser().parseFromString(this.responseText,'text/xml');
             if (this.readyState === this.DONE && mapml.querySelector && !mapml.querySelector("parsererror")) {
-                var serverExtent = mapml.querySelector('extent') || mapml.querySelector('meta[name=projection]'), projection;
+                var serverExtent = mapml.querySelector('map-extent') || mapml.querySelector('meta[name=projection]'), projection;
 
-                if (serverExtent.tagName.toLowerCase() === "extent" && serverExtent.hasAttribute('units')){
+                if (serverExtent.tagName.toLowerCase() === "map-extent" && serverExtent.hasAttribute('units')){
                   projection = serverExtent.getAttribute("units");
                 } else if (serverExtent.tagName.toLowerCase() === "meta" && serverExtent.hasAttribute('content')) {
                   projection = M.metaContentToObject(serverExtent.getAttribute('content')).content;
                 }
                     
                 var projectionMatch = projection && projection === layer.options.mapprojection,
-                    metaExtent = mapml.querySelector('meta[name=extent]'),
+                    metaExtent = mapml.querySelector('meta[name=map-extent]'),
                     selectedAlternate = !projectionMatch && mapml.querySelector('head link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 
