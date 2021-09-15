@@ -6,7 +6,7 @@
       <meta content="text/mapml" http-equiv="Content-Type" />
    </head>
    <body>
-      <extent units="WGS84">
+      <map-extent units="WGS84">
          <input name="zoomLevel" type="zoom" value="1" min="0" max="6" />
          <input name="minLon" type="location" value="135" units="gcrs" axis="longitude" position="top-left" min="-180" max="180" />
          <input name="minLat" type="location" value="45" units="gcrs" axis="latitude" position="bottom-right" min="-90" max="90.0002058236639" />
@@ -14,7 +14,7 @@
          <input name="maxLat" type="location" value="90" units="gcrs" axis="latitude" position="top-left" min="-90" max="90.0002058236639" />
 
          <link rel="features" type="text/mapml" title="ne_10m_admin_0_countries (as MapML)" tref="./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}" />
-      </extent>
+      </map-extent>
       <feature id="fclass.72" class="fclass _72">
          <geometry>
             <multipolygon>
