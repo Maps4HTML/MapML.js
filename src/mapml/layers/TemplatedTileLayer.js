@@ -2,7 +2,7 @@ import { BLANK_TT_TREF } from '../utils/Constants';
 
 export var TemplatedTileLayer = L.TileLayer.extend({
     // a TemplateTileLayer is similar to a L.TileLayer except its templates are
-    // defined by the <extent><template/></extent>
+    // defined by the <map-extent><template/></map-extent>
     // content found in the MapML document.  As such, the client map does not
     // 'revisit' the server for more MapML content, it simply fills the map extent
     // with tiles for which it generates requests on demand (as the user pans/zooms/resizes

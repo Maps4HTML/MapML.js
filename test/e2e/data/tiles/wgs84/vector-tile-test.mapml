@@ -2,7 +2,7 @@
     <map-head>
         <map-title>World Countries - WGS84</map-title>
         <meta charset="utf-8" />
-        <meta name="zoom" content="min=0,max=5" />
+        <map-meta name="zoom" content="min=0,max=5" />
         <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="© Natural Resources Canada" />
         <link rel="stylesheet" href="vector-tile-test.css" />
         <link href="us_pop_density.mapml" rel="alternate" projection="CBMTILE" />
@@ -11,16 +11,15 @@
                 color:black;
             }
         </style>
-    </map-head>
-    <map-body>
-        <extent units="WGS84">
+   </map-head>
+   <map-body>
+        <map-extent units="WGS84">
             <input name="zoomLevel" type="zoom" min="0" max="2" value="0"/>
 
             <input name="row" type="location" axis="row" units="tilematrix" min="0" max="5"/>
             <input name="col" type="location" axis="column" units="tilematrix" min="0" max="5"/>
 
             <link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)' tref='wgs84/{zoomLevel}/r{row}_c{col}.mapml'/>
-
-        </extent>
+        </map-extent>
     </map-body>
 </mapml->

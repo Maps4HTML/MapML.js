@@ -3,9 +3,9 @@
     <map-title>US Population Density</map-title>
     <meta http-equiv="Content-Type" content="text/mapml"/>
     <meta charset="utf-8"/>
-    <meta name="projection" content="CBMTILE"/>
-    <meta name="zoom" content="min=2,max=2,value=0"/>
-      <meta name="extent"
+    <map-meta name="projection" content="CBMTILE"/>
+    <map-meta name="zoom" content="min=2,max=2,value=0"/>
+      <map-meta name="extent"
         content="zoom = 0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
     <link rel="license" href="https://leafletjs.com/examples/choropleth/" title=" CC-BY-SA Vladimir Agafonkin"/>
     <link href="vector-tile-test.mapml" rel="alternate" projection="WGS84" />

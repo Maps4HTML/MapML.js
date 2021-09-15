@@ -25,32 +25,32 @@
 <body>
   <mapml-viewer style="width: 500px;height: 500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls>
     <layer- label="CBMT - INLINE" checked>
-      <extent units="CBMTILE">
+      <map-extent units="CBMTILE">
         <input name="zoomLevel" type="zoom" value="3" min="0" max="3" />
         <input name="row" type="location" axis="row" units="tilematrix" min="14" max="21" />
         <input name="col" type="location" axis="column" units="tilematrix" min="14" max="19" />
         <link rel='tile' tref='/data/cbmt/{zoomLevel}/c{col}_r{row}.png' />
-      </extent>
+      </map-extent>
     </layer->
     <layer- label="Layer 2" checked>
-      <meta name="zoom" content="min=0,max=25">
-      <meta name="projection" content="CBMTILE">
+      <map-meta name="zoom" content="min=0,max=25"/>
+      <map-meta name="projection" content="CBMTILE"/>
       <link rel="license"
         href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
         title="Canada Base Map © Natural Resources Canada">
       <tile zoom="10" row="100" col="100" src="/data/cbmt/3/c14_r16.png"></tile>
     </layer->
     <layer- label="Layer 3" checked>
-      <meta name="zoom" content="min=0,max=25">
-      <meta name="projection" content="CBMTILE">
+      <map-meta name="zoom" content="min=0,max=25"/>
+      <map-meta name="projection" content="CBMTILE"/>
       <link rel="license"
         href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
         title="Canada Base Map © Natural Resources Canada">
       <tile zoom="10" row="101" col="100" src="/data/cbmt/2/c9_r10.png"></tile>
     </layer->
     <layer- label="Layer 4" checked>
-      <meta name="zoom" content="min=0,max=25">
-      <meta name="projection" content="CBMTILE">
+      <map-meta name="zoom" content="min=0,max=25"/>
+      <map-meta name="projection" content="CBMTILE"/>
       <link rel="license"
         href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
         title="Canada Base Map © Natural Resources Canada">

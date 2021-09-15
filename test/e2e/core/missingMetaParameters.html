@@ -23,8 +23,8 @@
   <map is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
 
     <layer- label="Arizona" checked>
-      <meta name="projection" content="CBMTILE" />
-      <meta name="cs" content="tilematrix" />
+      <map-meta name="projection" content="CBMTILE" />
+      <map-meta name="cs" content="tilematrix" />
 
       <link id="first" rel="stylesheet" type="text/css" href="first.css">
       <style>
@@ -88,18 +88,18 @@
     </layer->
     <layer- label="Alabama" checked>
 
-      <extent units="CBMTILE">
+      <map-extent units="CBMTILE">
         <input name="z" type="zoom" min="2" max="18" />
         <input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" />
         <input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46" />
         <input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" />
         <input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" />
         <link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
-      </extent>
+      </map-extent>
     </layer->
     <layer- label="Static MapML with tiles" checked>
-      <meta name="zoom" content="min=1,max=4,value=2">
-      <meta name="projection" content="CBMTILE">
+      <map-meta name="zoom" content="min=1,max=4,value=2">
+      <map-meta name="projection" content="CBMTILE">
       <link rel="license"
         href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
         title="Canada Base Map © Natural Resources Canada">
@@ -119,7 +119,7 @@
           color: aliceblue;
         }
       </style>
-      <extent units="WGS84">
+      <map-extent units="WGS84">
         <input name="zoomLevel" type="zoom" min="0" max="2" value="0" />
 
         <input name="row" type="location" axis="row" units="tilematrix" />
@@ -128,7 +128,7 @@
         <link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)'
           tref='data/wgs84/{zoomLevel}/r{row}_c{col}.mapml' />
 
-      </extent>
+      </map-extent>
     </layer->
   </map>
 </body>

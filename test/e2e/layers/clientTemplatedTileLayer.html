@@ -27,8 +27,8 @@
     width="900" height="400" controls>
 
     <layer- label="Inline Templated Tile" checked>
-      <meta name="zoom" content="min=0,max=5" />
-      <extent units="WGS84">
+      <map-meta name="zoom" content="min=0,max=5"/>
+      <map-extent units="WGS84">
         <input name="zoomLevel" type="zoom" min="1" max="1" value="0" />
 
         <input name="row" type="location" axis="row" units="tilematrix" min="0" max="1" />
@@ -36,11 +36,11 @@
 
         <link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)' />
 
-      </extent>
+      </map-extent>
     </layer->
   </mapml-viewer>
   <script>
-    let layer = document.querySelector("body > mapml-viewer > layer- > extent > link");
+    let layer = document.querySelector("body > mapml-viewer > layer- > map-meta > map-extent > link");
     layer.addEventListener("tileloadstart", (e) => {
       let cust = document.createElement("P");
       cust.textContent = `${e.detail.x}${e.detail.y}${e.detail.zoom}`;
