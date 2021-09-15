@@ -8,13 +8,13 @@
   </head>
   <body>
     <extent units="CBMTILE" method="GET">
-      <input name="z" type="zoom" value="7" min="2" max="7"/>
-      <input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="-7786477.0" max="7148753.0"/>
-      <input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" min="-927808.0" max="7928344.0"/>
-      <input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" min="-7786477.0" max="7148753.0"/>
-      <input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="-927808.0" max="7928344.0"/>
-      <input name="w" type="width"/>
-      <input name="h" type="height"/>
+      <map-input name="z" type="zoom" value="7" min="2" max="7"/>
+      <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="-7786477.0" max="7148753.0"/>
+      <map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" min="-927808.0" max="7928344.0"/>
+      <map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" min="-7786477.0" max="7148753.0"/>
+      <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="-927808.0" max="7928344.0"/>
+      <map-input name="w" type="width"/>
+      <map-input name="h" type="height"/>
       <select id="year-select" name="date">
         <option value="226,227,228,230,232,233,234">1867</option>
         <option value="216,217,218,220,222,223,224">1870</option>

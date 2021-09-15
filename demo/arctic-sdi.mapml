@@ -15,9 +15,9 @@
     </head>
     <body>
         <extent units="EPSG3573">
-          <input type="zoom" name="TileMatrix" min="0" max="11" value="0"/>
-          <input type="location" name="TileCol" axis="column" units="tilematrix" min="0" max="1"/>
-          <input type="location" name="TileRow" axis="row" units="tilematrix" min="0" max="1"/>
+          <map-input type="zoom" name="TileMatrix" min="0" max="11" value="0"/>
+          <map-input type="location" name="TileCol" axis="column" units="tilematrix" min="0" max="1"/>
+          <map-input type="location" name="TileRow" axis="row" units="tilematrix" min="0" max="1"/>
           <link rel="tile" tref="http://basemap.arctic-sdi.org/mapcache/wmts/1.0.0/arctic_cascading/default/3573/{TileMatrix}/{TileRow}/{TileCol}.png"/>
         </extent>
     <feature id="russia" class="asdi-countries">

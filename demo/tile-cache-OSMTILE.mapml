@@ -8,15 +8,15 @@
 </head>
 <body>
   <extent units="OSMTILE">
-    <input name="z" type="zoom" value="0" min="0" max="18">
-    <input name="x" type="location" units="tilematrix" axis="column">
-    <input name="y" type="location" units="tilematrix" axis="row">
-    <input name="xmin" type="xmin" min="0.0" max="256.0">
-    <input name="ymin" type="ymin" min="0.0" max="256.0">
-    <input name="xmax" type="xmax" min="0.0" max="256.0">
-    <input name="ymax" type="ymax" min="0.0" max="256.0">
-    <input name="projection" type="projection" value="OSMTILE">
-    <input name="s" type="hidden">
+    <map-input name="z" type="zoom" value="0" min="0" max="18">
+    <map-input name="x" type="location" units="tilematrix" axis="column">
+    <map-input name="y" type="location" units="tilematrix" axis="row">
+    <map-input name="xmin" type="xmin" min="0.0" max="256.0">
+    <map-input name="ymin" type="ymin" min="0.0" max="256.0">
+    <map-input name="xmax" type="xmax" min="0.0" max="256.0">
+    <map-input name="ymax" type="ymax" min="0.0" max="256.0">
+    <map-input name="projection" type="projection" value="OSMTILE">
+    <map-input name="s" type="hidden">
     <template type="tile" tref="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">
   </extent>
 </body>
