@@ -1,11 +1,11 @@
-<mapml xmlns="http://www.w3.org/1999/xhtml">
-   <head>
-      <title>ne_10m_admin_0_countries</title>
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+   <map-head>
+      <map-title>ne_10m_admin_0_countries</map-title>
 
       <meta charset="utf-8" />
       <meta content="text/mapml" http-equiv="Content-Type" />
-   </head>
-   <body>
+   </map-head>
+   <map-body>
       <map-extent units="WGS84">
          <input name="zoomLevel" type="zoom" value="1" min="0" max="6" />
          <input name="minLon" type="location" value="-135" units="gcrs" axis="longitude" position="top-left" min="-180" max="180" />
@@ -96,5 +96,5 @@
             </table>
          </properties>
       </feature>
-   </body>
-</mapml>
+   </map-body>
+</mapml->

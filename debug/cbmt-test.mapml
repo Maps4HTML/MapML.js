@@ -1,16 +1,16 @@
-<mapml xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>Canada Base Map - Transportation (CBMT)</title>
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+    <map-head>
+        <map-title>Canada Base Map - Transportation (CBMT)</map-title>
         <meta http-equiv="Content-Type" content="text/mapml"/>
         <meta charset="utf-8" />
         <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="Canada Base Map © Natural Resources Canada" />
-    </head>
-    <body>
+    </map-head>
+    <map-body>
         <extent units="CBMTILE">
           <input name="zoomLevel" type="zoom" value="3" min="0" max="3"/>
           <input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"/>
           <input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"/>
           <link rel="tile" tref="../test/e2e/data/tiles/cbmt/{zoomLevel}/c{col}_r{row}.png" />
         </extent>
-    </body>
-</mapml>
+    </map-body>
+</mapml->

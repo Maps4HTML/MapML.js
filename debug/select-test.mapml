@@ -1,12 +1,12 @@
-<mapml>
-  <head>
+<mapml->
+  <map-head>
     <title>Territorial Evolution 1867-Present</title>
     <meta http-equiv="Content-Type" content="text/mapml"/>
     <meta charset="utf-8"/>
     <link rel="license" href="http://open.canada.ca/en/open-government-licence-canada" title="Open Government Licence - Canada"/>
     <link rel="legend" href="http://s-bsc-geoappint.nrn.nrcan.gc.ca/arcgis/rest/services/ESS/TEByYear/MapServer/legend"/>
-  </head>
-  <body>
+  </map-head>
+  <map-body>
     <extent units="CBMTILE" method="GET">
       <input name="z" type="zoom" value="7" min="2" max="7"/>
       <input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="-7786477.0" max="7148753.0"/>
@@ -42,5 +42,5 @@
       </select>
       <link rel="image" tref="http://geoappext.nrcan.gc.ca/arcgis/services/FGP/TE/MapServer/WMSServer?SERVICE=WMS&amp;VERSION=1.3.0&amp;CRS=EPSG:3978&amp;LAYERS={date}&amp;BBOX={xmin},{ymin},{xmax},{ymax}&amp;REQUEST=GetMap&amp;FORMAT=image/png&amp;TRANSPARENT=FALSE&amp;WIDTH={w}&amp;HEIGHT={h}&amp;STYLES=&amp;m4h=t"/>
     </extent>
-  </body>
-</mapml>
+  </map-body>
+</mapml->

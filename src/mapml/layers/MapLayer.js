@@ -702,7 +702,7 @@ export var MapMLLayer = L.Layer.extend({
                     
                 var projectionMatch = projection && projection === layer.options.mapprojection,
                     metaExtent = mapml.querySelector('map-meta[name=extent]'),
-                    selectedAlternate = !projectionMatch && mapml.querySelector('head link[rel=alternate][projection='+layer.options.mapprojection+']'),
+                    selectedAlternate = !projectionMatch && mapml.querySelector('map-head link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 
       (new URL(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : mapml.baseURI || this.responseURL, this.responseURL)).href;
@@ -912,8 +912,8 @@ export var MapMLLayer = L.Layer.extend({
                   layer._styles = stylesControl;
                 }
                 
-                if (mapml.querySelector('title')) {
-                  layer._title = mapml.querySelector('title').textContent.trim();
+                if (mapml.querySelector('map-title')) {
+                  layer._title = mapml.querySelector('map-title').textContent.trim();
                 } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
                   layer._title = mapml.getAttribute('label').trim();
                 }
