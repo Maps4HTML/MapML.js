@@ -1,6 +1,6 @@
 <mapml- xmlns="http://www.w3.org/1999/xhtml">
     <map-head>
-        <title>Restaurants</title>
+        <map-title>Restaurants</map-title>
         <meta charset="utf-8" />
         <meta content="text/mapml" http-equiv="Content-Type" />
         <meta name="projection" content="CBMTILE"/>

@@ -1,6 +1,6 @@
 <mapml- xmlns="http://www.w3.org/1999/xhtml">
   <map-head>
-    <title>Canada Base Map - Transportation (CBMT)</title>
+    <map-title>Canada Base Map - Transportation (CBMT)</map-title>
     <meta http-equiv="Content-Type" content="text/mapml"/>
     <meta charset="utf-8"/>
     <link rel="zoomin" href="osm-changeProjection.mapml" type="text/mapml"/>

@@ -2,7 +2,7 @@
 <map-head>
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/mapml">
-  <title>An OSMTILE tile cache in Map Markup Language</title>
+  <map-title>An OSMTILE tile cache in Map Markup Language</map-title>
   <meta name="projection" content="OSMTILE">
   <link rel="license" href="https://www.openstreetmap.org/copyright" title="© Open Street Map Contributors">
 </map-head>

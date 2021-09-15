@@ -2,7 +2,7 @@
 <map-head>
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/mapml">
-  <title>A CBMTILE tile cache in Map Markup Language</title>
+  <map-title>A CBMTILE tile cache in Map Markup Language</map-title>
   <meta name="projection" content="CBMTILE">
   <meta name="zoom" content="min=0,max=17">
   <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="Canada Base Map © Natural Resources Canada">

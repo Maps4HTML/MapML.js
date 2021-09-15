@@ -1,6 +1,6 @@
 <mapml- xmlns="http://www.w3.org/1999/xhtml">
     <map-head>
-        <title>World Countries - WGS84</title>
+        <map-title>World Countries - WGS84</map-title>
         <meta charset="utf-8" />
         <meta name="zoom" content="min=0,max=5" />
         <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="© Natural Resources Canada" />

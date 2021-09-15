@@ -912,8 +912,8 @@ export var MapMLLayer = L.Layer.extend({
                   layer._styles = stylesControl;
                 }
                 
-                if (mapml.querySelector('title')) {
-                  layer._title = mapml.querySelector('title').textContent.trim();
+                if (mapml.querySelector('map-title')) {
+                  layer._title = mapml.querySelector('map-title').textContent.trim();
                 } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
                   layer._title = mapml.getAttribute('label').trim();
                 }

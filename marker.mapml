@@ -2,7 +2,7 @@
   <map-head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/mapml">
-    <title>A point in Map Markup Language</title>
+    <map-title>A point in Map Markup Language</map-title>
     <meta name="projection" content="WGS84">
     <meta name="zoom" content="15">
     <link rel="license" href="foo" title="Foo © Natural Resources Canada">

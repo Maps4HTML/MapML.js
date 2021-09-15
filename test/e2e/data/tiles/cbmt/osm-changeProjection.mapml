@@ -1,7 +1,7 @@
 <mapml- xmlns="http://www.w3.org/1999/xhtml">
   <map-head>
     <meta charset="utf-8"/>
-    <title>OpenStreetMap</title>
+    <map-title>OpenStreetMap</map-title>
     <link rel="license" href="https://www.openstreetmap.org/copyright" title="© OpenStreetMap contributors CC BY-SA"/>
     <link rel="zoomout" href="cbmt-changeProjection.mapml" type="text/mapml" />
   </map-head>

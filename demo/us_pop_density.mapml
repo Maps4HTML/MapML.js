@@ -1,6 +1,6 @@
 <mapml-  xmlns="http://www.w3.org/1999/xhtml">
   <map-head>
-    <title>US Population Density</title>
+    <map-title>US Population Density</map-title>
     <meta http-equiv="Content-Type" content="text/mapml"/>
     <meta charset="utf-8"/>
 
