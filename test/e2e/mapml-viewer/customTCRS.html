@@ -12,8 +12,8 @@
   <mapml-viewer zoom="2" lat="45" lon="-90" controls>
     <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
     <layer- label="Static MapML with tiles" checked>
-      <meta name="zoom" content="min=1,max=4">
-      <meta name="projection" content="basic">
+      <map-meta name="zoom" content="min=1,max=4">
+      <map-meta name="projection" content="basic">
 
       <tile zoom="2" row="-23" col="-9" src="data/cbmt/3/c17_r18.png"></tile>
       <tile zoom="2" row="-23" col="-10" src="data/cbmt/3/c16_r18.png"></tile>
@@ -38,10 +38,10 @@
   <mapml-viewer style="width:500px;height:500px;" projection="other" zoom="3" lat="45.5052040" lon="-75.2202344"
     controls>
     <layer- label="Arizona" checked>
-      <meta name="projection" content="other" />
-      <meta name="zoom" content="min=1,max=5,value=0" />
-      <meta name="cs" content="gcrs" />
-      <meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
+      <map-meta name="projection" content="other" />
+      <map-meta name="zoom" content="min=1,max=5,value=0" />
+      <map-meta name="cs" content="gcrs" />
+      <map-meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
 
       <link id="first" rel="stylesheet" type="text/css" href="first.css">
       <style>
@@ -115,7 +115,7 @@
       </feature>
     </layer->
     <layer- label="Alabama" checked>
-      <meta name="zoom" content="min=1,max=5" />
+      <map-meta name="zoom" content="min=1,max=5" />
       <map-extent units="other">
         <input name="z" type="zoom" min="2" max="18" value="0" />
         <input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" />
@@ -215,8 +215,8 @@
   </script>
   <mapml-viewer id="mapThree" zoom="2" lat="45" lon="-90" controls>
     <layer- label="Static MapML with tiles" checked>
-      <meta name="zoom" content="min=1,max=4">
-      <meta name="projection" content="basic">
+      <map-meta name="zoom" content="min=1,max=4">
+      <map-meta name="projection" content="basic">
 
       <tile zoom="2" row="-23" col="-9" src="data/cbmt/3/c17_r18.png"></tile>
       <tile zoom="2" row="-23" col="-10" src="data/cbmt/3/c16_r18.png"></tile>

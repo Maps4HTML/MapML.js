@@ -6,7 +6,7 @@
     <base href=""/>
     <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="Canada Base Map © Natural Resources Canada"/>
     <link rel="zoomin" href="/mapml/en/cbmtile/cbmt/?z=18" type="text/mapml"/>
-    <meta name="extent" content="zoom=17,top-left-row=29750,top-left-column=26484,bottom-right-row=34475,bottom-right-column=32463" />
+    <map-meta name="extent" content="zoom=17,top-left-row=29750,top-left-column=26484,bottom-right-row=34475,bottom-right-column=32463" />
   </head>
   <body>
     <map-extent units="CBMTILE">

@@ -2,7 +2,7 @@
     <head>
         <title>World Countries - WGS84</title>
         <meta charset="utf-8" />
-        <meta name="zoom" content="min=0,max=5" />
+        <map-meta name="zoom" content="min=0,max=5" />
         <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="© Natural Resources Canada" />
         <link rel="stylesheet" href="vector-tile-test.css" />
         <link href="us_pop_density.mapml" rel="alternate" projection="CBMTILE" />
