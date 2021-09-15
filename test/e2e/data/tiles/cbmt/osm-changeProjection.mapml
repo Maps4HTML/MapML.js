@@ -4,18 +4,26 @@
     <map-title>OpenStreetMap</map-title>
     <link rel="license" href="https://www.openstreetmap.org/copyright" title="© OpenStreetMap contributors CC BY-SA"/>
     <link rel="zoomout" href="cbmt-changeProjection.mapml" type="text/mapml" />
+<<<<<<< HEAD
   </map-head>
   <map-body>
   <map-extent units="OSMTILE">
     <input name="z" type="zoom" min="9" max="18"/>
     <input name="s" type="hidden" shard="true" list="servers"/>
+=======
+  </head>
+  <body>
+  <extent units="OSMTILE">
+    <map-input name="z" type="zoom" min="9" max="18"/>
+    <map-input name="s" type="hidden" shard="true" list="servers"/>
+>>>>>>> refactored the tests
     <datalist id="servers">
       <option value="a"/>
       <option value="b"/>
       <option value="c"/>
     </datalist>
-    <input name="x" type="location" units="tilematrix" axis="column"/>
-    <input name="y" type="location" units="tilematrix" axis="row"/>
+    <map-input name="x" type="location" units="tilematrix" axis="column"/>
+    <map-input name="y" type="location" units="tilematrix" axis="row"/>
     <link rel="tile" tref="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
   </map-extent>
   </map-body>

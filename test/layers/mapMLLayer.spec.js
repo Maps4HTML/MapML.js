@@ -21,10 +21,17 @@ describe("MapMLLayer Constructor Tests", () => {
 		var content;
 		beforeEach(() => {
 			content = document.createElement("layer-");
+<<<<<<< HEAD
 			content.innerHTML = `<map-extent units="CBMTILE">
                         <input name="zoomLevel" type="zoom" value="3" min="0" max="3"/>
                         <input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"/>
                         <input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"/>
+=======
+			content.innerHTML = `<extent units="CBMTILE">
+                        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"/>
+                        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"/>
+                        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"/>
+>>>>>>> refactored the tests
                         <link rel="tile" tref="./images/cbmt/{zoomLevel}/c{col}_r{row}.png"/>
                     </map-extent>`;
 
@@ -66,10 +73,17 @@ describe("MapMLLayer Constructor Tests", () => {
 		var content;
 		beforeEach(() => {
 			content = document.createElement("foo");
+<<<<<<< HEAD
 			content.innerHTML = `<map-extent units="CBMTILE">
                         <input name="zoomLevel" type="zoom" value="3" min="0" max="3"/>
                         <input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"/>
                         <input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"/>
+=======
+			content.innerHTML = `<extent units="CBMTILE">
+                        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"/>
+                        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"/>
+                        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"/>
+>>>>>>> refactored the tests
                         <link rel="tile" tref="./images/cbmt/{zoomLevel}/c{col}_r{row}.png"/>
                     </map-extent>`;
 

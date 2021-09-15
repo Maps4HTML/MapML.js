@@ -12,20 +12,28 @@
   <mapml-viewer style="width: 500px;height: 500px;" projection="CBMTILE" zoom="0" lat="45" lon="-90" controls>
     </layer->
     <layer- label="Inline Templated Tile" checked>
+<<<<<<< HEAD
       <map-meta name="zoom" content="min=0,max=5" />
       <map-extent units="CBMTILE">
         <input name="i" type="location" units="map" axis="i" />
         <input name="j" type="location" units="map" axis="j" />
         <input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="-2.003750834E7"
+=======
+      <meta name="zoom" content="min=0,max=5" />
+      <extent units="CBMTILE">
+        <map-input name="i" type="location" units="map" axis="i" />
+        <map-input name="j" type="location" units="map" axis="j" />
+        <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="-2.003750834E7"
+>>>>>>> refactored the tests
           max="2.003750834E7" />
-        <input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" min="-2.003750834E7"
+        <map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" min="-2.003750834E7"
           max="2.003750834E7" />
-        <input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" min="-2.003750834E7"
+        <map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" min="-2.003750834E7"
           max="2.003750834E7" />
-        <input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="-2.003750834E7"
+        <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="-2.003750834E7"
           max="2.003750834E7" />
-        <input name="w" type="width" />
-        <input name="h" type="height" />
+        <map-input name="w" type="width" />
+        <map-input name="h" type="height" />
         <link rel="query" tref="data/query/us_map_query?{i}{j}{xmin}{ymin}{xmax}{ymax}{w}{h}" />
       </map-extent>
     </layer->

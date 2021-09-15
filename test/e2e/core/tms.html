@@ -14,10 +14,10 @@
             <layer- label="Inline Countries" checked>
                 <map-meta name="zoom" content="min=0,max=4">
                 <map-extent units="WGS84">
-                    <input name="zoomLevel" type="zoom" value="1" min="0" max="4"/>
+                    <map-input name="zoomLevel" type="zoom" value="1" min="0" max="4"/>
 
-                    <input name="row" type="location" axis="row" units="tilematrix" min="0" max="2"/>
-                    <input name="col" type="location" axis="column" units="tilematrix" min="0" max="2"/>
+                    <map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="2"/>
+                    <map-input name="col" type="location" axis="column" units="tilematrix" min="0" max="2"/>
 
                     <link tms rel="tile" tref="https://maps4html.org/TiledArt-Rousseau/TheBanksOfTheBièvreNearBicêtre/{zoomLevel}/{col}/{row}.png" />
 

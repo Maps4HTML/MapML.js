@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <mapml- lang="en">
 <map-head>
   <meta charset="utf-8">
@@ -21,3 +22,28 @@
   </extent>
 </map-body>
 </mapml->
+=======
+<mapml lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/mapml">
+  <title>An OSMTILE tile cache in Map Markup Language</title>
+  <meta name="projection" content="OSMTILE">
+  <link rel="license" href="https://www.openstreetmap.org/copyright" title="© Open Street Map Contributors">
+</head>
+<body>
+  <extent units="OSMTILE">
+    <map-input name="z" type="zoom" value="0" min="0" max="18">
+    <map-input name="x" type="location" units="tilematrix" axis="column">
+    <map-input name="y" type="location" units="tilematrix" axis="row">
+    <map-input name="xmin" type="xmin" min="0.0" max="256.0">
+    <map-input name="ymin" type="ymin" min="0.0" max="256.0">
+    <map-input name="xmax" type="xmax" min="0.0" max="256.0">
+    <map-input name="ymax" type="ymax" min="0.0" max="256.0">
+    <map-input name="projection" type="projection" value="OSMTILE">
+    <map-input name="s" type="hidden">
+    <template type="tile" tref="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">
+  </extent>
+</body>
+</mapml>
+>>>>>>> refactored the tests
