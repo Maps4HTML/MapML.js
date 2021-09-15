@@ -54,10 +54,10 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
               var base = (new URL(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : url)).href;
               url = mapml.querySelector('link[rel=next]')? mapml.querySelector('link[rel=next]').getAttribute('href') : null;
               url =  url ? (new URL(url, base)).href: null;
-              let nativeZoom = mapml.querySelector("meta[name=zoom]") && 
-                +M.metaContentToObject(mapml.querySelector("meta[name=zoom]").getAttribute("content")).value || 0;
-              let nativeCS = mapml.querySelector("meta[name=cs]") && 
-                      M.metaContentToObject(mapml.querySelector("meta[name=cs]").getAttribute("content")).content || "GCRS";
+              let nativeZoom = mapml.querySelector("map-meta[name=zoom]") &&
+                +M.metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value || 0;
+              let nativeCS = mapml.querySelector("map-meta[name=cs]") &&
+                      M.metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content || "GCRS";
               features.addData(mapml, nativeCS, nativeZoom);
               if (url && --limit) {
                 return _pullFeatureFeed(url, limit);
@@ -100,10 +100,10 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
               url = mapml.querySelector('link[rel=next]')? mapml.querySelector('link[rel=next]').getAttribute('href') : null;
               url =  url ? (new URL(url, base)).href: null;
               // TODO if the xml parser barfed but the response is application/geo+json, use the parent addData method
-            let nativeZoom = mapml.querySelector("meta[name=zoom]") && 
-                              +M.metaContentToObject(mapml.querySelector("meta[name=zoom]").getAttribute("content")).value || 0;
-            let nativeCS = mapml.querySelector("meta[name=cs]") && 
-                              M.metaContentToObject(mapml.querySelector("meta[name=cs]").getAttribute("content")).content || "GCRS";
+            let nativeZoom = mapml.querySelector("map-meta[name=zoom]") &&
+                              +M.metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value || 0;
+            let nativeCS = mapml.querySelector("map-meta[name=cs]") &&
+                              M.metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content || "GCRS";
             features.addData(mapml, nativeCS, nativeZoom);
             if (url && --limit) {
               return _pullFeatureFeed(url, limit);

@@ -100,10 +100,10 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     },
 
     _getNativeVariables: function(mapml){
-      let nativeZoom = mapml.querySelector("meta[name=zoom]") && 
-          +M.metaContentToObject(mapml.querySelector("meta[name=zoom]").getAttribute("content")).value || 0;
-      let nativeCS = mapml.querySelector("meta[name=cs]") && 
-          M.metaContentToObject(mapml.querySelector("meta[name=cs]").getAttribute("content")).content || "GCRS";
+      let nativeZoom = mapml.querySelector("map-meta[name=zoom]") &&
+          +M.metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value || 0;
+      let nativeCS = mapml.querySelector("map-meta[name=cs]") &&
+          M.metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content || "GCRS";
       return {zoom:nativeZoom, cs: nativeCS};
     },
 
@@ -132,15 +132,15 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     _getLayerBounds : function(container) {
       if (!container) return null;
       let cs = FALLBACK_CS,
-          projection = container.querySelector('meta[name=projection]') &&
+          projection = container.querySelector('map-meta[name=projection]') &&
                     M.metaContentToObject(
-                      container.querySelector('meta[name=projection]').getAttribute('content'))
+                      container.querySelector('map-meta[name=projection]').getAttribute('content'))
                       .content.toUpperCase() || FALLBACK_PROJECTION;
       try{
 
-        let meta = container.querySelector('meta[name=extent]') &&
+        let meta = container.querySelector('map-meta[name=extent]') &&
                     M.metaContentToObject(
-                      container.querySelector('meta[name=extent]').getAttribute('content'));
+                      container.querySelector('map-meta[name=extent]').getAttribute('content'));
 
         let zoom = meta.zoom || 0;
         
@@ -205,8 +205,8 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         nMin = Math.min(nMin, lZoom);
       }
       try{
-        projection = M.metaContentToObject(container.querySelector('meta[name=projection]').getAttribute('content')).content;
-        meta = M.metaContentToObject(container.querySelector('meta[name=zoom]').getAttribute('content'));
+        projection = M.metaContentToObject(container.querySelector('map-meta[name=projection]').getAttribute('content')).content;
+        meta = M.metaContentToObject(container.querySelector('map-meta[name=zoom]').getAttribute('content'));
       } catch(error){
         return {
           minZoom:0,

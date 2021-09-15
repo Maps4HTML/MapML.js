@@ -692,16 +692,16 @@ export var MapMLLayer = L.Layer.extend({
             if(mapml.querySelector && mapml.querySelector('feature'))layer._content = mapml;
             if(!this.responseXML && this.responseText) mapml = new DOMParser().parseFromString(this.responseText,'text/xml');
             if (this.readyState === this.DONE && mapml.querySelector && !mapml.querySelector("parsererror")) {
-                var serverExtent = mapml.querySelector('map-extent') || mapml.querySelector('meta[name=projection]'), projection;
+                var serverExtent = mapml.querySelector('map-extent') || mapml.querySelector('map-meta[name=projection]'), projection;
 
                 if (serverExtent.tagName.toLowerCase() === "map-extent" && serverExtent.hasAttribute('units')){
                   projection = serverExtent.getAttribute("units");
-                } else if (serverExtent.tagName.toLowerCase() === "meta" && serverExtent.hasAttribute('content')) {
+                } else if (serverExtent.tagName.toLowerCase() === "map-meta" && serverExtent.hasAttribute('content')) {
                   projection = M.metaContentToObject(serverExtent.getAttribute('content')).content;
                 }
                     
                 var projectionMatch = projection && projection === layer.options.mapprojection,
-                    metaExtent = mapml.querySelector('meta[name=extent]'),
+                    metaExtent = mapml.querySelector('map-meta[name=extent]'),
                     selectedAlternate = !projectionMatch && mapml.querySelector('head link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 
@@ -770,8 +770,8 @@ export var MapMLLayer = L.Layer.extend({
                         ttype = (!t.hasAttribute('type')? 'image/*':t.getAttribute('type').toLowerCase()),
                         inputs = [],
                         tms = t && t.hasAttribute("tms");
-                        var zoomBounds = mapml.querySelector('meta[name=zoom]')?
-                                          M.metaContentToObject(mapml.querySelector('meta[name=zoom]').getAttribute('content')):
+                        var zoomBounds = mapml.querySelector('map-meta[name=zoom]')?
+                                          M.metaContentToObject(mapml.querySelector('map-meta[name=zoom]').getAttribute('content')):
                                           undefined;
                     while ((v = varNamesRe.exec(template)) !== null) {
                       var varName = v[1],
@@ -872,7 +872,7 @@ export var MapMLLayer = L.Layer.extend({
                 }
                 if (mapml.querySelector('tile')) {
                   var tiles = document.createElement("tiles"),
-                    zoom = mapml.querySelector('meta[name=zoom][content]') || mapml.querySelector('input[type=zoom][value]');
+                    zoom = mapml.querySelector('map-meta[name=zoom][content]') || mapml.querySelector('input[type=zoom][value]');
                   tiles.setAttribute("zoom", zoom && zoom.getAttribute('content') || zoom && zoom.getAttribute('value') || "0");
                   var newTiles = mapml.getElementsByTagName('tile');
                   for (var nt=0;nt<newTiles.length;nt++) {
@@ -1066,9 +1066,9 @@ export var MapMLLayer = L.Layer.extend({
         return extent;
     },
     _synthesizeExtent: function (mapml) {
-        var metaZoom = mapml.querySelectorAll('meta[name=zoom]')[0],
-            metaExtent = mapml.querySelector('meta[name=extent]'),
-            metaProjection = mapml.querySelector('meta[name=projection]'),
+        var metaZoom = mapml.querySelectorAll('map-meta[name=zoom]')[0],
+            metaExtent = mapml.querySelector('map-meta[name=extent]'),
+            metaProjection = mapml.querySelector('map-meta[name=projection]'),
             proj = metaProjection ? metaProjection.getAttribute('content'): FALLBACK_PROJECTION,
             i,expressions,bounds,zmin,zmax,xmin,ymin,xmax,ymax,expr,lhs,rhs;
         if (metaZoom) {
@@ -1128,7 +1128,7 @@ export var MapMLLayer = L.Layer.extend({
           if(extent.hasAttribute('value'))
             return extent.getAttribute('value').toUpperCase();
           break;
-        case "META":
+        case "MAP-META":
           if(extent.hasAttribute('content'))
             return M.metaContentToObject(extent.getAttribute('content')).content.toUpperCase(); 
           break;
