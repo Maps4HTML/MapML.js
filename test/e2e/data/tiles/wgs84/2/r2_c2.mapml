@@ -5,6 +5,7 @@
       <meta charset="utf-8" />
       <meta content="text/mapml" http-equiv="Content-Type" />
 <<<<<<< HEAD
+<<<<<<< HEAD
    </map-head>
    <map-body>
       <map-extent units="WGS84">
@@ -14,6 +15,8 @@
          <input name="maxLon" type="location" value="-45" units="gcrs" axis="longitude" position="bottom-right" min="-180" max="180" />
          <input name="maxLat" type="location" value="0" units="gcrs" axis="latitude" position="top-left" min="-90" max="90.0002058236639" />
 =======
+=======
+>>>>>>> 02d6db1e424f96d0e549ea751c36de3995b56d9a
    </head>
    <body>
       <extent units="WGS84">
@@ -22,7 +25,10 @@
          <map-input name="minLat" type="location" value="-45" units="gcrs" axis="latitude" position="bottom-right" min="-90" max="90.0002058236639" />
          <map-input name="maxLon" type="location" value="-45" units="gcrs" axis="longitude" position="bottom-right" min="-180" max="180" />
          <map-input name="maxLat" type="location" value="0" units="gcrs" axis="latitude" position="top-left" min="-90" max="90.0002058236639" />
+<<<<<<< HEAD
 >>>>>>> refactored the tests
+=======
+>>>>>>> 02d6db1e424f96d0e549ea751c36de3995b56d9a
 
          <link rel="features" type="text/mapml" title="ne_10m_admin_0_countries (as MapML)" tref="./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}" />
       </map-extent>

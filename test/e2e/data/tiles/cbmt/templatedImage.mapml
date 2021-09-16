@@ -4,9 +4,15 @@
     <meta charset="utf-8"/>
     <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/atlas-canada/read-about-topographic-maps/16840#topolicensing" title="Toporama © Natural Resources Canada"/>
     <link rel="legend" href="http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&amp;REQUEST=GetLegendGraphic&amp;LAYER=WMS-Toporama&amp;VERSION=1.1&amp;FORMAT=image/png"/>
+<<<<<<< HEAD
   </map-head>
   <map-body>
     <map-extent units="CBMTILE">
+=======
+  </head>
+  <body>
+    <extent units="CBMTILE">
+>>>>>>> 02d6db1e424f96d0e549ea751c36de3995b56d9a
       <map-input name="z" type="zoom" value="19" min="0" max="19"/>
       <map-input name="w" type="width"/>
       <map-input name="h" type="height"/>

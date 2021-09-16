@@ -4,9 +4,15 @@
 
       <meta charset="utf-8" />
       <meta content="text/mapml" http-equiv="Content-Type" />
+<<<<<<< HEAD
    </map-head>
    <map-body>
       <map-extent units="WGS84">
+=======
+   </head>
+   <body>
+      <extent units="WGS84">
+>>>>>>> 02d6db1e424f96d0e549ea751c36de3995b56d9a
          <map-input name="zoomLevel" type="zoom" value="0" min="0" max="6" />
          <map-input name="minLon" type="location" value="0" units="gcrs" axis="longitude" position="top-left" min="-180" max="180" />
          <map-input name="minLat" type="location" value="0" units="gcrs" axis="latitude" position="bottom-right" min="-90" max="90.0002058236639" />
