@@ -27,12 +27,11 @@
     width="900" height="400" controls>
 
     <layer- label="Inline Templated Tile" checked>
-      <map-meta name="zoom" content="min=0,max=5"/>
+      <map-meta name="zoom" content="min=0,max=5"></map-meta>
       <map-extent units="WGS84">
-        <input name="zoomLevel" type="zoom" min="1" max="1" value="0" />
-
-        <input name="row" type="location" axis="row" units="tilematrix" min="0" max="1" />
-        <input name="col" type="location" axis="column" units="tilematrix" min="0" max="1" />
+        <map-input name="zoomLevel" type="zoom" min="1" max="1" value="0" />
+        <map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="1" />
+        <map-input name="col" type="location" axis="column" units="tilematrix" min="0" max="1" />
 
         <link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)' />
 

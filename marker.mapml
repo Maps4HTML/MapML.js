@@ -8,14 +8,6 @@
     <link rel="license" href="foo" title="Foo © Natural Resources Canada">
   </map-head>
   <map-body>
-    <extent units="WGS84" action="marker.mapml" enctype="application/x-www-form-urlencoded">
-      <input name="xmin" type="xmin" min="-75.70864319801332" max="-75.70487201213837">
-      <input name="ymin" type="ymin" min="45.396931957344925" max="45.39844997630411">
-      <input name="xmax" type="xmax" min="-75.70487201213837" max="-75.70487201213837">
-      <input name="ymax" type="ymax" min="45.396931957344925" max="45.39844997630411">
-      <input name="zoom" type="zoom" min="15" max="17">
-      <input name="projection" type="projection" value="WGS84">
-    </extent>
     <feature id="aPoint">
       <properties>
         <code>1200020</code>
