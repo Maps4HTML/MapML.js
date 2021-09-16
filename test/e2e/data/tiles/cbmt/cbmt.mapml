@@ -11,25 +11,11 @@
     <link rel="zoomin" href="/mapml/en/cbmtile/cbmt/?z=18" type="text/mapml" />
   </map-head>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   <map-body>
     <map-extent units="CBMTILE">
-      <input name="z" type="zoom" value="17" min="0" max="17" />
-      <input name="y" type="location" units="tilematrix" axis="row" min="29750" max="34475" />
-      <input name="x" type="location" units="tilematrix" axis="column" min="26484" max="32463" />
-=======
-=======
->>>>>>> 02d6db1e424f96d0e549ea751c36de3995b56d9a
-  <body>
-    <extent units="CBMTILE">
       <map-input name="z" type="zoom" value="17" min="0" max="17" />
       <map-input name="y" type="location" units="tilematrix" axis="row" min="29750" max="34475" />
       <map-input name="x" type="location" units="tilematrix" axis="column" min="26484" max="32463" />
-<<<<<<< HEAD
->>>>>>> refactored the tests
-=======
->>>>>>> 02d6db1e424f96d0e549ea751c36de3995b56d9a
       <link rel="tile" tref="cbmt/{z}/c{x}_r{y}.png" />
     </map-extent>
   </map-body>

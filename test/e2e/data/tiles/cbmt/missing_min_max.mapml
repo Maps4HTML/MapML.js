@@ -6,7 +6,6 @@
     <base href=""/>
     <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="Canada Base Map © Natural Resources Canada"/>
     <link rel="zoomin" href="/mapml/en/cbmtile/cbmt/?z=18" type="text/mapml"/>
-<<<<<<< HEAD
     <map-meta name="extent" content="zoom=17,top-left-row=29750,top-left-column=26484,bottom-right-row=34475,bottom-right-column=32463" />
   </map-head>
   <map-body>
@@ -19,16 +18,3 @@
     </map-extent>
   </map-body>
 </mapml->
-=======
-    <meta name="extent" content="zoom=17,top-left-row=29750,top-left-column=26484,bottom-right-row=34475,bottom-right-column=32463" />
-  </head>
-  <body>
-    <extent units="CBMTILE">
-    <map-input name="z" type="zoom" value="17" min="0" max="17"/>
-    <map-input name="y" type="location" units="tilematrix" axis="row"/>
-    <map-input name="x" type="location" units="tilematrix" axis="column"/>
-    <link rel="tile" tref="cbmt/{z}/c{x}_r{y}.png" />
-    </extent>
-  </body>
-</mapml>
->>>>>>> 02d6db1e424f96d0e549ea751c36de3995b56d9a

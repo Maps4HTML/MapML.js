@@ -4,27 +4,12 @@
     <meta http-equiv="Content-Type" content="text/mapml"/>
     <meta charset="utf-8"/>
     <link rel="zoomin" href="osm-changeProjection.mapml" type="text/mapml"/>
-<<<<<<< HEAD
-<<<<<<< HEAD
   </map-head>
   <map-body>
   <map-extent units="CBMTILE" >
-    <input name="z" type="zoom" min="0" max="8"/>
-    <input name="y" type="location" units="tilematrix" axis="row"/>
-    <input name="x" type="location" units="tilematrix" axis="column"/>
-=======
-=======
->>>>>>> 02d6db1e424f96d0e549ea751c36de3995b56d9a
-  </head>
-  <body>
-  <extent units="CBMTILE" >
     <map-input name="z" type="zoom" min="0" max="8"/>
     <map-input name="y" type="location" units="tilematrix" axis="row"/>
     <map-input name="x" type="location" units="tilematrix" axis="column"/>
-<<<<<<< HEAD
->>>>>>> refactored the tests
-=======
->>>>>>> 02d6db1e424f96d0e549ea751c36de3995b56d9a
     <link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}?m4h=t" />
   </map-extent>
   </map-body>

@@ -11,15 +11,9 @@
                 color:black;
             }
         </style>
-<<<<<<< HEAD
    </map-head>
    <map-body>
         <map-extent units="WGS84">
-=======
-    </head>
-    <body>
-        <extent units="WGS84">
->>>>>>> 02d6db1e424f96d0e549ea751c36de3995b56d9a
             <map-input name="zoomLevel" type="zoom" min="0" max="2" value="0"/>
 
             <map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="5"/>
