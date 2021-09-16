@@ -19,7 +19,7 @@ export var MapMLLayer = L.Layer.extend({
         }
         if (content) {
           this._layerEl = content;
-          mapml = content.querySelector('image,feature,tile,map-extent') ? true : false;
+          mapml = content.querySelector('image,feature,map-tile,map-extent') ? true : false;
           if (!href && mapml) {
               this._content = content;
           }
@@ -711,7 +711,7 @@ export var MapMLLayer = L.Layer.extend({
                     serverExtent = layer._synthesizeExtent(mapml);
                     // the mapml resource does not have a (complete) extent form, save
                     // its content if any so we don't have to revisit the server, ever.
-                    if (mapml.querySelector('feature,image,tile')) {
+                    if (mapml.querySelector('feature,image,map-tile')) {
                         layer._content = mapml;
                     }
                 } else if (!projectionMatch && selectedAlternate && selectedAlternate.hasAttribute('href')) {
@@ -870,11 +870,11 @@ export var MapMLLayer = L.Layer.extend({
                 if (layer._templatedLayer) {
                   layer._templatedLayer.reset(layer._templateVars);
                 }
-                if (mapml.querySelector('tile')) {
+                if (mapml.querySelector('map-tile')) {
                   var tiles = document.createElement("tiles"),
                     zoom = mapml.querySelector('map-meta[name=zoom][content]') || mapml.querySelector('input[type=zoom][value]');
                   tiles.setAttribute("zoom", zoom && zoom.getAttribute('content') || zoom && zoom.getAttribute('value') || "0");
-                  var newTiles = mapml.getElementsByTagName('tile');
+                  var newTiles = mapml.getElementsByTagName('map-tile');
                   for (var nt=0;nt<newTiles.length;nt++) {
                       tiles.appendChild(document.importNode(newTiles[nt], true));
                   }
