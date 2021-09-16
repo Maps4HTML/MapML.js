@@ -7,7 +7,7 @@ jest.setTimeout(50000);
       () => {
         beforeAll(async () => {
           browser = await playwright[browserType].launch({
-            headless: false,
+            headless: ISHEADLESS,
             slowMo: 100,
           });
           context = await browser.newContext();
