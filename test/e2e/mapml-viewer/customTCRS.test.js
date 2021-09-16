@@ -30,7 +30,7 @@ jest.setTimeout(50000);
 
           const tilesLoaded = await page.$eval(
             "xpath=//html/body/mapml-viewer[1] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-static-tile-layer > div",
-            (tileGroup) => tileGroup.getElementsByTagName("tile").length
+            (tileGroup) => tileGroup.getElementsByTagName("map-tile").length
           );
 
           expect(tilesLoaded).toEqual(2);
