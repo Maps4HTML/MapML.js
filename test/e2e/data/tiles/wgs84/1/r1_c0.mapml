@@ -71,7 +71,7 @@
                </polygon>
             </multipolygon>
          </geometry>
-         <properties>
+         <map-properties>
             <table>
                <thead>
                   <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
@@ -136,7 +136,7 @@
                   <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
                </tbody>
             </table>
-         </properties>
+         </map-properties>
       </map-feature>
       <map-feature id="fclass.5" class="fclass _5">
          <geometry>
@@ -144,7 +144,7 @@
                <coordinates>-91.0437648782274 -0.3653177073796 <span class="noline">-91.2538912287127 0 -91.6041018128548 0</span> -91.4022157114082 -0.2211133492034 -91.1110602453763 -0.5713239333455 -91.5409265702252 -0.895440395532 -90.7979307819081 -0.9036806445706 -91.0437648782274 -0.3653177073796</coordinates>
             </polygon>
          </geometry>
-         <properties>
+         <map-properties>
             <table>
                <thead>
                   <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
@@ -209,7 +209,7 @@
                   <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
                </tbody>
             </table>
-         </properties>
+         </map-properties>
       </map-feature>
       <map-feature id="fclass.6" class="fclass _6">
          <geometry>
@@ -225,7 +225,7 @@
                </polygon>
             </multipolygon>
          </geometry>
-         <properties>
+         <map-properties>
             <table>
                <thead>
                   <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
@@ -290,7 +290,7 @@
                   <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
                </tbody>
             </table>
-         </properties>
+         </map-properties>
       </map-feature>
    </map-body>
 </mapml->
