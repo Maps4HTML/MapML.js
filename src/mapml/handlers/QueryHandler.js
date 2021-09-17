@@ -166,7 +166,7 @@ export var QueryHandler = L.Handler.extend({
         let div = L.DomUtil.create("div", "mapml-popup-content"),
             c = L.DomUtil.create("iframe");
         c.style = "border: none";
-        c.srcdoc = mapmldoc.querySelector('map-feature properties').innerHTML;
+        c.srcdoc = mapmldoc.querySelector('map-feature map-properties').innerHTML;
         c.setAttribute("sandbox","allow-same-origin allow-forms");
         div.appendChild(c);
         // passing a latlng to the popup is necessary for when there is no

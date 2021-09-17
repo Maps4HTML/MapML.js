@@ -12,7 +12,7 @@
                <coordinates>-91.3411005310383 0.1462644204358 <span class="noline">-91.6047885002747 0 -91.2538912287127 0</span> -91.3411005310383 0.1462644204358</coordinates>
             </polygon>
          </geometry>
-         <properties>
+         <map-properties>
             <table>
                <thead>
                   <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
@@ -77,7 +77,7 @@
                   <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
                </tbody>
             </table>
-         </properties>
+         </map-properties>
       </map-feature>
       <map-feature id="fclass.70" class="fclass _70">
          <geometry>
@@ -85,7 +85,7 @@
                <coordinates>-90.4930415674785 16.0719190624428 -91.7386925471525 16.0684856253433 -92.1630653726424 15.3234297747665 -92.2344808643106 14.5371726789965 -91.8588628456327 14.2494506500641 -91.4262497711042 13.9905694927669 -91.0197308185314 13.9074803149606 -90.5823109320637 13.9253341878777 -90.1483244826955 13.7509155832265 <span class="noline">-90 13.9555484343527 -90 17.8154184215345</span> -90.9908899468962 17.8161051089544 -90.9922633217359 17.2516480498077 -91.385048525911 17.2495879875481 -90.4374198864677 16.39122871269 -90.4930415674785 16.0719190624428</coordinates>
             </polygon>
          </geometry>
-         <properties>
+         <map-properties>
             <table>
                <thead>
                   <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
@@ -150,7 +150,7 @@
                   <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
                </tbody>
             </table>
-         </properties>
+         </map-properties>
       </map-feature>
       <map-feature id="fclass.71" class="fclass _71">
          <geometry>
@@ -174,7 +174,7 @@
                </polygon>
             </multipolygon>
          </geometry>
-         <properties>
+         <map-properties>
             <table>
                <thead>
                   <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
@@ -239,7 +239,7 @@
                   <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
                </tbody>
             </table>
-         </properties>
+         </map-properties>
       </map-feature>
       <map-feature id="fclass.73" class="fclass _73">
          <geometry>
@@ -247,7 +247,7 @@
                <coordinates>-90.1483244826955 13.7509155832265 <span class="noline">-90 13.6856802783373 -90 13.9555484343527</span> -90.1483244826955 13.7509155832265</coordinates>
             </polygon>
          </geometry>
-         <properties>
+         <map-properties>
             <table>
                <thead>
                   <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
@@ -312,7 +312,7 @@
                   <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
                </tbody>
             </table>
-         </properties>
+         </map-properties>
       </map-feature>
       <map-feature id="fclass.74" class="fclass _74">
          <geometry>
@@ -333,7 +333,7 @@
                </polygon>
             </multipolygon>
          </geometry>
-         <properties>
+         <map-properties>
             <table>
                <thead>
                   <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
@@ -398,7 +398,7 @@
                   <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
                </tbody>
             </table>
-         </properties>
+         </map-properties>
       </map-feature>
    </map-body>
 </mapml->
