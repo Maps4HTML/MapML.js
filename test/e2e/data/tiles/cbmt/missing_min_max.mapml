@@ -11,9 +11,9 @@
   <map-body>
     <map-extent units="CBMTILE">
       <map-meta name="extent" content="zoom=17,top-left-row=29750,top-left-column=26484,bottom-right-row=34475,bottom-right-column=32463"></map-meta>
-      <map-input name="z" type="zoom" value="17" min="0" max="17"/>
-      <map-input name="y" type="location" units="tilematrix" axis="row"/>
-      <map-input name="x" type="location" units="tilematrix" axis="column"/>
+      <map-input name="z" type="zoom" value="17" min="0" max="17"></map-input>
+      <map-input name="y" type="location" units="tilematrix" axis="row"></map-input>
+      <map-input name="x" type="location" units="tilematrix" axis="column"></map-input>
       <link rel="tile" tref="cbmt/{z}/c{x}_r{y}.png" />
     </map-extent>
   </map-body>

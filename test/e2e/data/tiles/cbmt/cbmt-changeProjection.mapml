@@ -7,9 +7,9 @@
   </map-head>
   <map-body>
   <map-extent units="CBMTILE" >
-    <map-input name="z" type="zoom" min="0" max="8"/>
-    <map-input name="y" type="location" units="tilematrix" axis="row"/>
-    <map-input name="x" type="location" units="tilematrix" axis="column"/>
+    <map-input name="z" type="zoom" min="0" max="8"></map-input>
+    <map-input name="y" type="location" units="tilematrix" axis="row"></map-input>
+    <map-input name="x" type="location" units="tilematrix" axis="column"></map-input>
     <link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}?m4h=t" />
   </map-extent>
   </map-body>

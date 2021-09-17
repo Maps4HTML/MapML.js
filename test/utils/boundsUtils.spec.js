@@ -169,9 +169,9 @@ describe("M.Util Bounds Related Tests", () => {
     test("Valid template with 3 inputs, tilematrix", () => {
       let template = {};
       let inputContainer = document.createElement("div");
-      inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="1" min="1" max="2">';
-      inputContainer.innerHTML += '<map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="2">';
-      inputContainer.innerHTML += '<map-input name="col" type="location" axis="column" units="tilematrix" min="0" max="2">';
+      inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="1" min="1" max="2"></map-input>';
+      inputContainer.innerHTML += '<map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="2"></map-input>';
+      inputContainer.innerHTML += '<map-input name="col" type="location" axis="column" units="tilematrix" min="0" max="2"></map-input>';
       template.values = inputContainer.querySelectorAll("map-input");
       template.zoomBounds = { min: "0", max: "5" };
       template.projection = "WGS84";
@@ -183,9 +183,9 @@ describe("M.Util Bounds Related Tests", () => {
     test("Another valid template with 3 inputs, pcrs", () => {
       let template = {};
       let inputContainer = document.createElement("div");
-      inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="2" min="1" max="5">';
-      inputContainer.innerHTML += '<map-input name="row" type="location" axis="northing" units="pcrs" min="5" max="10">';
-      inputContainer.innerHTML += '<map-input name="col" type="location" axis="easting" units="pcrs" min="5" max="10">';
+      inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="2" min="1" max="5"></map-input>';
+      inputContainer.innerHTML += '<map-input name="row" type="location" axis="northing" units="pcrs" min="5" max="10"></map-input>';
+      inputContainer.innerHTML += '<map-input name="col" type="location" axis="easting" units="pcrs" min="5" max="10"></map-input>';
       template.values = inputContainer.querySelectorAll("map-input");
       template.zoomBounds = { min: "1", max: "16" };
       template.projection = "WGS84";
@@ -197,9 +197,9 @@ describe("M.Util Bounds Related Tests", () => {
     test("Test defaulting maxNativeZoom to TCRS max", () => {
       let template = {};
       let inputContainer = document.createElement("div");
-      inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="2" min="1">';
-      inputContainer.innerHTML += '<map-input name="row" type="location" axis="northing" units="pcrs" min="5" max="10">';
-      inputContainer.innerHTML += '<map-input name="col" type="location" axis="easting" units="pcrs" min="5" max="10">';
+      inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="2" min="1"></map-input>';
+      inputContainer.innerHTML += '<map-input name="row" type="location" axis="northing" units="pcrs" min="5" max="10"></map-input>';
+      inputContainer.innerHTML += '<map-input name="col" type="location" axis="easting" units="pcrs" min="5" max="10"></map-input>';
       template.values = inputContainer.querySelectorAll("map-input");
       template.zoomBounds = { min: "1", max: "16" };
       template.projection = "OSMTILE";
@@ -211,13 +211,13 @@ describe("M.Util Bounds Related Tests", () => {
     test("Valid template with 7 inputs, pcrs", () => {
       let template = {};
       let inputContainer = document.createElement("div");
-      inputContainer.innerHTML = '<map-input name="z" type="zoom" value="19" min="0" max="19"/>';
-      inputContainer.innerHTML += '<map-input name="w" type="width"/>';
-      inputContainer.innerHTML += '<map-input name="h" type="height"/>';
-      inputContainer.innerHTML += '<map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="28448056.0" max="38608077.0"/>';
-      inputContainer.innerHTML += '<map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" min="28448056.0" max="42672085.0"/>';
-      inputContainer.innerHTML += '<map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" min="28448056.0" max="38608077.0"/>';
-      inputContainer.innerHTML += '<map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="28448056.0" max="42672085.0"/>';
+      inputContainer.innerHTML = '<map-input name="z" type="zoom" value="19" min="0" max="19"></map-input>';
+      inputContainer.innerHTML += '<map-input name="w" type="width"></map-input>';
+      inputContainer.innerHTML += '<map-input name="h" type="height"></map-input>';
+      inputContainer.innerHTML += '<map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="28448056.0" max="38608077.0"></map-input>';
+      inputContainer.innerHTML += '<map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" min="28448056.0" max="42672085.0"></map-input>';
+      inputContainer.innerHTML += '<map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" min="28448056.0" max="38608077.0"></map-input>';
+      inputContainer.innerHTML += '<map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="28448056.0" max="42672085.0"></map-input>';
       template.values = inputContainer.querySelectorAll("map-input");
       template.zoomBounds = { min: "0", max: "23" };
       template.projection = "CBMTILE";
@@ -229,13 +229,13 @@ describe("M.Util Bounds Related Tests", () => {
     test("Another valid template with 7 inputs, tilematrix", () => {
       let template = {};
       let inputContainer = document.createElement("div");
-      inputContainer.innerHTML = '<map-input name="z" type="zoom" value="19" min="3" max="5"/>';
-      inputContainer.innerHTML += '<map-input name="w" type="width"/>';
-      inputContainer.innerHTML += '<map-input name="h" type="height"/>';
-      inputContainer.innerHTML += '<map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="0.0" max="500.0"/>';
-      inputContainer.innerHTML += '<map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" min="0.0" max="500.0"/>';
-      inputContainer.innerHTML += '<map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" min="0.0" max="500.0"/>';
-      inputContainer.innerHTML += '<map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="0.0" max="500.0"/>';
+      inputContainer.innerHTML = '<map-input name="z" type="zoom" value="19" min="3" max="5"></map-input>';
+      inputContainer.innerHTML += '<map-input name="w" type="width"></map-input>';
+      inputContainer.innerHTML += '<map-input name="h" type="height"></map-input>';
+      inputContainer.innerHTML += '<map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="0.0" max="500.0"></map-input>';
+      inputContainer.innerHTML += '<map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" min="0.0" max="500.0"></map-input>';
+      inputContainer.innerHTML += '<map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" min="0.0" max="500.0"></map-input>';
+      inputContainer.innerHTML += '<map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="0.0" max="500.0"></map-input>';
       template.values = inputContainer.querySelectorAll("map-input");
       template.zoomBounds = { min: "2", max: "15" };
       template.projection = "CBMTILE";
@@ -247,7 +247,7 @@ describe("M.Util Bounds Related Tests", () => {
     test("Template with missing easting and northing input", () => {
       let template = {};
       let inputContainer = document.createElement("div");
-      inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="2" min="1" max="5">';
+      inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="2" min="1" max="5"></map-input>';
       template.values = inputContainer.querySelectorAll("map-input");
       template.zoomBounds = { min: "1", max: "12" };
       template.projection = "WGS84";
@@ -270,9 +270,9 @@ describe("M.Util Bounds Related Tests", () => {
     test("Template with no projection", () => {
       let template = {};
       let inputContainer = document.createElement("div");
-      inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="1" min="1" max="2">';
-      inputContainer.innerHTML += '<map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="2">';
-      inputContainer.innerHTML += '<map-input name="col" type="location" axis="column" units="tilematrix" min="0" max="2">';
+      inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="1" min="1" max="2"></map-input>';
+      inputContainer.innerHTML += '<map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="2"></map-input>';
+      inputContainer.innerHTML += '<map-input name="col" type="location" axis="column" units="tilematrix" min="0" max="2"></map-input>';
       template.values = inputContainer.querySelectorAll("map-input");
       template.zoomBounds = { min: "0", max: "5" };
 

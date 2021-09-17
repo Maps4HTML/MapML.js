@@ -22,9 +22,9 @@ describe("MapMLLayer Constructor Tests", () => {
 		beforeEach(() => {
 			content = document.createElement("layer-");
 			content.innerHTML = `<map-extent units="CBMTILE">
-                        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"/>
-                        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"/>
-                        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"/>
+                        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
+                        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>
+                        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>
                         <link rel="tile" tref="./images/cbmt/{zoomLevel}/c{col}_r{row}.png"/>
                     </map-extent>`;
 
@@ -67,9 +67,9 @@ describe("MapMLLayer Constructor Tests", () => {
 		beforeEach(() => {
 			content = document.createElement("foo");
 			content.innerHTML = `<map-extent units="CBMTILE">
-                        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"/>
-                        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"/>
-                        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"/>
+                        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
+                        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>
+                        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>
                         <link rel="tile" tref="./images/cbmt/{zoomLevel}/c{col}_r{row}.png"/>
                     </map-extent>`;
 
