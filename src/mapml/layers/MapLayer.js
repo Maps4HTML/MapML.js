@@ -872,7 +872,7 @@ export var MapMLLayer = L.Layer.extend({
                 }
                 if (mapml.querySelector('map-tile')) {
                   var tiles = document.createElement("tiles"),
-                    zoom = mapml.querySelector('meta[name=zoom][content]') || mapml.querySelector('map-input[type=zoom][value]');
+                    zoom = mapml.querySelector('map-meta[name=zoom][content]') || mapml.querySelector('map-input[type=zoom][value]');
                   tiles.setAttribute("zoom", zoom && zoom.getAttribute('content') || zoom && zoom.getAttribute('value') || "0");
                   var newTiles = mapml.getElementsByTagName('map-tile');
                   for (var nt=0;nt<newTiles.length;nt++) {
