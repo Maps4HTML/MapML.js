@@ -229,8 +229,8 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
       var linkedStylesheets = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelector("link[rel=stylesheet],style") : null;
       if (linkedStylesheets) {
-        var base = mapml.querySelector('base') && mapml.querySelector('base').hasAttribute('href') ? 
-            new URL(mapml.querySelector('base').getAttribute('href')).href : 
+        var base = mapml.querySelector('map-base') && mapml.querySelector('map-base').hasAttribute('href') ? 
+            new URL(mapml.querySelector('map-base').getAttribute('href')).href : 
             mapml.URL;
         M.parseStylesheetAsHTML(mapml,base,this._container);
       }

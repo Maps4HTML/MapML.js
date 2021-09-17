@@ -705,7 +705,7 @@ export var MapMLLayer = L.Layer.extend({
                     selectedAlternate = !projectionMatch && mapml.querySelector('map-head link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 
-      (new URL(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : mapml.baseURI || this.responseURL, this.responseURL)).href;
+      (new URL(mapml.querySelector('map-base') ? mapml.querySelector('map-base').getAttribute('href') : mapml.baseURI || this.responseURL, this.responseURL)).href;
                 
                 if (!serverExtent) {
                     serverExtent = layer._synthesizeExtent(mapml);

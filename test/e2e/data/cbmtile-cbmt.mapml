@@ -3,7 +3,7 @@
     <map-title>Canada Base Map - Transportation (CBMT)</map-title>
     <map-meta http-equiv="Content-Type" content="text/mapml;projection=CBMTILE"></map-meta>
     <map-meta charset="utf-8"></map-meta>
-    <base href="/mapml/en/cbmtile/cbmt/"/>
+    <map-base href="/mapml/en/cbmtile/cbmt/"></map-base>
     <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" map-title="Canada Base Map © Natural Resources Canada"/>
     <link rel="zoomin" href="/mapml/en/cbmtile/cbmt/?z=18" type="text/mapml"/>
   </map-head>
