@@ -15,7 +15,7 @@
 
          <link rel="features" type="text/mapml" title="ne_10m_admin_0_countries (as MapML)" tref="./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}" />
       </map-extent>
-      <feature id="fclass.2" class="fclass _2">
+      <map-feature id="fclass.2" class="fclass _2">
          <geometry>
             <multipolygon>
                <polygon>
@@ -99,8 +99,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.6" class="fclass _6">
+      </map-feature>
+      <map-feature id="fclass.6" class="fclass _6">
          <geometry>
             <multipolygon>
                <polygon>
@@ -183,8 +183,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.9" class="fclass _9">
+      </map-feature>
+      <map-feature id="fclass.9" class="fclass _9">
          <geometry>
             <multipolygon>
                <polygon>
@@ -264,8 +264,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.56" class="fclass _56">
+      </map-feature>
+      <map-feature id="fclass.56" class="fclass _56">
          <geometry>
             <multipolygon>
                <polygon>
@@ -357,8 +357,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.58" class="fclass _58">
+      </map-feature>
+      <map-feature id="fclass.58" class="fclass _58">
          <geometry>
             <multipolygon>
                <polygon>
@@ -522,8 +522,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.60" class="fclass _60">
+      </map-feature>
+      <map-feature id="fclass.60" class="fclass _60">
          <geometry>
             <multipolygon>
                <polygon>
@@ -602,8 +602,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.63" class="fclass _63">
+      </map-feature>
+      <map-feature id="fclass.63" class="fclass _63">
          <geometry>
             <multipolygon>
                <polygon>
@@ -692,8 +692,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.64" class="fclass _64">
+      </map-feature>
+      <map-feature id="fclass.64" class="fclass _64">
          <geometry>
             <multipolygon>
                <polygon>
@@ -781,8 +781,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.65" class="fclass _65">
+      </map-feature>
+      <map-feature id="fclass.65" class="fclass _65">
          <geometry>
             <polygon>
                <coordinates>127.3269547701886 -8.4091741439297 126.9094488188976 -8.3569859000183 125.8945248123054 -8.4805896355979 125.1158212781542 -8.6385277421718 125.0045779161326 -8.9132027101264 125.2888665079656 -9.3279619117378 126.4260208752976 -8.9310565830434 126.8339132027101 -8.7607581029116 127.3269547701886 -8.4091741439297</coordinates>
@@ -855,8 +855,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.67" class="fclass _67">
+      </map-feature>
+      <map-feature id="fclass.67" class="fclass _67">
          <geometry>
             <multipolygon>
                <polygon>
@@ -933,6 +933,6 @@
                </tbody>
             </table>
          </properties>
-      </feature>
+      </map-feature>
    </map-body>
 </mapml->

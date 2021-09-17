@@ -15,7 +15,7 @@
 
          <link rel="features" type="text/mapml" title="ne_10m_admin_0_countries (as MapML)" tref="./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}" />
       </map-extent>
-      <feature id="fclass.2" class="fclass _2">
+      <map-feature id="fclass.2" class="fclass _2">
          <geometry>
             <multipolygon>
                <polygon>
@@ -224,8 +224,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.3" class="fclass _3">
+      </map-feature>
+      <map-feature id="fclass.3" class="fclass _3">
          <geometry>
             <multipolygon>
                <polygon>
@@ -359,8 +359,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.16" class="fclass _16">
+      </map-feature>
+      <map-feature id="fclass.16" class="fclass _16">
          <geometry>
             <multipolygon>
                <polygon>
@@ -444,8 +444,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.20" class="fclass _20">
+      </map-feature>
+      <map-feature id="fclass.20" class="fclass _20">
          <geometry>
             <multipolygon>
                <polygon>
@@ -525,8 +525,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.25" class="fclass _25">
+      </map-feature>
+      <map-feature id="fclass.25" class="fclass _25">
          <geometry>
             <polygon>
                <coordinates>-36.0936641640725 -54.8793719099066 -35.9824208020509 -54.8120765427577 -35.8821644387475 -54.774308734664 -35.9027650613441 -54.5634956967588 -36.0689434169566 -54.5477018861014 -36.2749496429225 -54.3004944149423 -36.599066105109 -54.2428126716719 -36.5825856070317 -54.1219556857718 -37.4368247573704 -54.0162058231093 -37.8763047060978 -54.0168925105292 -37.5988829884637 -54.042299945065 -37.6840322285296 -54.1336293719099 -37.3077275224318 -54.1885643655008 -37.1401757919795 -54.2847006042849 -36.5537447353964 -54.5099340780077 -36.0936641640725 -54.8793719099066</coordinates>
@@ -599,6 +599,6 @@
                </tbody>
             </table>
          </properties>
-      </feature>
+      </map-feature>
    </map-body>
 </mapml->

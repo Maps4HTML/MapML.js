@@ -15,7 +15,7 @@
 
          <link rel="features" type="text/mapml" title="ne_10m_admin_0_countries (as MapML)" tref="./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}" />
       </map-extent>
-      <feature id="fclass.72" class="fclass _72">
+      <map-feature id="fclass.72" class="fclass _72">
          <geometry>
             <multipolygon>
                <polygon>
@@ -98,8 +98,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.234" class="fclass _234">
+      </map-feature>
+      <map-feature id="fclass.234" class="fclass _234">
          <geometry>
             <polygon>
                <coordinates>158.2780168467314 6.7789782091192 158.2993041567479 6.9664438747482 158.1241988646768 6.9245559421351 158.2780168467314 6.7789782091192</coordinates>
@@ -171,8 +171,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.235" class="fclass _235">
+      </map-feature>
+      <map-feature id="fclass.235" class="fclass _235">
          <geometry>
             <polygon>
                <coordinates>144.7125068668742 13.2207928950742 144.8354239150339 13.4927211133492 144.8539644753708 13.5867972898737 144.628731001648 13.4240523713606 144.7125068668742 13.2207928950742</coordinates>
@@ -245,8 +245,8 @@
                </tbody>
             </table>
          </properties>
-      </feature>
-      <feature id="fclass.237" class="fclass _237">
+      </map-feature>
+      <map-feature id="fclass.237" class="fclass _237">
          <geometry>
             <multipolygon>
                <polygon>
@@ -326,6 +326,6 @@
                </tbody>
             </table>
          </properties>
-      </feature>
+      </map-feature>
    </map-body>
 </mapml->
