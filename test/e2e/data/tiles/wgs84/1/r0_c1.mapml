@@ -6,7 +6,7 @@
       <meta content="text/mapml" http-equiv="Content-Type" />
    </map-head>
    <map-body>
-      <feature id="fclass.5" class="fclass _5">
+      <map-feature id="fclass.5" class="fclass _5">
          <geometry>
             <polygon>
                <coordinates>-75.5273759384728 0 -77.2633217359458 0.4010254532137 -78.9209851675517 1.5629005676616 -79.0542025270097 1.1962094854422 -80.0347921626076 0.8116645303058 <span class="noline">-80.1130745284746 0 -75.5273759384728 0</span></coordinates>
