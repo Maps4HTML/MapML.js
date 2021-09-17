@@ -19,7 +19,7 @@ export var MapMLLayer = L.Layer.extend({
         }
         if (content) {
           this._layerEl = content;
-          mapml = content.querySelector('image,feature,map-tile,map-extent') ? true : false;
+          mapml = content.querySelector('image,map-feature,map-tile,map-extent') ? true : false;
           if (!href && mapml) {
               this._content = content;
           }
@@ -689,7 +689,7 @@ export var MapMLLayer = L.Layer.extend({
         }
         function _processInitialExtent(content) {
             var mapml = this.responseXML || content;
-            if(mapml.querySelector && mapml.querySelector('feature'))layer._content = mapml;
+            if(mapml.querySelector && mapml.querySelector('map-feature'))layer._content = mapml;
             if(!this.responseXML && this.responseText) mapml = new DOMParser().parseFromString(this.responseText,'text/xml');
             if (this.readyState === this.DONE && mapml.querySelector && !mapml.querySelector("parsererror")) {
                 var serverExtent = mapml.querySelector('map-extent') || mapml.querySelector('map-meta[name=projection]'), projection;
@@ -711,7 +711,7 @@ export var MapMLLayer = L.Layer.extend({
                     serverExtent = layer._synthesizeExtent(mapml);
                     // the mapml resource does not have a (complete) extent form, save
                     // its content if any so we don't have to revisit the server, ever.
-                    if (mapml.querySelector('feature,image,map-tile')) {
+                    if (mapml.querySelector('map-feature,image,map-tile')) {
                         layer._content = mapml;
                     }
                 } else if (!projectionMatch && selectedAlternate && selectedAlternate.hasAttribute('href')) {

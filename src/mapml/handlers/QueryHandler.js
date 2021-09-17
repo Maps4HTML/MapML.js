@@ -133,7 +133,7 @@ export var QueryHandler = L.Handler.extend({
         let parser = new DOMParser(),
           mapmldoc = parser.parseFromString(mapml, "application/xml");
 
-        for(let feature of mapmldoc.querySelectorAll('feature')){
+        for(let feature of mapmldoc.querySelectorAll('map-feature')){
           if(!feature.querySelector('geometry')){
             let geo = document.createElement('geometry'), point = document.createElement('point'),
               coords = document.createElement('coordinates');
@@ -166,12 +166,12 @@ export var QueryHandler = L.Handler.extend({
         let div = L.DomUtil.create("div", "mapml-popup-content"),
             c = L.DomUtil.create("iframe");
         c.style = "border: none";
-        c.srcdoc = mapmldoc.querySelector('feature properties').innerHTML;
+        c.srcdoc = mapmldoc.querySelector('map-feature properties').innerHTML;
         c.setAttribute("sandbox","allow-same-origin allow-forms");
         div.appendChild(c);
         // passing a latlng to the popup is necessary for when there is no
         // geometry / null geometry
-        layer._totalFeatureCount = mapmldoc.querySelectorAll("feature").length;
+        layer._totalFeatureCount = mapmldoc.querySelectorAll("map-feature").length;
         layer.bindPopup(div, popupOptions).openPopup(loc);
         layer.on('popupclose', function() {
             map.removeLayer(f);

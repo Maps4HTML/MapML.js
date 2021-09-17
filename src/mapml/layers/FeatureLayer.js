@@ -44,7 +44,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       if (mapml && !this.options.query) {
         let native = this._getNativeVariables(mapml);
         //needed to check if the feature is static or not, since this method is used by templated also
-        if(!mapml.querySelector('map-extent') && mapml.querySelector('feature') && this.options.static){
+        if(!mapml.querySelector('map-extent') && mapml.querySelector('map-feature') && this.options.static){
           this._features = {};
           this._staticFeature = true;
           this.isVisible = true; //placeholder for when this actually gets updated in the future
@@ -89,8 +89,8 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
 
     showPaginationFeature: function(e){
-      if(this.options.query && this._mapmlFeatures.querySelectorAll("feature")[e.i]){
-        let feature = this._mapmlFeatures.querySelectorAll("feature")[e.i];
+      if(this.options.query && this._mapmlFeatures.querySelectorAll("map-feature")[e.i]){
+        let feature = this._mapmlFeatures.querySelectorAll("map-feature")[e.i];
         this.clearLayers();
         this.addData(feature, this.options.nativeCS, this.options.nativeZoom);
         e.popup._navigationBar.querySelector("p").innerText = (e.i + 1) + "/" + this.options._leafletLayer._totalFeatureCount;
@@ -197,7 +197,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
     _getZoomBounds: function(container, nativeZoom){
       if (!container) return null;
-      let nMin = 100,nMax=0, features = container.getElementsByTagName('feature'),meta,projection;
+      let nMin = 100,nMax=0, features = container.getElementsByTagName('map-feature'),meta,projection;
       for(let i =0;i<features.length;i++){
         let lZoom = +features[i].getAttribute('zoom');
         if(!features[i].getAttribute('zoom'))lZoom = nativeZoom;
@@ -224,7 +224,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     },
 
     addData: function (mapml, nativeCS, nativeZoom) {
-      var features = mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === "LAYER-" ? mapml.getElementsByTagName("feature") : null,
+      var features = mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === "LAYER-" ? mapml.getElementsByTagName("map-feature") : null,
           i, len, feature;
 
       var linkedStylesheets = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelector("link[rel=stylesheet],style") : null;
@@ -321,7 +321,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       }
     },
   geometryToLayer: function (mapml, vectorOptions, nativeCS, zoom, title) {
-    let geometry = mapml.tagName.toUpperCase() === 'FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
+    let geometry = mapml.tagName.toUpperCase() === 'MAP-FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
         cs = geometry.getAttribute("cs") || nativeCS, group = [], svgGroup = L.SVG.create('g'), copyOptions = Object.assign({}, vectorOptions);
     for(let geo of geometry.querySelectorAll('polygon, linestring, multilinestring, point, multipoint')){
       group.push(M.feature(geo, Object.assign(copyOptions,
