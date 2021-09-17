@@ -254,7 +254,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       if (mapml.classList.length) {
         options.className = mapml.classList.value;
       }
-      let zoom = mapml.getAttribute("zoom") || nativeZoom, title = mapml.querySelector("featurecaption");
+      let zoom = mapml.getAttribute("zoom") || nativeZoom, title = mapml.querySelector("map-featurecaption");
       title = title ? title.innerHTML : "Feature";
 
       if(mapml.querySelector("properties")) {
