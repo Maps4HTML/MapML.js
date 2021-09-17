@@ -5,14 +5,14 @@
     <map-meta charset="utf-8"></map-meta>
     <base href="/mapml/en/cbmtile/cbmt/"/>
     <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" map-title="Canada Base Map © Natural Resources Canada"/>
-    <link rel="zoomin" href="/mapml/en/cbmtile/cbmt/?z=18" type="text/mapml"/> 
+    <link rel="zoomin" href="/mapml/en/cbmtile/cbmt/?z=18" type="text/mapml"></map-input> 
   </map-head>
   <map-body>
     <map-extent units="CBMTILE" >
-      <input name="z" type="zoom"  value="17" min="0" max="17"/>
-      <input name="y" type="location" units="tilematrix" axis="row" min="29750"  max="34475" />
-      <input name="x" type="location" units="tilematrix" axis="column" min="26484"  max="32463" />
+      <map-input name="z" type="zoom"  value="17" min="0" max="17"></map-input>
+      <map-input name="y" type="location" units="tilematrix" axis="row" min="29750"  max="34475" />
+      <map-input name="x" type="location" units="tilematrix" axis="column" min="26484"  max="32463" />
       <link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}?m4h=t" />
     </map-extent>
   </map-body>
-</mapml->
+</mapml-> 
