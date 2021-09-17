@@ -21,7 +21,7 @@ jest.setTimeout(30000);
         await browser.close();
       });
 
-      test("[" + browserType + "]" + " Static features with missing <map-meta name='zoom'> & <map-meta name='extent'>", async () => {
+      test("[" + browserType + "]" + " Static features with missing <map-meta name='zoom'></map-meta> & <map-meta name='extent'></map-meta>", async () => {
         const layerController = await page.$eval("body > map:nth-child(1) > layer-:nth-child(1)",
           (controller) => controller.extent);
 
@@ -41,7 +41,7 @@ jest.setTimeout(30000);
         });
       });
 
-      test("[" + browserType + "]" + " Static tiles with missing <map-meta name='zoom'>", async () => {
+      test("[" + browserType + "]" + " Static tiles with missing <map-meta name='zoom'></map-meta>", async () => {
         const layerController = await page.$eval("body > map:nth-child(1) > layer-:nth-child(3)",
           (controller) => controller.extent);
 
@@ -62,7 +62,7 @@ jest.setTimeout(30000);
         });
       });
 
-      test("[" + browserType + "]" + " Templated features with missing <map-meta name='zoom'>", async () => {
+      test("[" + browserType + "]" + " Templated features with missing <map-meta name='zoom'></map-meta>", async () => {
         const layerController = await page.$eval("body > map:nth-child(1) > layer-:nth-child(2)",
           (controller) => controller.extent);
 
@@ -82,7 +82,7 @@ jest.setTimeout(30000);
         });
       });
 
-      test("[" + browserType + "]" + " Templated tiles with missing <map-meta name='zoom'> & extent", async () => {
+      test("[" + browserType + "]" + " Templated tiles with missing <map-meta name='zoom'></map-meta> & extent", async () => {
         const layerController = await page.$eval("body > map:nth-child(2) > layer-",
           (controller) => controller.extent);
 
@@ -102,7 +102,7 @@ jest.setTimeout(30000);
         });
       });
 
-      test("[" + browserType + "]" + " Templated image with missing <map-meta name='zoom'>", async () => {
+      test("[" + browserType + "]" + " Templated image with missing <map-meta name='zoom'></map-meta>", async () => {
         const layerController = await page.$eval("body > map:nth-child(1) > layer-:nth-child(4)",
           (controller) => controller.extent);
 

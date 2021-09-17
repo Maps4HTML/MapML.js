@@ -193,7 +193,7 @@ export var ContextMenu = L.Handler.extend({
         tL = layerElem.extent.topLeft.pcrs,
         bR = layerElem.extent.bottomRight.pcrs;
 
-    let data = `<map-meta name="extent" content="top-left-easting=${tL.horizontal}, top-left-northing=${tL.vertical}, bottom-right-easting=${bR.horizontal}, bottom-right-northing=${bR.vertical}"/>`;
+    let data = `<map-meta name="extent" content="top-left-easting=${tL.horizontal}, top-left-northing=${tL.vertical}, bottom-right-easting=${bR.horizontal}, bottom-right-northing=${bR.vertical}"></map-meta>`;
     context._copyData(data);
   },
 
