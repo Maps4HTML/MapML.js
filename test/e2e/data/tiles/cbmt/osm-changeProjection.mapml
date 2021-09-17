@@ -7,15 +7,15 @@
   </map-head>
   <map-body>
   <map-extent units="OSMTILE">
-    <map-input name="z" type="zoom" min="9" max="18"/>
-    <map-input name="s" type="hidden" shard="true" list="servers"/>
+    <map-input name="z" type="zoom" min="9" max="18"></map-input>
+    <map-input name="s" type="hidden" shard="true" list="servers"></map-input>
     <datalist id="servers">
       <option value="a"/>
       <option value="b"/>
       <option value="c"/>
     </datalist>
-    <map-input name="x" type="location" units="tilematrix" axis="column"/>
-    <map-input name="y" type="location" units="tilematrix" axis="row"/>
+    <map-input name="x" type="location" units="tilematrix" axis="column"></map-input>
+    <map-input name="y" type="location" units="tilematrix" axis="row"></map-input>
     <link rel="tile" tref="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
   </map-extent>
   </map-body>
