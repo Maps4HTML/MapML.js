@@ -13,9 +13,9 @@
   </map-head>
   <map-body>
     <map-feature class="all  _50-100">
-      <featurecaption>
+      <map-featurecaption>
         Alabama
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Alabama</h1>
       </properties>
@@ -26,9 +26,9 @@
       </geometry>
     </map-feature>
     <map-feature class="all  _0-10">
-      <featurecaption>
+      <map-featurecaption>
         Alaska
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Alaska</h1>
       </properties>
@@ -169,9 +169,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _50-100">
-      <featurecaption>
+      <map-featurecaption>
         Arizona
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Arizona</h1>
       </properties>
@@ -182,9 +182,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _50-100">
-      <featurecaption>
+      <map-featurecaption>
         Arkansas
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Arkansas</h1>
       </properties>
@@ -195,9 +195,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _200-500">
-      <featurecaption>
+      <map-featurecaption>
         California
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>California</h1>
       </properties>
@@ -210,9 +210,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _20-50">
-      <featurecaption>
+      <map-featurecaption>
         Colorado
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Colorado</h1>
       </properties>
@@ -223,9 +223,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _500-1000">
-      <featurecaption>
+      <map-featurecaption>
         Connecticut
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Connecticut</h1>
       </properties>
@@ -236,9 +236,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _200-500">
-      <featurecaption>
+      <map-featurecaption>
         Delaware
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Delaware</h1>
       </properties>
@@ -249,9 +249,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _1000plus">
-      <featurecaption>
+      <map-featurecaption>
         District of Columbia
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>District of Columbia</h1>
       </properties>
@@ -262,9 +262,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _200-500">
-      <featurecaption>
+      <map-featurecaption>
         Florida
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Florida</h1>
       </properties>
@@ -276,9 +276,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _100-200">
-      <featurecaption>
+      <map-featurecaption>
         Georgia
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Georgia</h1>
       </properties>
@@ -290,9 +290,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _200-500">
-      <featurecaption>
+      <map-featurecaption>
         Hawaii
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Hawaii</h1>
       </properties>
@@ -317,9 +317,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _10-20">
-      <featurecaption>
+      <map-featurecaption>
         Idaho
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Idaho</h1>
       </properties>
@@ -331,9 +331,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _200-500">
-      <featurecaption>
+      <map-featurecaption>
         Illinois
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Illinois</h1>
       </properties>
@@ -345,9 +345,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _100-200">
-      <featurecaption>
+      <map-featurecaption>
         Indiana
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Indiana</h1>
       </properties>
@@ -358,9 +358,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _50-100">
-      <featurecaption>
+      <map-featurecaption>
         Iowa
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Iowa</h1>
       </properties>
@@ -372,9 +372,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _20-50">
-      <featurecaption>
+      <map-featurecaption>
         Kansas
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Kansas</h1>
       </properties>
@@ -385,9 +385,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _100-200">
-      <featurecaption>
+      <map-featurecaption>
         Kentucky
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Kentucky</h1>
       </properties>
@@ -399,9 +399,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _100-200">
-      <featurecaption>
+      <map-featurecaption>
         Louisiana
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Louisiana</h1>
       </properties>
@@ -413,9 +413,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _20-50">
-      <featurecaption>
+      <map-featurecaption>
         Maine
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Maine</h1>
       </properties>
@@ -427,9 +427,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _500-1000">
-      <featurecaption>
+      <map-featurecaption>
         Maryland
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Maryland</h1>
       </properties>
@@ -446,9 +446,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _500-1000">
-      <featurecaption>
+      <map-featurecaption>
         Massachusetts
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Massachusetts</h1>
       </properties>
@@ -459,9 +459,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _100-200">
-      <featurecaption>
+      <map-featurecaption>
         Michigan
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Michigan</h1>
       </properties>
@@ -485,9 +485,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _50-100">
-      <featurecaption>
+      <map-featurecaption>
         Minnesota
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Minnesota</h1>
       </properties>
@@ -499,9 +499,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _50-100">
-      <featurecaption>
+      <map-featurecaption>
         Mississippi
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Mississippi</h1>
       </properties>
@@ -512,9 +512,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _50-100">
-      <featurecaption>
+      <map-featurecaption>
         Missouri
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Missouri</h1>
       </properties>
@@ -526,9 +526,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _0-10">
-      <featurecaption>
+      <map-featurecaption>
         Montana
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Montana</h1>
       </properties>
@@ -540,9 +540,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _20-50">
-      <featurecaption>
+      <map-featurecaption>
         Nebraska
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Nebraska</h1>
       </properties>
@@ -553,9 +553,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _20-50">
-      <featurecaption>
+      <map-featurecaption>
         Nevada
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Nevada</h1>
       </properties>
@@ -566,9 +566,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _100-200">
-      <featurecaption>
+      <map-featurecaption>
         New Hampshire
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>New Hampshire</h1>
       </properties>
@@ -579,9 +579,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _1000plus">
-      <featurecaption>
+      <map-featurecaption>
         New Jersey
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>New Jersey</h1>
       </properties>
@@ -592,9 +592,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _10-20">
-      <featurecaption>
+      <map-featurecaption>
         New Mexico
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>New Mexico</h1>
       </properties>
@@ -605,9 +605,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _200-500">
-      <featurecaption>
+      <map-featurecaption>
         New York
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>New York</h1>
       </properties>
@@ -619,9 +619,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _100-200">
-      <featurecaption>
+      <map-featurecaption>
         North Carolina
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>North Carolina</h1>
       </properties>
@@ -633,9 +633,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _0-10">
-      <featurecaption>
+      <map-featurecaption>
         North Dakota
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>North Dakota</h1>
       </properties>
@@ -646,9 +646,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _200-500">
-      <featurecaption>
+      <map-featurecaption>
         Ohio
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Ohio</h1>
       </properties>
@@ -660,9 +660,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _50-100">
-      <featurecaption>
+      <map-featurecaption>
         Oklahoma
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Oklahoma</h1>
       </properties>
@@ -673,9 +673,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _20-50">
-      <featurecaption>
+      <map-featurecaption>
         Oregon
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Oregon</h1>
       </properties>
@@ -687,9 +687,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _200-500">
-      <featurecaption>
+      <map-featurecaption>
         Pennsylvania
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Pennsylvania</h1>
       </properties>
@@ -700,9 +700,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _1000plus">
-      <featurecaption>
+      <map-featurecaption>
         Rhode Island
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Rhode Island</h1>
       </properties>
@@ -718,9 +718,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _100-200">
-      <featurecaption>
+      <map-featurecaption>
         South Carolina
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>South Carolina</h1>
       </properties>
@@ -731,9 +731,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _50-100">
-      <featurecaption>
+      <map-featurecaption>
         South Dakota
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>South Dakota</h1>
       </properties>
@@ -744,9 +744,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _50-100">
-      <featurecaption>
+      <map-featurecaption>
         Tennessee
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Tennessee</h1>
       </properties>
@@ -757,9 +757,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _50-100">
-      <featurecaption>
+      <map-featurecaption>
         Texas
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Texas</h1>
       </properties>
@@ -773,9 +773,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _20-50">
-      <featurecaption>
+      <map-featurecaption>
         Utah
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Utah</h1>
       </properties>
@@ -786,9 +786,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _50-100">
-      <featurecaption>
+      <map-featurecaption>
         Vermont
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Vermont</h1>
       </properties>
@@ -799,9 +799,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _200-500">
-      <featurecaption>
+      <map-featurecaption>
         Virginia
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Virginia</h1>
       </properties>
@@ -821,9 +821,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _100-200">
-      <featurecaption>
+      <map-featurecaption>
         Washington
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Washington</h1>
       </properties>
@@ -843,9 +843,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _50-100">
-      <featurecaption>
+      <map-featurecaption>
         West Virginia
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>West Virginia</h1>
       </properties>
@@ -857,9 +857,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _100-200">
-      <featurecaption>
+      <map-featurecaption>
         Wisconsin
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Wisconsin</h1>
       </properties>
@@ -871,9 +871,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _0-10">
-      <featurecaption>
+      <map-featurecaption>
         Wyoming
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Wyoming</h1>
       </properties>
@@ -884,9 +884,9 @@
       </geometry>
     </map-feature>
     <map-feature zoom="0" class="all  _1000plus">
-      <featurecaption>
+      <map-featurecaption>
         Puerto Rico
-      </featurecaption>
+      </map-featurecaption>
       <properties>
         <h1>Puerto Rico</h1>
       </properties>
