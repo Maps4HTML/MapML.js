@@ -313,7 +313,7 @@ export var Feature = L.Path.extend({
   _isClosed: function () {
     switch (this.type) {
       case 'MAP-POLYGON':
-      case 'MULTIPOLYGON':
+      case 'MAP-MULTIPOLYGON':
       case 'MAP-POINT':
       case 'MULTIPOINT':
         return true;

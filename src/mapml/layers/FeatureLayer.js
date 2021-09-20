@@ -336,7 +336,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         })));
     }
     let groupOptions = {group:svgGroup, featureID: mapml.id, accessibleTitle: title, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties, _leafletLayer: this.options._leafletLayer,},
-      collections = geometry.querySelector('multipolygon') || geometry.querySelector('geometrycollection');
+      collections = geometry.querySelector('map-multipolygon') || geometry.querySelector('geometrycollection');
     if(collections) groupOptions.wrappers = this._getGeometryParents(collections.parentElement);
 
     return M.featureGroup(group, groupOptions);
@@ -344,7 +344,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
   _getGeometryParents: function(subType, elems = []){
     if(subType && subType.tagName.toUpperCase() !== "MAP-GEOMETRY"){
-      if(subType.tagName.toUpperCase() === "MULTIPOLYGON" || subType.tagName.toUpperCase() === "GEOMETRYCOLLECTION")
+      if(subType.tagName.toUpperCase() === "MAP-MULTIPOLYGON" || subType.tagName.toUpperCase() === "GEOMETRYCOLLECTION")
         return this._getGeometryParents(subType.parentElement, elems);
       return this._getGeometryParents(subType.parentElement, elems.concat([subType]));
     } else {
