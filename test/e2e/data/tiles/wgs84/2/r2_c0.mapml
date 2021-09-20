@@ -7,7 +7,7 @@
    </map-head>
    <map-body>
       <map-feature id="fclass.6" class="fclass _6">
-         <geometry>
+         <map-geometry>
             <multipolygon>
                <polygon>
                   <coordinates>-179.8976835744369 -16.6823841787218 <span class="noline">-180 -16.7867606665446 -180 -16.9639260208753</span> -179.8207745834096 -16.778520417506 -179.8976835744369 -16.6823841787218</coordinates>
@@ -19,7 +19,7 @@
                   <coordinates>-180 -16.1694286760667 -179.9553653177074 -16.1529481779894 -179.9423182567295 -16.1213605566746 <span class="noline">-180 -16.1488280534701 -180 -16.1694286760667</span></coordinates>
                </polygon>
             </multipolygon>
-         </geometry>
+         </map-geometry>
          <map-properties>
             <table>
                <thead>
@@ -88,11 +88,11 @@
          </map-properties>
       </map-feature>
       <map-feature id="fclass.9" class="fclass _9">
-         <geometry>
+         <map-geometry>
             <polygon>
                <coordinates>-176.5905969602637 -44.1176066654459 -176.3447628639443 -44.0406976744186 -176.5775498992859 -43.766022706464 -176.564502838308 -43.9569218091925 -176.5905969602637 -44.1176066654459</coordinates>
             </polygon>
-         </geometry>
+         </map-geometry>
          <map-properties>
             <table>
                <thead>
@@ -161,11 +161,11 @@
          </map-properties>
       </map-feature>
       <map-feature id="fclass.11" class="fclass _11">
-         <geometry>
+         <map-geometry>
             <polygon>
                <coordinates>-149.6202618568028 -17.5235762680828 -149.5818073612891 -17.746062992126 -149.3359732649698 -17.7357626808277 -149.3572605749863 -17.5077824574254 -149.6202618568028 -17.5235762680828</coordinates>
             </polygon>
-         </geometry>
+         </map-geometry>
          <map-properties>
             <table>
                <thead>
@@ -235,7 +235,7 @@
          </map-properties>
       </map-feature>
       <map-feature id="fclass.15" class="fclass _15">
-         <geometry>
+         <map-geometry>
             <multipolygon>
                <polygon>
                   <coordinates>-171.3937465665629 -14.0461911737777 -171.6910822193737 -13.8504852591101 -172.0419794909357 -13.832631386193 -171.9190624427761 -14.0249038637612 -171.3937465665629 -14.0461911737777</coordinates>
@@ -244,7 +244,7 @@
                   <coordinates>-172.2184581578465 -13.7742629555027 -172.1834370994323 -13.6101446621498 -172.3042940853323 -13.4693737410731 -172.7726149056949 -13.5284288591833 -172.5267808093756 -13.8058505768174 -172.2184581578465 -13.7742629555027</coordinates>
                </polygon>
             </multipolygon>
-         </geometry>
+         </map-geometry>
          <map-properties>
             <table>
                <thead>

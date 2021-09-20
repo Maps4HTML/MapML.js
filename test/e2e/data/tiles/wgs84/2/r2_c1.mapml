@@ -7,7 +7,7 @@
    </map-head>
    <map-body>
       <map-feature id="fclass.5" class="fclass _5">
-         <geometry>
+         <map-geometry>
             <multipolygon>
                <polygon>
                   <coordinates>-90.2266068485625 -0.7361289141183 -90.1970792895074 -0.4889214429592 -90.5102087529756 -0.5239425013734 -90.4731276323018 -0.7464292254166 -90.2266068485625 -0.7361289141183</coordinates>
@@ -19,7 +19,7 @@
                   <coordinates>-90.5720106207654 -0.2334737227614 -90.810291155466 -0.1483244826955 -90.8617927119575 -0.3172495879875 -90.5960446804614 -0.3735579564182 -90.5720106207654 -0.2334737227614</coordinates>
                </polygon>
             </multipolygon>
-         </geometry>
+         </map-geometry>
          <map-properties>
             <table>
                <thead>

@@ -7,7 +7,7 @@
    </map-head>
    <map-body>
       <map-feature id="fclass.21" class="fclass _21">
-         <geometry>
+         <map-geometry>
             <multipolygon>
                <polygon>
                   <coordinates>55.318851858634 -20.9013916865043 55.2282091192089 -21.0332356711225 55.3106116095953 -21.2303149606299 55.5591924555942 -21.3614722578282 55.8036531770738 -21.3580388207288 55.8331807361289 -21.1623329060612 55.6766160043948 -20.9048251236037 55.318851858634 -20.9013916865043</coordinates>
@@ -16,7 +16,7 @@
                   <coordinates>45.1304706097784 -12.9811389855338 45.2341604101813 -12.7751327595678 45.0700421168284 -12.6831166453031 45.1304706097784 -12.9811389855338</coordinates>
                </polygon>
             </multipolygon>
-         </geometry>
+         </map-geometry>
          <map-properties>
             <table>
                <thead>
@@ -85,7 +85,7 @@
          </map-properties>
       </map-feature>
       <map-feature id="fclass.41" class="fclass _41">
-         <geometry>
+         <map-geometry>
             <multipolygon>
                <polygon>
                   <coordinates>50.0526460355246 -16.6411829335287 49.8459531221388 -16.9453854605384 49.8370261856803 -17.093023255814 50.0526460355246 -16.6411829335287</coordinates>
@@ -95,7 +95,7 @@
                   <coordinates>46.2628181651712 -15.6914942318257 46.4269364585241 -15.8913202710126 46.2772386009888 -15.9290880791064 46.2628181651712 -15.6914942318257</coordinates>
                </polygon>
             </multipolygon>
-         </geometry>
+         </map-geometry>
          <map-properties>
             <table>
                <thead>
@@ -164,11 +164,11 @@
          </map-properties>
       </map-feature>
       <map-feature id="fclass.44" class="fclass _44">
-         <geometry>
+         <map-geometry>
             <polygon>
                <coordinates>57.7950466947445 -20.2201977659769 57.6707562717451 -19.9997711041934 57.5492125984252 -19.9997711041934 57.3857809924922 -20.2373649514741 57.3562534334371 -20.4962461087713 57.671442959165 -20.4983061710309 57.7950466947445 -20.2201977659769</coordinates>
             </polygon>
-         </geometry>
+         </map-geometry>
          <map-properties>
             <table>
                <thead>
