@@ -215,7 +215,7 @@ export var Feature = L.Path.extend({
     for (let c of this._markup.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
       let ring = [], subRings = [];
       this._coordinateToArrays(c, ring, subRings, this.options.className);              //creates an array of pcrs points for the main ring and the subparts
-      if (!first && this.type === "POLYGON") {
+      if (!first && this.type === "MAP-POLYGON") {
         this._parts[0].rings.push(ring[0]);
         if (subRings.length > 0)
           this._parts[0].subrings = this._parts[0].subrings.concat(subRings);
@@ -312,7 +312,7 @@ export var Feature = L.Path.extend({
    */
   _isClosed: function () {
     switch (this.type) {
-      case 'POLYGON':
+      case 'MAP-POLYGON':
       case 'MULTIPOLYGON':
       case 'MAP-POINT':
       case 'MULTIPOINT':
