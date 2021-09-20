@@ -2,8 +2,8 @@
   <map-head>
     <meta charset="utf-8"/>
     <map-title>OpenStreetMap</map-title>
-    <link rel="license" href="https://www.openstreetmap.org/copyright" title="© OpenStreetMap contributors CC BY-SA"/>
-    <link rel="zoomout" href="cbmt-changeProjection.mapml" type="text/mapml" />
+    <map-link rel="license" href="https://www.openstreetmap.org/copyright" title="© OpenStreetMap contributors CC BY-SA"></map-link>
+    <map-link rel="zoomout" href="cbmt-changeProjection.mapml" type="text/mapml" ></map-link>
   </map-head>
   <map-body>
   <map-extent units="OSMTILE">
@@ -16,7 +16,7 @@
     </datalist>
     <map-input name="x" type="location" units="tilematrix" axis="column"></map-input>
     <map-input name="y" type="location" units="tilematrix" axis="row"></map-input>
-    <link rel="tile" tref="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+    <map-link rel="tile" tref="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
   </map-extent>
   </map-body>
 </mapml->

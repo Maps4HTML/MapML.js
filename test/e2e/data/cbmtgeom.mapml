@@ -3,15 +3,15 @@
     <map-title>Canada Base Map - Geometry</map-title>
     <map-meta http-equiv="Content-Type" content="text/mapml;projection=CBMTILE"></map-meta>
     <map-meta charset="utf-8"></map-meta>
-    <link rel="license" href="http://open.canada.ca/en/open-government-licence-canada" title="Open Government Licence - Canada"/>
-    <link rel="legend" href="http://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_CBCT_GEOM_3978/MapServer/legend"/>
+    <map-link rel="license" href="http://open.canada.ca/en/open-government-licence-canada" title="Open Government Licence - Canada"></map-link>
+    <map-link rel="legend" href="http://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_CBCT_GEOM_3978/MapServer/legend"></map-link>
   </map-head>
   <map-body>
     <map-extent units="CBMTILE" >
       <map-input name="z" type="zoom"  value="18" min="0" max="18"></map-input>
       <map-input name="y" type="location" units="tilematrix" axis="row" min="51599"  max="61455" ></map-input>
       <map-input name="x" type="location" units="tilematrix" axis="column" min="46501"  max="56244" ></map-input>
-      <link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_CBCT_GEOM_3978/MapServer/tile/{z}/{y}/{x}?m4h=t" />
+      <map-link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_CBCT_GEOM_3978/MapServer/tile/{z}/{y}/{x}?m4h=t" ></map-link>
     </map-extent>
   </map-body>
 </mapml->

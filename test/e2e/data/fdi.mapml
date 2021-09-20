@@ -3,8 +3,8 @@
     <map-title>Fire Danger (forecast)</map-title>
     <map-meta http-equiv="Content-Type" content="text/mapml;projection=CBMTILE"></map-meta>
     <map-meta charset="utf-8"></map-meta>
-    <link rel="license" href="https://www.nrcan.gc.ca/terms-conditions/10847" title="CWFIS © Natural Resources Canada"/>
-    <link rel="legend" href="https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image/png&amp;width=20&amp;height=20&amp;layer=fdr_current"/>
+    <map-link rel="license" href="https://www.nrcan.gc.ca/terms-conditions/10847" title="CWFIS © Natural Resources Canada"></map-link>
+    <map-link rel="legend" href="https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image/png&amp;width=20&amp;height=20&amp;layer=fdr_current"></map-link>
   </map-head>
   <map-body>
     <map-extent units="CBMTILE" >
@@ -13,7 +13,7 @@
       <map-input name="tymin" type="location" units="tilematrix" position="bottom-left" axis="northing" min="-2.003750834E7"  max="2.003750834E7" ></map-input>
       <map-input name="txmax" type="location" units="tilematrix" position="top-right" axis="easting" min="-2.003750834E7"  max="2.003750834E7" ></map-input>
       <map-input name="tymax" type="location" units="tilematrix" position="top-left" axis="northing" min="-2.003750834E7"  max="2.003750834E7" ></map-input>
-      <link rel="tile" tref="https://cwfis.cfs.nrcan.gc.ca/geoserver/public/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap&amp;layers=public:fdr_current&amp;styles=&amp;bbox={txmin},{tymin},{txmax},{tymax}&amp;width=256&amp;height=256&amp;crs=EPSG:3978&amp;FORMAT=image/png&amp;TRANSPARENT=TRUE&amp;m4h=t" />
+      <map-link rel="tile" tref="https://cwfis.cfs.nrcan.gc.ca/geoserver/public/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap&amp;layers=public:fdr_current&amp;styles=&amp;bbox={txmin},{tymin},{txmax},{tymax}&amp;width=256&amp;height=256&amp;crs=EPSG:3978&amp;FORMAT=image/png&amp;TRANSPARENT=TRUE&amp;m4h=t" ></map-link>
       <map-input name="i" type="location" units="map" axis="i"></map-input>
       <map-input name="j" type="location" units="map" axis="j"></map-input>
       <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="-2.003750834E7"  max="2.003750834E7" ></map-input>
@@ -22,7 +22,7 @@
       <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="-2.003750834E7"  max="2.003750834E7" ></map-input>
       <map-input name="w" type="width"></map-input>
       <map-input name="h" type="height"></map-input>
-      <link rel="query" tref="https://cwfis.cfs.nrcan.gc.ca/geoserver/public/wms?i={i}&amp;j={j}&amp;service=WMS&amp;version=1.3.0&amp;request=GetFeatureInfo&amp;layers=public:fdr_current&amp;QUERY_LAYERS=current:fdr_current&amp;styles=&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;width={w}&amp;height={h}&amp;srs=EPSG:3978&amp;INFO_FORMAT=text/html&amp;m4h=t" />
+      <map-link rel="query" tref="https://cwfis.cfs.nrcan.gc.ca/geoserver/public/wms?i={i}&amp;j={j}&amp;service=WMS&amp;version=1.3.0&amp;request=GetFeatureInfo&amp;layers=public:fdr_current&amp;QUERY_LAYERS=current:fdr_current&amp;styles=&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;width={w}&amp;height={h}&amp;srs=EPSG:3978&amp;INFO_FORMAT=text/html&amp;m4h=t" ></map-link>
     </map-extent>
   </map-body>
 </mapml->
