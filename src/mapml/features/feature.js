@@ -205,7 +205,7 @@ export var Feature = L.Path.extend({
 
     let attr = this._markup.attributes;
     this.featureAttributes = {};
-    if(this.options.link && this._markup.parentElement.tagName.toUpperCase() === "MAP-A" && this._markup.parentElement.parentElement.tagName.toUpperCase() !== "GEOMETRY")
+    if(this.options.link && this._markup.parentElement.tagName.toUpperCase() === "MAP-A" && this._markup.parentElement.parentElement.tagName.toUpperCase() !== "MAP-GEOMETRY")
       this.featureAttributes.tabindex = "0";
     for(let i = 0; i < attr.length; i++){
       this.featureAttributes[attr[i].name] = attr[i].value;

@@ -238,7 +238,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
        for (i = 0, len = features.length; i < len; i++) {
         // Only add this if geometry is set and not null
         feature = features[i];
-        var geometriesExist = feature.getElementsByTagName("geometry").length && feature.getElementsByTagName("coordinates").length;
+        var geometriesExist = feature.getElementsByTagName("map-geometry").length && feature.getElementsByTagName("coordinates").length;
         if (geometriesExist) {
          this.addData(feature, nativeCS, nativeZoom);
         }
@@ -321,7 +321,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       }
     },
   geometryToLayer: function (mapml, vectorOptions, nativeCS, zoom, title) {
-    let geometry = mapml.tagName.toUpperCase() === 'MAP-FEATURE' ? mapml.getElementsByTagName('geometry')[0] : mapml,
+    let geometry = mapml.tagName.toUpperCase() === 'MAP-FEATURE' ? mapml.getElementsByTagName('map-geometry')[0] : mapml,
         cs = geometry.getAttribute("cs") || nativeCS, group = [], svgGroup = L.SVG.create('g'), copyOptions = Object.assign({}, vectorOptions);
     for(let geo of geometry.querySelectorAll('polygon, linestring, multilinestring, point, multipoint')){
       group.push(M.feature(geo, Object.assign(copyOptions,
@@ -343,7 +343,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
   },
 
   _getGeometryParents: function(subType, elems = []){
-    if(subType && subType.tagName.toUpperCase() !== "GEOMETRY"){
+    if(subType && subType.tagName.toUpperCase() !== "MAP-GEOMETRY"){
       if(subType.tagName.toUpperCase() === "MULTIPOLYGON" || subType.tagName.toUpperCase() === "GEOMETRYCOLLECTION")
         return this._getGeometryParents(subType.parentElement, elems);
       return this._getGeometryParents(subType.parentElement, elems.concat([subType]));
