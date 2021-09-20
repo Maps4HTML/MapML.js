@@ -28,7 +28,7 @@ export var Feature = L.Path.extend({
   initialize: function (markup, options) {
     this.type = markup.tagName.toUpperCase();
 
-    if(this.type === "POINT" || this.type === "MULTIPOINT") options.fillOpacity = 1;
+    if(this.type === "MAP-POINT" || this.type === "MULTIPOINT") options.fillOpacity = 1;
 
     if(options.wrappers.length > 0)
       options = Object.assign(this._convertWrappers(options.wrappers), options);
@@ -235,7 +235,7 @@ export var Feature = L.Path.extend({
    * @private
    */
   _generateOutlinePoints: function () {
-    if (this.type === "MULTIPOINT" || this.type === "POINT" || this.type === "LINESTRING" || this.type === "MULTILINESTRING") return;
+    if (this.type === "MULTIPOINT" || this.type === "MAP-POINT" || this.type === "LINESTRING" || this.type === "MULTILINESTRING") return;
 
     this._outline = [];
     for (let coords of this._markup.querySelectorAll('coordinates')) {
@@ -314,7 +314,7 @@ export var Feature = L.Path.extend({
     switch (this.type) {
       case 'POLYGON':
       case 'MULTIPOLYGON':
-      case 'POINT':
+      case 'MAP-POINT':
       case 'MULTIPOINT':
         return true;
       case 'LINESTRING':

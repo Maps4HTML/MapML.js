@@ -135,7 +135,7 @@ export var QueryHandler = L.Handler.extend({
 
         for(let feature of mapmldoc.querySelectorAll('map-feature')){
           if(!feature.querySelector('map-geometry')){
-            let geo = document.createElement('map-geometry'), point = document.createElement('point'),
+            let geo = document.createElement('map-geometry'), point = document.createElement('map-point'),
               coords = document.createElement('coordinates');
             geo.setAttribute("cs", "gcrs");
             coords.innerHTML = `${loc.lng} ${loc.lat}`;
