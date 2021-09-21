@@ -292,7 +292,7 @@ export var Util = {
       var ss = [];
       var stylesheets = mapml.querySelectorAll('map-link[rel=stylesheet],style');
       for (var i=0;i<stylesheets.length;i++) {
-        if (stylesheets[i].nodeName.toUpperCase() === "LINK" ) {
+        if (stylesheets[i].nodeName.toUpperCase() === "MAP-LINK" ) {
           var href = stylesheets[i].hasAttribute('href') ? new URL(stylesheets[i].getAttribute('href'),base).href: null;
           if (href) {
             if (!container.querySelector("link[href='"+href+"']")) {
