@@ -9,11 +9,11 @@
     <map-extent units="OSMTILE" >
       <map-input name="z" type="zoom"  value="18" min="0" max="18"></map-input>
       <map-input name="s" type="hidden" shard="true" list="servers"></map-input>
-      <datalist id="servers">
+      <map-datalist id="servers">
         <option value="a"></option>
         <option value="b"></option>
         <option value="c"></option>
-      </datalist>
+      </map-datalist>
       <map-input name="x" type="location" units="tilematrix" axis="column" min="0"  max="262144" ></map-input>
       <map-input name="y" type="location" units="tilematrix" axis="row" min="0"  max="262144" ></map-input>
       <link rel="tile" tref="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
