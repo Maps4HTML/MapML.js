@@ -15,7 +15,7 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       var testcontainer = document.createElement('div');
       M.parseStylesheetAsHTML(mapml, base, testcontainer);
-      expect(testcontainer.querySelector('map-link')).toBeFalsy();
+      expect(testcontainer.querySelector('link')).toBeFalsy();
       expect(testcontainer.querySelector('style')).toBeTruthy();
       expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}');
 
@@ -45,7 +45,7 @@ describe("M.Util Tests", () => {
       var testcontainer = document.createElement('div');
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       M.parseStylesheetAsHTML(mapml, base, testcontainer);
-      expect(testcontainer.querySelector('map-link')).toBeFalsy();
+      expect(testcontainer.querySelector('link')).toBeFalsy();
       expect(testcontainer.querySelector('style')).toBeTruthy();
       expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}');
     });
