@@ -28,7 +28,7 @@ export var Feature = L.Path.extend({
   initialize: function (markup, options) {
     this.type = markup.tagName.toUpperCase();
 
-    if(this.type === "POINT" || this.type === "MULTIPOINT") options.fillOpacity = 1;
+    if(this.type === "MAP-POINT" || this.type === "MULTIPOINT") options.fillOpacity = 1;
 
     if(options.wrappers.length > 0)
       options = Object.assign(this._convertWrappers(options.wrappers), options);
@@ -205,7 +205,7 @@ export var Feature = L.Path.extend({
 
     let attr = this._markup.attributes;
     this.featureAttributes = {};
-    if(this.options.link && this._markup.parentElement.tagName.toUpperCase() === "MAP-A" && this._markup.parentElement.parentElement.tagName.toUpperCase() !== "GEOMETRY")
+    if(this.options.link && this._markup.parentElement.tagName.toUpperCase() === "MAP-A" && this._markup.parentElement.parentElement.tagName.toUpperCase() !== "MAP-GEOMETRY")
       this.featureAttributes.tabindex = "0";
     for(let i = 0; i < attr.length; i++){
       this.featureAttributes[attr[i].name] = attr[i].value;
@@ -215,7 +215,7 @@ export var Feature = L.Path.extend({
     for (let c of this._markup.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
       let ring = [], subRings = [];
       this._coordinateToArrays(c, ring, subRings, this.options.className);              //creates an array of pcrs points for the main ring and the subparts
-      if (!first && this.type === "POLYGON") {
+      if (!first && this.type === "MAP-POLYGON") {
         this._parts[0].rings.push(ring[0]);
         if (subRings.length > 0)
           this._parts[0].subrings = this._parts[0].subrings.concat(subRings);
@@ -235,7 +235,7 @@ export var Feature = L.Path.extend({
    * @private
    */
   _generateOutlinePoints: function () {
-    if (this.type === "MULTIPOINT" || this.type === "POINT" || this.type === "LINESTRING" || this.type === "MULTILINESTRING") return;
+    if (this.type === "MULTIPOINT" || this.type === "MAP-POINT" || this.type === "LINESTRING" || this.type === "MULTILINESTRING") return;
 
     this._outline = [];
     for (let coords of this._markup.querySelectorAll('coordinates')) {
@@ -312,9 +312,9 @@ export var Feature = L.Path.extend({
    */
   _isClosed: function () {
     switch (this.type) {
-      case 'POLYGON':
-      case 'MULTIPOLYGON':
-      case 'POINT':
+      case 'MAP-POLYGON':
+      case 'MAP-MULTIPOLYGON':
+      case 'MAP-POINT':
       case 'MULTIPOINT':
         return true;
       case 'LINESTRING':
