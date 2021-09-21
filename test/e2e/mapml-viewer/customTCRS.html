@@ -43,7 +43,7 @@
       <map-meta name="cs" content="gcrs"></map-meta>
       <map-meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5"></map-meta>
 
-      <link id="first" rel="stylesheet" type="text/css" href="first.css">
+      <map-link id="first" rel="stylesheet" type="text/css" href="first.css"></map-link>
       <style>
         .second {
           stroke: aqua;
@@ -54,7 +54,7 @@
           stroke: blue
         }
       </style>
-      <link id="forth" rel="stylesheet" type="text/css" href="forth.css">
+      <map-link id="forth" rel="stylesheet" type="text/css" href="forth.css"></map-link>
       <map-feature zoom="2" class="refDiff">
         <map-properties>
           <h1>Test</h1>
@@ -122,7 +122,7 @@
         <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46"></map-input>
         <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74"></map-input>
         <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46"></map-input>
-        <link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
+        <map-link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>
       </map-extent>
     </layer->
   </mapml-viewer>

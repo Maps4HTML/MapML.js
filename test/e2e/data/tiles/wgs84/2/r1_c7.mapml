@@ -7,7 +7,7 @@
    </map-head>
    <map-body>
 
-         <link rel="features" type="text/mapml" title="ne_10m_admin_0_countries (as MapML)" tref="./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}" />
+         <map-link rel="features" type="text/mapml" title="ne_10m_admin_0_countries (as MapML)" tref="./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}" ></map-link>
       <map-feature id="fclass.72" class="fclass _72">
          <map-geometry>
             <map-multipolygon>

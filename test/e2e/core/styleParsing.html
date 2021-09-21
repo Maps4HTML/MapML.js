@@ -28,7 +28,7 @@
       <map-meta name="extent"
                 content="cs=tilematrix,top-left-vertical=0,top-left-horizontal=0,bottom-right-vertical=5,bottom-right-horizontal=5"></map-meta>
 
-      <link id="first" rel="stylesheet" type="text/css" href="first.css">
+      <map-link id="first" rel="stylesheet" type="text/css" href="first.css"></map-link>>
       <style>
         .second {
           stroke: aqua;
@@ -39,7 +39,7 @@
           stroke: blue
         }
       </style>
-      <link id="forth" rel="stylesheet" type="text/css" href="forth.css">
+      <map-link id="forth" rel="stylesheet" type="text/css" href="forth.css"></map-link>>
       <map-feature zoom="2" class="refDiff">
         <map-properties>
           <h1>Arizona</h1>
@@ -96,7 +96,7 @@
         <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46" ></map-input>
         <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" ></map-input>
         <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" ></map-input>
-        <link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
+        <map-link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>>
       </map-extent>
     </layer->
   </map>
@@ -116,8 +116,8 @@
         <map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="5" ></map-input>
         <map-input name="col" type="location" axis="column" units="tilematrix" min="0" max="5" ></map-input>
 
-        <link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)'
-          tref='data/wgs84/{zoomLevel}/r{row}_c{col}.mapml' />
+        <map-link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)'
+          tref='data/wgs84/{zoomLevel}/r{row}_c{col}.mapml' ></map-link>>
 
       </map-extent>
     </layer->

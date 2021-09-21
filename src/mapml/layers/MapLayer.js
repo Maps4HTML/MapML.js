@@ -702,7 +702,7 @@ export var MapMLLayer = L.Layer.extend({
                     
                 var projectionMatch = projection && projection === layer.options.mapprojection,
                     metaExtent = mapml.querySelector('map-meta[name=extent]'),
-                    selectedAlternate = !projectionMatch && mapml.querySelector('map-head link[rel=alternate][projection='+layer.options.mapprojection+']'),
+                    selectedAlternate = !projectionMatch && mapml.querySelector('map-head map-link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 
       (new URL(mapml.querySelector('map-base') ? mapml.querySelector('map-base').getAttribute('href') : mapml.baseURI || this.responseURL, this.responseURL)).href;
@@ -721,11 +721,11 @@ export var MapMLLayer = L.Layer.extend({
                 } else if (!projectionMatch && layer._map && layer._map.options.mapEl.querySelectorAll("layer-").length === 1){
                   layer._map.options.mapEl.projection = projection;
                   return;
-                } else if (serverExtent.querySelector('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]') &&
+                } else if (serverExtent.querySelector('map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query]') &&
                         serverExtent.hasAttribute("units")) {
                   layer._templateVars = [];
                   // set up the URL template and associated inputs (which yield variable values when processed)
-                  var tlist = serverExtent.querySelectorAll('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]'),
+                  var tlist = serverExtent.querySelectorAll('map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query]'),
                       varNamesRe = (new RegExp('(?:\{)(.*?)(?:\})','g')),
                       zoomInput = serverExtent.querySelector('map-input[type="zoom" i]'),
                       includesZoom = false, extentFallback = {};
@@ -857,8 +857,8 @@ export var MapMLLayer = L.Layer.extend({
                 layer._extent = serverExtent;
                 
                 
-                var zoomin = mapml.querySelector('link[rel=zoomin]'),
-                    zoomout = mapml.querySelector('link[rel=zoomout]');
+                var zoomin = mapml.querySelector('map-link[rel=zoomin]'),
+                    zoomout = mapml.querySelector('map-link[rel=zoomout]');
                 delete layer._extent.zoomin;
                 delete layer._extent.zoomout;
                 if (zoomin) {
@@ -881,7 +881,7 @@ export var MapMLLayer = L.Layer.extend({
                   layer._mapmlTileContainer.appendChild(tiles);
                 }
                 M.parseStylesheetAsHTML(mapml, base, layer._container);
-                var styleLinks = mapml.querySelectorAll('link[rel=style],link[rel="self style"],link[rel="style self"]');
+                var styleLinks = mapml.querySelectorAll('map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]');
                 if (styleLinks.length > 1) {
                   var stylesControl = document.createElement('details'),
                   stylesControlSummary = document.createElement('summary');

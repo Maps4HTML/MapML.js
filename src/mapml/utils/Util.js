@@ -281,7 +281,7 @@ export var Util = {
     return pairs;
   },
   parseStylesheetAsHTML: function(mapml, base, container) {
-      if (!(container instanceof Element) || !mapml || !mapml.querySelector('link[rel=stylesheet],style')) return;
+      if (!(container instanceof Element) || !mapml || !mapml.querySelector('map-link[rel=stylesheet],style')) return;
 
       if(base instanceof Element) {
         base = base.getAttribute('href')?base.getAttribute('href'):document.URL;
@@ -290,9 +290,9 @@ export var Util = {
       }
 
       var ss = [];
-      var stylesheets = mapml.querySelectorAll('link[rel=stylesheet],style');
+      var stylesheets = mapml.querySelectorAll('map-link[rel=stylesheet],style');
       for (var i=0;i<stylesheets.length;i++) {
-        if (stylesheets[i].nodeName.toUpperCase() === "LINK" ) {
+        if (stylesheets[i].nodeName.toUpperCase() === "MAP-LINK" ) {
           var href = stylesheets[i].hasAttribute('href') ? new URL(stylesheets[i].getAttribute('href'),base).href: null;
           if (href) {
             if (!container.querySelector("link[href='"+href+"']")) {

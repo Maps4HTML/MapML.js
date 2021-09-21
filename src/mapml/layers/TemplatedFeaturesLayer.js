@@ -52,7 +52,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
                     .then( function (text) {
               mapml = parser.parseFromString(text,"application/xml");
               var base = (new URL(mapml.querySelector('map-base') ? mapml.querySelector('map-base').getAttribute('href') : url)).href;
-              url = mapml.querySelector('link[rel=next]')? mapml.querySelector('link[rel=next]').getAttribute('href') : null;
+              url = mapml.querySelector('map-link[rel=next]')? mapml.querySelector('map-link[rel=next]').getAttribute('href') : null;
               url =  url ? (new URL(url, base)).href: null;
               let nativeZoom = mapml.querySelector("map-meta[name=zoom]") &&
                 +M.metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value || 0;
@@ -97,7 +97,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
                     //TODO wrap this puppy in a try/catch/finally to parse application/geo+json if necessary
               mapml = parser.parseFromString(text,"application/xml");
               var base = (new URL(mapml.querySelector('map-base') ? mapml.querySelector('map-base').getAttribute('href') : url)).href;
-              url = mapml.querySelector('link[rel=next]')? mapml.querySelector('link[rel=next]').getAttribute('href') : null;
+              url = mapml.querySelector('map-link[rel=next]')? mapml.querySelector('map-link[rel=next]').getAttribute('href') : null;
               url =  url ? (new URL(url, base)).href: null;
               // TODO if the xml parser barfed but the response is application/geo+json, use the parent addData method
             let nativeZoom = mapml.querySelector("map-meta[name=zoom]") &&
