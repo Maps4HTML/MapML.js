@@ -10,9 +10,9 @@
     <map-input name="z" type="zoom" min="9" max="18"></map-input>
     <map-input name="s" type="hidden" shard="true" list="servers"></map-input>
     <map-datalist id="servers">
-      <option value="a"/>
-      <option value="b"/>
-      <option value="c"/>
+      <map-option value="a"></map-option>
+      <map-option value="b"></map-option>
+      <map-option value="c"></map-option>
     </map-datalist>
     <map-input name="x" type="location" units="tilematrix" axis="column"></map-input>
     <map-input name="y" type="location" units="tilematrix" axis="row"></map-input>

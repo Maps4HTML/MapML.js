@@ -794,7 +794,7 @@ export var MapMLLayer = L.Layer.extend({
                         if (inp.hasAttribute('shard')) {
                           var id = inp.getAttribute('list');
                           inp.servers = [];
-                          var servers = serverExtent.querySelectorAll('map-datalist#'+id + ' > option');
+                          var servers = serverExtent.querySelectorAll('map-datalist#'+id + ' > map-option');
                           if (servers.length === 0 && inp.hasAttribute('value')) {
                             servers = inp.getAttribute('value').split('');
                           }

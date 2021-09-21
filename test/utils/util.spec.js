@@ -28,8 +28,6 @@ describe("M.Util Tests", () => {
       var testcontainer = document.createElement('div');
       mapml.firstChild.firstChild.append(link);
 
-      console.log(link);
-      console.log(mapml.firstChild.firstChild);
 
       // we expect both the link and the inline style to be copied
       M.parseStylesheetAsHTML(mapml, base, testcontainer);
