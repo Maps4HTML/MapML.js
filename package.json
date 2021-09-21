@@ -36,7 +36,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@runette/leaflet-fullscreen": "1.0.4",
+    "@runette/leaflet-fullscreen": "^1.0.5",
     "express": "^4.17.1",
     "grunt": "^1.4.0",
     "grunt-contrib-clean": "^2.0.0",
@@ -56,5 +56,8 @@
     "proj4leaflet": "^1.0.2",
     "rollup": "^2.23.1"
   },
-  "files": [ "dist", "*.md" ]
+  "files": [
+    "dist",
+    "*.md"
+  ]
 }
