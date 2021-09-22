@@ -264,11 +264,11 @@ export var Feature = L.Path.extend({
   },
 
   /**
-   * Converts coordinates element to an object representing the parts and subParts
-   * @param {HTMLElement} coords - A single coordinates element
+   * Converts map-coordinates element to an object representing the parts and subParts
+   * @param {HTMLElement} coords - A single map-coordinates element
    * @param {Object[]} main - An empty array representing the main parts
    * @param {Object[]} subParts - An empty array representing the sub parts
-   * @param {boolean} isFirst - A true | false representing if the current HTML element is the parent coordinates element or not
+   * @param {boolean} isFirst - A true | false representing if the current HTML element is the parent map-coordinates element or not
    * @param {string} cls - The class of the coordinate/span
    * @param parents
    * @private
