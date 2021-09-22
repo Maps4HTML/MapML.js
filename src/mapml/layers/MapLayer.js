@@ -1150,7 +1150,7 @@ export var MapMLLayer = L.Layer.extend({
           if(extent.hasAttribute('units'))
             return extent.getAttribute('units').toUpperCase();
           break;
-        case "INPUT":
+        case "MAP-INPUT":
           if(extent.hasAttribute('value'))
             return extent.getAttribute('value').toUpperCase();
           break;

@@ -29,16 +29,16 @@
                 content="cs=tilematrix,top-left-vertical=0,top-left-horizontal=0,bottom-right-vertical=5,bottom-right-horizontal=5"></map-meta>
 
       <map-link id="first" rel="stylesheet" type="text/css" href="first.css"></map-link>>
-      <style>
+      <map-style>
         .second {
           stroke: aqua;
         }
-      </style>
-      <style>
+      </map-style>
+      <map-style>
         .third {
           stroke: blue
         }
-      </style>
+      </map-style>
       <map-link id="forth" rel="stylesheet" type="text/css" href="forth.css"></map-link>>
       <map-feature zoom="2" class="refDiff">
         <map-properties>
@@ -103,12 +103,12 @@
   <map is="web-map" projection="WGS84" zoom="0" lat="0" lon="0" controls>
 
     <layer- label="Inline Countries" checked>
-      <link rel="stylesheet" href="styleParsing.css">
-      <style>
+      <map-link rel="stylesheet" href="styleParsing.css">
+      <map-style>
         .secondVector {
           color: aliceblue;
         }
-      </style>
+      </map-style>
       <map-meta name="zoom" content="min=0,max=10"></map-meta>
       <map-extent units="WGS84">
         <map-input name="zoomLevel" type="zoom" min="0" max="2" value="0" ></map-input>

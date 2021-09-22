@@ -13,7 +13,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         // info: https://github.com/Leaflet/Leaflet/pull/4597
         L.DomUtil.addClass(this._container, 'leaflet-pane mapml-vector-container');
         L.setOptions(this.options.renderer, {pane: this._container});
-        let style = L.DomUtil.create("style", "mapml-feature-style", this._container);
+        let style = L.DomUtil.create("map-style", "mapml-feature-style", this._container);
         style.innerHTML = `
         g[role="link"]:focus,
         g[role="link"]:hover,
@@ -227,7 +227,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
       var features = mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === "LAYER-" ? mapml.getElementsByTagName("map-feature") : null,
           i, len, feature;
 
-      var linkedStylesheets = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelector("map-link[rel=stylesheet],style") : null;
+      var linkedStylesheets = mapml.nodeType === Node.DOCUMENT_NODE ? mapml.querySelector("map-link[rel=stylesheet],map-style") : null;
       if (linkedStylesheets) {
         var base = mapml.querySelector('map-base') && mapml.querySelector('map-base').hasAttribute('href') ? 
             new URL(mapml.querySelector('map-base').getAttribute('href')).href : 

@@ -3,7 +3,7 @@
 describe("M.Util Tests", () => {
   describe("M.parseStylesheetToHTML(mapml,base,container) utility function tests", () => {
 
-    var mapmlString = "<mapml-><map-head><style>.css {property:cool}</style></map-head><map-body></map-body></mapml->",
+    var mapmlString = "<mapml-><map-head><map-style>.css {property:cool}</map-style></map-head><map-body></map-body></mapml->",
       parser = new DOMParser(),
       base = "https://example.org/mapml/is/awesome/",
       link = parser.parseFromString('<doc><map-link rel="stylesheet" href="./remote.css" ></map-link></doc>', 'application/xml').firstChild.firstChild;
