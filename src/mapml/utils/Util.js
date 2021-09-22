@@ -302,7 +302,7 @@ export var Util = {
               ss.push(linkElm);
             }
           }  
-        } else { // <style>
+        } else { // <map-style>
             var styleElm = document.createElement('style');
             styleElm.textContent = stylesheets[i].textContent;
             ss.push(styleElm);

@@ -735,7 +735,7 @@ export var MapMLLayer = L.Layer.extend({
                     serverExtent = layer._synthesizeExtent(mapml);
                     // the mapml resource does not have a (complete) extent form, save
                     // its content if any so we don't have to revisit the server, ever.
-                    if (mapml.querySelector('map-feature,image,map-tile')) {
+                    if (mapml.querySelector('map-feature,map-tile')) {
                         layer._content = mapml;
                     }
                 } else if (!projectionMatch && selectedAlternate && selectedAlternate.hasAttribute('href')) {
@@ -907,7 +907,7 @@ export var MapMLLayer = L.Layer.extend({
                   layer._mapmlTileContainer.appendChild(tiles);
                 }
                 M.parseStylesheetAsHTML(mapml, base, layer._container);
-                var styleLinks = mapml.querySelectorAll('map-link[rel=map-style],map-link[rel="self map-style"],map-link[rel="map-style self"]');
+                var styleLinks = mapml.querySelectorAll('map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]');
                 if (styleLinks.length > 1) {
                   var stylesControl = document.createElement('details'),
                   stylesControlSummary = document.createElement('summary');
@@ -928,7 +928,7 @@ export var MapMLLayer = L.Layer.extend({
                     var styleOptionLabel = styleOption.appendChild(document.createElement('label'));
                     styleOptionLabel.setAttribute("for", "rad"+j);
                     styleOptionLabel.innerText = styleLinks[j].getAttribute('title');
-                    if (styleLinks[j].getAttribute("rel") === "map-style self" || styleLinks[j].getAttribute("rel") === "self map-style") {
+                    if (styleLinks[j].getAttribute("rel") === "style self" || styleLinks[j].getAttribute("rel") === "self style") {
                       styleOptionInput.checked = true;
                     }
                     stylesControl.appendChild(styleOption);
@@ -1164,14 +1164,14 @@ export var MapMLLayer = L.Layer.extend({
       return FALLBACK_PROJECTION;
     },
     _parseLicenseAndLegend: function (xml, layer) {
-        var licenseLink =  xml.querySelector('link[rel=license]'), licenseTitle, licenseUrl, attText;
+        var licenseLink =  xml.querySelector('map-link[rel=license]'), licenseTitle, licenseUrl, attText;
         if (licenseLink) {
             licenseTitle = licenseLink.getAttribute('title');
             licenseUrl = licenseLink.getAttribute('href');
             attText = '<a href="' + licenseUrl + '" title="'+licenseTitle+'">'+licenseTitle+'</a>';
         }
         L.setOptions(layer,{attribution:attText});
-        var legendLink = xml.querySelector('link[rel=legend]');
+        var legendLink = xml.querySelector('map-link[rel=legend]');
         if (legendLink) {
           layer._legendUrl = legendLink.getAttribute('href');
         }

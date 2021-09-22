@@ -26,7 +26,7 @@
       <map-meta name="projection" content="CBMTILE"></map-meta>
       <map-meta name="cs" content="tilematrix"></map-meta>
 
-      <map-link id="first" rel="stylesheet" type="text/css" href="first.css">
+      <map-link id="first" rel="stylesheet" type="text/css" href="first.css"></map-link>
       <map-style>
         .second {
           stroke: aqua;
@@ -37,7 +37,7 @@
           stroke: blue
         }
       </map-style>
-      <map-link id="forth" rel="stylesheet" type="text/css" href="forth.css">
+      <map-link id="forth" rel="stylesheet" type="text/css" href="forth.css"></map-link>
       <map-feature zoom="2" class="refDiff">
         <map-properties>
           <h1>Arizona</h1>
@@ -113,7 +113,7 @@
   <map is="web-map" projection="WGS84" zoom="0" lat="0" lon="0" controls>
 
     <layer- label="Inline Countries" checked>
-      <map-link rel="stylesheet" href="styleOrder.css">
+      <map-link rel="stylesheet" href="styleOrder.css"></map-link>
       <map-style>
         .secondVector {
           color: aliceblue;
@@ -126,7 +126,7 @@
         <map-input name="col" type="location" axis="column" units="tilematrix" ></map-input>
 
         <map-link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)'
-          tref='data/wgs84/{zoomLevel}/r{row}_c{col}.mapml' />
+                  tref='data/wgs84/{zoomLevel}/r{row}_c{col}.mapml' ></map-link>
 
       </map-extent>
     </layer->
