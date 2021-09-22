@@ -8,7 +8,7 @@ describe("MapMLStaticTileLayer Tests", function () {
 
   test("Setting Tile Layer options", function () {
     let tileContainer = document.createElement("div");
-    tileContainer.innerHTML = '<tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></tiles>';
+    tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
     const layer = M.mapMLStaticTileLayer({
       pane: container,
       className: "tempGridML",
@@ -26,7 +26,7 @@ describe("MapMLStaticTileLayer Tests", function () {
 
   test("Creating tile group map", function () {
     let tileContainer = document.createElement("div");
-    tileContainer.innerHTML = '<tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></tiles>';
+    tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
     const layer = M.mapMLStaticTileLayer({
       pane: container,
       className: "tempGridML",
@@ -45,7 +45,7 @@ describe("MapMLStaticTileLayer Tests", function () {
 
   test("Creating tile group map with multiple img in one tile in document order", function () {
     let tileContainer = document.createElement("div");
-    tileContainer.innerHTML = '<tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></tiles>';
+    tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
     const layer = M.mapMLStaticTileLayer({
       pane: container,
       className: "tempGridML",
@@ -63,7 +63,7 @@ describe("MapMLStaticTileLayer Tests", function () {
   describe("Deriving zoom bounds with MapMLStaticTileLayer._getZoomBounds()", function () {
     test("max=null,min=null,nativeMax=3,nativeMin=2", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></tiles>';
+      tileContainer.innerHTML = '<map-tiles><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
       const layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",
@@ -78,7 +78,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     });
     test("max=18,min=null,nativeMax=3,nativeMin=2", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="max=18"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></tiles>';
+      tileContainer.innerHTML = '<map-tiles zoom="max=18"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
       const layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",
@@ -93,7 +93,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     });
     test("max=null,min=3,nativeMax=20,nativeMin=4", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="min=3">';
+      tileContainer.innerHTML = '<map-tiles zoom="min=3">';
       tileContainer.innerHTML += '<map-tile zoom="4" row="18" col="17" src="data/cbmt/2/c11_r12.png">';
       tileContainer.innerHTML += '</map-tile><map-tile zoom="5" row="10" col="11" src="data/cbmt/2/c11_r10.png">';
       tileContainer.innerHTML += '</map-tile><map-tile zoom="20" row="11" col="9" src="data/cbmt/2/c9_r11.png">';
@@ -115,7 +115,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     });
     test("max=0,min=0,nativeMax=0,nativeMin=0", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="min=0,max=0"><map-tile zoom="0" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="0" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="0" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></tiles>';
+      tileContainer.innerHTML = '<map-tiles zoom="min=0,max=0"><map-tile zoom="0" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="0" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="0" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
       const layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",
@@ -130,7 +130,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     });
     test("max=5,min=18,nativeMax=3,nativeMin=2", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="min=5,max=18"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></tiles>';
+      tileContainer.innerHTML = '<map-tiles zoom="min=5,max=18"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
       const layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",
@@ -145,7 +145,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     });
     test("max=string,min=string,nativeMax=19,nativeMin=2", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="min=test,max=test"><map-tile zoom="19" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="19" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="15" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="12" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="5" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></tiles>';
+      tileContainer.innerHTML = '<map-tiles zoom="min=test,max=test"><map-tile zoom="19" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="19" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="15" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="12" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="5" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
       const layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",
@@ -162,7 +162,7 @@ describe("MapMLStaticTileLayer Tests", function () {
   describe("Creating tiles with MapMLStaticTileLayer.createTile()", function () {
     test("One image element in tile", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></tiles>';
+      tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
       let layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",
@@ -180,7 +180,7 @@ describe("MapMLStaticTileLayer Tests", function () {
 
     test("Multiple image element in tile", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></tiles>';
+      tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
       let layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",
@@ -198,7 +198,7 @@ describe("MapMLStaticTileLayer Tests", function () {
 
     test("Multiple image element in tile in order", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></tiles>';
+      tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
       let layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",
@@ -221,7 +221,7 @@ describe("MapMLStaticTileLayer Tests", function () {
   describe("Deriving layer bounds with MapMLStaticTileLayer._getLayerBounds()", function () {
     test("Reasonable tiles", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></tiles>';
+      tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
       let layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",
@@ -237,7 +237,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     });
     test("Different set of reasonable tiles", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="min=0,max=24"><map-tile zoom="3" row="20" col="12" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="19" col="13" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="8" col="11" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="8" col="13" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="1" col="1" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="0" col="0" src="data/cbmt/2/c11_r11.png"></map-tile></tiles>';
+      tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="20" col="12" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="19" col="13" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="8" col="11" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="8" col="13" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="1" col="1" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="0" col="0" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
       let layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",
@@ -253,7 +253,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     });
     test("Single tile", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="min=0,max=24"><map-tile zoom="0" row="0" col="0" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
+      tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="0" row="0" col="0" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
       let layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",
@@ -267,7 +267,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     });
     test("Empty tiles container", function () {
       let tileContainer = document.createElement("div");
-      tileContainer.innerHTML = '<tiles zoom="min=0,max=24"></tiles>';
+      tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"></map-tiles>';
       let layer = M.mapMLStaticTileLayer({
         pane: container,
         className: "tempGridML",

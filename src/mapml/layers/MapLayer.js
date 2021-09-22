@@ -149,7 +149,7 @@ export var MapMLLayer = L.Layer.extend({
         
         //only add the layer if there are tiles to be rendered
         if((!this._staticTileLayer || this._staticTileLayer._container === null) && 
-          this._mapmlTileContainer.getElementsByTagName("tiles").length > 0)
+          this._mapmlTileContainer.getElementsByTagName("map-tiles").length > 0)
         {
           this._staticTileLayer = M.mapMLStaticTileLayer({
             pane:this._container,
@@ -897,7 +897,7 @@ export var MapMLLayer = L.Layer.extend({
                   layer._templatedLayer.reset(layer._templateVars);
                 }
                 if (mapml.querySelector('map-tile')) {
-                  var tiles = document.createElement("tiles"),
+                  var tiles = document.createElement("map-tiles"),
                     zoom = mapml.querySelector('map-meta[name=zoom][content]') || mapml.querySelector('map-input[type=zoom][value]');
                   tiles.setAttribute("zoom", zoom && zoom.getAttribute('content') || zoom && zoom.getAttribute('value') || "0");
                   var newTiles = mapml.getElementsByTagName('map-tile');
