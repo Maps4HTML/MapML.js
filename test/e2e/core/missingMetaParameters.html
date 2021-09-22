@@ -26,18 +26,18 @@
       <map-meta name="projection" content="CBMTILE"></map-meta>
       <map-meta name="cs" content="tilematrix"></map-meta>
 
-      <link id="first" rel="stylesheet" type="text/css" href="first.css">
-      <style>
+      <map-link id="first" rel="stylesheet" type="text/css" href="first.css">
+      <map-style>
         .second {
           stroke: aqua;
         }
-      </style>
-      <style>
+      </map-style>
+      <map-style>
         .third {
           stroke: blue
         }
-      </style>
-      <link id="forth" rel="stylesheet" type="text/css" href="forth.css">
+      </map-style>
+      <map-link id="forth" rel="stylesheet" type="text/css" href="forth.css">
       <map-feature zoom="2" class="refDiff">
         <map-properties>
           <h1>Arizona</h1>
@@ -114,11 +114,11 @@
 
     <layer- label="Inline Countries" checked>
       <map-link rel="stylesheet" href="styleOrder.css">
-      <style>
+      <map-style>
         .secondVector {
           color: aliceblue;
         }
-      </style>
+      </map-style>
       <map-extent units="WGS84">
         <map-input name="zoomLevel" type="zoom" min="0" max="2" value="0" ></map-input>
 

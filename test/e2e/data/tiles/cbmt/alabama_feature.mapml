@@ -4,9 +4,9 @@
         <meta http-equiv="Content-Type" content="text/mapml"/>
         <map-link rel="stylesheet" href="canvec_cantopo_svg.css" type="text/css"></map-link>
         <map-link rel="stylesheet" href="canvec_feature_properties.css" type="text/css"></map-link>
-        <style>
+        <map-style>
         .all { fill-opacity: 0.7; stroke-width: 2; stroke: white; stroke-opacity: 1; stroke-dasharray: 3; }
-        </style>
+        </map-style>
         <map-link rel="license" href="http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="CanVec+ © Natural Resources Canada"></map-link>
     </map-head>
     <map-body>
