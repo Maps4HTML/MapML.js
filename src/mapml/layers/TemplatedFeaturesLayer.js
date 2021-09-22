@@ -197,7 +197,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
             name = inputs[i].getAttribute("name"), 
             position = inputs[i].getAttribute("position"),
             value = inputs[i].getAttribute("value"),
-            select = (inputs[i].tagName.toLowerCase() === "select");
+            select = (inputs[i].tagName.toLowerCase() === "map-select");
         if (type === "width") {
               featuresVarNames.feature.width = {name: name};
         } else if ( type === "height") {

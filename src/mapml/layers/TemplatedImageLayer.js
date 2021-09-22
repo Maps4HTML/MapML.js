@@ -111,7 +111,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
             axis = inputs[i].getAttribute("axis"), 
             name = inputs[i].getAttribute("name"), 
             position = inputs[i].getAttribute("position"),
-            select = (inputs[i].tagName.toLowerCase() === "select");
+            select = (inputs[i].tagName.toLowerCase() === "map-select");
         if (type === "width") {
               extentVarNames.extent.width = name;
         } else if ( type === "height") {
