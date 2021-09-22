@@ -19,7 +19,7 @@ export var MapMLLayer = L.Layer.extend({
         }
         if (content) {
           this._layerEl = content;
-          mapml = content.querySelector('image,map-feature,map-tile,map-extent') ? true : false;
+          mapml = content.querySelector('map-feature,map-tile,map-extent') ? true : false;
           if (!href && mapml) {
               this._content = content;
           }
