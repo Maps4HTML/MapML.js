@@ -43,7 +43,7 @@ export var Feature = L.Path.extend({
 
     this._convertMarkup();
 
-    if(markup.querySelector('span') || markup.querySelector('map-a')){
+    if(markup.querySelector('map-span') || markup.querySelector('map-a')){
       this._generateOutlinePoints();
     }
 
@@ -173,7 +173,7 @@ export var Feature = L.Path.extend({
   },
 
   /**
-   * Converts the spans, a and divs around a geometry subtype into options for the feature
+   * Converts the map-spans, a and divs around a geometry subtype into options for the feature
    * @param {HTMLElement[]} elems - The current zoom level of the map
    * @private
    */
@@ -231,7 +231,7 @@ export var Feature = L.Path.extend({
   },
 
   /**
-   * Generates the feature outline, subtracting the spans to generate those separately
+   * Generates the feature outline, subtracting the map-spans to generate those separately
    * @private
    */
   _generateOutlinePoints: function () {
