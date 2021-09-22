@@ -907,7 +907,7 @@ export var MapMLLayer = L.Layer.extend({
                   layer._mapmlTileContainer.appendChild(tiles);
                 }
                 M.parseStylesheetAsHTML(mapml, base, layer._container);
-                var styleLinks = mapml.querySelectorAll('map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]');
+                var styleLinks = mapml.querySelectorAll('map-link[rel=map-style],map-link[rel="self map-style"],map-link[rel="map-style self"]');
                 if (styleLinks.length > 1) {
                   var stylesControl = document.createElement('details'),
                   stylesControlSummary = document.createElement('summary');
@@ -928,7 +928,7 @@ export var MapMLLayer = L.Layer.extend({
                     var styleOptionLabel = styleOption.appendChild(document.createElement('label'));
                     styleOptionLabel.setAttribute("for", "rad"+j);
                     styleOptionLabel.innerText = styleLinks[j].getAttribute('title');
-                    if (styleLinks[j].getAttribute("rel") === "style self" || styleLinks[j].getAttribute("rel") === "self style") {
+                    if (styleLinks[j].getAttribute("rel") === "map-style self" || styleLinks[j].getAttribute("rel") === "self map-style") {
                       styleOptionInput.checked = true;
                     }
                     stylesControl.appendChild(styleOption);

@@ -119,7 +119,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     },
 
     _createFeatures: function(markup, coords, tile){
-      let stylesheets = markup.querySelector('map-link[rel=stylesheet],style');
+      let stylesheets = markup.querySelector('map-link[rel=stylesheet],map-style');
       if (stylesheets) {
         let base = markup.querySelector('map-base') && markup.querySelector('map-base').hasAttribute('href') ?
           new URL(markup.querySelector('map-base').getAttribute('href')).href :

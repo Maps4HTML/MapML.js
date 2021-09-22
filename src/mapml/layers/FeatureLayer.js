@@ -13,7 +13,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         // info: https://github.com/Leaflet/Leaflet/pull/4597
         L.DomUtil.addClass(this._container, 'leaflet-pane mapml-vector-container');
         L.setOptions(this.options.renderer, {pane: this._container});
-        let style = L.DomUtil.create("map-style", "mapml-feature-style", this._container);
+        let style = L.DomUtil.create("style", "mapml-feature-style", this._container);
         style.innerHTML = `
         g[role="link"]:focus,
         g[role="link"]:hover,
