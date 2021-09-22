@@ -212,7 +212,7 @@ export var Feature = L.Path.extend({
     }
 
     let first = true;
-    for (let c of this._markup.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
+    for (let c of this._markup.querySelectorAll('map-coordinates')) {              //loops through the coordinates of the child
       let ring = [], subRings = [];
       this._coordinateToArrays(c, ring, subRings, this.options.className);              //creates an array of pcrs points for the main ring and the subparts
       if (!first && this.type === "MAP-POLYGON") {
@@ -238,7 +238,7 @@ export var Feature = L.Path.extend({
     if (this.type === "MULTIPOINT" || this.type === "MAP-POINT" || this.type === "LINESTRING" || this.type === "MULTILINESTRING") return;
 
     this._outline = [];
-    for (let coords of this._markup.querySelectorAll('coordinates')) {
+    for (let coords of this._markup.querySelectorAll('map-coordinates')) {
       let nodes = coords.childNodes, cur = 0, tempDiv = document.createElement('div'), nodeLength = nodes.length;
       for (let n of nodes) {
         let line = [];

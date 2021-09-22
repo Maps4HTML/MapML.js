@@ -238,7 +238,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
        for (i = 0, len = features.length; i < len; i++) {
         // Only add this if geometry is set and not null
         feature = features[i];
-        var geometriesExist = feature.getElementsByTagName("map-geometry").length && feature.getElementsByTagName("coordinates").length;
+        var geometriesExist = feature.getElementsByTagName("map-geometry").length && feature.getElementsByTagName("map-coordinates").length;
         if (geometriesExist) {
          this.addData(feature, nativeCS, nativeZoom);
         }
