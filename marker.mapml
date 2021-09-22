@@ -1,29 +1,19 @@
 <mapml- lang="en">
   <map-head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/mapml">
+    <map-meta charset="utf-8"></map-meta>
+    <map-meta http-equiv="Content-Type" content="text/mapml"></map-meta>
     <map-title>A point in Map Markup Language</map-title>
-    <meta name="projection" content="WGS84">
-    <meta name="zoom" content="15">
-    <link rel="license" href="foo" title="Foo © Natural Resources Canada">
+    <map-meta name="projection" content="WGS84"></map-meta>
+    <map-meta name="zoom" content="15"></map-meta>
+    <map-link rel="license" href="foo" title="Foo © Natural Resources Canada"></map-link>
   </map-head>
   <map-body>
-    <feature id="aPoint">
-      <properties>
-        <code>1200020</code>
-        <accuracy>26</accuracy>
-        <valdate>1995</valdate>
-        <id>aPoint</id>
-        <theme>FO</theme>
-        <type>2</type>
-        <elevation>61</elevation>
-        <altiaccu>5</altiaccu>
-      </properties>
-      <geometry>
-        <Point>
-          <coordinates>-75.706646 45.3972513</coordinates>
-        </Point>
+    <map-feature id="aPoint">
+      <map-geometry>
+        <map-point>
+          <map-coordinates>-75.706646 45.3972513</map-coordinates>
+        </map-point>
       </geometry>
-    </feature>
+    </map-feature>
   </map-body>
 </mapml->
