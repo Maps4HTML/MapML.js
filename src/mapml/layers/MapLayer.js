@@ -629,7 +629,7 @@ export var MapMLLayer = L.Layer.extend({
                 var mapmlInput = template.values[j],
                     id = '#'+mapmlInput.getAttribute('id');
                 // don't add it again if it is referenced > once
-                if (mapmlInput.tagName.toLowerCase() === 'select' && !frag.querySelector(id)) {
+                if (mapmlInput.tagName.toLowerCase() === 'map-select' && !frag.querySelector(id)) {
                   // generate a <details><summary></summary><select...></details>
                   var selectdetails = document.createElement('details'),
                       selectsummary = document.createElement('summary'),
@@ -687,6 +687,30 @@ export var MapMLLayer = L.Layer.extend({
             xhr.overrideMimeType("text/xml");
             xhr.send();
         }
+        function transcribe(element) {
+            var select = document.createElement("select");
+            var elementAttrNames = element.getAttributeNames();
+
+            for(let i = 0; i < elementAttrNames.length; i++){
+                select.setAttribute(elementAttrNames[i], element.getAttribute(elementAttrNames[i]));
+            }
+
+            var options = element.children;
+
+            for(let i = 0; i < options.length; i++){
+                var option = document.createElement("option");
+                var optionAttrNames = options[i].getAttributeNames();
+
+                for (let j = 0; j < optionAttrNames; j++){
+                    option.setAttribute(optionAttrNames[j], options[i].getAttribute(optionAttrNames[j]));
+                }
+
+                option.innerHTML = options[i].innerHTML;
+                select.appendChild(option);
+            }
+            return select;
+        }
+
         function _processInitialExtent(content) {
             var mapml = this.responseXML || content;
             if(mapml.querySelector && mapml.querySelector('map-feature'))layer._content = mapml;
@@ -775,7 +799,7 @@ export var MapMLLayer = L.Layer.extend({
                                           undefined;
                     while ((v = varNamesRe.exec(template)) !== null) {
                       var varName = v[1],
-                          inp = serverExtent.querySelector('map-input[name='+varName+'],select[name='+varName+']');
+                          inp = serverExtent.querySelector('map-input[name='+varName+'],map-select[name='+varName+']');
                       if (inp) {
 
                         if ((inp.hasAttribute("type") && inp.getAttribute("type")==="location") && 
@@ -805,12 +829,14 @@ export var MapMLLayer = L.Layer.extend({
                               inp.servers.push(servers[s]);
                             }
                           }
-                        } else if (inp.tagName.toLowerCase() === 'select') {
+                        } else if (inp.tagName.toLowerCase() === 'map-select') {
                           // use a throwaway div to parse the input from MapML into HTML
                           var div =document.createElement("div");
                           div.insertAdjacentHTML("afterbegin",inp.outerHTML);
                           // parse
-                          inp.htmlselect = div.querySelector("select");
+                          inp.htmlselect = div.querySelector("map-select");
+                          inp.htmlselect = transcribe(inp.htmlselect);
+
                           // this goes into the layer control, so add a listener
                           L.DomEvent.on(inp.htmlselect, 'change', layer.redraw, layer);
                           if (!layer._userInputs) {

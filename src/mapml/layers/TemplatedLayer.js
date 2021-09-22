@@ -71,7 +71,7 @@ export var TemplatedLayer = L.Layer.extend({
             name = inputs[i].getAttribute("name"), 
             position = inputs[i].getAttribute("position"),
             rel = inputs[i].getAttribute("rel"),
-            select = (inputs[i].tagName.toLowerCase() === "select");
+            select = (inputs[i].tagName.toLowerCase() === "map-select");
         if (type === "width") {
               queryVarNames.query.width = name;
         } else if ( type === "height") {

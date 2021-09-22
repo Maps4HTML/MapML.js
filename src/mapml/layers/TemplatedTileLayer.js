@@ -267,7 +267,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
             name = inputs[i].getAttribute("name"), 
             position = inputs[i].getAttribute("position"),
             shard = (type === "hidden" && inputs[i].hasAttribute("shard")),
-            select = (inputs[i].tagName.toLowerCase() === "select"),
+            select = (inputs[i].tagName.toLowerCase() === "map-select"),
             value = inputs[i].getAttribute("value"),
             min = inputs[i].getAttribute("min"),
             max = inputs[i].getAttribute("max");
