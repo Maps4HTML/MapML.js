@@ -235,7 +235,7 @@ export var Feature = L.Path.extend({
    * @private
    */
   _generateOutlinePoints: function () {
-    if (this.type === "MULTIPOINT" || this.type === "MAP-POINT" || this.type === "LINESTRING" || this.type === "MULTILINESTRING") return;
+    if (this.type === "MULTIPOINT" || this.type === "MAP-POINT" || this.type === "MAP-LINESTRING" || this.type === "MULTILINESTRING") return;
 
     this._outline = [];
     for (let coords of this._markup.querySelectorAll('coordinates')) {
@@ -317,7 +317,7 @@ export var Feature = L.Path.extend({
       case 'MAP-POINT':
       case 'MULTIPOINT':
         return true;
-      case 'LINESTRING':
+      case 'MAP-LINESTRING':
       case 'MULTILINESTRING':
         return false;
       default:
