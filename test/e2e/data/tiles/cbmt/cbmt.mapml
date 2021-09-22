@@ -2,8 +2,7 @@
 
   <map-head>
     <map-title>Canada Base Map - Transportation (CBMT)</map-title>
-    <meta http-equiv="Content-Type" content="text/mapml"/>
-    <meta charset="utf-8" />
+    <map-meta http-equiv="Content-Type" content="text/mapml"></map-meta>
     <map-base href="" ></map-base>
     <map-link rel="license"
       href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"

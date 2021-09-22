@@ -1,7 +1,7 @@
 <mapml- xmlns="http://www.w3.org/1999/xhtml">
   <map-head>
     <map-title>Toporama</map-title>
-    <meta charset="utf-8"/>
+    <map-meta charset="utf-8"></map-meta>
     <map-link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/atlas-canada/read-about-topographic-maps/16840#topolicensing" title="Toporama © Natural Resources Canada"></map-link>
     <map-link rel="legend" href="http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&amp;REQUEST=GetLegendGraphic&amp;LAYER=WMS-Toporama&amp;VERSION=1.1&amp;FORMAT=image/png"></map-link>
   </map-head>
