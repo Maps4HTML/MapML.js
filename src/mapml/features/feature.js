@@ -28,7 +28,7 @@ export var Feature = L.Path.extend({
   initialize: function (markup, options) {
     this.type = markup.tagName.toUpperCase();
 
-    if(this.type === "MAP-POINT" || this.type === "MULTIPOINT") options.fillOpacity = 1;
+    if(this.type === "MAP-POINT" || this.type === "MAP-MULTIPOINT") options.fillOpacity = 1;
 
     if(options.wrappers.length > 0)
       options = Object.assign(this._convertWrappers(options.wrappers), options);
@@ -219,7 +219,7 @@ export var Feature = L.Path.extend({
         this._parts[0].rings.push(ring[0]);
         if (subRings.length > 0)
           this._parts[0].subrings = this._parts[0].subrings.concat(subRings);
-      } else if (this.type === "MULTIPOINT") {
+      } else if (this.type === "MAP-MULTIPOINT") {
         for (let point of ring[0].points.concat(subRings)) {
           this._parts.push({ rings: [{ points: [point] }], subrings: [], cls:`${point.cls || ""} ${this.options.className || ""}`.trim() });
         }
@@ -235,7 +235,7 @@ export var Feature = L.Path.extend({
    * @private
    */
   _generateOutlinePoints: function () {
-    if (this.type === "MULTIPOINT" || this.type === "MAP-POINT" || this.type === "LINESTRING" || this.type === "MULTILINESTRING") return;
+    if (this.type === "MAP-MULTIPOINT" || this.type === "MAP-POINT" || this.type === "MAP-LINESTRING" || this.type === "MAP-MULTILINESTRING") return;
 
     this._outline = [];
     for (let coords of this._markup.querySelectorAll('map-coordinates')) {
@@ -315,10 +315,10 @@ export var Feature = L.Path.extend({
       case 'MAP-POLYGON':
       case 'MAP-MULTIPOLYGON':
       case 'MAP-POINT':
-      case 'MULTIPOINT':
+      case 'MAP-MULTIPOINT':
         return true;
-      case 'LINESTRING':
-      case 'MULTILINESTRING':
+      case 'MAP-LINESTRING':
+      case 'MAP-MULTILINESTRING':
         return false;
       default:
         return false;
