@@ -24,125 +24,125 @@
     controls>
 
     <layer- label="Arizona" checked>
-      <meta name="projection" content="CBMTILE" />
-      <meta name="zoom" content="min=1,max=5,value=0" />
-      <meta name="cs" content="gcrs" />
-      <meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
+      <map-meta name="projection" content="CBMTILE"></map-meta>
+      <map-meta name="zoom" content="min=1,max=5,value=0"></map-meta>
+      <map-meta name="cs" content="gcrs"></map-meta>
+      <map-meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5"></map-meta>
 
-      <link id="first" rel="stylesheet" type="text/css" href="first.css">
-      <style>
+      <map-link id="first" rel="stylesheet" type="text/css" href="first.css"></map-link>
+      <map-style>
         .second {
           stroke: aqua;
         }
-      </style>
-      <style>
+      </map-style>
+      <map-style>
         .third {
           stroke: blue
         }
-      </style>
-      <link id="forth" rel="stylesheet" type="text/css" href="forth.css">
-      <feature zoom="2" class="refDiff">
-        <featurecaption>Accessible Square</featurecaption>
-        <properties>
+      </map-style>
+      <map-link id="forth" rel="stylesheet" type="text/css" href="forth.css"></map-link>
+      <map-feature zoom="2" class="refDiff">
+        <map-featurecaption>Accessible Square</map-featurecaption>
+        <map-properties>
           <h1>Test</h1>
           <a href="www.example.com">test</a>
-        </properties>
-        <geometry cs="tilematrix">
-          <polygon>
-            <coordinates>11 11 12 11 12 12 11 12 11 11</coordinates>
-          </polygon>
-        </geometry>
-      </feature>
+        </map-properties>
+        <map-geometry cs="tilematrix">
+          <map-polygon>
+            <map-coordinates>11 11 12 11 12 12 11 12 11 11</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
 
-      <feature zoom="2" class="refDiff">
-        <properties>
+      <map-feature zoom="2" class="refDiff">
+        <map-properties>
           <h1>Test</h1>
-        </properties>
-        <geometry cs="pcrs">
-          <polygon>
-            <coordinates>257421 -3567196 -271745 1221771 -3896544 242811 -3183549 -2613313</coordinates>
-          </polygon>
-        </geometry>
-      </feature>
+        </map-properties>
+        <map-geometry cs="pcrs">
+          <map-polygon>
+            <map-coordinates>257421 -3567196 -271745 1221771 -3896544 242811 -3183549 -2613313</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
 
-      <feature zoom="2" class="refDiff">
-        <properties>
+      <map-feature zoom="2" class="refDiff">
+        <map-properties>
           <h1>Test</h1>
-        </properties>
-        <geometry cs="tcrs">
-          <polygon>
-            <coordinates>2771 3106 2946 3113 2954 3210 2815 3192</coordinates>
-          </polygon>
-        </geometry>
-      </feature>
+        </map-properties>
+        <map-geometry cs="tcrs">
+          <map-polygon>
+            <map-coordinates>2771 3106 2946 3113 2954 3210 2815 3192</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
 
-      <feature zoom="2" class="refDiff">
-        <properties>
+      <map-feature zoom="2" class="refDiff">
+        <map-properties>
           <h1>Arizona</h1>
-        </properties>
-        <geometry>
-          <polygon>
-            <coordinates>-109.042503 37.000263 -109.04798 31.331629 -111.074448 31.331629 -112.246513 31.704061
+        </map-properties>
+        <map-geometry>
+          <map-polygon>
+            <map-coordinates>-109.042503 37.000263 -109.04798 31.331629 -111.074448 31.331629 -112.246513 31.704061
               -114.815198 32.492741 -114.72209 32.717295 -114.524921 32.755634 -114.470151 32.843265 -114.524921
               33.029481 -114.661844 33.034958 -114.727567 33.40739 -114.524921 33.54979 -114.497536 33.697668
               -114.535874 33.933176 -114.415382 34.108438 -114.256551 34.174162 -114.136058 34.305608 -114.333228
               34.448009 -114.470151 34.710902 -114.634459 34.87521 -114.634459 35.00118 -114.574213 35.138103
               -114.596121 35.324319 -114.678275 35.516012 -114.738521 36.102045 -114.371566 36.140383 -114.251074
               36.01989 -114.152489 36.025367 -114.048427 36.195153 -114.048427 37.000263 -110.499369 37.00574
-              -109.042503 37.000263</coordinates>
-          </polygon>
-        </geometry>
-      </feature>
-      <feature zoom="4" class="refDiff">
-        <properties>
+              -109.042503 37.000263</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+      <map-feature zoom="4" class="refDiff">
+        <map-properties>
           <h1>Arfsdfsdizona</h1>
-        </properties>
-        <geometry>
-          <polygon>
-            <coordinates>-109.042503 37.000263 -109.04798 31.331629 -111.074448 31.331629 -112.246513 31.704061
+        </map-properties>
+        <map-geometry>
+          <map-polygon>
+            <map-coordinates>-109.042503 37.000263 -109.04798 31.331629 -111.074448 31.331629 -112.246513 31.704061
               -114.815198 32.492741 -114.72209 32.717295 -114.524921 32.755634 -114.470151 32.843265 -114.524921
               33.029481 -114.661844 33.034958 -114.727567 33.40739 -114.524921 33.54979 -114.497536 33.697668
               -114.535874 33.933176 -114.415382 34.108438 -114.256551 34.174162 -114.136058 34.305608 -114.333228
               34.448009 -114.470151 34.710902 -114.634459 34.87521 -114.634459 35.00118 -114.574213 35.138103
               -114.596121 35.324319 -114.678275 35.516012 -114.738521 36.102045 -114.371566 36.140383 -114.251074
               36.01989 -114.152489 36.025367 -114.048427 36.195153 -114.048427 37.000263 -110.499369 37.00574
-              -109.042503 37.000263</coordinates>
-          </polygon>
-        </geometry>
-      </feature>
-      <feature zoom="3" class="all  _20-50">
-        <properties>
+              -109.042503 37.000263</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+      <map-feature zoom="3" class="all  _20-50">
+        <map-properties>
           <h1>Colorado</h1>
-        </properties>
-        <geometry>
-          <polygon>
-            <coordinates>-107.919731 41.003906 -105.728954 40.998429 -104.053011 41.003906 -102.053927 41.003906
+        </map-properties>
+        <map-geometry>
+          <map-polygon>
+            <map-coordinates>-107.919731 41.003906 -105.728954 40.998429 -104.053011 41.003906 -102.053927 41.003906
               -102.053927 40.001626 -102.042974 36.994786 -103.001438 37.000263 -104.337812 36.994786 -106.868158
               36.994786 -107.421329 37.000263 -109.042503 37.000263 -109.042503 38.166851 -109.058934 38.27639
-              -109.053457 39.125316 -109.04798 40.998429 -107.919731 41.003906</coordinates>
-          </polygon>
-        </geometry>
-      </feature>
+              -109.053457 39.125316 -109.04798 40.998429 -107.919731 41.003906</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
     </layer->
     <layer- label="Static MapML with tiles" checked>
-      <meta name="zoom" content="min=0,max=10">
-      <meta name="projection" content="CBMTILE">
-      <link rel="license"
+      <map-meta name="zoom" content="min=0,max=10"></map-meta>
+      <map-meta name="projection" content="CBMTILE"></map-meta>
+      <map-link rel="license"
         href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
-        title="Canada Base Map © Natural Resources Canada">
-      <tile zoom="0" row="3" col="3" src="data/cbmt/0/c3_r3.png"></tile>
+        title="Canada Base Map © Natural Resources Canada"></map-link>
+      <map-tile zoom="0" row="3" col="3" src="data/cbmt/0/c3_r3.png"></map-tile>
     </layer->
     <layer- label="vector states" src="data/us_pop_density.mapml" checked></layer->
     <layer- label="Inline Feature" checked>
-      <meta name="projection" content="CBMTILE" />
-      <meta name="zoom" content="min=2,max=2" />
-      <feature zoom="2">
-        <geometry cs="tilematrix">
-          <polygon>
-            <coordinates>10 10 11 10 11 11 10 11 10 10</coordinates>
-          </polygon>
-        </geometry>
-      </feature>
+      <map-meta name="projection" content="CBMTILE"></map-meta>
+      <map-meta name="zoom" content="min=2,max=2"></map-meta>
+      <map-feature zoom="2">
+        <map-geometry cs="tilematrix">
+          <map-polygon>
+            <map-coordinates>10 10 11 10 11 11 10 11 10 10</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
     </layer->
   </map>
 

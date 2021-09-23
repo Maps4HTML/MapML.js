@@ -24,119 +24,119 @@
      controls>
 
   <layer- label="Arizona" checked>
-    <meta name="projection" content="CBMTILE" />
-    <meta name="zoom" content="min=1,max=5,value=0" />
-    <meta name="cs" content="gcrs" />
-    <meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
+    <map-meta name="projection" content="CBMTILE"></map-meta>
+    <map-meta name="zoom" content="min=1,max=5,value=0"></map-meta>
+    <map-meta name="cs" content="gcrs"></map-meta>
+    <map-meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5"></map-meta>
 
-    <link id="first" rel="stylesheet" type="text/css" href="first.css">
-    <style>
+    <map-link id="first" rel="stylesheet" type="text/css" href="first.css"></map-link>
+    <map-style>
         .second {
             stroke: aqua;
         }
-    </style>
-    <style>
+    </map-style>
+    <map-style>
         .third {
             stroke: blue
         }
-    </style>
-    <link id="forth" rel="stylesheet" type="text/css" href="forth.css">
-    <feature zoom="2" class="refDiff">
-      <featurecaption>Accessible Square</featurecaption>
-      <properties>
+    </map-style>
+    <map-link id="forth" rel="stylesheet" type="text/css" href="forth.css"></map-link>
+    <map-feature zoom="2" class="refDiff">
+      <map-featurecaption>Accessible Square</map-featurecaption>
+      <map-properties>
         <h1>Test</h1>
         <a href="www.example.com">test</a>
-      </properties>
-      <geometry cs="tilematrix">
-        <polygon>
-          <coordinates>11 11 12 11 12 12 11 12 <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/" target="_blank">11 11</map-a></coordinates>
-        </polygon>
-      </geometry>
-    </feature>
+      </map-properties>
+      <map-geometry cs="tilematrix">
+        <map-polygon>
+          <map-coordinates>11 11 12 11 12 12 11 12 <map-a href="cbmtgeom.mapml" target="_blank">11 11</map-a></map-coordinates>
+        </map-polygon>
+      </map-geometry>
+    </map-feature>
 
-    <feature zoom="2" class="refDiff">
-      <properties>
+    <map-feature zoom="2" class="refDiff">
+      <map-properties>
         <h1>Test</h1>
-      </properties>
-      <geometry cs="pcrs">
-        <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/" target="_blank">
-          <polygon>
-            <coordinates>257421 -3567196 -271745 1221771 -3896544 242811 -3183549 -2613313</coordinates>
-          </polygon>
+      </map-properties>
+      <map-geometry cs="pcrs">
+        <map-a href="cbmtgeom.mapml" target="_blank">
+          <map-polygon>
+            <map-coordinates>257421 -3567196 -271745 1221771 -3896544 242811 -3183549 -2613313</map-coordinates>
+          </map-polygon>
         </map-a>
-      </geometry>
-    </feature>
+      </map-geometry>
+    </map-feature>
 
-    <feature zoom="2" class="refDiff">
-      <featurecaption>Inplace</featurecaption>
-      <properties>
+    <map-feature zoom="2" class="refDiff">
+      <map-featurecaption>Inplace</map-featurecaption>
+      <map-properties>
         <h1>Test</h1>
-      </properties>
-      <geometry cs="tcrs">
-        <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/" target="_blank">
-          <geometrycollection>
-            <polygon>
-              <coordinates>2771 3106 2946 3113 2954 3210 2815 3192</coordinates>
-            </polygon>
-            <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/fdi/" target="_blank" inplace>
-              <point>
-                <coordinates>2745 3218</coordinates>
-              </point>
+      </map-properties>
+      <map-geometry cs="tcrs">
+        <map-a href="cbmtgeom.mapml" target="_blank">
+          <map-geometrycollection>
+            <map-polygon>
+              <map-coordinates>2771 3106 2946 3113 2954 3210 2815 3192</map-coordinates>
+            </map-polygon>
+            <map-a href="fdi.mapml" target="_blank" inplace>
+              <map-point>
+                <map-coordinates>2745 3218</map-coordinates>
+              </map-point>
             </map-a>
-          </geometrycollection>
+          </map-geometrycollection>
         </map-a>
-      </geometry>
-    </feature>
-    <feature zoom="2" class="refDiff">
-      <properties>
+      </map-geometry>
+    </map-feature>
+    <map-feature zoom="2" class="refDiff">
+      <map-properties>
         <h1>Test</h1>
-      </properties>
-      <geometry cs="tilematrix">
+      </map-properties>
+      <map-geometry cs="tilematrix">
         <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/" target="_self" type="text/html">
-          <geometrycollection>
-            <polygon>
-              <coordinates>9 10 10 10 10 11 9 11 9 10</coordinates>
-            </polygon>
+          <map-geometrycollection>
+            <map-polygon>
+              <map-coordinates>9 10 10 10 10 11 9 11 9 10</map-coordinates>
+            </map-polygon>
             <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/fdi/" target="_top" type="text/html">
-              <point>
-                <coordinates>10.5 11</coordinates>
-              </point>
+              <map-point>
+                <map-coordinates>10.5 11</map-coordinates>
+              </map-point>
             </map-a>
-          </geometrycollection>
+          </map-geometrycollection>
         </map-a>
-      </geometry>
-    </feature>
-    <feature zoom="2" class="refDiff">
-      <properties>
+      </map-geometry>
+    </map-feature>
+    <map-feature zoom="2" class="refDiff">
+      <map-properties>
         <h1>Test</h1>
-      </properties>
-      <geometry cs="tilematrix">
+      </map-properties>
+      <map-geometry cs="tilematrix">
         <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/" target="_parent" type="text/html">
-          <geometrycollection>
-            <polygon>
-              <coordinates>9 10 10 10 10 11 9 11 9 10</coordinates>
-            </polygon>
+          <map-geometrycollection>
+            <map-polygon>
+              <map-coordinates>9 10 10 10 10 11 9 11 9 10</map-coordinates>
+            </map-polygon>
             <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/fdi/" target="_blank" type="text/html">
-              <point>
-                <coordinates>10.5 11</coordinates>
-              </point>
+              <map-point>
+                <map-coordinates>10.5 11</map-coordinates>
+              </map-point>
             </map-a>
-          </geometrycollection>
+          </map-geometrycollection>
         </map-a>
-      </geometry>
-    </feature>
-    <feature zoom="2" class="refDiff">
-      <properties>
+      </map-geometry>
+    </map-feature>
+    <map-feature zoom="2" class="refDiff">
+      <map-properties>
         <h1>Test</h1>
-      </properties>
-      <geometry cs="tilematrix">
+      </map-properties>
+      <map-geometry cs="tilematrix">
         <map-a href="data/vector-tile-test.mapml#2,-98,37" target="_blank">
-          <polygon>
-            <coordinates>10.5 11 10.75 11 10.75 11.25 10.5 11.25 10.5 11</coordinates>
-          </polygon>
+          <map-polygon>
+            <map-coordinates>10.5 11 10.75 11 10.75 11.25 10.5 11.25 10.5 11</map-coordinates>
+          </map-polygon>
         </map-a>
-      </geometry>
-    </feature>
+      </map-geometry>
+    </map-feature>
   </layer->
 </map>
 

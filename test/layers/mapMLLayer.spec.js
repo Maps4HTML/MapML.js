@@ -21,12 +21,12 @@ describe("MapMLLayer Constructor Tests", () => {
 		var content;
 		beforeEach(() => {
 			content = document.createElement("layer-");
-			content.innerHTML = `<extent units="CBMTILE">
-                        <input name="zoomLevel" type="zoom" value="3" min="0" max="3"/>
-                        <input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"/>
-                        <input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"/>
-                        <link rel="tile" tref="./images/cbmt/{zoomLevel}/c{col}_r{row}.png"/>
-                    </extent>`;
+			content.innerHTML = `<map-extent units="CBMTILE">
+                        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
+                        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>
+                        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>
+                        <map-link rel="tile" tref="./images/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>
+                    </map-extent>`;
 
 			expect(content instanceof HTMLElement).toBeTruthy();
 		});
@@ -66,12 +66,12 @@ describe("MapMLLayer Constructor Tests", () => {
 		var content;
 		beforeEach(() => {
 			content = document.createElement("foo");
-			content.innerHTML = `<extent units="CBMTILE">
-                        <input name="zoomLevel" type="zoom" value="3" min="0" max="3"/>
-                        <input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"/>
-                        <input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"/>
-                        <link rel="tile" tref="./images/cbmt/{zoomLevel}/c{col}_r{row}.png"/>
-                    </extent>`;
+			content.innerHTML = `<map-extent units="CBMTILE">
+                        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
+                        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>
+                        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>
+                        <map-link rel="tile" tref="./images/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>
+                    </map-extent>`;
 
 			expect(content instanceof HTMLElement).toBeTruthy();
 		});

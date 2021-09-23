@@ -12,16 +12,16 @@
         <mapml-viewer style="width: 600px;height:600px" projection="WGS84" zoom="1" lat="-10" lon="-112" controls>
  
             <layer- label="Inline Countries" checked>
-                <meta name="zoom" content="min=0,max=4">
-                <extent units="WGS84">
-                    <input name="zoomLevel" type="zoom" value="1" min="0" max="4"/>
+                <map-meta name="zoom" content="min=0,max=4"></map-meta>
+                <map-extent units="WGS84">
+                    <map-input name="zoomLevel" type="zoom" value="1" min="0" max="4"></map-input>
 
-                    <input name="row" type="location" axis="row" units="tilematrix" min="0" max="2"/>
-                    <input name="col" type="location" axis="column" units="tilematrix" min="0" max="2"/>
+                    <map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="2"></map-input>
+                    <map-input name="col" type="location" axis="column" units="tilematrix" min="0" max="2"></map-input>
 
-                    <link tms rel="tile" tref="https://maps4html.org/TiledArt-Rousseau/TheBanksOfTheBièvreNearBicêtre/{zoomLevel}/{col}/{row}.png" />
+                    <map-link tms rel="tile" tref="https://maps4html.org/TiledArt-Rousseau/TheBanksOfTheBièvreNearBicêtre/{zoomLevel}/{col}/{row}.png" ></map-link>
 
-                </extent>
+                </map-extent>
             </layer->
         </mapml-viewer>
     </body>

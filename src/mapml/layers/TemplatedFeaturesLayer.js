@@ -51,13 +51,13 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
                     .then( function (response) {return response.text();})
                     .then( function (text) {
               mapml = parser.parseFromString(text,"application/xml");
-              var base = (new URL(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : url)).href;
-              url = mapml.querySelector('link[rel=next]')? mapml.querySelector('link[rel=next]').getAttribute('href') : null;
+              var base = (new URL(mapml.querySelector('map-base') ? mapml.querySelector('map-base').getAttribute('href') : url)).href;
+              url = mapml.querySelector('map-link[rel=next]')? mapml.querySelector('map-link[rel=next]').getAttribute('href') : null;
               url =  url ? (new URL(url, base)).href: null;
-              let nativeZoom = mapml.querySelector("meta[name=zoom]") && 
-                +M.metaContentToObject(mapml.querySelector("meta[name=zoom]").getAttribute("content")).value || 0;
-              let nativeCS = mapml.querySelector("meta[name=cs]") && 
-                      M.metaContentToObject(mapml.querySelector("meta[name=cs]").getAttribute("content")).content || "GCRS";
+              let nativeZoom = mapml.querySelector("map-meta[name=zoom]") &&
+                +M.metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value || 0;
+              let nativeCS = mapml.querySelector("map-meta[name=cs]") &&
+                      M.metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content || "GCRS";
               features.addData(mapml, nativeCS, nativeZoom);
               if (url && --limit) {
                 return _pullFeatureFeed(url, limit);
@@ -96,14 +96,14 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
                   .then( function (text) {
                     //TODO wrap this puppy in a try/catch/finally to parse application/geo+json if necessary
               mapml = parser.parseFromString(text,"application/xml");
-              var base = (new URL(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : url)).href;
-              url = mapml.querySelector('link[rel=next]')? mapml.querySelector('link[rel=next]').getAttribute('href') : null;
+              var base = (new URL(mapml.querySelector('map-base') ? mapml.querySelector('map-base').getAttribute('href') : url)).href;
+              url = mapml.querySelector('map-link[rel=next]')? mapml.querySelector('map-link[rel=next]').getAttribute('href') : null;
               url =  url ? (new URL(url, base)).href: null;
               // TODO if the xml parser barfed but the response is application/geo+json, use the parent addData method
-            let nativeZoom = mapml.querySelector("meta[name=zoom]") && 
-                              +M.metaContentToObject(mapml.querySelector("meta[name=zoom]").getAttribute("content")).value || 0;
-            let nativeCS = mapml.querySelector("meta[name=cs]") && 
-                              M.metaContentToObject(mapml.querySelector("meta[name=cs]").getAttribute("content")).content || "GCRS";
+            let nativeZoom = mapml.querySelector("map-meta[name=zoom]") &&
+                              +M.metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value || 0;
+            let nativeCS = mapml.querySelector("map-meta[name=cs]") &&
+                              M.metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content || "GCRS";
             features.addData(mapml, nativeCS, nativeZoom);
             if (url && --limit) {
               return _pullFeatureFeed(url, limit);
@@ -197,7 +197,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
             name = inputs[i].getAttribute("name"), 
             position = inputs[i].getAttribute("position"),
             value = inputs[i].getAttribute("value"),
-            select = (inputs[i].tagName.toLowerCase() === "select");
+            select = (inputs[i].tagName.toLowerCase() === "map-select");
         if (type === "width") {
               featuresVarNames.feature.width = {name: name};
         } else if ( type === "height") {

@@ -19,7 +19,7 @@ export var MapMLLayer = L.Layer.extend({
         }
         if (content) {
           this._layerEl = content;
-          mapml = content.querySelector('image,feature,tile,extent') ? true : false;
+          mapml = content.querySelector('map-feature,map-tile,map-extent') ? true : false;
           if (!href && mapml) {
               this._content = content;
           }
@@ -149,7 +149,7 @@ export var MapMLLayer = L.Layer.extend({
         
         //only add the layer if there are tiles to be rendered
         if((!this._staticTileLayer || this._staticTileLayer._container === null) && 
-          this._mapmlTileContainer.getElementsByTagName("tiles").length > 0)
+          this._mapmlTileContainer.getElementsByTagName("map-tiles").length > 0)
         {
           this._staticTileLayer = M.mapMLStaticTileLayer({
             pane:this._container,
@@ -261,7 +261,7 @@ export var MapMLLayer = L.Layer.extend({
     },
     _onZoomAnim: function(e) {
       var toZoom = e.zoom,
-          zoom = this._extent ? this._extent.querySelector("input[type=zoom]") : null,
+          zoom = this._extent ? this._extent.querySelector("map-input[type=zoom]") : null, 
           min = zoom && zoom.hasAttribute("min") ? parseInt(zoom.getAttribute("min")) : this._map.getMinZoom(),
           max =  zoom && zoom.hasAttribute("max") ? parseInt(zoom.getAttribute("max")) : this._map.getMaxZoom(),
           canZoom = (toZoom < min && this._extent.zoomout) || (toZoom > max && this._extent.zoomin);
@@ -629,7 +629,7 @@ export var MapMLLayer = L.Layer.extend({
                 var mapmlInput = template.values[j],
                     id = '#'+mapmlInput.getAttribute('id');
                 // don't add it again if it is referenced > once
-                if (mapmlInput.tagName.toLowerCase() === 'select' && !frag.querySelector(id)) {
+                if (mapmlInput.tagName.toLowerCase() === 'map-select' && !frag.querySelector(id)) {
                   // generate a <details><summary></summary><select...></details>
                   var selectdetails = document.createElement('details'),
                       selectsummary = document.createElement('summary'),
@@ -687,31 +687,55 @@ export var MapMLLayer = L.Layer.extend({
             xhr.overrideMimeType("text/xml");
             xhr.send();
         }
+        function transcribe(element) {
+            var select = document.createElement("select");
+            var elementAttrNames = element.getAttributeNames();
+
+            for(let i = 0; i < elementAttrNames.length; i++){
+                select.setAttribute(elementAttrNames[i], element.getAttribute(elementAttrNames[i]));
+            }
+
+            var options = element.children;
+
+            for(let i = 0; i < options.length; i++){
+                var option = document.createElement("option");
+                var optionAttrNames = options[i].getAttributeNames();
+
+                for (let j = 0; j < optionAttrNames; j++){
+                    option.setAttribute(optionAttrNames[j], options[i].getAttribute(optionAttrNames[j]));
+                }
+
+                option.innerHTML = options[i].innerHTML;
+                select.appendChild(option);
+            }
+            return select;
+        }
+
         function _processInitialExtent(content) {
             var mapml = this.responseXML || content;
-            if(mapml.querySelector && mapml.querySelector('feature'))layer._content = mapml;
+            if(mapml.querySelector && mapml.querySelector('map-feature'))layer._content = mapml;
             if(!this.responseXML && this.responseText) mapml = new DOMParser().parseFromString(this.responseText,'text/xml');
             if (this.readyState === this.DONE && mapml.querySelector && !mapml.querySelector("parsererror")) {
-                var serverExtent = mapml.querySelector('extent') || mapml.querySelector('meta[name=projection]'), projection;
+                var serverExtent = mapml.querySelector('map-extent') || mapml.querySelector('map-meta[name=projection]'), projection;
 
-                if (serverExtent.tagName.toLowerCase() === "extent" && serverExtent.hasAttribute('units')){
+                if (serverExtent.tagName.toLowerCase() === "map-extent" && serverExtent.hasAttribute('units')){
                   projection = serverExtent.getAttribute("units");
-                } else if (serverExtent.tagName.toLowerCase() === "meta" && serverExtent.hasAttribute('content')) {
+                } else if (serverExtent.tagName.toLowerCase() === "map-meta" && serverExtent.hasAttribute('content')) {
                   projection = M.metaContentToObject(serverExtent.getAttribute('content')).content;
                 }
                     
                 var projectionMatch = projection && projection === layer.options.mapprojection,
-                    metaExtent = mapml.querySelector('meta[name=extent]'),
-                    selectedAlternate = !projectionMatch && mapml.querySelector('head link[rel=alternate][projection='+layer.options.mapprojection+']'),
+                    metaExtent = mapml.querySelector('map-meta[name=extent]'),
+                    selectedAlternate = !projectionMatch && mapml.querySelector('map-head map-link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 
-      (new URL(mapml.querySelector('base') ? mapml.querySelector('base').getAttribute('href') : mapml.baseURI || this.responseURL, this.responseURL)).href;
+      (new URL(mapml.querySelector('map-base') ? mapml.querySelector('map-base').getAttribute('href') : mapml.baseURI || this.responseURL, this.responseURL)).href;
                 
                 if (!serverExtent) {
                     serverExtent = layer._synthesizeExtent(mapml);
                     // the mapml resource does not have a (complete) extent form, save
                     // its content if any so we don't have to revisit the server, ever.
-                    if (mapml.querySelector('feature,image,tile')) {
+                    if (mapml.querySelector('map-feature,map-tile')) {
                         layer._content = mapml;
                     }
                 } else if (!projectionMatch && selectedAlternate && selectedAlternate.hasAttribute('href')) {
@@ -721,13 +745,13 @@ export var MapMLLayer = L.Layer.extend({
                 } else if (!projectionMatch && layer._map && layer._map.options.mapEl.querySelectorAll("layer-").length === 1){
                   layer._map.options.mapEl.projection = projection;
                   return;
-                } else if (serverExtent.querySelector('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]') &&
+                } else if (serverExtent.querySelector('map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query]') &&
                         serverExtent.hasAttribute("units")) {
                   layer._templateVars = [];
                   // set up the URL template and associated inputs (which yield variable values when processed)
-                  var tlist = serverExtent.querySelectorAll('link[rel=tile],link[rel=image],link[rel=features],link[rel=query]'),
+                  var tlist = serverExtent.querySelectorAll('map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query]'),
                       varNamesRe = (new RegExp('(?:\{)(.*?)(?:\})','g')),
-                      zoomInput = serverExtent.querySelector('input[type="zoom" i]'),
+                      zoomInput = serverExtent.querySelector('map-input[type="zoom" i]'),
                       includesZoom = false, extentFallback = {};
 
                   extentFallback.zoom = 0;
@@ -757,7 +781,7 @@ export var MapMLLayer = L.Layer.extend({
                     var t = tlist[i], template = t.getAttribute('tref'); 
                     if(!template){
                       template = BLANK_TT_TREF;
-                      let blankInputs = mapml.querySelectorAll('input');
+                      let blankInputs = mapml.querySelectorAll('map-input');
                       for (let i of blankInputs){
                         template += `{${i.getAttribute("name")}}`;
                       }
@@ -770,12 +794,12 @@ export var MapMLLayer = L.Layer.extend({
                         ttype = (!t.hasAttribute('type')? 'image/*':t.getAttribute('type').toLowerCase()),
                         inputs = [],
                         tms = t && t.hasAttribute("tms");
-                        var zoomBounds = mapml.querySelector('meta[name=zoom]')?
-                                          M.metaContentToObject(mapml.querySelector('meta[name=zoom]').getAttribute('content')):
+                        var zoomBounds = mapml.querySelector('map-meta[name=zoom]')?
+                                          M.metaContentToObject(mapml.querySelector('map-meta[name=zoom]').getAttribute('content')):
                                           undefined;
                     while ((v = varNamesRe.exec(template)) !== null) {
                       var varName = v[1],
-                          inp = serverExtent.querySelector('input[name='+varName+'],select[name='+varName+']');
+                          inp = serverExtent.querySelector('map-input[name='+varName+'],map-select[name='+varName+']');
                       if (inp) {
 
                         if ((inp.hasAttribute("type") && inp.getAttribute("type")==="location") && 
@@ -794,7 +818,7 @@ export var MapMLLayer = L.Layer.extend({
                         if (inp.hasAttribute('shard')) {
                           var id = inp.getAttribute('list');
                           inp.servers = [];
-                          var servers = serverExtent.querySelectorAll('datalist#'+id + ' > option');
+                          var servers = serverExtent.querySelectorAll('map-datalist#'+id + ' > map-option');
                           if (servers.length === 0 && inp.hasAttribute('value')) {
                             servers = inp.getAttribute('value').split('');
                           }
@@ -805,12 +829,14 @@ export var MapMLLayer = L.Layer.extend({
                               inp.servers.push(servers[s]);
                             }
                           }
-                        } else if (inp.tagName.toLowerCase() === 'select') {
+                        } else if (inp.tagName.toLowerCase() === 'map-select') {
                           // use a throwaway div to parse the input from MapML into HTML
                           var div =document.createElement("div");
                           div.insertAdjacentHTML("afterbegin",inp.outerHTML);
                           // parse
-                          inp.htmlselect = div.querySelector("select");
+                          inp.htmlselect = div.querySelector("map-select");
+                          inp.htmlselect = transcribe(inp.htmlselect);
+
                           // this goes into the layer control, so add a listener
                           L.DomEvent.on(inp.htmlselect, 'change', layer.redraw, layer);
                           if (!layer._userInputs) {
@@ -857,8 +883,8 @@ export var MapMLLayer = L.Layer.extend({
                 layer._extent = serverExtent;
                 
                 
-                var zoomin = mapml.querySelector('link[rel=zoomin]'),
-                    zoomout = mapml.querySelector('link[rel=zoomout]');
+                var zoomin = mapml.querySelector('map-link[rel=zoomin]'),
+                    zoomout = mapml.querySelector('map-link[rel=zoomout]');
                 delete layer._extent.zoomin;
                 delete layer._extent.zoomout;
                 if (zoomin) {
@@ -870,18 +896,18 @@ export var MapMLLayer = L.Layer.extend({
                 if (layer._templatedLayer) {
                   layer._templatedLayer.reset(layer._templateVars);
                 }
-                if (mapml.querySelector('tile')) {
-                  var tiles = document.createElement("tiles"),
-                    zoom = mapml.querySelector('meta[name=zoom][content]') || mapml.querySelector('input[type=zoom][value]');
+                if (mapml.querySelector('map-tile')) {
+                  var tiles = document.createElement("map-tiles"),
+                    zoom = mapml.querySelector('map-meta[name=zoom][content]') || mapml.querySelector('map-input[type=zoom][value]');
                   tiles.setAttribute("zoom", zoom && zoom.getAttribute('content') || zoom && zoom.getAttribute('value') || "0");
-                  var newTiles = mapml.getElementsByTagName('tile');
+                  var newTiles = mapml.getElementsByTagName('map-tile');
                   for (var nt=0;nt<newTiles.length;nt++) {
                       tiles.appendChild(document.importNode(newTiles[nt], true));
                   }
                   layer._mapmlTileContainer.appendChild(tiles);
                 }
                 M.parseStylesheetAsHTML(mapml, base, layer._container);
-                var styleLinks = mapml.querySelectorAll('link[rel=style],link[rel="self style"],link[rel="style self"]');
+                var styleLinks = mapml.querySelectorAll('map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]');
                 if (styleLinks.length > 1) {
                   var stylesControl = document.createElement('details'),
                   stylesControlSummary = document.createElement('summary');
@@ -912,8 +938,8 @@ export var MapMLLayer = L.Layer.extend({
                   layer._styles = stylesControl;
                 }
                 
-                if (mapml.querySelector('title')) {
-                  layer._title = mapml.querySelector('title').textContent.trim();
+                if (mapml.querySelector('map-title')) {
+                  layer._title = mapml.querySelector('map-title').textContent.trim();
                 } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
                   layer._title = mapml.getAttribute('label').trim();
                 }
@@ -935,13 +961,13 @@ export var MapMLLayer = L.Layer.extend({
     },
     _createExtent: function () {
     
-        var extent = document.createElement('extent'),
-            xminInput = document.createElement('input'),
-            yminInput = document.createElement('input'),
-            xmaxInput = document.createElement('input'),
-            ymaxInput = document.createElement('input'),
-            zoom = document.createElement('input'),
-            projection = document.createElement('input');
+        var extent = document.createElement('map-extent'),
+            xminInput = document.createElement('map-input'),
+            yminInput = document.createElement('map-input'),
+            xmaxInput = document.createElement('map-input'),
+            ymaxInput = document.createElement('map-input'),
+            zoom = document.createElement('map-input'),
+            projection = document.createElement('map-input');
     
         zoom.setAttribute('type','zoom');
         zoom.setAttribute('min','0');
@@ -1033,12 +1059,12 @@ export var MapMLLayer = L.Layer.extend({
     _getMapMLExtent: function (bounds, zooms, proj) {
         
         var extent = this._createExtent(),
-            zoom = extent.querySelector('input[type=zoom]'),
-            xminInput = extent.querySelector('input[type=xmin]'),
-            yminInput = extent.querySelector('input[type=ymin]'),
-            xmaxInput = extent.querySelector('input[type=xmax]'),
-            ymaxInput = extent.querySelector('input[type=ymax]'),
-            projection = extent.querySelector('input[type=projection]'),
+            zoom = extent.querySelector('map-input[type=zoom]'),
+            xminInput = extent.querySelector('map-input[type=xmin]'),
+            yminInput = extent.querySelector('map-input[type=ymin]'),
+            xmaxInput = extent.querySelector('map-input[type=xmax]'),
+            ymaxInput = extent.querySelector('map-input[type=ymax]'),
+            projection = extent.querySelector('map-input[type=projection]'),
             zmin = zooms[0] !== undefined && zooms[1] !== undefined ? Math.min(zooms[0],zooms[1]) : '',
             zmax = zooms[0] !== undefined && zooms[1] !== undefined ? Math.max(zooms[0],zooms[1]) : '',
             xmin = bounds ? bounds._southWest ? bounds.getWest() : bounds.getBottomLeft().x : '',
@@ -1066,9 +1092,9 @@ export var MapMLLayer = L.Layer.extend({
         return extent;
     },
     _synthesizeExtent: function (mapml) {
-        var metaZoom = mapml.querySelectorAll('meta[name=zoom]')[0],
-            metaExtent = mapml.querySelector('meta[name=extent]'),
-            metaProjection = mapml.querySelector('meta[name=projection]'),
+        var metaZoom = mapml.querySelectorAll('map-meta[name=zoom]')[0],
+            metaExtent = mapml.querySelector('map-meta[name=extent]'),
+            metaProjection = mapml.querySelector('map-meta[name=projection]'),
             proj = metaProjection ? metaProjection.getAttribute('content'): FALLBACK_PROJECTION,
             i,expressions,bounds,zmin,zmax,xmin,ymin,xmax,ymax,expr,lhs,rhs;
         if (metaZoom) {
@@ -1120,15 +1146,15 @@ export var MapMLLayer = L.Layer.extend({
       let extent = this._extent;
       if(!extent) return FALLBACK_PROJECTION;
       switch (extent.tagName.toUpperCase()) {
-        case "EXTENT":
+        case "MAP-EXTENT":
           if(extent.hasAttribute('units'))
             return extent.getAttribute('units').toUpperCase();
           break;
-        case "INPUT":
+        case "MAP-INPUT":
           if(extent.hasAttribute('value'))
             return extent.getAttribute('value').toUpperCase();
           break;
-        case "META":
+        case "MAP-META":
           if(extent.hasAttribute('content'))
             return M.metaContentToObject(extent.getAttribute('content')).content.toUpperCase(); 
           break;
@@ -1138,14 +1164,14 @@ export var MapMLLayer = L.Layer.extend({
       return FALLBACK_PROJECTION;
     },
     _parseLicenseAndLegend: function (xml, layer) {
-        var licenseLink =  xml.querySelector('link[rel=license]'), licenseTitle, licenseUrl, attText;
+        var licenseLink =  xml.querySelector('map-link[rel=license]'), licenseTitle, licenseUrl, attText;
         if (licenseLink) {
             licenseTitle = licenseLink.getAttribute('title');
             licenseUrl = licenseLink.getAttribute('href');
             attText = '<a href="' + licenseUrl + '" title="'+licenseTitle+'">'+licenseTitle+'</a>';
         }
         L.setOptions(layer,{attribution:attText});
-        var legendLink = xml.querySelector('link[rel=legend]');
+        var legendLink = xml.querySelector('map-link[rel=legend]');
         if (legendLink) {
           layer._legendUrl = legendLink.getAttribute('href');
         }

@@ -2,7 +2,7 @@ import { BLANK_TT_TREF } from '../utils/Constants';
 
 export var TemplatedTileLayer = L.TileLayer.extend({
     // a TemplateTileLayer is similar to a L.TileLayer except its templates are
-    // defined by the <extent><template/></extent>
+    // defined by the <map-extent><template/></map-extent>
     // content found in the MapML document.  As such, the client map does not
     // 'revisit' the server for more MapML content, it simply fills the map extent
     // with tiles for which it generates requests on demand (as the user pans/zooms/resizes
@@ -119,10 +119,10 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     },
 
     _createFeatures: function(markup, coords, tile){
-      let stylesheets = markup.querySelector('link[rel=stylesheet],style');
+      let stylesheets = markup.querySelector('map-link[rel=stylesheet],map-style');
       if (stylesheets) {
-        let base = markup.querySelector('base') && markup.querySelector('base').hasAttribute('href') ?
-          new URL(markup.querySelector('base').getAttribute('href')).href :
+        let base = markup.querySelector('map-base') && markup.querySelector('map-base').hasAttribute('href') ?
+          new URL(markup.querySelector('map-base').getAttribute('href')).href :
           markup.URL;
         M.parseStylesheetAsHTML(markup,base,tile);
       }
@@ -267,7 +267,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
             name = inputs[i].getAttribute("name"), 
             position = inputs[i].getAttribute("position"),
             shard = (type === "hidden" && inputs[i].hasAttribute("shard")),
-            select = (inputs[i].tagName.toLowerCase() === "select"),
+            select = (inputs[i].tagName.toLowerCase() === "map-select"),
             value = inputs[i].getAttribute("value"),
             min = inputs[i].getAttribute("min"),
             max = inputs[i].getAttribute("max");

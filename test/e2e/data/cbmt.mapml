@@ -1,0 +1,17 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml/">
+  <map-head>
+    <map-title>Canada Base Map - Transportation (CBMT)</map-title>
+    <map-meta http-equiv="Content-Type" content="text/mapml;projection=OSMTILE"></map-meta>
+    <map-meta charset="utf-8"></map-meta>
+    <map-link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" map-title="Canada Base Map © Natural Resources Canada"></map-link>
+  </map-head>
+  <map-body>
+    <map-extent units="OSMTILE" >
+      <map-input name="z" type="zoom"  value="15" min="0" max="15"></map-input>
+      <map-input name="y" type="location" units="tilematrix" axis="row" min="0"  max="32768" ></map-input>
+      <map-input name="x" type="location" units="tilematrix" axis="column" min="0"  max="32768" ></map-input>
+      <map-link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_CBCT_GEOM_3857/MapServer/tile/{z}/{y}/{x}?m4h=t" ></map-link>
+      <map-link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_TXT_3857/MapServer/tile/{z}/{y}/{x}?m4h=t" ></map-link>
+    </map-extent>
+  </map-body>
+</mapml->

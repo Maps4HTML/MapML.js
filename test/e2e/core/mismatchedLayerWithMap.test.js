@@ -35,8 +35,8 @@ jest.setTimeout(30000);
             </head>
             <body>
                 <map is="web-map" style="width:500px;height:500px" projection="CBMTILE" zoom="2" lat="45" lon="-90" controls >
-                    <layer- label='CBMT' src='https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/' checked></layer->
-                    <layer- id="checkMe" label="OpenStreetMap" src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" checked></layer->
+                    <layer- label='CBMT' src='cbmtile-cbmt.mapml' checked></layer->
+                    <layer- id="checkMe" label="OpenStreetMap" src="osm.mapml" checked></layer->
                 </map>     
             </body>
             </html>
@@ -66,8 +66,8 @@ jest.setTimeout(30000);
             </head>
             <body>
                 <mapml-viewer style="width:500px;height:500px" projection="OSMTILE" zoom="2" lat="45" lon="-90" controls >
-                    <layer- id="checkMe" label='CBMT' src='https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/' checked></layer->
-                    <layer- label="OpenStreetMap" src="http://geogratis.gc.ca/mapml/en/osmtile/osm/" checked></layer->
+                    <layer- id="checkMe" label='CBMT' src='cbmtile-cbmt.mapml' checked></layer->
+                    <layer- label="OpenStreetMap" src="osm.mapml" checked></layer->
                 </mapml-viewer>     
             </body>
             </html>

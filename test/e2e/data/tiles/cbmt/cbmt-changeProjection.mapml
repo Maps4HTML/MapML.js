@@ -1,16 +1,16 @@
-<mapml xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <title>Canada Base Map - Transportation (CBMT)</title>
-    <meta http-equiv="Content-Type" content="text/mapml"/>
-    <meta charset="utf-8"/>
-    <link rel="zoomin" href="osm-changeProjection.mapml" type="text/mapml"/>
-  </head>
-  <body>
-  <extent units="CBMTILE" >
-    <input name="z" type="zoom" min="0" max="8"/>
-    <input name="y" type="location" units="tilematrix" axis="row"/>
-    <input name="x" type="location" units="tilematrix" axis="column"/>
-    <link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}?m4h=t" />
-  </extent>
-  </body>
-</mapml>
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+  <map-head>
+    <map-title>Canada Base Map - Transportation (CBMT)</map-title>
+    <map-meta http-equiv="Content-Type" content="text/mapml"></map-meta>
+    <map-meta charset="utf-8"></map-meta>
+    <map-link rel="zoomin" href="osm-changeProjection.mapml" type="text/mapml"></map-link>
+  </map-head>
+  <map-body>
+  <map-extent units="CBMTILE" >
+    <map-input name="z" type="zoom" min="0" max="8"></map-input>
+    <map-input name="y" type="location" units="tilematrix" axis="row"></map-input>
+    <map-input name="x" type="location" units="tilematrix" axis="column"></map-input>
+    <map-link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}?m4h=t" ></map-link>
+  </map-extent>
+  </map-body>
+</mapml->

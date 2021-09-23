@@ -1,27 +1,18 @@
-<mapml xmlns="http://www.w3.org/1999/xhtml">
-   <head>
-      <title>ne_10m_admin_0_countries</title>
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+   <map-head>
+      <map-title>ne_10m_admin_0_countries</map-title>
 
-      <meta charset="utf-8" />
-      <meta content="text/mapml" http-equiv="Content-Type" />
-   </head>
-   <body>
-      <extent units="WGS84">
-         <input name="zoomLevel" type="zoom" value="1" min="0" max="6" />
-         <input name="minLon" type="location" value="-180" units="gcrs" axis="longitude" position="top-left" min="-180" max="180" />
-         <input name="minLat" type="location" value="0" units="gcrs" axis="latitude" position="bottom-right" min="-90" max="90.0002058236639" />
-         <input name="maxLon" type="location" value="-135" units="gcrs" axis="longitude" position="bottom-right" min="-180" max="180" />
-         <input name="maxLat" type="location" value="45" units="gcrs" axis="latitude" position="top-left" min="-90" max="90.0002058236639" />
-
-         <link rel="features" type="text/mapml" title="ne_10m_admin_0_countries (as MapML)" tref="./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}" />
-      </extent>
-      <feature id="fclass.7" class="fclass _7">
-         <geometry>
-            <polygon>
-               <coordinates>-157.1813770371727 1.7098516755173 -157.3722761399011 1.9089910272844 -157.5109869987182 1.8210950375389 -157.1813770371727 1.7098516755173</coordinates>
-            </polygon>
-         </geometry>
-         <properties>
+      <map-meta charset="utf-8"></map-meta>
+      <map-meta content="text/mapml" http-equiv="Content-Type" ></map-meta>
+   </map-head>
+   <map-body>
+      <map-feature id="fclass.7" class="fclass _7">
+         <map-geometry>
+            <map-polygon>
+               <map-coordinates>-157.1813770371727 1.7098516755173 -157.3722761399011 1.9089910272844 -157.5109869987182 1.8210950375389 -157.1813770371727 1.7098516755173</map-coordinates>
+            </map-polygon>
+         </map-geometry>
+         <map-properties>
             <table>
                <thead>
                   <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
@@ -86,32 +77,32 @@
                   <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
                </tbody>
             </table>
-         </properties>
-      </feature>
-      <feature id="fclass.74" class="fclass _74">
-         <geometry>
-            <multipolygon>
-               <polygon>
-                  <coordinates>-155.1323017762315 19.9400292986632 -155.8862845632668 20.2627723860099 -155.8258560703168 19.9997711041934 -156.0490294817799 19.7559970701337 -155.884911188427 19.3419245559421 -155.9219923091009 19.0734297747665 -155.6589910272844 18.9202984801318 -155.4330708661417 19.1908533235671 -155.1577092107673 19.2602087529756 -154.7820911920894 19.4710217908808 -155.0821735945798 19.7381431972166 -155.1323017762315 19.9400292986632</coordinates>
-               </polygon>
-               <polygon>
-                  <coordinates>-156.9767441860465 20.9254257462003 -156.9774308734664 20.7345266434719 -156.7947720197766 20.7777879509247 -156.9767441860465 20.9254257462003</coordinates>
-               </polygon>
-               <polygon>
-                  <coordinates>-156.659494598059 20.8265427577367 -156.4617286211317 20.7874015748032 -156.4239608130379 20.5779619117378 -156.0311756088628 20.6679179637429 -156.0153817982055 20.7935817615821 -156.2742629555026 20.9542666178356 -156.6134865409266 20.9693737410731 -156.659494598059 20.8265427577367</coordinates>
-               </polygon>
-               <polygon>
-                  <coordinates>-157.2390587804431 21.199414026735 -157.2651529023988 21.1094579747299 -156.8421534517488 21.0469694195202 -156.7116828419703 21.1595861563816 -157.2390587804431 21.199414026735</coordinates>
-               </polygon>
-               <polygon>
-                  <coordinates>-157.9820545687603 21.731596777147 -158.2354422266984 21.5413843618385 -158.0994781175609 21.302417139718 -157.7018861014466 21.3134041384362 -157.9820545687603 21.731596777147</coordinates>
-               </polygon>
-               <polygon>
-                  <coordinates>-159.3135414759201 22.215711408167 -159.5751693828969 22.2225782823659 -159.7818622962827 22.0907342977477 -159.683665995239 21.9279893792346 -159.3918238417872 21.8785478850027 -159.3135414759201 22.215711408167</coordinates>
-               </polygon>
-            </multipolygon>
-         </geometry>
-         <properties>
+         </map-properties>
+      </map-feature>
+      <map-feature id="fclass.74" class="fclass _74">
+         <map-geometry>
+            <map-multipolygon>
+               <map-polygon>
+                  <map-coordinates>-155.1323017762315 19.9400292986632 -155.8862845632668 20.2627723860099 -155.8258560703168 19.9997711041934 -156.0490294817799 19.7559970701337 -155.884911188427 19.3419245559421 -155.9219923091009 19.0734297747665 -155.6589910272844 18.9202984801318 -155.4330708661417 19.1908533235671 -155.1577092107673 19.2602087529756 -154.7820911920894 19.4710217908808 -155.0821735945798 19.7381431972166 -155.1323017762315 19.9400292986632</map-coordinates>
+               </map-polygon>
+               <map-polygon>
+                  <map-coordinates>-156.9767441860465 20.9254257462003 -156.9774308734664 20.7345266434719 -156.7947720197766 20.7777879509247 -156.9767441860465 20.9254257462003</map-coordinates>
+               </map-polygon>
+               <map-polygon>
+                  <map-coordinates>-156.659494598059 20.8265427577367 -156.4617286211317 20.7874015748032 -156.4239608130379 20.5779619117378 -156.0311756088628 20.6679179637429 -156.0153817982055 20.7935817615821 -156.2742629555026 20.9542666178356 -156.6134865409266 20.9693737410731 -156.659494598059 20.8265427577367</map-coordinates>
+               </map-polygon>
+               <map-polygon>
+                  <map-coordinates>-157.2390587804431 21.199414026735 -157.2651529023988 21.1094579747299 -156.8421534517488 21.0469694195202 -156.7116828419703 21.1595861563816 -157.2390587804431 21.199414026735</map-coordinates>
+               </map-polygon>
+               <map-polygon>
+                  <map-coordinates>-157.9820545687603 21.731596777147 -158.2354422266984 21.5413843618385 -158.0994781175609 21.302417139718 -157.7018861014466 21.3134041384362 -157.9820545687603 21.731596777147</map-coordinates>
+               </map-polygon>
+               <map-polygon>
+                  <map-coordinates>-159.3135414759201 22.215711408167 -159.5751693828969 22.2225782823659 -159.7818622962827 22.0907342977477 -159.683665995239 21.9279893792346 -159.3918238417872 21.8785478850027 -159.3135414759201 22.215711408167</map-coordinates>
+               </map-polygon>
+            </map-multipolygon>
+         </map-geometry>
+         <map-properties>
             <table>
                <thead>
                   <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
@@ -176,7 +167,7 @@
                   <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
                </tbody>
             </table>
-         </properties>
-      </feature>
-   </body>
-</mapml>
+         </map-properties>
+      </map-feature>
+   </map-body>
+</mapml->

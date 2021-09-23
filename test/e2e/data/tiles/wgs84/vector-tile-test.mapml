@@ -1,26 +1,25 @@
-<mapml xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>World Countries - WGS84</title>
-        <meta charset="utf-8" />
-        <meta name="zoom" content="min=0,max=5" />
-        <link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="© Natural Resources Canada" />
-        <link rel="stylesheet" href="vector-tile-test.css" />
-        <link href="us_pop_density.mapml" rel="alternate" projection="CBMTILE" />
-        <style>
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+    <map-head>
+        <map-title>World Countries - WGS84</map-title>
+        <map-meta charset="utf-8"></map-meta>
+        <map-meta name="zoom" content="min=0,max=5"></map-meta>
+        <map-link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="© Natural Resources Canada" ></map-link>
+        <map-link rel="stylesheet" href="vector-tile-test.css" ></map-link>
+        <map-link href="us_pop_density.mapml" rel="alternate" projection="CBMTILE" ></map-link>
+        <map-style>
             .secondLayerVector{
                 color:black;
             }
-        </style>
-    </head>
-    <body>
-        <extent units="WGS84">
-            <input name="zoomLevel" type="zoom" min="0" max="2" value="0"/>
+        </map-style>
+   </map-head>
+   <map-body>
+        <map-extent units="WGS84">
+            <map-input name="zoomLevel" type="zoom" min="0" max="2" value="0"></map-input>
 
-            <input name="row" type="location" axis="row" units="tilematrix" min="0" max="5"/>
-            <input name="col" type="location" axis="column" units="tilematrix" min="0" max="5"/>
+            <map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="5"></map-input>
+            <map-input name="col" type="location" axis="column" units="tilematrix" min="0" max="5"></map-input>
 
-            <link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)' tref='wgs84/{zoomLevel}/r{row}_c{col}.mapml'/>
-
-        </extent>
-    </body>
-</mapml>
+            <map-link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)' tref='wgs84/{zoomLevel}/r{row}_c{col}.mapml'></map-link>
+        </map-extent>
+    </map-body>
+</mapml->

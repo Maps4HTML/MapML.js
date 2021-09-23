@@ -4,7 +4,7 @@ export var MapMLStaticTileLayer = L.GridLayer.extend({
     this.zoomBounds = this._getZoomBounds(options.tileContainer,options.maxZoomBound);
     L.extend(options, this.zoomBounds);
     L.setOptions(this, options);
-    this._groups = this._groupTiles(this.options.tileContainer.getElementsByTagName('tile'));
+    this._groups = this._groupTiles(this.options.tileContainer.getElementsByTagName('map-tile'));
   },
 
   onAdd: function(){
@@ -50,7 +50,7 @@ export var MapMLStaticTileLayer = L.GridLayer.extend({
 
   createTile: function (coords) {
     let tileGroup = this._groups[this._tileCoordsToKey(coords)] || [],
-        tileElem = document.createElement('tile'), tileSize = this.getTileSize();
+        tileElem = document.createElement('map-tile'), tileSize = this.getTileSize();
     tileElem.setAttribute("col",coords.x);
     tileElem.setAttribute("row",coords.y);
     tileElem.setAttribute("zoom",coords.z);
@@ -96,8 +96,8 @@ export var MapMLStaticTileLayer = L.GridLayer.extend({
 
   _getZoomBounds: function(container, maxZoomBound){
     if(!container) return null;
-    let meta = M.metaContentToObject(container.getElementsByTagName('tiles')[0].getAttribute('zoom')),
-        zoom = {},tiles = container.getElementsByTagName("tile");
+    let meta = M.metaContentToObject(container.getElementsByTagName('map-tiles')[0].getAttribute('zoom')),
+        zoom = {},tiles = container.getElementsByTagName("map-tile");
     zoom.nativeZoom = +meta.value || 0;
     zoom.maxNativeZoom = 0;
     zoom.minNativeZoom = maxZoomBound;

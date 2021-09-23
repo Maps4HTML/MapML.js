@@ -28,7 +28,7 @@ export var Feature = L.Path.extend({
   initialize: function (markup, options) {
     this.type = markup.tagName.toUpperCase();
 
-    if(this.type === "POINT" || this.type === "MULTIPOINT") options.fillOpacity = 1;
+    if(this.type === "MAP-POINT" || this.type === "MAP-MULTIPOINT") options.fillOpacity = 1;
 
     if(options.wrappers.length > 0)
       options = Object.assign(this._convertWrappers(options.wrappers), options);
@@ -43,7 +43,7 @@ export var Feature = L.Path.extend({
 
     this._convertMarkup();
 
-    if(markup.querySelector('span') || markup.querySelector('map-a')){
+    if(markup.querySelector('map-span') || markup.querySelector('map-a')){
       this._generateOutlinePoints();
     }
 
@@ -173,7 +173,7 @@ export var Feature = L.Path.extend({
   },
 
   /**
-   * Converts the spans, a and divs around a geometry subtype into options for the feature
+   * Converts the map-spans, a and divs around a geometry subtype into options for the feature
    * @param {HTMLElement[]} elems - The current zoom level of the map
    * @private
    */
@@ -205,21 +205,21 @@ export var Feature = L.Path.extend({
 
     let attr = this._markup.attributes;
     this.featureAttributes = {};
-    if(this.options.link && this._markup.parentElement.tagName.toUpperCase() === "MAP-A" && this._markup.parentElement.parentElement.tagName.toUpperCase() !== "GEOMETRY")
+    if(this.options.link && this._markup.parentElement.tagName.toUpperCase() === "MAP-A" && this._markup.parentElement.parentElement.tagName.toUpperCase() !== "MAP-GEOMETRY")
       this.featureAttributes.tabindex = "0";
     for(let i = 0; i < attr.length; i++){
       this.featureAttributes[attr[i].name] = attr[i].value;
     }
 
     let first = true;
-    for (let c of this._markup.querySelectorAll('coordinates')) {              //loops through the coordinates of the child
+    for (let c of this._markup.querySelectorAll('map-coordinates')) {              //loops through the coordinates of the child
       let ring = [], subRings = [];
       this._coordinateToArrays(c, ring, subRings, this.options.className);              //creates an array of pcrs points for the main ring and the subparts
-      if (!first && this.type === "POLYGON") {
+      if (!first && this.type === "MAP-POLYGON") {
         this._parts[0].rings.push(ring[0]);
         if (subRings.length > 0)
           this._parts[0].subrings = this._parts[0].subrings.concat(subRings);
-      } else if (this.type === "MULTIPOINT") {
+      } else if (this.type === "MAP-MULTIPOINT") {
         for (let point of ring[0].points.concat(subRings)) {
           this._parts.push({ rings: [{ points: [point] }], subrings: [], cls:`${point.cls || ""} ${this.options.className || ""}`.trim() });
         }
@@ -231,14 +231,14 @@ export var Feature = L.Path.extend({
   },
 
   /**
-   * Generates the feature outline, subtracting the spans to generate those separately
+   * Generates the feature outline, subtracting the map-spans to generate those separately
    * @private
    */
   _generateOutlinePoints: function () {
-    if (this.type === "MULTIPOINT" || this.type === "POINT" || this.type === "LINESTRING" || this.type === "MULTILINESTRING") return;
+    if (this.type === "MAP-MULTIPOINT" || this.type === "MAP-POINT" || this.type === "MAP-LINESTRING" || this.type === "MAP-MULTILINESTRING") return;
 
     this._outline = [];
-    for (let coords of this._markup.querySelectorAll('coordinates')) {
+    for (let coords of this._markup.querySelectorAll('map-coordinates')) {
       let nodes = coords.childNodes, cur = 0, tempDiv = document.createElement('div'), nodeLength = nodes.length;
       for (let n of nodes) {
         let line = [];
@@ -264,11 +264,11 @@ export var Feature = L.Path.extend({
   },
 
   /**
-   * Converts coordinates element to an object representing the parts and subParts
-   * @param {HTMLElement} coords - A single coordinates element
+   * Converts map-coordinates element to an object representing the parts and subParts
+   * @param {HTMLElement} coords - A single map-coordinates element
    * @param {Object[]} main - An empty array representing the main parts
    * @param {Object[]} subParts - An empty array representing the sub parts
-   * @param {boolean} isFirst - A true | false representing if the current HTML element is the parent coordinates element or not
+   * @param {boolean} isFirst - A true | false representing if the current HTML element is the parent map-coordinates element or not
    * @param {string} cls - The class of the coordinate/span
    * @param parents
    * @private
@@ -312,13 +312,13 @@ export var Feature = L.Path.extend({
    */
   _isClosed: function () {
     switch (this.type) {
-      case 'POLYGON':
-      case 'MULTIPOLYGON':
-      case 'POINT':
-      case 'MULTIPOINT':
+      case 'MAP-POLYGON':
+      case 'MAP-MULTIPOLYGON':
+      case 'MAP-POINT':
+      case 'MAP-MULTIPOINT':
         return true;
-      case 'LINESTRING':
-      case 'MULTILINESTRING':
+      case 'MAP-LINESTRING':
+      case 'MAP-MULTILINESTRING':
         return false;
       default:
         return false;

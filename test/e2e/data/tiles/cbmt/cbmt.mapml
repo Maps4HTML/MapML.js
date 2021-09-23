@@ -1,22 +1,21 @@
-<mapml xmlns="http://www.w3.org/1999/xhtml">
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
 
-  <head>
-    <title>Canada Base Map - Transportation (CBMT)</title>
-    <meta http-equiv="Content-Type" content="text/mapml"/>
-    <meta charset="utf-8" />
-    <base href="" />
-    <link rel="license"
+  <map-head>
+    <map-title>Canada Base Map - Transportation (CBMT)</map-title>
+    <map-meta http-equiv="Content-Type" content="text/mapml"></map-meta>
+    <map-base href="" ></map-base>
+    <map-link rel="license"
       href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
-      title="Canada Base Map © Natural Resources Canada" />
-    <link rel="zoomin" href="/mapml/en/cbmtile/cbmt/?z=18" type="text/mapml" />
-  </head>
+      title="Canada Base Map © Natural Resources Canada" ></map-link>
+    <map-link rel="zoomin" href="/mapml/en/cbmtile/cbmt/?z=18" type="text/mapml" ></map-link>
+  </map-head>
 
-  <body>
-    <extent units="CBMTILE">
-      <input name="z" type="zoom" value="17" min="0" max="17" />
-      <input name="y" type="location" units="tilematrix" axis="row" min="29750" max="34475" />
-      <input name="x" type="location" units="tilematrix" axis="column" min="26484" max="32463" />
-      <link rel="tile" tref="cbmt/{z}/c{x}_r{y}.png" />
-    </extent>
-  </body>
-</mapml>
+  <map-body>
+    <map-extent units="CBMTILE">
+      <map-input name="z" type="zoom" value="17" min="0" max="17" ></map-input>
+      <map-input name="y" type="location" units="tilematrix" axis="row" min="29750" max="34475" ></map-input>
+      <map-input name="x" type="location" units="tilematrix" axis="column" min="26484" max="32463" ></map-input>
+      <map-link rel="tile" tref="cbmt/{z}/c{x}_r{y}.png" ></map-link>
+    </map-extent>
+  </map-body>
+</mapml->

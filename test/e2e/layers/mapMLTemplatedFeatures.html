@@ -23,23 +23,23 @@
   <map style="width: 500px;height: 500px;" is="web-map" projection="CBMTILE" zoom="3" lat="45.5052040" lon="-75.2202344"
     controls>
     <layer- label="Alabama" checked>
-      <meta name="zoom" content="min=2,max=5" />
-      <extent units="CBMTILE">
-        <input name="z" type="zoom" min="2" max="18" value="0" />
-        <input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" />
-        <input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46" />
-        <input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" />
-        <input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" />
-        <link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
-      </extent>
+      <map-meta name="zoom" content="min=2,max=5"></map-meta>
+      <map-extent units="CBMTILE">
+        <map-input name="z" type="zoom" min="2" max="18" value="0" ></map-input>
+        <map-input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" ></map-input>
+        <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46" ></map-input>
+        <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" ></map-input>
+        <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" ></map-input>
+        <map-link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>
+      </map-extent>
     </layer->
     <layer- label="Static MapML with tiles" checked>
-      <meta name="zoom" content="min=0,max=10">
-      <meta name="projection" content="CBMTILE">
-      <link rel="license"
+      <map-meta name="zoom" content="min=0,max=10"></map-meta>
+      <map-meta name="projection" content="CBMTILE"></map-meta>
+      <map-link rel="license"
         href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
-        title="Canada Base Map © Natural Resources Canada">
-      <tile zoom="0" row="3" col="3" src="data/cbmt/0/c3_r3.png"></tile>
+        title="Canada Base Map © Natural Resources Canada"></map-link>
+      <map-tile zoom="0" row="3" col="3" src="data/cbmt/0/c3_r3.png"></map-tile>
     </layer->
   </map>
 

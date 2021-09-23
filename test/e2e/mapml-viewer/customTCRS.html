@@ -12,11 +12,11 @@
   <mapml-viewer zoom="2" lat="45" lon="-90" controls>
     <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
     <layer- label="Static MapML with tiles" checked>
-      <meta name="zoom" content="min=1,max=4">
-      <meta name="projection" content="basic">
+      <map-meta name="zoom" content="min=1,max=4"></map-meta>
+      <map-meta name="projection" content="basic"></map-meta>
 
-      <tile zoom="2" row="-23" col="-9" src="data/cbmt/3/c17_r18.png"></tile>
-      <tile zoom="2" row="-23" col="-10" src="data/cbmt/3/c16_r18.png"></tile>
+      <map-tile zoom="2" row="-23" col="-9" src="data/cbmt/3/c17_r18.png"></map-tile>
+      <map-tile zoom="2" row="-23" col="-10" src="data/cbmt/3/c16_r18.png"></map-tile>
     </layer->
   </mapml-viewer>
 
@@ -38,92 +38,92 @@
   <mapml-viewer style="width:500px;height:500px;" projection="other" zoom="3" lat="45.5052040" lon="-75.2202344"
     controls>
     <layer- label="Arizona" checked>
-      <meta name="projection" content="other" />
-      <meta name="zoom" content="min=1,max=5,value=0" />
-      <meta name="cs" content="gcrs" />
-      <meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5" />
+      <map-meta name="projection" content="other"></map-meta>
+      <map-meta name="zoom" content="min=1,max=5,value=0"></map-meta>
+      <map-meta name="cs" content="gcrs"></map-meta>
+      <map-meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5"></map-meta>
 
-      <link id="first" rel="stylesheet" type="text/css" href="first.css">
-      <style>
+      <map-link id="first" rel="stylesheet" type="text/css" href="first.css"></map-link>
+      <map-style>
         .second {
           stroke: aqua;
         }
-      </style>
-      <style>
+      </map-style>
+      <map-style>
         .third {
           stroke: blue
         }
-      </style>
-      <link id="forth" rel="stylesheet" type="text/css" href="forth.css">
-      <feature zoom="2" class="refDiff">
-        <properties>
+      </map-style>
+      <map-link id="forth" rel="stylesheet" type="text/css" href="forth.css"></map-link>
+      <map-feature zoom="2" class="refDiff">
+        <map-properties>
           <h1>Test</h1>
-        </properties>
-        <geometry cs="tilematrix">
-          <polygon>
-            <coordinates>1 1 2 1 2 2 1 2</coordinates>
-          </polygon>
-        </geometry>
-      </feature>
+        </map-properties>
+        <map-geometry cs="tilematrix">
+          <map-polygon>
+            <map-coordinates>1 1 2 1 2 2 1 2</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
 
-      <feature zoom="2" class="refDiff">
-        <properties>
+      <map-feature zoom="2" class="refDiff">
+        <map-properties>
           <h1>Arizona</h1>
-        </properties>
-        <geometry>
-          <polygon>
-            <coordinates>-109.042503 37.000263 -109.04798 31.331629 -111.074448 31.331629 -112.246513 31.704061
+        </map-properties>
+        <map-geometry>
+          <map-polygon>
+            <map-coordinates>-109.042503 37.000263 -109.04798 31.331629 -111.074448 31.331629 -112.246513 31.704061
               -114.815198 32.492741 -114.72209 32.717295 -114.524921 32.755634 -114.470151 32.843265 -114.524921
               33.029481 -114.661844 33.034958 -114.727567 33.40739 -114.524921 33.54979 -114.497536 33.697668
               -114.535874 33.933176 -114.415382 34.108438 -114.256551 34.174162 -114.136058 34.305608 -114.333228
               34.448009 -114.470151 34.710902 -114.634459 34.87521 -114.634459 35.00118 -114.574213 35.138103
               -114.596121 35.324319 -114.678275 35.516012 -114.738521 36.102045 -114.371566 36.140383 -114.251074
               36.01989 -114.152489 36.025367 -114.048427 36.195153 -114.048427 37.000263 -110.499369 37.00574
-              -109.042503 37.000263</coordinates>
-          </polygon>
-        </geometry>
-      </feature>
-      <feature zoom="4" class="refDiff">
-        <properties>
+              -109.042503 37.000263</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+      <map-feature zoom="4" class="refDiff">
+        <map-properties>
           <h1>Arfsdfsdizona</h1>
-        </properties>
-        <geometry>
-          <polygon>
-            <coordinates>-109.042503 37.000263 -109.04798 31.331629 -111.074448 31.331629 -112.246513 31.704061
+        </map-properties>
+        <map-geometry>
+          <map-polygon>
+            <map-coordinates>-109.042503 37.000263 -109.04798 31.331629 -111.074448 31.331629 -112.246513 31.704061
               -114.815198 32.492741 -114.72209 32.717295 -114.524921 32.755634 -114.470151 32.843265 -114.524921
               33.029481 -114.661844 33.034958 -114.727567 33.40739 -114.524921 33.54979 -114.497536 33.697668
               -114.535874 33.933176 -114.415382 34.108438 -114.256551 34.174162 -114.136058 34.305608 -114.333228
               34.448009 -114.470151 34.710902 -114.634459 34.87521 -114.634459 35.00118 -114.574213 35.138103
               -114.596121 35.324319 -114.678275 35.516012 -114.738521 36.102045 -114.371566 36.140383 -114.251074
               36.01989 -114.152489 36.025367 -114.048427 36.195153 -114.048427 37.000263 -110.499369 37.00574
-              -109.042503 37.000263</coordinates>
-          </polygon>
-        </geometry>
-      </feature>
-      <feature zoom="3" class="all  _20-50">
-        <properties>
+              -109.042503 37.000263</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+      <map-feature zoom="3" class="all  _20-50">
+        <map-properties>
           <h1>Colorado</h1>
-        </properties>
-        <geometry>
-          <polygon>
-            <coordinates>-107.919731 41.003906 -105.728954 40.998429 -104.053011 41.003906 -102.053927 41.003906
+        </map-properties>
+        <map-geometry>
+          <map-polygon>
+            <map-coordinates>-107.919731 41.003906 -105.728954 40.998429 -104.053011 41.003906 -102.053927 41.003906
               -102.053927 40.001626 -102.042974 36.994786 -103.001438 37.000263 -104.337812 36.994786 -106.868158
               36.994786 -107.421329 37.000263 -109.042503 37.000263 -109.042503 38.166851 -109.058934 38.27639
-              -109.053457 39.125316 -109.04798 40.998429 -107.919731 41.003906</coordinates>
-          </polygon>
-        </geometry>
-      </feature>
+              -109.053457 39.125316 -109.04798 40.998429 -107.919731 41.003906</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
     </layer->
     <layer- label="Alabama" checked>
-      <meta name="zoom" content="min=1,max=5" />
-      <extent units="other">
-        <input name="z" type="zoom" min="2" max="18" value="0" />
-        <input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" />
-        <input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46" />
-        <input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" />
-        <input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" />
-        <link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
-      </extent>
+      <map-meta name="zoom" content="min=1,max=5"></map-meta>
+      <map-extent units="other">
+        <map-input name="z" type="zoom" min="2" max="18" value="0"></map-input>
+        <map-input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74"></map-input>
+        <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46"></map-input>
+        <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74"></map-input>
+        <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46"></map-input>
+        <map-link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>
+      </map-extent>
     </layer->
   </mapml-viewer>
 
@@ -215,11 +215,11 @@
   </script>
   <mapml-viewer id="mapThree" zoom="2" lat="45" lon="-90" controls>
     <layer- label="Static MapML with tiles" checked>
-      <meta name="zoom" content="min=1,max=4">
-      <meta name="projection" content="basic">
+      <map-meta name="zoom" content="min=1,max=4"></map-meta>
+      <map-meta name="projection" content="basic"></map-meta>
 
-      <tile zoom="2" row="-23" col="-9" src="data/cbmt/3/c17_r18.png"></tile>
-      <tile zoom="2" row="-23" col="-10" src="data/cbmt/3/c16_r18.png"></tile>
+      <map-tile zoom="2" row="-23" col="-9" src="data/cbmt/3/c17_r18.png"></map-tile>
+      <map-tile zoom="2" row="-23" col="-10" src="data/cbmt/3/c16_r18.png"></map-tile>
     </layer->
   </mapml-viewer>
   

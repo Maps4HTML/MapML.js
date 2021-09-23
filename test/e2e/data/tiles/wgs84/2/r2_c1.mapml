@@ -1,35 +1,26 @@
-<mapml xmlns="http://www.w3.org/1999/xhtml">
-   <head>
-      <title>ne_10m_admin_0_countries</title>
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+   <map-head>
+      <map-title>ne_10m_admin_0_countries</map-title>
 
-      <meta charset="utf-8" />
-      <meta content="text/mapml" http-equiv="Content-Type" />
-   </head>
-   <body>
-      <extent units="WGS84">
-         <input name="zoomLevel" type="zoom" value="1" min="0" max="6" />
-         <input name="minLon" type="location" value="-135" units="gcrs" axis="longitude" position="top-left" min="-180" max="180" />
-         <input name="minLat" type="location" value="-45" units="gcrs" axis="latitude" position="bottom-right" min="-90" max="90.0002058236639" />
-         <input name="maxLon" type="location" value="-90" units="gcrs" axis="longitude" position="bottom-right" min="-180" max="180" />
-         <input name="maxLat" type="location" value="0" units="gcrs" axis="latitude" position="top-left" min="-90" max="90.0002058236639" />
-
-         <link rel="features" type="text/mapml" title="ne_10m_admin_0_countries (as MapML)" tref="./items.mapml?tilingScheme=WorldCRS84Quad&amp;zoomLevel={zoomLevel}&amp;clipbox={minLon},{minLat},{maxLon},{maxLat}" />
-      </extent>
-      <feature id="fclass.5" class="fclass _5">
-         <geometry>
-            <multipolygon>
-               <polygon>
-                  <coordinates>-90.2266068485625 -0.7361289141183 -90.1970792895074 -0.4889214429592 -90.5102087529756 -0.5239425013734 -90.4731276323018 -0.7464292254166 -90.2266068485625 -0.7361289141183</coordinates>
-               </polygon>
-               <polygon>
-                  <coordinates>-91.4186962094854 -0.4854880058597 -91.4001556491485 -0.2588811572972 -91.1337209302326 -0.5198223768541 -91.2030763596411 -0.6386193004944 -91.5100256363304 -0.8363852774217 -91.4269364585241 -1.0197308185314 -91.0952664347189 -1.0108038820729 -90.8899468961729 -0.9393883904047 -90.8109778428859 -0.7361289141183 -90.9510620765428 -0.5836843069035 -90.9682292620399 -0.4030855154734 -91.179728987365 -0.2355337850211 <span class="noline">-91.2538912287127 0 -91.6047885002747 0</span> -91.4399835195019 -0.0130470609778 -91.4001556491485 -0.2588811572972 -91.6034151254349 -0.2870353415125 -91.651483244827 -0.4216260758103 -91.4186962094854 -0.4854880058597</coordinates>
-               </polygon>
-               <polygon>
-                  <coordinates>-90.5720106207654 -0.2334737227614 -90.810291155466 -0.1483244826955 -90.8617927119575 -0.3172495879875 -90.5960446804614 -0.3735579564182 -90.5720106207654 -0.2334737227614</coordinates>
-               </polygon>
-            </multipolygon>
-         </geometry>
-         <properties>
+      <map-meta charset="utf-8"></map-meta>
+      <map-meta content="text/mapml" http-equiv="Content-Type" ></map-meta>
+   </map-head>
+   <map-body>
+      <map-feature id="fclass.5" class="fclass _5">
+         <map-geometry>
+            <map-multipolygon>
+               <map-polygon>
+                  <map-coordinates>-90.2266068485625 -0.7361289141183 -90.1970792895074 -0.4889214429592 -90.5102087529756 -0.5239425013734 -90.4731276323018 -0.7464292254166 -90.2266068485625 -0.7361289141183</map-coordinates>
+               </map-polygon>
+               <map-polygon>
+                  <map-coordinates>-91.4186962094854 -0.4854880058597 -91.4001556491485 -0.2588811572972 -91.1337209302326 -0.5198223768541 -91.2030763596411 -0.6386193004944 -91.5100256363304 -0.8363852774217 -91.4269364585241 -1.0197308185314 -91.0952664347189 -1.0108038820729 -90.8899468961729 -0.9393883904047 -90.8109778428859 -0.7361289141183 -90.9510620765428 -0.5836843069035 -90.9682292620399 -0.4030855154734 -91.179728987365 -0.2355337850211 <map-span class="noline">-91.2538912287127 0 -91.6047885002747 0</map-span> -91.4399835195019 -0.0130470609778 -91.4001556491485 -0.2588811572972 -91.6034151254349 -0.2870353415125 -91.651483244827 -0.4216260758103 -91.4186962094854 -0.4854880058597</map-coordinates>
+               </map-polygon>
+               <map-polygon>
+                  <map-coordinates>-90.5720106207654 -0.2334737227614 -90.810291155466 -0.1483244826955 -90.8617927119575 -0.3172495879875 -90.5960446804614 -0.3735579564182 -90.5720106207654 -0.2334737227614</map-coordinates>
+               </map-polygon>
+            </map-multipolygon>
+         </map-geometry>
+         <map-properties>
             <table>
                <thead>
                   <tr><th role="columnheader" scope="col">Property name</th><th role="columnheader" scope="col">Property value</th></tr>
@@ -94,7 +85,7 @@
                   <tr><th scope="row">homepart</th><td itemprop="homepart">1</td></tr>
                </tbody>
             </table>
-         </properties>
-      </feature>
-   </body>
-</mapml>
+         </map-properties>
+      </map-feature>
+   </map-body>
+</mapml->
