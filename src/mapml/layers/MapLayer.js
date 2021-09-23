@@ -962,12 +962,12 @@ export var MapMLLayer = L.Layer.extend({
     _createExtent: function () {
     
         var extent = document.createElement('map-extent'),
-            xminInput = document.createElement('input'),
-            yminInput = document.createElement('input'),
-            xmaxInput = document.createElement('input'),
-            ymaxInput = document.createElement('input'),
-            zoom = document.createElement('input'),
-            projection = document.createElement('input');
+            xminInput = document.createElement('map-input'),
+            yminInput = document.createElement('map-input'),
+            xmaxInput = document.createElement('map-input'),
+            ymaxInput = document.createElement('map-input'),
+            zoom = document.createElement('map-input'),
+            projection = document.createElement('map-input');
     
         zoom.setAttribute('type','zoom');
         zoom.setAttribute('min','0');
