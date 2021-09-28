@@ -1290,13 +1290,14 @@ export var MapMLLayer = L.Layer.extend({
       }
       // When popup is open, what gets focused with tab needs to be done using JS as the DOM order is not in an accessibility friendly manner
       function focusFeature(focusEvent){
+        let path = focusEvent.originalEvent.path || focusEvent.originalEvent.composedPath();
         let isTab = focusEvent.originalEvent.keyCode === 9,
             shiftPressed = focusEvent.originalEvent.shiftKey;
-        if((focusEvent.originalEvent.path[0].classList.contains("leaflet-popup-close-button") && isTab && !shiftPressed) || focusEvent.originalEvent.keyCode === 27){
+        if((path[0].classList.contains("leaflet-popup-close-button") && isTab && !shiftPressed) || focusEvent.originalEvent.keyCode === 27){
           L.DomEvent.stop(focusEvent);
           map.closePopup(popup);
           group.focus();
-        } else if ((focusEvent.originalEvent.path[0].title==="Focus Map" || focusEvent.originalEvent.path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
+        } else if ((path[0].title==="Focus Map" || path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
           setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
             L.DomEvent.stop(focusEvent);
             map.closePopup(popup);
@@ -1306,17 +1307,18 @@ export var MapMLLayer = L.Layer.extend({
       }
 
       function focusMap(focusEvent){
+        let path = focusEvent.originalEvent.path || focusEvent.originalEvent.composedPath();
         let isTab = focusEvent.originalEvent.keyCode === 9,
         shiftPressed = focusEvent.originalEvent.shiftKey;
 
-        if((focusEvent.originalEvent.keyCode === 13 && focusEvent.originalEvent.path[0].classList.contains("leaflet-popup-close-button")) || focusEvent.originalEvent.keyCode === 27 ){
+        if((focusEvent.originalEvent.keyCode === 13 && path[0].classList.contains("leaflet-popup-close-button")) || focusEvent.originalEvent.keyCode === 27 ){
           L.DomEvent.stopPropagation(focusEvent);
           map._container.focus();
           map.closePopup(popup);
           if(focusEvent.originalEvent.keyCode !== 27)map._popupClosed = true;
-        } else if (isTab && focusEvent.originalEvent.path[0].classList.contains("leaflet-popup-close-button")){
+        } else if (isTab && path[0].classList.contains("leaflet-popup-close-button")){
           map.closePopup(popup);
-        } else if ((focusEvent.originalEvent.path[0].title==="Focus Map" || focusEvent.originalEvent.path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
+        } else if ((path[0].title==="Focus Map" || path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
           setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
             L.DomEvent.stop(focusEvent);
             map.closePopup(popup);
