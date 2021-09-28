@@ -530,7 +530,6 @@ export var ContextMenu = L.Handler.extend({
 
     let key = e.keyCode;
     let path = e.path || e.composedPath();
-    console.log(path + e.path + e.composedPath());
 
     if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && path[0].innerText !== "Copy Coordinates (C) >")
       this._hide();
