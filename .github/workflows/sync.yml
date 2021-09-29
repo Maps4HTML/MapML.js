@@ -3,7 +3,7 @@ name: Sync Repositories
 on: 
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -42,7 +42,7 @@ jobs:
         user_email: 'peter.rushforth@gmail.com'
         user_name: 'prushforth'
         commit_msg: '[AUTO] Sync MapML Build'
-        destination_branch: master
+        destination_branch: main
     - name: Pushes to experiments repo
       uses: ./.github/actions/sync-repo
       env:
