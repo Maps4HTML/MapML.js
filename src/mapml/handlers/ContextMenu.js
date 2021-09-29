@@ -531,9 +531,15 @@ export var ContextMenu = L.Handler.extend({
     let key = e.keyCode;
     let path = e.path || e.composedPath();
 
+    if(key === 13)
+      e.preventDefault();
     if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && path[0].innerText !== "Copy Coordinates (C) >")
       this._hide();
     switch(key){
+      case 13:  //ENTER KEY
+        if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
+          this._map._container.parentNode.activeElement.click();
+        break;
       case 32:  //SPACE KEY
         if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
           this._map._container.parentNode.activeElement.click();
