@@ -537,9 +537,6 @@ export var ContextMenu = L.Handler.extend({
       this._hide();
     switch(key){
       case 13:  //ENTER KEY
-        if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
-          this._map._container.parentNode.activeElement.click();
-        break;
       case 32:  //SPACE KEY
         if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
           this._map._container.parentNode.activeElement.click();
