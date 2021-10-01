@@ -178,6 +178,7 @@ export var DebugVectors = L.LayerGroup.extend({
       j = 0;
 
     this.addLayer(this._centerVector);
+
     for (let i of id) {
       if (layers[i].layerBounds) {
         let boundsArray = [
@@ -198,6 +199,20 @@ export var DebugVectors = L.LayerGroup.extend({
         this.addLayer(boundsRect);
         j++;
       }
+    }
+
+    if(map.totalLayerBounds){
+      let totalBoundsArray = [
+        map.totalLayerBounds.min,
+        L.point(map.totalLayerBounds.max.x, map.totalLayerBounds.min.y),
+        map.totalLayerBounds.max,
+        L.point(map.totalLayerBounds.min.x, map.totalLayerBounds.max.y)
+      ];
+
+      let totalBounds = projectedExtent(
+          totalBoundsArray,
+          {color: "#808080", weight: 5, opacity: 0.5, fill: false});
+      this.addLayer(totalBounds);
     }
   },
 

@@ -100,7 +100,6 @@ export class MapViewer extends HTMLElement {
   constructor() {
     // Always call super first in constructor
     super();
-    
     this._source = this.outerHTML;
     let tmpl = document.createElement('template');
     tmpl.innerHTML =
@@ -110,7 +109,10 @@ export class MapViewer extends HTMLElement {
     
     let shadowRoot = this.attachShadow({mode: 'open'});
     this._container = document.createElement('div');
-    
+
+    let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
+    this._container.insertAdjacentHTML("beforeend", output);
+
     // Set default styles for the map element.
     let mapDefaultCSS = document.createElement('style');
     mapDefaultCSS.innerHTML =
@@ -198,6 +200,8 @@ export class MapViewer extends HTMLElement {
             projection: this.projection,
             query: true,
             contextMenu: true,
+            //Will replace with M.options.announceMoves
+            announceMovement: true,
             mapEl: this,
             crs: M[this.projection],
             zoom: this.zoom,

@@ -56,6 +56,7 @@ import { Crosshair, crosshair } from "./layers/Crosshair";
 import { Feature, feature } from "./features/feature";
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
 import { FeatureGroup, featureGroup} from './features/featureGroup';
+import {AnnounceMovement} from "./handlers/AnnounceMovement";
 import { Options } from "./options";
 import "./keyboard";
 
@@ -600,13 +601,16 @@ M.coordsToArray = Util.coordsToArray;
 M.parseStylesheetAsHTML = Util.parseStylesheetAsHTML;
 M.pointToPCRSPoint = Util.pointToPCRSPoint;
 M.pixelToPCRSPoint = Util.pixelToPCRSPoint;
+M.gcrsToTileMatrix = Util.gcrsToTileMatrix;
 
 M.QueryHandler = QueryHandler;
 M.ContextMenu = ContextMenu;
+M.AnnounceMovement = AnnounceMovement;
 
 // see https://leafletjs.com/examples/extending/extending-3-controls.html#handlers
 L.Map.addInitHook('addHandler', 'query', M.QueryHandler);
 L.Map.addInitHook('addHandler', 'contextMenu', M.ContextMenu);
+L.Map.addInitHook('addHandler', 'announceMovement', M.AnnounceMovement);
 
 M.MapMLLayer = MapMLLayer;
 M.mapMLLayer = mapMLLayer;

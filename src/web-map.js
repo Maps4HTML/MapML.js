@@ -117,7 +117,10 @@ export class WebMap extends HTMLMapElement {
 
     let shadowRoot = rootDiv.attachShadow({mode: 'open'});
     this._container = document.createElement('div');
-    
+
+    let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
+    this._container.insertAdjacentHTML("beforeend", output);
+
     // Set default styles for the map element.
     let mapDefaultCSS = document.createElement('style');
     mapDefaultCSS.innerHTML =
@@ -211,6 +214,8 @@ export class WebMap extends HTMLMapElement {
             projection: this.projection,
             query: true,
             contextMenu: true,
+            //Will replace with M.options.announceMoves
+            announceMovement: true,
             mapEl: this,
             crs: M[this.projection],
             zoom: this.zoom,

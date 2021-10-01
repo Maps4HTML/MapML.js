@@ -385,4 +385,12 @@ export var Util = {
       map.getContainer().focus();
     }
   },
+
+  gcrsToTileMatrix: function (mapEl) {
+    let point = mapEl._map.project(mapEl._map.getCenter());
+    let tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.y;
+    let column = Math.trunc(point.x / tileSize);
+    let row = Math.trunc(point.y / tileSize);
+    return [column, row];
+  }
 };
