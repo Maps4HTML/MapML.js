@@ -129,6 +129,7 @@ export class WebMap extends HTMLMapElement {
     `width: 300px;` +
     `border-width: 2px;` + // Set a default border for contrast, similar to UA default for iframes.
     `border-style: inset;` +
+    `box-sizing: inherit;` + // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/350#issuecomment-888361985
     `}` +
     `[is="web-map"][frameborder="0"] {` +
   	`border-width: 0;` +
