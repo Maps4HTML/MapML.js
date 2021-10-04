@@ -57,8 +57,7 @@
   margin: 0;
   padding: 0;
   overflow: hidden;
-  text-align: left;
-  text-align: inline-start;
+  text-align: inherit;
   text-transform: none;
   -webkit-appearance: none;
      -moz-appearance: none;
