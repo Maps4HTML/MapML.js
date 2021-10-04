@@ -17,19 +17,28 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         style.innerHTML = `
         g[role="link"]:focus,
         g[role="link"]:hover,
-        g[role="button"]:focus,
-        g[role="button"]:hover,
-        g[role="link"] path:focus,
-        g[role="link"] path:hover,
-        g[role="button"] path:focus,
-        g[role="button"] path:hover,
         g[role="link"]:focus path,
         g[role="link"]:hover path,
+        g[role="link"] path:focus,
+        g[role="link"] path:hover,
+        g[role="button"]:focus,
+        g[role="button"]:hover,
         g[role="button"]:focus path,
-        g[role="button"]:hover path {
-          outline: 0!important;
+        g[role="button"]:hover path,
+        g[role="button"] path:focus,
+        g[role="button"] path:hover,
+        path[tabindex="0"]:focus {
           stroke: #0000EE;
           stroke: LinkText;
+        }
+        g[role="link"]:focus:not(:focus-visible),
+        g[role="link"]:focus:not(:focus-visible) path,
+        g[role="link"] path:focus:not(:focus-visible),
+        g[role="button"]:focus:not(:focus-visible),
+        g[role="button"]:focus:not(:focus-visible) path,
+        g[role="button"] path:focus:not(:focus-visible),
+        path[tabindex="0"]:focus:not(:focus-visible) {
+          outline: 0!important;
         }`;
       }
 
