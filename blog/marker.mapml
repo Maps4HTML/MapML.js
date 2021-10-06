@@ -1,37 +1,34 @@
-<mapml>
-  <head>
-    <title>A point in Map Markup Language</title>
-    <meta http-equiv="Content-Type" content="text/mapml"/>
-    <meta charset="utf-8"/>
-    <meta name="projection" content="WGS84"/>
-    <meta name="zoom" content="17"/>
-    <link rel="license" href="foo" title="Foo © Natural Resources Canada"/>
-  </head>
-  <body>
-    <extent units="WGS84" action="marker.mapml" enctype="application/x-www-form-urlencoded">
-      <input name="xmin" type="xmin" min="-75.70864319801332" max="-75.70487201213837"/>
-      <input name="ymin" type="ymin" min="45.396931957344925" max="45.39844997630411"/>
-      <input name="xmax" type="xmax" min="-75.70487201213837" max="-75.70487201213837"/>
-      <input name="ymax" type="ymax" min="45.396931957344925" max="45.39844997630411"/>
-      <input name="zoom" type="zoom" min="15" max="17"/>
-      <input name="projection" type="projection" value="WGS84"/>
-    </extent>
-    <feature id="aPoint">
-      <properties>
-        <code>1200020</code>
-        <accuracy>26</accuracy>
-        <valdate>1995</valdate>
-        <id>aPoint</id>
-        <theme>FO</theme>
-        <type>2</type>
-        <elevation>61</elevation>
-        <altiaccu>5</altiaccu>
-      </properties>
-      <geometry>
-        <Point>
-          <coordinates>-75.7077641 45.3981755</coordinates>
-        </Point>
-      </geometry>
-    </feature>
-  </body>
-</mapml>
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+  <map-head>
+    <map-title>A point in Map Markup Language</map-title>
+    <map-meta http-equiv="Content-Type" content="text/mapml"></map-meta>
+    <map-meta charset="utf-8"></map-meta>
+    <map-meta name="projection" content="OSMTILE"></map-meta>
+    <map-meta name="cs" content="gcrs"></map-meta>
+<!--    <map-meta name="extent" content="top-left-longitude=-75.70864319801332,top-left-latitude=45.396931957344925,bottom-right-longitude=-75.70487201213837,bottom-right-latitude=45.39844997630411"></map-meta>
+    <map-meta name="zoom" content="17"></map-meta>-->
+    <map-link rel="license" href="foo" title="Foo © Natural Resources Canada"></map-link>
+  </map-head>
+  <map-body>
+    <map-feature id="aPoint">
+      <map-featurecaption>A point</map-featurecaption>
+      <map-properties>
+        <table>
+          <tr><th>Code</th><td>12000020</td></tr>
+          <tr><th>Accuracy</th><td>26</td></tr>
+          <tr><th>Valid. date</th><td>1995</td></tr>
+          <tr><th>Id</th><td>aPoint</td></tr>
+          <tr><th>Theme</th><td>FO</td></tr>
+          <tr><th>Type</th><td>2</td></tr>
+          <tr><th>Elevation (m)</th><td>61</td></tr>
+          <tr><th>Altitude accuracy</th><td>5</td></tr>
+        </table>
+      </map-properties>
+      <map-geometry>
+        <map-point>
+          <map-coordinates>-75.7077641 45.3981755</map-coordinates>
+        </map-point>
+      </map-geometry>
+    </map-feature>
+  </map-body>
+</mapml->
