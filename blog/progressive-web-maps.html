@@ -28,9 +28,7 @@
     
     <!-- IE has been forced to IE7 compatibility (see above), Web Components aren't run -->
 <!--[if !IE]>-->
-    <script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-
-    <link rel="import" href="../bower_components/web-map/web-map.html">
+    <script type="module" src="../dist/web-map.js"></script>
     <link rel="stylesheet" media="all" href="styles/v2-combined.css?20131111">
 
 <!--<![endif]-->
@@ -183,7 +181,7 @@
       </pre>
       <!-- the @width / @height attributes take precedence over properties, but currently don't change to reflect updates -->
       <img usemap="#dowslake" src="../map1.png" width="700" height="400" alt="Dow's Lake area" />
-      <map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" controls hidden>
+      <map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" controls>
         <layer- id="osm" src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked hidden></layer->
         <!-- the HTML author can create MapML files and serve them as layers if they prefer -->
         <layer- id="marker" label="Marker layer" src="marker.mapml"></layer->
