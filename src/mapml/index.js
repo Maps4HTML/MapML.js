@@ -56,6 +56,7 @@ import { Crosshair, crosshair } from "./layers/Crosshair";
 import { Feature, feature } from "./features/feature";
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
 import { FeatureGroup, featureGroup} from './features/featureGroup';
+import { Options } from "./options";
 
 /* global L, Node */
 (function (window, document, undefined) {
@@ -645,5 +646,7 @@ M.featureRenderer = featureRenderer;
 
 M.FeatureGroup = FeatureGroup;
 M.featureGroup = featureGroup;
+
+M.options = Options;
 
 }(window, document));
