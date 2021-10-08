@@ -621,3 +621,94 @@ svg.leaflet-image-layer.leaflet-interactive g {
   margin: 3px 5px 2px 3px;
   color: rgb(60,64,67);
 }
+
+/**
+* layer item controls
+*/
+
+button.mapml-button:disabled,
+.mapml-button[aria-disabled="true"],
+.mapml-layer-item:disabled button.mapml-button {
+  opacity: .3;
+}
+
+.mapml-button-icon {
+  pointer-events: none;
+}
+
+.mapml-button-icon svg {
+  fill: currentColor;
+}
+
+.mapml-layer-item,
+.mapml-layer-item *,
+.mapml-layer-item ::before,
+.mapml-layer-item ::after {
+  box-sizing: border-box;
+}
+
+.mapml-layer-item {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.mapml-layer-item:not(:last-of-type) {
+  border-bottom: 1px solid #e3e3e3;
+}
+
+.mapml-layer-item-properties {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mapml-layer-item-controls {
+  margin-inline-start: auto;
+}
+
+.mapml-layer-item-controls button svg {
+  vertical-align: middle;
+}
+
+.mapml-layer-item-controls,
+label.mapml-layer-item-toggle,
+.mapml-layer-item-remove-control {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.mapml-layer-item-name {
+  padding: .5rem;
+  padding-inline-start: 0;
+  word-break: break-word;
+}
+
+.mapml-layer-item-toggle,
+.mapml-layer-item-remove-control,
+.mapml-layer-item-settings-control {
+  min-height: 44px;
+  min-width: 44px;
+  height: 44px;
+  width: 44px;
+}
+
+.mapml-layer-item-settings > * {
+  display: block;
+  padding-block-start: .25rem;
+  padding-block-end: .25rem;
+  padding-inline-start: 44px;
+  padding-inline-end: 20px;
+}
+
+.mapml-layer-item-settings summary {
+  -webkit-user-select: none;
+          user-select: none;
+}
+
+.mapml-layer-item-opacity [type="range"] {
+  margin-inline-end: 0;
+  margin-inline-start: 0;
+  width: 100%;
+}

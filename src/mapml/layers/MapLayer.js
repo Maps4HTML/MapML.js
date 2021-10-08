@@ -484,34 +484,89 @@ export var MapMLLayer = L.Layer.extend({
       var fieldset = document.createElement('fieldset'),
         input = document.createElement('input'),
         label = document.createElement('label'),
-        name = document.createElement('span'),
+        layerItemName = document.createElement('span'),
+        buttonNameIcon = document.createElement('span'),
+        settingsButtonNameIcon = document.createElement('span'),
         details = document.createElement('details'),
         summary = document.createElement('summary'),
         summaryContainer = document.createElement('div'),
+        layerItemProperty = document.createElement('div'),
+        layerItemControls = document.createElement('div'),
+        layerItemSettings = document.createElement('div'),
         opacity = document.createElement('input'),
         opacityControl = document.createElement('details'),
         opacityControlSummary = document.createElement('summary'),
-        opacityControlSummaryLabel = document.createElement('label'),
+        itemToggleLabel = document.createElement('label'),
+        svgRemoveIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+        svgSettingsControlIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+        removeIconPath1 = document.createElementNS('http://www.w3.org/2000/svg', 'path'),
+        removeIconPath2 = document.createElementNS('http://www.w3.org/2000/svg', 'path'),
+        settingsControlPath1 = document.createElementNS('http://www.w3.org/2000/svg', 'path'),
+        settingsControlPath2 = document.createElementNS('http://www.w3.org/2000/svg', 'path'),
         mapEl = this._layerEl.parentNode;
         this.opacityEl = opacity;
-        
+
+        // append the paths in svg for the remove layer and toggle icons
+        svgRemoveIcon.setAttribute('viewBox', '0 0 24 24');
+        svgRemoveIcon.setAttribute('height', '22');
+        svgRemoveIcon.setAttribute('width', '22');
+        svgSettingsControlIcon.setAttribute('viewBox', '0 0 24 24');
+        svgSettingsControlIcon.setAttribute('height', '22');
+        svgSettingsControlIcon.setAttribute('width', '22');
+        removeIconPath1.setAttribute('d', 'M0 0h24v24H0V0z');
+        removeIconPath1.setAttribute('fill', 'none');
+        removeIconPath2.setAttribute('d', 'M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z');
+        settingsControlPath1.setAttribute('d', 'M0 0h24v24H0z');
+        settingsControlPath1.setAttribute('fill', 'none');
+        settingsControlPath2.setAttribute('d', 'M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z');
+        svgRemoveIcon.appendChild(removeIconPath1);
+        svgRemoveIcon.appendChild(removeIconPath2);
+        svgSettingsControlIcon.appendChild(settingsControlPath1);
+        svgSettingsControlIcon.appendChild(settingsControlPath2);
+
         summaryContainer.classList.add('mapml-control-summary-container');
+        layerItemProperty.classList.add('mapml-layer-item-properties');
+        layerItemSettings.classList.add('mapml-layer-item-settings');
+        fieldset.classList.add('mapml-layer-item');
+        buttonNameIcon.classList.add('mapml-button-icon');
+        settingsButtonNameIcon.classList.add('mapml-button-icon');
+        layerItemName.classList.add('mapml-layer-item-name');
+        layerItemControls.classList.add('mapml-layer-item-controls');
         
-        let removeButton = document.createElement('button');
-        removeButton.type = 'button';
-        removeButton.title = 'Remove Layer';
-        removeButton.innerHTML = "<span aria-hidden='true'>&#10006;</span>";
-        removeButton.classList.add('mapml-layer-remove-button', 'mapml-button');
-        L.DomEvent.disableClickPropagation(removeButton);
-        L.DomEvent.on(removeButton, 'click', L.DomEvent.stop);
-        L.DomEvent.on(removeButton, 'click', (e)=>{
+        layerItemSettings.hidden = true;
+        buttonNameIcon.setAttribute('aria-hidden', true);
+        settingsButtonNameIcon.setAttribute('aria-hidden', true);
+        
+        let removeControlButton = document.createElement('button');
+        removeControlButton.type = 'button';
+        removeControlButton.title = 'Remove Layer';
+        removeControlButton.classList.add('mapml-layer-item-remove-control', 'mapml-button');
+        L.DomEvent.disableClickPropagation(removeControlButton);
+        L.DomEvent.on(removeControlButton, 'click', L.DomEvent.stop);
+        L.DomEvent.on(removeControlButton, 'click', (e)=>{
           mapEl.removeChild(e.target.closest("fieldset").querySelector("span").layer._layerEl);
+        }, this);
+
+        let itemSettingControlButton = document.createElement('button');
+        itemSettingControlButton.type = 'button';
+        itemSettingControlButton.title = 'Layer Settings';
+        itemSettingControlButton.setAttribute('aria-expanded', false);
+        itemSettingControlButton.classList.add('mapml-layer-item-settings-control', 'mapml-button');
+        L.DomEvent.on(itemSettingControlButton, 'click', (e)=>{
+          if(layerItemSettings.hidden == true){
+            itemSettingControlButton.setAttribute('aria-expanded', true);
+            layerItemSettings.hidden = false;
+          } else {
+            itemSettingControlButton.setAttribute('aria-expanded', false);
+            layerItemSettings.hidden = true;
+          }
         }, this);
 
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
         input.className = 'leaflet-control-layers-selector';
-        name.layer = this;
+        layerItemName.layer = this;
+
 
         if (this._legendUrl) {
           var legendLink = document.createElement('a');
@@ -519,28 +574,30 @@ export var MapMLLayer = L.Layer.extend({
           legendLink.href = this._legendUrl;
           legendLink.target = '_blank';
           legendLink.draggable = false;
-          name.appendChild(legendLink);
+          layerItemName.appendChild(legendLink);
         } else {
-          name.innerHTML = ' ' + this._title;
+          layerItemName.innerHTML = ' ' + this._title;
         }
-        label.appendChild(input);
-        label.appendChild(name);
-        opacityControlSummaryLabel.innerText = 'Opacity';
-        opacity.id = "o" + L.stamp(opacity);
-        opacityControlSummaryLabel.setAttribute('for', opacity.id);
-        opacityControlSummary.appendChild(opacityControlSummaryLabel);
+        layerItemName.id = this._title;
+        itemToggleLabel.classList.add('mapml-layer-item-toggle');
+        itemToggleLabel.setAttribute('title', 'Enable Layer');
+        itemToggleLabel.appendChild(input);
+        opacityControlSummary.innerText = 'Opacity';
+        opacityControlSummary.id = 'mapml-layer-item-opacity-' + this._title;
         opacityControl.appendChild(opacityControlSummary);
         opacityControl.appendChild(opacity);
         L.DomUtil.addClass(details, 'mapml-control-layers');
-        L.DomUtil.addClass(opacityControl,'mapml-control-layers');
+        L.DomUtil.addClass(opacityControl,'mapml-layer-item-opacity');
         opacity.setAttribute('type','range');
         opacity.setAttribute('min', '0');
         opacity.setAttribute('max','1.0');
         opacity.setAttribute('value', this._container.style.opacity || '1.0');
         opacity.setAttribute('step','0.1');
+        opacity.setAttribute('aria-labelledby', 'mapml-layer-item-opacity-' + this._title);
         opacity.value = this._container.style.opacity || '1.0';
 
         fieldset.setAttribute("aria-grabbed", "false");
+        fieldset.setAttribute('aria-labelledby', this._title);
 
         fieldset.onmousedown = (downEvent) => {
           if(downEvent.target.tagName.toLowerCase() === "input" || downEvent.target.tagName.toLowerCase() === "select") return;
@@ -609,12 +666,21 @@ export var MapMLLayer = L.Layer.extend({
 
         L.DomEvent.on(opacity,'change', this._changeOpacity, this);
 
-        fieldset.appendChild(details);
+        fieldset.appendChild(layerItemProperty);
+        fieldset.appendChild(layerItemSettings);
+        layerItemProperty.appendChild(itemToggleLabel);
+        layerItemProperty.appendChild(layerItemName);
+        layerItemProperty.appendChild(layerItemControls);
+        layerItemControls.appendChild(removeControlButton);
+        layerItemControls.appendChild(itemSettingControlButton);
+        removeControlButton.appendChild(buttonNameIcon);
+        itemSettingControlButton.appendChild(settingsButtonNameIcon);
+        buttonNameIcon.appendChild(svgRemoveIcon);
+        settingsButtonNameIcon.appendChild(svgSettingsControlIcon);
         details.appendChild(summary);
         summaryContainer.appendChild(label);
-        summaryContainer.appendChild(removeButton);
         summary.appendChild(summaryContainer);
-        details.appendChild(opacityControl);
+        layerItemSettings.appendChild(opacityControl);
 
         if (this._styles) {
           details.appendChild(this._styles);
