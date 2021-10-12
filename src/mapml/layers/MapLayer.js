@@ -564,9 +564,7 @@ export var MapMLLayer = L.Layer.extend({
 
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
-        //input.className = 'leaflet-control-layers-selector';
         layerItemName.layer = this;
-
 
         if (this._legendUrl) {
           var legendLink = document.createElement('a');
@@ -669,7 +667,6 @@ export var MapMLLayer = L.Layer.extend({
         fieldset.appendChild(layerItemProperty);
         fieldset.appendChild(layerItemSettings);
         layerItemProperty.appendChild(itemToggleLabel);
-        //layerItemProperty.appendChild(layerItemName);
         itemToggleLabel.appendChild(layerItemName);
         layerItemProperty.appendChild(layerItemControls);
         layerItemControls.appendChild(removeControlButton);

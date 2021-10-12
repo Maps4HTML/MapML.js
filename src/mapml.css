@@ -685,10 +685,7 @@ button.mapml-button:disabled,
   margin-right: 15px;
 }
 
-.mapml-layer-item-properties label input {
-  vertical-align: middle;
-}
-
+.mapml-layer-item-properties label input,
 .mapml-layer-item-properties label span {
   vertical-align: middle;
 }

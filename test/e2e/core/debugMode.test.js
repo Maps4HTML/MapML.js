@@ -164,7 +164,7 @@ jest.setTimeout(50000);
 
         test("[" + browserType + "]" + " Layer deselected then reselected", async () => {
           await page.hover(".leaflet-top.leaflet-right");
-          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > details > summary");
+          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span");
           const feature = await page.$eval(
             "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g",
             (tile) => tile.childElementCount
@@ -174,7 +174,7 @@ jest.setTimeout(50000);
 
         test("[" + browserType + "]" + " Layer deselected then reselected", async () => {
           await page.hover(".leaflet-top.leaflet-right");
-          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > details > summary");
+          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span");
           const feature = await page.$eval(
             "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(4)",
             (tile) => tile.getAttribute("d")
