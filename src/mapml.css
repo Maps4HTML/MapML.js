@@ -662,7 +662,6 @@ button.mapml-button:disabled,
   display: flex;
   justify-content: space-between;
 }
-
 .mapml-layer-item-controls {
   margin-inline-start: auto;
 }
@@ -672,17 +671,26 @@ button.mapml-button:disabled,
 }
 
 .mapml-layer-item-controls,
-label.mapml-layer-item-toggle,
 .mapml-layer-item-remove-control {
   align-items: center;
   display: flex;
   justify-content: center;
 }
 
-.mapml-layer-item-name {
-  padding: .5rem;
-  padding-inline-start: 0;
-  word-break: break-word;
+.mapml-layer-item-properties label {
+  display: contents;
+  padding-right: 15px;
+  padding-left: 15px;
+  text-indent: 5px;
+  margin-right: 15px;
+}
+
+.mapml-layer-item-properties label input {
+  vertical-align: middle;
+}
+
+.mapml-layer-item-properties label span {
+  vertical-align: middle;
 }
 
 .mapml-layer-item-toggle,

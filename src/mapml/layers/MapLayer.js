@@ -564,7 +564,7 @@ export var MapMLLayer = L.Layer.extend({
 
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
-        input.className = 'leaflet-control-layers-selector';
+        //input.className = 'leaflet-control-layers-selector';
         layerItemName.layer = this;
 
 
@@ -669,7 +669,8 @@ export var MapMLLayer = L.Layer.extend({
         fieldset.appendChild(layerItemProperty);
         fieldset.appendChild(layerItemSettings);
         layerItemProperty.appendChild(itemToggleLabel);
-        layerItemProperty.appendChild(layerItemName);
+        //layerItemProperty.appendChild(layerItemName);
+        itemToggleLabel.appendChild(layerItemName);
         layerItemProperty.appendChild(layerItemControls);
         layerItemControls.appendChild(removeControlButton);
         layerItemControls.appendChild(itemSettingControlButton);
