@@ -617,6 +617,12 @@ button.mapml-button:disabled,
   justify-content: center;
 }
 
+.mapml-layer-item-controls button span {
+  font-size: large;
+  font-weight: 900;
+  vertical-align: middle;
+}
+
 .mapml-layer-item-properties label {
   display: contents;
   padding-right: 15px;

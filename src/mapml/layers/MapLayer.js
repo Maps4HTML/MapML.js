@@ -487,7 +487,6 @@ export var MapMLLayer = L.Layer.extend({
         layerItemName = document.createElement('span'),
         buttonNameIcon = document.createElement('span'),
         settingsButtonNameIcon = document.createElement('span'),
-        details = document.createElement('details'),
         summary = document.createElement('summary'),
         summaryContainer = document.createElement('div'),
         layerItemProperty = document.createElement('div'),
@@ -540,6 +539,7 @@ export var MapMLLayer = L.Layer.extend({
         let removeControlButton = document.createElement('button');
         removeControlButton.type = 'button';
         removeControlButton.title = 'Remove Layer';
+        removeControlButton.innerHTML = "<span aria-hidden='true'>&#10005;</span>";
         removeControlButton.classList.add('mapml-layer-item-remove-control', 'mapml-button');
         L.DomEvent.disableClickPropagation(removeControlButton);
         L.DomEvent.on(removeControlButton, 'click', L.DomEvent.stop);
@@ -551,6 +551,7 @@ export var MapMLLayer = L.Layer.extend({
         itemSettingControlButton.type = 'button';
         itemSettingControlButton.title = 'Layer Settings';
         itemSettingControlButton.setAttribute('aria-expanded', false);
+        //itemSettingControlButton.innerHTML = "<span aria-hidden='true'>&#8942;</span>";
         itemSettingControlButton.classList.add('mapml-layer-item-settings-control', 'mapml-button');
         L.DomEvent.on(itemSettingControlButton, 'click', (e)=>{
           if(layerItemSettings.hidden == true){
@@ -584,7 +585,6 @@ export var MapMLLayer = L.Layer.extend({
         opacityControlSummary.id = 'mapml-layer-item-opacity-' + this._title;
         opacityControl.appendChild(opacityControlSummary);
         opacityControl.appendChild(opacity);
-        L.DomUtil.addClass(details, 'mapml-control-layers');
         L.DomUtil.addClass(opacityControl,'mapml-layer-item-opacity');
         opacity.setAttribute('type','range');
         opacity.setAttribute('min', '0');
@@ -671,17 +671,16 @@ export var MapMLLayer = L.Layer.extend({
         layerItemProperty.appendChild(layerItemControls);
         layerItemControls.appendChild(removeControlButton);
         layerItemControls.appendChild(itemSettingControlButton);
-        removeControlButton.appendChild(buttonNameIcon);
+        //removeControlButton.appendChild(buttonNameIcon);
         itemSettingControlButton.appendChild(settingsButtonNameIcon);
-        buttonNameIcon.appendChild(svgRemoveIcon);
+        //buttonNameIcon.appendChild(svgRemoveIcon);
         settingsButtonNameIcon.appendChild(svgSettingsControlIcon);
-        details.appendChild(summary);
         summaryContainer.appendChild(label);
         summary.appendChild(summaryContainer);
         layerItemSettings.appendChild(opacityControl);
 
         if (this._styles) {
-          details.appendChild(this._styles);
+          layerItemSettings.appendChild(this._styles);
         }
         if (this._userInputs) {
           var frag = document.createDocumentFragment();
@@ -700,7 +699,7 @@ export var MapMLLayer = L.Layer.extend({
                       selectSummaryLabel = document.createElement('label');
                       selectSummaryLabel.innerText = mapmlInput.getAttribute('name');
                       selectSummaryLabel.setAttribute('for', mapmlInput.getAttribute('id'));
-                      L.DomUtil.addClass(selectdetails, 'mapml-control-layers');
+                      L.DomUtil.addClass(selectdetails, 'mapml-layer-item-settings');
                       selectsummary.appendChild(selectSummaryLabel);
                       selectdetails.appendChild(selectsummary);
                       selectdetails.appendChild(mapmlInput.htmlselect);
@@ -709,7 +708,7 @@ export var MapMLLayer = L.Layer.extend({
               }
             }
           }
-          details.appendChild(frag);
+          layerItemSettings.appendChild(frag);
         }
         return fieldset;
     },
@@ -996,7 +995,7 @@ export var MapMLLayer = L.Layer.extend({
                       styleOptionInput.checked = true;
                     }
                     stylesControl.appendChild(styleOption);
-                    L.DomUtil.addClass(stylesControl,'mapml-control-layers');
+                    L.DomUtil.addClass(stylesControl,'mapml-layer-item-settings');
                     L.DomEvent.on(styleOptionInput,'click', changeStyle, layer);
                   }
                   layer._styles = stylesControl;
