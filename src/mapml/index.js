@@ -56,6 +56,7 @@ import { Crosshair, crosshair } from "./layers/Crosshair";
 import { Feature, feature } from "./features/feature";
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
 import { FeatureGroup, featureGroup} from './features/featureGroup';
+import { Options } from "./options";
 
 /* global L, Node */
 (function (window, document, undefined) {
@@ -86,6 +87,14 @@ window.M = M;
    return path;
   };
   M.mime = "text/mapml";
+
+  let mapOptions = window.document.head.querySelector("map-options");
+  if (mapOptions){
+    M.options = JSON.parse(mapOptions.innerHTML);
+  } else {
+    M.options = Options;
+  }
+
   // see https://leafletjs.com/reference-1.5.0.html#crs-l-crs-base
   // "new classes can't inherit from (L.CRS), and methods can't be added 
   // to (L.CRS.anything) with the include function
