@@ -699,7 +699,7 @@ export var MapMLLayer = L.Layer.extend({
                       selectSummaryLabel = document.createElement('label');
                       selectSummaryLabel.innerText = mapmlInput.getAttribute('name');
                       selectSummaryLabel.setAttribute('for', mapmlInput.getAttribute('id'));
-                      L.DomUtil.addClass(selectdetails, 'mapml-layer-item-settings');
+                      L.DomUtil.addClass(selectdetails, 'mapml-control-layers');
                       selectsummary.appendChild(selectSummaryLabel);
                       selectdetails.appendChild(selectsummary);
                       selectdetails.appendChild(mapmlInput.htmlselect);
@@ -995,7 +995,7 @@ export var MapMLLayer = L.Layer.extend({
                       styleOptionInput.checked = true;
                     }
                     stylesControl.appendChild(styleOption);
-                    L.DomUtil.addClass(stylesControl,'mapml-layer-item-settings');
+                    L.DomUtil.addClass(stylesControl,'mapml-control-layers');
                     L.DomEvent.on(styleOptionInput,'click', changeStyle, layer);
                   }
                   layer._styles = stylesControl;
