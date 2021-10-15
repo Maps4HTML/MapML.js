@@ -496,30 +496,19 @@ export var MapMLLayer = L.Layer.extend({
         opacityControl = document.createElement('details'),
         opacityControlSummary = document.createElement('summary'),
         itemToggleLabel = document.createElement('label'),
-        svgRemoveIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
         svgSettingsControlIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
-        removeIconPath1 = document.createElementNS('http://www.w3.org/2000/svg', 'path'),
-        removeIconPath2 = document.createElementNS('http://www.w3.org/2000/svg', 'path'),
         settingsControlPath1 = document.createElementNS('http://www.w3.org/2000/svg', 'path'),
         settingsControlPath2 = document.createElementNS('http://www.w3.org/2000/svg', 'path'),
         mapEl = this._layerEl.parentNode;
         this.opacityEl = opacity;
 
         // append the paths in svg for the remove layer and toggle icons
-        svgRemoveIcon.setAttribute('viewBox', '0 0 24 24');
-        svgRemoveIcon.setAttribute('height', '22');
-        svgRemoveIcon.setAttribute('width', '22');
         svgSettingsControlIcon.setAttribute('viewBox', '0 0 24 24');
         svgSettingsControlIcon.setAttribute('height', '22');
         svgSettingsControlIcon.setAttribute('width', '22');
-        removeIconPath1.setAttribute('d', 'M0 0h24v24H0V0z');
-        removeIconPath1.setAttribute('fill', 'none');
-        removeIconPath2.setAttribute('d', 'M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z');
         settingsControlPath1.setAttribute('d', 'M0 0h24v24H0z');
         settingsControlPath1.setAttribute('fill', 'none');
         settingsControlPath2.setAttribute('d', 'M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z');
-        svgRemoveIcon.appendChild(removeIconPath1);
-        svgRemoveIcon.appendChild(removeIconPath2);
         svgSettingsControlIcon.appendChild(settingsControlPath1);
         svgSettingsControlIcon.appendChild(settingsControlPath2);
 
@@ -671,9 +660,7 @@ export var MapMLLayer = L.Layer.extend({
         layerItemProperty.appendChild(layerItemControls);
         layerItemControls.appendChild(removeControlButton);
         layerItemControls.appendChild(itemSettingControlButton);
-        //removeControlButton.appendChild(buttonNameIcon);
         itemSettingControlButton.appendChild(settingsButtonNameIcon);
-        //buttonNameIcon.appendChild(svgRemoveIcon);
         settingsButtonNameIcon.appendChild(svgSettingsControlIcon);
         summaryContainer.appendChild(label);
         summary.appendChild(summaryContainer);
