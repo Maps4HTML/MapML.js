@@ -374,6 +374,7 @@
 /* Disable pointer events where they'd interfere with the intended action. */
 .leaflet-tooltip,
 .leaflet-crosshair *,
+.mapml-layer-item-settings .mapml-control-layers summary label,
 .mapml-contextmenu-item > * {
   pointer-events: none!important;
 }
