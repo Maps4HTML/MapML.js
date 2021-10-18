@@ -568,7 +568,6 @@ export var MapMLLayer = L.Layer.extend({
         }
         layerItemName.id = this._title;
         itemToggleLabel.classList.add('mapml-layer-item-toggle');
-        itemToggleLabel.setAttribute('title', 'Enable Layer');
         itemToggleLabel.appendChild(input);
         opacityControlSummary.innerText = 'Opacity';
         opacityControlSummary.id = 'mapml-layer-item-opacity-' + this._title;
