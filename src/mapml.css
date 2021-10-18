@@ -619,17 +619,18 @@ button.mapml-button:disabled,
   vertical-align: middle;
 }
 
-.mapml-layer-item-controls,
-.mapml-layer-item-remove-control {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-}
-
 .mapml-layer-item-controls button span {
   font-size: large;
   font-weight: 900;
   vertical-align: middle;
+}
+
+.mapml-layer-item-controls,
+.mapml-layer-item-remove-control,
+.mapml-layer-item-settings-control {
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }
 
 .mapml-layer-item-properties label {
@@ -638,11 +639,6 @@ button.mapml-button:disabled,
   padding-left: 15px;
   text-indent: 5px;
   margin-right: 15px;
-}
-
-.mapml-layer-item-properties label input,
-.mapml-layer-item-properties label span {
-  vertical-align: middle;
 }
 
 .mapml-layer-item-toggle,
