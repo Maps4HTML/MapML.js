@@ -609,6 +609,7 @@ button.mapml-button:disabled,
   align-items: center;
   display: flex;
   justify-content: space-between;
+  padding: 2% 10%; 
 }
 .mapml-layer-item-controls {
   margin-inline-start: auto;
