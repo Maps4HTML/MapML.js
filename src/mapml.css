@@ -609,7 +609,7 @@ button.mapml-button:disabled,
   align-items: center;
   display: flex;
   justify-content: space-between;
-  padding-left: .5rem; 
+  padding-inline-start: .5rem;
 }
 .mapml-layer-item-controls {
   margin-inline-start: auto;
@@ -635,10 +635,7 @@ button.mapml-button:disabled,
 
 .mapml-layer-item-properties label {
   display: contents;
-  padding-right: 15px;
-  padding-left: 15px;
   text-indent: 5px;
-  margin-right: 15px;
 }
 
 .mapml-layer-item-toggle,
@@ -654,8 +651,8 @@ button.mapml-button:disabled,
   display: block;
   padding-block-start: .25rem;
   padding-block-end: .25rem;
-  padding-inline-start: 44px;
-  padding-inline-end: 20px;
+  padding-inline-start: 2rem;
+  padding-inline-end: 1rem;
 }
 
 .mapml-layer-item-settings summary {
