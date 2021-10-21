@@ -75,7 +75,7 @@ jest.setTimeout(30000);
 
         expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
         expect(layerIndex).toEqual("2");
-        expect(controlText).toBe("Canada Base Map - Transportation (CBMT)");
+        expect(controlText).toBe(" Canada Base Map - Transportation (CBMT)");
       });
 
       test("[" + browserType + "]" + " Moving layer up one in control overlay", async () => {
@@ -103,7 +103,7 @@ jest.setTimeout(30000);
 
         expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
         expect(layerIndex).toEqual("1");
-        expect(controlText).toBe("Static MapML With Tiles");
+        expect(controlText).toBe(" Static MapML With Tiles");
       });
 
     });
