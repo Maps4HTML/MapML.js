@@ -650,7 +650,7 @@ button.mapml-button:disabled,
 
 .mapml-layer-item-name {
   word-break: break-word;
-  text-align: left;
+  text-align: inline-start;
 }
 
 .mapml-layer-item-settings > * {
