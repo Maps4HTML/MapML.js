@@ -615,14 +615,15 @@ button.mapml-button:disabled,
   margin-inline-start: auto;
 }
 
-.mapml-layer-item-controls button svg {
-  vertical-align: middle;
-}
 
 .mapml-layer-item-controls button span {
   font-size: large;
   font-weight: 900;
   vertical-align: middle;
+}
+
+.mapml-layer-item-controls button svg {
+  vertical-align: text-bottom;
 }
 
 .mapml-layer-item-controls,
@@ -634,17 +635,20 @@ button.mapml-button:disabled,
 }
 
 .mapml-layer-item-properties label {
-  display: contents;
   text-indent: 5px;
 }
 
-.mapml-layer-item-toggle,
+
 .mapml-layer-item-remove-control,
 .mapml-layer-item-settings-control {
   min-height: 44px;
   min-width: 44px;
   height: 44px;
   width: 44px;
+}
+
+.mapml-layer-item-toggle{
+  width: 100%;
 }
 
 .mapml-layer-item-settings > * {
