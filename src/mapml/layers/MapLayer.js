@@ -554,7 +554,7 @@ export var MapMLLayer = L.Layer.extend({
           legendLink.draggable = false;
           layerItemName.appendChild(legendLink);
         } else {
-          layerItemName.innerHTML = ' ' + this._title;
+          layerItemName.innerHTML = this._title;
         }
         layerItemName.id = this._title;
         opacityControlSummary.innerText = 'Opacity';
