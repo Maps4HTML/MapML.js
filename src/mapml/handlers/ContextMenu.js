@@ -15,26 +15,26 @@ export var ContextMenu = L.Handler.extend({
     //setting the items in the context menu and their callback functions
     this._items = [
       {
-        text:"Back (<kbd>B</kbd>)",
+        text: M.options.locale.cmBack + " (<kbd>B</kbd>)",
         callback:this._goBack,
       },
       {
-        text:"Forward (<kbd>F</kbd>)",
+        text: M.options.locale.cmForward + " (<kbd>F</kbd>)",
         callback:this._goForward,
       },
       {
-        text:"Reload (<kbd>R</kbd>)",
+        text: M.options.locale.cmReload + " (<kbd>R</kbd>)",
         callback:this._reload,
       },
       {
         spacer:"-",
       },
       {
-        text:"Toggle Controls (<kbd>T</kbd>)",
+        text: M.options.locale.cmToggleControls + " (<kbd>T</kbd>)",
         callback:this._toggleControls,
       },
       {
-        text:"Copy Coordinates (<kbd>C</kbd>) <span aria-hidden='true'>></span>", 
+        text: M.options.locale.cmCopyCoords + " (<kbd>C</kbd>) <span aria-hidden='true'>></span>",
         callback:this._copyCoords,
         hideOnSelect:false,
         popup:true,
@@ -73,32 +73,32 @@ export var ContextMenu = L.Handler.extend({
             spacer:"-",
           },
           {
-            text:"All",
+            text: M.options.locale.cmCopyAll,
             callback:this._copyAllCoords,
           }
         ]
       },
       {
-        text:"Toggle Debug Mode (<kbd>D</kbd>)",
+        text: M.options.locale.cmToggleDebug + " (<kbd>D</kbd>)",
         callback:this._toggleDebug,
       },
       {
-        text:"Copy MapML (<kbd>M</kbd>)",
+        text: M.options.locale.cmCopyMapML + " (<kbd>M</kbd>)",
         callback:this._copyMapML,
       },
       {
-        text:"View Map Source (<kbd>V</kbd>)",
+        text: M.options.locale.cmViewSource + " (<kbd>V</kbd>)",
         callback:this._viewSource,
       },
     ];
 
     this._layerItems = [
       {
-        text:"Zoom To Layer (<kbd>Z</kbd>)",
+        text: M.options.locale.lmZoomToLayer + " (<kbd>Z</kbd>)",
         callback:this._zoomToLayer
       },
       {
-        text:"Copy Extent (<kbd>C</kbd>)",
+        text: M.options.locale.lmCopyExtent + " (<kbd>C</kbd>)",
         callback:this._copyLayerExtent
       },
     ];
@@ -522,7 +522,7 @@ export var ContextMenu = L.Handler.extend({
 
     if(key === 13)
       e.preventDefault();
-    if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && path[0].innerText !== "Copy Coordinates (C) >")
+    if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && path[0].innerText !== (M.options.locale.cmCopyCoords + " (C) >"))
       this._hide();
     switch(key){
       case 13:  //ENTER KEY
@@ -599,7 +599,7 @@ export var ContextMenu = L.Handler.extend({
 
   _hideCoordMenu: function(e){
     if(e.srcElement.parentElement.classList.contains("mapml-submenu") ||
-        e.srcElement.innerText === "Copy Coordinates (C) >")return;
+        e.srcElement.innerText === (M.options.locale.cmCopyCoords + " (C) >"))return;
     let menu = this._coordMenu, copyEl = this._items[5].el.el;
     copyEl.setAttribute("aria-expanded","false");
     menu.style.display = "none";
@@ -607,7 +607,7 @@ export var ContextMenu = L.Handler.extend({
 
   _onItemMouseOver: function (e) {
     L.DomUtil.addClass(e.target || e.srcElement, 'over');
-    if(e.srcElement.innerText === "Copy Coordinates (C) >") this._showCoordMenu(e);
+    if(e.srcElement.innerText === (M.options.locale.cmCopyCoords + " (C) >")) this._showCoordMenu(e);
   },
 
   _onItemMouseOut: function (e) {
