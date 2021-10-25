@@ -521,7 +521,7 @@ export var MapMLLayer = L.Layer.extend({
         removeControlButton.title = 'Remove Layer';
         removeControlButton.innerHTML = "<span aria-hidden='true'>&#10005;</span>";
         removeControlButton.classList.add('mapml-layer-item-remove-control', 'mapml-button');
-        L.DomEvent.disableClickPropagation(removeControlButton);
+        //L.DomEvent.disableClickPropagation(removeControlButton);
         L.DomEvent.on(removeControlButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(removeControlButton, 'click', (e)=>{
           mapEl.removeChild(e.target.closest("fieldset").querySelector("span").layer._layerEl);
