@@ -513,49 +513,66 @@ export class MapViewer extends HTMLElement {
   }
 
   _addToHistory(){
-    if(this._traversalCall){
-      this._traversalCall = false;
-      return;
-    }
-    let mapLocation = this._map.getCenter();
+    if(this._traversalCall) return;
+
+    let mapLocation = this._map.getPixelBounds().getCenter();
     let location ={
-      zoom:this._map.getZoom(),
-      lat:mapLocation.lat,
-      lng:mapLocation.lng,
+      zoom: this._map.getZoom(),
+      x:mapLocation.x,
+      y:mapLocation.y,
     };
     this._historyIndex++;
-    this._history.push(location);
+    this._history.splice(this._historyIndex, 0, location);
   }
 
   back(){
-    let mapEl = this,
-        history = mapEl._history;
-    if(mapEl._historyIndex > 0){
-      mapEl._historyIndex--;
+    let history = this._history;
+    let curr = history[this._historyIndex];
+
+    if(this._historyIndex > 0){
+      this._historyIndex--;
+      let prev = history[this._historyIndex];
+
+      this._traversalCall = true;
+      this._map.setZoom(prev.zoom);
+      this._map.panBy([(prev.x - curr.x), (prev.y - curr.y)]);
+
+      this._map.once("moveend", () => {this._traversalCall = false})
     }
-    let prev = history[mapEl._historyIndex];
-    mapEl._traversalCall = true;
-    mapEl.zoomTo(prev.lat,prev.lng,prev.zoom);
   }
 
   forward(){
-    let mapEl = this,
-        history = this._history;
-    if(mapEl._historyIndex < history.length -1){
-      mapEl._historyIndex++;
+    let history = this._history;
+    let curr = history[this._historyIndex];
+    if(this._historyIndex < history.length - 1){
+      this._historyIndex++;
+      let next = history[this._historyIndex];
+
+      this._traversalCall = true;
+      this._map.setZoom(next.zoom);
+      this._map.panBy([(next.x - curr.x), (next.y - curr.y)]);
+
+      this._map.once("moveend", () => {this._traversalCall = false})
     }
-    let next = history[this._historyIndex];
-    mapEl._traversalCall = true;
-    mapEl.zoomTo(next.lat,next.lng,next.zoom);
   }
 
   reload(){
-    let mapEl = this,
-        initialLocation = mapEl._history.shift();
-    mapEl._history = [initialLocation];
-    mapEl._historyIndex = 0;
-    mapEl._traversalCall = true;
-    mapEl.zoomTo(initialLocation.lat,initialLocation.lng,initialLocation.zoom);
+    let initialLocation = this._history.shift();
+    let mapLocation = this._map.getPixelBounds().getCenter();
+    let curr = {
+      zoom: this._map.getZoom(),
+      x:mapLocation.x,
+      y:mapLocation.y,
+    };
+
+    this._history = [initialLocation];
+    this._historyIndex = 0;
+
+    this._traversalCall = true;
+    this._map.setZoom(initialLocation.zoom);
+    this._map.panBy([(initialLocation.x - curr.x), (initialLocation.y - curr.y)]);
+
+    this._map.once("moveend", () => {this._traversalCall = false})
   }
 
   viewSource(){
