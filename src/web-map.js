@@ -553,7 +553,7 @@ export class WebMap extends HTMLMapElement {
     if(this._traversalCall) return;
 
     let mapLocation = this._map.getPixelBounds().getCenter();
-    let location ={
+    let location = {
       zoom: this._map.getZoom(),
       x:mapLocation.x,
       y:mapLocation.y,
@@ -571,9 +571,18 @@ export class WebMap extends HTMLMapElement {
       let prev = history[this._historyIndex];
 
       this._traversalCall = true;
-      this._map.setZoom(prev.zoom);
-      this._map.panBy([(prev.x - curr.x), (prev.y - curr.y)]);
 
+      if(prev.zoom !== curr.zoom){
+        let currScale = this._map.options.crs.scale(curr.zoom);
+        let prevScale = this._map.options.crs.scale(prev.zoom);
+
+        let scale = currScale / prevScale;
+
+        this._map.panBy([((prev.x * scale) - curr.x), ((prev.y * scale) - curr.y)], {animate: false});
+        this._map.setZoom(prev.zoom);
+      } else {
+        this._map.panBy([(prev.x - curr.x), (prev.y - curr.y)]);
+      }
       this._map.once("moveend", () => {this._traversalCall = false})
     }
   }
@@ -586,8 +595,18 @@ export class WebMap extends HTMLMapElement {
       let next = history[this._historyIndex];
 
       this._traversalCall = true;
-      this._map.setZoom(next.zoom);
-      this._map.panBy([(next.x - curr.x), (next.y - curr.y)]);
+
+      if(next.zoom !== curr.zoom){
+        let currScale = this._map.options.crs.scale(curr.zoom);
+        let nextScale = this._map.options.crs.scale(next.zoom);
+
+        let scale = currScale / nextScale;
+
+        this._map.panBy([((next.x * scale) - curr.x), ((next.y * scale) - curr.y)], {animate: false});
+        this._map.setZoom(next.zoom);
+      } else {
+        this._map.panBy([(next.x - curr.x), (next.y - curr.y)]);
+      }
 
       this._map.once("moveend", () => {this._traversalCall = false})
     }
@@ -606,12 +625,17 @@ export class WebMap extends HTMLMapElement {
     this._historyIndex = 0;
 
     this._traversalCall = true;
+
+    let currScale = this._map.options.crs.scale(curr.zoom);
+    let initScale = this._map.options.crs.scale(initialLocation.zoom);
+
+    let scale = currScale / initScale;
+
+    this._map.panBy([((initialLocation.x * scale) - curr.x), ((initialLocation.y * scale) - curr.y)], {animate: false});
     this._map.setZoom(initialLocation.zoom);
-    this._map.panBy([(initialLocation.x - curr.x), (initialLocation.y - curr.y)]);
 
     this._map.once("moveend", () => {this._traversalCall = false})
   }
-
   viewSource(){
     let blob = new Blob([this._source],{type:"text/plain"}),
         url = URL.createObjectURL(blob);
