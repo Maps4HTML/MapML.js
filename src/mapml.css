@@ -307,12 +307,9 @@
   .mapml-contextmenu-item[aria-controls] span::after {
     content:"";
     display: list-item;
-    list-style-type: disclosure-open;
+    list-style-type: disclosure-closed;
     margin-inline-start: 20px;
   }
-  .mapml-contextmenu-item[aria-expanded="false"] span::after {
-    list-style-type: disclosure-closed;
-  }  
 }
 
 /*
