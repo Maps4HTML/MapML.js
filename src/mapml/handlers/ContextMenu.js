@@ -34,7 +34,7 @@ export var ContextMenu = L.Handler.extend({
         callback:this._toggleControls,
       },
       {
-        text:"Copy Coordinates (<kbd>C</kbd>) <span aria-hidden='true'>></span>", 
+        text:"Copy Coordinates (<kbd>C</kbd>)<span></span>", 
         callback:this._copyCoords,
         hideOnSelect:false,
         popup:true,
@@ -522,7 +522,7 @@ export var ContextMenu = L.Handler.extend({
 
     if(key === 13)
       e.preventDefault();
-    if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && path[0].innerText !== "Copy Coordinates (C) >")
+    if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && path[0].innerText !== "Copy Coordinates (C)")
       this._hide();
     switch(key){
       case 13:  //ENTER KEY
@@ -579,15 +579,15 @@ export var ContextMenu = L.Handler.extend({
     copyEl.setAttribute("aria-expanded","true");
     menu.style.display = "block";
 
-    if (click.containerPoint.x + 150 + 80 > mapSize.x) {
+    if (click.containerPoint.x + 160 + 80 > mapSize.x) {
       menu.style.left = 'auto';
-      menu.style.right = 150 + 'px';
+      menu.style.right = 160 + 'px';
     } else {
-      menu.style.left = 150 + 'px';
+      menu.style.left = 160 + 'px';
       menu.style.right = 'auto';
     }
 
-    if (click.containerPoint.y + 150 > mapSize.y) {
+    if (click.containerPoint.y + 160 > mapSize.y) {
       menu.style.top = 'auto';
       menu.style.bottom = 20 + 'px';
     } else {
@@ -599,7 +599,7 @@ export var ContextMenu = L.Handler.extend({
 
   _hideCoordMenu: function(e){
     if(e.srcElement.parentElement.classList.contains("mapml-submenu") ||
-        e.srcElement.innerText === "Copy Coordinates (C) >")return;
+        e.srcElement.innerText === "Copy Coordinates (C)")return;
     let menu = this._coordMenu, copyEl = this._items[5].el.el;
     copyEl.setAttribute("aria-expanded","false");
     menu.style.display = "none";
@@ -607,7 +607,7 @@ export var ContextMenu = L.Handler.extend({
 
   _onItemMouseOver: function (e) {
     L.DomUtil.addClass(e.target || e.srcElement, 'over');
-    if(e.srcElement.innerText === "Copy Coordinates (C) >") this._showCoordMenu(e);
+    if(e.srcElement.innerText === "Copy Coordinates (C)") this._showCoordMenu(e);
   },
 
   _onItemMouseOut: function (e) {
