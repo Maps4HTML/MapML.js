@@ -103,7 +103,9 @@ conforms to the W3C <abbr title="Technical Architecture Group">TAG</abbr>'s
       <ul><li>- [ ] </li></ul>
     </td>
     <td>
-      TBD
+      See the
+      <a href="https://github.com/Maps4HTML/Web-Map-Custom-Element/labels/basic%20styling">basic styling</a>
+      label for relevant issues/PRs
     </td>
   </tr>
   <tr>
