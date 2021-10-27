@@ -550,7 +550,10 @@ export class WebMap extends HTMLMapElement {
   }
 
   _addToHistory(){
-    if(this._traversalCall) return;
+    if(this._traversalCall > 0) {
+      this._traversalCall--;
+      return;
+    }
 
     let mapLocation = this._map.getPixelBounds().getCenter();
     let location = {
@@ -570,9 +573,9 @@ export class WebMap extends HTMLMapElement {
       this._historyIndex--;
       let prev = history[this._historyIndex];
 
-      this._traversalCall = true;
-
       if(prev.zoom !== curr.zoom){
+        this._traversalCall = 2;
+
         let currScale = this._map.options.crs.scale(curr.zoom);
         let prevScale = this._map.options.crs.scale(prev.zoom);
 
@@ -581,9 +584,9 @@ export class WebMap extends HTMLMapElement {
         this._map.panBy([((prev.x * scale) - curr.x), ((prev.y * scale) - curr.y)], {animate: false});
         this._map.setZoom(prev.zoom);
       } else {
+        this._traversalCall = 1;
         this._map.panBy([(prev.x - curr.x), (prev.y - curr.y)]);
       }
-      this._map.once("moveend", () => {this._traversalCall = false})
     }
   }
 
@@ -594,9 +597,9 @@ export class WebMap extends HTMLMapElement {
       this._historyIndex++;
       let next = history[this._historyIndex];
 
-      this._traversalCall = true;
-
       if(next.zoom !== curr.zoom){
+        this._traversalCall = 2;
+
         let currScale = this._map.options.crs.scale(curr.zoom);
         let nextScale = this._map.options.crs.scale(next.zoom);
 
@@ -605,10 +608,9 @@ export class WebMap extends HTMLMapElement {
         this._map.panBy([((next.x * scale) - curr.x), ((next.y * scale) - curr.y)], {animate: false});
         this._map.setZoom(next.zoom);
       } else {
+        this._traversalCall = 1;
         this._map.panBy([(next.x - curr.x), (next.y - curr.y)]);
       }
-
-      this._map.once("moveend", () => {this._traversalCall = false})
     }
   }
 
@@ -624,17 +626,20 @@ export class WebMap extends HTMLMapElement {
     this._history = [initialLocation];
     this._historyIndex = 0;
 
-    this._traversalCall = true;
+    if(initialLocation.zoom !== curr.zoom) {
+      this._traversalCall = 2;
 
-    let currScale = this._map.options.crs.scale(curr.zoom);
-    let initScale = this._map.options.crs.scale(initialLocation.zoom);
+      let currScale = this._map.options.crs.scale(curr.zoom);
+      let initScale = this._map.options.crs.scale(initialLocation.zoom);
 
-    let scale = currScale / initScale;
+      let scale = currScale / initScale;
 
-    this._map.panBy([((initialLocation.x * scale) - curr.x), ((initialLocation.y * scale) - curr.y)], {animate: false});
-    this._map.setZoom(initialLocation.zoom);
-
-    this._map.once("moveend", () => {this._traversalCall = false})
+      this._map.panBy([((initialLocation.x * scale) - curr.x), ((initialLocation.y * scale) - curr.y)], {animate: false});
+      this._map.setZoom(initialLocation.zoom);
+    } else {
+      this._traversalCall = 1;
+      this._map.panBy([(initialLocation.x- curr.x), (initialLocation.y - curr.y)]);
+    }
   }
   viewSource(){
     let blob = new Blob([this._source],{type:"text/plain"}),
