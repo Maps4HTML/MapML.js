@@ -512,9 +512,13 @@ export class MapViewer extends HTMLElement {
     this.zoom = this._map.getZoom();
   }
 
+  /**
+   * Adds to the maps history on moveends
+   * @private
+   */
   _addToHistory(){
-    if(this._traversalCall > 0) {
-      this._traversalCall--;
+    if(this._traversalCall > 0) { // this._traversalCall tracks how many consecutive moveends to ignore from history
+      this._traversalCall--;      // this is useful for ignoring moveends corresponding to back, forward and reload
       return;
     }
 
@@ -528,6 +532,9 @@ export class MapViewer extends HTMLElement {
     this._history.splice(this._historyIndex, 0, location);
   }
 
+  /**
+   * Allow user to move back in history
+   */
   back(){
     let history = this._history;
     let curr = history[this._historyIndex];
@@ -537,12 +544,12 @@ export class MapViewer extends HTMLElement {
       let prev = history[this._historyIndex];
 
       if(prev.zoom !== curr.zoom){
-        this._traversalCall = 2;
+        this._traversalCall = 2;  // allows the next 2 moveends to be ignored from history
 
-        let currScale = this._map.options.crs.scale(curr.zoom);
-        let prevScale = this._map.options.crs.scale(prev.zoom);
+        let currScale = this._map.options.crs.scale(curr.zoom); // gets the scale of the current zoom level
+        let prevScale = this._map.options.crs.scale(prev.zoom); // gets the scale of the previous zoom level
 
-        let scale = currScale / prevScale;
+        let scale = currScale / prevScale; // used to convert the previous pixel location to be in terms of the current zoom level
 
         this._map.panBy([((prev.x * scale) - curr.x), ((prev.y * scale) - curr.y)], {animate: false});
         this._map.setZoom(prev.zoom);
@@ -553,6 +560,9 @@ export class MapViewer extends HTMLElement {
     }
   }
 
+  /**
+   * Allows user to move forward in history
+   */
   forward(){
     let history = this._history;
     let curr = history[this._historyIndex];
@@ -561,12 +571,12 @@ export class MapViewer extends HTMLElement {
       let next = history[this._historyIndex];
 
       if(next.zoom !== curr.zoom){
-        this._traversalCall = 2;
+        this._traversalCall = 2; // allows the next 2 moveends to be ignored from history
 
-        let currScale = this._map.options.crs.scale(curr.zoom);
-        let nextScale = this._map.options.crs.scale(next.zoom);
+        let currScale = this._map.options.crs.scale(curr.zoom); // gets the scale of the current zoom level
+        let nextScale = this._map.options.crs.scale(next.zoom); // gets the scale of the next zoom level
 
-        let scale = currScale / nextScale;
+        let scale = currScale / nextScale; // used to convert the next pixel location to be in terms of the current zoom level
 
         this._map.panBy([((next.x * scale) - curr.x), ((next.y * scale) - curr.y)], {animate: false});
         this._map.setZoom(next.zoom);
@@ -577,6 +587,9 @@ export class MapViewer extends HTMLElement {
     }
   }
 
+  /**
+   * Allows the user to reload/reset the map's location to it's initial location
+   */
   reload(){
     let initialLocation = this._history.shift();
     let mapLocation = this._map.getPixelBounds().getCenter();
@@ -590,16 +603,16 @@ export class MapViewer extends HTMLElement {
     this._historyIndex = 0;
 
     if(initialLocation.zoom !== curr.zoom) {
-      this._traversalCall = 2;
+      this._traversalCall = 2; // ignores the next 2 moveend events
 
-      let currScale = this._map.options.crs.scale(curr.zoom);
-      let initScale = this._map.options.crs.scale(initialLocation.zoom);
+      let currScale = this._map.options.crs.scale(curr.zoom); // gets the scale of the current zoom level
+      let initScale = this._map.options.crs.scale(initialLocation.zoom); // gets the scale of the initial location's zoom
 
       let scale = currScale / initScale;
 
       this._map.panBy([((initialLocation.x * scale) - curr.x), ((initialLocation.y * scale) - curr.y)], {animate: false});
       this._map.setZoom(initialLocation.zoom);
-    } else {
+    } else { // if it's on the same zoom level as the initial location, no need to calculate scales
       this._traversalCall = 1;
       this._map.panBy([(initialLocation.x- curr.x), (initialLocation.y - curr.y)]);
     }
