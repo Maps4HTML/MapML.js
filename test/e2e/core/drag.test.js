@@ -61,7 +61,7 @@ jest.setTimeout(30000);
         await page.hover(".leaflet-top.leaflet-right");
 
         const controlText = await page.$eval(
-          "xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > details > summary > div > label > span",
+          "xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > div:nth-child(1) > label > span",
           (span) => span.innerText
         );
         const layerIndex = await page.$eval(
@@ -75,7 +75,7 @@ jest.setTimeout(30000);
 
         expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
         expect(layerIndex).toEqual("2");
-        expect(controlText).toBe(" Canada Base Map - Transportation (CBMT)");
+        expect(controlText).toBe("Canada Base Map - Transportation (CBMT)");
       });
 
       test("[" + browserType + "]" + " Moving layer up one in control overlay", async () => {
@@ -89,7 +89,7 @@ jest.setTimeout(30000);
         await page.hover(".leaflet-top.leaflet-right");
 
         const controlText = await page.$eval(
-          "xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > details > summary > div > label > span",
+          "xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span",
           (span) => span.innerText
         );
         const layerIndex = await page.$eval(
@@ -103,7 +103,7 @@ jest.setTimeout(30000);
 
         expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
         expect(layerIndex).toEqual("1");
-        expect(controlText).toBe(" Static MapML With Tiles");
+        expect(controlText).toBe("Static MapML With Tiles");
       });
 
     });

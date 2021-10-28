@@ -189,46 +189,15 @@
   min-height: 44px;
 }
 
-.leaflet-control-layers-overlays > fieldset > .mapml-control-layers > summary,
-.leaflet-control-layers-overlays > fieldset > .mapml-control-layers > summary ~ * {
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-.leaflet-control-layers-overlays > fieldset > .mapml-control-layers > summary {
-  padding-top: 12.5px;
-  padding-bottom: 12.5px;
-}
-
-.leaflet-control-layers-overlays > fieldset > .mapml-control-layers details > summary {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-.leaflet-control-layers-overlays > fieldset > .mapml-control-layers details {
-  padding-bottom: 4px;
-  margin: 0 0 0 15px;
-}
-
-.leaflet-control-layers-overlays > fieldset > .mapml-control-layers details > summary ~ * {
-  display: block;
-  margin-top: 5px;
-  margin-left: 15px;
-  width: calc(100% - 15px);
-}
-
 .leaflet-control-layers label {
   display: inline;
 }
 
-.mapml-control-layers summary::marker {
-  margin-right: 5px;
-}
-
-.mapml-control-layers details [type="radio"],
-.mapml-control-layers details [type="checkbox"] {
-  margin-right: 5px;
-  margin-left: 0;
+.leaflet-control-layers-overlays > fieldset > .mapml-layer-item-settings > .mapml-control-layers > summary ~ * {
+  display: block;
+  margin-top: 5px;
+  margin-left: 15px;
+  width: calc(100% - 15px);
 }
 
 .leaflet-control-layers-list .leaflet-control-layers-overlays > :not(:last-of-type) {
@@ -239,9 +208,6 @@
 .leaflet-control-layers-selector {
   margin-top: revert;
   position: revert;
-}
-.mapml-control-layers summary label > * {
-  vertical-align: middle;
 }
 
 /*
@@ -423,9 +389,8 @@
 /* Disable pointer events where they'd interfere with the intended action. */
 .leaflet-tooltip,
 .leaflet-crosshair *,
-.mapml-contextmenu-item > *,
-.mapml-control-layers .mapml-control-layers summary label,
-.mapml-draggable [aria-grabbed="true"] .mapml-control-layers > * {
+.mapml-layer-item-settings .mapml-control-layers summary label,
+.mapml-contextmenu-item > * {
   pointer-events: none!important;
 }
 
@@ -585,23 +550,6 @@ summary {
   height: 100%;
   width: 100%;
 }
-
-/* Quick fix for https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/358,
-   refactor TBD in https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/263. */
-.mapml-control-summary-container {
-  display: contents;
-}
-.mapml-control-summary-container .mapml-layer-remove-button {
-  text-decoration: none;
-  float: right;
-}
-.mapml-control-summary-container * {
-  display: inline;
-}
-.mapml-control-summary-container label {
-  margin-right: 15px;
-}
-
  
  /* Force printers to include background-images of controls for printing.
    (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/294) */
@@ -635,4 +583,108 @@ svg.leaflet-image-layer.leaflet-interactive g {
 .mapml-link-preview > p {
   margin: 3px 5px 2px 3px;
   color: rgb(60,64,67);
+}
+
+/**
+* layer item controls
+*/
+
+button.mapml-button:disabled,
+.mapml-button[aria-disabled="true"],
+.mapml-layer-item:disabled button.mapml-button {
+  opacity: .3;
+}
+
+.mapml-button-icon {
+  pointer-events: none;
+}
+
+.mapml-button-icon svg {
+  fill: currentColor;
+}
+
+.mapml-layer-item,
+.mapml-layer-item *,
+.mapml-layer-item ::before,
+.mapml-layer-item ::after {
+  box-sizing: border-box;
+}
+
+.mapml-layer-item {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.mapml-layer-item:not(:last-of-type) {
+  border-bottom: 1px solid #e3e3e3;
+}
+
+.mapml-layer-item-properties {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding-inline-start: .5rem;
+}
+.mapml-layer-item-controls {
+  margin-inline-start: auto;
+}
+
+
+.mapml-layer-item-controls button span {
+  font-size: large;
+  font-weight: 900;
+  vertical-align: middle;
+}
+
+.mapml-layer-item-controls button svg {
+  vertical-align: text-bottom;
+}
+
+.mapml-layer-item-controls,
+.mapml-layer-item-remove-control,
+.mapml-layer-item-settings-control {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+
+.mapml-layer-item-remove-control,
+.mapml-layer-item-settings-control {
+  min-height: 44px;
+  min-width: 44px;
+  height: 44px;
+  width: 44px;
+}
+
+.mapml-layer-item-toggle{
+  display: inline-flex !important;
+  width: 100%;
+}
+
+.mapml-layer-item-name {
+  word-break: break-word;
+  text-align: inline-start;
+  padding-inline-start: .25rem;
+  padding-inline-end: 1rem;
+}
+
+.mapml-layer-item-settings > * {
+  display: block;
+  padding-block-start: .25rem;
+  padding-block-end: .25rem;
+  padding-inline-start: 2rem;
+  padding-inline-end: 1rem;
+}
+
+.mapml-layer-item-settings summary {
+  -webkit-user-select: none;
+          user-select: none;
+}
+
+.mapml-layer-item-opacity [type="range"] {
+  margin-inline-end: 0;
+  margin-inline-start: 0;
+  width: 100%;
 }

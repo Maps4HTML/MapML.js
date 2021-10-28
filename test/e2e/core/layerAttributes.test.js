@@ -26,7 +26,7 @@ jest.setTimeout(50000);
           await page.$eval("body > mapml-viewer > layer-",
             (layer) => layer.removeAttribute("checked"));
           await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > a');
-          const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > summary > div > label > input",
+          const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div > label > input",
             (controller) => controller.checked);
 
           expect(layerController).toEqual(false);
@@ -34,7 +34,7 @@ jest.setTimeout(50000);
         test("[" + browserType + "]" + " Check attribute added", async () => {
           await page.$eval("body > mapml-viewer > layer-",
             (layer) => layer.setAttribute("checked", ""));
-          const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > summary > div > label > input",
+          const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div > label > input",
             (controller) => controller.checked);
 
           expect(layerController).toEqual(true);
@@ -106,7 +106,7 @@ jest.setTimeout(50000);
               await page.reload();
               await page.$eval("body > mapml-viewer > layer-",
                 (layer) => layer.opacity = 0.4);
-              let value = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input[type=range]",
+              let value = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div:nth-child(2) > details > input[type=range]",
                 (input) => input.value);
               expect(value).toEqual("0.4");
             });
