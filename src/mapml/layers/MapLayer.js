@@ -553,7 +553,7 @@ export var MapMLLayer = L.Layer.extend({
         }
         layerItemName.id = 'mapml-layer-item-name-{' + L.stamp(layerItemName) + '}';
         opacityControlSummary.innerText = 'Opacity';
-        opacityControlSummary.id = 'mapml-layer-item-opacity-' + this._title;
+        opacityControlSummary.id = 'mapml-layer-item-opacity-' + L.stamp(opacityControlSummary);
         opacityControl.appendChild(opacityControlSummary);
         opacityControl.appendChild(opacity);
         opacity.setAttribute('type','range');
@@ -561,7 +561,7 @@ export var MapMLLayer = L.Layer.extend({
         opacity.setAttribute('max','1.0');
         opacity.setAttribute('value', this._container.style.opacity || '1.0');
         opacity.setAttribute('step','0.1');
-        opacity.setAttribute('aria-labelledby', 'mapml-layer-item-opacity-' + this._title);
+        opacity.setAttribute('aria-labelledby', opacityControlSummary.id);
         opacity.value = this._container.style.opacity || '1.0';
 
         fieldset.setAttribute("aria-grabbed", "false");
