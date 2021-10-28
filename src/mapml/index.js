@@ -89,11 +89,8 @@ window.M = M;
   M.mime = "text/mapml";
 
   let mapOptions = window.document.head.querySelector("map-options");
-  if (mapOptions){
-    M.options = JSON.parse(mapOptions.innerHTML);
-  } else {
-    M.options = Options;
-  }
+  M.options = Options;
+  if (mapOptions) M.options = Object.assign(M.options, JSON.parse(mapOptions.innerHTML));
 
   // see https://leafletjs.com/reference-1.5.0.html#crs-l-crs-base
   // "new classes can't inherit from (L.CRS), and methods can't be added 
