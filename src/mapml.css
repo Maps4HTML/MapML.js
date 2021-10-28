@@ -221,7 +221,7 @@
   background-color: #fff;
   cursor: default;
   position: absolute;
-  width: 150px;
+  width: 160px;
   z-index: 10001;
 }
 
@@ -260,6 +260,21 @@
   }
   .mapml-contextmenu.mapml-submenu {
     position: absolute;
+  }
+}
+
+.mapml-contextmenu-item[aria-controls] span::after {
+  content:">";
+}
+@supports (list-style-type: disclosure-open) {
+  .mapml-contextmenu-item[aria-controls] span {
+    display: inline-block;
+  }
+  .mapml-contextmenu-item[aria-controls] span::after {
+    content:"";
+    display: list-item;
+    list-style-type: disclosure-closed;
+    margin-inline-start: 20px;
   }
 }
 
