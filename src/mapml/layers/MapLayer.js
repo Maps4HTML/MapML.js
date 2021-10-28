@@ -551,9 +551,9 @@ export var MapMLLayer = L.Layer.extend({
         } else {
           layerItemName.innerHTML = this._title;
         }
-        layerItemName.id = this._title;
+        layerItemName.id = 'mapml-layer-item-name-{' + L.stamp(layerItemName) + '}';
         opacityControlSummary.innerText = 'Opacity';
-        opacityControlSummary.id = 'mapml-layer-item-opacity-' + this._title;
+        opacityControlSummary.id = 'mapml-layer-item-opacity-' + L.stamp(opacityControlSummary);
         opacityControl.appendChild(opacityControlSummary);
         opacityControl.appendChild(opacity);
         opacity.setAttribute('type','range');
@@ -561,11 +561,11 @@ export var MapMLLayer = L.Layer.extend({
         opacity.setAttribute('max','1.0');
         opacity.setAttribute('value', this._container.style.opacity || '1.0');
         opacity.setAttribute('step','0.1');
-        opacity.setAttribute('aria-labelledby', 'mapml-layer-item-opacity-' + this._title);
+        opacity.setAttribute('aria-labelledby', opacityControlSummary.id);
         opacity.value = this._container.style.opacity || '1.0';
 
         fieldset.setAttribute("aria-grabbed", "false");
-        fieldset.setAttribute('aria-labelledby', this._title);
+        fieldset.setAttribute('aria-labelledby', layerItemName.id);
 
         fieldset.onmousedown = (downEvent) => {
           if(downEvent.target.tagName.toLowerCase() === "input" || downEvent.target.tagName.toLowerCase() === "select") return;
@@ -942,12 +942,12 @@ export var MapMLLayer = L.Layer.extend({
                     var styleOption = document.createElement('span'),
                     styleOptionInput = styleOption.appendChild(document.createElement('input'));
                     styleOptionInput.setAttribute("type", "radio");
-                    styleOptionInput.setAttribute("id", "rad"+j);
-                    styleOptionInput.setAttribute("name", "styles");
+                    styleOptionInput.setAttribute("id", "rad-"+L.stamp(styleOptionInput));
+                    styleOptionInput.setAttribute("name", "styles-"+layer._title);
                     styleOptionInput.setAttribute("value", styleLinks[j].getAttribute('title'));
                     styleOptionInput.setAttribute("data-href", new URL(styleLinks[j].getAttribute('href'),base).href);
                     var styleOptionLabel = styleOption.appendChild(document.createElement('label'));
-                    styleOptionLabel.setAttribute("for", "rad"+j);
+                    styleOptionLabel.setAttribute("for", "rad-"+L.stamp(styleOptionInput));
                     styleOptionLabel.innerText = styleLinks[j].getAttribute('title');
                     if (styleLinks[j].getAttribute("rel") === "style self" || styleLinks[j].getAttribute("rel") === "self style") {
                       styleOptionInput.checked = true;
