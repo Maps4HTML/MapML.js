@@ -24,7 +24,7 @@ jest.setTimeout(50000);
 
         test("[" + browserType + "]" + " Layer context menu shows when layer is clicked", async () => {
           await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
-          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > details > summary > div > label > span",
+          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span",
             { button: "right" });
 
           const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
@@ -50,7 +50,7 @@ jest.setTimeout(50000);
 
         test("[" + browserType + "]" + " Map zooms in to layer 2", async () => {
           await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
-          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > details > summary > div > label > span",
+          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > div:nth-child(1) > label > span",
             { button: "right" });
           await page.keyboard.press("z");
           await page.waitForTimeout(1000);
@@ -73,7 +73,7 @@ jest.setTimeout(50000);
             await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in");
 
           await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
-          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(3) > details > summary > div > label > span",
+          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(3) > div:nth-child(1) > label > span",
             { button: "right" });
           await page.keyboard.press("z");
           await page.waitForTimeout(1000);
@@ -96,7 +96,7 @@ jest.setTimeout(50000);
             await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in");
 
           await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
-          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(4) > details > summary > div > label > span",
+          await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(4) > div:nth-child(1) > label > span",
             { button: "right" });
           await page.keyboard.press("z");
           await page.waitForTimeout(1000);

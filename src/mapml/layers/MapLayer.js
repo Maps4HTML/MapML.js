@@ -481,37 +481,65 @@ export var MapMLLayer = L.Layer.extend({
         return this.options.attribution;
     },
     getLayerUserControlsHTML: function () {
-      var fieldset = document.createElement('fieldset'),
-        input = document.createElement('input'),
-        label = document.createElement('label'),
-        name = document.createElement('span'),
-        details = document.createElement('details'),
-        summary = document.createElement('summary'),
-        summaryContainer = document.createElement('div'),
-        opacity = document.createElement('input'),
-        opacityControl = document.createElement('details'),
-        opacityControlSummary = document.createElement('summary'),
-        opacityControlSummaryLabel = document.createElement('label'),
+      var fieldset = L.DomUtil.create('fieldset', 'mapml-layer-item'),
+        input = L.DomUtil.create('input'),
+        layerItemName = L.DomUtil.create('span', 'mapml-layer-item-name'),
+        settingsButtonNameIcon = L.DomUtil.create('span'),
+        layerItemProperty = L.DomUtil.create('div', 'mapml-layer-item-properties', fieldset),
+        layerItemSettings = L.DomUtil.create('div', 'mapml-layer-item-settings', fieldset),
+        itemToggleLabel = L.DomUtil.create('label', 'mapml-layer-item-toggle', layerItemProperty),
+        layerItemControls = L.DomUtil.create('div', 'mapml-layer-item-controls', layerItemProperty),
+        opacityControl = L.DomUtil.create('details', 'mapml-layer-item-opacity', layerItemSettings),
+        opacity = L.DomUtil.create('input'),
+        opacityControlSummary = L.DomUtil.create('summary'),
+        svgSettingsControlIcon = L.SVG.create('svg'),
+        settingsControlPath1 = L.SVG.create('path'),
+        settingsControlPath2 = L.SVG.create('path'),
         mapEl = this._layerEl.parentNode;
         this.opacityEl = opacity;
+
+        // append the paths in svg for the remove layer and toggle icons
+        svgSettingsControlIcon.setAttribute('viewBox', '0 0 24 24');
+        svgSettingsControlIcon.setAttribute('height', '22');
+        svgSettingsControlIcon.setAttribute('width', '22');
+        settingsControlPath1.setAttribute('d', 'M0 0h24v24H0z');
+        settingsControlPath1.setAttribute('fill', 'none');
+        settingsControlPath2.setAttribute('d', 'M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z');
+        svgSettingsControlIcon.appendChild(settingsControlPath1);
+        svgSettingsControlIcon.appendChild(settingsControlPath2);
         
-        summaryContainer.classList.add('mapml-control-summary-container');
+        layerItemSettings.hidden = true;
+        settingsButtonNameIcon.setAttribute('aria-hidden', true);
         
-        let removeButton = document.createElement('button');
-        removeButton.type = 'button';
-        removeButton.title = 'Remove Layer';
-        removeButton.innerHTML = "<span aria-hidden='true'>&#10006;</span>";
-        removeButton.classList.add('mapml-layer-remove-button', 'mapml-button');
-        L.DomEvent.disableClickPropagation(removeButton);
-        L.DomEvent.on(removeButton, 'click', L.DomEvent.stop);
-        L.DomEvent.on(removeButton, 'click', (e)=>{
+        let removeControlButton = L.DomUtil.create('button', 'mapml-layer-item-remove-control', layerItemControls);
+        removeControlButton.type = 'button';
+        removeControlButton.title = 'Remove Layer';
+        removeControlButton.innerHTML = "<span aria-hidden='true'>&#10005;</span>";
+        removeControlButton.classList.add('mapml-button');
+        //L.DomEvent.disableClickPropagation(removeControlButton);
+        L.DomEvent.on(removeControlButton, 'click', L.DomEvent.stop);
+        L.DomEvent.on(removeControlButton, 'click', (e)=>{
           mapEl.removeChild(e.target.closest("fieldset").querySelector("span").layer._layerEl);
+        }, this);
+
+        let itemSettingControlButton = L.DomUtil.create('button', 'mapml-layer-item-settings-control', layerItemControls);
+        itemSettingControlButton.type = 'button';
+        itemSettingControlButton.title = 'Layer Settings';
+        itemSettingControlButton.setAttribute('aria-expanded', false);
+        itemSettingControlButton.classList.add('mapml-button');
+        L.DomEvent.on(itemSettingControlButton, 'click', (e)=>{
+          if(layerItemSettings.hidden == true){
+            itemSettingControlButton.setAttribute('aria-expanded', true);
+            layerItemSettings.hidden = false;
+          } else {
+            itemSettingControlButton.setAttribute('aria-expanded', false);
+            layerItemSettings.hidden = true;
+          }
         }, this);
 
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
-        input.className = 'leaflet-control-layers-selector';
-        name.layer = this;
+        layerItemName.layer = this;
 
         if (this._legendUrl) {
           var legendLink = document.createElement('a');
@@ -519,28 +547,25 @@ export var MapMLLayer = L.Layer.extend({
           legendLink.href = this._legendUrl;
           legendLink.target = '_blank';
           legendLink.draggable = false;
-          name.appendChild(legendLink);
+          layerItemName.appendChild(legendLink);
         } else {
-          name.innerHTML = ' ' + this._title;
+          layerItemName.innerHTML = this._title;
         }
-        label.appendChild(input);
-        label.appendChild(name);
-        opacityControlSummaryLabel.innerText = 'Opacity';
-        opacity.id = "o" + L.stamp(opacity);
-        opacityControlSummaryLabel.setAttribute('for', opacity.id);
-        opacityControlSummary.appendChild(opacityControlSummaryLabel);
+        layerItemName.id = this._title;
+        opacityControlSummary.innerText = 'Opacity';
+        opacityControlSummary.id = 'mapml-layer-item-opacity-' + this._title;
         opacityControl.appendChild(opacityControlSummary);
         opacityControl.appendChild(opacity);
-        L.DomUtil.addClass(details, 'mapml-control-layers');
-        L.DomUtil.addClass(opacityControl,'mapml-control-layers');
         opacity.setAttribute('type','range');
         opacity.setAttribute('min', '0');
         opacity.setAttribute('max','1.0');
         opacity.setAttribute('value', this._container.style.opacity || '1.0');
         opacity.setAttribute('step','0.1');
+        opacity.setAttribute('aria-labelledby', 'mapml-layer-item-opacity-' + this._title);
         opacity.value = this._container.style.opacity || '1.0';
 
         fieldset.setAttribute("aria-grabbed", "false");
+        fieldset.setAttribute('aria-labelledby', this._title);
 
         fieldset.onmousedown = (downEvent) => {
           if(downEvent.target.tagName.toLowerCase() === "input" || downEvent.target.tagName.toLowerCase() === "select") return;
@@ -609,15 +634,13 @@ export var MapMLLayer = L.Layer.extend({
 
         L.DomEvent.on(opacity,'change', this._changeOpacity, this);
 
-        fieldset.appendChild(details);
-        details.appendChild(summary);
-        summaryContainer.appendChild(label);
-        summaryContainer.appendChild(removeButton);
-        summary.appendChild(summaryContainer);
-        details.appendChild(opacityControl);
+        itemToggleLabel.appendChild(input);
+        itemToggleLabel.appendChild(layerItemName);
+        itemSettingControlButton.appendChild(settingsButtonNameIcon);
+        settingsButtonNameIcon.appendChild(svgSettingsControlIcon);
 
         if (this._styles) {
-          details.appendChild(this._styles);
+          layerItemSettings.appendChild(this._styles);
         }
         if (this._userInputs) {
           var frag = document.createDocumentFragment();
@@ -631,21 +654,19 @@ export var MapMLLayer = L.Layer.extend({
                 // don't add it again if it is referenced > once
                 if (mapmlInput.tagName.toLowerCase() === 'map-select' && !frag.querySelector(id)) {
                   // generate a <details><summary></summary><select...></details>
-                  var selectdetails = document.createElement('details'),
-                      selectsummary = document.createElement('summary'),
-                      selectSummaryLabel = document.createElement('label');
+                  var selectdetails = L.DomUtil.create('details', 'mapml-control-layers', frag),
+                      selectsummary = L.DomUtil.create('summary'),
+                      selectSummaryLabel = L.DomUtil.create('label');
                       selectSummaryLabel.innerText = mapmlInput.getAttribute('name');
                       selectSummaryLabel.setAttribute('for', mapmlInput.getAttribute('id'));
-                      L.DomUtil.addClass(selectdetails, 'mapml-control-layers');
                       selectsummary.appendChild(selectSummaryLabel);
                       selectdetails.appendChild(selectsummary);
                       selectdetails.appendChild(mapmlInput.htmlselect);
-                  frag.appendChild(selectdetails);
                 }
               }
             }
           }
-          details.appendChild(frag);
+          layerItemSettings.appendChild(frag);
         }
         return fieldset;
     },

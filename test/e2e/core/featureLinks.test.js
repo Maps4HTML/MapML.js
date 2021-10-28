@@ -36,7 +36,7 @@ jest.setTimeout(50000);
 
           test("[" + browserType + "]" + " Sub-point inplace link adds new layer, parent feature has separate link", async () => {
             await page.hover(".leaflet-top.leaflet-right");
-            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > details > summary > div > button");
+            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > div:nth-child(1) > div > button:nth-child(1)");
             await page.click("body > map");
             for(let i = 0; i < 6; i++)
               await page.keyboard.press("Tab");
@@ -68,7 +68,7 @@ jest.setTimeout(50000);
         describe("Main Part Link Tests in " + browserType, () => {
           test("[" + browserType + "]" + " Main part adds new layer", async () => {
             await page.hover(".leaflet-top.leaflet-right");
-            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > details > summary > div > button");
+            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > div:nth-child(1) > div > button:nth-child(1)");
             await page.click("body > map");
             for(let i = 0; i < 5; i++)
               await page.keyboard.press("Tab");

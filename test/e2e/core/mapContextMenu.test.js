@@ -187,17 +187,16 @@ jest.setTimeout(50000);
 
           test("[" + browserType + "]" + " Context menu, toggle controls after changing opacity", async () => {
             await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
-            await page.$eval(
-              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details",
-              (div) => div.open = true
+            await page.click(
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div > div > button:nth-child(2)",
             );
             await page.$eval(
-              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details",
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div:nth-child(2) > details",
               (div) => div.open = true
             );
-            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input");
+            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div:nth-child(2) > details > input");
             const valueBefore = await page.$eval(
-              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input",
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div:nth-child(2) > details > input",
               (opacity) => opacity.value
             );
             expect(valueBefore).toEqual("0.5");
@@ -208,7 +207,7 @@ jest.setTimeout(50000);
             await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
 
             const valueAfter = await page.$eval(
-              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > details > input",
+              "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div:nth-child(2) > details > input",
               (opacity) => opacity.value
             );
 

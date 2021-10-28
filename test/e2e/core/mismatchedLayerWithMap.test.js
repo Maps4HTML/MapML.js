@@ -80,7 +80,7 @@ jest.setTimeout(30000);
           (controller) => controller.hasAttribute('disabled'))
 
         await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
-        await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > details > summary > div > label > span",
+        await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span",
           { button: "right" });
 
         const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
