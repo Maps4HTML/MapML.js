@@ -35,13 +35,6 @@
   font-size: 12px;
 }
 
-/* Remove opinionated color of links. */
-.leaflet-container a,
-.leaflet-container a.leaflet-popup-close-button,
-.leaflet-container a.leaflet-popup-close-button:hover {
-  color: initial;
-}
-
 /*
  * Controls.
  */
@@ -62,6 +55,23 @@
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
+}
+
+/* Remove opinionated link colors set by Leaflet. */
+.leaflet-container a {
+  color: revert;
+}
+/* Don't use UA styles for links that are controls
+  (and don't inherit color from map into the reload button for consistency). */
+.mapml-reload-button,
+.leaflet-control-container a,
+.leaflet-container a.leaflet-popup-close-button,
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: #000;
+}
+/* Revert above `color: #000` for legendlinks. */
+.mapml-layer-item-name a {
+  color: revert;
 }
  
  .leaflet-top .leaflet-control {
