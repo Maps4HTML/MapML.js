@@ -31,16 +31,16 @@
         /* border: none; */
       }
       
-      /* Pre-style to avoid FOUC of inline layer- and fallback content. */
-      mapml-viewer:not(:defined) > * {
-        display: none;
-      }
-      
       /* Pre-style to avoid Layout Shift. */
       mapml-viewer:not(:defined) {
         display: inline-block;
         contain: size;
         contain-intrinsic-size: 304px 154px;
+      }
+      
+      /* Pre-style to avoid FOUC of inline layer- and fallback content. */
+      mapml-viewer:not(:defined) > * {
+        display: none;
       }
       
       /* Ensure inline layer content is hidden if custom/built-in elements isn't
