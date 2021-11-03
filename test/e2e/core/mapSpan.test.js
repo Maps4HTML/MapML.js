@@ -25,7 +25,7 @@ jest.setTimeout(50000);
                     const total = await page.$eval(
                         'body > mapml-viewer div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div:nth-child(1) > svg > g > g:nth-child(1) > path:nth-child(2)',
                         (path) => path.getAttribute("style")
-                    )
+                    );
 
                     const featureOutline = await page.$(
                         'body > mapml-viewer div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div:nth-child(1) > svg > g > g:nth-child(1) > path.fclass._2.mapml-feature-outline'
@@ -44,7 +44,6 @@ jest.setTimeout(50000);
 
                     expect(total).toEqual("stroke: none;");
                     expect(index).toEqual(-1);
-                    console.log(spliced);
                 });
             }
         );
