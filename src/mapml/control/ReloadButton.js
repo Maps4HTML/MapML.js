@@ -8,7 +8,7 @@ export var ReloadButton = L.Control.extend({
 
     let link = L.DomUtil.create("button", "mapml-reload-button", container);
     link.innerHTML = "<span aria-hidden='true'>&#x021BA</span>";
-    link.title = "Reload";
+    link.title = M.options.locale.cmReload;
     link.setAttribute("type", "button");
     link.classList.add("mapml-button");
     link.setAttribute('aria-label', "Reload");
