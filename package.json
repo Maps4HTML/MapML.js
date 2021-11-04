@@ -36,7 +36,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@runette/leaflet-fullscreen": "^1.0.5",
     "express": "^4.17.1",
     "grunt": "^1.4.0",
     "grunt-contrib-clean": "^2.0.0",

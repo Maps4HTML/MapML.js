@@ -2,7 +2,6 @@ import './leaflet-src.js';  // a (very slightly) modified version of Leaflet for
 import './proj4-src.js';        // modified version of proj4; could be stripped down for mapml
 import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use.
 import './mapml.js';       // refactored URI usage, replaced with URL standard
-import './Leaflet.fullscreen.js';
 import { MapLayer } from './layer.js';
 
 export class MapViewer extends HTMLElement {
@@ -105,7 +104,6 @@ export class MapViewer extends HTMLElement {
     let tmpl = document.createElement('template');
     tmpl.innerHTML =
     `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
-    `<link rel="stylesheet" href="${new URL("leaflet.fullscreen.css", import.meta.url).href}">` +
     `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`;
     
     let shadowRoot = this.attachShadow({mode: 'open'});
@@ -283,7 +281,7 @@ export class MapViewer extends HTMLElement {
       }
       if (!this.controlslist.toLowerCase().includes("nofullscreen") && !this._fullScreenControl && (totalSize + 49) <= mapSize){
         totalSize += 49;
-        this._fullScreenControl = L.control.fullscreen().addTo(this._map);
+        this._fullScreenControl = M.fullscreenButton().addTo(this._map);
       }
       //removes any control layers that are not needed, either by the toggling or by the controlslist attribute
       for(let i in options){
