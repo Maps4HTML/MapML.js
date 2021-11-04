@@ -50,7 +50,7 @@ jest.setTimeout(50000);
                 test("[" + browserType + "]" + " White space parsing for map-coordinates", async ()=>{
                     await page.waitForTimeout(1000);
                     const feature = await page.$eval(
-                        'body > mapml-viewer:nth-child(2) div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div:nth-child(1) > svg > g > g:nth-child(8) > path.fclass.mapml-feature-outline',
+                        'body > mapml-viewer:nth-child(2) div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div:nth-child(1) > svg > g > g > path.fclass.mapml-feature-outline',
                         (path) => path.getAttribute("d")
                     );
 
