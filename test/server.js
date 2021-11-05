@@ -20,6 +20,7 @@ app.get('/data/query/us_map_query', (req, res, next) => {
 
 app.use("/data", express.static(path.join(__dirname, "e2e/data/tiles/cbmt")));
 app.use("/data", express.static(path.join(__dirname, "e2e/data/tiles/wgs84")));
+app.use("/data", express.static(path.join(__dirname, "e2e/data/tiles/osmtile")));
 app.use(
   "/data/cbmt/0",
   express.static(path.join(__dirname, "e2e/data/tiles/cbmt/0"))
@@ -39,6 +40,10 @@ app.use(
 app.use(
   "/data/wgs84/1",
   express.static(path.join(__dirname, "e2e/data/tiles/wgs84/1"))
+);
+app.use(
+    "/data/osmtile/2",
+    express.static(path.join(__dirname, "e2e/data/tiles/osmtile/2"))
 );
 
 console.log("Running on localhost:" + port);

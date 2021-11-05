@@ -1,0 +1,21 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+    <map-head>
+        <map-title>ne_10m_admin_0_countries</map-title>
+        <map-meta charset="utf-8"/>
+        <map-meta content="text/mapml" http-equiv="Content-Type"/>
+      <map-meta name="projection" content="OSMTILE"></map-meta>
+      <map-meta name="cs" content="pcrs"></map-meta>
+    </map-head>
+    <map-body>
+        <map-feature id="fclass.73" class="fclass">
+            <map-geometry>
+                <map-polygon>
+                    <map-coordinates>
+                        -10019154.93269 1538354.08306 -10018754.17139 1538179.92761 -9953778.73157 1518203.74208 -9871068.81875 1482220.46653 -9790805.04014 1478766.01397 -9768484.06551 1498870.65375 -9796003.07532 1547622.63538 -9951944.13091 1647924.2825 -10018754.17139 1569038.46245 
+                        <map-span class="noline">-10019154.93269 1569012.97177 -10019154.93269 1538354.08306</map-span>
+                    </map-coordinates>
+                </map-polygon>
+            </map-geometry>
+        </map-feature>
+    </map-body>
+</mapml->

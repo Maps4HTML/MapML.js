@@ -1,0 +1,53 @@
+
+path.fclass { stroke: blue; }
+
+g[data-fid="fclass.73"] > path { stroke: blue; fill: #DDA0DD;}
+
+
+/* Those parts which are wrapped in a span also inherit the class
+values of the span element, which in this case are taken to be noline and
+aren"t therefore drawn at all (they are there only to represent tile boundaries)*/
+path.noline { display: none}
+
+*, ::before, ::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    margin: 0;
+    line-height: 1.5;
+}
+
+
+/*
+ * map viewers
+ */
+mapml-viewer:defined,
+[is="web-map"]:defined {
+    height: 100%;
+    max-width: 100%;
+    width: 100%;
+    vertical-align: middle;
+}
+
+/* Pre-style to avoid FOUC of inline layer- and fallback content. */
+mapml-viewer:not(:defined) > * {
+    display: none;
+}
+[is="web-map"]:not(:defined) + img[usemap],
+[is="web-map"]:not(:defined) > :not(area):not(.mapml-web-map) {
+    display: none;
+}
+/* Ensure inline layer content is hidden if custom/built-in elements isn't
+supported, or if javascript is disabled. This needs to be defined separately
+from the above, because the `:not(:defined)` selector invalidates the entire
+declaration in browsers that do not support it. */
+layer- {
+    display: none;
+}
