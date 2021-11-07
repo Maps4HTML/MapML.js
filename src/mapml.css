@@ -674,9 +674,9 @@ button.mapml-button:disabled,
   width: 44px;
 }
 
-.mapml-layer-item-toggle{
-  display: inline-flex !important;
-  width: 100%;
+label.mapml-layer-item-toggle {
+  display: inline-flex;
+  align-items: center;
 }
 
 .mapml-layer-item-name {
