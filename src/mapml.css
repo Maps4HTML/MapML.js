@@ -385,7 +385,8 @@
 .leaflet-control,
 .mapml-contextmenu,
 .mapml-debug,
-.mapml-focus-buttons {
+.mapml-focus-buttons,
+.mapml-layer-item-settings summary {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -691,11 +692,6 @@ button.mapml-button:disabled,
   padding-block-end: .25rem;
   padding-inline-start: 2rem;
   padding-inline-end: 1rem;
-}
-
-.mapml-layer-item-settings summary {
-  -webkit-user-select: none;
-          user-select: none;
 }
 
 .mapml-layer-item-opacity [type="range"] {
