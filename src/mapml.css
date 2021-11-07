@@ -681,7 +681,6 @@ label.mapml-layer-item-toggle {
 
 .mapml-layer-item-name {
   word-break: break-word;
-  text-align: inline-start;
   padding-inline-start: .25rem;
   padding-inline-end: 1rem;
 }
