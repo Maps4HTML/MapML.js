@@ -564,6 +564,7 @@ summary {
   position: absolute;
   height: 100%;
   width: 100%;
+  color: initial;
 }
  
  /* Force printers to include background-images of controls for printing.
