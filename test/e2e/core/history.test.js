@@ -21,8 +21,20 @@ jest.setTimeout(50000);
                     await browser.close();
                });
 
+               //https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/550
+               test("[" + browserType + "]" + " History does not get added to when trying to zoom out at min zoom level", async ()=>{
+                   await page.keyboard.press("Tab");
+                   await page.keyboard.press("Minus");
+                   await page.waitForTimeout(100);
+
+                   const history = await page.$eval(
+                       "body > mapml-viewer",
+                       (map) => map._history
+                   );
+                   expect(history.length).toEqual(1);
+               });
+
                test("[" + browserType + "]" + " History values are correct during vertical motion out of projection", async ()=>{
-                    await page.keyboard.press("Tab");
                     for(let i = 0; i < 3; i++){
                         await page.keyboard.press("ArrowUp");
                         await page.waitForTimeout(100);
