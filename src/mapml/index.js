@@ -57,6 +57,7 @@ import { Feature, feature } from "./features/feature";
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
 import { FeatureGroup, featureGroup} from './features/featureGroup';
 import { Options } from "./options";
+import "./keyboard";
 
 /* global L, Node */
 (function (window, document, undefined) {
