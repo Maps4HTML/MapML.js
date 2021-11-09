@@ -25,7 +25,7 @@ L.Map.Keyboard.include({
             if (!map._panAnim || !map._panAnim._inProgress) {
                 offset = this._panKeys[key];
                 if (e.shiftKey) {
-                    offset = toPoint(offset).multiplyBy(3);
+                    offset = L.point(offset).multiplyBy(3);
                 }
 
                 map.panBy(offset);
