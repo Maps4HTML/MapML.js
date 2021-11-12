@@ -213,7 +213,8 @@
   display: flex;
 }
 
-.mapml-layer-item-style input {
+.mapml-layer-item-style input,
+.mapml-layer-item-opacity input {
   margin-inline-start: 0;
 }
 
