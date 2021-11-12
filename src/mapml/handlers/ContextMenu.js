@@ -418,7 +418,8 @@ export var ContextMenu = L.Handler.extend({
       if(!elem.layer.validProjection) return;
       this._layerClicked = elem;
       this._showAtPoint(e.containerPoint, e, this._layerMenu);
-    } else if(elem.classList.contains("leaflet-container") || elem.classList.contains("mapml-debug-extent")) {
+    } else if(elem.classList.contains("leaflet-container") || elem.classList.contains("mapml-debug-extent") ||
+      elem.tagName === "path") {
       this._layerClicked = undefined;
       this._showAtPoint(e.containerPoint, e, this._container);
     }
