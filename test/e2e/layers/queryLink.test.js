@@ -73,6 +73,24 @@ jest.setTimeout(50000);
             expect(popupNumLeft).toEqual(0);
             expect(popupNumTop).toEqual(0);
           });
+          test("[" + browserType + "]" + " Auto query on moveend", async () => {
+            await page.reload()
+            await page.click("div");
+
+            await page.keyboard.press("Escape");
+            await page.waitForTimeout(500);
+            await page.keyboard.press("ArrowUp");
+            await page.waitForSelector("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div");
+            const popupNum = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane", (div) => div.childElementCount);
+            expect(popupNum).toEqual(1);
+
+            await page.keyboard.press("Escape");
+            await page.waitForTimeout(1000);
+            await page.keyboard.press("ArrowDown");
+            await page.waitForSelector("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div");
+            const popupNumTwo = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane", (div) => div.childElementCount);
+            expect(popupNumTwo).toEqual(1);
+          });
         });
         describe("Queried Feature Tests in " + browserType, () => {
           test("[" + browserType + "]" + " First feature added + popup content updated ", async () => {
