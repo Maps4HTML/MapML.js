@@ -203,11 +203,18 @@
   display: inline;
 }
 
-.leaflet-control-layers-overlays > fieldset > .mapml-layer-item-settings > .mapml-control-layers > summary ~ * {
+.mapml-control-layers > :not(summary) {
   display: block;
-  margin-top: 5px;
-  margin-left: 15px;
-  width: calc(100% - 15px);
+  margin-block-start: 5px;
+  width: 100%;
+}
+
+.mapml-layer-item-style > div {
+  display: flex;
+}
+
+.mapml-layer-item-style input {
+  margin-inline-start: 0;
 }
 
 .leaflet-control-layers-list .leaflet-control-layers-overlays > :not(:last-of-type) {
@@ -691,10 +698,4 @@ label.mapml-layer-item-toggle {
   padding-block-end: .25rem;
   padding-inline-start: 2rem;
   padding-inline-end: 1rem;
-}
-
-.mapml-layer-item-opacity [type="range"] {
-  margin-inline-end: 0;
-  margin-inline-start: 0;
-  width: 100%;
 }
