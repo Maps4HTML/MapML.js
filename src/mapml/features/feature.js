@@ -48,6 +48,13 @@ export var Feature = L.Path.extend({
     }
 
     this.isClosed = this._isClosed();
+    this.on("keyup", this._focusOnTab, this);
+  },
+
+  _focusOnTab: function (e){
+    if(e.originalEvent.keyCode === 9){
+      this._map.panTo(e.target.getCenter());
+    }
   },
 
   /**
