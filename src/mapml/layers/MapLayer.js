@@ -332,100 +332,6 @@ export var MapMLLayer = L.Layer.extend({
         }
       } 
     },
-    _setUpInputVars: function(inputs) {
-      // process the inputs and create an object named "extent"
-      // with member properties as follows:
-      // {width: {name: 'widthvarname'}, // value supplied by map if necessary
-      //  height: {name: 'heightvarname'}, // value supplied by map if necessary
-      //  left: {name: 'leftvarname', axis: 'leftaxisname'}, // axis name drives (coordinate system of) the value supplied by the map
-      //  right: {name: 'rightvarname', axis: 'rightaxisname'}, // axis name (coordinate system of) drives the value supplied by the map
-      //  top: {name: 'topvarname', axis: 'topaxisname'}, // axis name drives (coordinate system of) the value supplied by the map
-      //  bottom: {name: 'bottomvarname', axis: 'bottomaxisname'} // axis name drives (coordinate system of) the value supplied by the map
-      //  zoom: {name: 'zoomvarname'}
-      //  hidden: [{name: name, value: value}]}
-
-      var extentVarNames = {extent:{}};
-      extentVarNames.extent.hidden = [];
-      for (var i=0;i<inputs.length;i++) {
-        // this can be removed when the spec removes the deprecated inputs...
-        this._transformDeprectatedInput(inputs[i]);
-        var type = inputs[i].getAttribute("type"), 
-            units = inputs[i].getAttribute("units"), 
-            axis = inputs[i].getAttribute("axis"), 
-            name = inputs[i].getAttribute("name"), 
-            position = inputs[i].getAttribute("position"),
-            value = inputs[i].getAttribute("value");
-        if (type === "width") {
-              extentVarNames.extent.width = {name: name};
-        } else if ( type === "height") {
-              extentVarNames.extent.height = {name: name};
-        } else if (type === "zoom") {
-              extentVarNames.extent.zoom = {name: name};
-        } else if (type === "location" && (units === "pcrs" || units ==="gcrs" || units === "tcrs")) {
-          //<input name="..." units="pcrs" type="location" position="top|bottom-left|right" axis="northing|easting">
-          switch (axis) {
-            case ('easting'):
-              if (position) {
-                  if (position.match(/.*?-left/i)) {
-                    extentVarNames.extent.left = { name: name, axis: axis};
-                  } else if (position.match(/.*?-right/i)) {
-                    extentVarNames.extent.right = { name: name, axis: axis};
-                  }
-              }
-              break;
-            case ('northing'):
-              if (position) {
-                if (position.match(/top-.*?/i)) {
-                  extentVarNames.extent.top = { name: name, axis: axis};
-                } else if (position.match(/bottom-.*?/i)) {
-                  extentVarNames.extent.bottom = { name: name, axis: axis};
-                }
-              }
-              break;
-            case ('x'):
-              if (position) {
-                  if (position.match(/.*?-left/i)) {
-                    extentVarNames.extent.left = { name: name, axis: axis};
-                  } else if (position.match(/.*?-right/i)) {
-                    extentVarNames.extent.right = { name: name, axis: axis};
-                  }
-              }
-              break;
-            case ('y'):
-              if (position) {
-                if (position.match(/top-.*?/i)) {
-                  extentVarNames.extent.top = { name: name, axis: axis};
-                } else if (position.match(/bottom-.*?/i)) {
-                  extentVarNames.extent.bottom = { name: name, axis: axis};
-                }
-              }
-              break;
-            case ('longitude'):
-              if (position) {
-                  if (position.match(/.*?-left/i)) {
-                    extentVarNames.extent.left = { name: name, axis: axis};
-                  } else if (position.match(/.*?-right/i)) {
-                    extentVarNames.extent.right = { name: name, axis: axis};
-                  }
-              }
-              break;
-            case ('latitude'):
-              if (position) {
-                if (position.match(/top-.*?/i)) {
-                  extentVarNames.extent.top = { name: name, axis: axis};
-                } else if (position.match(/bottom-.*?/i)) {
-                  extentVarNames.extent.bottom = { name: name, axis: axis};
-                }
-              }
-              break;
-          }
-          // projection is deprecated, make it hidden
-        } else if (type === "hidden" || type === "projection") {
-            extentVarNames.extent.hidden.push({name: name, value: value});
-        }
-      }
-      return extentVarNames;
-    },
     // retrieve the (projected, scaled) layer extent for the current map zoom level
     getLayerExtentBounds: function(map) {
         
@@ -777,25 +683,31 @@ export var MapMLLayer = L.Layer.extend({
 
                   extentFallback.zoom = 0;
                   if (metaExtent){
-                    let content = M.metaContentToObject(metaExtent.getAttribute("content")), cs;
+                    // if the extent is not in PCRS or GCRS, the user should supply
+                    // a zoom=n key within the meta content, so that the PCRS bounds
+                    // can be calculated
+                    let content = M.metaContentToObject(metaExtent.getAttribute("content"));
                     
+                    // the extentFallback.zoom is used to calculate the PCRS bounds
                     extentFallback.zoom = content.zoom || extentFallback.zoom;
     
                     let metaKeys = Object.keys(content);
                     for(let i =0;i<metaKeys.length;i++){
                       if(!metaKeys[i].includes("zoom")){
-                        cs = M.axisToCS(metaKeys[i].split("-")[2]);
+                        // deduce the CS from the first recognized axis name, quit
+                        extentFallback.cs = M.axisToCS(metaKeys[i].split("-")[2]);
                         break;
                       }
                     }
-                    let axes = M.csToAxes(cs);
+                    let axes = M.csToAxes(extentFallback.cs);
                     extentFallback.bounds = M.boundsToPCRSBounds(
                       L.bounds(L.point(+content[`top-left-${axes[0]}`],+content[`top-left-${axes[1]}`]),
                       L.point(+content[`bottom-right-${axes[0]}`],+content[`bottom-right-${axes[1]}`])),
-                      extentFallback.zoom, projection, cs);
+                      extentFallback.zoom, projection, extentFallback.cs);
                     
                   } else {
                     extentFallback.bounds = M[projection].options.crs.pcrs.bounds;
+                    extentFallback.cs = "PCRS";
                   }
                     
                   for (var i=0;i< tlist.length;i++) {
@@ -822,12 +734,16 @@ export var MapMLLayer = L.Layer.extend({
                       var varName = v[1],
                           inp = serverExtent.querySelector('map-input[name='+varName+'],map-select[name='+varName+']');
                       if (inp) {
-
+                        // if location input is missing min/max, force set the
+                        // fallback min/max from the extentFallback
                         if ((inp.hasAttribute("type") && inp.getAttribute("type")==="location") && 
                             (!inp.hasAttribute("min" || !inp.hasAttribute("max"))) && 
                             (inp.hasAttribute("axis") && !["i","j"].includes(inp.getAttribute("axis").toLowerCase()))){
                           zoomInput.setAttribute("value", extentFallback.zoom);
-                          
+                          // set location input min/max axis values based on calculated 
+                          // and potentially converted from PCRS bounds read
+                          // from the <map-meta> element.  This is a fallback, but it only
+                          // works when the file includes location inputs.
                           let axis = inp.getAttribute("axis"), 
                               axisBounds = M.convertPCRSBounds(extentFallback.bounds, extentFallback.zoom, projection, M.axisToCS(axis));
                           inp.setAttribute("min", axisBounds.min[M.axisToXY(axis)]);
@@ -893,6 +809,7 @@ export var MapMLLayer = L.Layer.extend({
                         type: ttype, 
                         values: inputs, 
                         zoomBounds:zoomBounds, 
+                        extentPCRSFallback: {bounds: extentFallback.bounds}, 
                         projectionMatch: projectionMatch || selectedAlternate,
                         projection:serverExtent.getAttribute("units") || FALLBACK_PROJECTION,
                         tms:tms,

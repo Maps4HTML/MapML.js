@@ -27,14 +27,14 @@ describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
   zoomLimit.test("mapMLTemplatedFeatures.html", 2, 1);
   extentProperty.test("mapMLTemplatedFeatures.html", expectedPCRS, expectedGCRS);
 
+  beforeAll(async () => {
+    await page.goto(PATH + "mapMLTemplatedFeatures.html");
+  });
+  afterAll(async function () {
+    await context.close();
+  });
+  
   describe("Retreived Features Loading Tests", () => {
-    beforeAll(async () => {
-      await page.goto(PATH + "mapMLTemplatedFeatures.html");
-    });
-
-    afterAll(async function () {
-      await context.close();
-    });
 
     test("Loading in tilematrix feature", async () => {
       await page.waitForTimeout(200);
@@ -59,6 +59,25 @@ describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
         (tile) => tile.getAttribute("d")
       );
       expect(feature).toEqual("M307 456L599 467L612 629L381 599z");
+    });
+  });
+  describe("Simple query by select values without map extent filter tests", () => {
+    test("All features loaded at start", async () => {
+      const features = await page.$$("css= body > map:nth-child(2) > .mapml-web-map >> css= div > .mapml-templatedlayer-container > div > div > svg > g > g");
+      expect(features.length).toEqual(8);
+    });
+    test("User can select/filter features by category", async () => {
+        const restaurants = await page.$$("css= map:nth-child(2) .mapml-templatedlayer-container g > g");
+        expect(restaurants.length).toEqual(8);
+
+        await page.hover("css= map:nth-child(2) .leaflet-control-container .leaflet-top.leaflet-right > div");
+        await page.click("css= map:nth-child(2) button.mapml-layer-item-settings-control.mapml-button");
+        await page.click("css= map:nth-child(2) details.mapml-control-layers");
+        await page.selectOption('css= map:nth-child(2) details.mapml-control-layers select', 'italian');
+        await page.waitForTimeout(250);
+        
+        const features = await page.$$("css= map:nth-child(2) .mapml-templatedlayer-container g > g");
+        expect(features.length).toEqual(1);
     });
   });
 });

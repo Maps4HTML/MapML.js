@@ -1,0 +1,167 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+    <map-head>
+        <map-title>Restaurants</map-title>
+        <map-meta charset="utf-8" ></map-meta>
+        <map-meta content="text/mapml" http-equiv="Content-Type" ></map-meta>
+        <map-link rel="license" href="http://opendatacommons.org/licenses/odbl/1-0/" title="© OpenStreetMap and contributors" />
+        <map-meta name="projection" content="CBMTILE"></map-meta>
+        <map-meta name="zoom" content="min=0,max=22,value=3" ></map-meta>
+        <map-meta name="cs" content="gcrs" ></map-meta>
+        <map-meta name="extent" content="top-left-easting=1509080.1964270622,top-left-northing=-169400.558801122,bottom-right-easting=1512094.3357886747,bottom-right-northing=-172702.5654051304" ></map-meta>
+    </map-head>
+    <map-body>
+        <map-feature id="restaurant_map-point.77" class="restaurant_map-point">
+          <map-featurecaption>Hung Sum Restaurant</map-featurecaption>
+            <map-geometry>
+                <map-point>
+                        <map-coordinates>-75.71543400037297 45.40819502909854</map-coordinates>
+                </map-point>
+            </map-geometry>
+            <map-properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">amenity</th>
+                            <td itemprop="amenity">restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name</th>
+                            <td itemprop="name">Hung Sum Restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_stree</th>
+                            <td itemprop="addr_stree">Somerset Street West</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_house</th>
+                            <td itemprop="addr_house">939</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">cuisine</th>
+                            <td itemprop="cuisine">chinese</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </map-properties>
+        </map-feature>
+        <map-feature id="restaurant_map-point.13" class="restaurant_map-point">
+          <map-featurecaption>Phucket Royal</map-featurecaption>
+            <map-geometry>
+              <map-point>
+                <map-coordinates>-75.70786179432208 45.410746385011166</map-coordinates>
+              </map-point>
+            </map-geometry>
+            <map-properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">amenity</th>
+                            <td itemprop="amenity">restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name</th>
+                            <td itemprop="name">Phucket Royal</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_stree</th>
+                            <td itemprop="addr_stree">Somerset Street West</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_house</th>
+                            <td itemprop="addr_house">713</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">cuisine</th>
+                            <td itemprop="cuisine">thai</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </map-properties>
+        </map-feature>
+        <map-feature id="restaurant_map-point.18" class="restaurant_map-point">
+          <map-featurecaption>Sushi 88</map-featurecaption>
+            <map-geometry>
+              <map-point>
+                <map-coordinates>-75.70642921479893 45.41108327733854</map-coordinates>
+              </map-point>
+            </map-geometry>
+            <map-properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">amenity</th>
+                            <td itemprop="amenity">restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name</th>
+                            <td itemprop="name">Sushi 88</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_stree</th>
+                            <td itemprop="addr_stree">Somerset Street West</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_house</th>
+                            <td itemprop="addr_house">690 B</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">cuisine</th>
+                            <td itemprop="cuisine">sushi</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">website</th>
+                            <td itemprop="website" />
+                        </tr>
+                        <tr>
+                            <th scope="row">phone</th>
+                            <td itemprop="phone">+1-613-233-3288</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">wheelchair</th>
+                            <td itemprop="wheelchair">no</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_postc</th>
+                            <td itemprop="addr_postc">K1R 6P4</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">outdoor_se</th>
+                            <td itemprop="outdoor_se">no</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">takeaway</th>
+                            <td itemprop="takeaway">yes</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">delivery</th>
+                            <td itemprop="delivery">no</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">internet_a</th>
+                            <td itemprop="internet_a">no</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </map-properties>
+        </map-feature>
+    </map-body>
+</mapml->
+
