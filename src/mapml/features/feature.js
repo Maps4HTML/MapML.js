@@ -53,7 +53,9 @@ export var Feature = L.Path.extend({
 
   _focusOnTab: function (e){
     if(e.originalEvent.keyCode === 9){
-      this._map.panTo(e.target.getCenter());
+      let layerCenter = this.getCenter();
+      if (layerCenter.equals(this._map.getCenter())) return;
+      this._map.panTo(layerCenter);
     }
   },
 
