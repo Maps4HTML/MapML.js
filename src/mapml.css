@@ -206,15 +206,15 @@
 .mapml-control-layers > :not(summary) {
   display: block;
   margin-block-start: 5px;
-  width: 100%;
+  margin-inline-start: 15px;
+  width: calc(100% - 15px);
 }
 
 .mapml-layer-item-style > div {
   display: flex;
 }
 
-.mapml-layer-item-style input,
-.mapml-layer-item-opacity input {
+.mapml-layer-item-style input {
   margin-inline-start: 0;
 }
 
