@@ -30,19 +30,6 @@ jest.setTimeout(50000);
             expect(afterTab).toEqual("");
           });
 
-          test("[" + browserType + "]" + " Crosshair remains on map move with arrow keys", async () => {
-            await page.keyboard.press("ArrowUp");
-            await page.waitForTimeout(1000);
-            await page.keyboard.press("ArrowDown");
-            await page.waitForTimeout(1000);
-            await page.keyboard.press("ArrowLeft");
-            await page.waitForTimeout(1000);
-            await page.keyboard.press("ArrowRight");
-            await page.waitForTimeout(1000);
-            const afterMove = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
-            expect(afterMove).toEqual("");
-          });
-
           test("[" + browserType + "]" + " Crosshair shows on esc but hidden on tab out", async () => {
             await page.keyboard.press("Escape");
             const afterEsc = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);

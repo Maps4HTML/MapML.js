@@ -35,6 +35,7 @@ export var Crosshair = L.Layer.extend({
 
     map.on("layerchange layeradd layerremove overlayremove", this._toggleEvents, this);
     map.on("popupopen", this._isMapFocused, this);
+    map.on("moveend", this._moveEndQuery, this);
     L.DomEvent.on(map._container, "keydown keyup mousedown", this._isMapFocused, this);
 
     this._addOrRemoveCrosshair();
@@ -43,6 +44,7 @@ export var Crosshair = L.Layer.extend({
   onRemove: function (map) {
     map.off("layerchange layeradd layerremove overlayremove", this._toggleEvents);
     map.off("popupopen", this._isMapFocused);
+    map.off("moveend", this._moveEndQuery);
     L.DomEvent.off(map._container, "keydown keyup mousedown", this._isMapFocused);
   },
 
@@ -53,6 +55,16 @@ export var Crosshair = L.Layer.extend({
       this._map.off("viewreset move moveend", this._addOrRemoveCrosshair, this);
     }
     this._addOrRemoveCrosshair();
+  },
+
+  _moveEndQuery: function (e) {
+    if (this._hasQueryableLayer() && this._map.isFocused) {
+      this._map.fire('click', {
+        latlng: this._map.getCenter(),
+        layerPoint: this._map.latLngToLayerPoint(this._map.getCenter()),
+        containerPoint: this._map.latLngToContainerPoint(this._map.getCenter())
+      });
+    }
   },
 
   _addOrRemoveCrosshair: function (e) {
