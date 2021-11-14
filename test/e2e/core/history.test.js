@@ -4,7 +4,7 @@ describe("History test", ()=> {
     });
 
     afterAll(async function () {
-      await browser.close();
+      await context.close();
     });
 
     //https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/550
@@ -29,7 +29,7 @@ describe("History test", ()=> {
         "body > mapml-viewer",
         (map) => map._history
       );
-      console.log(history)
+
       expect(history[2]).toEqual({ zoom: 0, x: 909, y: 870 });
       expect(history[3]).toEqual({ zoom: 0, x: 909, y: 790 });
     });

@@ -10,8 +10,10 @@ describe("Playwright Projection Change Tests", () => {
 
   describe("Linked Feature Projection Change Tests", () => {
     test("_self Linked Feature Change To OSMTILE", async () => {
-      for(let i = 0; i < 2; i++)
+      for(let i = 0; i < 2; i++) {
         await page.keyboard.press("Tab");
+        await page.waitForTimeout(200);
+      }
       await page.keyboard.press("Enter");
       await page.waitForTimeout(2000);
       const isChecked = await page.$eval(
@@ -27,8 +29,10 @@ describe("Playwright Projection Change Tests", () => {
     });
 
     test("_parent Linked Feature Change To OSMTILE", async () => {
-      for(let i = 0; i < 10; i++)
+      for(let i = 0; i < 10; i++) {
         await page.keyboard.press("Tab");
+        await page.waitForTimeout(200);
+      }
       await page.keyboard.press("Enter");
       await page.waitForTimeout(2000);
       const isChecked = await page.$eval(
@@ -68,8 +72,10 @@ describe("Playwright Projection Change Tests", () => {
         (path) => path.getAttribute("d")
       )
 
-      for(let i = 0; i < 2; i++)
+      for(let i = 0; i < 2; i++) {
         await page.keyboard.press("Tab");
+        await page.waitForTimeout(200);
+      }
       await page.keyboard.press("Enter");
       await page.waitForTimeout(2000);
 
