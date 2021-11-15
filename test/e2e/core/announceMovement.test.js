@@ -1,4 +1,4 @@
-const playwright = require("playwright");
+﻿const playwright = require("playwright");
 jest.setTimeout(50000);
 (async () => {
     for (const browserType of BROWSER) {
@@ -22,13 +22,6 @@ jest.setTimeout(50000);
                 });
 
                 test("[" + browserType + "]" + " Output values are correct during regular movement", async ()=>{
-                    const announceMovement = await page.$eval(
-                        "body > mapml-viewer",
-                        (map) => map._map.announceMovement._enabled
-                    );
-                    if(!announceMovement){
-                        return;
-                    }
                     await page.keyboard.press("Tab");
                     await page.keyboard.press("ArrowUp");
                     await page.waitForTimeout(100);
@@ -61,13 +54,6 @@ jest.setTimeout(50000);
                 });
 
                 test("[" + browserType + "]" + " Output values are correct at bounds and bounces back", async ()=>{
-                    const announceMovement = await page.$eval(
-                        "body > mapml-viewer",
-                        (map) => map._map.announceMovement._enabled
-                    );
-                    if(!announceMovement){
-                        return;
-                    }
                     //Zoom out to min layer bound
                     await page.keyboard.press("Minus");
                     await page.waitForTimeout(100);
