@@ -11,6 +11,7 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
     test("Crosshair hidden onload, shows on focus", async () => {
       const beforeTabHidden = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
       await page.keyboard.press("Tab");
+      await page.waitForTimeout(200);
       const afterTab = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
       expect(beforeTabHidden).toEqual("hidden");
       expect(afterTab).toEqual("");
@@ -31,11 +32,13 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
 
     test("Crosshair shows on esc but hidden on tab out", async () => {
       await page.keyboard.press("Escape");
+      await page.waitForTimeout(200);
       const afterEsc = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
       await page.click("body");
       await page.keyboard.press("Tab");
+      await page.waitForTimeout(200);
       await page.keyboard.press("ArrowUp");
-
+      await page.waitForTimeout(200);
       await page.keyboard.press("Tab");
       const afterTab = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
 
@@ -46,7 +49,9 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
     test("Crosshair hidden when queryable layer is unselected, shows on reselect", async () => {
       await page.click("body");
       await page.keyboard.press("Tab");
+      await page.waitForTimeout(200);
       await page.keyboard.press("ArrowUp");
+      await page.waitForTimeout(200);
       await page.evaluateHandle(() => document.querySelector("layer-").removeAttribute("checked"));
       const afterUncheck = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
 
@@ -88,19 +93,21 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
 
     test("Tab focuses fetched features", async () => {
       await page.evaluateHandle(() => document.getElementById("vector").setAttribute("checked", ""));
+      await page.waitForTimeout(500);
       await page.click("body");
-      await page.keyboard.press("Tab");
 
-      await page.keyboard.press("Tab");
-      await page.keyboard.press("Tab");
-      await page.keyboard.press("Tab");
-      await page.keyboard.press("Tab");
+      for(let i = 0; i < 5; i++){
+        await page.keyboard.press("Tab");
+        await page.waitForTimeout(500);
+      }
+
       const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
       const resultHandle = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nextHandle);
       const focused = await (await page.evaluateHandle(elem => elem.getAttribute("d"), resultHandle)).jsonValue();
 
       await page.keyboard.press("Tab");
+      await page.waitForTimeout(500);
       const aHandleNext = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nextHandleNext = await page.evaluateHandle(doc => doc.shadowRoot, aHandleNext);
       const resultHandleNext = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nextHandleNext);
@@ -118,49 +125,59 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.evaluateHandle(() => document.getElementById("query").removeAttribute("checked"));
       await page.click("body");
       await page.keyboard.press("Tab");
+      await page.waitForTimeout(500);
 
       await page.keyboard.press("Tab");
+      await page.waitForTimeout(200);
       await page.keyboard.press("Enter");
+      await page.waitForTimeout(500);
       const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
       const rh = await page.evaluateHandle(root => root.activeElement, nh);
       const f = await (await page.evaluateHandle(elem => elem.className, rh)).jsonValue();
 
+      await page.waitForTimeout(500);
       await page.keyboard.press("Tab");
       const h2 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nh2 = await page.evaluateHandle(doc => doc.shadowRoot, h2);
       const rh2 = await page.evaluateHandle(root => root.activeElement, nh2);
       const f2 = await (await page.evaluateHandle(elem => elem.tagName, rh2)).jsonValue();
 
+      await page.waitForTimeout(500);
       await page.keyboard.press("Tab");
       const h3 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nh3 = await page.evaluateHandle(doc => doc.shadowRoot, h3);
       const rh3 = await page.evaluateHandle(root => root.activeElement, nh3);
       const f3 = await (await page.evaluateHandle(elem => elem.title, rh3)).jsonValue();
 
+      await page.waitForTimeout(500);
       await page.keyboard.press("Tab");
       const h4 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nh4 = await page.evaluateHandle(doc => doc.shadowRoot, h4);
       const rh4 = await page.evaluateHandle(root => root.activeElement, nh4);
       const f4 = await (await page.evaluateHandle(elem => elem.title, rh4)).jsonValue();
 
+      await page.waitForTimeout(500);
       await page.keyboard.press("Tab");
       const h5 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nh5 = await page.evaluateHandle(doc => doc.shadowRoot, h5);
       const rh5 = await page.evaluateHandle(root => root.activeElement, nh5);
       const f5 = await (await page.evaluateHandle(elem => elem.title, rh5)).jsonValue();
 
+      await page.waitForTimeout(500);
       await page.keyboard.press("Tab");
       const h6 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nh6 = await page.evaluateHandle(doc => doc.shadowRoot, h6);
       const rh6 = await page.evaluateHandle(root => root.activeElement, nh6);
       const f6 = await (await page.evaluateHandle(elem => elem.title, rh6)).jsonValue();
 
+      await page.waitForTimeout(500);
       await page.keyboard.press("Tab");
       const h7 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nh7 = await page.evaluateHandle(doc => doc.shadowRoot, h7);
       const rh7 = await page.evaluateHandle(root => root.activeElement, nh7);
       const f7 = await (await page.evaluateHandle(elem => elem.className, rh7)).jsonValue();
+      await page.waitForTimeout(500);
 
       expect(f).toEqual("mapml-popup-content");
       expect(f2.toUpperCase()).toEqual("A");
@@ -181,6 +198,7 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
 
       let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
+      await page.waitForTimeout(500);
 
       expect(tooltipCount).toEqual(1);
       expect(f).toEqual("M153 508L113 146L-161 220L-107 436z");
@@ -188,15 +206,16 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
 
     test("Shift + Tab to current feature while popup open", async () => {
       await page.keyboard.press("Enter");
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000);
       await page.keyboard.press("Shift+Tab");
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000);
 
       const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
       const rh = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nh);
       const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
 
+      await page.waitForTimeout(500);
       let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
 
       expect(tooltipCount).toEqual(1);
@@ -205,18 +224,19 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
 
     test("Previous feature button focuses previous feature", async () => {
       await page.keyboard.press("Enter");
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000);
       await page.keyboard.press("Tab");
       await page.waitForTimeout(500);
       await page.keyboard.press("Tab");
       await page.waitForTimeout(500);
       await page.keyboard.press("Enter");
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000);
       const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
       const rh = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nh);
       const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
 
+      await page.waitForTimeout(1000);
       let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
 
       expect(tooltipCount).toEqual(1);
@@ -227,14 +247,13 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.keyboard.press("Tab");
       await page.waitForTimeout(500);
       await page.keyboard.press("Enter");
-      await page.waitForTimeout(500);
-      await page.keyboard.press("Tab");
-      await page.waitForTimeout(500);
-      await page.keyboard.press("Tab");
-      await page.waitForTimeout(500);
-      await page.keyboard.press("Tab");
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000);
+      for(let i = 0; i < 3; i++){
+        await page.keyboard.press("Tab");
+        await page.waitForTimeout(500);
+      }
       await page.keyboard.press("Enter");
+      await page.waitForTimeout(1000);
       const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
       const rh = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nh);
@@ -247,16 +266,25 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
     });
 
     test("Focus Controls focuses the first <button> child in control div", async () => {
-      await page.click("body > mapml-viewer");
+      await page.focus("body > mapml-viewer");
+      await page.waitForTimeout(500);
       await page.keyboard.press("Shift+F10");
+      await page.waitForTimeout(500);
       await page.keyboard.press("t");
+      await page.waitForTimeout(500);
       await page.click("body");
       await page.keyboard.press("Tab");
+      await page.waitForTimeout(500);
       await page.keyboard.press("Tab");
+      await page.waitForTimeout(500);
       await page.keyboard.press("Enter");
-      for (let i = 0; i < 5; i++)
+      await page.waitForTimeout(500);
+      for (let i = 0; i < 5; i++) {
         await page.keyboard.press("Tab");
+        await page.waitForTimeout(200);
+      }
       await page.keyboard.press("Enter");
+      await page.waitForTimeout(1000);
       const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
       const rh = await page.evaluateHandle(root => root.activeElement, nh);

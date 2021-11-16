@@ -51,11 +51,23 @@ export var Feature = L.Path.extend({
     this.on("keyup", this._focusOnTab, this);
   },
 
+  /**
+   * Focuses the feature to the center of the map when focused through tab
+   * uses pcrs and tcrs to pan map, allowing features defined in areas where
+   * gcrs causes issues to still work as expected
+   * @param e
+   * @private
+   */
   _focusOnTab: function (e){
     if(e.originalEvent.keyCode === 9){
-      let layerCenter = this.getCenter();
-      if (layerCenter.equals(this._map.getCenter())) return;
-      this._map.panTo(layerCenter);
+      let crs = this._map.options.crs;
+      let mc = this._map.getPixelBounds().getCenter();
+      let scale  = crs.scale(this._map.getZoom());
+
+      let fc = crs.transformation.transform(this._bounds.getCenter(), scale);
+
+      if (fc.equals(mc)) return;
+      this._map.panBy([(fc.x - mc.x), (fc.y - mc.y)]);
     }
   },
 
