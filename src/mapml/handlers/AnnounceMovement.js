@@ -6,8 +6,8 @@ export var AnnounceMovement = L.Handler.extend({
         });
 
         this._map.options.mapEl.addEventListener('moveend', this.announceBounds);
-        this._map.options.mapEl.addEventListener('focus', this.focusAnnouncement);
         this._map.dragging._draggable.addEventListener('dragstart', this.dragged);
+        this._map.options.mapEl.addEventListener('mapfocused', this.focusAnnouncement);
     },
     removeHooks: function () {
         this._map.off({
@@ -16,26 +16,32 @@ export var AnnounceMovement = L.Handler.extend({
         });
 
         this._map.options.mapEl.removeEventListener('moveend', this.announceBounds);
-        this._map.options.mapEl.removeEventListener('focus', this.focusAnnouncement);
         this._map.dragging._draggable.removeEventListener('dragstart', this.dragged);
+        this._map.options.mapEl.removeEventListener('mapfocused', this.focusAnnouncement);
     },
 
      focusAnnouncement: function () {
-         let el = this.querySelector(".mapml-web-map") ? this.querySelector(".mapml-web-map").shadowRoot.querySelector(".leaflet-container") :
-             this.shadowRoot.querySelector(".leaflet-container");
+         let mapEl = this;
+         setTimeout(function (){
+             let el = mapEl.querySelector(".mapml-web-map") ? mapEl.querySelector(".mapml-web-map").shadowRoot.querySelector(".leaflet-container") :
+                 mapEl.shadowRoot.querySelector(".leaflet-container");
 
-         let mapZoom = this._map.getZoom();
-         let location = M.gcrsToTileMatrix(this);
-         let standard = " zoom level " + mapZoom + " column " + location[0] + " row " + location[1];
+             let mapZoom = mapEl._map.getZoom();
+             let location = M.gcrsToTileMatrix(mapEl);
+             let standard = " zoom level " + mapZoom + " column " + location[0] + " row " + location[1];
 
-        if(mapZoom === this._map._layersMaxZoom){
-             standard = "At maximum zoom level, zoom in disabled " + standard;
-         }
-         else if(mapZoom === this._map._layersMinZoom){
-             standard = "At minimum zoom level, zoom out disabled " + standard;
-         }
+             if(mapZoom === mapEl._map._layersMaxZoom){
+                 standard = "At maximum zoom level, zoom in disabled " + standard;
+             }
+             else if(mapZoom === mapEl._map._layersMinZoom){
+                 standard = "At minimum zoom level, zoom out disabled " + standard;
+             }
 
-         el.setAttribute("aria-roledescription", "region " + standard);
+             el.setAttribute("aria-roledescription", "region " + standard);
+             setTimeout(function () {
+                 el.removeAttribute("aria-roledescription");
+             }, 2000);
+         }, 0);
      },
 
     announceBounds: function () {

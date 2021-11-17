@@ -402,6 +402,19 @@ export class WebMap extends HTMLMapElement {
         this.dispatchEvent(new CustomEvent("layerchange", {details:{target: this, originalEvent: e}}));
       }
     }, false);
+
+    this.parentElement.addEventListener('keyup', function (e) {
+      if(e.keyCode === 9 && document.activeElement.nodeName === "MAPML-VIEWER"){
+        document.activeElement.dispatchEvent(new CustomEvent('mapfocused', {detail:
+              {target: this}}));
+      }
+    });
+    this.parentElement.addEventListener('mousedown', function (e) {
+      if(document.activeElement.nodeName === "MAPML-VIEWER"){
+        document.activeElement.dispatchEvent(new CustomEvent('mapfocused', {detail:
+              {target: this}}));
+      }
+    });
     this._map.on('load',
       function () {
         this.dispatchEvent(new CustomEvent('load', {detail: {target: this}}));
