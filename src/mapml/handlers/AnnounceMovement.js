@@ -28,13 +28,13 @@ export var AnnounceMovement = L.Handler.extend({
 
              let mapZoom = mapEl._map.getZoom();
              let location = M.gcrsToTileMatrix(mapEl);
-             let standard = " zoom level " + mapZoom + " column " + location[0] + " row " + location[1];
+             let standard = M.options.locale.amZoom + " " + mapZoom + " " + M.options.locale.amColumn + " " + location[0] + " " + M.options.locale.amRow + " " + location[1];
 
              if(mapZoom === mapEl._map._layersMaxZoom){
-                 standard = "At maximum zoom level, zoom in disabled " + standard;
+                 standard = M.options.locale.amMaxZoom + " " + standard;
              }
              else if(mapZoom === mapEl._map._layersMinZoom){
-                 standard = "At minimum zoom level, zoom out disabled " + standard;
+                 standard = M.options.locale.amMinZoom + " " + standard;
              }
 
              el.setAttribute("aria-roledescription", "region " + standard);
@@ -62,7 +62,7 @@ export var AnnounceMovement = L.Handler.extend({
 
         //GCRS to TileMatrix
         let location = M.gcrsToTileMatrix(this);
-        let standard = "zoom level " + mapZoom + " column " + location[0] + " row " + location[1];
+        let standard = M.options.locale.amZoom + " " + mapZoom + " " + M.options.locale.amColumn + " " + location[0] + " " + M.options.locale.amRow + " " + location[1];
 
         if(!visible){
             let outOfBoundsPos = this._history[this._historyIndex];
@@ -71,32 +71,32 @@ export var AnnounceMovement = L.Handler.extend({
             this._history.pop();
 
             if(outOfBoundsPos.zoom !== inBoundsPos.zoom){
-                output.innerText = "Zoomed out of bounds, returning to";
+                output.innerText = M.options.locale.amZoomedOut;
             }
             else if(this._map.dragging._draggable.wasDragged){
-                output.innerText = "Dragged out of bounds, returning to ";
+                output.innerText = M.options.locale.amDraggedOut;
             }
             else if(outOfBoundsPos.x > inBoundsPos.x){
-                output.innerText = "Reached east bound, panning east disabled";
+                output.innerText = M.options.locale.amEastBound;
             }
             else if(outOfBoundsPos.x < inBoundsPos.x){
-                output.innerText = "Reached west bound, panning west disabled";
+                output.innerText = M.options.locale.amWestBound;
             }
             else if(outOfBoundsPos.y < inBoundsPos.y){
-                output.innerText = "Reached north bound, panning north disabled";
+                output.innerText = M.options.locale.amNorthBound;
             }
             else if(outOfBoundsPos.y > inBoundsPos.y){
-                output.innerText = "Reached south bound, panning south disabled";
+                output.innerText = M.options.locale.amSouthBound;
             }
 
         }
         else{
             let prevZoom = this._history[this._historyIndex - 1] ? this._history[this._historyIndex - 1].zoom : this._history[this._historyIndex].zoom;
             if(mapZoom === this._map._layersMaxZoom && mapZoom !== prevZoom){
-                output.innerText = "At maximum zoom level, zoom in disabled " + standard;
+                output.innerText = M.options.locale.amMaxZoom + " " + standard;
             }
             else if(mapZoom === this._map._layersMinZoom && mapZoom !== prevZoom){
-                output.innerText = "At minimum zoom level, zoom out disabled " + standard;
+                output.innerText = M.options.locale.amMinZoom + " " + standard;
             }
             else {
                 output.innerText = standard;
