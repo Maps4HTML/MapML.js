@@ -91,7 +91,7 @@ export var AnnounceMovement = L.Handler.extend({
 
         }
         else{
-            let prevZoom = this._history[this._historyIndex - 1].zoom;
+            let prevZoom = this._history[this._historyIndex - 1] ? this._history[this._historyIndex - 1].zoom : this._history[this._historyIndex].zoom;
             if(mapZoom === this._map._layersMaxZoom && mapZoom !== prevZoom){
                 output.innerText = "At maximum zoom level, zoom in disabled " + standard;
             }
