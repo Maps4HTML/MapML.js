@@ -169,11 +169,16 @@ describe("M.Util Bounds Related Tests", () => {
     test("Valid template with 3 inputs, tilematrix", () => {
       let template = {};
       let inputContainer = document.createElement("div");
+      // min/max zoom attributes are "min/maxNativeZoom", i.e. server says resources 
+      // exist in that zoom range, outside that, expect 4xx.
       inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="1" min="1" max="2"></map-input>';
       inputContainer.innerHTML += '<map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="2"></map-input>';
       inputContainer.innerHTML += '<map-input name="col" type="location" axis="column" units="tilematrix" min="0" max="2"></map-input>';
       template.values = inputContainer.querySelectorAll("map-input");
+      // zoom min/max for *scaled display* of server resources, supplied via 
+      // <map-meta name="zoom" content="min=n,max=n+k"></map-meta>
       template.zoomBounds = { min: "0", max: "5" };
+      template.extentPCRSFallback = {};
       template.projection = "WGS84";
 
       let extractedBounds = M.extractInputBounds(template);
@@ -188,6 +193,7 @@ describe("M.Util Bounds Related Tests", () => {
       inputContainer.innerHTML += '<map-input name="col" type="location" axis="easting" units="pcrs" min="5" max="10"></map-input>';
       template.values = inputContainer.querySelectorAll("map-input");
       template.zoomBounds = { min: "1", max: "16" };
+      template.extentPCRSFallback = {};
       template.projection = "WGS84";
 
       let extractedBounds = M.extractInputBounds(template);
@@ -250,22 +256,37 @@ describe("M.Util Bounds Related Tests", () => {
       inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="2" min="1" max="5"></map-input>';
       template.values = inputContainer.querySelectorAll("map-input");
       template.zoomBounds = { min: "1", max: "12" };
+      template.extentPCRSFallback = {bounds: null};
       template.projection = "WGS84";
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: -90, y: 90 }, min: { x: -180, y: 45 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 12, minNativeZoom: 1, minZoom: 1 } });
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 180, y: 90 }, min: { x: -180, y: -90 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 12, minNativeZoom: 1, minZoom: 1 } });
     });
-    test("Template with 3 inputs missing", () => {
+    test("Template with NO location inputs, extent fallback provided by author", () => {
+      let template = {};
+      let inputContainer = document.createElement("div");
+      template.values = inputContainer.querySelectorAll("map-input");
+      template.zoomBounds = { min: "3", max: "12" };
+      template.extentPCRSFallback = {bounds: { max: { x: 170, y: 20 }, min: { x: 0, y: 0 }}};
+      template.projection = "WGS84";
+
+      let extractedBounds = M.extractInputBounds(template);
+
+      expect(extractedBounds).toEqual({ bounds: { max: { x: 170, y: 20 }, min: { x: 0, y: 0 }}, zoomBounds: { maxNativeZoom: 21, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
+    });
+    test("Template with NO location inputs, extent fallback NOT provided by author", () => {
       let template = {};
       let inputContainer = document.createElement("div");
       template.values = inputContainer.querySelectorAll("map-input");
       template.zoomBounds = { min: "3", max: "12" };
       template.projection = "WGS84";
-
+      // this is necessary. WHY?
+      template.extentPCRSFallback = {};
+      
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 180, y: 90 }, min: { x: -180, y: -90 } }, zoomBounds: { maxNativeZoom: 21, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
+      expect(extractedBounds).toEqual( { bounds: M.WGS84.options.crs.pcrs.bounds, zoomBounds: { maxNativeZoom: 21, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
     });
     test("Template with no projection", () => {
       let template = {};
@@ -277,8 +298,25 @@ describe("M.Util Bounds Related Tests", () => {
       template.zoomBounds = { min: "0", max: "5" };
 
       let extractedBounds = M.extractInputBounds(template);
-
+      // this expect is logically equal, but not arithmetically equal to the
+      // numbers used below, because the default projection is OSMTILE, but we
+      // have to convert the provided bounds from tilematrix to pcrs coords,
+      // resulting in small numerical differences.
+//      expect(extractedBounds).toEqual({ bounds: M.OSMTILE.options.crs.pcrs.bounds, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
       expect(extractedBounds).toEqual({ bounds: { max: { x: 20037508.342789244, y: 20037508.342789244 }, min: { x: -20037508.342789244, y: -20037508.342789244 } }, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
+    });
+    test("Template with no projection AND inputs without min/max attributes", () => {
+      let template = {};
+      let inputContainer = document.createElement("div");
+      inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" min="1" max="2"></map-input>';
+      inputContainer.innerHTML += '<map-input name="row" type="location" axis="row" units="tilematrix"></map-input>';
+      inputContainer.innerHTML += '<map-input name="col" type="location" axis="column" units="tilematrix"></map-input>';
+      template.values = inputContainer.querySelectorAll("map-input");
+      template.zoomBounds = { min: "0", max: "5" };
+      template.extentPCRSFallback = {};
+      
+      let extractedBounds = M.extractInputBounds(template);
+      expect(extractedBounds).toEqual({ bounds: M.OSMTILE.options.crs.pcrs.bounds, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
     });
     test("Null template", () => {
       let extractedBounds = M.extractInputBounds(null);

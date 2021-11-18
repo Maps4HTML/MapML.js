@@ -81,8 +81,9 @@ export var Util = {
     if(!template) return undefined;
 
     //sets variables with their respective fallback values incase content is missing from the template
-    let inputs = template.values, projection = template.projection || FALLBACK_PROJECTION, value = 0, boundsUnit = FALLBACK_CS;
-    let bounds = this[projection].options.crs.tilematrix.bounds(0), nMinZoom = 0, nMaxZoom = this[projection].options.resolutions.length - 1;
+      let inputs = template.values, projection = template.projection || FALLBACK_PROJECTION, value = 0, boundsUnit = FALLBACK_CS;
+      let bounds = this[projection].options.crs.tilematrix.bounds(0), nMinZoom = 0, nMaxZoom = this[projection].options.resolutions.length - 1;
+      let locInputs = false, numberOfAxes = 0;
     if(!template.zoomBounds){
       template.zoomBounds ={};
       template.zoomBounds.min=0;
@@ -106,6 +107,7 @@ export var Util = {
               boundsUnit = M.axisToCS(inputs[i].getAttribute("axis").toLowerCase());
               bounds.min.x = min;
               bounds.max.x = max;
+              numberOfAxes++;
             break;
             case "y":
             case "latitude":
@@ -114,6 +116,7 @@ export var Util = {
               boundsUnit = M.axisToCS(inputs[i].getAttribute("axis").toLowerCase());
               bounds.min.y = min;
               bounds.max.y = max;
+              numberOfAxes++;
             break;
             default:
             break;
@@ -122,15 +125,25 @@ export var Util = {
         default:
       }
     }
+    if (numberOfAxes >= 2) {
+      locInputs = true;
+    }
     let zoomBoundsFormatted = {
       minZoom:+template.zoomBounds.min,
       maxZoom:+template.zoomBounds.max,
       minNativeZoom:nMinZoom,
       maxNativeZoom:nMaxZoom
     };
+    if(!locInputs && template.extentPCRSFallback && template.extentPCRSFallback.bounds) {
+      bounds = template.extentPCRSFallback.bounds;
+    } else if (locInputs) {
+      bounds = this.boundsToPCRSBounds(bounds,value,projection,boundsUnit);
+    } else {
+      bounds = this[projection].options.crs.pcrs.bounds;
+    }
     return {
       zoomBounds:zoomBoundsFormatted,
-      bounds:this.boundsToPCRSBounds(bounds,value,projection,boundsUnit)
+      bounds:bounds
     };
   },
 

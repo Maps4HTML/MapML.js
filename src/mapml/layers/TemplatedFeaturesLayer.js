@@ -71,6 +71,9 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
         })
         .catch(function (error) { console.log(error);});
     },
+    redraw: function() {
+        this._onMoveEnd();
+    },
 
     _onMoveEnd: function() {
       let mapZoom = this._map.getZoom();
@@ -149,23 +152,28 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       this._map.removeLayer(this._features);
     },
     _getfeaturesUrl: function() {
-        var pxBounds = this._map.getPixelBounds(),
-            topLeft = pxBounds.getTopLeft(),
-            topRight = pxBounds.getTopRight(),
-            bottomRight = pxBounds.getBottomRight(),
-            bottomLeft = pxBounds.getBottomLeft(),
-            bounds = this._map.getBounds();
-            bounds.extend(this._map.unproject(bottomLeft))
-                  .extend(this._map.unproject(bottomRight))
-                  .extend(this._map.unproject(topLeft))
-                  .extend(this._map.unproject(topRight));
         var obj = {};
-        // assumes gcrs at this moment
-        obj[this.options.feature.zoom.name] = this._map.getZoom();
-        obj[this.options.feature.bottom.name] = bounds.getSouth();
-        obj[this.options.feature.left.name] = bounds.getWest();
-        obj[this.options.feature.top.name] = bounds.getNorth();
-        obj[this.options.feature.right.name] = bounds.getEast();
+        if (this.options.feature.zoom) {
+          obj[this.options.feature.zoom] = this._map.getZoom();
+        }
+        if (this.options.feature.width) {
+          obj[this.options.feature.width] = this._map.getSize().x;
+        }
+        if (this.options.feature.height) {
+          obj[this.options.feature.height] = this._map.getSize().y;
+        }
+        if (this.options.feature.bottom) {
+          obj[this.options.feature.bottom] = this._TCRSToPCRS(this._map.getPixelBounds().max,this._map.getZoom()).y;
+        }
+        if (this.options.feature.left) {
+          obj[this.options.feature.left] = this._TCRSToPCRS(this._map.getPixelBounds().min, this._map.getZoom()).x;
+        }
+        if (this.options.feature.top) {
+          obj[this.options.feature.top] = this._TCRSToPCRS(this._map.getPixelBounds().min, this._map.getZoom()).y;
+        }
+        if (this.options.feature.right) {
+          obj[this.options.feature.right] = this._TCRSToPCRS(this._map.getPixelBounds().max,this._map.getZoom()).x;
+        }
         // hidden and other variables that may be associated
         for (var v in this.options.feature) {
             if (["width","height","left","right","top","bottom","zoom"].indexOf(v) < 0) {
@@ -173,6 +181,13 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
               }
         }
         return L.Util.template(this._template.template, obj);
+    },
+    _TCRSToPCRS: function(coords, zoom) {
+      // TCRS pixel point to Projected CRS point (in meters, presumably)
+      var map = this._map,
+          crs = map.options.crs,
+          loc = crs.transformation.untransform(coords,crs.scale(zoom));
+          return loc;
     },
     _setUpFeaturesTemplateVars: function(template) {
       // process the inputs and create an object named "extent"
@@ -199,12 +214,12 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
             value = inputs[i].getAttribute("value"),
             select = (inputs[i].tagName.toLowerCase() === "map-select");
         if (type === "width") {
-              featuresVarNames.feature.width = {name: name};
+              featuresVarNames.feature.width = name;
         } else if ( type === "height") {
-              featuresVarNames.feature.height = {name: name};
+              featuresVarNames.feature.height = name;
         } else if (type === "zoom") {
-              featuresVarNames.feature.zoom = {name: name};
-        } else if (type === "location" && (units === "pcrs" || units ==="gcrs" || units === "tcrs")) {
+              featuresVarNames.feature.zoom = name;
+        } else if (type === "location" && (units === "pcrs" || units ==="gcrs") ) {
           //<input name="..." units="pcrs" type="location" position="top|bottom-left|right" axis="northing|easting">
           switch (axis) {
             case ('x'):
@@ -212,9 +227,9 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
             case ('easting'):
               if (position) {
                   if (position.match(/.*?-left/i)) {
-                    featuresVarNames.feature.left = { name: name, axis: axis};
+                    featuresVarNames.feature.left = name;
                   } else if (position.match(/.*?-right/i)) {
-                    featuresVarNames.feature.right = { name: name, axis: axis};
+                    featuresVarNames.feature.right = name;
                   }
               }
               break;
@@ -223,9 +238,9 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
             case ('northing'):
               if (position) {
                 if (position.match(/top-.*?/i)) {
-                  featuresVarNames.feature.top = { name: name, axis: axis};
+                  featuresVarNames.feature.top = name;
                 } else if (position.match(/bottom-.*?/i)) {
-                  featuresVarNames.feature.bottom = { name: name, axis: axis};
+                  featuresVarNames.feature.bottom = name;
                 }
               }
               break;
@@ -237,8 +252,12 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
               return parsedselect.value;
           };
          // projection is deprecated, make it hidden
-        } else if (type === "hidden" || type === "projection") {
-            featuresVarNames.feature.hidden.push({name: name, value: value});
+        } else {
+            /*jshint -W104 */
+            const input = inputs[i];
+            featuresVarNames.feature[name] = function() {
+                return input.getAttribute("value");
+            };
         }
       }
       return featuresVarNames;

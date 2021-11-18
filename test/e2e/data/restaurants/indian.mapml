@@ -1,0 +1,67 @@
+
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+    <map-head>
+        <map-title>Restaurants</map-title>
+        <map-meta charset="utf-8" ></map-meta>
+        <map-meta content="text/mapml" http-equiv="Content-Type" ></map-meta>
+        <map-link rel="license" href="http://opendatacommons.org/licenses/odbl/1-0/" title="© OpenStreetMap and contributors" />
+        <map-meta name="projection" content="CBMTILE"></map-meta>
+        <map-meta name="zoom" content="min=0,max=22,value=3" ></map-meta>
+        <map-meta name="cs" content="gcrs" ></map-meta>
+        <map-meta name="extent" content="top-left-easting=1509080.1964270622,top-left-northing=-169400.558801122,bottom-right-easting=1512094.3357886747,bottom-right-northing=-172702.5654051304" ></map-meta>
+    </map-head>
+    <map-body>
+        <map-feature id="restaurant_polygon.7" class="restaurant_polygon">
+          <map-featurecaption>India Palace</map-featurecaption>
+            <map-geometry>
+              <map-point>
+                  <map-coordinates>-75.7019048 45.4191548</map-coordinates>
+              </map-point>
+            </map-geometry>
+            <map-properties>
+                <table>
+                    <thead>
+                        <tr>
+                            <th role="columnheader" scope="col">Property name</th>
+                            <th role="columnheader" scope="col">Property value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">addr_house</th>
+                            <td itemprop="addr_house">292</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">addr_stree</th>
+                            <td itemprop="addr_stree">Albert Street</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">amenity</th>
+                            <td itemprop="amenity">restaurant</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">building</th>
+                            <td itemprop="building">yes</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">name</th>
+                            <td itemprop="name">India Palace</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">cuisine</th>
+                            <td itemprop="cuisine">indian</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">website</th>
+                            <td itemprop="website">http://www.indiapalace.ca</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">phone</th>
+                            <td itemprop="phone">+1-613-234-5433</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </map-properties>
+        </map-feature>
+    </map-body>
+</mapml->
