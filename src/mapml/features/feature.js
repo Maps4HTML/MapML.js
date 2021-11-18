@@ -64,6 +64,7 @@ export var Feature = L.Path.extend({
     if (link.visited) elem.classList.add("map-a-visited");
     L.DomEvent.on(elem, 'mousedown', e => dragStart = {x:e.clientX, y:e.clientY}, this);
     L.DomEvent.on(elem, "mouseup", (e) => {
+      if (e.button !== 0) return; // don't trigger when button isn't left click
       let onTop = true, nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
       while(nextLayer && onTop){
         if(nextLayer.tagName && nextLayer.tagName.toUpperCase() === "LAYER-")
