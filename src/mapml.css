@@ -203,11 +203,19 @@
   display: inline;
 }
 
-.leaflet-control-layers-overlays > fieldset > .mapml-layer-item-settings > .mapml-control-layers > summary ~ * {
+.mapml-control-layers > :not(summary) {
   display: block;
-  margin-top: 5px;
-  margin-left: 15px;
+  margin-block-start: 5px;
+  margin-inline-start: 15px;
   width: calc(100% - 15px);
+}
+
+.mapml-layer-item-style > div {
+  display: flex;
+}
+
+.mapml-layer-item-style input {
+  margin-inline-start: 0;
 }
 
 .leaflet-control-layers-list .leaflet-control-layers-overlays > :not(:last-of-type) {
@@ -385,7 +393,8 @@
 .leaflet-control,
 .mapml-contextmenu,
 .mapml-debug,
-.mapml-focus-buttons {
+.mapml-focus-buttons,
+.mapml-layer-item-settings summary {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -674,14 +683,15 @@ button.mapml-button:disabled,
   width: 44px;
 }
 
-.mapml-layer-item-toggle{
-  display: inline-flex !important;
-  width: 100%;
+label.mapml-layer-item-toggle {
+  display: inline-flex;
+  align-items: center;
 }
 
 .mapml-layer-item-name {
   word-break: break-word;
-  text-align: inline-start;
+  padding-block-start: .25rem;
+  padding-block-end: .25rem;
   padding-inline-start: .25rem;
   padding-inline-end: 1rem;
 }
@@ -692,15 +702,4 @@ button.mapml-button:disabled,
   padding-block-end: .25rem;
   padding-inline-start: 2rem;
   padding-inline-end: 1rem;
-}
-
-.mapml-layer-item-settings summary {
-  -webkit-user-select: none;
-          user-select: none;
-}
-
-.mapml-layer-item-opacity [type="range"] {
-  margin-inline-end: 0;
-  margin-inline-start: 0;
-  width: 100%;
 }
