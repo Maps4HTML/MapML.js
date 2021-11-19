@@ -175,7 +175,7 @@
   background-position: 3px 3px;
 }
 
-:host(.leaflet-fullscreen-on) .leaflet-control-fullscreen a {
+:host(.mapml-fullscreen-on) .leaflet-control-fullscreen a {
   background-position: 3px -35px;
 }
 

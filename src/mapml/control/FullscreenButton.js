@@ -44,7 +44,10 @@ export var FullscreenButton = L.Control.extend({
         },
 
         toggleFullscreen: function (options) {
-            var container = this.getContainer().getRootNode().host;
+            // the <map> element can't contain a shadow root, so we used a child <div>
+            // <mapml-viewer> can contain a shadow root, so return it directly
+            var mapEl = this.getContainer().getRootNode().host,
+                container = mapEl.nodeName === "DIV" ? mapEl.parentElement : mapEl;
             if (this.isFullscreen()) {
                 if (options && options.pseudoFullscreen) {
                     this._disablePseudoFullscreen(container);
@@ -93,9 +96,9 @@ export var FullscreenButton = L.Control.extend({
             this._isFullscreen = fullscreen;
             var container = this.getContainer().getRootNode().host;
             if (fullscreen) {
-                L.DomUtil.addClass(container, 'leaflet-fullscreen-on');
+                L.DomUtil.addClass(container, 'mapml-fullscreen-on');
             } else {
-                L.DomUtil.removeClass(container, 'leaflet-fullscreen-on');
+                L.DomUtil.removeClass(container, 'mapml-fullscreen-on');
             }
             this.invalidateSize();
         },
@@ -106,7 +109,8 @@ export var FullscreenButton = L.Control.extend({
                 document.mozFullScreenElement ||
                 document.webkitFullscreenElement ||
                 document.msFullscreenElement,
-                container = this.getContainer().getRootNode().host;
+                mapEl = this.getContainer().getRootNode().host,
+                container = mapEl.nodeName === "DIV" ? mapEl.parentElement : mapEl;
             
 
             if (fullscreenElement === container && !this._isFullscreen) {
