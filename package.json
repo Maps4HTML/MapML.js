@@ -34,13 +34,13 @@
     "test": "jest --verbose --noStackTrace",
     "test:watch": "jest --detectOpenHandles --watch"
   },
-  "dependencies": {},
   "devDependencies": {
     "express": "^4.17.1",
     "grunt": "^1.4.0",
     "grunt-contrib-clean": "^2.0.0",
     "grunt-contrib-concat": "~1.0.0",
     "grunt-contrib-copy": "~1.0.0",
+    "grunt-contrib-cssmin": "^4.0.0",
     "grunt-contrib-jshint": "~2.0.0",
     "grunt-contrib-uglify-es": "~3.3.0",
     "grunt-contrib-watch": "~1.1.0",
