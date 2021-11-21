@@ -62,6 +62,10 @@ describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
     });
   });
   describe("Simple query by select values without map extent filter tests", () => {
+    beforeEach(async () => {
+      await page.goto(PATH + "mapMLTemplatedFeatures.html");
+      await page.waitForTimeout(200);
+    });
     test("All features loaded at start", async () => {
       const features = await page.$$("css= body > map:nth-child(2) > .mapml-web-map >> css= div > .mapml-templatedlayer-container > div > div > svg > g > g");
       expect(features.length).toEqual(8);
@@ -78,6 +82,17 @@ describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
         
         const features = await page.$$("css= map:nth-child(2) .mapml-templatedlayer-container g > g");
         expect(features.length).toEqual(1);
+    });
+    test("<map-select> <map-option> attributes are copied to layer control <option> elements", async () => {
+      const firstOptionSelected = await page.$eval('css= map:nth-child(2) details.mapml-control-layers select option:nth-child(1)', (option) => option.selected);
+      expect(firstOptionSelected).toBeTruthy();
+      const firstOptionLabel = await page.$eval('css= map:nth-child(2) details.mapml-control-layers select option:nth-child(1)', (option) => option.label);
+      expect(firstOptionLabel).toEqual("All cuisines");
+      const firstOptionValue = await page.$eval('css= map:nth-child(2) details.mapml-control-layers select option:nth-child(1)', (option) => option.value);
+      expect(firstOptionValue).toEqual("restaurants");
+      const thirdOptionValue = await page.$eval('css= map:nth-child(2) details.mapml-control-layers select option:nth-child(3)', (option) => option.value);
+      expect(thirdOptionValue).toEqual("african");
+      
     });
   });
 });

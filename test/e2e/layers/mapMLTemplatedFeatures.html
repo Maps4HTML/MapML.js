@@ -48,13 +48,13 @@
       <map-meta name="extent" content="top-left-easting=1509080.1964270622,top-left-northing=-169400.558801122,bottom-right-easting=1512094.3357886747,bottom-right-northing=-172702.5654051304" ></map-meta>
       <map-extent units="CBMTILE">
          <map-select id="restaurants" name="cuisine">
-            <map-option>restaurants</map-option>
-            <map-option>italian</map-option>
-            <map-option>african</map-option>
-            <map-option>asian</map-option>
-            <map-option>cajun</map-option>
-            <map-option>mexican</map-option>
-            <map-option>indian</map-option>
+            <map-option selected label="All cuisines" value="restaurants">restaurants</map-option>
+            <map-option label="Italian">italian</map-option>
+            <map-option label="African">african</map-option>
+            <map-option label="Asian">asian</map-option>
+            <map-option label="Cajun">cajun</map-option>
+            <map-option label="Mexican">mexican</map-option>
+            <map-option label="Indian">indian</map-option>
           </map-select>
           <map-link tref="restaurants/{cuisine}.mapml" rel="features"/>
         </map-extent>
