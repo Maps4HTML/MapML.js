@@ -25,6 +25,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         this._initLayout();
         this._map.on('validate', this._validateInput, this);
         L.DomEvent.on(this.options.mapEl, "layerchange", this._validateInput, this);
+        L.DomEvent.on(this._container, 'keydown', this._focusFirstLayer, this._container);
         this._update();
         //this._validateExtents();
         if(this._layers.length < 1 && !this._map._showControls){
@@ -36,6 +37,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
     },
     onRemove: function (map) {
         map.off('validate', this._validateInput, this);
+        L.DomEvent.off(this._container, 'keydown', this._focusFirstLayer, this._container);
         // remove layer-registerd event handlers so that if the control is not
         // on the map it does not generate layer events
         for (var i = 0; i < this._layers.length; i++) {
@@ -83,6 +85,13 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         }
       }
 
+    },
+    // focus the first layer in the layer control when enter is pressed
+    _focusFirstLayer: function(e){
+      if(e.key === 'Enter' && this.className != 'leaflet-control-layers leaflet-control leaflet-control-layers-expanded'){
+        var elem = this.children[1].children[2].children[0].children[0].children[0].children[0];
+        if(elem) setTimeout(() => elem.focus(), 0);
+        }
     },
     _withinZoomBounds: function(zoom, range) {
         return range.min <= zoom && zoom <= range.max;
