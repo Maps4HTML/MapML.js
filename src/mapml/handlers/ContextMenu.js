@@ -425,7 +425,13 @@ export var ContextMenu = L.Handler.extend({
     }
     if(e.originalEvent.button === 0 || e.originalEvent.button === -1){
       this._keyboardEvent = true;
-      this._container.firstChild.focus();
+      if(this._layerClicked){
+        this._layerMenuTabs = 1;
+        this._layerMenu.firstChild.focus();
+      } else {
+        this._container.firstChild.focus();
+      }
+
     }
   },
 
@@ -515,6 +521,14 @@ export var ContextMenu = L.Handler.extend({
       return size;
   },
 
+   // once tab is clicked on the layer menu, change the focus back to the layer control
+   _focusOnLayerControl: function(){
+    this._mapMenuVisible = false;
+    delete this._layerMenuTabs;
+    this._layerMenu.style.display = 'none';
+    this._layerClicked.parentElement.firstChild.focus();
+  },
+
   _onKeyDown: function (e) {
     if(!this._mapMenuVisible) return;
 
@@ -525,6 +539,18 @@ export var ContextMenu = L.Handler.extend({
       e.preventDefault();
     if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)"))
       this._hide();
+    // keep track of where the focus is on the layer menu and when the layer menu is tabbed out of, focus on layer control
+    if(key === 9){
+      if(e.shiftKey){
+        this._layerMenuTabs -= 1;
+      } else {
+        this._layerMenuTabs += 1;
+      }
+      if(this._layerMenuTabs === 0 || this._layerMenuTabs === 3){
+        L.DomEvent.stop(e);
+        this._focusOnLayerControl();
+      } 
+    }
     switch(key){
       case 13:  //ENTER KEY
       case 32:  //SPACE KEY
