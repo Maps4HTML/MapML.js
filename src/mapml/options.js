@@ -15,6 +15,17 @@ export var Options = {
     lcOpacity: "Opacity",
     btnZoomIn: "Zoom in",
     btnZoomOut: "Zoom out",
-    btnFullScreen: "View fullscreen"
+    btnFullScreen: "View fullscreen",
+    amZoom: "zoom level",
+    amColumn: "column",
+    amRow: "row",
+    amMaxZoom: "At maximum zoom level, zoom in disabled",
+    amMinZoom: "At minimum zoom level, zoom out disabled",
+    amZoomedOut: "Zoomed out of bounds, returning to",
+    amDraggedOut: "Dragged out of bounds, returning to",
+    amEastBound: "Reached east bound, panning east disabled",
+    amWestBound: "Reached west bound, panning west disabled",
+    amNorthBound: "Reached north bound, panning north disabled",
+    amSouthBound: "Reached south bound, panning south disabled"
   }
 };

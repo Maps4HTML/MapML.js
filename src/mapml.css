@@ -73,7 +73,7 @@
 .mapml-layer-item-name a {
   color: revert;
 }
- 
+
  .leaflet-top .leaflet-control {
    margin-top: 5px;
  }
@@ -723,4 +723,14 @@ label.mapml-layer-item-toggle {
   padding-block-end: .25rem;
   padding-inline-start: 2rem;
   padding-inline-end: 1rem;
+}
+
+.mapml-screen-reader-output {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
