@@ -99,7 +99,6 @@ export class MapViewer extends HTMLElement {
   constructor() {
     // Always call super first in constructor
     super();
-    
     this._source = this.outerHTML;
     let tmpl = document.createElement('template');
     tmpl.innerHTML =
@@ -108,7 +107,10 @@ export class MapViewer extends HTMLElement {
     
     let shadowRoot = this.attachShadow({mode: 'open'});
     this._container = document.createElement('div');
-    
+
+    let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
+    this._container.insertAdjacentHTML("beforeend", output);
+
     // Set default styles for the map element.
     let mapDefaultCSS = document.createElement('style');
     mapDefaultCSS.innerHTML =
@@ -196,6 +198,7 @@ export class MapViewer extends HTMLElement {
             projection: this.projection,
             query: true,
             contextMenu: true,
+            announceMovement: M.options.announceMovement,
             mapEl: this,
             crs: M[this.projection],
             zoom: this.zoom,
@@ -359,6 +362,19 @@ export class MapViewer extends HTMLElement {
         this.dispatchEvent(new CustomEvent("layerchange", {details:{target: this, originalEvent: e}}));
       }
     }, false);
+
+    this.parentElement.addEventListener('keyup', function (e) {
+      if(e.keyCode === 9 && document.activeElement.nodeName === "MAPML-VIEWER"){
+        document.activeElement.dispatchEvent(new CustomEvent('mapfocused', {detail:
+              {target: this}}));
+      }
+    });
+    this.parentElement.addEventListener('mousedown', function (e) {
+      if(document.activeElement.nodeName === "MAPML-VIEWER"){
+        document.activeElement.dispatchEvent(new CustomEvent('mapfocused', {detail:
+              {target: this}}));
+      }
+    });
     this._map.on('load',
       function () {
         this.dispatchEvent(new CustomEvent('load', {detail: {target: this}}));

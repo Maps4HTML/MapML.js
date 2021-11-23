@@ -57,7 +57,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
       this.isVisible = mapZoom <= this.options.maxZoom && mapZoom >= this.options.minZoom && 
                         this.layerBounds.overlaps(mapBounds);
-      if(!(this.isVisible))return;
+        if(!(this.isVisible))return;
       this._parentOnMoveEnd();
     },
     createTile: function (coords) {
