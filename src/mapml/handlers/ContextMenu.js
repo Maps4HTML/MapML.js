@@ -544,21 +544,19 @@ export var ContextMenu = L.Handler.extend({
 
     if(key === 13)
       e.preventDefault();
-    if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)")){
-      L.DomEvent.stop(e);
-      this._focusOnLayerControl();
-    }
     // keep track of where the focus is on the layer menu and when the layer menu is tabbed out of, focus on layer control
-    if(key === 9){
+    if(key === 9 || key === 27){
       if(e.shiftKey){
         this._layerMenuTabs -= 1;
       } else {
         this._layerMenuTabs += 1;
       }
-      if(this._layerMenuTabs === 0 || this._layerMenuTabs === 3){
+      if(this._layerMenuTabs === 0 || this._layerMenuTabs === 3 || key === 27){
         L.DomEvent.stop(e);
         this._focusOnLayerControl();
       } 
+    } else if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)")){
+      this._hide();
     }
     switch(key){
       case 13:  //ENTER KEY
