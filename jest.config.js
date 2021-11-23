@@ -11,7 +11,7 @@ module.exports = {
       globals: {
         PATH: "http://localhost:30001/",
       },
-      testMatch: ["**/test/e2e/**/*.test.js", "!**/test/e2e/**/keyboardInteraction.test.js"]
+      testMatch: ["**/test/e2e/**/*.test.js", "!**/test/e2e/**/keyboardInteraction.test.js", "!**/test/e2e/**/featureLinks.test.js"]
   }
   ]
 };
