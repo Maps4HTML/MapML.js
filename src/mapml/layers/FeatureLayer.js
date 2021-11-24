@@ -17,7 +17,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
       this._layers = {};
       if(this.options.query){
-        this._mapmlFeatures = mapml;
+        this._mapmlFeatures = mapml.features ? mapml.features: mapml;
         this.isVisible = true;
         let native = this._getNativeVariables(mapml);
         this.options.nativeZoom = native.zoom;
@@ -72,8 +72,8 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
 
     showPaginationFeature: function(e){
-      if(this.options.query && this._mapmlFeatures.querySelectorAll("map-feature")[e.i]){
-        let feature = this._mapmlFeatures.querySelectorAll("map-feature")[e.i];
+      if(this.options.query && this._mapmlFeatures[e.i]){
+        let feature = this._mapmlFeatures[e.i];
         this.clearLayers();
         this.addData(feature, this.options.nativeCS, this.options.nativeZoom);
         e.popup._navigationBar.querySelector("p").innerText = (e.i + 1) + "/" + this.options._leafletLayer._totalFeatureCount;

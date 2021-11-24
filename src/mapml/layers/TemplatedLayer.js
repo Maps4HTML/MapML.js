@@ -1,6 +1,8 @@
 export var TemplatedLayer = L.Layer.extend({
   initialize: function(templates, options) {
     this._templates =  templates;
+    this.layerBounds = options.layerBounds;
+    this.zoomBounds = options.zoomBounds;
     L.setOptions(this, options);
     this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
     L.DomUtil.addClass(this._container,'mapml-templatedlayer-container');
@@ -42,6 +44,10 @@ export var TemplatedLayer = L.Layer.extend({
   },
   _onZoomStart: function() {
       this.closePopup();
+  },
+
+  _onMoveEnd: function() {
+
   },
 
 
@@ -209,6 +215,11 @@ export var TemplatedLayer = L.Layer.extend({
       }
     }
   },
+  //addTo: function(map) {
+    //for(let i = 0; i < this._templates.length; i++){
+  //    this._templates[0].layer.addTo(map);
+    //}
+  //},
 //  setZIndex: function (zIndex) {
 //      this.options.zIndex = zIndex;
 //      this._updateZIndex();
@@ -241,6 +252,10 @@ export var TemplatedLayer = L.Layer.extend({
       this._count++;
       this._map.fire("featurepagination", {i: this._count, popup: this});
     }
+  },
+
+  changeOpacity: function(opacity){
+    this._container.style.opacity = opacity;
   },
 
 });

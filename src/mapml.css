@@ -776,3 +776,43 @@ label.mapml-layer-item-toggle {
   ) {
   outline: 0!important;
 }
+.mapml-layer-item-settings summary {
+  -webkit-user-select: none;
+          user-select: none;
+}
+
+.mapml-layer-item-opacity [type="range"] {
+  margin-inline-end: 0;
+  margin-inline-start: 0;
+  width: 100%;
+}
+
+/*
+* Extent Elements in the Layer Control
+*/
+
+.mapml-layer-item-settings .mapml-layer-extent {
+  padding-inline-start: 1.8rem;
+  padding-block-end: 0.125rem;
+  padding-block-start: 0.125rem;
+}
+
+.mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-properties{
+  padding-inline-start: 0;
+}
+
+.mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-settings-control,
+.mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-remove-control {
+  min-height: 30px;
+  height: 30px;
+}
+
+.mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-opacity {
+  padding-inline-start: 1.6rem;
+}
+
+.mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-controls{
+  position: absolute;
+  right: 0;
+}
+

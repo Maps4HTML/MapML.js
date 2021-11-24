@@ -33,6 +33,9 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       L.TileLayer.prototype.onAdd.call(this,this._map);
       this._handleMoveEnd();
     },
+    addTo: function(map){
+      L.tileLayer(this._url, this.options).addTo(map);
+    },
 
     getEvents: function(){
       let events = L.TileLayer.prototype.getEvents.call(this,this._map);
