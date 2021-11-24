@@ -227,6 +227,8 @@ export class WebMap extends HTMLMapElement {
           this._addToHistory();
           // the attribution control is not optional
           this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+          this._attributionControl.getContainer().setAttribute("role","group");
+          this._attributionControl.getContainer().setAttribute("aria-label","Map data attribution");
 
           this.setControls(false,false,true);
           this._crosshair = M.crosshair().addTo(this._map);
