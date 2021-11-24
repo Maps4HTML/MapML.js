@@ -339,6 +339,10 @@ export var Feature = L.Path.extend({
     if (!this._bounds) return null;
     return this._map.options.crs.unproject(this._bounds.getCenter());
   },
+
+  getPCRSCenter: function () {
+    return this._bounds.getCenter();
+  },
 });
 
 /**
