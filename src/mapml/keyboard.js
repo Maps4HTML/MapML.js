@@ -45,6 +45,6 @@ L.Map.Keyboard.include({
             return;
         }
 
-        stop(e);
+        L.DomEvent.stop(e);
     }
 });

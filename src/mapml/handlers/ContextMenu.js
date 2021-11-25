@@ -425,7 +425,15 @@ export var ContextMenu = L.Handler.extend({
     }
     if(e.originalEvent.button === 0 || e.originalEvent.button === -1){
       this._keyboardEvent = true;
-      this._container.firstChild.focus();
+      if(this._layerClicked){
+        let activeEl = document.activeElement;
+        this._elementInFocus = activeEl.shadowRoot.activeElement;
+        this._layerMenuTabs = 1;
+        this._layerMenu.firstChild.focus();
+      } else {
+        this._container.firstChild.focus();
+      }
+
     }
   },
 
@@ -515,6 +523,19 @@ export var ContextMenu = L.Handler.extend({
       return size;
   },
 
+   // once tab is clicked on the layer menu, change the focus back to the layer control
+   _focusOnLayerControl: function(){
+    this._mapMenuVisible = false;
+    delete this._layerMenuTabs;
+    this._layerMenu.style.display = 'none';
+    if(this._elementInFocus){
+      this._elementInFocus.focus();
+    } else {
+      this._layerClicked.parentElement.firstChild.focus();
+    }
+    delete this._elementInFocus;
+  },
+
   _onKeyDown: function (e) {
     if(!this._mapMenuVisible) return;
 
@@ -523,8 +544,20 @@ export var ContextMenu = L.Handler.extend({
 
     if(key === 13)
       e.preventDefault();
-    if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)"))
+    // keep track of where the focus is on the layer menu and when the layer menu is tabbed out of, focus on layer control
+    if(key === 9 || key === 27){
+      if(e.shiftKey){
+        this._layerMenuTabs -= 1;
+      } else {
+        this._layerMenuTabs += 1;
+      }
+      if(this._layerMenuTabs === 0 || this._layerMenuTabs === 3 || key === 27){
+        L.DomEvent.stop(e);
+        this._focusOnLayerControl();
+      } 
+    } else if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)")){
       this._hide();
+    }
     switch(key){
       case 13:  //ENTER KEY
       case 32:  //SPACE KEY
@@ -560,9 +593,6 @@ export var ContextMenu = L.Handler.extend({
         break;
       case 86: //V KEY
         this._viewSource(e);
-        break;
-      case 27: //H KEY
-        this._hide();
         break;
       case 90: //Z KEY
         if(this._layerClicked)

@@ -26,6 +26,14 @@ describe("Playwright mapml-viewer Element Tests", () => {
   afterAll(async function () {
     await context.close();
   });
+  
+  test("Ensure attribution control has role='group' aria-label='Map data attribution'", async () => {
+    let role = await page.evaluate(`document.querySelector('mapml-viewer')._attributionControl.getContainer().getAttribute('role')`);
+    expect(role).toEqual("group");
+    let arialabel = await page.evaluate(`document.querySelector('mapml-viewer')._attributionControl.getContainer().getAttribute('aria-label')`);
+    expect(arialabel).toEqual("Map data attribution");
+  });
+
 
   test("Initial map element extent", async () => {
     const extent = await page.$eval(
