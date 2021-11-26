@@ -395,7 +395,6 @@ export var Util = {
     } else if (zoomTo && !link.inPlace && justPan){
       leafletLayer._map.options.mapEl.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
       if(opacity) layer.opacity = opacity;
-      map.getContainer().focus();
     }
   },
 
