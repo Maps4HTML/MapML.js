@@ -58,13 +58,13 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       const rh7 = await page.evaluateHandle(root => root.activeElement, nh7);
       const f7 = await (await page.evaluateHandle(elem => elem.className, rh7)).jsonValue();
 
-      expect(f).toEqual("mapml-popup-content");
-      expect(f2.toUpperCase()).toEqual("A");
-      expect(f3).toEqual("Focus Map");
-      expect(f4).toEqual("Previous Feature");
-      expect(f5).toEqual("Next Feature");
-      expect(f6).toEqual("Focus Controls");
-      expect(f7).toEqual("leaflet-popup-close-button");
+      await expect(f).toEqual("mapml-popup-content");
+      await expect(f2.toUpperCase()).toEqual("A");
+      await expect(f3).toEqual("Focus Map");
+      await expect(f4).toEqual("Previous Feature");
+      await expect(f5).toEqual("Next Feature");
+      await expect(f6).toEqual("Focus Controls");
+      await expect(f7).toEqual("leaflet-popup-close-button");
     });
 
     test("Tab to next feature after tabbing out of popup", async () => {
@@ -78,8 +78,8 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
 
       let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
 
-      expect(tooltipCount).toEqual(1);
-      expect(f).toEqual("M153 508L113 146L-161 220L-107 436z");
+      await expect(tooltipCount).toEqual(1);
+      await expect(f).toEqual("M153 508L113 146L-161 220L-107 436z");
     });
 
     test("Shift + Tab to current feature while popup open", async () => {
@@ -95,8 +95,8 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
 
       let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
 
-      expect(tooltipCount).toEqual(1);
-      expect(f).toEqual("M153 508L113 146L-161 220L-107 436z");
+      await expect(tooltipCount).toEqual(1);
+      await expect(f).toEqual("M153 508L113 146L-161 220L-107 436z");
     });
 
     test("Previous feature button focuses previous feature", async () => {
@@ -115,8 +115,8 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
 
       let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
 
-      expect(tooltipCount).toEqual(1);
-      expect(f).toEqual("M330 83L586 83L586 339L330 339z");
+      await expect(tooltipCount).toEqual(1);
+      await expect(f).toEqual("M330 83L586 83L586 339L330 339z");
     });
 
     test("Next feature button focuses next feature", async () => {
@@ -138,8 +138,8 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
 
       let tooltipCount = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tooltip-pane", div => div.childElementCount);
 
-      expect(tooltipCount).toEqual(1);
-      expect(f).toEqual("M285 373L460 380L468 477L329 459z");
+      await expect(tooltipCount).toEqual(1);
+      await expect(f).toEqual("M285 373L460 380L468 477L329 459z");
     });
 
     test("Focus Controls focuses the first <button> child in control div", async () => {
@@ -157,7 +157,7 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
       const rh = await page.evaluateHandle(root => root.activeElement, nh);
       const f = await (await page.evaluateHandle(elem => elem.innerText, rh)).jsonValue();
-      expect(f).toEqual("Maps4HTML");
+      await expect(f).toEqual("Maps4HTML");
     });
   });
 });

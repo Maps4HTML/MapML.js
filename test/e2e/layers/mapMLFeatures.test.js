@@ -38,7 +38,7 @@ describe("Playwright mapMLFeatures (Static Features) Layer Tests", () => {
         "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(3) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g",
         (featureGroups) => featureGroups.childNodes.length
       );
-      expect(features).toEqual(52);
+      await expect(features).toEqual(52);
     });
 
     test("Loading in tilematrix feature", async () => {
@@ -46,7 +46,7 @@ describe("Playwright mapMLFeatures (Static Features) Layer Tests", () => {
         "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > g:nth-child(1) > path.leaflet-interactive",
         (tile) => tile.getAttribute("d")
       );
-      expect(feature).toEqual("M330 83L586 83L586 339L330 339L330 83z");
+      await expect(feature).toEqual("M330 83L586 83L586 339L330 339L330 83z");
     });
 
     test("Loading in pcrs feature", async () => {
@@ -54,7 +54,7 @@ describe("Playwright mapMLFeatures (Static Features) Layer Tests", () => {
         "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > g:nth-child(2) > path.leaflet-interactive",
         (tile) => tile.getAttribute("d")
       );
-      expect(feature).toEqual("M153 508L113 146L-161 220L-107 436z");
+      await expect(feature).toEqual("M153 508L113 146L-161 220L-107 436z");
     });
 
     test("Loading in tcrs feature", async () => {
@@ -62,7 +62,7 @@ describe("Playwright mapMLFeatures (Static Features) Layer Tests", () => {
         "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > g:nth-child(3) > path.leaflet-interactive",
         (tile) => tile.getAttribute("d")
       );
-      expect(feature).toEqual("M285 373L460 380L468 477L329 459z");
+      await expect(feature).toEqual("M285 373L460 380L468 477L329 459z");
     });
 
     test("valid <layer>.extent", async () => {
@@ -70,12 +70,12 @@ describe("Playwright mapMLFeatures (Static Features) Layer Tests", () => {
         "body > map > layer-:nth-child(3)",
         (layer) => layer.extent
       );
-      expect(layerExtent.topLeft.pcrs).toEqual({ horizontal: -34655800, vertical: 39310000 });
-      expect(layerExtent.topLeft.gcrs).toEqual({ horizontal: -169.78391348558873, vertical: -60.79113663130127 });
-      expect(layerExtent.bottomRight.pcrs).toEqual({ horizontal: 14450964.88019643, vertical: -9796764.88019643 });
-      expect(layerExtent.bottomRight.gcrs).toEqual({ horizontal: 79.6961805581841, vertical: -60.79110984572508 });
-      expect(layerExtent.zoom).toEqual({ maxNativeZoom: 0, minNativeZoom: 0, maxZoom: 2, minZoom: 2 });
-      expect(layerExtent.projection).toEqual("CBMTILE");
+      await expect(layerExtent.topLeft.pcrs).toEqual({ horizontal: -34655800, vertical: 39310000 });
+      await expect(layerExtent.topLeft.gcrs).toEqual({ horizontal: -169.78391348558873, vertical: -60.79113663130127 });
+      await expect(layerExtent.bottomRight.pcrs).toEqual({ horizontal: 14450964.88019643, vertical: -9796764.88019643 });
+      await expect(layerExtent.bottomRight.gcrs).toEqual({ horizontal: 79.6961805581841, vertical: -60.79110984572508 });
+      await expect(layerExtent.zoom).toEqual({ maxNativeZoom: 0, minNativeZoom: 0, maxZoom: 2, minZoom: 2 });
+      await expect(layerExtent.projection).toEqual("CBMTILE");
     });
   });
   describe("Inline Static Features Tests", () => {
@@ -96,8 +96,8 @@ describe("Playwright mapMLFeatures (Static Features) Layer Tests", () => {
         "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(4) > div.leaflet-layer.leaflet-pane.mapml-vector-container > svg > g > g",
         (g) => g.getAttribute("class")
       );
-      expect(feature).toEqual("M74 -173L330 -173L330 83L74 83L74 -173z");
-      expect(classList).toBeFalsy();
+      await expect(feature).toEqual("M74 -173L330 -173L330 83L74 83L74 -173z");
+      await expect(classList).toBeFalsy();
     });
   });
 });

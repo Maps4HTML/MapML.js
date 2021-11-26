@@ -41,14 +41,14 @@ describe("Playwright Client Tile Tests", () => {
       (tile) => tile.textContent
     );
 
-    expect(one).toEqual("101");
-    expect(two).toEqual("001");
-    expect(three).toEqual("201");
-    expect(four).toEqual("111");
-    expect(five).toEqual("011");
-    expect(six).toEqual("211");
-    expect(seven).toEqual("301");
-    expect(eight).toEqual("311");
+    await expect(one).toEqual("101");
+    await expect(two).toEqual("001");
+    await expect(three).toEqual("201");
+    await expect(four).toEqual("111");
+    await expect(five).toEqual("011");
+    await expect(six).toEqual("211");
+    await expect(seven).toEqual("301");
+    await expect(eight).toEqual("311");
 
   });
 });

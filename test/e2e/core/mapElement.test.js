@@ -29,12 +29,12 @@ describe("Playwright Map Element Tests", () => {
       (map) => map.extent
     );
 
-    expect(extent.projection).toEqual("CBMTILE");
-    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
-    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
-    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
+    await expect(extent.projection).toEqual("CBMTILE");
+    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
+    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+    await expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
+    await expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
   });
   test("Panned and zoomed initial map's extent", async () => {
     await page.$eval(
@@ -47,11 +47,11 @@ describe("Playwright Map Element Tests", () => {
       (map) => map.extent
     );
 
-    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
-    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
-    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
+    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
+    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
+    await expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
+    await expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
   });
 
   test("Reload button takes you back to initial state", async () => {
@@ -67,13 +67,13 @@ describe("Playwright Map Element Tests", () => {
       (map) => map._history
     );
 
-    expect(history.length).toEqual(1);
-    expect(extent.projection).toEqual("CBMTILE");
-    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
-    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
-    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
+    await expect(history.length).toEqual(1);
+    await expect(extent.projection).toEqual("CBMTILE");
+    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
+    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+    await expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
+    await expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
   });
 
   test("Default projection, when no projection attribute, is OSMTILE", async () => {
@@ -82,12 +82,12 @@ describe("Playwright Map Element Tests", () => {
       (map) => map.projection
     );
 
-    expect(projection).toEqual("OSMTILE");
+    await expect(projection).toEqual("OSMTILE");
   });
   test("Ensure attribution control has role='group' aria-label='Map data attribution'", async () => {
     let role = await page.evaluate(`document.querySelector('map')._attributionControl.getContainer().getAttribute('role')`);
-    expect(role).toEqual("group");
+    await expect(role).toEqual("group");
     let arialabel = await page.evaluate(`document.querySelector('map')._attributionControl.getContainer().getAttribute('aria-label')`);
-    expect(arialabel).toEqual("Map data attribution");
+    await expect(arialabel).toEqual("Map data attribution");
   });
 });

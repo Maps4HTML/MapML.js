@@ -21,13 +21,13 @@ describe("Playwright mapml-viewer fullscreen tests", () => {
     await page.click("xpath=/html/body/mapml-viewer[1] >> css= div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-fullscreen.leaflet-bar.leaflet-control > a");
     let fullscreenElement = await page.evaluate(`document.fullscreenElement.id`);
     // the first mapml-viewer should be returned by document.fullscreen
-    expect(fullscreenElement).toEqual("map1");
+    await expect(fullscreenElement).toEqual("map1");
     await page.click("xpath=/html/body/mapml-viewer[1] >> css= div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-fullscreen.leaflet-bar.leaflet-control > a");
     fullscreenElement = await page.evaluate( `document.fullscreenElement`);
-    expect(fullscreenElement).toBeFalsy();
+    await expect(fullscreenElement).toBeFalsy();
     await page.click("xpath=/html/body/mapml-viewer[2] >> css= div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-fullscreen.leaflet-bar.leaflet-control > a");
     fullscreenElement = await page.evaluate( `document.fullscreenElement.id`);
-    expect(fullscreenElement).toEqual("map2");
+    await expect(fullscreenElement).toEqual("map2");
     try {
       // try to click the fullscreen button of the other map that is not in fullscreen
       await page.click("xpath=/html/body/mapml-viewer[1] >> css= div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-fullscreen.leaflet-bar.leaflet-control > a",
@@ -39,7 +39,7 @@ describe("Playwright mapml-viewer fullscreen tests", () => {
     }
     // fullscreen element should not have changed
     fullscreenElement = await page.evaluate( `document.fullscreenElement.id`);
-    expect(fullscreenElement).toEqual("map2");
+    await expect(fullscreenElement).toEqual("map2");
   });
 });
 
@@ -62,13 +62,13 @@ describe("Playwright mapml-viewer fullscreen tests", () => {
     await page.click("xpath=/html/body/map[1]/div >> css= div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-fullscreen.leaflet-bar.leaflet-control > a");
     let fullscreenElement = await page.evaluate(`document.fullscreenElement.id`);
     // the first map element should be returned by document.fullscreen
-    expect(fullscreenElement).toEqual("map1");
+    await expect(fullscreenElement).toEqual("map1");
     await page.click("xpath=/html/body/map[1]/div >> css= div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-fullscreen.leaflet-bar.leaflet-control > a");
     fullscreenElement = await page.evaluate( `document.fullscreenElement`);
-    expect(fullscreenElement).toBeFalsy();
+    await expect(fullscreenElement).toBeFalsy();
     await page.click("xpath=/html/body/map[2]/div >> css= div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-fullscreen.leaflet-bar.leaflet-control > a");
     fullscreenElement = await page.evaluate( `document.fullscreenElement.id`);
-    expect(fullscreenElement).toEqual("map2");
+    await expect(fullscreenElement).toEqual("map2");
     try {
       // try to click the fullscreen button of the other map that is not in fullscreen
       await page.click("xpath=/html/body/map[1]/div >> css= div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-fullscreen.leaflet-bar.leaflet-control > a",
@@ -80,6 +80,6 @@ describe("Playwright mapml-viewer fullscreen tests", () => {
     }
     // fullscreen element should not have changed
     fullscreenElement = await page.evaluate( `document.fullscreenElement.id`);
-    expect(fullscreenElement).toEqual("map2");
+    await expect(fullscreenElement).toEqual("map2");
   });
 });

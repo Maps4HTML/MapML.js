@@ -29,9 +29,9 @@ describe("Playwright mapml-viewer Element Tests", () => {
   
   test("Ensure attribution control has role='group' aria-label='Map data attribution'", async () => {
     let role = await page.evaluate(`document.querySelector('mapml-viewer')._attributionControl.getContainer().getAttribute('role')`);
-    expect(role).toEqual("group");
+    await expect(role).toEqual("group");
     let arialabel = await page.evaluate(`document.querySelector('mapml-viewer')._attributionControl.getContainer().getAttribute('aria-label')`);
-    expect(arialabel).toEqual("Map data attribution");
+    await expect(arialabel).toEqual("Map data attribution");
   });
 
 
@@ -41,12 +41,12 @@ describe("Playwright mapml-viewer Element Tests", () => {
       (map) => map.extent
     );
 
-    expect(extent.projection).toEqual("CBMTILE");
-    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
-    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
-    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
+    await expect(extent.projection).toEqual("CBMTILE");
+    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
+    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+    await expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
+    await expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
   });
   test("Panned and zoomed initial map's extent", async () => {
     await page.$eval(
@@ -59,11 +59,11 @@ describe("Playwright mapml-viewer Element Tests", () => {
       (map) => map.extent
     );
 
-    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
-    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
-    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
+    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
+    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
+    await expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
+    await expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
   });
 
   describe("Attributes Tests", () => {
@@ -78,7 +78,7 @@ describe("Playwright mapml-viewer Element Tests", () => {
           for (let [key, value] of Object.entries(children)) {
             if (value.className === controls[i]) found = true;
           }
-          expect(found).toEqual(false);
+          await expect(found).toEqual(false);
         });
         test("Toggle controls, controls aren't re-enabled", async () => {
           await page.click("body > mapml-viewer", { button: "right" });
@@ -91,7 +91,7 @@ describe("Playwright mapml-viewer Element Tests", () => {
           for (let [key, value] of Object.entries(children)) {
             if (value.className === controls[i]) found = true;
           }
-          expect(found).toEqual(false);
+          await expect(found).toEqual(false);
         });
 
       });
@@ -102,7 +102,7 @@ describe("Playwright mapml-viewer Element Tests", () => {
           (layer) => layer.setAttribute("controlslist", "nolayer"));
 
         let children = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right", (div) => div.childElementCount);
-        expect(children).toEqual(0);
+        await expect(children).toEqual(0);
       });
       test("Toggle controls, controls aren't re-enabled", async () => {
         await page.click("body > mapml-viewer", { button: "right" });
@@ -111,7 +111,7 @@ describe("Playwright mapml-viewer Element Tests", () => {
         await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
 
         let children = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right", (div) => div.childElementCount);
-        expect(children).toEqual(0);
+        await expect(children).toEqual(0);
       });
     });
   });

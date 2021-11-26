@@ -17,15 +17,15 @@ describe("Playwright Custom TCRS Tests", () => {
       (tileGroup) => tileGroup.getElementsByTagName("map-tile").length
     );
 
-    expect(tilesLoaded).toEqual(2);
-    expect(misMatchedLayerDisabled).toEqual(true);
+    await expect(tilesLoaded).toEqual(2);
+    await expect(misMatchedLayerDisabled).toEqual(true);
   });
   test("A projection name containing a colon is invalid", async () => {
     const message = await page.$eval(
       "body > p",
       (message) => message.innerHTML
     );
-    expect(message).toEqual("passing");
+    await expect(message).toEqual("passing");
   });
   test("Complex Custom TCRS, static features loaded, templated features loaded", async () => {
     const staticFeatures = await page.$eval(
@@ -56,16 +56,16 @@ describe("Playwright Custom TCRS Tests", () => {
     );
 
 
-    expect(featureOne).toEqual("M88 681L21 78L-436 201L-346 561z");
-    expect(featureTwo).toEqual("M307 456L599 467L612 629L381 599z");
+    await expect(featureOne).toEqual("M88 681L21 78L-436 201L-346 561z");
+    await expect(featureTwo).toEqual("M307 456L599 467L612 629L381 599z");
 
-    expect(featureThree).toEqual("M382 -28L809 -28L809 399L382 399z");
-    expect(featureFour).toEqual("M150 429L171 426L175 438L181 457L183 461L185 463L185 465L187 465L185 468L185 470L184 472L186 477L186 4" +
+    await expect(featureThree).toEqual("M382 -28L809 -28L809 399L382 399z");
+    await expect(featureFour).toEqual("M150 429L171 426L175 438L181 457L183 461L185 463L185 465L187 465L185 468L185 470L184 472L186 477L186 4" +
       "81L188 485L182 486L154 490L154 492L157 494L157 497L158 498L156 501L154 501L151 499L150 495L149 495L148 498L148 501L14" +
       "4 501L141 477L141 448L141 431L139 430L150 429z");
 
-    expect(staticFeatures).toEqual(false);
-    expect(templatedFeatures).toEqual(false);
+    await expect(staticFeatures).toEqual(false);
+    await expect(templatedFeatures).toEqual(false);
 
   });
 });

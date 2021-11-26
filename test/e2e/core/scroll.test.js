@@ -19,6 +19,6 @@ describe("Scroll test", ()=> {
         await page.waitForTimeout(1000);
 
         const scrollX = await page.evaluate('window.scrollX');
-        expect(scrollX).toEqual(0);
+        await expect(scrollX).toEqual(0);
     });
 });

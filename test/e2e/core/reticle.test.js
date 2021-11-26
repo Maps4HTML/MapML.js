@@ -12,8 +12,8 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       const beforeTabHidden = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
       await page.keyboard.press("Tab");
       const afterTab = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
-      expect(beforeTabHidden).toEqual("hidden");
-      expect(afterTab).toEqual("");
+      await expect(beforeTabHidden).toEqual("hidden");
+      await expect(afterTab).toEqual("");
     });
 
     test("Crosshair remains on map move with arrow keys", async () => {
@@ -26,7 +26,7 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.keyboard.press("ArrowRight");
       await page.waitForTimeout(1000);
       const afterMove = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
-      expect(afterMove).toEqual("");
+      await expect(afterMove).toEqual("");
     });
 
     test("Crosshair shows on esc but hidden on tab out", async () => {
@@ -39,8 +39,8 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.keyboard.press("Tab");
       const afterTab = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
 
-      expect(afterEsc).toEqual("");
-      expect(afterTab).toEqual("hidden");
+      await expect(afterEsc).toEqual("");
+      await expect(afterTab).toEqual("hidden");
     });
 
     test("Crosshair hidden when queryable layer is unselected, shows on reselect", async () => {
@@ -53,8 +53,8 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.evaluateHandle(() => document.querySelector("layer-").setAttribute("checked", ""));
       const afterCheck = await page.$eval("div > div.mapml-crosshair", (div) => div.style.visibility);
 
-      expect(afterUncheck).toEqual("hidden");
-      expect(afterCheck).toEqual("");
+      await expect(afterUncheck).toEqual("hidden");
+      await expect(afterCheck).toEqual("");
     });
   });
 });

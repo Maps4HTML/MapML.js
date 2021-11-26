@@ -14,7 +14,7 @@ exports.test = (path, zoomIn, zoomOut) => {
         const zoomButton = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in",
           (controller) => controller.className);
 
-        expect(zoomButton).toMatch("disabled");
+        await expect(zoomButton).toMatch("disabled");
       });
 
       test("Allow zooming before reaching limit (zooming in)", async () => {
@@ -23,7 +23,7 @@ exports.test = (path, zoomIn, zoomOut) => {
         const zoomButton = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in",
           (controller) => controller.className);
 
-        expect(zoomButton).not.toMatch("disabled");
+        await expect(zoomButton).not.toMatch("disabled");
       });
 
       test("Limit map zooming (zooming out)", async () => {
@@ -34,7 +34,7 @@ exports.test = (path, zoomIn, zoomOut) => {
         const zoomButton = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out",
           (controller) => controller.className);
 
-        expect(zoomButton).toMatch("disabled");
+        await expect(zoomButton).toMatch("disabled");
       });
 
       test("Allow zooming before reaching limit (zooming out)", async () => {
@@ -43,7 +43,7 @@ exports.test = (path, zoomIn, zoomOut) => {
         const zoomButton = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out",
           (controller) => controller.className);
 
-        expect(zoomButton).not.toMatch("disabled");
+        await expect(zoomButton).not.toMatch("disabled");
       });
     });
 };

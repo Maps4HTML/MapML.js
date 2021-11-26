@@ -42,7 +42,7 @@ describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
         "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(3) > path.leaflet-interactive",
         (tile) => tile.getAttribute("d")
       );
-      expect(feature).toEqual("M382 -28L809 -28L809 399L382 399z");
+      await expect(feature).toEqual("M382 -28L809 -28L809 399L382 399z");
     });
 
     test("Loading in pcrs feature", async () => {
@@ -50,7 +50,7 @@ describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
         "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(1) > path.leaflet-interactive",
         (tile) => tile.getAttribute("d")
       );
-      expect(feature).toEqual("M88 681L21 78L-436 201L-346 561z");
+      await expect(feature).toEqual("M88 681L21 78L-436 201L-346 561z");
     });
 
     test("Loading in tcrs feature", async () => {
@@ -58,7 +58,7 @@ describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
         "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(2) > path.leaflet-interactive",
         (tile) => tile.getAttribute("d")
       );
-      expect(feature).toEqual("M307 456L599 467L612 629L381 599z");
+      await expect(feature).toEqual("M307 456L599 467L612 629L381 599z");
     });
   });
   describe("Simple query by select values without map extent filter tests", () => {
@@ -68,11 +68,11 @@ describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
     });
     test("All features loaded at start", async () => {
       const features = await page.$$("css= body > map:nth-child(2) > .mapml-web-map >> css= div > .mapml-templatedlayer-container > div > div > svg > g > g");
-      expect(features.length).toEqual(8);
+      await expect(features.length).toEqual(8);
     });
     test("User can select/filter features by category", async () => {
         const restaurants = await page.$$("css= map:nth-child(2) .mapml-templatedlayer-container g > g");
-        expect(restaurants.length).toEqual(8);
+        await expect(restaurants.length).toEqual(8);
 
         await page.hover("css= map:nth-child(2) .leaflet-control-container .leaflet-top.leaflet-right > div");
         await page.click("css= map:nth-child(2) button.mapml-layer-item-settings-control.mapml-button");
@@ -81,17 +81,17 @@ describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
         await page.waitForTimeout(250);
         
         const features = await page.$$("css= map:nth-child(2) .mapml-templatedlayer-container g > g");
-        expect(features.length).toEqual(1);
+        await expect(features.length).toEqual(1);
     });
     test("<map-select> <map-option> attributes are copied to layer control <option> elements", async () => {
       const firstOptionSelected = await page.$eval('css= map:nth-child(2) details.mapml-control-layers select option:nth-child(1)', (option) => option.selected);
-      expect(firstOptionSelected).toBeTruthy();
+      await expect(firstOptionSelected).toBeTruthy();
       const firstOptionLabel = await page.$eval('css= map:nth-child(2) details.mapml-control-layers select option:nth-child(1)', (option) => option.label);
-      expect(firstOptionLabel).toEqual("All cuisines");
+      await expect(firstOptionLabel).toEqual("All cuisines");
       const firstOptionValue = await page.$eval('css= map:nth-child(2) details.mapml-control-layers select option:nth-child(1)', (option) => option.value);
-      expect(firstOptionValue).toEqual("restaurants");
+      await expect(firstOptionValue).toEqual("restaurants");
       const thirdOptionValue = await page.$eval('css= map:nth-child(2) details.mapml-control-layers select option:nth-child(3)', (option) => option.value);
-      expect(thirdOptionValue).toEqual("african");
+      await expect(thirdOptionValue).toEqual("african");
       
     });
   });

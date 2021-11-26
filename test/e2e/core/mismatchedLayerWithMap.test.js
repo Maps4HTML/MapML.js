@@ -35,8 +35,8 @@ describe("Playwright Mismatched Layers Test", () => {
     const osmtileLayer = await page.$eval("#checkMe",
       (controller) => controller.hasAttribute('disabled'))
 
-    expect(cbmtileLayer).toEqual(false);
-    expect(osmtileLayer).toEqual(true);
+    await expect(cbmtileLayer).toEqual(false);
+    await expect(osmtileLayer).toEqual(true);
   });
 
   test("OSMTILE Map with CBMTILE layer", async () => {
@@ -76,9 +76,9 @@ describe("Playwright Mismatched Layers Test", () => {
 
     const menuDisplay = await (await page.evaluateHandle(elem => elem.style.display, resultHandle)).jsonValue();
 
-    expect(menuDisplay).toEqual("");
+    await expect(menuDisplay).toEqual("");
 
-    expect(cbmtileLayer).toEqual(true);
-    expect(osmtileLayer).toEqual(false);
+    await expect(cbmtileLayer).toEqual(true);
+    await expect(osmtileLayer).toEqual(false);
   });
 });
