@@ -440,7 +440,8 @@
 .leaflet-tooltip,
 .leaflet-crosshair *,
 .mapml-layer-item-settings .mapml-control-layers summary label,
-.mapml-contextmenu-item > * {
+.mapml-contextmenu-item > *,
+.mapml-link-preview {
   pointer-events: none!important;
 }
 
