@@ -386,6 +386,9 @@ export var MapMLLayer = L.Layer.extend({
     getAttribution: function () {
         return this.options.attribution;
     },
+    getShadowRoot: function(root){
+
+    },
     getLayerUserControlsHTML: function () {
       var fieldset = L.DomUtil.create('fieldset', 'mapml-layer-item'),
         input = L.DomUtil.create('input'),
@@ -425,7 +428,8 @@ export var MapMLLayer = L.Layer.extend({
         //L.DomEvent.disableClickPropagation(removeControlButton);
         L.DomEvent.on(removeControlButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(removeControlButton, 'click', (e)=>{
-          let fieldset = 0, elem;
+          let fieldset = 0, elem, root;
+          root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".mapml-web-map").shadowRoot;
           if(e.target.closest("fieldset").nextElementSibling){
             elem = e.target.closest("fieldset").previousElementSibling;
             while(elem){
@@ -434,11 +438,11 @@ export var MapMLLayer = L.Layer.extend({
             }
           } else {
             // focus on the link
-            elem = document.getElementsByTagName('mapml-viewer')[0].shadowRoot.querySelector(".leaflet-control-attribution").firstElementChild;
+            elem = root.querySelector(".leaflet-control-attribution").firstElementChild;
           }
           mapEl.removeChild(e.target.closest("fieldset").querySelector("span").layer._layerEl);
           if(elem === null){
-            elem = document.body.getElementsByTagName('mapml-viewer')[0].shadowRoot.querySelectorAll('input')[fieldset];
+            elem = root.querySelectorAll('input')[fieldset];
           }
           if(elem) setTimeout(() => elem.focus(), 800); // a timeout is set so "pressed remove layer" is announced first
         }, this);
