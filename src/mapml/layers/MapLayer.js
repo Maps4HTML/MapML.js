@@ -425,7 +425,21 @@ export var MapMLLayer = L.Layer.extend({
         //L.DomEvent.disableClickPropagation(removeControlButton);
         L.DomEvent.on(removeControlButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(removeControlButton, 'click', (e)=>{
+          let fieldset = 0, elem, root;
+          root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".mapml-web-map").shadowRoot;
+          if(e.target.closest("fieldset").nextElementSibling && !e.target.closest("fieldset").nextElementSibling.disbaled){
+            elem = e.target.closest("fieldset").previousElementSibling;
+            while(elem){
+              fieldset += 2; // find the next layer menu item
+              elem = elem.previousElementSibling;
+            }
+          } else {
+            // focus on the link
+            elem = "link";
+          }
           mapEl.removeChild(e.target.closest("fieldset").querySelector("span").layer._layerEl);
+          elem = elem ? root.querySelector(".leaflet-control-attribution").firstElementChild: elem = root.querySelectorAll('input')[fieldset];
+          setTimeout(() => elem.focus(), 800); // a timeout is set so "pressed remove layer" is announced first
         }, this);
 
         let itemSettingControlButton = L.DomUtil.create('button', 'mapml-layer-item-settings-control', layerItemControls);
