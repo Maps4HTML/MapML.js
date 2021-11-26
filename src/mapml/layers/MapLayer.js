@@ -386,9 +386,6 @@ export var MapMLLayer = L.Layer.extend({
     getAttribution: function () {
         return this.options.attribution;
     },
-    getShadowRoot: function(root){
-
-    },
     getLayerUserControlsHTML: function () {
       var fieldset = L.DomUtil.create('fieldset', 'mapml-layer-item'),
         input = L.DomUtil.create('input'),
