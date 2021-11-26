@@ -439,7 +439,7 @@ export var MapMLLayer = L.Layer.extend({
           }
           mapEl.removeChild(e.target.closest("fieldset").querySelector("span").layer._layerEl);
           elem = elem ? root.querySelector(".leaflet-control-attribution").firstElementChild: elem = root.querySelectorAll('input')[fieldset];
-          elem.focus(); // a timeout is set so "pressed remove layer" is announced first
+          elem.focus();
         }, this);
 
         let itemSettingControlButton = L.DomUtil.create('button', 'mapml-layer-item-settings-control', layerItemControls);
