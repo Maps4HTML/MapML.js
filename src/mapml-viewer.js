@@ -101,9 +101,7 @@ export class MapViewer extends HTMLElement {
     super();
     this._source = this.outerHTML;
     let tmpl = document.createElement('template');
-    tmpl.innerHTML =
-    `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` + // jshint ignore:line
-    `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
+    tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
     
     let shadowRoot = this.attachShadow({mode: 'open'});
     this._container = document.createElement('div');

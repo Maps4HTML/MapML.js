@@ -11,6 +11,17 @@ module.exports = function(grunt) {
 //        dest: 'dist/c.js'
 //      }
 //    },
+    cssmin: {
+      options: {
+        mergeIntoShorthands: false,
+        roundingPrecision: -1
+      },
+      combine: {
+        files: {
+        'dist/mapml.css': ['node_modules/leaflet/dist/leaflet.css', 'src/mapml.css']
+        }
+      }
+    },
     uglify: {
       options: {
        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
@@ -152,6 +163,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
 //  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-rollup');
 
@@ -160,7 +172,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', ['jshint']);
 
-  grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'rollup', 'uglify']);
+  grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'rollup', 'uglify', 'cssmin']);
   grunt.registerTask('build', ['rollup']);
 
 };
