@@ -96,6 +96,7 @@ export var Crosshair = L.Layer.extend({
       this._map.isFocused = false;
     } else this._map.isFocused = isLeafletContainer && ["keyup", "keydown"].includes(e.type);
 
+    if(this._map.isFocused) this._map.fire("mapfocused");
     this._addOrRemoveMapOutline();
     this._addOrRemoveCrosshair();
   },

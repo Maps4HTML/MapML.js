@@ -4,41 +4,6 @@
  * @returns {*}
  */
 export var FeatureRenderer = L.SVG.extend({
-
-  _indexOrder: [],
-
-  _addToIndex: function (layer, updateIndex) {
-    let scale = this._map.options.crs.scale(this._map.getZoom());
-    let mc = this._map.options.crs.transformation.untransform(this._map.getPixelBounds().getCenter(),scale);
-    let lc = layer.getPCRSCenter();
-    let dist = Math.sqrt(Math.pow(lc.x - mc.x, 2) + Math.pow(lc.y - mc.y, 2))
-
-    this._indexOrder.push({layer: layer, dist: dist, updateIndex: updateIndex});
-    for (let i = this._indexOrder.length - 1; i > 0 && this._indexOrder[i].dist < this._indexOrder[i-1].dist; i--) {
-      let tmp = this._indexOrder[i];
-      this._indexOrder[i] = this._indexOrder[i-1];
-      this._indexOrder[i].updateIndex(i);
-      tmp.updateIndex(i-1);
-      this._indexOrder[i-1] = tmp;
-    }
-  },
-
-  _sortIndex: function () {
-    let scale = this._map.options.crs.scale(this._map.getZoom());
-    let mc = this._map.options.crs.transformation.untransform(this._map.getPixelBounds().getCenter(),scale);
-    this._indexOrder.sort(function(a, b) {
-      let ac = a.layer.getPCRSCenter();
-      let bc = b.layer.getPCRSCenter();
-      a.dist = Math.sqrt(Math.pow(ac.x - mc.x, 2) + Math.pow(ac.y - mc.y, 2));
-      b.dist = Math.sqrt(Math.pow(bc.x - mc.x, 2) + Math.pow(bc.y - mc.y, 2));
-      return a.dist - b.dist;
-    });
-
-    this._indexOrder.forEach(function (l, i) {
-      l.updateIndex(i + 1);
-    });
-  },
-
   /**
    * Override method of same name from L.SVG, use the this._container property
    * to set up the role="none presentation" on featureGroupu container,
@@ -54,7 +19,6 @@ export var FeatureRenderer = L.SVG.extend({
     // access it and set the role="none presetation" which suppresses the 
     // announcement of "Graphic" on each feature focus.
     this._container.setAttribute('role', 'none presentation');
-    this._map.on("moveend", this._sortIndex, this);
   },
   
   /**
@@ -77,21 +41,13 @@ export var FeatureRenderer = L.SVG.extend({
     for (let p of layer._parts) {
       if (p.rings){
         this._createPath(p, layer.options.className, layer.featureAttributes['aria-label'], layer.options.interactive, layer.featureAttributes);
-        if(layer.options.interactive) {
-          this._addToIndex(layer, function (val) {
-            p.path.setAttribute("tabindex", val);
-          });
-        }
         if(layer.outlinePath) p.path.style.stroke = "none";
       }
       if (p.subrings) {
         for (let r of p.subrings) {
           this._createPath(r, layer.options.className, r.attr['aria-label'], (r.link !== undefined), r.attr);
           if(r.attr && r.attr.tabindex){
-            this._addToIndex(layer, function (val) {
-              r.path.setAttribute("tabindex", val);
-            });
-            //p.path.setAttribute('tabindex', r.attr.tabindex || '0');
+            this._map.options.mapEl._addToIndex(layer, r.path);
           }
         }
       }
