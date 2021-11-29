@@ -14,7 +14,7 @@ describe("Playwright Map Element Tests", () => {
         `xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div:nth-child(${i + 1}) > img`,
         (tile) => tile.getAttribute("src")
       );
-      expect(feature).toEqual(`https://maps4html.org/TiledArt-Rousseau/TheBanksOfTheBièvreNearBicêtre/${tileOrder[i]}.png`);
+      await expect(feature).toEqual(`https://maps4html.org/TiledArt-Rousseau/TheBanksOfTheBièvreNearBicêtre/${tileOrder[i]}.png`);
     }
   });
 });

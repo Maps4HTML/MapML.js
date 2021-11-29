@@ -40,7 +40,7 @@ describe("Playwright mapMLStaticTile Layer Tests", () => {
         "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-static-tile-layer > div",
         (tileGroup) => tileGroup.getElementsByTagName("map-tile").length
       );
-      expect(tiles).toEqual(1);
+      await expect(tiles).toEqual(1);
     });
   });
 });

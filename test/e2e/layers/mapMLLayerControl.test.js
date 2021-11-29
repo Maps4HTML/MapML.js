@@ -13,7 +13,7 @@ describe("Playwright mapMLLayerControl Tests", () => {
         "css=body > mapml-viewer:nth-child(1) >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div",
         (elem) => elem.hasAttribute("hidden")
       );
-      expect(controlsHidden).toEqual(true);
+      await expect(controlsHidden).toEqual(true);
     });
 
     test("Control panel shown when layers are on map", async () => {
@@ -21,7 +21,7 @@ describe("Playwright mapMLLayerControl Tests", () => {
         "css=body > mapml-viewer:nth-child(2) >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div",
         (elem) => elem.hasAttribute("hidden")
       );
-      expect(controlsHidden).toEqual(false);
+      await expect(controlsHidden).toEqual(false);
     });
   });
 });

@@ -29,9 +29,9 @@ describe("Playwright Map Element Tests", () => {
       (gridElem) => gridElem.childElementCount
     )
 
-    expect(panel).toEqual(6);
-    expect(banner).toEqual("DEBUG MODE");
-    expect(grid).toEqual(1);
+    await expect(panel).toEqual(6);
+    await expect(banner).toEqual("DEBUG MODE");
+    await expect(grid).toEqual(1);
 
   });
 
@@ -40,7 +40,7 @@ describe("Playwright Map Element Tests", () => {
       "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(2)",
       (tile) => tile.getAttribute("d")
     );
-    expect(feature).toEqual("M82.51724137931035 332.27586206896535L347.34482758620686 332.27586206896535L347.34482758620686 -38.48275862068965L82.51724137931035 -38.48275862068965z");
+    await expect(feature).toEqual("M82.51724137931035 332.27586206896535L347.34482758620686 332.27586206896535L347.34482758620686 -38.48275862068965L82.51724137931035 -38.48275862068965z");
   });
 
   test("Large debug layer extent created", async () => {
@@ -48,7 +48,7 @@ describe("Playwright Map Element Tests", () => {
       "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(3)",
       (tile) => tile.getAttribute("d")
     );
-    expect(feature).toEqual("M-659 500L365 500L365 -780L-659 -780z");
+    await expect(feature).toEqual("M-659 500L365 500L365 -780L-659 -780z");
   });
 
   test("Debug layer extent beyond ((0,0), (5,5))  created", async () => {
@@ -56,7 +56,7 @@ describe("Playwright Map Element Tests", () => {
       "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(4)",
       (tile) => tile.getAttribute("d")
     );
-    expect(feature).toEqual("M-1683 1268L1133 1268L1133 -1292L-1683 -1292z");
+    await expect(feature).toEqual("M-1683 1268L1133 1268L1133 -1292L-1683 -1292z");
   });
 
   test("Accurate debug coordinates", async () => {
@@ -86,12 +86,12 @@ describe("Playwright Map Element Tests", () => {
       (gcrsElem) => gcrsElem.innerText
     );
 
-    expect(tile).toEqual("tile: i: 141, j: 6");
-    expect(matrix).toEqual("tilematrix: column: 3, row: 4");
-    expect(map).toEqual("map: i: 250, j: 250");
-    expect(tcrs).toEqual("tcrs: x: 909, y: 1030");
-    expect(pcrs).toEqual("pcrs: easting: 217676.00, northing: -205599.86");
-    expect(gcrs).toEqual("gcrs: lon: -92.152897, lat: 47.114275");
+    await expect(tile).toEqual("tile: i: 141, j: 6");
+    await expect(matrix).toEqual("tilematrix: column: 3, row: 4");
+    await expect(map).toEqual("map: i: 250, j: 250");
+    await expect(tcrs).toEqual("tcrs: x: 909, y: 1030");
+    await expect(pcrs).toEqual("pcrs: easting: 217676.00, northing: -205599.86");
+    await expect(gcrs).toEqual("gcrs: lon: -92.152897, lat: 47.114275");
   });
 
   test("Layer disabled attribute update when controls are toggled off", async () => {
@@ -112,7 +112,7 @@ describe("Playwright Map Element Tests", () => {
       (elem) => elem.hasAttribute("disabled")
     );
 
-    expect(layer).toEqual(true);
+    await expect(layer).toEqual(true);
   });
 
   test("Debug mode correctly re-enabled after disabling", async () => {
@@ -140,9 +140,9 @@ describe("Playwright Map Element Tests", () => {
       (gridElem) => gridElem.childElementCount
     )
 
-    expect(panel).toEqual(6);
-    expect(banner).toEqual("DEBUG MODE");
-    expect(grid).toEqual(1);
+    await expect(panel).toEqual(6);
+    await expect(banner).toEqual("DEBUG MODE");
+    await expect(grid).toEqual(1);
 
   });
 
@@ -153,7 +153,7 @@ describe("Playwright Map Element Tests", () => {
       "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g",
       (tile) => tile.childElementCount
     );
-    expect(feature).toEqual(3);
+    await expect(feature).toEqual(3);
   });
 
   test("Layer deselected then reselected", async () => {
@@ -163,6 +163,6 @@ describe("Playwright Map Element Tests", () => {
       "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(4)",
       (tile) => tile.getAttribute("d")
     );
-    expect(feature).toEqual("M82.51724137931035 332.27586206896535L347.34482758620686 332.27586206896535L347.34482758620686 -38.48275862068965L82.51724137931035 -38.48275862068965z");
+    await expect(feature).toEqual("M82.51724137931035 332.27586206896535L347.34482758620686 332.27586206896535L347.34482758620686 -38.48275862068965L82.51724137931035 -38.48275862068965z");
   });
 });

@@ -16,7 +16,7 @@ jobs:
     - run: sudo apt-get install xvfb
     - run: npm install
     - run: npm install -g grunt-cli
-    - run: grunt clean copy rollup
+    - run: grunt default
     - run: xvfb-run --auto-servernum -- npm test
       env:
         CI: true

@@ -2,10 +2,10 @@
 describe("TCRS Tests", function () {
 	describe("CBMTILE Tests", function () {
 		var cbmtile;
-		test("M.CBMTILE origin", function () {
+		test("M.CBMTILE origin", async () => {
 			cbmtile = M.CBMTILE;
-			expect(cbmtile.options.origin[0]).toBe(-34655800);
-			expect(cbmtile.options.origin[1]).toBe(39310000);
+			await expect(cbmtile.options.origin[0]).toBe(-34655800);
+			await expect(cbmtile.options.origin[1]).toBe(39310000);
 		});
 	});
 	// for (OSMTILE, CBMTILE, WGS84, APSTILE)

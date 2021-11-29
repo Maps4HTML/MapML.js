@@ -13,7 +13,7 @@ exports.test = (path, zoomIn, zoomOut) => {
       const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1)",
         (controller) => controller.hasAttribute('disabled'))
 
-      expect(layerController).toEqual(true);
+      await expect(layerController).toEqual(true);
     });
     test("isVisible property false when zoomed out of bounds (zooming out)", async () => {
 
@@ -24,7 +24,7 @@ exports.test = (path, zoomIn, zoomOut) => {
       const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1)",
         (controller) => controller.hasAttribute('disabled'))
 
-      expect(layerController).toEqual(true);
+      await expect(layerController).toEqual(true);
     });
   });
 };

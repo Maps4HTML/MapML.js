@@ -106,9 +106,7 @@ export class WebMap extends HTMLMapElement {
 
     this._source = this.outerHTML;
     let tmpl = document.createElement('template');
-    tmpl.innerHTML =
-    `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
-    `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`;
+    tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
 
     const rootDiv = document.createElement('div');
     rootDiv.classList.add('mapml-web-map');

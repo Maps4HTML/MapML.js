@@ -5,7 +5,9 @@ module.exports = {
         launchTimeout: 10000,
     },
     launchOptions: {
-        headless: true,
+      headless: true,
+    },
+    connectOptions: {
         slowMo: 250,
     },
     browsers: ["chromium"],

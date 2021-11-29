@@ -13,7 +13,7 @@ describe("Playwright Query Link Tests", () => {
       await page.click("div");
       await page.waitForSelector("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div");
       const popupNum = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane", (div) => div.childElementCount);
-      expect(popupNum).toEqual(1);
+      await expect(popupNum).toEqual(1);
     });
 
     test("Query link closes previous popup when new query made within bounds", async () => {
@@ -23,7 +23,7 @@ describe("Playwright Query Link Tests", () => {
       await page.waitForTimeout(500);
       await page.waitForSelector("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div");
       const popupNum = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane", (div) => div.childElementCount);
-      expect(popupNum).toEqual(1);
+      await expect(popupNum).toEqual(1);
     });
 
     test("Query link does not show when out of bounds", async () => {
@@ -51,10 +51,10 @@ describe("Playwright Query Link Tests", () => {
       await page.waitForTimeout(1000);
       const popupNumTop = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane", (div) => div.childElementCount);
 
-      expect(popupNumRight).toEqual(0);
-      expect(popupNumBottom).toEqual(0);
-      expect(popupNumLeft).toEqual(0);
-      expect(popupNumTop).toEqual(0);
+      await expect(popupNumRight).toEqual(0);
+      await expect(popupNumBottom).toEqual(0);
+      await expect(popupNumLeft).toEqual(0);
+      await expect(popupNumTop).toEqual(0);
     });
   });
   describe("Queried Feature Tests", () => {
@@ -71,8 +71,8 @@ describe("Playwright Query Link Tests", () => {
         (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
       );
 
-      expect(feature).toEqual("M259 279L263 279L264 281L265 285L266 286L266 287L266 287L267 287L266 288L266 288L266 288L266 289L266 290L267 291L266 291L260 292L260 293L260 293L260 294L261 294L260 294L260 294L259 294L259 293L259 293L259 294L259 294L258 294L257 289L257 283L257 280L257 280L259 279z");
-      expect(popup).toEqual("Alabama");
+      await expect(feature).toEqual("M259 279L263 279L264 281L265 285L266 286L266 287L266 287L267 287L266 288L266 288L266 288L266 289L266 290L267 291L266 291L260 292L260 293L260 293L260 294L261 294L260 294L260 294L259 294L259 293L259 293L259 294L259 294L258 294L257 289L257 283L257 280L257 280L259 279z");
+      await expect(popup).toEqual("Alabama");
     });
 
     test("Next feature added + popup content updated ", async () => {
@@ -86,8 +86,8 @@ describe("Playwright Query Link Tests", () => {
         (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
       );
 
-      expect(feature).toEqual("M205 271L201 288L196 287L193 285L187 280L187 280L188 280L188 279L188 279L188 279L188 278L189 277L189 277L189 276L189 276L190 276L190 275L190 275L190 274L190 273L190 273L190 273L190 272L190 271L191 270L191 270L192 270L192 270L192 270L193 267L201 270L205 271z");
-      expect(popup).toEqual("Arizona");
+      await expect(feature).toEqual("M205 271L201 288L196 287L193 285L187 280L187 280L188 280L188 279L188 279L188 279L188 278L189 277L189 277L189 276L189 276L190 276L190 275L190 275L190 274L190 273L190 273L190 273L190 272L190 271L191 270L191 270L192 270L192 270L192 270L193 267L201 270L205 271z");
+      await expect(popup).toEqual("Arizona");
     });
 
     test("Previous feature added + popup content updated ", async () => {
@@ -101,8 +101,8 @@ describe("Playwright Query Link Tests", () => {
         (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
       );
 
-      expect(feature).toEqual("M259 279L263 279L264 281L265 285L266 286L266 287L266 287L267 287L266 288L266 288L266 288L266 289L266 290L267 291L266 291L260 292L260 293L260 293L260 294L261 294L260 294L260 294L259 294L259 293L259 293L259 294L259 294L258 294L257 289L257 283L257 280L257 280L259 279z");
-      expect(popup).toEqual("Alabama");
+      await expect(feature).toEqual("M259 279L263 279L264 281L265 285L266 286L266 287L266 287L267 287L266 288L266 288L266 288L266 289L266 290L267 291L266 291L260 292L260 293L260 293L260 294L261 294L260 294L260 294L259 294L259 293L259 293L259 294L259 294L258 294L257 289L257 283L257 280L257 280L259 279z");
+      await expect(popup).toEqual("Alabama");
     });
 
     test("PCRS feature added + popup content updated ", async () => {
@@ -117,8 +117,8 @@ describe("Playwright Query Link Tests", () => {
         (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
       );
 
-      expect(feature).toEqual("M246 332L232 207L138 232L156 307z");
-      expect(popup).toEqual("PCRS Test");
+      await expect(feature).toEqual("M246 332L232 207L138 232L156 307z");
+      await expect(popup).toEqual("PCRS Test");
     });
 
     test("TCRS feature added + popup content updated ", async () => {
@@ -132,8 +132,8 @@ describe("Playwright Query Link Tests", () => {
         (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
       );
 
-      expect(feature).toEqual("M292 285L352 287L355 321L307 315z");
-      expect(popup).toEqual("TCRS Test");
+      await expect(feature).toEqual("M292 285L352 287L355 321L307 315z");
+      await expect(popup).toEqual("TCRS Test");
     });
 
     test("Tilematrix feature added + popup content updated ", async () => {
@@ -147,8 +147,8 @@ describe("Playwright Query Link Tests", () => {
         (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
       );
 
-      expect(feature).toEqual("M307 185L395 185L395 273L307 273z");
-      expect(popup).toEqual("TILEMATRIX Test");
+      await expect(feature).toEqual("M307 185L395 185L395 273L307 273z");
+      await expect(popup).toEqual("TILEMATRIX Test");
     });
     test("Synthesized point, valid location ", async () => {
       await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)");
@@ -161,8 +161,8 @@ describe("Playwright Query Link Tests", () => {
         (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
       );
 
-      expect(feature).toEqual("M250 250 L237.5 220 C237.5 200, 262.5 200, 262.5 220 L250 250z");
-      expect(popup).toEqual("No Geometry");
+      await expect(feature).toEqual("M250 250 L237.5 220 C237.5 200, 262.5 200, 262.5 220 L250 250z");
+      await expect(popup).toEqual("No Geometry");
     });
   });
 });

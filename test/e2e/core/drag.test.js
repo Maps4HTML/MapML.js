@@ -22,7 +22,7 @@ describe("UI Drag&Drop Test", () => {
     });
     await page.hover(".leaflet-top.leaflet-right");
     let vars = await page.$$("xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset");
-    expect(vars.length).toBe(3);
+    await expect(vars.length).toBe(3);
   });
 
   test("Drag and drop of layers", async () => {
@@ -35,7 +35,7 @@ describe("UI Drag&Drop Test", () => {
     await page.mouse.up();
     await page.hover(".leaflet-top.leaflet-right");
     let vars = await page.$$("xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset");
-    expect(vars.length).toBe(3);
+    await expect(vars.length).toBe(3);
   });
 
   test("Moving layer down one in control overlay", async () => {
@@ -61,9 +61,9 @@ describe("UI Drag&Drop Test", () => {
       (div) => div.label
     );
 
-    expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
-    expect(layerIndex).toEqual("2");
-    expect(controlText).toBe("Canada Base Map - Transportation (CBMT)");
+    await expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
+    await expect(layerIndex).toEqual("2");
+    await expect(controlText).toBe("Canada Base Map - Transportation (CBMT)");
   });
 
   test("Moving layer up one in control overlay", async () => {
@@ -89,9 +89,9 @@ describe("UI Drag&Drop Test", () => {
       (div) => div.label
     );
 
-    expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
-    expect(layerIndex).toEqual("1");
-    expect(controlText).toBe("Static MapML With Tiles");
+    await expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
+    await expect(layerIndex).toEqual("1");
+    await expect(controlText).toBe("Static MapML With Tiles");
   });
 
 });
