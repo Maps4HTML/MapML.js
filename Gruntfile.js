@@ -59,7 +59,7 @@ module.exports = function(grunt) {
             cwd: 'node_modules/leaflet/dist/',
             flatten: true,
             filter: 'isFile',
-            src: ['leaflet.css','leaflet-src.js'],
+            src: ['leaflet-src.js'],
             dest: 'dist/'
           },
           {
