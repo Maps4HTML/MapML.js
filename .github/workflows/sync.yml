@@ -18,7 +18,7 @@ jobs:
         node-version: '12.x'
     - run: npm install
     - run: npm install -g grunt-cli
-    - run: grunt clean copy rollup
+    - run: grunt default
     - name: Pushes to requirements repo
       uses: ./.github/actions/sync-repo
       env:
