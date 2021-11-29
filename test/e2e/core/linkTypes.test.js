@@ -1,6 +1,6 @@
 describe("Playwright Feature Links Tests", () => {
     beforeAll(async () => {
-      await page.goto(PATH + "featureLinks.html");
+      await page.goto(PATH + "linkTypes.html");
     });
 
     afterAll(async function () {
