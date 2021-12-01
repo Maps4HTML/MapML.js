@@ -133,6 +133,9 @@ export class WebMap extends HTMLMapElement {
     `[is="web-map"][frameborder="0"] {` +
   	`border-width: 0;` +
   	`}` +
+    `[is="web-map"][hidden] {` +
+    `display: none!important;` +
+    `}` +
     `[is="web-map"] .mapml-web-map {` +
     `display: contents;` + // This div doesn't have to participate in layout by generating its own box.
     `}`;
