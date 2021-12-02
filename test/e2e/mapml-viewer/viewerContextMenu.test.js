@@ -72,7 +72,7 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     await page.click("body > mapml-viewer", { button: "right" });
     const contextMenu = await page.$eval(
       "div > div.mapml-contextmenu",
-      (menu) => menu.style.display
+      (menu) => window.getComputedStyle(menu).getPropertyValue("display")
     );
     await expect(contextMenu).toEqual("block");
   });

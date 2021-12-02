@@ -16,7 +16,7 @@ describe("Playwright Layer Context Menu Tests", () => {
     const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
     const resultHandle = await page.evaluateHandle(root => root.querySelector(".mapml-contextmenu.mapml-layer-menu"), nextHandle);
 
-    const menuDisplay = await (await page.evaluateHandle(elem => elem.style.display, resultHandle)).jsonValue();
+    const menuDisplay = await (await page.evaluateHandle(elem => window.getComputedStyle(elem).getPropertyValue("display"), resultHandle)).jsonValue();
 
     await expect(menuDisplay).toEqual("block");
   });

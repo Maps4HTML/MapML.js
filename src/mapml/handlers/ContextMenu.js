@@ -106,6 +106,7 @@ export var ContextMenu = L.Handler.extend({
     this._keyboardEvent = false;
 
     this._container = L.DomUtil.create("div", "mapml-contextmenu", map._container);
+    this._container.setAttribute('hidden', '');
     
     for (let i = 0; i < 6; i++) {
       this._items[i].el = this._createItem(this._container, this._items[i]);
@@ -113,6 +114,7 @@ export var ContextMenu = L.Handler.extend({
 
     this._coordMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-submenu", this._container);
     this._coordMenu.id = "mapml-copy-submenu";
+    this._coordMenu.setAttribute('hidden', '');
 
     this._clickEvent = null;
 
@@ -125,6 +127,7 @@ export var ContextMenu = L.Handler.extend({
     this._items[8].el = this._createItem(this._container, this._items[8]);
 
     this._layerMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-layer-menu", map._container);
+    this._layerMenu.setAttribute('hidden', '');
     for (let i = 0; i < this._layerItems.length; i++) {
       this._createItem(this._layerMenu, this._layerItems[i]);
     }
@@ -452,7 +455,7 @@ export var ContextMenu = L.Handler.extend({
           this._setPosition(pt,container);
 
           if (!this._mapMenuVisible) {
-            container.style.display = 'block';
+            container.removeAttribute('hidden');
               this._mapMenuVisible = true;
           }
 
@@ -463,9 +466,9 @@ export var ContextMenu = L.Handler.extend({
   _hide: function () {
       if (this._mapMenuVisible) {
           this._mapMenuVisible = false;
-          this._container.style.display = 'none';
-          this._coordMenu.style.display = 'none';
-          this._layerMenu.style.display = 'none';
+          this._container.setAttribute('hidden', '');
+          this._coordMenu.setAttribute('hidden', '');
+          this._layerMenu.setAttribute('hidden', '');
           this._map.fire('contextmenu.hide', {contextmenu: this});
           setTimeout(() => this._map._container.focus(), 0);
       }
@@ -501,21 +504,18 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _getElementSize: function (el) {
-      let size = this._size,
-          initialDisplay = el.style.display;
+      let size = this._size;
 
       if (!size || this._sizeChanged) {
           size = {};
 
           el.style.left = '-999999px';
           el.style.right = 'auto';
-          el.style.display = 'block';
 
           size.x = el.offsetWidth;
           size.y = el.offsetHeight;
 
           el.style.left = 'auto';
-          el.style.display = initialDisplay;
 
           this._sizeChanged = false;
       }
@@ -527,7 +527,7 @@ export var ContextMenu = L.Handler.extend({
    _focusOnLayerControl: function(){
     this._mapMenuVisible = false;
     delete this._layerMenuTabs;
-    this._layerMenu.style.display = 'none';
+    this._layerMenu.setAttribute('hidden', '');
     if(this._elementInFocus){
       this._elementInFocus.focus();
     } else {
@@ -608,7 +608,7 @@ export var ContextMenu = L.Handler.extend({
         copyEl = this._items[5].el.el;
 
     copyEl.setAttribute("aria-expanded","true");
-    menu.style.display = "block";
+    menu.removeAttribute('hidden');
 
     if (click.containerPoint.x + 160 + 80 > mapSize.x) {
       menu.style.left = 'auto';
@@ -633,7 +633,7 @@ export var ContextMenu = L.Handler.extend({
         e.srcElement.innerText === (M.options.locale.cmCopyCoords + " (C)"))return;
     let menu = this._coordMenu, copyEl = this._items[5].el.el;
     copyEl.setAttribute("aria-expanded","false");
-    menu.style.display = "none";
+    menu.setAttribute('hidden', '');
   },
 
   _onItemMouseOver: function (e) {
