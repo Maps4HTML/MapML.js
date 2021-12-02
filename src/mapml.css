@@ -457,7 +457,7 @@
   outline: 0;
 }
 .leaflet-container:not(:focus-within) .mapml-crosshair {
-  visibility: hidden;
+  display: none;
 }
 
 /* Restore the default UA tap highlight color by overriding the opinionated tap
@@ -488,6 +488,10 @@ summary {
   cursor: crosshair;
 }
 
+[hidden] {
+  display: none!important;
+}
+
 /*
  * Visibility hack – mitigates FOUC.
  * (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154)
@@ -505,8 +509,6 @@ summary {
   height: 72px;
   left: 50%;
   top: 50%;
-  content: '';
-  display: block;
   position: absolute;
   z-index: 10000;
 }
