@@ -60,7 +60,7 @@ describe("Playwright Map Context Menu Tests", () => {
     await page.click("body > map", { button: "right" });
     const contextMenu = await page.$eval(
       "div > div.mapml-contextmenu",
-      (menu) => menu.style.display
+      (menu) => window.getComputedStyle(menu).getPropertyValue("display")
     );
     await expect(contextMenu).toEqual("block");
   });

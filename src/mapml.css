@@ -259,7 +259,6 @@
  */
 
 .mapml-contextmenu {
-  display: none;
   border-radius: 4px;
   padding: 4px 0;
   background-color: #fff;
@@ -270,7 +269,6 @@
 }
 
 .mapml-contextmenu button.mapml-contextmenu-item {
-  display: block;
   color: #222;
   font-size: 12px;
   line-height: 20px;
