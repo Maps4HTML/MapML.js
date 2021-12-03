@@ -735,3 +735,37 @@ label.mapml-layer-item-toggle {
   white-space: nowrap;
   width: 1px;
 }
+
+/*
+ * Feature styles.
+ */
+ 
+.mapml-vector-container svg :is(
+  [role="link"]:focus,
+  [role="link"]:hover,
+  [role="link"]:focus path,
+  [role="link"]:hover path,
+  [role="link"] path:focus,
+  [role="link"] path:hover,
+  [role="button"]:focus,
+  [role="button"]:hover,
+  [role="button"]:focus path,
+  [role="button"]:hover path,
+  [role="button"] path:focus,
+  [role="button"] path:hover,
+  path[tabindex="0"]:focus
+  ) {
+  stroke: #0000EE;
+  stroke: LinkText;
+}
+.mapml-vector-container svg :is(
+  [role="link"]:focus:not(:focus-visible),
+  [role="link"]:focus:not(:focus-visible) path,
+  [role="link"] path:focus:not(:focus-visible),
+  [role="button"]:focus:not(:focus-visible),
+  [role="button"]:focus:not(:focus-visible) path,
+  [role="button"] path:focus:not(:focus-visible),
+  path[tabindex="0"]:focus:not(:focus-visible)
+  ) {
+  outline: 0!important;
+}
