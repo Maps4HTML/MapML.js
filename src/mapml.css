@@ -713,6 +713,8 @@ button.mapml-button:disabled,
 label.mapml-layer-item-toggle {
   display: inline-flex;
   align-items: center;
+  width: 100%; /* have the clickable area take up all available width */
+  min-height: 44px;
 }
 
 .mapml-layer-item-name {
