@@ -22,6 +22,14 @@ describe("Playwright Map Context Menu Tests", () => {
     await context.close();
   });
 
+  test("Context menu dismissed by Escape key", async () => {
+    await page.click("body > map");
+    await page.keyboard.press("Shift+F10");
+    const contextMenu = page.locator('css= body > map >> css= div > div.mapml-contextmenu').first();
+    expect( await contextMenu.isVisible()).toBeTruthy();
+    await page.keyboard.press("Escape");
+    expect(await contextMenu.isHidden()).toBeTruthy();
+  });
   test("Context menu focus on keyboard shortcut", async () => {
     await page.click("body > map");
     await page.keyboard.press("Shift+F10");
