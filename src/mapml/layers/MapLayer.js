@@ -1168,9 +1168,9 @@ export var MapMLLayer = L.Layer.extend({
       mapFocusButton.type = "button";
       mapFocusButton.title = "Focus Map";
       mapFocusButton.innerHTML = "<span aria-hidden='true'>|&#10094;</span>";
-      L.DomEvent.disableClickPropagation(mapFocusButton);
-      L.DomEvent.on(mapFocusButton, 'click', L.DomEvent.stop);
       L.DomEvent.on(mapFocusButton, 'click', (e)=>{
+        L.DomEvent.stop(e);
+        map.options.mapEl._sortIndex();
         map.closePopup();
         map._container.focus();
       }, popup);
@@ -1180,8 +1180,6 @@ export var MapMLLayer = L.Layer.extend({
       previousButton.type = "button";
       previousButton.title = "Previous Feature";
       previousButton.innerHTML = "<span aria-hidden='true'>&#10094;</span>";
-      L.DomEvent.disableClickPropagation(previousButton);
-      L.DomEvent.on(previousButton, 'click', L.DomEvent.stop);
       L.DomEvent.on(previousButton, 'click', layer._previousFeature, popup);
 
       // static feature counter that 1/1
@@ -1194,8 +1192,6 @@ export var MapMLLayer = L.Layer.extend({
       nextButton.type = "button";
       nextButton.title = "Next Feature";
       nextButton.innerHTML = "<span aria-hidden='true'>&#10095;</span>";
-      L.DomEvent.disableClickPropagation(nextButton);
-      L.DomEvent.on(nextButton, 'click', L.DomEvent.stop);
       L.DomEvent.on(nextButton, 'click', layer._nextFeature, popup);
       
       // creates >| button, focuses map controls
@@ -1203,9 +1199,12 @@ export var MapMLLayer = L.Layer.extend({
       controlFocusButton.type = "button";
       controlFocusButton.title = "Focus Controls";
       controlFocusButton.innerHTML = "<span aria-hidden='true'>&#10095;|</span>";
-      L.DomEvent.disableClickPropagation(controlFocusButton);
-      L.DomEvent.on(controlFocusButton, 'click', L.DomEvent.stop);
       L.DomEvent.on(controlFocusButton, 'click', (e) => {
+        map.options.mapEl._sortIndex();
+        map.options.mapEl._currFeatureIndex = map.options.mapEl._featureIndexOrder.length - 1;
+        map.options.mapEl._featureIndexOrder[0].path.setAttribute("tabindex", -1);
+        map.options.mapEl._featureIndexOrder[map.options.mapEl._currFeatureIndex].path.setAttribute("tabindex", 0);
+        L.DomEvent.stop(e);
         map.closePopup();
         map._controlContainer.querySelector("A").focus();
       }, popup);
@@ -1232,9 +1231,11 @@ export var MapMLLayer = L.Layer.extend({
         let isTab = focusEvent.originalEvent.keyCode === 9,
             shiftPressed = focusEvent.originalEvent.shiftKey;
         if((path[0].classList.contains("leaflet-popup-close-button") && isTab && !shiftPressed) || focusEvent.originalEvent.keyCode === 27){
-          L.DomEvent.stop(focusEvent);
-          map.closePopup(popup);
-          group.focus();
+          setTimeout(() => {
+            L.DomEvent.stop(focusEvent);
+            map.closePopup(popup);
+            group.focus();
+          }, 0);
         } else if ((path[0].title==="Focus Map" || path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
           setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
             L.DomEvent.stop(focusEvent);

@@ -63,7 +63,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
           this.options._leafletLayer._map.options.mapEl._featureIndexOrder[index].path.setAttribute("tabindex", 0);
         }
       }
-    } else if (!(e.keyCode === 9 || e.keyCode === 16)){
+    } else if (!(e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13)){
       this.options._leafletLayer._map.options.mapEl._currFeatureIndex = 0;
       this.options._leafletLayer._map.options.mapEl._featureIndexOrder[0].path.focus();
     }
@@ -97,22 +97,10 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @private
    */
   _previousFeature: function(e){
-    let group = this._source.group.previousSibling;
-    if(!group){
-      let currentIndex = this._source.group.closest("div.mapml-layer").style.zIndex;
-      let overlays = this._map.getPane("overlayPane").children;
-      for(let i = overlays.length - 1; i >= 0; i--){
-        let layer = overlays[i];
-        if(layer.style.zIndex >= currentIndex) continue;
-        group = layer.querySelector("g.leaflet-interactive");
-        if(group){
-          group = group.parentNode.lastChild;
-          break;
-        }
-      }
-      if (!group) group = this._source.group;
-    }
-    group.focus();
+    L.DomEvent.stop(e);
+    this._map.options.mapEl._currFeatureIndex = Math.max(this._map.options.mapEl._currFeatureIndex - 1, 0);
+    let prevFocus = this._map.options.mapEl._featureIndexOrder[this._map.options.mapEl._currFeatureIndex];
+    prevFocus.path.focus();
     this._map.closePopup();
   },
 
@@ -122,18 +110,10 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @private
    */
   _nextFeature: function(e){
-    let group = this._source.group.nextSibling;
-    if(!group){
-      let currentIndex = this._source.group.closest("div.mapml-layer").style.zIndex;
-
-      for(let layer of this._map.getPane("overlayPane").children){
-        if(layer.style.zIndex <= currentIndex) continue;
-        group = layer.querySelectorAll("g.leaflet-interactive");
-        if(group.length > 0)break;
-      }
-      group = group && group.length > 0 ? group[0] : this._source.group;
-    }
-    group.focus();
+    L.DomEvent.stop(e);
+    this._map.options.mapEl._currFeatureIndex = Math.min(this._map.options.mapEl._currFeatureIndex + 1, this._map.options.mapEl._featureIndexOrder.length - 1);
+    let nextFocus = this._map.options.mapEl._featureIndexOrder[this._map.options.mapEl._currFeatureIndex];
+    nextFocus.path.focus();
     this._map.closePopup();
   },
 
