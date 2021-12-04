@@ -6,6 +6,7 @@ module.exports = {
     },
     launchOptions: {
       headless: true,
+//      devtools: true, // expose browser devtools when headless: false
     },
     connectOptions: {
         slowMo: 250,
