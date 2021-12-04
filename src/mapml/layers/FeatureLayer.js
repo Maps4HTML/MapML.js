@@ -72,6 +72,9 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
     onAdd: function(map){
       L.FeatureGroup.prototype.onAdd.call(this, map);
+      this.eachLayer(function (layer) {
+        layer._updateInteraction();
+      });
       if(this._mapmlFeatures)map.on("featurepagination", this.showPaginationFeature, this);
     },
 
@@ -82,6 +85,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         L.DomUtil.remove(this._container);
       }
       L.FeatureGroup.prototype.onRemove.call(this, map);
+      this._map.options.mapEl._cleanIndex();
     },
 
     getEvents: function(){

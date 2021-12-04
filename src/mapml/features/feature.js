@@ -284,13 +284,19 @@ export var Feature = L.Path.extend({
       this._coordinateToArrays(span, main, subParts, false, span.getAttribute("class"), parents.concat([span]));
     }
     let noSpan = coords.textContent.replace(/(<([^>]+)>)/ig, ''),
-        pairs = noSpan.match(/(\S+\s+\S+)/gim), local = [];
+        pairs = noSpan.match(/(\S+\s+\S+)/gim), local = [], bounds;
     for (let p of pairs) {
       let numPair = [];
       p.split(/\s+/gim).forEach(M.parseNumber, numPair);
       let point = M.pointToPCRSPoint(L.point(numPair), this.options.zoom, this.options.projection, this.options.nativeCS);
       local.push(point);
-      this._bounds = this._bounds ? this._bounds.extend(point) : L.bounds(point, point);
+      bounds = bounds ? bounds.extend(point) : L.bounds(point, point);
+    }
+    if (this._bounds) {
+      this._bounds.extend(bounds.min);
+      this._bounds.extend(bounds.max);
+    } else {
+      this._bounds = bounds;
     }
     if (isFirst) {
       main.push({ points: local });
@@ -303,6 +309,7 @@ export var Feature = L.Path.extend({
       }
       subParts.unshift({
         points: local,
+        center: bounds.getCenter(),
         cls: `${cls || ""} ${wrapperAttr.className || ""}`.trim(),
         attr: attrMap,
         link: wrapperAttr.link,

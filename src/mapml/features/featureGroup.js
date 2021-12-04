@@ -25,11 +25,15 @@ export var FeatureGroup = L.FeatureGroup.extend({
         this.options.onEachFeature(this.options.properties, this);
         this.off("click", this._openPopup);
       }
-      this.options._leafletLayer._map.options.mapEl._addToIndex(this, this.options.group);
     }
 
     this.options.group.setAttribute('aria-label', this.options.accessibleTitle);
     if(this.options.featureID) this.options.group.setAttribute("data-fid", this.options.featureID);
+  },
+
+  _updateInteraction: function () {
+    if((this.options.onEachFeature && this.options.properties) || this.options.link)
+      this.options._leafletLayer._map.options.mapEl._addToIndex(this, this.getPCRSCenter(), this.options.group);
   },
 
   /**
@@ -42,6 +46,8 @@ export var FeatureGroup = L.FeatureGroup.extend({
     if((e.keyCode === 9 || e.keyCode === 16) && e.type === "keydown"){
       let index = this.options._leafletLayer._map.options.mapEl._currFeatureIndex;
       if(e.keyCode === 9 && e.shiftKey) {
+        if(index === this.options._leafletLayer._map.options.mapEl._featureIndexOrder.length - 1)
+          this.options._leafletLayer._map.options.mapEl._featureIndexOrder[index].path.setAttribute("tabindex", -1);
         if(index !== 0){
           L.DomEvent.stop(e);
           this.options._leafletLayer._map.options.mapEl._featureIndexOrder[index - 1].path.focus();
@@ -59,6 +65,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
       }
     } else if (!(e.keyCode === 9 || e.keyCode === 16)){
       this.options._leafletLayer._map.options.mapEl._currFeatureIndex = 0;
+      this.options._leafletLayer._map.options.mapEl._featureIndexOrder[0].path.focus();
     }
     if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup") {
       this.openTooltip();
