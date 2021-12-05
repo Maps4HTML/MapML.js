@@ -11,5 +11,5 @@ module.exports = {
     connectOptions: {
         slowMo: 250,
     },
-    browsers: ["chromium"],
+    browsers: ["firefox"],
 }
