@@ -1,7 +1,7 @@
 L.Map.Keyboard.include({
     _onKeyDown: function (e) {
 
-        if (e.altKey || e.ctrlKey || e.metaKey) { return; }
+        if (e.altKey || e.metaKey) { return; }
 
         let zoomIn = {
             187: 187,
@@ -26,6 +26,9 @@ L.Map.Keyboard.include({
                 offset = this._panKeys[key];
                 if (e.shiftKey) {
                     offset = L.point(offset).multiplyBy(3);
+                }
+                if (e.ctrlKey) {
+                    offset = L.point(offset).divideBy(5);
                 }
 
                 map.panBy(offset);
