@@ -28,7 +28,7 @@ L.Map.Keyboard.include({
                     offset = L.point(offset).multiplyBy(3);
                 }
                 if (e.ctrlKey) {
-                    offset = L.point(offset).divideBy(3);
+                    offset = L.point(offset).divideBy(5);
                 }
 
                 map.panBy(offset);
