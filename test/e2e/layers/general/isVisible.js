@@ -6,7 +6,7 @@ exports.test = (path, zoomIn, zoomOut) => {
 
     test("isVisible property false when zoomed out of bounds (zooming in)", async () => {
       for (let i = 0; i < zoomIn; i++) {
-        await page.click('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in');
+        await page.click('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in', {force: true});
         await page.waitForTimeout(300);
       }
       await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > a');
@@ -18,7 +18,7 @@ exports.test = (path, zoomIn, zoomOut) => {
     test("isVisible property false when zoomed out of bounds (zooming out)", async () => {
 
       for (let i = 0; i < zoomOut + zoomIn; i++) {
-        await page.click('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out');
+        await page.click('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out', {force: true});
         await page.waitForTimeout(300);
       }
       const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1)",

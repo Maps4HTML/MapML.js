@@ -8,7 +8,7 @@ exports.test = (path, zoomIn, zoomOut) => {
 
       test("Limit map zooming (zooming in)", async () => {
         for (let i = 0; i < zoomIn; i++) {
-          await page.click('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in');
+          await page.click('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in', {force: true});
           await page.waitForTimeout(500);
         }
         const zoomButton = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in",
@@ -18,7 +18,7 @@ exports.test = (path, zoomIn, zoomOut) => {
       });
 
       test("Allow zooming before reaching limit (zooming in)", async () => {
-        await page.click('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out');
+        await page.click('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out', {force: true});
         await page.waitForTimeout(300);
         const zoomButton = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in",
           (controller) => controller.className);
@@ -28,7 +28,7 @@ exports.test = (path, zoomIn, zoomOut) => {
 
       test("Limit map zooming (zooming out)", async () => {
         for (let i = 0; i < zoomOut + zoomIn - 1; i++) {
-          await page.click('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out');
+          await page.click('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out', {force: true});
           await page.waitForTimeout(500);
         }
         const zoomButton = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out",
@@ -38,7 +38,7 @@ exports.test = (path, zoomIn, zoomOut) => {
       });
 
       test("Allow zooming before reaching limit (zooming out)", async () => {
-        await page.click('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in');
+        await page.click('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in', {force: true});
         await page.waitForTimeout(300);
         const zoomButton = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out",
           (controller) => controller.className);
