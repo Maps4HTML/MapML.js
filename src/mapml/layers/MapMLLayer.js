@@ -624,6 +624,7 @@ export var MapMLLayer = L.Layer.extend({
         svgSettingsControlIcon.setAttribute('viewBox', '0 0 24 24');
         svgSettingsControlIcon.setAttribute('height', '22');
         svgSettingsControlIcon.setAttribute('width', '22');
+        svgSettingsControlIcon.setAttribute('fill', 'currentColor');
         settingsControlPath1.setAttribute('d', 'M0 0h24v24H0z');
         settingsControlPath1.setAttribute('fill', 'none');
         settingsControlPath2.setAttribute('d', 'M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z');
