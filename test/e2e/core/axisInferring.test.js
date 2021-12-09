@@ -37,11 +37,18 @@ describe("UI Drag&Drop Test", () => {
   });
 
   test("GCRS inferring", async () => {
+    const EPSILON = 0.0000001;
+    const expectedTopLeftLongitude = -92.0;
+    const expectedTopLeftLatitude = 52.999999999993484;
+    const expectedBottomRightLongitude = -62.0;
+    const expectedBottomRightLatitude = 33.99999999999964;
     const layerExtent = await page.$eval(
       "body > map > layer-:nth-child(4)",
       (layer) => layer.extent
     );
-    await expect(layerExtent.topLeft.gcrs).toEqual({ horizontal: -92, vertical: 52.999999999993484 });
-    await expect(layerExtent.bottomRight.gcrs).toEqual({ horizontal: -62, vertical: 33.99999999999964 });
+    await expect(Math.abs(layerExtent.topLeft.gcrs.horizontal - expectedTopLeftLongitude) < EPSILON);
+    await expect(Math.abs(layerExtent.topLeft.gcrs.vertical - expectedTopLeftLatitude) < EPSILON);
+    await expect(Math.abs(layerExtent.bottomRight.gcrs.horizontal - expectedBottomRightLongitude) < EPSILON);
+    await expect(Math.abs(layerExtent.bottomRight.gcrs.vertical - expectedBottomRightLatitude) < EPSILON);
   });
 });

@@ -25,47 +25,30 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
   test("Context menu focus on keyboard shortcut", async () => {
     await page.click("body > mapml-viewer");
     await page.keyboard.press("Shift+F10");
-    const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
-    const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
-    const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
-    const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
-    let name = await nameHandle.jsonValue();
-    await nameHandle.dispose();
-    await expect(name).toEqual("Back (B)");
+    const activeButtonText = await page.evaluate(`document.activeElement.shadowRoot.activeElement.textContent`);
+    await expect(activeButtonText).toEqual("Back (B)");
   });
 
   test("Context menu tab goes to next item", async () => {
+    // depends on previous test
     await page.keyboard.press("Tab");
-    const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
-    const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
-    const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
-    const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
-    let name = await nameHandle.jsonValue();
-    await nameHandle.dispose();
-    await expect(name).toEqual("Forward (F)");
+    const activeButtonText = await page.evaluate(`document.activeElement.shadowRoot.activeElement.textContent`);
+    await expect(activeButtonText).toEqual("Forward (F)");
   });
 
 
   test("Context menu shift + tab goes to previous item", async () => {
+    // depends on previous test
     await page.keyboard.press("Shift+Tab");
-    const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
-    const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
-    const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
-    const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
-    let name = await nameHandle.jsonValue();
-    await nameHandle.dispose();
-    await expect(name).toEqual("Back (B)");
+    const activeButtonText = await page.evaluate(`document.activeElement.shadowRoot.activeElement.textContent`);
+    await expect(activeButtonText).toEqual("Back (B)");
   });
 
   test("Submenu opens on C with focus on first item", async () => {
+    // depends on previous test
     await page.keyboard.press("c");
-    const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
-    const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
-    const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
-    const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
-    let name = await nameHandle.jsonValue();
-    await nameHandle.dispose();
-    await expect(name).toEqual("tile");
+    const activeButtonText = await page.evaluate(`document.activeElement.shadowRoot.activeElement.textContent`);
+    await expect(activeButtonText).toEqual("tile");
   });
 
   test("Context menu displaying on map", async () => {

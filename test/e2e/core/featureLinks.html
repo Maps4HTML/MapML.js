@@ -41,7 +41,7 @@
         }
     </map-style>
     <map-link id="forth" rel="stylesheet" type="text/css" href="forth.css"></map-link>
-    <map-feature zoom="2" class="refDiff">
+    <map-feature id="tabstop-one" zoom="2" class="refDiff">
       <map-featurecaption>Accessible Square</map-featurecaption>
       <map-properties>
         <h1>Test</h1>
@@ -49,17 +49,17 @@
       </map-properties>
       <map-geometry cs="tilematrix">
         <map-polygon>
-          <map-coordinates>11 11 12 11 12 12 11 12 <map-a href="cbmtgeom.mapml" target="_blank">11 11</map-a></map-coordinates>
+          <map-coordinates>11 11 12 11 12 12 11 12 <map-a id="tabstop-two" href="cbmtgeom.mapml" target="_blank">11 11</map-a></map-coordinates>
         </map-polygon>
       </map-geometry>
     </map-feature>
 
-    <map-feature zoom="2" class="refDiff">
+    <map-feature  zoom="2" class="refDiff">
       <map-properties>
         <h1>Test</h1>
       </map-properties>
       <map-geometry cs="pcrs">
-        <map-a href="cbmtgeom.mapml" target="_blank">
+        <map-a id="tabstop-three" href="cbmtgeom.mapml" target="_blank">
           <map-polygon>
             <map-coordinates>257421 -3567196 -271745 1221771 -3896544 242811 -3183549 -2613313</map-coordinates>
           </map-polygon>
@@ -73,7 +73,7 @@
         <h1>Test</h1>
       </map-properties>
       <map-geometry cs="tcrs">
-        <map-a href="cbmtgeom.mapml" target="_blank">
+        <map-a  id="tabstop-four" href="cbmtgeom.mapml" target="_blank">
           <map-geometrycollection>
             <map-polygon>
               <map-coordinates>2771 3106 2946 3113 2954 3210 2815 3192</map-coordinates>
@@ -92,12 +92,12 @@
         <h1>Test</h1>
       </map-properties>
       <map-geometry cs="tilematrix">
-        <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/" target="_self" type="text/html">
+        <map-a id="tabstop-five" href="http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/" target="_self" type="text/html">
           <map-geometrycollection>
             <map-polygon>
               <map-coordinates>9 10 10 10 10 11 9 11 9 10</map-coordinates>
             </map-polygon>
-            <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/fdi/" target="_top" type="text/html">
+            <map-a id="tabstop-six" href="http://geogratis.gc.ca/mapml/en/cbmtile/fdi/" target="_top" type="text/html">
               <map-point>
                 <map-coordinates>10.5 11</map-coordinates>
               </map-point>
@@ -111,12 +111,12 @@
         <h1>Test</h1>
       </map-properties>
       <map-geometry cs="tilematrix">
-        <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/" target="_parent" type="text/html">
+        <map-a id="tabstop-seven" href="http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/" target="_parent" type="text/html">
           <map-geometrycollection>
             <map-polygon>
               <map-coordinates>9 10 10 10 10 11 9 11 9 10</map-coordinates>
             </map-polygon>
-            <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/fdi/" target="_blank" type="text/html">
+            <map-a id="tabstop-eight" href="http://geogratis.gc.ca/mapml/en/cbmtile/fdi/" target="_blank" type="text/html">
               <map-point>
                 <map-coordinates>10.5 11</map-coordinates>
               </map-point>
@@ -130,7 +130,7 @@
         <h1>Test</h1>
       </map-properties>
       <map-geometry cs="tilematrix">
-        <map-a href="data/vector-tile-test.mapml#2,-98,37" target="_blank">
+        <map-a id="tabstop-nine" href="data/vector-tile-test.mapml#2,-98,37" target="_blank">
           <map-polygon>
             <map-coordinates>10.5 11 10.75 11 10.75 11.25 10.5 11.25 10.5 11</map-coordinates>
           </map-polygon>

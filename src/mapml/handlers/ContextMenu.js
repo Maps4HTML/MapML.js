@@ -103,7 +103,6 @@ export var ContextMenu = L.Handler.extend({
       },
     ];
     this._mapMenuVisible = false;
-    this._keyboardEvent = false;
 
     this._container = L.DomUtil.create("div", "mapml-contextmenu", map._container);
     
@@ -418,13 +417,14 @@ export var ContextMenu = L.Handler.extend({
       if(!elem.layer.validProjection) return;
       this._layerClicked = elem;
       this._showAtPoint(e.containerPoint, e, this._layerMenu);
+      this._layerMenu.firstChild.focus();
     } else if(elem.classList.contains("leaflet-container") || elem.classList.contains("mapml-debug-extent") ||
       elem.tagName === "path") {
       this._layerClicked = undefined;
       this._showAtPoint(e.containerPoint, e, this._container);
+      this._container.firstChild.focus();
     }
     if(e.originalEvent.button === 0 || e.originalEvent.button === -1){
-      this._keyboardEvent = true;
       if(this._layerClicked){
         let activeEl = document.activeElement;
         this._elementInFocus = activeEl.shadowRoot.activeElement;
@@ -439,8 +439,6 @@ export var ContextMenu = L.Handler.extend({
 
   _showAtPoint: function (pt, data, container) {
       if (this._items.length) {
-          let event = L.extend(data || {}, {contextmenu: this});
-
           this._showLocation = {
               containerPoint: pt
           };
@@ -455,8 +453,6 @@ export var ContextMenu = L.Handler.extend({
             container.style.display = 'block';
               this._mapMenuVisible = true;
           }
-
-          this._map.fire('contextmenu.show', event);
       }
   },
 
@@ -625,7 +621,7 @@ export var ContextMenu = L.Handler.extend({
       menu.style.top = 100 + 'px';
       menu.style.bottom = 'auto';
     }
-    if(this._keyboardEvent)menu.firstChild.focus();
+    menu.firstChild.focus();
   },
 
   _hideCoordMenu: function(e){

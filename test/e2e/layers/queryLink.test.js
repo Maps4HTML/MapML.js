@@ -76,7 +76,7 @@ describe("Playwright Query Link Tests", () => {
     });
 
     test("Next feature added + popup content updated ", async () => {
-      await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)");
+      await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)",{force: true});
       const feature = await page.$eval(
         "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
         (tile) => tile.getAttribute("d")
@@ -91,7 +91,7 @@ describe("Playwright Query Link Tests", () => {
     });
 
     test("Previous feature added + popup content updated ", async () => {
-      await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(2)");
+      await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(2)",{force: true});
       const feature = await page.$eval(
         "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
         (tile) => tile.getAttribute("d")
@@ -107,7 +107,7 @@ describe("Playwright Query Link Tests", () => {
 
     test("PCRS feature added + popup content updated ", async () => {
       for (let i = 0; i < 2; i++)
-        await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)");
+        await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)",{force: true});
       const feature = await page.$eval(
         "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
         (tile) => tile.getAttribute("d")
@@ -122,7 +122,7 @@ describe("Playwright Query Link Tests", () => {
     });
 
     test("TCRS feature added + popup content updated ", async () => {
-      await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)");
+      await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)",{force: true});
       const feature = await page.$eval(
         "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
         (tile) => tile.getAttribute("d")
@@ -137,7 +137,7 @@ describe("Playwright Query Link Tests", () => {
     });
 
     test("Tilematrix feature added + popup content updated ", async () => {
-      await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)");
+      await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)",{force: true});
       const feature = await page.$eval(
         "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
         (tile) => tile.getAttribute("d")
@@ -151,7 +151,7 @@ describe("Playwright Query Link Tests", () => {
       await expect(popup).toEqual("TILEMATRIX Test");
     });
     test("Synthesized point, valid location ", async () => {
-      await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)");
+      await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)",{force: true});
       const feature = await page.$eval(
         "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
         (tile) => tile.getAttribute("d")
