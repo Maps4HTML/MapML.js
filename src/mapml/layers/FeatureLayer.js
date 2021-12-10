@@ -72,9 +72,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
     onAdd: function(map){
       L.FeatureGroup.prototype.onAdd.call(this, map);
-      this.eachLayer(function (layer) {
-        layer._updateInteraction();
-      });
       if(this._mapmlFeatures)map.on("featurepagination", this.showPaginationFeature, this);
     },
 

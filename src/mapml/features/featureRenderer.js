@@ -46,7 +46,6 @@ export var FeatureRenderer = L.SVG.extend({
       if (p.subrings) {
         for (let r of p.subrings) {
           this._createPath(r, layer.options.className, r.attr['aria-label'], (r.link !== undefined), r.attr);
-          if(r.attr && r.attr.tabindex) this._map.featureIndex.addToIndex(layer, r.center, r.path);
         }
       }
       this._updateStyle(layer);
@@ -73,7 +72,7 @@ export var FeatureRenderer = L.SVG.extend({
       if (title) p.setAttribute('aria-label', title);
     } else {
       for(let [name, value] of Object.entries(attr)){
-        if(name === "id") continue;
+        if(name === "id" || name === "tabindex") continue;
         p.setAttribute(name, value);
       }
     }

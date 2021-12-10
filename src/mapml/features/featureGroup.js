@@ -31,9 +31,26 @@ export var FeatureGroup = L.FeatureGroup.extend({
     if(this.options.featureID) this.options.group.setAttribute("data-fid", this.options.featureID);
   },
 
-  _updateInteraction: function () {
+  onAdd: function (map) {
+    L.LayerGroup.prototype.onAdd.call(this, map);
+    this.updateInteraction();
+  },
+
+  updateInteraction: function () {
+    let map = this.options._leafletLayer._map || this._map;
     if((this.options.onEachFeature && this.options.properties) || this.options.link)
-      this._map.featureIndex.addToIndex(this, this.getPCRSCenter(), this.options.group);
+      map.featureIndex.addToIndex(this, this.getPCRSCenter(), this.options.group);
+
+    for (let layerID in this._layers) {
+      let layer = this._layers[layerID];
+      for(let part of layer._parts){
+        if(layer.featureAttributes && layer.featureAttributes.tabindex)
+          map.featureIndex.addToIndex(layer, layer.getPCRSCenter(), part.path);
+        for(let subPart of part.subrings) {
+          if(subPart.attr && subPart.attr.tabindex) map.featureIndex.addToIndex(layer, subPart.center, subPart.path);
+        }
+      }
+    }
   },
 
   /**
@@ -42,7 +59,6 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @private
    */
   _handleFocus: function(e) {
-    if(e.target.tagName.toUpperCase() !== "G") return;
     if((e.keyCode === 9 || e.keyCode === 16) && e.type === "keydown"){
       let index = this._map.featureIndex.currentIndex;
       if(e.keyCode === 9 && e.shiftKey) {
@@ -67,6 +83,8 @@ export var FeatureGroup = L.FeatureGroup.extend({
       this._map.featureIndex.currentIndex = 0;
       this._map.featureIndex.inBoundFeatures[0].path.focus();
     }
+
+    if(e.target.tagName.toUpperCase() !== "G") return;
     if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup") {
       this.openTooltip();
     } else if (e.keyCode === 13 || e.keyCode === 32){
