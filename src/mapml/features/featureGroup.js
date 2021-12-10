@@ -33,7 +33,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
 
   _updateInteraction: function () {
     if((this.options.onEachFeature && this.options.properties) || this.options.link)
-      this.options._leafletLayer._map.options.mapEl._addToIndex(this, this.getPCRSCenter(), this.options.group);
+      this._map.featureIndex.addToIndex(this, this.getPCRSCenter(), this.options.group);
   },
 
   /**
@@ -44,28 +44,28 @@ export var FeatureGroup = L.FeatureGroup.extend({
   _handleFocus: function(e) {
     if(e.target.tagName.toUpperCase() !== "G") return;
     if((e.keyCode === 9 || e.keyCode === 16) && e.type === "keydown"){
-      let index = this.options._leafletLayer._map.options.mapEl._currFeatureIndex;
+      let index = this._map.featureIndex.currentIndex;
       if(e.keyCode === 9 && e.shiftKey) {
-        if(index === this.options._leafletLayer._map.options.mapEl._featureIndexOrder.length - 1)
-          this.options._leafletLayer._map.options.mapEl._featureIndexOrder[index].path.setAttribute("tabindex", -1);
+        if(index === this._map.featureIndex.inBoundFeatures.length - 1)
+          this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", -1);
         if(index !== 0){
           L.DomEvent.stop(e);
-          this.options._leafletLayer._map.options.mapEl._featureIndexOrder[index - 1].path.focus();
-          this.options._leafletLayer._map.options.mapEl._currFeatureIndex--;
+          this._map.featureIndex.inBoundFeatures[index - 1].path.focus();
+          this._map.featureIndex.currentIndex--;
         }
       } else if (e.keyCode === 9) {
-        if(index !== this.options._leafletLayer._map.options.mapEl._featureIndexOrder.length - 1) {
+        if(index !== this._map.featureIndex.inBoundFeatures.length - 1) {
           L.DomEvent.stop(e);
-          this.options._leafletLayer._map.options.mapEl._featureIndexOrder[index + 1].path.focus();
-          this.options._leafletLayer._map.options.mapEl._currFeatureIndex++;
+          this._map.featureIndex.inBoundFeatures[index + 1].path.focus();
+          this._map.featureIndex.currentIndex++;
         } else {
-          this.options._leafletLayer._map.options.mapEl._featureIndexOrder[0].path.setAttribute("tabindex", -1);
-          this.options._leafletLayer._map.options.mapEl._featureIndexOrder[index].path.setAttribute("tabindex", 0);
+          this._map.featureIndex.inBoundFeatures[0].path.setAttribute("tabindex", -1);
+          this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", 0);
         }
       }
     } else if (!(e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13)){
-      this.options._leafletLayer._map.options.mapEl._currFeatureIndex = 0;
-      this.options._leafletLayer._map.options.mapEl._featureIndexOrder[0].path.focus();
+      this._map.featureIndex.currentIndex = 0;
+      this._map.featureIndex.inBoundFeatures[0].path.focus();
     }
     if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup") {
       this.openTooltip();

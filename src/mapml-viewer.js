@@ -152,49 +152,6 @@ export class MapViewer extends HTMLElement {
       });
     });
     this.controlsListObserver.observe(this, {attributes:true});
-    this._featureIndexOrder = [];
-    this._currFeatureIndex = 0;
-  }
-
-  _addToIndex(layer, lc, path) {
-    let scale = this._map.options.crs.scale(this._map.getZoom());
-    let mc = this._map.options.crs.transformation.untransform(this._map.getPixelBounds().getCenter(),scale);
-    let dist = Math.sqrt(Math.pow(lc.x - mc.x, 2) + Math.pow(lc.y - mc.y, 2));
-    let index = this._map.options.mapEl._featureIndexOrder;
-
-    let elem = {path: path, layer: layer, center: lc, dist: dist};
-    path.setAttribute("tabindex", -1);
-    index.push(elem);
-    for (let i = index.length - 1; i > 0 && index[i].dist < index[i-1].dist; i--) {
-      let tmp = index[i];
-      index[i] = index[i-1];
-      index[i-1] = tmp;
-    }
-  }
-
-  _cleanIndex() {
-    this._currFeatureIndex = 0;
-    this._featureIndexOrder = this._featureIndexOrder.filter((elem) => {
-      return elem.layer._map;
-    });
-  }
-
-  _sortIndex() {
-    this._cleanIndex();
-    if(this._featureIndexOrder.length === 0) return;
-
-    let scale = this._map.options.crs.scale(this._map.getZoom());
-    let mc = this._map.options.crs.transformation.untransform(this._map.getPixelBounds().getCenter(), scale);
-    this._featureIndexOrder.sort(function(a, b) {
-      let ac = a.center;
-      let bc = b.center;
-      a.path.setAttribute("tabindex", -1);
-      b.path.setAttribute("tabindex", -1);
-      a.dist = Math.sqrt(Math.pow(ac.x - mc.x, 2) + Math.pow(ac.y - mc.y, 2));
-      b.dist = Math.sqrt(Math.pow(bc.x - mc.x, 2) + Math.pow(bc.y - mc.y, 2));
-      return a.dist - b.dist;
-    });
-    this._featureIndexOrder[0].path.setAttribute("tabindex", 0);
   }
 
   connectedCallback() {
@@ -243,6 +200,7 @@ export class MapViewer extends HTMLElement {
             query: true,
             contextMenu: true,
             announceMovement: M.options.announceMovement,
+            featureIndex: true,
             mapEl: this,
             crs: M[this.projection],
             zoom: this.zoom,
@@ -419,7 +377,6 @@ export class MapViewer extends HTMLElement {
               {target: this}}));
       }
     });
-    this._map.on('mapfocused', () => this._sortIndex());
     this._map.on('load',
       function () {
         this.dispatchEvent(new CustomEvent('load', {detail: {target: this}}));

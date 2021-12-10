@@ -85,7 +85,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         L.DomUtil.remove(this._container);
       }
       L.FeatureGroup.prototype.onRemove.call(this, map);
-      this._map.options.mapEl._cleanIndex();
+      this._map.featureIndex.cleanIndex();
     },
 
     getEvents: function(){
