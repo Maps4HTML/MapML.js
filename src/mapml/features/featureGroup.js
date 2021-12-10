@@ -116,8 +116,8 @@ export var FeatureGroup = L.FeatureGroup.extend({
    */
   _previousFeature: function(e){
     L.DomEvent.stop(e);
-    this._map.options.mapEl._currFeatureIndex = Math.max(this._map.options.mapEl._currFeatureIndex - 1, 0);
-    let prevFocus = this._map.options.mapEl._featureIndexOrder[this._map.options.mapEl._currFeatureIndex];
+    this._map.featureIndex.currentIndex = Math.max(this._map.featureIndex.currentIndex - 1, 0);
+    let prevFocus = this._map.featureIndex.inBoundFeatures[this._map.featureIndex.currentIndex];
     prevFocus.path.focus();
     this._map.closePopup();
   },
@@ -129,8 +129,8 @@ export var FeatureGroup = L.FeatureGroup.extend({
    */
   _nextFeature: function(e){
     L.DomEvent.stop(e);
-    this._map.options.mapEl._currFeatureIndex = Math.min(this._map.options.mapEl._currFeatureIndex + 1, this._map.options.mapEl._featureIndexOrder.length - 1);
-    let nextFocus = this._map.options.mapEl._featureIndexOrder[this._map.options.mapEl._currFeatureIndex];
+    this._map.featureIndex.currentIndex = Math.min(this._map.featureIndex.currentIndex + 1, this._map.featureIndex.inBoundFeatures.length - 1);
+    let nextFocus = this._map.featureIndex.inBoundFeatures[this._map.featureIndex.currentIndex];
     nextFocus.path.focus();
     this._map.closePopup();
   },

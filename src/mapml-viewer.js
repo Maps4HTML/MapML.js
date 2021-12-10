@@ -153,7 +153,6 @@ export class MapViewer extends HTMLElement {
     });
     this.controlsListObserver.observe(this, {attributes:true});
   }
-
   connectedCallback() {
     if (this.isConnected) {
 

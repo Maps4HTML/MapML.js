@@ -1170,7 +1170,7 @@ export var MapMLLayer = L.Layer.extend({
       mapFocusButton.innerHTML = "<span aria-hidden='true'>|&#10094;</span>";
       L.DomEvent.on(mapFocusButton, 'click', (e)=>{
         L.DomEvent.stop(e);
-        map.options.mapEl._sortIndex();
+        map.featureIndex._sortIndex();
         map.closePopup();
         map._container.focus();
       }, popup);
@@ -1200,10 +1200,10 @@ export var MapMLLayer = L.Layer.extend({
       controlFocusButton.title = "Focus Controls";
       controlFocusButton.innerHTML = "<span aria-hidden='true'>&#10095;|</span>";
       L.DomEvent.on(controlFocusButton, 'click', (e) => {
-        map.options.mapEl._sortIndex();
-        map.options.mapEl._currFeatureIndex = map.options.mapEl._featureIndexOrder.length - 1;
-        map.options.mapEl._featureIndexOrder[0].path.setAttribute("tabindex", -1);
-        map.options.mapEl._featureIndexOrder[map.options.mapEl._currFeatureIndex].path.setAttribute("tabindex", 0);
+        map.featureIndex._sortIndex();
+        map.featureIndex.currentIndex = map.featureIndex.inBoundFeatures.length - 1;
+        map.featureIndex.inBoundFeatures[0].path.setAttribute("tabindex", -1);
+        map.featureIndex.inBoundFeatures[map.featureIndex.currentIndex].path.setAttribute("tabindex", 0);
         L.DomEvent.stop(e);
         map.closePopup();
         map._controlContainer.querySelector("A").focus();
