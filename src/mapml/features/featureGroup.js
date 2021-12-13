@@ -37,7 +37,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
   },
 
   updateInteraction: function () {
-    let map = this.options._leafletLayer._map || this._map;
+    let map = this._map || this.options._leafletLayer._map;
     if((this.options.onEachFeature && this.options.properties) || this.options.link)
       map.featureIndex.addToIndex(this, this.getPCRSCenter(), this.options.group);
 

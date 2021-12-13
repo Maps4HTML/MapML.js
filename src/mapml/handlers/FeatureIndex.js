@@ -20,6 +20,12 @@ export var FeatureIndex = L.Handler.extend({
     this._map.off('mapfocused', this._sortIndex);
   },
 
+  /**
+   * Adds a svg element to the index of tabbable features, it also keeps track of the layer it's associated + center
+   * @param layer - the layer object the feature is associated with
+   * @param lc - the layer center
+   * @param path - the svg element that needs to be focused, can be a path or g
+   */
   addToIndex: function (layer, lc, path) {
     let mc = this._mapPCRSBounds.getCenter();
     let dist = Math.sqrt(Math.pow(lc.x - mc.x, 2) + Math.pow(lc.y - mc.y, 2));
@@ -29,6 +35,8 @@ export var FeatureIndex = L.Handler.extend({
     path.setAttribute("tabindex", -1);
 
     index.push(elem);
+
+    // TODO: this insertion loop has potential to be improved slightly
     for (let i = index.length - 1; i > 0 && index[i].dist < index[i-1].dist; i--) {
       let tmp = index[i];
       index[i] = index[i-1];
@@ -41,6 +49,10 @@ export var FeatureIndex = L.Handler.extend({
       this.outBoundFeatures = index;
   },
 
+  /**
+   * Removes features that are no longer on the map, also moves features to the respective array depending
+   * on whether the feature is in the maps viewport or not
+   */
   cleanIndex: function() {
     this.currentIndex = 0;
     this.inBoundFeatures = this.inBoundFeatures.filter((elem) => {
@@ -61,6 +73,10 @@ export var FeatureIndex = L.Handler.extend({
     });
   },
 
+  /**
+   * Sorts the index of features in the map's viewport based on distance from center
+   * @private
+   */
   _sortIndex: function() {
     this.cleanIndex();
     if(this.inBoundFeatures.length === 0) return;
@@ -78,7 +94,13 @@ export var FeatureIndex = L.Handler.extend({
     this.inBoundFeatures[0].path.setAttribute("tabindex", 0);
   },
 
+  /**
+   * Event handler for 'mapfocused' event to update the map's bounds in terms of PCRS
+   * @param e - the event object
+   * @private
+   */
   _updateMapBounds: function (e) {
+    // TODO: map's PCRS bounds is used in other parts of the viewer, can be moved out to the map object directly
     this._mapPCRSBounds = M.pixelToPCRSBounds(
       this._map.getPixelBounds(),
       this._map.getZoom(),
