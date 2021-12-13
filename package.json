@@ -1,6 +1,6 @@
 {
   "name": "@maps4html/web-map-custom-element",
-  "version": "0.8.3",
+  "version": "0.9.0",
   "description": "web-map customized built-in HTML <map> or custom <mapml-viewer>",
   "keywords": [
     "web-components",
@@ -34,23 +34,25 @@
     "test": "jest --verbose --noStackTrace",
     "test:watch": "jest --detectOpenHandles --watch"
   },
-  "dependencies": {},
   "devDependencies": {
     "express": "^4.17.1",
     "grunt": "^1.4.0",
     "grunt-contrib-clean": "^2.0.0",
     "grunt-contrib-concat": "~1.0.0",
     "grunt-contrib-copy": "~1.0.0",
-    "grunt-contrib-jshint": "~2.0.0",
+    "grunt-contrib-cssmin": "^4.0.0",
+    "grunt-contrib-jshint": "~3.1.0",
     "grunt-contrib-uglify-es": "~3.3.0",
     "grunt-contrib-watch": "~1.1.0",
     "grunt-html": "~9.3.0",
     "grunt-rollup": "^11.3.0",
-    "jest": "^26.1.0",
+    "jest": "^26.6.3",
+    "jest-circus": "^26.6.3",
+    "jest-environment-node": "^26.6.1",
     "jest-playwright-preset": "^1.7.0",
     "leaflet": "^1.7.1",
     "path": "^0.12.7",
-    "playwright": "^1.2.1",
+    "playwright": "^1.16.3",
     "proj4": "^2.6.2",
     "proj4leaflet": "^1.0.2",
     "rollup": "^2.23.1"

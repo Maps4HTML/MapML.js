@@ -9,24 +9,24 @@ exports.test = (path, expectedPCRS, expectedGCRS) => {
         "body > map > layer-:nth-child(1)",
         (layer) => layer.extent
       );
-      expect(extent.hasOwnProperty("zoom")).toBeTruthy();
-      expect(extent.hasOwnProperty("topLeft")).toBeTruthy();
-      expect(extent.hasOwnProperty("bottomRight")).toBeTruthy();
-      expect(extent.hasOwnProperty("projection")).toBeTruthy();
-      expect(extent.topLeft.pcrs).toEqual(expectedPCRS.topLeft);
-      expect(extent.bottomRight.pcrs).toEqual(expectedPCRS.bottomRight);
-      expect(extent.topLeft.gcrs).toEqual(expectedGCRS.topLeft);
-      expect(extent.bottomRight.gcrs).toEqual(expectedGCRS.bottomRight);
+      await expect(extent.hasOwnProperty("zoom")).toBeTruthy();
+      await expect(extent.hasOwnProperty("topLeft")).toBeTruthy();
+      await expect(extent.hasOwnProperty("bottomRight")).toBeTruthy();
+      await expect(extent.hasOwnProperty("projection")).toBeTruthy();
+      await expect(extent.topLeft.pcrs).toEqual(expectedPCRS.topLeft);
+      await expect(extent.bottomRight.pcrs).toEqual(expectedPCRS.bottomRight);
+      await expect(extent.topLeft.gcrs).toEqual(expectedGCRS.topLeft);
+      await expect(extent.bottomRight.gcrs).toEqual(expectedGCRS.bottomRight);
     });
     test("2nd <layer->.extent test", async () => {
       const extent = await page.$eval(
         "body > map > layer-:nth-child(2)",
         (layer) => layer.extent
       );
-      expect(extent.hasOwnProperty("zoom")).toBeTruthy();
-      expect(extent.hasOwnProperty("topLeft")).toBeTruthy();
-      expect(extent.hasOwnProperty("bottomRight")).toBeTruthy();
-      expect(extent.hasOwnProperty("projection")).toBeTruthy();
+      await expect(extent.hasOwnProperty("zoom")).toBeTruthy();
+      await expect(extent.hasOwnProperty("topLeft")).toBeTruthy();
+      await expect(extent.hasOwnProperty("bottomRight")).toBeTruthy();
+      await expect(extent.hasOwnProperty("projection")).toBeTruthy();
     });
   });
 };

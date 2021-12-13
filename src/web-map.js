@@ -106,9 +106,7 @@ export class WebMap extends HTMLMapElement {
 
     this._source = this.outerHTML;
     let tmpl = document.createElement('template');
-    tmpl.innerHTML =
-    `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
-    `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`;
+    tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
 
     const rootDiv = document.createElement('div');
     rootDiv.classList.add('mapml-web-map');
@@ -135,6 +133,9 @@ export class WebMap extends HTMLMapElement {
     `[is="web-map"][frameborder="0"] {` +
   	`border-width: 0;` +
   	`}` +
+    `[is="web-map"][hidden] {` +
+    `display: none!important;` +
+    `}` +
     `[is="web-map"] .mapml-web-map {` +
     `display: contents;` + // This div doesn't have to participate in layout by generating its own box.
     `}`;
@@ -229,6 +230,8 @@ export class WebMap extends HTMLMapElement {
           this._addToHistory();
           // the attribution control is not optional
           this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+          this._attributionControl.getContainer().setAttribute("role","group");
+          this._attributionControl.getContainer().setAttribute("aria-label","Map data attribution");
 
           this.setControls(false,false,true);
           this._crosshair = M.crosshair().addTo(this._map);

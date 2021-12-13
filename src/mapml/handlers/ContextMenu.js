@@ -545,7 +545,7 @@ export var ContextMenu = L.Handler.extend({
     if(key === 13)
       e.preventDefault();
     // keep track of where the focus is on the layer menu and when the layer menu is tabbed out of, focus on layer control
-    if(key === 9 || key === 27){
+    if(this._layerMenuTabs && (key === 9 || key === 27)){
       if(e.shiftKey){
         this._layerMenuTabs -= 1;
       } else {

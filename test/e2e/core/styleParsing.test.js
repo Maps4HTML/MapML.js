@@ -13,13 +13,13 @@ describe("Style Parsed and Implemented Test", () => {
       "css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div",
       (styleE) => styleE.innerHTML
     );
-    expect(styleContent.indexOf("first")).toBeLessThan(
+    await expect(styleContent.indexOf("first")).toBeLessThan(
       styleContent.indexOf(".second")
     );
-    expect(styleContent.indexOf(".second")).toBeLessThan(
+    await expect(styleContent.indexOf(".second")).toBeLessThan(
       styleContent.indexOf(".third")
     );
-    expect(styleContent.indexOf(".third")).toBeLessThan(
+    await expect(styleContent.indexOf(".third")).toBeLessThan(
       styleContent.indexOf("forth")
     );
   });
@@ -33,8 +33,8 @@ describe("Style Parsed and Implemented Test", () => {
       "css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link:nth-child(2)",
       (styleL) => styleL.outerHTML
     );
-    expect(firstStyle).toMatch("canvec_cantopo");
-    expect(secondStyle).toMatch("canvec_feature");
+    await expect(firstStyle).toMatch("canvec_cantopo");
+    await expect(secondStyle).toMatch("canvec_feature");
   });
 
   test("CSS within html page added to overlay-pane container", async () => {
@@ -42,8 +42,8 @@ describe("Style Parsed and Implemented Test", () => {
     const foundStyleTag = await page.$(
       "css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > style:nth-child(2)"
     );
-    expect(foundStyleTag).toBeTruthy();
-    expect(foundStyleLink).toBeTruthy();
+    await expect(foundStyleTag).toBeTruthy();
+    await expect(foundStyleLink).toBeTruthy();
   });
 
   test("CSS from a retrieved MapML File added to templated-layer container", async () => {
@@ -53,8 +53,8 @@ describe("Style Parsed and Implemented Test", () => {
     const foundStyleLinkTwo = await page.$(
       "css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link:nth-child(2)"
     );
-    expect(foundStyleLinkOne).toBeTruthy();
-    expect(foundStyleLinkTwo).toBeTruthy();
+    await expect(foundStyleLinkOne).toBeTruthy();
+    await expect(foundStyleLinkTwo).toBeTruthy();
   });
 
   //testing done on 2nd map in the page
@@ -70,9 +70,9 @@ describe("Style Parsed and Implemented Test", () => {
     const foundStyleLink = await page.$(
       "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div > link"
     );
-    expect(firstStyle).toMatch("refStyleOne");
-    expect(secondStyle).toMatch("refStyleTwo");
-    expect(foundStyleLink).toBeTruthy();
+    await expect(firstStyle).toMatch("refStyleOne");
+    await expect(secondStyle).toMatch("refStyleTwo");
+    await expect(foundStyleLink).toBeTruthy();
   });
 
   test("CSS within html page added inorder to overlay-pane container", async () => {
@@ -82,7 +82,7 @@ describe("Style Parsed and Implemented Test", () => {
     const foundStyleTag = await page.$(
       "xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > style"
     );
-    expect(foundStyleTag).toBeTruthy();
-    expect(foundStyleLink).toBeTruthy();
+    await expect(foundStyleTag).toBeTruthy();
+    await expect(foundStyleLink).toBeTruthy();
   });
 });

@@ -57,38 +57,38 @@ describe("M.Util Bounds Related Tests", () => {
   ];
   describe("M.pixelToPCRSBounds utility function tests", () => {
 
-    test("Null, Null parameters", () => {
+    test("Null, Null parameters", async () => {
       let output = M.pixelToPCRSBounds(null, null);
-      expect(output).toEqual(undefined);
+      await expect(output).toEqual(undefined);
     });
-    test("Null, float parameters", () => {
+    test("Null, float parameters", async () => {
       let output = M.pixelToPCRSBounds(null, osmtileResolutions[0]);
-      expect(output).toEqual(undefined);
+      await expect(output).toEqual(undefined);
     });
-    test("bounds, Null parameters", () => {
+    test("bounds, Null parameters", async () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
       let output = M.pixelToPCRSBounds(bounds, null);
-      expect(output).toEqual(undefined);
+      await expect(output).toEqual(undefined);
     });
-    test("bounds, number parameters", () => {
+    test("bounds, number parameters", async () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
       let output = M.pixelToPCRSBounds(bounds, 0, "CBMTILE");
-      expect(output).toEqual(L.bounds(L.point(-34617435.339937344, 39118176.699686736), L.point(-34463976.699686736, 39271635.339937344)));
+      await expect(output).toEqual(L.bounds(L.point(-34617435.339937344, 39118176.699686736), L.point(-34463976.699686736, 39271635.339937344)));
     });
-    test("bounds, number parameters", () => {
+    test("bounds, number parameters", async () => {
       let bounds = L.bounds(L.point(9, 0), L.point(54, 87));
       let output = M.pixelToPCRSBounds(bounds, 3, "OSMTILE");
-      expect(output).toEqual(L.bounds(L.point(-19861397.4296202, 18335102.8488218), L.point(-18980842.86377497, 20037508.342789244)));
+      await expect(output).toEqual(L.bounds(L.point(-19861397.4296202, 18335102.8488218), L.point(-18980842.86377497, 20037508.342789244)));
     });
-    test("bounds (with null min & max points), float parameters", () => {
+    test("bounds (with null min & max points), float parameters", async () => {
       let bounds = L.bounds(L.point(null, null), L.point(null, null));
       let output = M.pixelToPCRSBounds(bounds, 3, "CBMTILE");
-      expect(output).toEqual(undefined);
+      await expect(output).toEqual(undefined);
     });
-    test("bounds (with valid min & null max point), float parameters", () => {
+    test("bounds (with valid min & null max point), float parameters", async () => {
       let bounds = L.bounds(L.point(1, 1), L.point(null, null));
       let output = M.pixelToPCRSBounds(bounds, 3, "OSMTILE");
-      expect(output).toEqual(undefined);
+      await expect(output).toEqual(undefined);
     });
 
   });
@@ -120,42 +120,42 @@ describe("M.Util Bounds Related Tests", () => {
     /* jshint ignore:start */
     for(let i in csArray ){
       for(let j in projArray ){
-        test(`Valid conversion in ${projArray[j]} + ${csArray[i]}`, () => {
+        test(`Valid conversion in ${projArray[j]} + ${csArray[i]}`, async () => {
           let output = M.boundsToPCRSBounds(bounds, 0, projArray[j], csArray[i]);
-          expect(output).toEqual(expected[i][j]);
+          await expect(output).toEqual(expected[i][j]);
         });
       }
     }
     /* jshint ignore:end */
 
-    test("Null bounds", () => {
+    test("Null bounds", async () => {
       let output = M.boundsToPCRSBounds(null, 3, "CBMTILE", "TILEMATRIX");
-      expect(output).toEqual(undefined);
+      await expect(output).toEqual(undefined);
     });
-    test("Tile bounds, null ", () => {
+    test("Tile bounds, null ", async () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
       let output = M.boundsToPCRSBounds(bounds, null, null, null);
-      expect(output).toEqual(undefined);
+      await expect(output).toEqual(undefined);
     });
-    test("Lowercase units bounds", () => {
+    test("Lowercase units bounds", async () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
       let output = M.boundsToPCRSBounds(bounds, 3, "CBMTILE", "tilematrix");
-      expect(output).toEqual(L.bounds(L.point(-32623795.935991872, 29149979.679959357), L.point(-24495779.679959357, 37277995.93599187)));
+      await expect(output).toEqual(L.bounds(L.point(-32623795.935991872, 29149979.679959357), L.point(-24495779.679959357, 37277995.93599187)));
     });
-    test("TILEMATRIX bounds", () => {
+    test("TILEMATRIX bounds", async () => {
       let bounds = L.bounds(L.point(1, 1), L.point(5, 5));
       let output = M.boundsToPCRSBounds(bounds, 3, "CBMTILE", "TILEMATRIX");
-      expect(output).toEqual(L.bounds(L.point(-32623795.935991872, 29149979.679959357), L.point(-24495779.679959357, 37277995.93599187)));
+      await expect(output).toEqual(L.bounds(L.point(-32623795.935991872, 29149979.679959357), L.point(-24495779.679959357, 37277995.93599187)));
     });
-    test("PCRS bounds ", () => {
+    test("PCRS bounds ", async () => {
       let bounds = L.bounds(L.point(1, 1), L.point(559, 559));
       let output = M.boundsToPCRSBounds(bounds, 0, "CBMTILE", "pcrs");
-      expect(output).toEqual(L.bounds(L.point(1, 1), L.point(559, 559)));
+      await expect(output).toEqual(L.bounds(L.point(1, 1), L.point(559, 559)));
     });
-    test("GCRS bounds ", () => {
+    test("GCRS bounds ", async () => {
       let bounds = L.bounds(L.point(1, 1), L.point(15, 15));
       let output = M.boundsToPCRSBounds(bounds, 0, "CBMTILE", "GCrs");
-      expect(output).toEqual(L.bounds(L.point(11044163.602622755, 6054659.650462182), L.point(8756326.16822687, 3974012.3343449486)));
+      await expect(output).toEqual(L.bounds(L.point(11044163.602622755, 6054659.650462182), L.point(8756326.16822687, 3974012.3343449486)));
     });
   });
 
@@ -166,7 +166,7 @@ describe("M.Util Bounds Related Tests", () => {
   //  zoomBounds:{max:, min:}
   //}
   describe("M.extractInputBounds utility function tests", () => {
-    test("Valid template with 3 inputs, tilematrix", () => {
+    test("Valid template with 3 inputs, tilematrix", async () => {
       let template = {};
       let inputContainer = document.createElement("div");
       // min/max zoom attributes are "min/maxNativeZoom", i.e. server says resources 
@@ -183,9 +183,9 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 0, y: 90 }, min: { x: -180, y: -90 } }, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
+      await expect(extractedBounds).toEqual({ bounds: { max: { x: 0, y: 90 }, min: { x: -180, y: -90 } }, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
     });
-    test("Another valid template with 3 inputs, pcrs", () => {
+    test("Another valid template with 3 inputs, pcrs", async () => {
       let template = {};
       let inputContainer = document.createElement("div");
       inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="2" min="1" max="5"></map-input>';
@@ -198,9 +198,9 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 10, y: 10 }, min: { x: 5, y: 5 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
+      await expect(extractedBounds).toEqual({ bounds: { max: { x: 10, y: 10 }, min: { x: 5, y: 5 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
     });
-    test("Test defaulting maxNativeZoom to TCRS max", () => {
+    test("Test defaulting maxNativeZoom to TCRS max", async () => {
       let template = {};
       let inputContainer = document.createElement("div");
       inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="2" min="1"></map-input>';
@@ -212,9 +212,9 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 10, y: 10 }, min: { x: 5, y: 5 } }, zoomBounds: { maxNativeZoom: 24, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
+      await expect(extractedBounds).toEqual({ bounds: { max: { x: 10, y: 10 }, min: { x: 5, y: 5 } }, zoomBounds: { maxNativeZoom: 24, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
     });
-    test("Valid template with 7 inputs, pcrs", () => {
+    test("Valid template with 7 inputs, pcrs", async () => {
       let template = {};
       let inputContainer = document.createElement("div");
       inputContainer.innerHTML = '<map-input name="z" type="zoom" value="19" min="0" max="19"></map-input>';
@@ -230,9 +230,9 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 38608077, y: 42672085 }, min: { x: 28448056, y: 28448056 } }, zoomBounds: { maxNativeZoom: 19, maxZoom: 23, minNativeZoom: 0, minZoom: 0 } });
+      await expect(extractedBounds).toEqual({ bounds: { max: { x: 38608077, y: 42672085 }, min: { x: 28448056, y: 28448056 } }, zoomBounds: { maxNativeZoom: 19, maxZoom: 23, minNativeZoom: 0, minZoom: 0 } });
     });
-    test("Another valid template with 7 inputs, tilematrix", () => {
+    test("Another valid template with 7 inputs, tilematrix", async () => {
       let template = {};
       let inputContainer = document.createElement("div");
       inputContainer.innerHTML = '<map-input name="z" type="zoom" value="19" min="3" max="5"></map-input>';
@@ -248,9 +248,9 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 500, y: 500 }, min: { x: 0, y: 0 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 15, minNativeZoom: 3, minZoom: 2 } });
+      await expect(extractedBounds).toEqual({ bounds: { max: { x: 500, y: 500 }, min: { x: 0, y: 0 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 15, minNativeZoom: 3, minZoom: 2 } });
     });
-    test("Template with missing easting and northing input", () => {
+    test("Template with missing easting and northing input", async () => {
       let template = {};
       let inputContainer = document.createElement("div");
       inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="2" min="1" max="5"></map-input>';
@@ -261,9 +261,9 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 180, y: 90 }, min: { x: -180, y: -90 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 12, minNativeZoom: 1, minZoom: 1 } });
+      await expect(extractedBounds).toEqual({ bounds: { max: { x: 180, y: 90 }, min: { x: -180, y: -90 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 12, minNativeZoom: 1, minZoom: 1 } });
     });
-    test("Template with NO location inputs, extent fallback provided by author", () => {
+    test("Template with NO location inputs, extent fallback provided by author", async () => {
       let template = {};
       let inputContainer = document.createElement("div");
       template.values = inputContainer.querySelectorAll("map-input");
@@ -273,9 +273,9 @@ describe("M.Util Bounds Related Tests", () => {
 
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 170, y: 20 }, min: { x: 0, y: 0 }}, zoomBounds: { maxNativeZoom: 21, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
+      await expect(extractedBounds).toEqual({ bounds: { max: { x: 170, y: 20 }, min: { x: 0, y: 0 }}, zoomBounds: { maxNativeZoom: 21, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
     });
-    test("Template with NO location inputs, extent fallback NOT provided by author", () => {
+    test("Template with NO location inputs, extent fallback NOT provided by author", async () => {
       let template = {};
       let inputContainer = document.createElement("div");
       template.values = inputContainer.querySelectorAll("map-input");
@@ -286,9 +286,9 @@ describe("M.Util Bounds Related Tests", () => {
       
       let extractedBounds = M.extractInputBounds(template);
 
-      expect(extractedBounds).toEqual( { bounds: M.WGS84.options.crs.pcrs.bounds, zoomBounds: { maxNativeZoom: 21, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
+      await expect(extractedBounds).toEqual( { bounds: M.WGS84.options.crs.pcrs.bounds, zoomBounds: { maxNativeZoom: 21, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
     });
-    test("Template with no projection", () => {
+    test("Template with no projection", async () => {
       let template = {};
       let inputContainer = document.createElement("div");
       inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" value="1" min="1" max="2"></map-input>';
@@ -303,9 +303,9 @@ describe("M.Util Bounds Related Tests", () => {
       // have to convert the provided bounds from tilematrix to pcrs coords,
       // resulting in small numerical differences.
 //      expect(extractedBounds).toEqual({ bounds: M.OSMTILE.options.crs.pcrs.bounds, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
-      expect(extractedBounds).toEqual({ bounds: { max: { x: 20037508.342789244, y: 20037508.342789244 }, min: { x: -20037508.342789244, y: -20037508.342789244 } }, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
+      await expect(extractedBounds).toEqual({ bounds: { max: { x: 20037508.342789244, y: 20037508.342789244 }, min: { x: -20037508.342789244, y: -20037508.342789244 } }, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
     });
-    test("Template with no projection AND inputs without min/max attributes", () => {
+    test("Template with no projection AND inputs without min/max attributes", async () => {
       let template = {};
       let inputContainer = document.createElement("div");
       inputContainer.innerHTML = '<map-input name="zoomLevel" type="zoom" min="1" max="2"></map-input>';
@@ -316,12 +316,12 @@ describe("M.Util Bounds Related Tests", () => {
       template.extentPCRSFallback = {};
       
       let extractedBounds = M.extractInputBounds(template);
-      expect(extractedBounds).toEqual({ bounds: M.OSMTILE.options.crs.pcrs.bounds, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
+      await expect(extractedBounds).toEqual({ bounds: M.OSMTILE.options.crs.pcrs.bounds, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
     });
-    test("Null template", () => {
+    test("Null template", async () => {
       let extractedBounds = M.extractInputBounds(null);
 
-      expect(extractedBounds).toEqual(undefined);
+      await expect(extractedBounds).toEqual(undefined);
     });
   });
 
@@ -351,7 +351,7 @@ describe("M.Util Bounds Related Tests", () => {
       { horizontal: 1170.4888888888888, vertical: 105.24444444444445 },
       { horizontal: 119.62786235691402, vertical: 136.37476315186083 }];
     for (let i = 0; i < projections.length; i++) {
-      test(`Accurate conversion and formatting in ${projections[i]} projection`, () => {
+      test(`Accurate conversion and formatting in ${projections[i]} projection`, async () => {
         let container = document.createElement('div'), mapEl = document.createElement('div');
         let map = L.map(container, {
           center: new L.LatLng(0, 0),
@@ -365,12 +365,12 @@ describe("M.Util Bounds Related Tests", () => {
         });
         let pcrsBounds = L.bounds(L.point(14, 16), L.point(643, 24454));
         let conversion = M.convertAndFormatPCRS(pcrsBounds, map);
-        expect(conversion.bottomRight.pcrs).toEqual(expectedPCRS[i]);
-        expect(conversion.bottomRight.gcrs).toEqual(expectedGCRS[i]);
-        expect(conversion.bottomRight.tilematrix[0]).toEqual(expectedFirstTileMatrix[i]);
-        expect(conversion.bottomRight.tcrs[0]).toEqual(expectedFirstTCRS[i]);
+        await expect(conversion.bottomRight.pcrs).toEqual(expectedPCRS[i]);
+        await expect(conversion.bottomRight.gcrs).toEqual(expectedGCRS[i]);
+        await expect(conversion.bottomRight.tilematrix[0]).toEqual(expectedFirstTileMatrix[i]);
+        await expect(conversion.bottomRight.tcrs[0]).toEqual(expectedFirstTCRS[i]);
       });
-      test(`Correct number of TCRS and TileMatrix conversions in ${projections[i]} projection`, () => {
+      test(`Correct number of TCRS and TileMatrix conversions in ${projections[i]} projection`, async () => {
         let container = document.createElement('div'), mapEl = document.createElement('div');
         let map = L.map(container, {
           center: new L.LatLng(0, 0),
@@ -384,8 +384,8 @@ describe("M.Util Bounds Related Tests", () => {
         });
         let pcrsBounds = L.bounds(L.point(14, 16), L.point(643, 24454));
         let conversion = M.convertAndFormatPCRS(pcrsBounds, map);
-        expect(conversion.bottomRight.tilematrix.length).toEqual(M[projections[i]].options.resolutions.length);
-        expect(conversion.bottomRight.tcrs.length).toEqual(M[projections[i]].options.resolutions.length);
+        await expect(conversion.bottomRight.tilematrix.length).toEqual(M[projections[i]].options.resolutions.length);
+        await expect(conversion.bottomRight.tcrs.length).toEqual(M[projections[i]].options.resolutions.length);
       });
     }
   });
@@ -417,28 +417,28 @@ describe("M.Util Bounds Related Tests", () => {
     /* jshint ignore:start */
     for(let i in csArray ){
       for(let j in projArray ){
-        test(`Valid conversion in ${projArray[j]} + ${csArray[i]}`, () => {
+        test(`Valid conversion in ${projArray[j]} + ${csArray[i]}`, async () => {
           let output = M.convertPCRSBounds(bounds, 0, projArray[j], csArray[i]);
-          expect(output).toEqual(expected[i][j]);
+          await expect(output).toEqual(expected[i][j]);
         });
       }
     }
     /* jshint ignore:end */
-    test("Null bounds", () => {
+    test("Null bounds", async () => {
       let output = M.convertPCRSBounds(null, 0, "CBMTILE", "tilematrix");
-      expect(output).toEqual(undefined);
+      await expect(output).toEqual(undefined);
     });
-    test("Null zoom", () => {
+    test("Null zoom", async () => {
       let output = M.convertPCRSBounds(bounds, null, "CBMTILE", "tilematrix");
-      expect(output).toEqual(undefined);
+      await expect(output).toEqual(undefined);
     });
-    test("Null projection", () => {
+    test("Null projection", async () => {
       let output = M.convertPCRSBounds(bounds, 1, null, "tilematrix");
-      expect(output).toEqual(undefined);
+      await expect(output).toEqual(undefined);
     });
-    test("Null cs", () => {
+    test("Null cs", async () => {
       let output = M.convertPCRSBounds(bounds, 1, "CBMTILE", null);
-      expect(output).toEqual(undefined);
+      await expect(output).toEqual(undefined);
     });
   });
 });

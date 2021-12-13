@@ -18,7 +18,7 @@ describe("Playwright Layer Context Menu Tests", () => {
 
     const menuDisplay = await (await page.evaluateHandle(elem => elem.style.display, resultHandle)).jsonValue();
 
-    expect(menuDisplay).toEqual("block");
+    await expect(menuDisplay).toEqual("block");
   });
 
   test("Layer context menu copy layer extent", async () => {
@@ -30,7 +30,7 @@ describe("Playwright Layer Context Menu Tests", () => {
       (text) => text.value
     );
 
-    expect(copyValue).toEqual("<map-meta name=\"extent\" content=\"top-left-easting=-6207743.103886206, top-left-northing=10861943.103886206, bottom-right-easting=3952277.216154434, bottom-right-northing=-3362085.3441706896\"></map-meta>");
+    await expect(copyValue).toEqual("<map-meta name=\"extent\" content=\"top-left-easting=-6207743.103886206, top-left-northing=10861943.103886206, bottom-right-easting=3952277.216154434, bottom-right-northing=-3362085.3441706896\"></map-meta>");
   });
 
   test("Map zooms in to layer 2", async () => {
@@ -49,8 +49,8 @@ describe("Playwright Layer Context Menu Tests", () => {
       (text) => text._map.getZoom()
     );
 
-    expect(mapZoom).toEqual(11);
-    expect(mapLocation).toEqual({ max: { x: 43130, y: 43130 }, min: { x: 42630, y: 42630 } });
+    await expect(mapZoom).toEqual(11);
+    await expect(mapLocation).toEqual({ max: { x: 43130, y: 43130 }, min: { x: 42630, y: 42630 } });
   });
 
   test("Map zooms out to layer 3", async () => {
@@ -73,8 +73,8 @@ describe("Playwright Layer Context Menu Tests", () => {
       (text) => text._map.getZoom()
     );
 
-    expect(mapZoom).toEqual(11);
-    expect(mapLocation).toEqual({ max: { x: 43130, y: 43557 }, min: { x: 42630, y: 43057 } });
+    await expect(mapZoom).toEqual(11);
+    await expect(mapLocation).toEqual({ max: { x: 43130, y: 43557 }, min: { x: 42630, y: 43057 } });
   });
 
   test("Map zooms out to layer 4", async () => {
@@ -97,7 +97,7 @@ describe("Playwright Layer Context Menu Tests", () => {
       (text) => text._map.getZoom()
     );
 
-    expect(mapZoom).toEqual(5);
-    expect(mapLocation).toEqual({ max: { x: 8084, y: 8084 }, min: { x: 7584, y: 7584 } });
+    await expect(mapZoom).toEqual(5);
+    await expect(mapLocation).toEqual({ max: { x: 8084, y: 8084 }, min: { x: 7584, y: 7584 } });
   });
 });

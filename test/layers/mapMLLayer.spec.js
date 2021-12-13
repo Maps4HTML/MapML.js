@@ -1,25 +1,25 @@
 describe("MapMLLayer Constructor Tests", () => {
 	describe("M.mapMLLayer(url) factory function ", () => {
-		test("(null content, null options) should return a MapMLLayer object", () => {
-			var url = "https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/";
+		test("(null content, null options) should return a MapMLLayer object", async () => {
+      var url = "https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/";
 			var ml = M.mapMLLayer(url);
-			expect(ml._content).toBeFalsy();
-			expect(ml._container).toBeTruthy();
-			expect(
+			await expect(ml._content).toBeFalsy();
+			await expect(ml._container).toBeTruthy();
+			await expect(
 				ml._container.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._imageContainer).toBeTruthy();
-			expect(
+			await expect(ml._imageContainer).toBeTruthy();
+			await expect(
 				ml._imageContainer.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._href === url).toBeTruthy();
-			expect(ml.options.zIndex).toBe(0);
+			await expect(ml._href === url).toBeTruthy();
+			await expect(ml.options.zIndex).toBe(0);
 		});
 	});
 
 	describe("M.mapMLLayer(null, <layer-></layer->, options) factory function ", () => {
 		var content;
-		beforeEach(() => {
+		beforeEach(async () => {
 			content = document.createElement("layer-");
 			content.innerHTML = `<map-extent units="CBMTILE">
                         <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
@@ -28,43 +28,43 @@ describe("MapMLLayer Constructor Tests", () => {
                         <map-link rel="tile" tref="./images/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>
                     </map-extent>`;
 
-			expect(content instanceof HTMLElement).toBeTruthy();
+			await expect(content instanceof HTMLElement).toBeTruthy();
 		});
-		test("null url should return a MapMLLayer object", () => {
+		test("null url should return a MapMLLayer object",async () => {
 			var ml = M.mapMLLayer(null, content);
-			expect(ml._content).toBeTruthy();
-			expect(
+			await expect(ml._content).toBeTruthy();
+			await expect(
 				ml._container.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._imageContainer).toBeTruthy();
-			expect(
+			await expect(ml._imageContainer).toBeTruthy();
+			await expect(
 				ml._imageContainer.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._href).toBeFalsy();
-			expect(ml.options.zIndex).toBe(0);
+			await expect(ml._href).toBeFalsy();
+			await expect(ml.options.zIndex).toBe(0);
 		});
-		test("url should return a MapMLLayer object", () => {
+		test("url should return a MapMLLayer object",async () => {
 			var url = "https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/";
 			var ml = M.mapMLLayer(url, content);
-			expect(ml._content).toBeFalsy();
-			expect(ml._layerEl).toBeTruthy();
-			expect(ml._layerEl).toBe(content);
-			expect(
+			await expect(ml._content).toBeFalsy();
+			await expect(ml._layerEl).toBeTruthy();
+			await expect(ml._layerEl).toBe(content);
+			await expect(
 				ml._container.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._imageContainer).toBeTruthy();
-			expect(
+			await expect(ml._imageContainer).toBeTruthy();
+			await expect(
 				ml._imageContainer.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._href).toBeTruthy();
-			expect(ml._href).toBe(url);
-			expect(ml.options.zIndex).toBe(0);
+			await expect(ml._href).toBeTruthy();
+			await expect(ml._href).toBe(url);
+			await expect(ml.options.zIndex).toBe(0);
 		});
 	});
 
 	describe("M.mapMLLayer(url | null, <foo>mapml content</foo>, options) factory function ", () => {
 		var content;
-		beforeEach(() => {
+		beforeEach(async () => {
 			content = document.createElement("foo");
 			content.innerHTML = `<map-extent units="CBMTILE">
                         <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
@@ -73,65 +73,65 @@ describe("MapMLLayer Constructor Tests", () => {
                         <map-link rel="tile" tref="./images/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>
                     </map-extent>`;
 
-			expect(content instanceof HTMLElement).toBeTruthy();
+			await expect(content instanceof HTMLElement).toBeTruthy();
 		});
-		test("url value should return a url-based MapMLLayer object", () => {
+		test("url value should return a url-based MapMLLayer object", async () => {
 			var url = "https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/";
 			var ml = M.mapMLLayer(url, content);
-			expect(ml._content).toBeFalsy();
-			expect(ml._layerEl).toBeTruthy();
-			expect(ml._layerEl).toBe(content);
-			expect(
+			await expect(ml._content).toBeFalsy();
+			await expect(ml._layerEl).toBeTruthy();
+			await expect(ml._layerEl).toBe(content);
+			await expect(
 				ml._container.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._imageContainer).toBeTruthy();
-			expect(
+			await expect(ml._imageContainer).toBeTruthy();
+			await expect(
 				ml._imageContainer.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._href).toBeTruthy();
-			expect(ml._href).toBe(url);
-			expect(ml.options.zIndex).toBe(0);
+			await expect(ml._href).toBeTruthy();
+			await expect(ml._href).toBe(url);
+			await expect(ml.options.zIndex).toBe(0);
 		});
-		test("null url should return a inline-content based MapMLLayer object", () => {
+		test("null url should return a inline-content based MapMLLayer object", async () => {
 			var ml = M.mapMLLayer(null, content);
-			expect(ml._content).toBeTruthy();
-			expect(ml._layerEl).toBeTruthy();
-			expect(ml._layerEl).toBe(content);
-			expect(
+			await expect(ml._content).toBeTruthy();
+			await expect(ml._layerEl).toBeTruthy();
+			await expect(ml._layerEl).toBe(content);
+			await expect(
 				ml._container.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._imageContainer).toBeTruthy();
-			expect(
+			await expect(ml._imageContainer).toBeTruthy();
+			await expect(
 				ml._imageContainer.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._href).toBeFalsy();
-			expect(ml.options.zIndex).toBe(0);
+			await expect(ml._href).toBeFalsy();
+			await expect(ml.options.zIndex).toBe(0);
 		});
 	});
 	describe("M.mapMLLayer(url, <foo>(empty)</foo>, options) factory function ", () => {
-		test("url value should return a url-based MapMLLayer object", () => {
+		test("url value should return a url-based MapMLLayer object", async () => {
 			var url = "https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/";
 			var empty = document.createElement("bar");
 			var ml = M.mapMLLayer(url, empty);
-			expect(ml._content).toBeFalsy();
-			expect(ml._layerEl).toBeTruthy();
-			expect(ml._layerEl).toBe(empty);
-			expect(
+			await expect(ml._content).toBeFalsy();
+			await expect(ml._layerEl).toBeTruthy();
+			await expect(ml._layerEl).toBe(empty);
+			await expect(
 				ml._container.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._imageContainer).toBeTruthy();
-			expect(
+			await expect(ml._imageContainer).toBeTruthy();
+			await expect(
 				ml._imageContainer.classList.contains("leaflet-layer")
 			).toBeTruthy();
-			expect(ml._href).toBeTruthy();
-			expect(ml._href).toBe(url);
-			expect(ml.options.zIndex).toBe(0);
+			await expect(ml._href).toBeTruthy();
+			await expect(ml._href).toBe(url);
+			await expect(ml.options.zIndex).toBe(0);
 		});
 	});
 	describe("M.mapMLLayer(null, null, options) factory function ", () => {
-		test("null url, null content, any object params should NOT return a MapMLLayer object", () => {
+		test("null url, null content, any object params should NOT return a MapMLLayer object", async () => {
 			var ml = M.mapMLLayer(null, null, {});
-			expect(ml).toBeFalsy();
+			await expect(ml).toBeFalsy();
 		});
 	});
 });

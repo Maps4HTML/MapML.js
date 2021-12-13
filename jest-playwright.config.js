@@ -5,7 +5,10 @@ module.exports = {
         launchTimeout: 10000,
     },
     launchOptions: {
-        headless: true,
+      headless: true,
+//      devtools: true, // expose browser devtools when headless: false
+    },
+    connectOptions: {
         slowMo: 250,
     },
     browsers: ["chromium"],

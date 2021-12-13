@@ -101,9 +101,7 @@ export class MapViewer extends HTMLElement {
     super();
     this._source = this.outerHTML;
     let tmpl = document.createElement('template');
-    tmpl.innerHTML =
-    `<link rel="stylesheet" href="${new URL("leaflet.css", import.meta.url).href}">` +
-    `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`;
+    tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
     
     let shadowRoot = this.attachShadow({mode: 'open'});
     this._container = document.createElement('div');
@@ -125,6 +123,9 @@ export class MapViewer extends HTMLElement {
     `}` +
     `:host([frameborder="0"]) {` +
     `border-width: 0;` +
+    `}` +
+    `:host([hidden]) {` +
+    `display: none!important;` +
     `}` +
     `:host .mapml-contextmenu,` +
     `:host .leaflet-control-container {` +
@@ -214,7 +215,9 @@ export class MapViewer extends HTMLElement {
           this._addToHistory();
           // the attribution control is not optional
           this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
-    
+          this._attributionControl.getContainer().setAttribute("role","group");
+          this._attributionControl.getContainer().setAttribute("aria-label","Map data attribution");
+
           this.setControls(false,false,true);
           this._crosshair = M.crosshair().addTo(this._map);
           

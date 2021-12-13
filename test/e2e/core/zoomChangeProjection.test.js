@@ -18,8 +18,8 @@ describe("Playwright zoomin zoomout Projection Change Tests", () => {
       'body > map > layer-',
       (layer) => !layer.hasAttribute('disabled')
     )
-    expect(newProjection).toEqual("OSMTILE");
-    expect(layerValid).toEqual(true);
+    await expect(newProjection).toEqual("OSMTILE");
+    await expect(layerValid).toEqual(true);
   });
 
   test("zoomout link changes projections", async () => {
@@ -33,7 +33,7 @@ describe("Playwright zoomin zoomout Projection Change Tests", () => {
       'body > map > layer-',
       (layer) => !layer.hasAttribute('disabled')
     )
-    expect(newProjection).toEqual("CBMTILE");
-    expect(layerValid).toEqual(true);
+    await expect(newProjection).toEqual("CBMTILE");
+    await expect(layerValid).toEqual(true);
   });
 });

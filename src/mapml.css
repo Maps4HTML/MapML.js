@@ -214,7 +214,6 @@
 }
 
 .leaflet-control-layers fieldset {
-  border: none;
   margin: 0;
   padding: 0;
   min-height: 44px;
@@ -237,10 +236,6 @@
 
 .mapml-layer-item-style input {
   margin-inline-start: 0;
-}
-
-.leaflet-control-layers-list .leaflet-control-layers-overlays > :not(:last-of-type) {
-  border-bottom: 1px solid #e3e3e3;
 }
 
 .leaflet-control .leaflet-control-layers-toggle {
@@ -440,7 +435,8 @@
 .leaflet-tooltip,
 .leaflet-crosshair *,
 .mapml-layer-item-settings .mapml-control-layers summary label,
-.mapml-contextmenu-item > * {
+.mapml-contextmenu-item > *,
+.mapml-link-preview {
   pointer-events: none!important;
 }
 
@@ -486,7 +482,6 @@ summary {
 .mapml-draggable,
 .mapml-draggable * {
   cursor: row-resize;
-  background-color: white;
 }
 
 .leaflet-crosshair {
@@ -650,20 +645,31 @@ button.mapml-button:disabled,
 }
 
 .mapml-layer-item,
-.mapml-layer-item *,
-.mapml-layer-item ::before,
-.mapml-layer-item ::after {
+.mapml-layer-item * {
   box-sizing: border-box;
 }
 
 .mapml-layer-item {
-  border: 0;
+  background-color: #fff;
+  border: 1px solid #fff;
   margin: 0;
   padding: 0;
 }
 
 .mapml-layer-item:not(:last-of-type) {
   border-bottom: 1px solid #e3e3e3;
+}
+.mapml-layer-item[aria-grabbed="true"] {
+  border: 1px solid #e3e3e3;
+  border-radius: 0;
+}
+.mapml-layer-item:first-of-type {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+.mapml-layer-item:last-of-type {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 
 .mapml-layer-item-properties {
@@ -707,6 +713,8 @@ button.mapml-button:disabled,
 label.mapml-layer-item-toggle {
   display: inline-flex;
   align-items: center;
+  width: 100%; /* have the clickable area take up all available width */
+  min-height: 44px;
 }
 
 .mapml-layer-item-name {
@@ -733,4 +741,38 @@ label.mapml-layer-item-toggle {
   position: absolute;
   white-space: nowrap;
   width: 1px;
+}
+
+/*
+ * Feature styles.
+ */
+ 
+.mapml-vector-container svg :is(
+  [role="link"]:focus,
+  [role="link"]:hover,
+  [role="link"]:focus path,
+  [role="link"]:hover path,
+  [role="link"] path:focus,
+  [role="link"] path:hover,
+  [role="button"]:focus,
+  [role="button"]:hover,
+  [role="button"]:focus path,
+  [role="button"]:hover path,
+  [role="button"] path:focus,
+  [role="button"] path:hover,
+  path[tabindex="0"]:focus
+  ) {
+  stroke: #0000EE;
+  stroke: LinkText;
+}
+.mapml-vector-container svg :is(
+  [role="link"]:focus:not(:focus-visible),
+  [role="link"]:focus:not(:focus-visible) path,
+  [role="link"] path:focus:not(:focus-visible),
+  [role="button"]:focus:not(:focus-visible),
+  [role="button"]:focus:not(:focus-visible) path,
+  [role="button"] path:focus:not(:focus-visible),
+  path[tabindex="0"]:focus:not(:focus-visible)
+  ) {
+  outline: 0!important;
 }
