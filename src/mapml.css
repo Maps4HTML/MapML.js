@@ -649,7 +649,7 @@ button.mapml-button:disabled,
   box-sizing: border-box;
 }
 
-.mapml-layer-item, 
+.mapml-layer-item,
 .mapml-layer-grouped-extents,
 .mapml-layer-extent {
   background-color: #fff;
@@ -751,7 +751,7 @@ label.mapml-layer-item-toggle {
 /*
  * Feature styles.
  */
- 
+
 .mapml-vector-container svg :is(
   [role="link"]:focus,
   [role="link"]:hover,
@@ -803,3 +803,53 @@ label.mapml-layer-item-toggle {
   right: 0;
 }
 
+
+
+/**
+* Feature Index
+ */
+.mapml-feature-index-box {
+  margin: -36px 0 0 -36px;
+  width: 72px;
+  height: 72px;
+  left: 50%;
+  top: 50%;
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: 10000;
+}
+
+.mapml-feature-index {
+  contain: content;
+  max-height: 100%;
+  max-width: 100%;
+  border-radius: 4px;
+  padding: 5px 10px;
+  background-color: #fff;
+  cursor: default;
+  z-index: 1000;
+  position: absolute;
+  display: block;
+  top: auto;
+  right: 5px;
+  bottom: 5px;
+  left: 5px;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  font: inherit;
+}
+
+.mapml-feature-index-content {
+  font-family: monospace;
+}
+
+.mapml-feature-index-header {
+  font-weight: bold;
+  text-transform: uppercase;
+  display: inline-block;
+  text-align: left;
+  text-align: inline-start;
+  line-height: 2;
+}
