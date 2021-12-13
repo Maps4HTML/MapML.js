@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Multiple Query Extents Test</title>
+  <meta charset="UTF-8">
+  <script type="module" src="mapml-viewer.js"></script>
+  <style>
+    html {
+      height: 100%
+    }
+
+    body,
+    map {
+      height: inherit
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <mapml-viewer style="width: 500px;height: 500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls>
+    <layer- label="Multiple Query Extents" checked>
+      <map-extent label="col3row3 query" units="CBMTILE">
+        <map-input name="i" type="location" units="map" axis="i" ></map-input>
+        <map-input name="j" type="location" units="map" axis="j" ></map-input>
+        <map-input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="115" max="-44" ></map-input>
+        <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="27" max="33" ></map-input>
+        <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="115" max="-44" ></map-input>
+        <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="27" max="33" ></map-input>
+        <map-input name="w" type="width" ></map-input>
+        <map-input name="h" type="height" ></map-input>
+        <map-link rel="query" tref="data/query/us_map_query?{i}{j}{xmin}{ymin}{xmax}{ymax}{w}{h}" ></map-link>
+      </map-extent>
+      <map-extent label="col3row3 query" units="CBMTILE">
+        <map-input name="i" type="location" units="map" axis="i" ></map-input>
+        <map-input name="j" type="location" units="map" axis="j" ></map-input>
+        <map-input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="115" max="-44" ></map-input>
+        <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="27" max="33" ></map-input>
+        <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="115" max="-44" ></map-input>
+        <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="27" max="33" ></map-input>
+        <map-input name="w" type="width" ></map-input>
+        <map-input name="h" type="height" ></map-input>
+        <map-link rel="query" tref="data/query/us_map_query?{i}{j}{xmin}{ymin}{xmax}{ymax}{w}{h}" ></map-link>
+      </map-extent>
+      <map-extent label="col4row3 query" units="CBMTILE">
+        <map-input name="i" type="location" units="map" axis="i" ></map-input>
+        <map-input name="j" type="location" units="map" axis="j" ></map-input>
+        <map-input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="57" max="-15" ></map-input>
+        <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="29" max="-19" ></map-input>
+        <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="57" max="-15" ></map-input>
+        <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="29" max="-19" ></map-input>
+        <map-input name="w" type="width" ></map-input>
+        <map-input name="h" type="height" ></map-input>
+        <map-link rel="query" tref="data/query/us_map_query?{i}{j}{xmin}{ymin}{xmax}{ymax}{w}{h}" ></map-link>
+      </map-extent>
+    </layer->
+  </mapml-viewer>
+  <textarea name="message" rows="10" cols="100"></textarea>
+</body>
+
+</html>
