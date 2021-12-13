@@ -93,20 +93,16 @@ export var MapMLLayer = L.Layer.extend({
           //extent.templatedLayer._templates[0].layer.addTo(this._map);
           extent.checked = true;
           this._getCombinedExtentsLayerBounds();
-              extent.templatedLayer = M.templatedLayer(extent._templateVars, 
-                { pane: this._container,
-                  _leafletLayer: this,
-                  crs: extent.crs,
-                  opacity: extent.opacity,
-                  layerBounds: this._extent.layerBounds
-                }).addTo(this._map);         
+          this._container.appendChild(extent.templatedLayer._container);
+          extent.templatedLayer.addTo(this._map);  
         } else {
             // remove and add extents again so layerbounds gets updated
             L.DomEvent.stopPropagation(e);
             extent.checked = false;
             this._getCombinedExtentsLayerBounds();
-            this._removeExtents(this._map);
-            this._addExtentsToMap(this._map);
+            this._container.removeChild(extent.templatedLayer._container);
+            //this._removeExtents(this._map);
+            //this._addExtentsToMap(this._map);
         }
     },
 
