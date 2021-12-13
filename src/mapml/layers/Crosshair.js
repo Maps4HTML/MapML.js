@@ -85,6 +85,7 @@ export var Crosshair = L.Layer.extend({
     return false;
   },
 
+  // TODO: should be merged with the 'mapfocused' event emitted by mapml-viewer and map, not trivial
   _isMapFocused: function (e) {
     //set this._map.isFocused = true if arrow buttons are used
     if(!this._map._container.parentNode.activeElement){
@@ -96,7 +97,7 @@ export var Crosshair = L.Layer.extend({
       this._map.isFocused = false;
     } else this._map.isFocused = isLeafletContainer && ["keyup", "keydown"].includes(e.type);
 
-    if(this._map.isFocused) this._map.fire("mapfocused");
+    if(this._map.isFocused) this._map.fire("mapkeyboardfocused");
     this._addOrRemoveMapOutline();
     this._addOrRemoveCrosshair();
   },

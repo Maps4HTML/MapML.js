@@ -11,13 +11,13 @@ export var FeatureIndex = L.Handler.extend({
   },
 
   addHooks: function () {
-    this._map.on("mapfocused", this._updateMapBounds, this);
-    this._map.on('mapfocused', this._sortIndex, this);
+    this._map.on("mapkeyboardfocused", this._updateMapBounds, this);
+    this._map.on('mapkeyboardfocused', this._sortIndex, this);
   },
 
   removeHooks: function () {
-    this._map.off("mapfocused", this._updateMapBounds);
-    this._map.off('mapfocused', this._sortIndex);
+    this._map.off("mapkeyboardfocused", this._updateMapBounds);
+    this._map.off('mapkeyboardfocused', this._sortIndex);
   },
 
   /**
