@@ -5,6 +5,7 @@ export var TemplatedLayer = L.Layer.extend({
     this.zoomBounds = options.zoomBounds;
     L.setOptions(this, options);
     this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
+    this._container.style.opacity = this._templates.opacity;
     L.DomUtil.addClass(this._container,'mapml-templatedlayer-container');
 
     for (var i=0;i<templates.length;i++) {

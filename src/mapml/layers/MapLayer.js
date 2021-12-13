@@ -85,7 +85,7 @@ export var MapMLLayer = L.Layer.extend({
     _changeExtentOpacity: function(e){
       if(e && e.target && e.target.value >=0 && e.target.value <= 1.0){
         this.templatedLayer.changeOpacity(e.target.value);
-        this.opacity = e.target.value;
+        this._templateVars.opacity = e.target.value;
       }
     },
     _changeExtent: function(e, extent) {
@@ -93,16 +93,19 @@ export var MapMLLayer = L.Layer.extend({
           //extent.templatedLayer._templates[0].layer.addTo(this._map);
           extent.checked = true;
           this._getCombinedExtentsLayerBounds();
-          this._container.appendChild(extent.templatedLayer._container);
-          extent.templatedLayer.addTo(this._map);  
+              extent.templatedLayer = M.templatedLayer(extent._templateVars, 
+                { pane: this._container,
+                  _leafletLayer: this,
+                  crs: extent.crs,
+                  layerBounds: this._extent.layerBounds
+                }).addTo(this._map);         
         } else {
             // remove and add extents again so layerbounds gets updated
             L.DomEvent.stopPropagation(e);
             extent.checked = false;
             this._getCombinedExtentsLayerBounds();
-            this._container.removeChild(extent.templatedLayer._container);
-            //this._removeExtents(this._map);
-            //this._addExtentsToMap(this._map);
+            this._removeExtents(this._map);
+            this._addExtentsToMap(this._map);
         }
     },
 
@@ -283,7 +286,6 @@ export var MapMLLayer = L.Layer.extend({
           this._templatedLayer = M.templatedLayer(this._extent._mapExtents[i]._templateVars, 
             { pane: this._container,
               _leafletLayer: this,
-              opacity: this._extent._mapExtents[i].opacity,
               crs: this._extent.crs,
               layerBounds: this._extent.layerBounds,
               zoomBounds: this._extent.zoomBounds
@@ -557,10 +559,10 @@ export var MapMLLayer = L.Layer.extend({
         opacity.setAttribute('type','range');
         opacity.setAttribute('min', '0');
         opacity.setAttribute('max','1.0');
-        opacity.setAttribute('value', this._extent._mapExtents[i].opacity || '1.0');
+        opacity.setAttribute('value', this._extent._mapExtents[i]._templateVars.opacity || '1.0');
         opacity.setAttribute('step','0.1');
         opacity.setAttribute('aria-labelledby', 'mapml-layer-item-opacity-' + L.stamp(extentOpacitySummary));
-        this._extent._mapExtents[i].opacity = this._extent._mapExtents[i].opacity || '1.0';
+        this._extent._mapExtents[i]._templateVars.opacity = this._extent._mapExtents[i]._templateVars.opacity || '1.0';
         L.DomEvent.on(opacity, 'change', this._changeExtentOpacity, this._extent._mapExtents[i]);
 
         var extentItemNameSpan = L.DomUtil.create('span', 'mapml-layer-item-name', extentLabel);
