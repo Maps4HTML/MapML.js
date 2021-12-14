@@ -337,42 +337,24 @@ export class MapLayer extends HTMLElement {
 
     let mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
 
-    if(mapPCRS.contains(layerBounds)){
+    let zOffset = mapPCRS.contains(layerBounds) ? 1 : -1;
 
-    } else {
+    while((zOffset === -1 && !(mapPCRS.contains(layerBounds)) && (newZoom - 1) >= minZoom)  ||
+          (zOffset === 1 && mapPCRS.contains(layerBounds) && (newZoom + 1) <= maxZoom)) {
+      newZoom += zOffset;
 
+      scale = map.options.crs.scale(newZoom);
+      mapCenterTCRS = map.options.crs.transformation.transform(layerBounds.getCenter(true), scale);
+
+      mapTlNew = mapCenterTCRS.subtract(mapHalf).round();
+      mapBrNew = mapCenterTCRS.add(mapHalf).round();
+      mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection);
+      mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
+
+      mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
     }
+    if(zOffset === 1 && newZoom - 1 >= 0) newZoom--;
 
-    if(mapPCRS.contains(layerBounds)){
-      while(mapPCRS.contains(layerBounds) && (newZoom + 1) <= maxZoom){
-        newZoom++;
-
-        scale = map.options.crs.scale(newZoom);
-        mapCenterTCRS = map.options.crs.transformation.transform(layerBounds.getCenter(true), scale);
-
-        mapTlNew = mapCenterTCRS.subtract(viewHalf).round();
-        mapBrNew = mapCenterTCRS.add(viewHalf).round();
-        mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection);
-        mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
-
-        mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
-      }
-      if(newZoom - 1 >= 0) newZoom--;
-    } else {
-      while(!(mapPCRS.contains(layerBounds)) && (newZoom - 1) >= minZoom){
-        newZoom--;
-
-        scale = map.options.crs.scale(newZoom);
-        mapCenterTCRS = map.options.crs.transformation.transform(layerBounds.getCenter(true), scale);
-
-        mapTlNew = mapCenterTCRS.subtract(viewHalf).round();
-        mapBrNew = mapCenterTCRS.add(viewHalf).round();
-        mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection);
-        mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
-
-        mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
-      }
-    }
     map.flyTo(center, newZoom);
   }
 }
