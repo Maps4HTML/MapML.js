@@ -321,34 +321,58 @@ export class MapLayer extends HTMLElement {
       bR = this.extent.bottomRight.pcrs,
       layerBounds = L.bounds(L.point(tL.horizontal, tL.vertical), L.point(bR.horizontal, bR.vertical)),
       center = map.options.crs.unproject(layerBounds.getCenter(true)),
-      currentZoom = map.getZoom();
+      newZoom = map.getZoom();
 
-    map.setView(center, currentZoom, {animate:false});
-    let mapBounds = M.pixelToPCRSBounds(
-      map.getPixelBounds(),
-      map.getZoom(),
-      map.options.projection);
+    let maxZoom = this.extent.zoom.maxZoom, minZoom = this.extent.zoom.minZoom;
 
-    //fits the bounds to the map view
-    if(mapBounds.contains(layerBounds)){
-      while(mapBounds.contains(layerBounds) && (currentZoom + 1) <= this.extent.zoom.maxZoom){
-        currentZoom++;
-        map.setView(center, currentZoom, {animate:false});
-        mapBounds = M.pixelToPCRSBounds(
-          map.getPixelBounds(),
-          map.getZoom(),
-          map.options.projection);
-      }
-      if(currentZoom - 1 >= 0) map.flyTo(center, (currentZoom - 1));
+    let scale = map.options.crs.scale(newZoom),
+      mapCenterTCRS = map.options.crs.transformation.transform(layerBounds.getCenter(true), scale);
+
+    let mapHalf = map.getSize().divideBy(2),
+      mapTlNew = mapCenterTCRS.subtract(mapHalf).round(),
+      mapBrNew = mapCenterTCRS.add(mapHalf).round();
+
+    let mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection),
+      mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
+
+    let mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
+
+    if(mapPCRS.contains(layerBounds)){
+
     } else {
-      while(!(mapBounds.contains(layerBounds)) && (currentZoom - 1) >= this.extent.zoom.minZoom){
-        currentZoom--;
-        map.setView(center, currentZoom, {animate:false});
-        mapBounds = M.pixelToPCRSBounds(
-          map.getPixelBounds(),
-          map.getZoom(),
-          map.options.projection);
+
+    }
+
+    if(mapPCRS.contains(layerBounds)){
+      while(mapPCRS.contains(layerBounds) && (newZoom + 1) <= maxZoom){
+        newZoom++;
+
+        scale = map.options.crs.scale(newZoom);
+        mapCenterTCRS = map.options.crs.transformation.transform(layerBounds.getCenter(true), scale);
+
+        mapTlNew = mapCenterTCRS.subtract(viewHalf).round();
+        mapBrNew = mapCenterTCRS.add(viewHalf).round();
+        mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection);
+        mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
+
+        mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
+      }
+      if(newZoom - 1 >= 0) newZoom--;
+    } else {
+      while(!(mapPCRS.contains(layerBounds)) && (newZoom - 1) >= minZoom){
+        newZoom--;
+
+        scale = map.options.crs.scale(newZoom);
+        mapCenterTCRS = map.options.crs.transformation.transform(layerBounds.getCenter(true), scale);
+
+        mapTlNew = mapCenterTCRS.subtract(viewHalf).round();
+        mapBrNew = mapCenterTCRS.add(viewHalf).round();
+        mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection);
+        mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
+
+        mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
       }
     }
+    map.flyTo(center, newZoom);
   }
 }
