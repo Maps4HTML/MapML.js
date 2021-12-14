@@ -106,19 +106,26 @@ export var FeatureIndex = L.Layer.extend({
     },
 
     _addOrRemoveFeatureIndex: function (e) {
-        if (e && e.type === "focus"){
-            this._container.querySelector('rect').style.display = "inline";
-            this._table.style.display = "block";
-        } else if (e && e.type === "blur") {
-            this._container.querySelector('rect').style.display = "none";
-            this._table.style.display = "none";
-        } else if (this._map.isFocused) {
-            this._container.querySelector('rect').style.display = "inline";
-            this._table.style.display = "block";
-        } else {
-            this._container.querySelector('rect').style.display = "none";
-            this._table.style.display = "none";
-        }
+        let obj = this;
+        setTimeout(function() {
+            if (obj._table.contains(obj._map.options.mapEl.shadowRoot.activeElement)) {
+                return;
+            }
+            if (e && e.type === "focus") {
+                obj._container.querySelector('rect').style.display = "inline";
+                obj._table.style.display = "block";
+            } else if (e && e.type === "blur") {
+                obj._container.querySelector('rect').style.display = "none";
+                obj._table.style.display = "none";
+            } else if (obj._map.isFocused) {
+                obj._container.querySelector('rect').style.display = "inline";
+                obj._table.style.display = "block";
+            } else {
+                obj._container.querySelector('rect').style.display = "none";
+                obj._table.style.display = "none";
+            }
+        }, 0);
+
     },
 
 });
