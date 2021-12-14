@@ -354,7 +354,6 @@ export class MapLayer extends HTMLElement {
       mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
     }
     if(zOffset === 1 && newZoom - 1 >= 0) newZoom--;
-
-    map.flyTo(center, newZoom);
+    map.setView(center, newZoom, {animate: false});
   }
 }
