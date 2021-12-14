@@ -83,22 +83,17 @@ export var MapMLLayerControl = L.Control.Layers.extend({
           input[0].closest("fieldset").disabled = false;
           label[0].style.fontStyle = "normal";
         }
-        // check if an extent is disabled and disable its buttons and inputs
+        // check if an extent is disabled and disable it
         if(this._layers[i].layer._extent && this._layers[i].layer._extent._mapExtents){
           for(let j = 0; j < this._layers[i].layer._extent._mapExtents.length; j++){
-            let buttons = this._layers[i].layer._extent._mapExtents[j].extentAnatomy.getElementsByTagName("button");
-            label = this._layers[i].layer._extent._mapExtents[j].extentAnatomy.getElementsByClassName("mapml-layer-item-name")[0];
-            input = this._layers[i].layer._extent._mapExtents[j].extentAnatomy.getElementsByTagName("input")[0];
+            let input = this._layers[i].layer._extent._mapExtents[j].extentAnatomy,
+                label = input.getElementsByClassName("mapml-layer-item-name")[0];
             if(this._layers[i].layer._extent._mapExtents[j].disabled && this._layers[i].layer._extent._mapExtents[j].checked){
               label.style.fontStyle = "italic";
               input.disabled = true;
-              buttons[0].disabled = true;
-              buttons[1].disabled = true;
             } else {
               label.style.fontStyle = "normal";
               input.disabled = false;
-              buttons[0].disabled = false;
-              buttons[1].disabled = false;
             }
           }
         }

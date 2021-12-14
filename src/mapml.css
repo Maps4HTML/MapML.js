@@ -649,7 +649,9 @@ button.mapml-button:disabled,
   box-sizing: border-box;
 }
 
-.mapml-layer-item {
+.mapml-layer-item, 
+.mapml-layer-grouped-extents,
+.mapml-layer-extent {
   background-color: #fff;
   border: 1px solid #fff;
   margin: 0;
@@ -783,18 +785,10 @@ label.mapml-layer-item-toggle {
 
 .mapml-layer-item-settings .mapml-layer-extent {
   padding-inline-start: 1.8rem;
-  padding-block-end: 0.125rem;
-  padding-block-start: 0.125rem;
 }
 
 .mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-properties{
   padding-inline-start: 0;
-}
-
-.mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-settings-control,
-.mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-remove-control {
-  min-height: 30px;
-  height: 30px;
 }
 
 .mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-opacity {

@@ -496,7 +496,7 @@ export var MapMLLayer = L.Layer.extend({
     },
 
     getLayerExtentHTML: function (labelName, i) {
-      var extent = L.DomUtil.create('div', 'mapml-layer-extent'),
+      var extent = L.DomUtil.create('fieldset', 'mapml-layer-extent'),
         extentProperties = L.DomUtil.create('div', 'mapml-layer-item-properties', extent),
         extentSettings = L.DomUtil.create('div', 'mapml-layer-item-settings', extent),
         extentLabel = L.DomUtil.create('label', 'mapml-layer-item-toggle', extentProperties),
@@ -573,6 +573,8 @@ export var MapMLLayer = L.Layer.extend({
         L.DomEvent.on(input, 'change', (e)=>{
           this._changeExtent(e, this._extent._mapExtents[i]);
         });
+        extentItemNameSpan.id = 'mapml-extent-item-name-{' + L.stamp(extentItemNameSpan) + '}';
+        extent.setAttribute('aria-labelledby', extentItemNameSpan.id);
         return extent;
     },
 
@@ -782,9 +784,12 @@ export var MapMLLayer = L.Layer.extend({
 
         // if there are extents, add them to the layer control
         if(this._extent && this._extent._mapExtents) {
+          var extentsFieldset = L.DomUtil.create('fieldset', 'mapml-layer-grouped-extents');
+          extentsFieldset.setAttribute('aria-label', 'Sublayers');
           for(let j=0; j < this._extent._mapExtents.length; j++) {
-            layerItemSettings.appendChild(this._extent._mapExtents[j].extentAnatomy);
+            extentsFieldset.appendChild(this._extent._mapExtents[j].extentAnatomy);
           }
+          layerItemSettings.appendChild(extentsFieldset);
         }
 
         return fieldset;
