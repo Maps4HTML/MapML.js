@@ -21,8 +21,9 @@ export var FeatureIndex = L.Layer.extend({
         this._title = L.DomUtil.create("caption", "mapml-feature-index-header", this._table);
         this._title.innerHTML = "Feature Index";
         this._body = L.DomUtil.create("tbody", "mapml-feature-index-content", this._table);
-
+        map.on("layerchange layeradd layerremove overlayremove", this._toggleEvents, this);
         map.on('moveend', this._checkOverlap, this);
+        this._addOrRemoveFeatureIndex();
     },
 
     _checkOverlap: function () {
@@ -97,6 +98,27 @@ export var FeatureIndex = L.Layer.extend({
                 hiddenCells[i].style.display = "";
             }
         };
+    },
+
+    _toggleEvents: function (){
+        this._map.on("viewreset move moveend focus blur", this._addOrRemoveFeatureIndex, this);
+
+    },
+
+    _addOrRemoveFeatureIndex: function (e) {
+        if (e && e.type === "focus"){
+            this._container.querySelector('rect').style.display = "inline";
+            this._table.style.display = "block";
+        } else if (e && e.type === "blur") {
+            this._container.querySelector('rect').style.display = "none";
+            this._table.style.display = "none";
+        } else if (this._map.isFocused) {
+            this._container.querySelector('rect').style.display = "inline";
+            this._table.style.display = "block";
+        } else {
+            this._container.querySelector('rect').style.display = "none";
+            this._table.style.display = "none";
+        }
     },
 
 });
