@@ -22,7 +22,7 @@ export var FeatureIndex = L.Layer.extend({
         this._title.innerHTML = "Feature Index";
         this._body = L.DomUtil.create("tbody", "mapml-feature-index-content", this._table);
         map.on("layerchange layeradd layerremove overlayremove", this._toggleEvents, this);
-        map.on('moveend', this._checkOverlap, this);
+        map.on('moveend focus', this._checkOverlap, this);
         this._addOrRemoveFeatureIndex();
     },
 
