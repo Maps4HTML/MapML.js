@@ -12,7 +12,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       // options first...
       let inputData = M.extractInputBounds(template);
       this.zoomBounds = inputData.zoomBounds;
-      this.layerBounds=inputData.bounds;
+      this.extentBounds=inputData.bounds;
       this.isVisible = true;
       L.extend(options, this.zoomBounds);
       options.tms = template.tms;
@@ -59,7 +59,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       let mapZoom = this._map.getZoom();
       let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
       this.isVisible = mapZoom <= this.options.maxZoom && mapZoom >= this.options.minZoom && 
-                        this.layerBounds.overlaps(mapBounds);
+                        this.extentBounds.overlaps(mapBounds);
         if(!(this.isVisible))return;
       this._parentOnMoveEnd();
     },

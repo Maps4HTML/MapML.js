@@ -143,7 +143,7 @@ export var QueryHandler = L.Handler.extend({
           }
       }
 
-      if(template.layerBounds.contains(pcrsClick)){
+      if(template.extentBounds.contains(pcrsClick)){
         let lastOne = (i === (templates.length - 1)) ? true: false;
         fetchFeatures(template, obj, lastOne);
       }

@@ -113,7 +113,7 @@ export var MapMLLayer = L.Layer.extend({
       for(let i = 0; i < this._extent._mapExtents.length; i++){
         for(let j = 0; j < this._extent._mapExtents[i]._templateVars.length; j++){
           let inputData = M.extractInputBounds(this._extent._mapExtents[i]._templateVars[j]);
-          this._extent._mapExtents[i]._templateVars[j].extentBounds = inputData.bounds;
+          this._extent._mapExtents[i]._templateVars[j].tempExtentBounds = inputData.bounds;
           this._extent._mapExtents[i]._templateVars[j].extentZoomBounds = inputData.zoomBounds;
         }
       }
@@ -122,14 +122,14 @@ export var MapMLLayer = L.Layer.extend({
         if(this._extent._mapExtents[i].checked){
               for(let j = 0; j < this._extent._mapExtents[i]._templateVars.length; j++){
                 if(!bounds){
-                  bounds = this._extent._mapExtents[i]._templateVars[j].extentBounds;
+                  bounds = this._extent._mapExtents[i]._templateVars[j].tempExtentBounds;
                   zoomMax = this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.maxZoom;
                   zoomMin = this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.minZoom;
                   maxNativeZoom = this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.maxNativeZoom;
                   minNativeZoom = this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.minNativeZoom;
                 } else {
-                  bounds.extend(this._extent._mapExtents[i]._templateVars[j].extentBounds.min);
-                  bounds.extend(this._extent._mapExtents[i]._templateVars[j].extentBounds.max);
+                  bounds.extend(this._extent._mapExtents[i]._templateVars[j].tempExtentBounds.min);
+                  bounds.extend(this._extent._mapExtents[i]._templateVars[j].tempExtentBounds.max);
                   zoomMax = Math.max(zoomMax, this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.maxZoom);
                   zoomMin = Math.min(zoomMin, this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.minZoom);
                   maxNativeZoom = Math.max(maxNativeZoom, this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.maxNativeZoom);
@@ -1367,7 +1367,7 @@ export var MapMLLayer = L.Layer.extend({
           var templates = [];
           // only return queries that are in bound
           for(let i = 0; i < this._extent._queries.length; i++){
-            if(this._extent._queries[i].layerBounds.contains(pcrsClick)){
+            if(this._extent._queries[i].extentBounds.contains(pcrsClick)){
               templates.push(this._extent._queries[i]);
             }
           }
