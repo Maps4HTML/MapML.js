@@ -17,12 +17,14 @@ export var FeatureIndex = L.Layer.extend({
         this._container = L.DomUtil.create("div", "mapml-feature-index-box", map._container);
         this._container.innerHTML = svgInnerHTML;
 
-        this._table = L.DomUtil.create("table", "mapml-feature-index", map._container);
-        this._title = L.DomUtil.create("caption", "mapml-feature-index-header", this._table);
-        this._title.innerHTML = "Feature Index";
-        this._body = L.DomUtil.create("tbody", "mapml-feature-index-content", this._table);
+        this._output = L.DomUtil.create("output", "mapml-feature-index", map._container);
+        this._body = L.DomUtil.create("span", "mapml-feature-index-content", this._output);
+        this._moreContent = L.DomUtil.create("span", "mapml-feature-index-content more-content", this._output);
+        this._moreContent.style.display = "none";
+
         map.on("layerchange layeradd layerremove overlayremove", this._toggleEvents, this);
         map.on('moveend focus', this._checkOverlap, this);
+        map.on("keydown", this._toggleMoreContent, this);
         this._addOrRemoveFeatureIndex();
     },
 
@@ -46,58 +48,41 @@ export var FeatureIndex = L.Layer.extend({
 
         body.innerHTML = "";
 
+        let moreContent = this._moreContent;
+        moreContent.innerHTML = "";
+
         keys.forEach(i => {
             if(layers[i].featureAttributes && featureIndexBounds.overlaps(layers[i]._bounds)){
                 let label = layers[i].group.getAttribute("aria-label");
-
                 if(index === 9){
-                    body.appendChild(this._updateCell("More results", 9));
-                    body.querySelector("tr:nth-child(9) > td").addEventListener('focus', this._showMoreResults(body));
+                    body.appendChild(this._updateOutput("More results", 9));
                     index += 1;
                 }
+
                 if(index > 9){
-                    this._moreResults(label, index, body);
+                    moreContent.appendChild(this._updateOutput(label, index));
                 } else {
-                    body.appendChild(this._updateCell(label, index));
+                    body.appendChild(this._updateOutput(label, index));
                 }
                 index += 1;
 
             }
         });
     },
-
-    _updateCell: function (label, index) {
-        let row = document.createElement("tr");
-        let cell = document.createElement("td");
-
-        row.setAttribute("row", index);
-        cell.setAttribute("tabindex", index);
-        cell.setAttribute("aria-label", label);
-        cell.innerHTML = index + " " + label;
-        row.appendChild(cell);
-        return row;
+    _updateOutput: function (label, index) {
+        let span = document.createElement("span");
+        span.innerHTML = `<kbd>${index}</kbd>` + " " + label;
+        return span;
     },
-
-    _moreResults :function (label, index, body) {
-        let multiplier = Math.floor((index - 1) / 9);
-        let row = body.querySelector(`[row='${index - (9 * multiplier)}']`);
-        let cell = document.createElement("td");
-
-        cell.className = "more-results";
-        cell.style.display = "none";
-        cell.setAttribute("tabindex", index);
-        cell.setAttribute("aria-label", label);
-        cell.innerHTML = index + " " + label;
-        row.appendChild(cell);
-    },
-
-    _showMoreResults: function (body) {
-        return function () {
-            let hiddenCells = body.getElementsByClassName("more-results");
-            for (let i = 0; i < hiddenCells.length; i++){
-                hiddenCells[i].style.display = "";
+    _toggleMoreContent: function (e){
+        let display = this._moreContent.style.display;
+        if(e.originalEvent.keyCode === 57){
+            if(display === "none"){
+                this._moreContent.style.display = "inline-block";
+            } else {
+                this._moreContent.style.display = "none";
             }
-        };
+        }
     },
 
     _toggleEvents: function (){
@@ -108,21 +93,18 @@ export var FeatureIndex = L.Layer.extend({
     _addOrRemoveFeatureIndex: function (e) {
         let obj = this;
         setTimeout(function() {
-            if (obj._table.contains(obj._map.options.mapEl.shadowRoot.activeElement)) {
-                return;
-            }
             if (e && e.type === "focus") {
                 obj._container.querySelector('rect').style.display = "inline";
-                obj._table.style.display = "block";
+                obj._output.style.display = "block";
             } else if (e && e.type === "blur") {
                 obj._container.querySelector('rect').style.display = "none";
-                obj._table.style.display = "none";
+                obj._output.style.display = "none";
             } else if (obj._map.isFocused) {
                 obj._container.querySelector('rect').style.display = "inline";
-                obj._table.style.display = "block";
+                obj._output.style.display = "block";
             } else {
                 obj._container.querySelector('rect').style.display = "none";
-                obj._table.style.display = "none";
+                obj._output.style.display = "none";
             }
         }, 0);
 

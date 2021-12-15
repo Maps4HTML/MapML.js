@@ -842,6 +842,10 @@ label.mapml-layer-item-toggle {
 }
 
 .mapml-feature-index-content {
+  display: inline-block;
+}
+.mapml-feature-index-content > span{
+  display: block;
   font-family: monospace;
 }
 
