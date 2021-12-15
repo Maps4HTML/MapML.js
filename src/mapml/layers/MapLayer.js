@@ -90,22 +90,18 @@ export var MapMLLayer = L.Layer.extend({
     },
     _changeExtent: function(e, extent) {
         if(e.target.checked){
-          //extent.templatedLayer._templates[0].layer.addTo(this._map);
           extent.checked = true;
-          this._getCombinedExtentsLayerBounds();
               extent.templatedLayer = M.templatedLayer(extent._templateVars, 
                 { pane: this._container,
                   _leafletLayer: this,
-                  crs: extent.crs,
-                  layerBounds: this._extent.layerBounds
-                }).addTo(this._map);         
+                  crs: extent.crs
+                }).addTo(this._map);
+                this._getCombinedExtentsLayerBounds();         
         } else {
-            // remove and add extents again so layerbounds gets updated
             L.DomEvent.stopPropagation(e);
             extent.checked = false;
+            this._map.removeLayer(extent.templatedLayer);
             this._getCombinedExtentsLayerBounds();
-            this._removeExtents(this._map);
-            this._addExtentsToMap(this._map);
         }
     },
 
@@ -153,6 +149,12 @@ export var MapMLLayer = L.Layer.extend({
             this._layerEl.extent = (Object.assign(
                                       M.convertAndFormatPCRS(bounds,this._map),
                                       {zoom:this._extent.zoomBounds}));
+          }
+
+          // assign each template the layer and zoom bounds
+          for(let i = 0; i < this._extent._mapExtents.length; i++){
+            this._extent._mapExtents[i].templatedLayer.layerBounds = bounds;
+            this._extent._mapExtents[i].templatedLayer.zoomBounds = this._extent.zoomBounds;
           }
       },
 
@@ -248,8 +250,21 @@ export var MapMLLayer = L.Layer.extend({
 
         // if the extent has been initialized and received, update the map,
         if (this._extent && this._extent._mapExtents && this._extent._mapExtents[0]._templateVars) {
+          for(let i = 0; i < this._extent._mapExtents.length; i++){
+            if (this._extent._mapExtents[i]._templateVars && this._extent._mapExtents[i].checked) {
+              this._templatedLayer = M.templatedLayer(this._extent._mapExtents[i]._templateVars, 
+                { pane: this._container,
+                  _leafletLayer: this,
+                  crs: this._extent.crs,
+                  }).addTo(map);   
+                  this._extent._mapExtents[i].templatedLayer = this._templatedLayer;
+                  if(this._templatedLayer._queries){
+                    if(!this._extent._queries) this._extent._queries = [];
+                    this._extent._queries = this._extent._queries.concat(this._templatedLayer._queries);
+                  }
+            }
+           }
           this._getCombinedExtentsLayerBounds();
-          this._addExtentsToMap(map);
         } else {
             this.once('extentload', function() {
                 if(!this._validProjection(map)){
@@ -280,24 +295,6 @@ export var MapMLLayer = L.Layer.extend({
         map.on("popupopen", this._attachSkipButtons, this);
     },
 
-    _addExtentsToMap: function(map){
-      for(let i = 0; i < this._extent._mapExtents.length; i++){
-        if (this._extent._mapExtents[i]._templateVars && this._extent._mapExtents[i].checked) {
-          this._templatedLayer = M.templatedLayer(this._extent._mapExtents[i]._templateVars, 
-            { pane: this._container,
-              _leafletLayer: this,
-              crs: this._extent.crs,
-              layerBounds: this._extent.layerBounds,
-              zoomBounds: this._extent.zoomBounds
-              }).addTo(map);   
-              this._extent._mapExtents[i].templatedLayer = this._templatedLayer;
-              if(this._templatedLayer._queries){
-                if(!this._extent._queries) this._extent._queries = [];
-                this._extent._queries = this._extent._queries.concat(this._templatedLayer._queries);
-              }
-        }
-       }
-    },
 
     _validProjection : function(map){
       let noLayer = false;

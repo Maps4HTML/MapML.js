@@ -1,8 +1,6 @@
 export var TemplatedLayer = L.Layer.extend({
   initialize: function(templates, options) {
     this._templates =  templates;
-    this.layerBounds = options.layerBounds;
-    this.zoomBounds = options.zoomBounds;
     L.setOptions(this, options);
     this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
     this._container.style.opacity = this._templates.opacity;
