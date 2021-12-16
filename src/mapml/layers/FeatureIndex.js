@@ -19,7 +19,7 @@ export var FeatureIndex = L.Layer.extend({
 
         this._output = L.DomUtil.create("output", "mapml-feature-index", map._container);
         this._body = L.DomUtil.create("span", "mapml-feature-index-content", this._output);
-        this._moreContent = L.DomUtil.create("span", "mapml-feature-index-content more-content", this._output);
+        this._moreContent = L.DomUtil.create("span", "mapml-feature-index-more-content", this._output);
         this._moreContent.style.display = "none";
 
         map.on("layerchange layeradd layerremove overlayremove", this._toggleEvents, this);
@@ -54,13 +54,21 @@ export var FeatureIndex = L.Layer.extend({
         keys.forEach(i => {
             if(layers[i].featureAttributes && featureIndexBounds.overlaps(layers[i]._bounds)){
                 let label = layers[i].group.getAttribute("aria-label");
-                if(index === 9){
-                    body.appendChild(this._updateOutput("More results", 9));
-                    index += 1;
+
+                if(index%9 === 0){
+                    let span = document.createElement("span");
+                    span.setAttribute("id", index/9);
+                    moreContent.appendChild(span);
+                    if(index === 9){
+                        body.appendChild(this._updateOutput("More results", 9));
+                        index += 1;
+                    }
                 }
 
                 if(index > 9){
-                    moreContent.appendChild(this._updateOutput(label, index));
+                    let value = Math.floor((index - 1)/9);
+                    let span = moreContent.querySelector(`[id=${CSS.escape(value)}]`);
+                    span.appendChild(this._updateOutput(label, index));
                 } else {
                     body.appendChild(this._updateOutput(label, index));
                 }

@@ -825,7 +825,6 @@ label.mapml-layer-item-toggle {
   max-height: 100%;
   max-width: 100%;
   border-radius: 4px;
-  padding: 5px 10px;
   background-color: #fff;
   cursor: default;
   z-index: 1000;
@@ -841,9 +840,18 @@ label.mapml-layer-item-toggle {
   font: inherit;
 }
 
-.mapml-feature-index-content {
+.mapml-feature-index-more-content {
   display: inline-block;
 }
+.mapml-feature-index-more-content > span{
+  padding: 5px 10px 5px 0;
+  display: inline-block;
+}
+.mapml-feature-index-content {
+  padding: 5px 10px;
+  display: inline-block;
+}
+.mapml-feature-index-more-content > span > span,
 .mapml-feature-index-content > span{
   display: block;
   font-family: monospace;
