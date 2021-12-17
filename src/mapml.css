@@ -820,7 +820,7 @@ label.mapml-layer-item-toggle {
   z-index: 10000;
 }
 
-.mapml-feature-index {
+.mapml-feature-index:not([hidden]) {
   contain: content;
   max-height: 100%;
   max-width: 100%;
