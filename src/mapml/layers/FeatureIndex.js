@@ -110,16 +110,21 @@ export var FeatureIndex = L.Layer.extend({
 
     _addOrRemoveFeatureIndex: function (e) {
         let obj = this;
+        let features = this._body.allFeatures ? this._body.allFeatures.length : 0;
         setTimeout(function() {
             if (e && e.type === "focus") {
                 obj._container.removeAttribute("hidden");
-                obj._output.removeAttribute("hidden");
+                if (features !== 0) obj._output.removeAttribute("hidden");
             } else if (e && e.type === "blur") {
                 obj._container.setAttribute("hidden", "");
                 obj._output.setAttribute("hidden", "");
             } else if (obj._map.isFocused) {
                 obj._container.removeAttribute("hidden");
-                obj._output.removeAttribute("hidden");
+                if (features !== 0) {
+                    obj._output.removeAttribute("hidden");
+                } else {
+                    obj._output.setAttribute("hidden", "");
+                }
             } else {
                 obj._container.setAttribute("hidden", "");
                 obj._output.setAttribute("hidden", "");
