@@ -1,18 +1,6 @@
 export var FeatureIndex = L.Layer.extend({
     onAdd: function (map) {
-        let svgInnerHTML = `<svg
-                            xmlns:dc="http://purl.org/dc/elements/1.1/"
-                            xmlns:cc="http://creativecommons.org/ns#"
-                            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-                            xmlns:svg="http://www.w3.org/2000/svg" 
-                            xmlns="http://www.w3.org/2000/svg" version="1.1"
-                            x="0px" y="0px" viewBox="0 0 99.999998 99.999998" xml:space="preserve">
-                                <g>
-                                    <rect  width="100" height="100"
-                                    style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-                                    />
-                                </g>
-                            </svg>`;
+        let svgInnerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 100 100"><path fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" d="M0 0h100v100H0z" color="#000" overflow="visible"/></svg>`;
 
         this._container = L.DomUtil.create("div", "mapml-feature-index-box", map._container);
         this._container.innerHTML = svgInnerHTML;
@@ -124,17 +112,17 @@ export var FeatureIndex = L.Layer.extend({
         let obj = this;
         setTimeout(function() {
             if (e && e.type === "focus") {
-                obj._container.querySelector('rect').style.display = "inline";
-                obj._output.style.display = "block";
+                obj._container.removeAttribute("hidden");
+                obj._output.removeAttribute("hidden");
             } else if (e && e.type === "blur") {
-                obj._container.querySelector('rect').style.display = "none";
-                obj._output.style.display = "none";
+                obj._container.setAttribute("hidden", "");
+                obj._output.setAttribute("hidden", "");
             } else if (obj._map.isFocused) {
-                obj._container.querySelector('rect').style.display = "inline";
-                obj._output.style.display = "block";
+                obj._container.removeAttribute("hidden");
+                obj._output.removeAttribute("hidden");
             } else {
-                obj._container.querySelector('rect').style.display = "none";
-                obj._output.style.display = "none";
+                obj._container.setAttribute("hidden", "");
+                obj._output.setAttribute("hidden", "");
             }
         }, 0);
 
