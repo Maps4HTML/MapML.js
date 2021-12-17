@@ -818,6 +818,7 @@ label.mapml-layer-item-toggle {
   display: block;
   position: absolute;
   z-index: 10000;
+  outline: thin solid #fff;
 }
 
 .mapml-feature-index:not([hidden]) {
