@@ -4,8 +4,6 @@
  * @returns {*}
  */
 export var FeatureRenderer = L.SVG.extend({
-  
-
   /**
    * Override method of same name from L.SVG, use the this._container property
    * to set up the role="none presentation" on featureGroupu container,
@@ -48,9 +46,6 @@ export var FeatureRenderer = L.SVG.extend({
       if (p.subrings) {
         for (let r of p.subrings) {
           this._createPath(r, layer.options.className, r.attr['aria-label'], (r.link !== undefined), r.attr);
-          if(r.attr && r.attr.tabindex){
-            p.path.setAttribute('tabindex', r.attr.tabindex || '0');
-          }
         }
       }
       this._updateStyle(layer);
@@ -77,7 +72,7 @@ export var FeatureRenderer = L.SVG.extend({
       if (title) p.setAttribute('aria-label', title);
     } else {
       for(let [name, value] of Object.entries(attr)){
-        if(name === "id") continue;
+        if(name === "id" || name === "tabindex") continue;
         p.setAttribute(name, value);
       }
     }

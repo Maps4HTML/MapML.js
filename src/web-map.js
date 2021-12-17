@@ -169,6 +169,7 @@ export class WebMap extends HTMLMapElement {
     });
     this.controlsListObserver.observe(this, {attributes:true});
   }
+
   connectedCallback() {
     if (this.isConnected) {
 
@@ -213,6 +214,7 @@ export class WebMap extends HTMLMapElement {
             query: true,
             contextMenu: true,
             announceMovement: M.options.announceMovement,
+            featureIndex: true,
             mapEl: this,
             crs: M[this.projection],
             zoom: this.zoom,

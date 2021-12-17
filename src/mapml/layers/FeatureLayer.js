@@ -55,6 +55,7 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         L.DomUtil.remove(this._container);
       }
       L.FeatureGroup.prototype.onRemove.call(this, map);
+      this._map.featureIndex.cleanIndex();
     },
 
     getEvents: function(){
@@ -146,6 +147,8 @@ export var MapMLFeatures = L.FeatureGroup.extend({
 
     _resetFeatures : function (zoom){
       this.clearLayers();
+      // since features are removed and re-added by zoom level, need to clean the feature index before re-adding
+      if(this._map) this._map.featureIndex.cleanIndex();
       if(this._features && this._features[zoom]){
         for(let k =0;k < this._features[zoom].length;k++){
           this.addLayer(this._features[zoom][k]);

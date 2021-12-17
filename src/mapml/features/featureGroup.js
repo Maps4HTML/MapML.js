@@ -12,7 +12,6 @@ export var FeatureGroup = L.FeatureGroup.extend({
     L.LayerGroup.prototype.initialize.call(this, layers, options);
 
     if((this.options.onEachFeature && this.options.properties) || this.options.link) {
-      this.options.group.setAttribute('tabindex', '0');
       L.DomUtil.addClass(this.options.group, "leaflet-interactive");
       L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
       let firstLayer = layers[Object.keys(layers)[0]];
@@ -32,12 +31,59 @@ export var FeatureGroup = L.FeatureGroup.extend({
     if(this.options.featureID) this.options.group.setAttribute("data-fid", this.options.featureID);
   },
 
+  onAdd: function (map) {
+    L.LayerGroup.prototype.onAdd.call(this, map);
+    this.updateInteraction();
+  },
+
+  updateInteraction: function () {
+    let map = this._map || this.options._leafletLayer._map;
+    if((this.options.onEachFeature && this.options.properties) || this.options.link)
+      map.featureIndex.addToIndex(this, this.getPCRSCenter(), this.options.group);
+
+    for (let layerID in this._layers) {
+      let layer = this._layers[layerID];
+      for(let part of layer._parts){
+        if(layer.featureAttributes && layer.featureAttributes.tabindex)
+          map.featureIndex.addToIndex(layer, layer.getPCRSCenter(), part.path);
+        for(let subPart of part.subrings) {
+          if(subPart.attr && subPart.attr.tabindex) map.featureIndex.addToIndex(layer, subPart.center, subPart.path);
+        }
+      }
+    }
+  },
+
   /**
    * Handler for focus events
    * @param {L.DOMEvent} e - Event that occurred
    * @private
    */
   _handleFocus: function(e) {
+    if((e.keyCode === 9 || e.keyCode === 16) && e.type === "keydown"){
+      let index = this._map.featureIndex.currentIndex;
+      if(e.keyCode === 9 && e.shiftKey) {
+        if(index === this._map.featureIndex.inBoundFeatures.length - 1)
+          this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", -1);
+        if(index !== 0){
+          L.DomEvent.stop(e);
+          this._map.featureIndex.inBoundFeatures[index - 1].path.focus();
+          this._map.featureIndex.currentIndex--;
+        }
+      } else if (e.keyCode === 9) {
+        if(index !== this._map.featureIndex.inBoundFeatures.length - 1) {
+          L.DomEvent.stop(e);
+          this._map.featureIndex.inBoundFeatures[index + 1].path.focus();
+          this._map.featureIndex.currentIndex++;
+        } else {
+          this._map.featureIndex.inBoundFeatures[0].path.setAttribute("tabindex", -1);
+          this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", 0);
+        }
+      }
+    } else if (!(e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13)){
+      this._map.featureIndex.currentIndex = 0;
+      this._map.featureIndex.inBoundFeatures[0].path.focus();
+    }
+
     if(e.target.tagName.toUpperCase() !== "G") return;
     if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup") {
       this.openTooltip();
@@ -69,22 +115,10 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @private
    */
   _previousFeature: function(e){
-    let group = this._source.group.previousSibling;
-    if(!group){
-      let currentIndex = this._source.group.closest("div.mapml-layer").style.zIndex;
-      let overlays = this._map.getPane("overlayPane").children;
-      for(let i = overlays.length - 1; i >= 0; i--){
-        let layer = overlays[i];
-        if(layer.style.zIndex >= currentIndex) continue;
-        group = layer.querySelector("g.leaflet-interactive");
-        if(group){
-          group = group.parentNode.lastChild;
-          break;
-        }
-      }
-      if (!group) group = this._source.group;
-    }
-    group.focus();
+    L.DomEvent.stop(e);
+    this._map.featureIndex.currentIndex = Math.max(this._map.featureIndex.currentIndex - 1, 0);
+    let prevFocus = this._map.featureIndex.inBoundFeatures[this._map.featureIndex.currentIndex];
+    prevFocus.path.focus();
     this._map.closePopup();
   },
 
@@ -94,19 +128,24 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @private
    */
   _nextFeature: function(e){
-    let group = this._source.group.nextSibling;
-    if(!group){
-      let currentIndex = this._source.group.closest("div.mapml-layer").style.zIndex;
-
-      for(let layer of this._map.getPane("overlayPane").children){
-        if(layer.style.zIndex <= currentIndex) continue;
-        group = layer.querySelectorAll("g.leaflet-interactive");
-        if(group.length > 0)break;
-      }
-      group = group && group.length > 0 ? group[0] : this._source.group;
-    }
-    group.focus();
+    L.DomEvent.stop(e);
+    this._map.featureIndex.currentIndex = Math.min(this._map.featureIndex.currentIndex + 1, this._map.featureIndex.inBoundFeatures.length - 1);
+    let nextFocus = this._map.featureIndex.inBoundFeatures[this._map.featureIndex.currentIndex];
+    nextFocus.path.focus();
     this._map.closePopup();
+  },
+
+  getPCRSCenter: function () {
+    let bounds;
+    for(let l in this._layers){
+      let layer = this._layers[l];
+      if (!bounds) {
+        bounds = L.bounds(layer.getPCRSCenter(), layer.getPCRSCenter());
+      } else {
+        bounds.extend(layer.getPCRSCenter());
+      }
+    }
+    return bounds.getCenter();
   },
 });
 

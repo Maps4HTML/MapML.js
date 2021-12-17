@@ -2,7 +2,8 @@
 describe("MapMLStaticTileLayer Tests", function () {
   var map, container;
   beforeEach(() => {
-    map = L.map(document.createElement("map"));
+    map = L.map(document.createElement("map"), {center:[0, 0], zoom: 0});
+    map.options.projection = "CBMTILE";
     container = document.createElement("div");
   });
 
