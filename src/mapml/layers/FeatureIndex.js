@@ -19,12 +19,10 @@ export var FeatureIndex = L.Layer.extend({
 
         this._output = L.DomUtil.create("output", "mapml-feature-index", map._container);
         this._body = L.DomUtil.create("span", "mapml-feature-index-content", this._output);
-        this._moreContent = L.DomUtil.create("span", "mapml-feature-index-more-content", this._output);
-        this._moreContent.style.display = "none";
 
         map.on("layerchange layeradd layerremove overlayremove", this._toggleEvents, this);
         map.on('moveend focus', this._checkOverlap, this);
-        map.on("keydown", this._toggleMoreContent, this);
+        map.on("keydown", this._toggleContent, this);
         this._addOrRemoveFeatureIndex();
     },
 
@@ -48,47 +46,71 @@ export var FeatureIndex = L.Layer.extend({
 
         body.innerHTML = "";
 
-        let moreContent = this._moreContent;
-        moreContent.innerHTML = "";
-
+        body.allFeatures = [];
         keys.forEach(i => {
             if(layers[i].featureAttributes && featureIndexBounds.overlaps(layers[i]._bounds)){
                 let label = layers[i].group.getAttribute("aria-label");
 
-                if(index%9 === 0){
-                    let span = document.createElement("span");
-                    span.setAttribute("id", index/9);
-                    moreContent.appendChild(span);
-                    if(index === 9){
-                        body.appendChild(this._updateOutput("More results", 9));
-                        index += 1;
-                    }
+                if (index < 8){
+                    body.appendChild(this._updateOutput(label, index, index));
                 }
-
-                if(index > 9){
-                    let value = Math.floor((index - 1)/9);
-                    let span = moreContent.querySelector(`[id=${CSS.escape(value)}]`);
-                    span.appendChild(this._updateOutput(label, index));
-                } else {
-                    body.appendChild(this._updateOutput(label, index));
+                if (index % 7 === 0 || index === 1) {
+                    body.allFeatures.push([]);
+                }
+                body.allFeatures[Math.floor((index - 1) / 7)].push({label, index});
+                if (body.allFeatures[1] && body.allFeatures[1].length === 1){
+                    body.appendChild(this._updateOutput("More results", 0, 9));
                 }
                 index += 1;
-
             }
         });
+        this._addToggleKeys();
     },
-    _updateOutput: function (label, index) {
+
+    _updateOutput: function (label, index, key) {
         let span = document.createElement("span");
-        span.innerHTML = `<kbd>${index}</kbd>` + " " + label;
+        span.setAttribute("index", index);
+        span.innerHTML = `<kbd>${key}</kbd>` + " " + label;
         return span;
     },
-    _toggleMoreContent: function (e){
-        let display = this._moreContent.style.display;
+
+    _addToggleKeys: function () {
+        let allFeatures = this._body.allFeatures;
+        for(let i = 0; i < allFeatures.length; i++){
+            if(allFeatures[i].length === 0) return;
+            if(allFeatures[i - 1]){
+                let label = "Previous results";
+                allFeatures[i].push({label});
+            }
+
+            if(allFeatures[i + 1] && allFeatures[i + 1].length > 0){
+                let label = "More results";
+                allFeatures[i].push({label});
+            }
+        }
+    },
+
+    _toggleContent: function (e){
+        let body = this._body;
         if(e.originalEvent.keyCode === 57){
-            if(display === "none"){
-                this._moreContent.style.display = "inline-block";
-            } else {
-                this._moreContent.style.display = "none";
+            this._newContent(body, 1);
+        } else if(e.originalEvent.keyCode === 56){
+            this._newContent(body, -1);
+        }
+    },
+
+    _newContent: function (body, direction) {
+        let index = body.firstChild.getAttribute("index");
+        let newContent = body.allFeatures[Math.floor(((index - 1) / 7) + direction)];
+        if(newContent && newContent.length > 0){
+            body.innerHTML = "";
+            for(let i = 0; i < newContent.length; i++){
+                let feature = newContent[i];
+                let index = feature.index ? feature.index : 0;
+                let key = i + 1;
+                if (feature.label === "More results") key = 9;
+                if (feature.label === "Previous results") key = 8;
+                body.appendChild(this._updateOutput(feature.label, index, key));
             }
         }
     },

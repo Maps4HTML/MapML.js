@@ -834,34 +834,14 @@ label.mapml-layer-item-toggle {
   right: 5px;
   bottom: 5px;
   left: 5px;
+  padding: 5px 10px;
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
   font: inherit;
 }
-
-.mapml-feature-index-more-content {
-  display: inline-block;
-}
-.mapml-feature-index-more-content > span{
-  padding: 5px 10px 5px 0;
-  display: inline-block;
-}
-.mapml-feature-index-content {
-  padding: 5px 10px;
-  display: inline-block;
-}
-.mapml-feature-index-more-content > span > span,
 .mapml-feature-index-content > span{
   display: block;
   font-family: monospace;
 }
 
-.mapml-feature-index-header {
-  font-weight: bold;
-  text-transform: uppercase;
-  display: inline-block;
-  text-align: left;
-  text-align: inline-start;
-  line-height: 2;
-}
