@@ -79,7 +79,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
           this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", 0);
         }
       }
-    } else if (!(e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13)){
+    } else if (!([9, 16, 13, 27].includes(e.keyCode))){
       this._map.featureIndex.currentIndex = 0;
       this._map.featureIndex.inBoundFeatures[0].path.focus();
     }
