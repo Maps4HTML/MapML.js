@@ -79,13 +79,13 @@ export var FeatureGroup = L.FeatureGroup.extend({
           this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", 0);
         }
       }
-    } else if (!([9, 16, 13, 27].includes(e.keyCode))){
+    } else if (!([9, 16, 13, 27, 49, 50, 51, 52, 53, 54, 55].includes(e.keyCode))){
       this._map.featureIndex.currentIndex = 0;
       this._map.featureIndex.inBoundFeatures[0].path.focus();
     }
 
     if(e.target.tagName.toUpperCase() !== "G") return;
-    if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13) && e.type === "keyup") {
+    if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13 || (e.keyCode >= 49 && e.keyCode <= 55)) && e.type === "keyup") {
       this.openTooltip();
     } else if (e.keyCode === 13 || e.keyCode === 32){
       this.closeTooltip();

@@ -16,6 +16,7 @@ export var FeatureIndexOverlay = L.Layer.extend({
     },
 
     _checkOverlap: function () {
+        this._map.fire("mapkeyboardfocused");
         let bounds = this._map.getPixelBounds();
         let center = bounds.getCenter();
         let wRatio = Math.abs(bounds.min.x - bounds.max.x) / (this._map.options.mapEl.width);
@@ -94,8 +95,12 @@ export var FeatureIndexOverlay = L.Layer.extend({
         let body = this._body;
         let key = e.originalEvent.keyCode;
         if (key >= 49 && key <= 55){
-            let group = body.allFeatures[body.index][key - 49].group;
-            if (group) group.focus();
+            let feature = body.allFeatures[body.index][key - 49];
+            let group = feature.group;
+            if (group) {
+                this._map.featureIndex.currentIndex = feature.index - 1;
+                group.focus();
+            }
         } else if(e.originalEvent.keyCode === 56){
             this._newContent(body, -1);
         } else if(e.originalEvent.keyCode === 57){
