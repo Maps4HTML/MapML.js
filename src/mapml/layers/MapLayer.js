@@ -94,7 +94,8 @@ export var MapMLLayer = L.Layer.extend({
               extent.templatedLayer = M.templatedLayer(extent._templateVars, 
                 { pane: this._container,
                   _leafletLayer: this,
-                  crs: extent.crs
+                  crs: extent.crs,
+                  extentZIndex: extent.extentZIndex
                 }).addTo(this._map);
                 this._getCombinedExtentsLayerBounds();         
         } else {
@@ -256,8 +257,10 @@ export var MapMLLayer = L.Layer.extend({
                 { pane: this._container,
                   _leafletLayer: this,
                   crs: this._extent.crs,
+                  extentZIndex: i,
                   }).addTo(map);   
                   this._extent._mapExtents[i].templatedLayer = this._templatedLayer;
+                  this._extent._mapExtents[i].extentZIndex = i;
                   if(this._templatedLayer._queries){
                     if(!this._extent._queries) this._extent._queries = [];
                     this._extent._queries = this._extent._queries.concat(this._templatedLayer._queries);
@@ -1074,7 +1077,7 @@ export var MapMLLayer = L.Layer.extend({
                 if (layer._extent._mapExtents) {
                   for(let i = 0; i < layer._extent._mapExtents.length; i++){
                     if(layer._extent._mapExtents[i].templatedLayer){
-                      layer._extent._mapExtents[i].templatedLayer.reset(layer._extent._mapExtents[i]._templateVars);
+                      layer._extent._mapExtents[i].templatedLayer.reset(layer._extent._mapExtents[i]._templateVars, layer._extent._mapExtents[i].extentZIndex);
                     }
                   }
                   

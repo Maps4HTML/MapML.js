@@ -9,11 +9,11 @@ export var TemplatedLayer = L.Layer.extend({
     for (var i=0;i<templates.length;i++) {
       if (templates[i].rel === 'tile') {
           this._templates[i].layer = M.templatedTileLayer(templates[i], 
-            L.Util.extend(options, {errorTileUrl: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==", zIndex: i, pane: this._container}));
+            L.Util.extend(options, {errorTileUrl: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==", zIndex: options.extentZIndex, pane: this._container}));
       } else if (templates[i].rel === 'image') {
-          this._templates[i].layer = M.templatedImageLayer(templates[i], L.Util.extend(options, {zIndex: i, pane: this._container}));
+          this._templates[i].layer = M.templatedImageLayer(templates[i], L.Util.extend(options, {zIndex: options.extentZIndex, pane: this._container}));
       } else if (templates[i].rel === 'features') {
-          this._templates[i].layer = M.templatedFeaturesLayer(templates[i], L.Util.extend(options, {zIndex: i, pane: this._container}));
+          this._templates[i].layer = M.templatedFeaturesLayer(templates[i], L.Util.extend(options, {zIndex: options.extentZIndex, pane: this._container}));
       } else if (templates[i].rel === 'query') {
           // add template to array of queryies to be added to map and processed
           // on click/tap events
@@ -44,11 +44,6 @@ export var TemplatedLayer = L.Layer.extend({
   _onZoomStart: function() {
       this.closePopup();
   },
-
-  _onMoveEnd: function() {
-
-  },
-
 
   _setupQueryVars: function(template) {
       // process the inputs associated to template and create an object named
@@ -174,7 +169,7 @@ export var TemplatedLayer = L.Layer.extend({
       queryVarNames.query.title = template.title;
       return queryVarNames;
   },
-  reset: function (templates) {
+  reset: function (templates, extentZIndex) {
     if (!templates) {return;}
     if (!this._map) {return;}
     var addToMap = this._map && this._map.hasLayer(this),
@@ -186,11 +181,11 @@ export var TemplatedLayer = L.Layer.extend({
     for (var i=0;i<templates.length;i++) {
       if (templates[i].rel === 'tile') {
           this._templates[i].layer = M.templatedTileLayer(templates[i],
-            L.Util.extend(this.options, {errorTileUrl: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==", zIndex: i, pane: this._container}));
+            L.Util.extend(this.options, {errorTileUrl: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==", zIndex: extentZIndex, pane: this._container}));
       } else if (templates[i].rel === 'image') {
-          this._templates[i].layer = M.templatedImageLayer(templates[i], L.Util.extend(this.options, {zIndex: i, pane: this._container}));
+          this._templates[i].layer = M.templatedImageLayer(templates[i], L.Util.extend(this.options, {zIndex: extentZIndex, pane: this._container}));
       } else if (templates[i].rel === 'features') {
-          this._templates[i].layer = M.templatedFeaturesLayer(templates[i], L.Util.extend(this.options, {zIndex: i, pane: this._container}));
+          this._templates[i].layer = M.templatedFeaturesLayer(templates[i], L.Util.extend(this.options, {zIndex: extentZIndex, pane: this._container}));
       } else if (templates[i].rel === 'query') {
           if (!this._queries) {
             this._queries = [];
