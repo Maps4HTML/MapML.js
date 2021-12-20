@@ -51,6 +51,7 @@ import { DebugOverlay, debugOverlay} from './layers/DebugLayer';
 import { QueryHandler } from './handlers/QueryHandler';
 import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
+import { AttributionButton, attributionButton } from './control/AttributionButton';
 import { ReloadButton, reloadButton } from './control/ReloadButton';
 import { FullscreenButton, fullscreenButton } from './control/FullscreenButton';
 import { Crosshair, crosshair } from "./layers/Crosshair";
@@ -639,6 +640,9 @@ M.mapMlFeatures = mapMlFeatures;
 
 M.MapMLLayerControl = MapMLLayerControl;
 M.mapMlLayerControl = mapMlLayerControl;
+
+M.AttributionButton = AttributionButton;
+M.attributionButton = attributionButton;
 
 M.ReloadButton = ReloadButton;
 M.reloadButton = reloadButton;

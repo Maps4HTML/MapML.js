@@ -224,13 +224,12 @@ export class WebMap extends HTMLMapElement {
             // there is a better configuration than that, but at this moment
             // I'm not sure how to approach that issue.
             // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
-            fadeAnimation: true
+            fadeAnimation: true,
+            attributionControl: false
           });
           this._addToHistory();
           // the attribution control is not optional
-          this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
-          this._attributionControl.getContainer().setAttribute("role","group");
-          this._attributionControl.getContainer().setAttribute("aria-label","Map data attribution");
+          this._attributionControl = M.attributionButton().addTo(this._map);
 
           this.setControls(false,false,true);
           this._crosshair = M.crosshair().addTo(this._map);
