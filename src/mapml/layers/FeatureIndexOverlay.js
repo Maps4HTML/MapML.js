@@ -1,4 +1,4 @@
-export var FeatureIndex = L.Layer.extend({
+export var FeatureIndexOverlay = L.Layer.extend({
     onAdd: function (map) {
         let svgInnerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 100 100"><path fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" d="M0 0h100v100H0z" color="#000" overflow="visible"/></svg>`;
 
@@ -28,9 +28,9 @@ export var FeatureIndex = L.Layer.extend({
         let b = L.bounds(minPoint, maxPoint);
         let featureIndexBounds = M.pixelToPCRSBounds(b,this._map.getZoom(),this._map.options.projection);
 
-        let layers = this._map._layers;
+        let features = this._map.featureIndex.inBoundFeatures;
         let index = 1;
-        let keys = Object.keys(layers);
+        let keys = Object.keys(features);
         let body = this._body;
 
         body.innerHTML = "";
@@ -38,8 +38,17 @@ export var FeatureIndex = L.Layer.extend({
 
         body.allFeatures = [];
         keys.forEach(i => {
-            if(layers[i].featureAttributes && featureIndexBounds.overlaps(layers[i]._bounds)){
-                let group = layers[i].group;
+            let layers = features[i].layer._layers;
+            let keys = Object.keys(layers);
+            let bounds = L.bounds();
+            keys.forEach(j => {
+                if(!bounds) bounds = L.bounds(layers[j]._bounds.min, layers[j]._bounds.max);
+                bounds.extend(layers[j]._bounds.min);
+                bounds.extend(layers[j]._bounds.max);
+            });
+
+            if(featureIndexBounds.overlaps(bounds)){
+                let group = features[i].path;
                 let label = group.getAttribute("aria-label");
 
                 if (index < 8){
@@ -143,6 +152,6 @@ export var FeatureIndex = L.Layer.extend({
 
 });
 
-export var featureIndex = function (options) {
-    return new FeatureIndex(options);
+export var featureIndexOverlay = function (options) {
+    return new FeatureIndexOverlay(options);
 };

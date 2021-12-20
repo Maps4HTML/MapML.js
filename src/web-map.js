@@ -234,7 +234,7 @@ export class WebMap extends HTMLMapElement {
 
           this.setControls(false,false,true);
           this._crosshair = M.crosshair().addTo(this._map);
-          this._featureIndex = M.featureIndex().addTo(this._map);
+          this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
 
           if (this.hasAttribute('name')) {
             var name = this.getAttribute('name');
