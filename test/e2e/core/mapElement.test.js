@@ -89,10 +89,4 @@ test.describe("Playwright Map Element Tests", () => {
 
     await expect(projection).toEqual("OSMTILE");
   });
-  test("Ensure attribution control has role='group' aria-label='Map data attribution'", async () => {
-    let role = await page.evaluate(`document.querySelector('map')._attributionControl.getContainer().getAttribute('role')`);
-    await expect(role).toEqual("group");
-    let arialabel = await page.evaluate(`document.querySelector('map')._attributionControl.getContainer().getAttribute('aria-label')`);
-    await expect(arialabel).toEqual("Map data attribution");
-  });
 });

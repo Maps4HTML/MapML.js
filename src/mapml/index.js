@@ -51,6 +51,7 @@ import { DebugOverlay, debugOverlay} from './layers/DebugOverlay';
 import { QueryHandler } from './handlers/QueryHandler';
 import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
+import { AttributionButton, attributionButton } from './control/AttributionButton';
 import { ReloadButton, reloadButton } from './control/ReloadButton';
 import { FullscreenButton, fullscreenButton } from './control/FullscreenButton';
 import {attributionControl} from "./control/AttributionControl"; 
@@ -651,6 +652,9 @@ M.featureLayer = featureLayer;
 
 M.LayerControl = LayerControl;
 M.layerControl = layerControl;
+
+M.AttributionButton = AttributionButton;
+M.attributionButton = attributionButton;
 
 M.ReloadButton = ReloadButton;
 M.reloadButton = reloadButton;

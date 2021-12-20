@@ -140,19 +140,52 @@
 .leaflet-tooltip-pane .leaflet-tooltip,
 .leaflet-touch .leaflet-control-layers,
 .leaflet-touch .leaflet-bar,
-.leaflet-popup-tip {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgb(0, 0, 0, 0.3);
-}
-
-/* Increase contrast between the attribution container and the underlying content. */
+.leaflet-popup-tip,
 .leaflet-container .leaflet-control-attribution {
-  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: rgb(0 0 0 / 30%) 0px 1px 4px -1px;
 }
 
 /* Remove opinionated styles of attribution links. */
 .leaflet-control-attribution a {
   color: revert;
   text-decoration: revert;
+}
+
+
+/*
+ * Attribution.
+ */
+
+.leaflet-container .leaflet-control-attribution {
+  background-color: #fff;
+  border-radius: 1.5em;
+  color: currentColor;
+  margin: 5px;
+  min-height: 30px;
+  min-width: 30px;
+  padding: 0;
+}
+
+.leaflet-control-attribution summary {
+  display: block;
+  list-style: none;
+  border-radius: 100%;
+  position: absolute;
+  bottom: 0;
+  left: calc(100% - 30px);
+  line-height: 0;
+  width: 30px;
+  height: 30px;
+}
+
+.leaflet-control-attribution summary svg {
+  border-radius: 100%;
+  width: inherit;
+  height: inherit;
+}
+
+.mapml-attribution-container {
+  padding: 5px 35px 5px 10px;
 }
 
 /*
