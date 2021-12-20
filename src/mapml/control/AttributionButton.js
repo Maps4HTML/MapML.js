@@ -1,7 +1,7 @@
 export var AttributionButton = L.Control.extend({
 	options: {
 		position: 'bottomright',
-		prefix: '<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> <span aria-hidden="true">|</span> <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>'
+		prefix: '<a href="https://www.w3.org/community/maps4html/">Maps for HTML Community Group</a> <span aria-hidden="true">|</span> <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>'
 	},
 
 	initialize: function (options) {

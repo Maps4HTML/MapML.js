@@ -1120,7 +1120,7 @@ export var MapMLLayer = L.Layer.extend({
         if (licenseLink) {
             licenseTitle = licenseLink.getAttribute('title');
             licenseUrl = licenseLink.getAttribute('href');
-            attText = '<a href="' + licenseUrl + '" title="'+licenseTitle+'">'+licenseTitle+'</a>';
+            attText = '<a href="' + licenseUrl + '">'+licenseTitle+'</a>';
         }
         L.setOptions(layer,{attribution:attText});
         var legendLink = xml.querySelector('map-link[rel=legend]');
