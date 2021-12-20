@@ -7,10 +7,11 @@ export var FeatureIndex = L.Layer.extend({
 
         this._output = L.DomUtil.create("output", "mapml-feature-index", map._container);
         this._body = L.DomUtil.create("span", "mapml-feature-index-content", this._output);
+        this._body.index = 0;
 
         map.on("layerchange layeradd layerremove overlayremove", this._toggleEvents, this);
         map.on('moveend focus', this._checkOverlap, this);
-        map.on("keydown", this._toggleContent, this);
+        map.on("keydown", this._onKeyDown, this);
         this._addOrRemoveFeatureIndex();
     },
 
@@ -33,11 +34,13 @@ export var FeatureIndex = L.Layer.extend({
         let body = this._body;
 
         body.innerHTML = "";
+        body.index = 0;
 
         body.allFeatures = [];
         keys.forEach(i => {
             if(layers[i].featureAttributes && featureIndexBounds.overlaps(layers[i]._bounds)){
-                let label = layers[i].group.getAttribute("aria-label");
+                let group = layers[i].group;
+                let label = group.getAttribute("aria-label");
 
                 if (index < 8){
                     body.appendChild(this._updateOutput(label, index, index));
@@ -45,7 +48,7 @@ export var FeatureIndex = L.Layer.extend({
                 if (index % 7 === 0 || index === 1) {
                     body.allFeatures.push([]);
                 }
-                body.allFeatures[Math.floor((index - 1) / 7)].push({label, index});
+                body.allFeatures[Math.floor((index - 1) / 7)].push({label, index, group});
                 if (body.allFeatures[1] && body.allFeatures[1].length === 1){
                     body.appendChild(this._updateOutput("More results", 0, 9));
                 }
@@ -78,12 +81,16 @@ export var FeatureIndex = L.Layer.extend({
         }
     },
 
-    _toggleContent: function (e){
+    _onKeyDown: function (e){
         let body = this._body;
-        if(e.originalEvent.keyCode === 57){
-            this._newContent(body, 1);
+        let key = e.originalEvent.keyCode;
+        if (key >= 49 && key <= 55){
+            let group = body.allFeatures[body.index][key - 49].group;
+            if (group) group.focus();
         } else if(e.originalEvent.keyCode === 56){
             this._newContent(body, -1);
+        } else if(e.originalEvent.keyCode === 57){
+            this._newContent(body, 1);
         }
     },
 
@@ -92,6 +99,7 @@ export var FeatureIndex = L.Layer.extend({
         let newContent = body.allFeatures[Math.floor(((index - 1) / 7) + direction)];
         if(newContent && newContent.length > 0){
             body.innerHTML = "";
+            body.index += direction;
             for(let i = 0; i < newContent.length; i++){
                 let feature = newContent[i];
                 let index = feature.index ? feature.index : 0;
