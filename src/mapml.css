@@ -430,6 +430,7 @@
 }
 
 /* Disable pointer events where they'd interfere with the intended action. */
+.mapml-feature-index-box,
 .leaflet-tooltip,
 .leaflet-crosshair *,
 .mapml-layer-item-settings .mapml-control-layers summary label,

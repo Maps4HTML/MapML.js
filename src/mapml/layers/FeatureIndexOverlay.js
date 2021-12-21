@@ -40,13 +40,18 @@ export var FeatureIndexOverlay = L.Layer.extend({
         body.allFeatures = [];
         keys.forEach(i => {
             let layers = features[i].layer._layers;
-            let keys = Object.keys(layers);
             let bounds = L.bounds();
-            keys.forEach(j => {
-                if(!bounds) bounds = L.bounds(layers[j]._bounds.min, layers[j]._bounds.max);
-                bounds.extend(layers[j]._bounds.min);
-                bounds.extend(layers[j]._bounds.max);
-            });
+
+            if(layers) {
+                let keys = Object.keys(layers);
+                keys.forEach(j => {
+                    if(!bounds) bounds = L.bounds(layers[j]._bounds.min, layers[j]._bounds.max);
+                    bounds.extend(layers[j]._bounds.min);
+                    bounds.extend(layers[j]._bounds.max);
+                });
+            } else if(features[i].layer._bounds){
+                bounds = L.bounds(features[i].layer._bounds.min, features[i].layer._bounds.max);
+            }
 
             if(featureIndexBounds.overlaps(bounds)){
                 let group = features[i].path;
