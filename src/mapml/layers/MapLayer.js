@@ -861,31 +861,62 @@ export var MapMLLayer = L.Layer.extend({
                 M.parseStylesheetAsHTML(mapml, base, layer._container);
                 var styleLinks = mapml.querySelectorAll('map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]');
                 if (styleLinks.length > 1) {
+                  var changeStyle = function (e) {
+                    var href = getStyleURL(e);
+                    if (e.type === 'focusout' && !isStyleOption(e.relatedTarget) && href != layer._href) {
+                      layer.fire('changestyle', {src: href}, false);
+                    }
+                    function isStyleOption(item) {
+                      var form = e.target.form,  
+                          stylesRadioNodeList = form.elements["styles-"+L.stamp(layer)],
+                          isRB = false;
+                      for(var i=0;i<stylesRadioNodeList.length;i++) {
+                        if (item === stylesRadioNodeList[i]) {
+                          isRB = true;
+                          break;
+                        }
+                      }
+                      return isRB;
+                    }
+                    function getStyleURL(e) {
+                      var form = e.target.form,
+                      stylesRadioNodeList = form.elements["styles-"+L.stamp(layer)],
+                      href;
+                      for (var i=0;i < stylesRadioNodeList.length;i++) {
+                        if (stylesRadioNodeList[i].checked) {
+                          href =  stylesRadioNodeList[i].getAttribute('data-href');
+                          break;
+                        }
+                      }
+                      return href;
+                    }
+                  };
                   var stylesControl = document.createElement('details'),
-                  stylesControlSummary = document.createElement('summary');
+                  stylesControlSummary = document.createElement('summary'),
+                  stylesForm = document.createElement('form');
+                  L.stamp(stylesForm);
+                  stylesForm.addEventListener('focusout', changeStyle);
                   stylesControlSummary.innerText = 'Style';
                   stylesControl.appendChild(stylesControlSummary);
-                  var changeStyle = function (e) {
-                      layer.fire('changestyle', {src: e.target.getAttribute("data-href")}, false);
-                  };
+                  stylesControl.appendChild(stylesForm);
 
                   for (var j=0;j<styleLinks.length;j++) {
                     var styleOption = document.createElement('div'),
                     styleOptionInput = styleOption.appendChild(document.createElement('input'));
                     styleOptionInput.setAttribute("type", "radio");
                     styleOptionInput.setAttribute("id", "rad-"+L.stamp(styleOptionInput));
-                    styleOptionInput.setAttribute("name", "styles-"+layer._title);
+                    styleOptionInput.setAttribute("name", "styles-"+L.stamp(layer));
                     styleOptionInput.setAttribute("value", styleLinks[j].getAttribute('title'));
                     styleOptionInput.setAttribute("data-href", new URL(styleLinks[j].getAttribute('href'),base).href);
+                    styleOptionInput.setAttribute("tabindex", "0");
                     var styleOptionLabel = styleOption.appendChild(document.createElement('label'));
                     styleOptionLabel.setAttribute("for", "rad-"+L.stamp(styleOptionInput));
                     styleOptionLabel.innerText = styleLinks[j].getAttribute('title');
                     if (styleLinks[j].getAttribute("rel") === "style self" || styleLinks[j].getAttribute("rel") === "self style") {
                       styleOptionInput.checked = true;
                     }
-                    stylesControl.appendChild(styleOption);
+                    stylesForm.appendChild(styleOption);
                     L.DomUtil.addClass(stylesControl,'mapml-layer-item-style mapml-control-layers');
-                    L.DomEvent.on(styleOptionInput,'click', changeStyle, layer);
                   }
                   layer._styles = stylesControl;
                 }
