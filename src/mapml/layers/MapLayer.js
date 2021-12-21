@@ -88,20 +88,21 @@ export var MapMLLayer = L.Layer.extend({
         this._templateVars.opacity = e.target.value;
       }
     },
-    _changeExtent: function(e, extent) {
+    _changeExtent: function(e, extentEl) {
         if(e.target.checked){
-          extent.checked = true;
-              extent.templatedLayer = M.templatedLayer(extent._templateVars, 
+          extentEl.checked = true;
+          extentEl.templatedLayer.setZIndex();
+              extentEl.templatedLayer = M.templatedLayer(extentEl._templateVars, 
                 { pane: this._container,
                   _leafletLayer: this,
-                  crs: extent.crs,
-                  extentZIndex: extent.extentZIndex
+                  crs: extentEl.crs,
+                  extentZIndex: extentEl.extentZIndex
                 }).addTo(this._map);
                 this._getCombinedExtentsLayerBounds();         
         } else {
             L.DomEvent.stopPropagation(e);
-            extent.checked = false;
-            this._map.removeLayer(extent.templatedLayer);
+            extentEl.checked = false;
+            this._map.removeLayer(extentEl.templatedLayer);
             this._getCombinedExtentsLayerBounds();
         }
     },
@@ -253,14 +254,14 @@ export var MapMLLayer = L.Layer.extend({
         if (this._extent && this._extent._mapExtents && this._extent._mapExtents[0]._templateVars) {
           for(let i = 0; i < this._extent._mapExtents.length; i++){
             if (this._extent._mapExtents[i]._templateVars && this._extent._mapExtents[i].checked) {
+              if(this._extent._mapExtents[i].extentZIndex === null) this._extent._mapExtents[i].extentZIndex = i;
               this._templatedLayer = M.templatedLayer(this._extent._mapExtents[i]._templateVars, 
                 { pane: this._container,
                   _leafletLayer: this,
                   crs: this._extent.crs,
-                  extentZIndex: i,
+                  extentZIndex: this._extent._mapExtents[i].extentZIndex,
                   }).addTo(map);   
                   this._extent._mapExtents[i].templatedLayer = this._templatedLayer;
-                  this._extent._mapExtents[i].extentZIndex = i;
                   if(this._templatedLayer._queries){
                     if(!this._extent._queries) this._extent._queries = [];
                     this._extent._queries = this._extent._queries.concat(this._templatedLayer._queries);
@@ -508,8 +509,10 @@ export var MapMLLayer = L.Layer.extend({
         extentItemControls = L.DomUtil.create('div', 'mapml-layer-item-controls', extentProperties),
         opacityControl = L.DomUtil.create('details', 'mapml-layer-item-opacity', extentSettings),
         extentOpacitySummary = L.DomUtil.create('summary', '', opacityControl),
+        mapEl = this._layerEl.parentNode,
         opacity = L.DomUtil.create('input', '', opacityControl);
         extentSettings.hidden = true;
+        extent.setAttribute("aria-grabbed", "false");
 
         // append the svg paths
         svgExtentControlIcon.setAttribute('viewBox', '0 0 24 24');
@@ -575,6 +578,77 @@ export var MapMLLayer = L.Layer.extend({
         });
         extentItemNameSpan.id = 'mapml-extent-item-name-{' + L.stamp(extentItemNameSpan) + '}';
         extent.setAttribute('aria-labelledby', extentItemNameSpan.id);
+        extentItemNameSpan.extent = this._extent._mapExtents[i];
+
+        extent.onmousedown = (downEvent) => {
+          if(downEvent.target.tagName.toLowerCase() === "input" || downEvent.target.tagName.toLowerCase() === "select") return;
+          downEvent.preventDefault();
+          downEvent.stopPropagation();
+
+          let control = extent,
+              controls = extent.parentNode,
+              moving = false, yPos = downEvent.clientY;
+
+              document.body.onmousemove = (moveEvent) => {
+                moveEvent.preventDefault();
+    
+                // Fixes flickering by only moving element when there is enough space
+                let offset = moveEvent.clientY - yPos;
+                moving = Math.abs(offset) > 5 || moving;
+                if( (controls && !moving) || (controls && controls.childElementCount <= 1) || 
+                    controls.getBoundingClientRect().top > control.getBoundingClientRect().bottom || 
+                    controls.getBoundingClientRect().bottom < control.getBoundingClientRect().top){
+                      return;
+                    }
+                
+                controls.classList.add("mapml-draggable");
+                control.style.transform = "translateY("+ offset +"px)";
+                control.style.pointerEvents = "none";
+    
+                let x = moveEvent.clientX, y = moveEvent.clientY,
+                    root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".mapml-web-map").shadowRoot,
+                    elementAt = root.elementFromPoint(x, y),
+                    swapControl = !elementAt || !elementAt.closest("fieldset") ? control : elementAt.closest("fieldset");
+          
+                swapControl =  Math.abs(offset) <= swapControl.offsetHeight ? control : swapControl;
+                
+                control.setAttribute("aria-grabbed", 'true');
+                control.setAttribute("aria-dropeffect", "move");
+                if(swapControl && controls === swapControl.parentNode){
+                  swapControl = swapControl !== control.nextSibling? swapControl : swapControl.nextSibling;
+                  if(control !== swapControl){ 
+                    yPos = moveEvent.clientY;
+                    control.style.transform = null;
+                  }
+                  controls.insertBefore(control, swapControl);
+                }
+              };
+
+              document.body.onmouseup = () => {
+                control.setAttribute("aria-grabbed", "false");
+                control.removeAttribute("aria-dropeffect");
+                control.style.pointerEvents = null;
+                control.style.transform = null;
+                let controlsElems = controls.children,
+                    zIndex = 0;
+                for(let c of controlsElems){
+                  let extentEl = c.querySelector("span").extent;
+                  
+                  extentEl.setAttribute("data-moving","");
+                  mapEl.insertAdjacentElement("beforeend", extentEl);
+                  extentEl.removeAttribute("data-moving");
+    
+                  extentEl.extentZIndex = zIndex;
+                  extentEl.templatedLayer.setZIndex(zIndex);
+                  zIndex++;
+                }
+                controls.classList.remove("mapml-draggable");
+                document.body.onmousemove = document.body.onmouseup = null;
+              };
+
+              
+        };
+
         return extent;
     },
 
