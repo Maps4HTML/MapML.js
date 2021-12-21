@@ -1,0 +1,19 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+  <map-head>
+    <map-title>Basemap with Alternate Styles</map-title>
+    <map-meta http-equiv="Content-Type" content="text/mapml"></map-meta>
+    <map-meta charset="utf-8"></map-meta>
+    <map-link rel="license" href="https://server.arcgisonline.com/arcgis/rest/services/NatGeo_World_map/MapServer/" title="&amp;copy; National Geographic, Esri, Garmin, HERE, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, increment P Corp."/>
+    <map-link rel="self style" title="National Geographic Basemap" href="alternate-styles-natgeo.mapml"/>
+    <map-link rel="style" title="Satellite Imagery with place names" href="alternate-styles-labelled-imagery.mapml"/>
+    <map-link rel="style" title="Satellite Imagery" href="alternate-styles-imagery.mapml"/>
+  </map-head>
+  <map-body>
+    <map-extent units="OSMTILE">
+      <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"/>
+      <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"/>
+      <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"/>
+      <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/WMTS/tile/1.0.0/NatGeo_World_Map/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"/>
+    </map-extent>
+  </map-body>
+</mapml->

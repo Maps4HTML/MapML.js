@@ -1,0 +1,19 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+  <map-head>
+    <map-title>Satellite</map-title>
+    <map-meta http-equiv="Content-Type" content="text/mapml"></map-meta>
+    <map-meta charset="utf-8"></map-meta>
+    <map-link rel="license" href="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/" title="Source: Esri, Maxar, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AeroGRID, IGN, and the GIS User Community"/>
+    <map-link rel="style" title="National Geographic Basemap" href="alternate-styles-natgeo.mapml"/>
+    <map-link rel="style" title="Satellite Imagery with place names" href="alternate-styles-labelled-imagery.mapml"/>
+    <map-link rel="self style" title="Satellite Imagery" href="alternate-styles-imagery.mapml"/>
+  </map-head>
+  <map-body>
+    <map-extent units="OSMTILE">
+      <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"/>
+      <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"/>
+      <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"/>
+      <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS/tile/1.0.0/World_Imagery/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"/>
+    </map-extent>
+  </map-body>
+</mapml->

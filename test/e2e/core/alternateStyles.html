@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Alternate Styles Test</title>
+	<meta charset="UTF-8" />
+	<script type="module" src="mapml-viewer.js"></script>
+	<style>
+		html {
+			height: 100%;
+		}
+
+		body,
+		mapml-viewer {
+			height: inherit;
+      width: 100%
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+
+<body>
+	<mapml-viewer projection="OSMTILE" zoom="0" lat="0" lon="0"	controls>
+    <layer- label="Default style selected by author" src="alternate-styles-natgeo.mapml" checked></layer->
+	</mapml-viewer>
+</body>
+
+</html>
