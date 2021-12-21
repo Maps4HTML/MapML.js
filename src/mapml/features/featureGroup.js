@@ -82,6 +82,9 @@ export var FeatureGroup = L.FeatureGroup.extend({
     } else if (!([9, 16, 13, 27, 49, 50, 51, 52, 53, 54, 55].includes(e.keyCode))){
       this._map.featureIndex.currentIndex = 0;
       this._map.featureIndex.inBoundFeatures[0].path.focus();
+    } else if(e.keyCode === 27){
+      this._map.featureIndex.currentIndex = 0;
+      this._map._container.focus();
     }
 
     if(e.target.tagName.toUpperCase() !== "G") return;
