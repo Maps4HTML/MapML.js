@@ -1,6 +1,6 @@
 export var FeatureIndexOverlay = L.Layer.extend({
     onAdd: function (map) {
-        let svgInnerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 100 100"><path fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" d="M0 0h100v100H0z" color="#000" overflow="visible"/></svg>`;
+        let svgInnerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 100 100"><path fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M0 0h100v100H0z" color="#000" overflow="visible"/></svg>`;
 
         this._container = L.DomUtil.create("div", "mapml-feature-index-box", map._container);
         this._container.innerHTML = svgInnerHTML;
@@ -22,8 +22,8 @@ export var FeatureIndexOverlay = L.Layer.extend({
         let wRatio = Math.abs(bounds.min.x - bounds.max.x) / (this._map.options.mapEl.width);
         let hRatio = Math.abs(bounds.min.y - bounds.max.y) / (this._map.options.mapEl.height);
 
-        let w = wRatio * 36;
-        let h = hRatio * 36;
+        let w = wRatio * (getComputedStyle(this._container).width).replace(/\D/g,'') / 2;
+        let h = hRatio * (getComputedStyle(this._container).height).replace(/\D/g,'') / 2;
         let minPoint = L.point(center.x - w, center.y + h);
         let maxPoint = L.point(center.x + w, center.y - h);
         let b = L.bounds(minPoint, maxPoint);
@@ -106,9 +106,9 @@ export var FeatureIndexOverlay = L.Layer.extend({
                 this._map.featureIndex.currentIndex = feature.index - 1;
                 group.focus();
             }
-        } else if(e.originalEvent.keyCode === 56){
+        } else if(key === 56){
             this._newContent(body, -1);
-        } else if(e.originalEvent.keyCode === 57){
+        } else if(key === 57){
             this._newContent(body, 1);
         }
     },

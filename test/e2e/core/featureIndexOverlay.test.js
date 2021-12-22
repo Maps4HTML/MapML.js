@@ -43,14 +43,14 @@ describe("Announce movement test", ()=> {
             "div > output.mapml-feature-index > span > span:nth-child(1)",
             (span) => span.innerText
         );
-        const lastSpan = await page.$eval(
+        const moreResults = await page.$eval(
             "div > output.mapml-feature-index > span > span:nth-child(8)",
             (span) => span.innerText
         );
 
         await expect(spanCount).toEqual(8);
         await expect(firstFeature).toEqual("1 Vermont");
-        await expect(lastSpan).toEqual("9 More results");
+        await expect(moreResults).toEqual("9 More results");
     });
 
     test("Feature index more results are correct", async () => {
@@ -65,14 +65,14 @@ describe("Announce movement test", ()=> {
             "div > output.mapml-feature-index > span > span:nth-child(1)",
             (span) => span.innerText
         );
-        const lastSpan = await page.$eval(
-            "div > output.mapml-feature-index > span > span:nth-child(3)",
+        const prevResults = await page.$eval(
+            "div > output.mapml-feature-index > span > span:nth-child(8)",
             (span) => span.innerText
         );
 
-        await expect(spanCount).toEqual(3);
+        await expect(spanCount).toEqual(9);
         await expect(firstFeature).toEqual("1 Pennsylvania");
-        await expect(lastSpan).toEqual("8 Previous results");
+        await expect(prevResults).toEqual("8 Previous results");
     });
 
     test("Feature index previous results are correct", async () => {
@@ -83,6 +83,39 @@ describe("Announce movement test", ()=> {
         );
 
         await expect(spanCount).toEqual(8);
+    });
+
+    test("Feature index content is correct on moveend", async () => {
+        await page.keyboard.press("ArrowUp");
+        await page.waitForTimeout(1000);
+        const spanCount = await page.$eval(
+            "div > output.mapml-feature-index > span",
+            (span) => span.childElementCount
+        );
+        const firstFeature = await page.$eval(
+            "div > output.mapml-feature-index > span > span:nth-child(1)",
+            (span) => span.innerText
+        );
+
+        await expect(spanCount).toEqual(1);
+        await expect(firstFeature).toEqual("1 Maine");
+    });
+
+    test("Feature index overlay is hidden when empty, reticle still visible", async () => {
+        await page.keyboard.press("ArrowUp");
+        await page.waitForTimeout(1000);
+
+        const overlay = await page.$eval(
+            "div > output.mapml-feature-index",
+            (output) => output.hasAttribute("hidden")
+        );
+        const reticle = await page.$eval(
+            "div > div.mapml-feature-index-box",
+            (div) => div.hasAttribute("hidden")
+        );
+
+        await expect(overlay).toEqual(true);
+        await expect(reticle).toEqual(false);
     });
 
 });

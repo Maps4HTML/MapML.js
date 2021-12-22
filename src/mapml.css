@@ -810,16 +810,16 @@ label.mapml-layer-item-toggle {
 * Feature Index
  */
 .mapml-feature-index-box {
-  margin: -36px 0 0 -36px;
-  width: 72px;
-  height: 72px;
+  margin: -60px 0 0 -60px;
+  width: 120px;
+  height: 120px;
   left: 50%;
   top: 50%;
   content: '';
   display: block;
   position: absolute;
   z-index: 10000;
-  outline: thin solid #fff;
+  outline: 2px solid #fff;
 }
 
 .mapml-feature-index {
