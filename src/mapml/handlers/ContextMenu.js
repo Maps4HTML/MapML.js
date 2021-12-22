@@ -417,7 +417,8 @@ export var ContextMenu = L.Handler.extend({
     this._clickEvent = e;
     let elem = e.originalEvent.target;
     if(elem.closest("fieldset")){
-      elem = elem.closest("fieldset").querySelector("span");
+      elem = elem.closest("fieldset");
+      elem = (elem.className === "mapml-layer-extent") ? elem.closest("fieldset").parentNode.parentNode.parentNode.querySelector("span") : elem.querySelector("span");
       if(!elem.layer.validProjection) return;
       this._layerClicked = elem;
       this._showAtPoint(e.containerPoint, e, this._layerMenu);

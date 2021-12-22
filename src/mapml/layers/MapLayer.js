@@ -91,18 +91,20 @@ export var MapMLLayer = L.Layer.extend({
     _changeExtent: function(e, extentEl) {
         if(e.target.checked){
           extentEl.checked = true;
-          extentEl.templatedLayer.setZIndex();
+          if(this._layerEl.checked){
               extentEl.templatedLayer = M.templatedLayer(extentEl._templateVars, 
                 { pane: this._container,
                   _leafletLayer: this,
                   crs: extentEl.crs,
                   extentZIndex: extentEl.extentZIndex
                 }).addTo(this._map);
-                this._getCombinedExtentsLayerBounds();         
+                extentEl.templatedLayer.setZIndex();
+                this._getCombinedExtentsLayerBounds();  
+            }       
         } else {
             L.DomEvent.stopPropagation(e);
             extentEl.checked = false;
-            this._map.removeLayer(extentEl.templatedLayer);
+            if(this._layerEl.checked) this._map.removeLayer(extentEl.templatedLayer);
             this._getCombinedExtentsLayerBounds();
         }
     },
@@ -513,6 +515,10 @@ export var MapMLLayer = L.Layer.extend({
         opacity = L.DomUtil.create('input', '', opacityControl);
         extentSettings.hidden = true;
         extent.setAttribute("aria-grabbed", "false");
+        if(!labelName){ // if a label attribute is not present, set it to hidden in layer control
+          extent.setAttribute("hidden", "");
+          this._extent._mapExtents[i].hidden = true;
+        }
 
         // append the svg paths
         svgExtentControlIcon.setAttribute('viewBox', '0 0 24 24');
@@ -531,11 +537,16 @@ export var MapMLLayer = L.Layer.extend({
         removeExtentButton.classList.add('mapml-button');
         L.DomEvent.on(removeExtentButton, 'click', L.DomEvent.stop);
         L.DomEvent.on(removeExtentButton, 'click', (e)=>{
+          let allRemoved = true;
           e.target.checked = false;
-          this._changeExtent(e, this._extent._mapExtents[i]);
+          this._extent._mapExtents[i].removed = true;
+          this._extent._mapExtents[i].checked = false;
+          if(this._layerEl.checked) this._changeExtent(e, this._extent._mapExtents[i]);
           this._extent._mapExtents[i].extentAnatomy.parentNode.removeChild(this._extent._mapExtents[i].extentAnatomy);
-          //this._extent._mapExtents.splice(i, 1);
-          // remove events
+          for(let j = 0; j < this._extent._mapExtents.length; j++){
+            if(!this._extent._mapExtents[j].removed) allRemoved = false;
+          }
+          if(allRemoved) this._layerItemSettingsHTML.removeChild(this._extentGroupAnatomy); 
         }, this);
 
         let extentsettingsButton = L.DomUtil.create('button', 'mapml-layer-item-settings-control', extentItemControls);
@@ -667,6 +678,7 @@ export var MapMLLayer = L.Layer.extend({
         svgSettingsControlIcon = L.SVG.create('svg'),
         settingsControlPath1 = L.SVG.create('path'),
         settingsControlPath2 = L.SVG.create('path'),
+        extentsFieldset = L.DomUtil.create('fieldset', 'mapml-layer-grouped-extents'),
         mapEl = this._layerEl.parentNode;
         this.opacityEl = opacity;
 
@@ -858,12 +870,15 @@ export var MapMLLayer = L.Layer.extend({
 
         // if there are extents, add them to the layer control
         if(this._extent && this._extent._mapExtents) {
-          var extentsFieldset = L.DomUtil.create('fieldset', 'mapml-layer-grouped-extents');
+          var allHidden = true;
+          this._layerItemSettingsHTML = layerItemSettings;
+          this._extentGroupAnatomy = extentsFieldset;
           extentsFieldset.setAttribute('aria-label', 'Sublayers');
           for(let j=0; j < this._extent._mapExtents.length; j++) {
             extentsFieldset.appendChild(this._extent._mapExtents[j].extentAnatomy);
+            if(!this._extent._mapExtents[j].hidden) allHidden = false;
           }
-          layerItemSettings.appendChild(extentsFieldset);
+          if(!allHidden) layerItemSettings.appendChild(extentsFieldset);
         }
 
         return fieldset;
@@ -1172,7 +1187,6 @@ export var MapMLLayer = L.Layer.extend({
                 if(layer._extent._mapExtents){
                   for(let j = 0; j < layer._extent._mapExtents.length; j++){
                     var labelName = layer._extent._mapExtents[j].getAttribute('label');
-                    if(!labelName) labelName = layer._layerEl.getAttribute('label') + " Extent"; // temporariyl have the extent lableled by label name
                     var extentElement = layer.getLayerExtentHTML(labelName, j);
                     layer._extent._mapExtents[j].extentAnatomy = extentElement;
                   }

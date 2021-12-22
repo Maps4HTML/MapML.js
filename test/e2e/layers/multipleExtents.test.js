@@ -101,10 +101,6 @@
         beforeAll(async () => {
           await page.goto(PATH + "multipleExtents.html");
         });
-    
-        afterAll(async function () {
-          await context.close();
-        });
 
         test("Both Extent Bounds and Layer Bounds show up", async () => {
             await page.$eval(
@@ -224,5 +220,108 @@
             await expect(cbmtEnabled).toEqual(false);
             await expect(layerEnabled).toEqual(false);
         });
+
+    });
+
+    describe("Multiple Extents Reordering and ZIndices Tests", () => {
+        
+        beforeAll(async () => {
+            await page.goto(PATH + "multipleExtents.html");
+        });
+        afterAll(async function () {
+            await context.close();
+        });
+
+        test("Move Extent down in the Layer Control", async () => {
+            await page.hover(".leaflet-top.leaflet-right");
+            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div > div > button:nth-child(2)");
+            let control = await page.$("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1)");
+            let controlBBox = await control.boundingBox();
+            await page.mouse.move(controlBBox.x + controlBBox.width / 2, controlBBox.y + controlBBox.height / 2);
+            await page.mouse.down();
+            await page.mouse.move(controlBBox.x + controlBBox.width / 2, (controlBBox.y + controlBBox.height / 2) + 48);
+            await page.mouse.up();
+            await page.waitForTimeout(200);
+
+            const alabamaLabel = await page.$eval("css=body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div:nth-child(3) > fieldset > div:nth-child(2) > fieldset > fieldset > div > label > span",
+                (span) => span.innerText);
+            const cbmtLabel = await page.$eval("css=body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div:nth-child(3) > fieldset > div:nth-child(2) > fieldset > fieldset:nth-child(2) > div > label > span",
+                (span) => span.innerText);
+            const alabamaIndex = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(4)", 
+                (div) => div.style.zIndex);
+            const cbmtIndex = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(5)", 
+                (div) => div.style.zIndex);
+
+            await expect(alabamaLabel).toEqual("Alabama_feature");
+            await expect(cbmtLabel).toEqual("Cbmt");
+            await expect(alabamaIndex).toEqual("1");
+            await expect(cbmtIndex).toEqual("0");
+        });
+
+        test("Ensure Same Order When Extent and Layer Checked Off/On", async () => {
+            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1) > div.mapml-layer-item-properties > label > input[type=checkbox]");
+            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1) > div.mapml-layer-item-properties > label > input[type=checkbox]");
+
+            let alabamaLabel = await page.$eval("css=body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div:nth-child(3) > fieldset > div:nth-child(2) > fieldset > fieldset > div > label > span",
+                (span) => span.innerText);
+            let cbmtLabel = await page.$eval("css=body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div:nth-child(3) > fieldset > div:nth-child(2) > fieldset > fieldset:nth-child(2) > div > label > span",
+                (span) => span.innerText);
+            let alabama = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(4) > div", 
+                (div) => div.className);
+            let cbmt = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(5) > div", 
+                (div) => div.className);
+
+            await expect(alabamaLabel).toEqual("Alabama_feature");
+            await expect(cbmtLabel).toEqual("Cbmt");
+            await expect(alabama).toEqual("leaflet-layer mapml-templated-tile-container");
+            await expect(cbmt).toEqual("leaflet-layer mapml-features-container");
+
+            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div.mapml-layer-item-properties > label > input[type=checkbox]");
+            await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div.mapml-layer-item-properties > label > input[type=checkbox]");
+            await page.waitForTimeout(200);
+
+            alabamaLabel = await page.$eval("css=body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div:nth-child(3) > fieldset > div:nth-child(2) > fieldset > fieldset > div > label > span",
+                (span) => span.innerText);
+            cbmtLabel = await page.$eval("css=body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div:nth-child(3) > fieldset > div:nth-child(2) > fieldset > fieldset:nth-child(2) > div > label > span",
+                (span) => span.innerText);
+            alabama = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(4) > div", 
+                (div) => div.className);
+            cbmt = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(5) > div", 
+                (div) => div.className);
+
+            await expect(alabamaLabel).toEqual("Alabama_feature");
+            await expect(cbmtLabel).toEqual("Cbmt");
+            await expect(alabama).toEqual("leaflet-layer mapml-templated-tile-container");
+            await expect(cbmt).toEqual("leaflet-layer mapml-features-container");
+        });
+
+        test("Move Extent Back Up in the Layer Control", async () => {
+            await page.hover(".leaflet-top.leaflet-right");
+            let control = await page.$("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(2)");
+            let controlBBox = await control.boundingBox();
+            await page.mouse.move(controlBBox.x + controlBBox.width / 2, controlBBox.y + controlBBox.height / 2);
+            await page.mouse.down();
+            await page.mouse.move(controlBBox.x + controlBBox.width / 2, (controlBBox.y + controlBBox.height / 2) - 48);
+            await page.mouse.up();
+            await page.waitForTimeout(200);
+
+            const cbmtLabel = await page.$eval("css=body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div:nth-child(3) > fieldset > div:nth-child(2) > fieldset > fieldset > div > label > span",
+                (span) => span.innerText);
+            const alabamaLabel = await page.$eval("css=body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div:nth-child(3) > fieldset > div:nth-child(2) > fieldset > fieldset:nth-child(2) > div > label > span",
+                (span) => span.innerText);
+            const cbmtIndex = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(4)", 
+                (div) => div.style.zIndex);
+            const alabamaIndex = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(5)", 
+                (div) => div.style.zIndex);
+
+            await expect(cbmtLabel).toEqual("Cbmt");
+            await expect(alabamaLabel).toEqual("Alabama_feature");
+            await expect(cbmtIndex).toEqual("0");
+            await expect(alabamaIndex).toEqual("1");
+        });
+
+        });
+
+        
     
-      });
+      
