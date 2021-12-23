@@ -304,7 +304,7 @@ export var MapMLLayer = L.Layer.extend({
 
     _validProjection : function(map){
       let noLayer = false;
-      if(this._extent._mapExtents){
+      if(this._extent && this._extent._mapExtents){
         for(let i = 0; i < this._extent._mapExtents.length; i++){
           if(this._extent._mapExtents[i]._templateVars){
             for(let template of this._extent._mapExtents[i]._templateVars)
@@ -1400,6 +1400,7 @@ export var MapMLLayer = L.Layer.extend({
     // a layer must share a projection with the map so that all the layers can
     // be overlayed in one coordinate space.  WGS84 is a 'wildcard', sort of.
     getProjection: function () {
+      if(!this._extent) { return; }
       let extent = this._extent._mapExtents ? this._extent._mapExtents[0] : this._extent; // the projections for each extent eould be the same (as) validated in _validProjection, so can use mapExtents[0]
       if(!extent) return FALLBACK_PROJECTION;
       switch (extent.tagName.toUpperCase()) {
