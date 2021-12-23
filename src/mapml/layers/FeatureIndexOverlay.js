@@ -6,6 +6,9 @@ export var FeatureIndexOverlay = L.Layer.extend({
         this._container.innerHTML = svgInnerHTML;
 
         this._output = L.DomUtil.create("output", "mapml-feature-index", map._container);
+        this._output.setAttribute("role", "status");
+        this._output.setAttribute("aria-live", "polite");
+        this._output.setAttribute("aria-atomic", "true");
         this._body = L.DomUtil.create("span", "mapml-feature-index-content", this._output);
         this._body.index = 0;
 
@@ -141,20 +144,20 @@ export var FeatureIndexOverlay = L.Layer.extend({
         setTimeout(function() {
             if (e && e.type === "focus") {
                 obj._container.removeAttribute("hidden");
-                if (features !== 0) obj._output.removeAttribute("hidden");
+                if (features !== 0) obj._output.classList.remove("mapml-screen-reader-output");
             } else if (e && e.type === "blur") {
                 obj._container.setAttribute("hidden", "");
-                obj._output.setAttribute("hidden", "");
+                obj._output.classList.add("mapml-screen-reader-output");
             } else if (obj._map.isFocused) {
                 obj._container.removeAttribute("hidden");
                 if (features !== 0) {
-                    obj._output.removeAttribute("hidden");
+                    obj._output.classList.remove("mapml-screen-reader-output");
                 } else {
-                    obj._output.setAttribute("hidden", "");
+                    obj._output.classList.add("mapml-screen-reader-output");
                 }
             } else {
                 obj._container.setAttribute("hidden", "");
-                obj._output.setAttribute("hidden", "");
+                obj._output.classList.add("mapml-screen-reader-output");
             }
         }, 0);
 

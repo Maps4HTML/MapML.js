@@ -10,7 +10,7 @@ describe("Announce movement test", ()=> {
     test("Feature index overlay and reticle shows on focus", async () => {
         const hiddenOverlay = await page.$eval(
             "div > output.mapml-feature-index",
-            (output) => output.hasAttribute("hidden")
+            (output) => output.classList.contains("mapml-screen-reader-output")
         );
         const hiddenReticle = await page.$eval(
             "div > div.mapml-feature-index-box",
@@ -21,7 +21,7 @@ describe("Announce movement test", ()=> {
         await page.waitForTimeout(500);
         const afterTabOverlay = await page.$eval(
             "div > output.mapml-feature-index",
-            (output) => output.hasAttribute("hidden")
+            (output) => output.classList.contains("mapml-screen-reader-output")
         );
         const afterTabReticle = await page.$eval(
             "div > div.mapml-feature-index-box",
@@ -107,7 +107,7 @@ describe("Announce movement test", ()=> {
 
         const overlay = await page.$eval(
             "div > output.mapml-feature-index",
-            (output) => output.hasAttribute("hidden")
+            (output) => output.classList.contains("mapml-screen-reader-output")
         );
         const reticle = await page.$eval(
             "div > div.mapml-feature-index-box",
