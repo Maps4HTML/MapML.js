@@ -256,7 +256,7 @@ export var MapMLLayer = L.Layer.extend({
         if (this._extent && this._extent._mapExtents && this._extent._mapExtents[0]._templateVars) {
           for(let i = 0; i < this._extent._mapExtents.length; i++){
             if (this._extent._mapExtents[i]._templateVars && this._extent._mapExtents[i].checked) {
-              if(this._extent._mapExtents[i].extentZIndex === null) this._extent._mapExtents[i].extentZIndex = i;
+              if(!this._extent._mapExtents[i].extentZIndex) this._extent._mapExtents[i].extentZIndex = i;
               this._templatedLayer = M.templatedLayer(this._extent._mapExtents[i]._templateVars, 
                 { pane: this._container,
                   _leafletLayer: this,
