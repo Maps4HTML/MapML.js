@@ -512,6 +512,7 @@ export var MapMLLayer = L.Layer.extend({
         opacityControl = L.DomUtil.create('details', 'mapml-layer-item-opacity', extentSettings),
         extentOpacitySummary = L.DomUtil.create('summary', '', opacityControl),
         mapEl = this._layerEl.parentNode,
+        layerEl = this._layerEl,
         opacity = L.DomUtil.create('input', '', opacityControl);
         extentSettings.hidden = true;
         extent.setAttribute("aria-grabbed", "false");
@@ -646,7 +647,7 @@ export var MapMLLayer = L.Layer.extend({
                   let extentEl = c.querySelector("span").extent;
                   
                   extentEl.setAttribute("data-moving","");
-                  mapEl.insertAdjacentElement("beforeend", extentEl);
+                  layerEl.insertAdjacentElement("beforeend", extentEl);
                   extentEl.removeAttribute("data-moving");
     
                   extentEl.extentZIndex = zIndex;
