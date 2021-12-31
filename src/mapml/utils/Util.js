@@ -81,19 +81,16 @@ export var Util = {
     if(!template) return undefined;
 
     //sets variables with their respective fallback values incase content is missing from the template
-      let inputs = template.values, projection = template.projection || FALLBACK_PROJECTION, value = 0, boundsUnit = FALLBACK_CS;
-      let bounds = this[projection].options.crs.tilematrix.bounds(0), nMinZoom = 0, nMaxZoom = this[projection].options.resolutions.length - 1;
-      let locInputs = false, numberOfAxes = 0;
-    if(!template.zoomBounds){
-      template.zoomBounds ={};
-      template.zoomBounds.min=0;
-      template.zoomBounds.max=nMaxZoom;
-    }
+    let inputs = template.values, projection = template.projection || FALLBACK_PROJECTION, value = 0, boundsUnit = FALLBACK_CS;
+    let bounds = this[projection].options.crs.tilematrix.bounds(0), 
+        defaultMinZoom = 0, defaultMaxZoom = this[projection].options.resolutions.length - 1,
+        nativeMinZoom = defaultMinZoom, nativeMaxZoom = defaultMaxZoom;
+    let locInputs = false, numberOfAxes = 0;
     for(let i=0;i<inputs.length;i++){
       switch(inputs[i].getAttribute("type")){
         case "zoom":
-          nMinZoom = +inputs[i].getAttribute("min");
-          nMaxZoom = +(inputs[i].hasAttribute("max") ? inputs[i].getAttribute("max") : nMaxZoom);
+          nativeMinZoom = +(inputs[i].hasAttribute("min") && !isNaN(+inputs[i].getAttribute("min")) ? inputs[i].getAttribute("min") : defaultMinZoom);
+          nativeMaxZoom = +(inputs[i].hasAttribute("max") && !isNaN(+inputs[i].getAttribute("max")) ? inputs[i].getAttribute("max") : defaultMaxZoom);
           value = +inputs[i].getAttribute("value");
         break;
         case "location":
@@ -128,11 +125,13 @@ export var Util = {
     if (numberOfAxes >= 2) {
       locInputs = true;
     }
-    let zoomBoundsFormatted = {
-      minZoom:+template.zoomBounds.min,
-      maxZoom:+template.zoomBounds.max,
-      minNativeZoom:nMinZoom,
-      maxNativeZoom:nMaxZoom
+    // min/maxZoom are copied from <meta name=zoom content="min=n,max=m>, are *display* range for content
+    // min/maxNativeZoom are received from <input type=zoom min=... max=...>, describe *server* content availability
+    let zoomBounds = {
+      minZoom: template.zoomBounds?.min && !isNaN(+template.zoomBounds.min) ? +template.zoomBounds.min : defaultMinZoom,
+      maxZoom: template.zoomBounds?.max && !isNaN(+template.zoomBounds.max) ? +template.zoomBounds.max : defaultMaxZoom,
+      minNativeZoom: nativeMinZoom,
+      maxNativeZoom: nativeMaxZoom
     };
     if(!locInputs && template.extentPCRSFallback && template.extentPCRSFallback.bounds) {
       bounds = template.extentPCRSFallback.bounds;
@@ -142,8 +141,8 @@ export var Util = {
       bounds = this[projection].options.crs.pcrs.bounds;
     }
     return {
-      zoomBounds:zoomBoundsFormatted,
-      bounds:bounds
+      zoomBounds: zoomBounds,
+      bounds: bounds
     };
   },
 
