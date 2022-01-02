@@ -34,6 +34,24 @@ describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
     await context.close();
   });
   
+  describe("Templated Features Zoom To Extent Tests", () => {
+    test("Zoom to layer applies meta extent", async () => {
+      const startTopLeft = await page.evaluate(`document.querySelector('#map2').extent.topLeft.pcrs`);
+      const startBottomRight = await page.evaluate(`document.querySelector('#map2').extent.bottomRight.pcrs`);
+      await expect(startTopLeft.horizontal).toBe(1509616.5079163536);
+      await expect(startTopLeft.vertical).toBe(-170323.5596054569);
+      await expect(startBottomRight.horizontal).toBe(1511931.6167132407);
+      await expect(startBottomRight.vertical).toBe(-172638.668402344);
+      await page.evaluate(`document.querySelector('#map2 > layer-').focus()`);
+      const endTopLeft = await page.evaluate(`document.querySelector('#map2').extent.topLeft.pcrs`);
+      const endBottomRight = await page.evaluate(`document.querySelector('#map2').extent.bottomRight.pcrs`);
+      await expect(endTopLeft.horizontal).toBe(1508601.8288036585);
+      await expect(endTopLeft.vertical).toBe(-169068.77063754946);
+      await expect(endBottomRight.horizontal).toBe(1512570.5867411792);
+      await expect(endBottomRight.vertical).toBe(-173037.52857506275);
+    });
+  });
+  
   describe("Retreived Features Loading Tests", () => {
 
     test("Loading in tilematrix feature", async () => {
