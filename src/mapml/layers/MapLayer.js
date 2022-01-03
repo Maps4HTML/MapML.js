@@ -140,6 +140,7 @@ export var MapMLLayer = L.Layer.extend({
               }
             });
           }
+          this._setLayerElExtent();
           map.addLayer(this._mapmlvectors);
         } else {
           this.once('extentload', function() {
@@ -197,55 +198,50 @@ export var MapMLLayer = L.Layer.extend({
             tileSize: map.options.crs.options.crs.tile.bounds.max.x,
           });
           map.addLayer(this._staticTileLayer);
+          this._setLayerElExtent();
         }
-
+        
+        const createAndAdd = createAndAddTemplatedLayers.bind(this);
         // if the extent has been initialized and received, update the map,
         if (this._extent && this._extent._mapExtents && this._extent._mapExtents[0]._templateVars) {
-          for(let i = 0; i < this._extent._mapExtents.length; i++){
-            if (this._extent._mapExtents[i]._templateVars && this._extent._mapExtents[i].checked) {
-              if(!this._extent._mapExtents[i].extentZIndex) this._extent._mapExtents[i].extentZIndex = i;
-              this._templatedLayer = M.templatedLayer(this._extent._mapExtents[i]._templateVars, 
-                { pane: this._container,
-                  _leafletLayer: this,
-                  crs: this._extent.crs,
-                  extentZIndex: this._extent._mapExtents[i].extentZIndex,
-                  }).addTo(map);   
-                  this._extent._mapExtents[i].templatedLayer = this._templatedLayer;
-                  if(this._templatedLayer._queries){
-                    if(!this._extent._queries) this._extent._queries = [];
-                    this._extent._queries = this._extent._queries.concat(this._templatedLayer._queries);
-                  }
-            }
-           }
-          this._setLayerElExtent();
-        } else {
-            this.once('extentload', function() {
-                if(!this._validProjection(map)){
-                  this.validProjection = false;
-                  return;
-                }
-                if(this._extent && this._extent._mapExtents){
-                  for(let i = 0; i < this._extent._mapExtents.length; i++){
-                    if (this._extent._mapExtents[i]._templateVars) { 
-                      this._templatedLayer = M.templatedLayer(this._extent._mapExtents[i]._templateVars, 
-                      { pane: this._container,
-                        _leafletLayer: this,
-                        crs: this._extent.crs
-                      }).addTo(map);
-                      this._extent._mapExtents[i].templatedLayer = this._templatedLayer;
-                      this._setLayerElExtent();
-                    }
-                  }
-                } 
-              }, this);
+          createAndAdd();
+        } else { // wait for extent to be loaded
+          this.once('extentload', function() {
+              if(!this._validProjection(map)){
+                this.validProjection = false;
+                return;
+              }
+              createAndAdd();
+            }, this);
         }
-        this._setLayerElExtent();
         this.setZIndex(this.options.zIndex);
         this.getPane().appendChild(this._container);
         setTimeout(() => {
           map.fire('checkdisabled');
         }, 0);
         map.on("popupopen", this._attachSkipButtons, this);
+        
+        function createAndAddTemplatedLayers() {
+          if(this._extent && this._extent._mapExtents){
+            for(let i = 0; i < this._extent._mapExtents.length; i++){
+              if (this._extent._mapExtents[i]._templateVars && this._extent._mapExtents[i].checked) {
+                if(!this._extent._mapExtents[i].extentZIndex) this._extent._mapExtents[i].extentZIndex = i;
+                this._templatedLayer = M.templatedLayer(this._extent._mapExtents[i]._templateVars, 
+                  { pane: this._container,
+                    _leafletLayer: this,
+                    crs: this._extent.crs,
+                    extentZIndex: this._extent._mapExtents[i].extentZIndex,
+                    }).addTo(map);   
+                    this._extent._mapExtents[i].templatedLayer = this._templatedLayer;
+                    if(this._templatedLayer._queries){
+                      if(!this._extent._queries) this._extent._queries = [];
+                      this._extent._queries = this._extent._queries.concat(this._templatedLayer._queries);
+                    }
+              }
+             }
+            this._setLayerElExtent();
+          }
+        }
     },
 
 
