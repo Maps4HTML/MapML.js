@@ -126,7 +126,6 @@ export class MapLayer extends HTMLElement {
           if (typeof newValue === "string") {
             this.parentElement._map.addLayer(this._layer);
           } else {
-            this._layer._removeExtents(this.parentElement._map);
             this.parentElement._map.removeLayer(this._layer);
           }
           this.dispatchEvent(new Event("change", { bubbles: true }));
