@@ -24,7 +24,16 @@
 
 <body>
   <mapml-viewer style="width: 500px;height: 500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls>
-    <layer- label="Multiple Query Extents" checked>
+<layer- label="Multiple Query Extents" checked>
+      <!-- the non-query extent (in this case a TemplatedTileLayer) is necessary 
+           to have the layer not disabled in the layer control -->
+      <!-- see: https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/647#issue-1096626052 -->
+      <map-extent units="CBMTILE">
+        <map-input name="z" type="zoom" value="17" min="0" max="17"></map-input>
+        <map-input name="y" type="location" units="tilematrix" axis="row" min="29750" max="34475"></map-input>
+        <map-input name="x" type="location" units="tilematrix" axis="column" min="26484" max="32463"></map-input>
+        <map-link rel="tile" tref="cbmt/{z}/c{x}_r{y}.png" ></map-link>
+      </map-extent>
       <map-extent label="col3row3 query" units="CBMTILE">
         <map-input name="i" type="location" units="map" axis="i" ></map-input>
         <map-input name="j" type="location" units="map" axis="j" ></map-input>

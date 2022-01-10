@@ -72,6 +72,9 @@ export var MapMLLayer = L.Layer.extend({
           }
         }
       }
+      if (this._extent._queries) {
+        delete this._extent._queries;
+      }
     },
     _changeOpacity: function(e) {
       if (e && e.target && e.target.value >=0 && e.target.value <= 1.0) {
