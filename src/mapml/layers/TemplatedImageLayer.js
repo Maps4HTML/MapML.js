@@ -7,6 +7,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
         this.zoomBounds = inputData.zoomBounds;
         this.extentBounds=inputData.bounds;
         this.isVisible = true;
+        delete options.opacity;
         L.extend(options, this.zoomBounds);
         L.setOptions(this, L.extend(options,this._setUpExtentTemplateVars(template)));
     },

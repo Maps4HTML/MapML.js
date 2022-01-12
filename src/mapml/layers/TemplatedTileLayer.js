@@ -16,6 +16,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       this.isVisible = true;
       L.extend(options, this.zoomBounds);
       options.tms = template.tms;
+      delete options.opacity;
       L.setOptions(this, options);
       this._setUpTileTemplateVars(template);
 
@@ -47,10 +48,6 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       this._container = L.DomUtil.create('div', 'leaflet-layer', this.options.pane);
       L.DomUtil.addClass(this._container,'mapml-templated-tile-container');
       this._updateZIndex();
-
-      if (this.options.opacity < 1) {
-        this._updateOpacity();
-      }
     },
     _handleMoveEnd : function(e){
       let mapZoom = this._map.getZoom();

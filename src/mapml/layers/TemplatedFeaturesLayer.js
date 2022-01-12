@@ -9,6 +9,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
       L.extend(options, this.zoomBounds);
       L.DomUtil.addClass(this._container, 'mapml-features-container');
+      delete options.opacity;
       L.setOptions(this, L.extend(options,this._setUpFeaturesTemplateVars(template)));
     },
     getEvents: function () {

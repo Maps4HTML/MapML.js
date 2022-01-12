@@ -35,16 +35,24 @@
             // restore the cbmt extent
             await page.click("text=cbmt");
             const endExtentCount = await page.$$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-templatedlayer-container", (extents) => extents.length);
-            alabama = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(4) > div", (div) => div.className);
-            const cbmt = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(5) > div", (div) => div.className);
-            const layerOpacity = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > details > input[type=range]", (opacity) => opacity.value);
-            const cbmtOpacity = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1) > div.mapml-layer-item-settings > details > input[type=range]", (opacity) => opacity.value);
-            const alabamaOpacity = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(2) > div.mapml-layer-item-settings > details > input[type=range]", (opacity) => opacity.value);
             await expect(endExtentCount).toEqual(2);
+            alabama = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(4) > div", (div) => div.className);
             await expect(alabama).toEqual("leaflet-layer mapml-features-container");
+            const cbmt = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(5) > div", (div) => div.className);
             await expect(cbmt).toEqual("leaflet-layer mapml-templated-tile-container");
+            const layerOpacity = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > details > input[type=range]", (opacity) => opacity.value);
             await expect(layerOpacity).toEqual("1");
+            const cbmtOpacity = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1) > div.mapml-layer-item-settings > details > input[type=range]", (opacity) => opacity.value);
             await expect(cbmtOpacity).toEqual("0.5");
+            // the mapml-templated-tile-container is a child of mapml-templatedlayer-container
+            // the parent is the extent container, and controls the opacity
+            // the child should always have an opacity of 1 (never set, default value from Leaflet)
+            // the opacity of the extent content should be restored through cycling it off/on
+            const cbmtTemplatedLayerContainerOpacity = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(5)", (div) => div.style.opacity);
+            await expect(cbmtTemplatedLayerContainerOpacity).toEqual("0.5");
+            const cbmtTemplatedTileContainerOpacity = await page.$eval("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(5) > div", (div) => div.style.opacity);
+            await expect(cbmtTemplatedTileContainerOpacity).toEqual("1");
+            const alabamaOpacity = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(2) > div.mapml-layer-item-settings > details > input[type=range]", (opacity) => opacity.value);
             await expect(alabamaOpacity).toEqual("1");
         });
 
@@ -146,6 +154,7 @@
             await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
             await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div > div > button:nth-child(2)");
             // uncheck the extent / remove from map
+            // map-extent doesn't have an onRemove handler (yet)
             await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1) > div.mapml-layer-item-properties > label > input[type=checkbox]");
             // reload the debug layer; this should not require cycling
             await page.$eval("body > mapml-viewer", (map) => map.toggleDebug());

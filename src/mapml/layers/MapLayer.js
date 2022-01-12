@@ -96,6 +96,7 @@ export var MapMLLayer = L.Layer.extend({
           if(this._layerEl.checked){
               extentEl.templatedLayer = M.templatedLayer(extentEl._templateVars, 
                 { pane: this._container,
+                  opacity: extentEl._templateVars.opacity,
                   _leafletLayer: this,
                   crs: extentEl.crs,
                   extentZIndex: extentEl.extentZIndex
@@ -230,6 +231,7 @@ export var MapMLLayer = L.Layer.extend({
                 if(!this._extent._mapExtents[i].extentZIndex) this._extent._mapExtents[i].extentZIndex = i;
                 this._templatedLayer = M.templatedLayer(this._extent._mapExtents[i]._templateVars, 
                   { pane: this._container,
+                    opacity: this._extent._mapExtents[i]._templateVars.opacity,
                     _leafletLayer: this,
                     crs: this._extent.crs,
                     extentZIndex: this._extent._mapExtents[i].extentZIndex,
