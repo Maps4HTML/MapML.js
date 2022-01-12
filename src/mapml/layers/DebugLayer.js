@@ -180,13 +180,23 @@ export var DebugVectors = L.LayerGroup.extend({
     this.addLayer(this._centerVector);
 
     for (let i of id) {
-      if (layers[i].layerBounds) {
-        let boundsArray = [
-          layers[i].layerBounds.min,
-          L.point(layers[i].layerBounds.max.x, layers[i].layerBounds.min.y),
-          layers[i].layerBounds.max,
-          L.point(layers[i].layerBounds.min.x, layers[i].layerBounds.max.y)
-        ];
+      if (layers[i].layerBounds || layers[i].extentBounds) {
+        let boundsArray;
+        if(layers[i].layerBounds){
+          boundsArray = [
+            layers[i].layerBounds.min,
+            L.point(layers[i].layerBounds.max.x, layers[i].layerBounds.min.y),
+            layers[i].layerBounds.max,
+            L.point(layers[i].layerBounds.min.x, layers[i].layerBounds.max.y)
+          ];
+        } else {
+          boundsArray = [
+            layers[i].extentBounds.min,
+            L.point(layers[i].extentBounds.max.x, layers[i].extentBounds.min.y),
+            layers[i].extentBounds.max,
+            L.point(layers[i].extentBounds.min.x, layers[i].extentBounds.max.y)
+          ];
+        }        
         let boundsRect = projectedExtent(boundsArray, {
           color: colors[j % colors.length],
           weight: 2,

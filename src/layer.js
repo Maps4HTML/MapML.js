@@ -195,10 +195,18 @@ export class MapLayer extends HTMLElement {
             let type = layerTypes[j];
             if(this.checked && layer[type]){
               if(type === "_templatedLayer"){
-                for(let j =0;j<layer[type]._templates.length;j++){
-                  if(layer[type]._templates[j].rel ==="query") continue;
-                  total++;
-                  if(!(layer[type]._templates[j].layer.isVisible))count++;
+                for(let i =0;i<layer._extent._mapExtents.length;i++){
+                  for(let j = 0; j < layer._extent._mapExtents[i].templatedLayer._templates.length; j++){
+                    if(layer._extent._mapExtents[i].templatedLayer._templates[j].rel ==="query") continue;
+                    total++;
+                    layer._extent._mapExtents[i].removeAttribute("disabled");
+                    layer._extent._mapExtents[i].disabled = false;
+                    if(!(layer._extent._mapExtents[i].templatedLayer._templates[j].layer.isVisible)){
+                      count++;
+                      layer._extent._mapExtents[i].setAttribute("disabled", "");
+                      layer._extent._mapExtents[i].disabled = true;
+                    }
+                  }  
                 }
               } else {
                 total++;

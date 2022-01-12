@@ -3,12 +3,13 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
     initialize: function(template, options) {
       let inputData = M.extractInputBounds(template);
       this.zoomBounds = inputData.zoomBounds;
-      this.layerBounds=inputData.bounds;
+      this.extentBounds=inputData.bounds;
       this.isVisible = true;
       this._template = template;
       this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
       L.extend(options, this.zoomBounds);
       L.DomUtil.addClass(this._container, 'mapml-features-container');
+      delete options.opacity;
       L.setOptions(this, L.extend(options,this._setUpFeaturesTemplateVars(template)));
     },
     getEvents: function () {
@@ -79,7 +80,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       let mapZoom = this._map.getZoom();
       let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
       this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && 
-                        this.layerBounds.overlaps(mapBounds);
+                        this.extentBounds.overlaps(mapBounds);
       
       this._features.clearLayers();
       if(!(this.isVisible)){

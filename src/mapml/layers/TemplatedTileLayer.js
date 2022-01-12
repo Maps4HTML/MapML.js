@@ -12,10 +12,11 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       // options first...
       let inputData = M.extractInputBounds(template);
       this.zoomBounds = inputData.zoomBounds;
-      this.layerBounds=inputData.bounds;
+      this.extentBounds=inputData.bounds;
       this.isVisible = true;
       L.extend(options, this.zoomBounds);
       options.tms = template.tms;
+      delete options.opacity;
       L.setOptions(this, options);
       this._setUpTileTemplateVars(template);
 
@@ -47,16 +48,12 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       this._container = L.DomUtil.create('div', 'leaflet-layer', this.options.pane);
       L.DomUtil.addClass(this._container,'mapml-templated-tile-container');
       this._updateZIndex();
-
-      if (this.options.opacity < 1) {
-        this._updateOpacity();
-      }
     },
     _handleMoveEnd : function(e){
       let mapZoom = this._map.getZoom();
       let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
       this.isVisible = mapZoom <= this.options.maxZoom && mapZoom >= this.options.minZoom && 
-                        this.layerBounds.overlaps(mapBounds);
+                        this.extentBounds.overlaps(mapBounds);
         if(!(this.isVisible))return;
       this._parentOnMoveEnd();
     },

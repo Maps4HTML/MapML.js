@@ -37,15 +37,14 @@ export var QueryHandler = L.Handler.extend({
     _queryTopLayer: function(event) {
         var layer = this._getTopQueryableLayer();
         if (layer) {
+            if(layer._mapmlFeatures) delete layer._mapmlFeatures;
             this._query(event, layer);
         }
     },
     _query(e, layer) {
-      var obj = {},
-          template = layer.getQueryTemplates()[0],
-          zoom = e.target.getZoom(),
+      var zoom = e.target.getZoom(),
           map = this._map,
-          crs = layer.crs,
+          crs = layer._extent.crs, // the crs for each extent would be the same
           tileSize = map.options.crs.options.crs.tile.bounds.max.x,
           container = layer._container,
           popupOptions = {autoClose: false, autoPan: true, maxHeight: (map.getSize().y * 0.5) - 50},
@@ -59,7 +58,45 @@ export var QueryHandler = L.Handler.extend({
           tileMatrixClickLoc = tcrsClickLoc.divideBy(tileSize).floor(),
           tileBounds = new L.Bounds(tcrsClickLoc.divideBy(tileSize).floor().multiplyBy(tileSize), 
           tcrsClickLoc.divideBy(tileSize).ceil().multiplyBy(tileSize));
-  
+
+      let point = this._map.project(e.latlng),
+          scale = this._map.options.crs.scale(this._map.getZoom()),
+          pcrsClick = this._map.options.crs.transformation.untransform(point,scale),
+          contenttype;
+      var templates = layer.getQueryTemplates(pcrsClick);
+
+      var fetchFeatures = function(template, obj, lastOne) {
+        fetch(L.Util.template(template.template, obj), { redirect: 'follow' }).then((response) => {
+        contenttype = response.headers.get("Content-Type");
+        if (response.status >= 200 && response.status < 300) {
+          return response.text();
+        } else {
+          throw new Error(response.status);
+        }
+      }).then((mapml) => {
+        if (contenttype.startsWith("text/mapml")) {
+          //if(!this.mapml) this.mapml = "";
+          //this.mapml = this.mapml.concat(mapml);
+          if(!layer._mapmlFeatures) layer._mapmlFeatures = [];
+          let parser = new DOMParser(),
+              mapmldoc = parser.parseFromString(mapml, "application/xml"),
+              features = Array.prototype.slice.call(mapmldoc.querySelectorAll("map-feature"));
+              if(features.length) layer._mapmlFeatures = layer._mapmlFeatures.concat(features);
+              mapmldoc.features = layer._mapmlFeatures;
+          if(lastOne) return handleMapMLResponse(mapmldoc, e.latlng);
+        } else {
+          return handleOtherResponse(mapml, layer, e.latlng);
+        }
+      }).catch((err) => {
+        console.log('Looks like there was a problem. Status: ' + err.message);
+      });
+    };
+
+    for(let i = 0; i < templates.length; i++){
+
+      var obj = {},
+          template = templates[i];
+ 
       // all of the following are locations that might be used in a query, I think.
       obj[template.query.tilei] = tcrsClickLoc.x.toFixed() - (tileMatrixClickLoc.x * tileSize);
       obj[template.query.tilej] = tcrsClickLoc.y.toFixed() - (tileMatrixClickLoc.y * tileSize);
@@ -106,34 +143,14 @@ export var QueryHandler = L.Handler.extend({
           }
       }
 
-      let point = this._map.project(e.latlng),
-          scale = this._map.options.crs.scale(this._map.getZoom()),
-          pcrsClick = this._map.options.crs.transformation.untransform(point,scale),
-          contenttype;
-
-      if(template.layerBounds.contains(pcrsClick)){
-        fetch(L.Util.template(template.template, obj), { redirect: 'follow' }).then((response) => {
-          contenttype = response.headers.get("Content-Type");
-          if (response.status >= 200 && response.status < 300) {
-            return response.text();
-          } else {
-            throw new Error(response.status);
-          }
-        }).then((mapml) => {
-          if (contenttype.startsWith("text/mapml")) {
-            return handleMapMLResponse(mapml, e.latlng);
-          } else {
-            return handleOtherResponse(mapml, layer, e.latlng);
-          }
-        }).catch((err) => {
-          console.log('Looks like there was a problem. Status: ' + err.message);
-        });
+      if(template.extentBounds.contains(pcrsClick)){
+        let lastOne = (i === (templates.length - 1)) ? true: false;
+        fetchFeatures(template, obj, lastOne);
       }
-      function handleMapMLResponse(mapml, loc) {
-        let parser = new DOMParser(),
-          mapmldoc = parser.parseFromString(mapml, "application/xml");
+    }
+      function handleMapMLResponse(mapmldoc, loc) {
 
-        for(let feature of mapmldoc.querySelectorAll('map-feature')){
+        for(let feature of mapmldoc.features){
           if(!feature.querySelector('map-geometry')){
             let geo = document.createElement('map-geometry'), point = document.createElement('map-point'),
               coords = document.createElement('map-coordinates');
@@ -171,7 +188,7 @@ export var QueryHandler = L.Handler.extend({
         div.appendChild(c);
         // passing a latlng to the popup is necessary for when there is no
         // geometry / null geometry
-        layer._totalFeatureCount = mapmldoc.querySelectorAll("map-feature").length;
+        layer._totalFeatureCount = mapmldoc.features.length;
         layer.bindPopup(div, popupOptions).openPopup(loc);
         layer.on('popupclose', function() {
             map.removeLayer(f);

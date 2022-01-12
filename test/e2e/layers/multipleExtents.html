@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Multiple Extents Test</title>
+  <meta charset="UTF-8">
+  <script type="module" src="mapml-viewer.js"></script>
+  <style>
+    html {
+      height: 100%
+    }
+
+    body,
+    map {
+      height: inherit
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <mapml-viewer style="width: 500px;height: 500px;" projection="CBMTILE" zoom="2" lat="47" lon="-92" controls>
+    <layer- label="Multiple Extents" checked>
+      <map-extent label="cbmt" units="CBMTILE">
+        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3" ></map-input>
+        <map-input name="row" type="location" axis="row" units="tilematrix" min="16" max="20" ></map-input>
+        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19" ></map-input>
+        <map-link rel='tile' tref='/data/cbmt/{zoomLevel}/c{col}_r{row}.png' ></map-link>
+      </map-extent>   
+      <map-extent label="alabama_feature" units="CBMTILE">
+        <map-input name="z" type="zoom" min="2" max="18" value="0"></map-input>
+        <map-input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" ></map-input>
+        <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="6" ></map-input>
+        <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" ></map-input>
+        <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="6" ></map-input>
+        <map-link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
+      </map-extent>
+    </layer->
+    <layer- label="One Extent No label">
+      <map-extent units="CBMTILE">
+        <map-input name="z" type="zoom" value="11" min="4" max="4" ></map-input>
+        <map-input name="w" type="width" ></map-input>
+        <map-input name="h" type="height" ></map-input>
+        <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" ></map-input>
+        <map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" ></map-input>
+        <map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" ></map-input>
+        <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" ></map-input>
+        <map-link rel="image"
+          tref="http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/jpeg&TRANSPARENT=FALSE&STYLES=&VERSION=1.3.0&LAYERS=WMS-Toporama&WIDTH={w}&HEIGHT={h}&CRS=EPSG:3978&BBOX={xmin},{ymin},{xmax},{ymax}&m4h=t" ></map-link>
+      </map-extent>
+    </layer->
+  </mapml-viewer>
+  <textarea name="message" rows="10" cols="100"></textarea>
+</body>
+
+</html>

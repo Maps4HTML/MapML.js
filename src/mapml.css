@@ -649,7 +649,9 @@ button.mapml-button:disabled,
   box-sizing: border-box;
 }
 
-.mapml-layer-item {
+.mapml-layer-item, 
+.mapml-layer-grouped-extents,
+.mapml-layer-extent {
   background-color: #fff;
   border: 1px solid #fff;
   margin: 0;
@@ -659,15 +661,18 @@ button.mapml-button:disabled,
 .mapml-layer-item:not(:last-of-type) {
   border-bottom: 1px solid #e3e3e3;
 }
-.mapml-layer-item[aria-grabbed="true"] {
+.mapml-layer-item[aria-grabbed="true"],
+.mapml-layer-extent[aria-grabbed="true"] {
   border: 1px solid #e3e3e3;
   border-radius: 0;
 }
-.mapml-layer-item:first-of-type {
+.mapml-layer-item:first-of-type,
+.mapml-layer-extent:first-of-type {
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
-.mapml-layer-item:last-of-type {
+.mapml-layer-item:last-of-type,
+.mapml-layer-extent:last-of-type {
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
 }
@@ -776,3 +781,25 @@ label.mapml-layer-item-toggle {
   ) {
   outline: 0!important;
 }
+
+/*
+* Extent Elements in the Layer Control
+*/
+
+.mapml-layer-item-settings .mapml-layer-extent {
+  padding-inline-start: 1.8rem;
+}
+
+.mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-properties{
+  padding-inline-start: 0;
+}
+
+.mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-opacity {
+  padding-inline-start: 1.6rem;
+}
+
+.mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-controls{
+  position: absolute;
+  right: 0;
+}
+

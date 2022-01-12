@@ -37,8 +37,7 @@ export var MapMLLayer = L.Layer.extend({
         // OR use the extent of the content provided
 
         if (!mapml && content && content.hasAttribute('label')) this._title = content.getAttribute('label');
-        this._initCount = 0;
-        this._initExtent(mapml ? content : null);
+        this._initialize(mapml ? content : null);
         
         // a default extent can't be correctly set without the map to provide
         // its bounds , projection, zoom range etc, so if that stuff's not
@@ -63,6 +62,19 @@ export var MapMLLayer = L.Layer.extend({
             this._container.style.zIndex = this.options.zIndex;
         }
     },
+    // remove all the extents before removing the layer from the map
+    _removeExtents: function(map){
+      if(this._extent._mapExtents){
+        for(let i = 0; i < this._extent._mapExtents.length; i++){
+          if(this._extent._mapExtents[i].templatedLayer){
+            map.removeLayer(this._extent._mapExtents[i].templatedLayer);
+          }
+        }
+      }
+      if (this._extent._queries) {
+        delete this._extent._queries;
+      }
+    },
     _changeOpacity: function(e) {
       if (e && e.target && e.target.value >=0 && e.target.value <= 1.0) {
         this.changeOpacity(e.target.value);
@@ -72,8 +84,36 @@ export var MapMLLayer = L.Layer.extend({
         this._container.style.opacity = opacity;
         if(this.opacityEl) this.opacityEl.value = opacity;
     },
+    _changeExtentOpacity: function(e){
+      if(e && e.target && e.target.value >=0 && e.target.value <= 1.0){
+        this.templatedLayer.changeOpacity(e.target.value);
+        this._templateVars.opacity = e.target.value;
+      }
+    },
+    _changeExtent: function(e, extentEl) {
+        if(e.target.checked){
+          extentEl.checked = true;
+          if(this._layerEl.checked){
+              extentEl.templatedLayer = M.templatedLayer(extentEl._templateVars, 
+                { pane: this._container,
+                  opacity: extentEl._templateVars.opacity,
+                  _leafletLayer: this,
+                  crs: extentEl.crs,
+                  extentZIndex: extentEl.extentZIndex
+                }).addTo(this._map);
+                extentEl.templatedLayer.setZIndex();
+                this._setLayerElExtent();  
+            }       
+        } else {
+            L.DomEvent.stopPropagation(e);
+            extentEl.checked = false;
+            if(this._layerEl.checked) this._map.removeLayer(extentEl.templatedLayer);
+            this._setLayerElExtent();
+        }
+    },
+
     onAdd: function (map) {
-        if(this._extent && !this._validProjection(map)){
+        if((this._extent || this._extent_mapExtents) && !this._validProjection(map)){
           this.validProjection = false;
           return;
         }
@@ -103,6 +143,7 @@ export var MapMLLayer = L.Layer.extend({
               }
             });
           }
+          this._setLayerElExtent();
           map.addLayer(this._mapmlvectors);
         } else {
           this.once('extentload', function() {
@@ -160,89 +201,134 @@ export var MapMLLayer = L.Layer.extend({
             tileSize: map.options.crs.options.crs.tile.bounds.max.x,
           });
           map.addLayer(this._staticTileLayer);
+          this._setLayerElExtent();
         }
-
+        
+        const createAndAdd = createAndAddTemplatedLayers.bind(this);
         // if the extent has been initialized and received, update the map,
-        if (this._extent) {
-            if (this._templateVars) {
-              this._templatedLayer = M.templatedLayer(this._templateVars, 
-              { pane: this._container,
-                _leafletLayer: this,
-                crs: this.crs
-              }).addTo(map);
-            }
-        } else {
-            this.once('extentload', function() {
-                if(!this._validProjection(map)){
-                  this.validProjection = false;
-                  return;
-                }
-                if (this._templateVars) {
-                  this._templatedLayer = M.templatedLayer(this._templateVars, 
-                  { pane: this._container,
-                    _leafletLayer: this,
-                    crs: this.crs
-                  }).addTo(map);
-                  this._setLayerElExtent();
-                }
-              }, this);
+        if (this._extent && this._extent._mapExtents && this._extent._mapExtents[0]._templateVars) {
+          createAndAdd();
+        } else { // wait for extent to be loaded
+          this.once('extentload', function() {
+              if(!this._validProjection(map)){
+                this.validProjection = false;
+                return;
+              }
+              createAndAdd();
+            }, this);
         }
-        this._setLayerElExtent();
         this.setZIndex(this.options.zIndex);
         this.getPane().appendChild(this._container);
         setTimeout(() => {
           map.fire('checkdisabled');
         }, 0);
         map.on("popupopen", this._attachSkipButtons, this);
+        
+        function createAndAddTemplatedLayers() {
+          if(this._extent && this._extent._mapExtents){
+            for(let i = 0; i < this._extent._mapExtents.length; i++){
+              if (this._extent._mapExtents[i]._templateVars && this._extent._mapExtents[i].checked) {
+                if(!this._extent._mapExtents[i].extentZIndex) this._extent._mapExtents[i].extentZIndex = i;
+                this._templatedLayer = M.templatedLayer(this._extent._mapExtents[i]._templateVars, 
+                  { pane: this._container,
+                    opacity: this._extent._mapExtents[i]._templateVars.opacity,
+                    _leafletLayer: this,
+                    crs: this._extent.crs,
+                    extentZIndex: this._extent._mapExtents[i].extentZIndex,
+                    }).addTo(map);   
+                    this._extent._mapExtents[i].templatedLayer = this._templatedLayer;
+                    if(this._templatedLayer._queries){
+                      if(!this._extent._queries) this._extent._queries = [];
+                      this._extent._queries = this._extent._queries.concat(this._templatedLayer._queries);
+                    }
+              }
+             }
+            this._setLayerElExtent();
+          }
+        }
     },
+
 
     _validProjection : function(map){
       let noLayer = false;
-      if(this._templateVars){
-        for(let template of this._templateVars)
-          if(!template.projectionMatch && template.projection !== map.options.projection) noLayer = true;
+      if(this._extent && this._extent._mapExtents){
+        for(let i = 0; i < this._extent._mapExtents.length; i++){
+          if(this._extent._mapExtents[i]._templateVars){
+            for(let template of this._extent._mapExtents[i]._templateVars)
+              if(!template.projectionMatch && template.projection !== map.options.projection) {
+                noLayer = true; // if there's a single template where projections don't match, set noLayer to true
+                break;
+              } 
+            }
       }
+    }
       return !(noLayer || this.getProjection() !== map.options.projection.toUpperCase());
     },
 
     //sets the <layer-> elements .bounds property 
     _setLayerElExtent: function(){
-      let localBounds, localZoomRanges;
+      let bounds, zoomMax, zoomMin, maxNativeZoom, minNativeZoom,
+          zoomBounds = {minZoom: 0, maxZoom: 0, maxNativeZoom: 0, minNativeZoom: 0};
       let layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
       layerTypes.forEach((type) =>{
         if(this[type]){
           if(type === "_templatedLayer"){
-            for(let j =0;j<this[type]._templates.length;j++){
-              if(this[type]._templates[j].rel === "query") continue;
-              if(this[type]._templates[j].layer.layerBounds){
-                if(!localBounds){
-                  localBounds = this[type]._templates[j].layer.layerBounds;
-                  localZoomRanges = this[type]._templates[j].layer.zoomBounds;
-                } else {
-                  localBounds.extend(this[type]._templates[j].layer.layerBounds.min);
-                  localBounds.extend(this[type]._templates[j].layer.layerBounds.max);
+            for(let i = 0; i < this._extent._mapExtents.length; i++){
+              for(let j = 0; j < this._extent._mapExtents[i]._templateVars.length; j++){
+                let inputData = M.extractInputBounds(this._extent._mapExtents[i]._templateVars[j]);
+                this._extent._mapExtents[i]._templateVars[j].tempExtentBounds = inputData.bounds;
+                this._extent._mapExtents[i]._templateVars[j].extentZoomBounds = inputData.zoomBounds;
+              }
+            }
+            for(let i = 0; i < this._extent._mapExtents.length; i++){
+              if(this._extent._mapExtents[i].checked){
+                for(let j = 0; j < this._extent._mapExtents[i]._templateVars.length; j++){
+                  if(!bounds){
+                    bounds = this._extent._mapExtents[i]._templateVars[j].tempExtentBounds;
+                    zoomMax = this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.maxZoom;
+                    zoomMin = this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.minZoom;
+                    maxNativeZoom = this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.maxNativeZoom;
+                    minNativeZoom = this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.minNativeZoom;
+                  } else {
+                    bounds.extend(this._extent._mapExtents[i]._templateVars[j].tempExtentBounds.min);
+                    bounds.extend(this._extent._mapExtents[i]._templateVars[j].tempExtentBounds.max);
+                    zoomMax = Math.max(zoomMax, this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.maxZoom);
+                    zoomMin = Math.min(zoomMin, this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.minZoom);
+                    maxNativeZoom = Math.max(maxNativeZoom, this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.maxNativeZoom);
+                    minNativeZoom = Math.min(minNativeZoom, this._extent._mapExtents[i]._templateVars[j].extentZoomBounds.minNativeZoom);
+                  }
                 }
               }
             }
+            zoomBounds.minZoom = zoomMin;
+            zoomBounds.maxZoom = zoomMax;
+            zoomBounds.minNativeZoom = minNativeZoom;
+            zoomBounds.maxNativeZoom = maxNativeZoom;
+            this._extent.zoomBounds = zoomBounds;
+            this._extent.layerBounds = bounds;
+            // assign each template the layer and zoom bounds
+            for(let i = 0; i < this._extent._mapExtents.length; i++){
+              this._extent._mapExtents[i].templatedLayer.layerBounds = bounds;
+              this._extent._mapExtents[i].templatedLayer.zoomBounds = zoomBounds;
+            }
           } else {
             if(this[type].layerBounds){
-              if(!localBounds){
-                localBounds = this[type].layerBounds;
-                localZoomRanges = this[type].zoomBounds;
+              if(!bounds){
+                bounds = this[type].layerBounds;
+                zoomBounds = this[type].zoomBounds;
               } else{
-                localBounds.extend(this[type].layerBounds.min);
-                localBounds.extend(this[type].layerBounds.max);
+                bounds.extend(this[type].layerBounds.min);
+                bounds.extend(this[type].layerBounds.max);
               }
             } 
           }
         }
       });
-
-      if(localBounds){
+      if(bounds){
         //assigns the formatted extent object to .extent and spreads the zoom ranges to .extent also
         this._layerEl.extent = (Object.assign(
-                                  M.convertAndFormatPCRS(localBounds,this._map),
-                                  {zoom:localZoomRanges}));
+                                  M.convertAndFormatPCRS(bounds,this._map),
+                                  {zoom:zoomBounds}));
       }
     },
 
@@ -255,16 +341,28 @@ export var MapMLLayer = L.Layer.extend({
     },
     redraw: function() {
       // for now, only redraw templated layers.
-        if (this._templatedLayer) {
-          this._templatedLayer.redraw();
+        if (this._extent._mapExtents) {
+          for(let i = 0; i < this._extent._mapExtents.length; i++){
+            if(this._extent._mapExtents[i].templatedLayer){
+              this._extent._mapExtents[i].templatedLayer.redraw();
+            }
+          }
         }
     },
     _onZoomAnim: function(e) {
+      // get the min and max zooms from all extents
       var toZoom = e.zoom,
-          zoom = this._extent ? this._extent.querySelector("map-input[type=zoom]") : null, 
+          zoom = (this._extent && this._extent._mapExtents) ? this._extent._mapExtents[0].querySelector("map-input[type=zoom]") : null,
           min = zoom && zoom.hasAttribute("min") ? parseInt(zoom.getAttribute("min")) : this._map.getMinZoom(),
-          max =  zoom && zoom.hasAttribute("max") ? parseInt(zoom.getAttribute("max")) : this._map.getMaxZoom(),
-          canZoom = (toZoom < min && this._extent.zoomout) || (toZoom > max && this._extent.zoomin);
+          max =  zoom && zoom.hasAttribute("max") ? parseInt(zoom.getAttribute("max")) : this._map.getMaxZoom();
+      if(zoom){
+        for(let i = 1; i < this._extent._mapExtents.length; i++){
+          zoom = this._extent._mapExtents[i].querySelector("map-input[type=zoom]");
+          if(zoom && zoom.hasAttribute("min")) { min = Math.min(parseInt(zoom.getAttribute("min")), min); }
+          if(zoom && zoom.hasAttribute("max")){ max = Math.max(parseInt(zoom.getAttribute("max")), max); }
+        }
+      }
+      var canZoom = (toZoom < min && this._extent.zoomout) || (toZoom > max && this._extent.zoomin);
       if (!(min <= toZoom && toZoom <= max)){
         if (this._extent.zoomin && toZoom > max) {
           // this._href is the 'original' url from which this layer came
@@ -292,100 +390,181 @@ export var MapMLLayer = L.Layer.extend({
         if(this._staticTileLayer) map.removeLayer(this._staticTileLayer);
         if(this._mapmlvectors) map.removeLayer(this._mapmlvectors);
         if(this._imageLayer) map.removeLayer(this._imageLayer);
-        if (this._templatedLayer) map.removeLayer(this._templatedLayer);
+        if (this._extent && this._extent._mapExtents) this._removeExtents(map);
 
         map.fire("checkdisabled");
         map.off("popupopen", this._attachSkipButtons);
     },
-    getZoomBounds: function () {
-        var ext = this._extent;
-        var zoom = ext ? ext.querySelector('[type=zoom]') : undefined,
-            min = zoom && zoom.hasAttribute('min') ? zoom.getAttribute('min') : this._map.getMinZoom(),
-            max = zoom && zoom.hasAttribute('max') ? zoom.getAttribute('max') : this._map.getMaxZoom();
-        var bounds = {};
-        bounds.min = Math.min(min,max);
-        bounds.max = Math.max(min,max);
-        return bounds;
-    },
-    _transformDeprectatedInput: function (i) {
-      var type = i.getAttribute("type").toLowerCase();
-      if (type === "xmin" || type === "ymin" || type === "xmax" || type === "ymax") {
-        i.setAttribute("type", "location");
-        i.setAttribute("units","tcrs");
-        switch (type) {
-          case "xmin":
-            i.setAttribute("axis","x");
-            i.setAttribute("position","top-left");
-            break;
-          case "ymin":
-            i.setAttribute("axis","y");
-            i.setAttribute("position","top-left");
-            break;
-          case "xmax":
-            i.setAttribute("axis","x");
-            i.setAttribute("position","bottom-right");
-            break;
-          case "ymax":
-            i.setAttribute("axis","y");
-            i.setAttribute("position","bottom-right");
-            break;
-        }
-      } 
-    },
-    // retrieve the (projected, scaled) layer extent for the current map zoom level
-    getLayerExtentBounds: function(map) {
-        
-        if (!this._extent) return;
-        var zoom = map.getZoom(), projection = map.options.projection,
-            ep = this._extent.getAttribute("units"),
-            projecting = (projection !== ep),
-            p;
-        
-        var xmin,ymin,xmax,ymax,v1,v2,extentZoomValue;
-        
-        // todo: create an array of min values, converted to tcrs units
-        // take the Math.min of all of them.
-        v1 = this._extent.querySelector('[type=xmin]').getAttribute('min');
-        v2 = this._extent.querySelector('[type=xmax]').getAttribute('min');
-        xmin = Math.min(v1,v2);
-        v1 = this._extent.querySelector('[type=xmin]').getAttribute('max');
-        v2 = this._extent.querySelector('[type=xmax]').getAttribute('max');
-        xmax = Math.max(v1,v2);
-        v1 = this._extent.querySelector('[type=ymin]').getAttribute('min');
-        v2 = this._extent.querySelector('[type=ymax]').getAttribute('min');
-        ymin = Math.min(v1,v2);
-        v1 = this._extent.querySelector('[type=ymin]').getAttribute('max');
-        v2 = this._extent.querySelector('[type=ymax]').getAttribute('max');
-        ymax = Math.max(v1,v2);
-        // WGS84 can be converted to Tiled CRS units
-        if (projecting) {
-            //project and scale to M[projection] from WGS84
-            p = M[projection];
-            var corners = [
-              p.latLngToPoint(L.latLng([ymin,xmin]),zoom),
-              p.latLngToPoint(L.latLng([ymax,xmax]),zoom), 
-              p.latLngToPoint(L.latLng([ymin,xmin]),zoom), 
-              p.latLngToPoint(L.latLng([ymin,xmax]),zoom)
-            ];
-            return L.bounds(corners);
-        } else {
-            // if the zoom level of the extent does not match that of the map
-            extentZoomValue = parseInt(this._extent.querySelector('[type=zoom]').getAttribute('value'));
-            if (extentZoomValue !== zoom) {
-                // convert the extent bounds to corresponding bounds at the current map zoom
-                p = M[projection];
-                return L.bounds(
-                    p.latLngToPoint(p.pointToLatLng(L.point(xmin,ymin),extentZoomValue),zoom),
-                    p.latLngToPoint(p.pointToLatLng(L.point(xmax,ymax),extentZoomValue),zoom));
-            } else {
-                // the extent's zoom value === map.getZoom(), return the bounds
-                return L.bounds(L.point(xmin,ymin), L.point(xmax,ymax));
-            }
-        }
-    },
     getAttribution: function () {
         return this.options.attribution;
     },
+
+    getLayerExtentHTML: function (labelName, i) {
+      var extent = L.DomUtil.create('fieldset', 'mapml-layer-extent'),
+        extentProperties = L.DomUtil.create('div', 'mapml-layer-item-properties', extent),
+        extentSettings = L.DomUtil.create('div', 'mapml-layer-item-settings', extent),
+        extentLabel = L.DomUtil.create('label', 'mapml-layer-item-toggle', extentProperties),
+        input = L.DomUtil.create('input'),
+        svgExtentControlIcon = L.SVG.create('svg'),
+        extentControlPath1 = L.SVG.create('path'),
+        extentControlPath2 = L.SVG.create('path'),
+        extentNameIcon = L.DomUtil.create('span'),
+        extentItemControls = L.DomUtil.create('div', 'mapml-layer-item-controls', extentProperties),
+        opacityControl = L.DomUtil.create('details', 'mapml-layer-item-opacity', extentSettings),
+        extentOpacitySummary = L.DomUtil.create('summary', '', opacityControl),
+        mapEl = this._layerEl.parentNode,
+        layerEl = this._layerEl,
+        opacity = L.DomUtil.create('input', '', opacityControl);
+        extentSettings.hidden = true;
+        extent.setAttribute("aria-grabbed", "false");
+        if(!labelName){ // if a label attribute is not present, set it to hidden in layer control
+          extent.setAttribute("hidden", "");
+          this._extent._mapExtents[i].hidden = true;
+        }
+
+        // append the svg paths
+        svgExtentControlIcon.setAttribute('viewBox', '0 0 24 24');
+        svgExtentControlIcon.setAttribute('height', '22');
+        svgExtentControlIcon.setAttribute('width', '22');
+        extentControlPath1.setAttribute('d', 'M0 0h24v24H0z');
+        extentControlPath1.setAttribute('fill', 'none');
+        extentControlPath2.setAttribute('d', 'M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z');
+        svgExtentControlIcon.appendChild(extentControlPath1);
+        svgExtentControlIcon.appendChild(extentControlPath2);
+
+        let removeExtentButton = L.DomUtil.create('button', 'mapml-layer-item-remove-control', extentItemControls);
+        removeExtentButton.type = 'button';
+        removeExtentButton.title = 'Remove Sub Layer';
+        removeExtentButton.innerHTML = "<span aria-hidden='true'>&#10005;</span>";
+        removeExtentButton.classList.add('mapml-button');
+        L.DomEvent.on(removeExtentButton, 'click', L.DomEvent.stop);
+        L.DomEvent.on(removeExtentButton, 'click', (e)=>{
+          let allRemoved = true;
+          e.target.checked = false;
+          this._extent._mapExtents[i].removed = true;
+          this._extent._mapExtents[i].checked = false;
+          if(this._layerEl.checked) this._changeExtent(e, this._extent._mapExtents[i]);
+          this._extent._mapExtents[i].extentAnatomy.parentNode.removeChild(this._extent._mapExtents[i].extentAnatomy);
+          for(let j = 0; j < this._extent._mapExtents.length; j++){
+            if(!this._extent._mapExtents[j].removed) allRemoved = false;
+          }
+          if(allRemoved) this._layerItemSettingsHTML.removeChild(this._extentGroupAnatomy); 
+        }, this);
+
+        let extentsettingsButton = L.DomUtil.create('button', 'mapml-layer-item-settings-control', extentItemControls);
+        extentsettingsButton.type = 'button';
+        extentsettingsButton.title = 'Extent Settings';
+        extentsettingsButton.setAttribute('aria-expanded', false);
+        extentsettingsButton.classList.add('mapml-button');
+        L.DomEvent.on(extentsettingsButton, 'click', (e)=>{
+          if(extentSettings.hidden == true){
+            extentsettingsButton.setAttribute('aria-expanded', true);
+            extentSettings.hidden = false;
+          } else {
+            extentsettingsButton.setAttribute('aria-expanded', false);
+            extentSettings.hidden = true;
+          }
+        }, this);
+
+        extentNameIcon.setAttribute('aria-hidden', true);
+        extentLabel.appendChild(input);
+        extentsettingsButton.appendChild(extentNameIcon);
+        extentNameIcon.appendChild(svgExtentControlIcon);
+        extentOpacitySummary.innerText = 'Opacity';
+        extentOpacitySummary.id = 'mapml-layer-item-opacity-' + L.stamp(extentOpacitySummary);
+        opacity.setAttribute('type','range');
+        opacity.setAttribute('min', '0');
+        opacity.setAttribute('max','1.0');
+        opacity.setAttribute('value', this._extent._mapExtents[i]._templateVars.opacity || '1.0');
+        opacity.setAttribute('step','0.1');
+        opacity.setAttribute('aria-labelledby', 'mapml-layer-item-opacity-' + L.stamp(extentOpacitySummary));
+        this._extent._mapExtents[i]._templateVars.opacity = this._extent._mapExtents[i]._templateVars.opacity || '1.0';
+        L.DomEvent.on(opacity, 'change', this._changeExtentOpacity, this._extent._mapExtents[i]);
+
+        var extentItemNameSpan = L.DomUtil.create('span', 'mapml-layer-item-name', extentLabel);
+        input.defaultChecked = this._extent._mapExtents[i] ? true: false;
+        this._extent._mapExtents[i].checked = input.defaultChecked;
+        input.type = 'checkbox';
+        extentItemNameSpan.innerHTML = labelName;
+        L.DomEvent.on(input, 'change', (e)=>{
+          this._changeExtent(e, this._extent._mapExtents[i]);
+        });
+        extentItemNameSpan.id = 'mapml-extent-item-name-{' + L.stamp(extentItemNameSpan) + '}';
+        extent.setAttribute('aria-labelledby', extentItemNameSpan.id);
+        extentItemNameSpan.extent = this._extent._mapExtents[i];
+
+        extent.onmousedown = (downEvent) => {
+          if(downEvent.target.tagName.toLowerCase() === "input" || downEvent.target.tagName.toLowerCase() === "select") return;
+          downEvent.preventDefault();
+          downEvent.stopPropagation();
+
+          let control = extent,
+              controls = extent.parentNode,
+              moving = false, yPos = downEvent.clientY;
+
+              document.body.onmousemove = (moveEvent) => {
+                moveEvent.preventDefault();
+    
+                // Fixes flickering by only moving element when there is enough space
+                let offset = moveEvent.clientY - yPos;
+                moving = Math.abs(offset) > 5 || moving;
+                if( (controls && !moving) || (controls && controls.childElementCount <= 1) || 
+                    controls.getBoundingClientRect().top > control.getBoundingClientRect().bottom || 
+                    controls.getBoundingClientRect().bottom < control.getBoundingClientRect().top){
+                      return;
+                    }
+                
+                controls.classList.add("mapml-draggable");
+                control.style.transform = "translateY("+ offset +"px)";
+                control.style.pointerEvents = "none";
+    
+                let x = moveEvent.clientX, y = moveEvent.clientY,
+                    root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".mapml-web-map").shadowRoot,
+                    elementAt = root.elementFromPoint(x, y),
+                    swapControl = !elementAt || !elementAt.closest("fieldset") ? control : elementAt.closest("fieldset");
+          
+                swapControl =  Math.abs(offset) <= swapControl.offsetHeight ? control : swapControl;
+                
+                control.setAttribute("aria-grabbed", 'true');
+                control.setAttribute("aria-dropeffect", "move");
+                if(swapControl && controls === swapControl.parentNode){
+                  swapControl = swapControl !== control.nextSibling? swapControl : swapControl.nextSibling;
+                  if(control !== swapControl){ 
+                    yPos = moveEvent.clientY;
+                    control.style.transform = null;
+                  }
+                  controls.insertBefore(control, swapControl);
+                }
+              };
+
+              document.body.onmouseup = () => {
+                control.setAttribute("aria-grabbed", "false");
+                control.removeAttribute("aria-dropeffect");
+                control.style.pointerEvents = null;
+                control.style.transform = null;
+                let controlsElems = controls.children,
+                    zIndex = 0;
+                for(let c of controlsElems){
+                  let extentEl = c.querySelector("span").extent;
+                  
+                  extentEl.setAttribute("data-moving","");
+                  layerEl.insertAdjacentElement("beforeend", extentEl);
+                  extentEl.removeAttribute("data-moving");
+    
+                  extentEl.extentZIndex = zIndex;
+                  extentEl.templatedLayer.setZIndex(zIndex);
+                  zIndex++;
+                }
+                controls.classList.remove("mapml-draggable");
+                document.body.onmousemove = document.body.onmouseup = null;
+              };
+
+              
+        };
+
+        return extent;
+    },
+
     getLayerUserControlsHTML: function () {
       var fieldset = L.DomUtil.create('fieldset', 'mapml-layer-item'),
         input = L.DomUtil.create('input'),
@@ -401,6 +580,7 @@ export var MapMLLayer = L.Layer.extend({
         svgSettingsControlIcon = L.SVG.create('svg'),
         settingsControlPath1 = L.SVG.create('path'),
         settingsControlPath2 = L.SVG.create('path'),
+        extentsFieldset = L.DomUtil.create('fieldset', 'mapml-layer-grouped-extents'),
         mapEl = this._layerEl.parentNode;
         this.opacityEl = opacity;
 
@@ -562,9 +742,10 @@ export var MapMLLayer = L.Layer.extend({
         if (this._styles) {
           layerItemSettings.appendChild(this._styles);
         }
+
         if (this._userInputs) {
           var frag = document.createDocumentFragment();
-          var templates = this._templateVars;
+          var templates = this._extent._templateVars;
           if (templates) {
             for (var i=0;i<templates.length;i++) {
               var template = templates[i];
@@ -588,9 +769,23 @@ export var MapMLLayer = L.Layer.extend({
           }
           layerItemSettings.appendChild(frag);
         }
+
+        // if there are extents, add them to the layer control
+        if(this._extent && this._extent._mapExtents) {
+          var allHidden = true;
+          this._layerItemSettingsHTML = layerItemSettings;
+          this._extentGroupAnatomy = extentsFieldset;
+          extentsFieldset.setAttribute('aria-label', 'Sublayers');
+          for(let j=0; j < this._extent._mapExtents.length; j++) {
+            extentsFieldset.appendChild(this._extent._mapExtents[j].extentAnatomy);
+            if(!this._extent._mapExtents[j].hidden) allHidden = false;
+          }
+          if(!allHidden) layerItemSettings.appendChild(extentsFieldset);
+        }
+
         return fieldset;
     },
-    _initExtent: function(content) {
+    _initialize: function(content) {
         if (!this._href && !content) {return;}
         var layer = this;
         // the this._href (comes from layer@src) should take precedence over 
@@ -652,201 +847,225 @@ export var MapMLLayer = L.Layer.extend({
             return select;
         }
 
+        function _initTemplateVars(serverExtent, metaExtent, projection, mapml, base, projectionMatch){
+          var templateVars = [];
+          // set up the URL template and associated inputs (which yield variable values when processed)
+          var tlist = serverExtent.querySelectorAll('map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query]'),
+              varNamesRe = (new RegExp('(?:\{)(.*?)(?:\})','g')),
+              zoomInput = serverExtent.querySelector('map-input[type="zoom" i]'),
+              includesZoom = false, extentFallback = {};
+
+          extentFallback.zoom = 0;
+          if (metaExtent){
+            let content = M.metaContentToObject(metaExtent.getAttribute("content")), cs;
+            
+            extentFallback.zoom = content.zoom || extentFallback.zoom;
+
+            let metaKeys = Object.keys(content);
+            for(let i =0;i<metaKeys.length;i++){
+              if(!metaKeys[i].includes("zoom")){
+                cs = M.axisToCS(metaKeys[i].split("-")[2]);
+                break;
+              }
+            }
+            let axes = M.csToAxes(cs);
+            extentFallback.bounds = M.boundsToPCRSBounds(
+              L.bounds(L.point(+content[`top-left-${axes[0]}`],+content[`top-left-${axes[1]}`]),
+              L.point(+content[`bottom-right-${axes[0]}`],+content[`bottom-right-${axes[1]}`])),
+              extentFallback.zoom, projection, cs);
+            
+          } else {
+            extentFallback.bounds = M[projection].options.crs.pcrs.bounds;
+          }
+            
+          for (var i=0;i< tlist.length;i++) {
+            var t = tlist[i], template = t.getAttribute('tref'); 
+            if(!template){
+              template = BLANK_TT_TREF;
+              let blankInputs = mapml.querySelectorAll('map-input');
+              for (let i of blankInputs){
+                template += `{${i.getAttribute("name")}}`;
+              }
+            }
+            
+            var v,
+                title = t.hasAttribute('title') ? t.getAttribute('title') : 'Query this layer',
+                vcount=template.match(varNamesRe),
+                trel = (!t.hasAttribute('rel') || t.getAttribute('rel').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('rel').toLowerCase(),
+                ttype = (!t.hasAttribute('type')? 'image/*':t.getAttribute('type').toLowerCase()),
+                inputs = [],
+                tms = t && t.hasAttribute("tms");
+                var zoomBounds = mapml.querySelector('map-meta[name=zoom]')?
+                                  M.metaContentToObject(mapml.querySelector('map-meta[name=zoom]').getAttribute('content')):
+                                  undefined;
+            while ((v = varNamesRe.exec(template)) !== null) {
+              var varName = v[1],
+                  inp = serverExtent.querySelector('map-input[name='+varName+'],map-select[name='+varName+']');
+              if (inp) {
+
+                if ((inp.hasAttribute("type") && inp.getAttribute("type")==="location") && 
+                    (!inp.hasAttribute("min" || !inp.hasAttribute("max"))) && 
+                    (inp.hasAttribute("axis") && !["i","j"].includes(inp.getAttribute("axis").toLowerCase()))){
+                  zoomInput.setAttribute("value", extentFallback.zoom);
+                  
+                  let axis = inp.getAttribute("axis"), 
+                      axisBounds = M.convertPCRSBounds(extentFallback.bounds, extentFallback.zoom, projection, M.axisToCS(axis));
+                  inp.setAttribute("min", axisBounds.min[M.axisToXY(axis)]);
+                  inp.setAttribute("max", axisBounds.max[M.axisToXY(axis)]);
+                }
+
+                inputs.push(inp);
+                includesZoom = includesZoom || inp.hasAttribute("type") && inp.getAttribute("type").toLowerCase() === "zoom";
+                if (inp.hasAttribute('shard')) {
+                  var id = inp.getAttribute('list');
+                  inp.servers = [];
+                  var servers = serverExtent.querySelectorAll('map-datalist#'+id + ' > map-option');
+                  if (servers.length === 0 && inp.hasAttribute('value')) {
+                    servers = inp.getAttribute('value').split('');
+                  }
+                  for (var s=0;s < servers.length;s++) {
+                    if (servers[s].getAttribute) {
+                      inp.servers.push(servers[s].getAttribute('value'));
+                    } else {
+                      inp.servers.push(servers[s]);
+                    }
+                  }
+                } else if (inp.tagName.toLowerCase() === 'map-select') {
+                  // use a throwaway div to parse the input from MapML into HTML
+                  var div =document.createElement("div");
+                  div.insertAdjacentHTML("afterbegin",inp.outerHTML);
+                  // parse
+                  inp.htmlselect = div.querySelector("map-select");
+                  inp.htmlselect = transcribe(inp.htmlselect);
+
+                  // this goes into the layer control, so add a listener
+                  L.DomEvent.on(inp.htmlselect, 'change', layer.redraw, layer);
+                  if (!layer._userInputs) {
+                    layer._userInputs = [];
+                  }
+                  layer._userInputs.push(inp.htmlselect);
+                }
+                // TODO: if this is an input@type=location 
+                // get the TCRS min,max attribute values at the identified zoom level 
+                // save this information as properties of the serverExtent,
+                // perhaps as a bounds object so that it can be easily used
+                // later by the layer control to determine when to enable
+                // disable the layer for drawing.
+              } else {
+                console.log('input with name='+varName+' not found for template variable of same name');
+                // no match found, template won't be used
+                break;
+              }
+            }
+            if (template && vcount.length === inputs.length || template === BLANK_TT_TREF) {
+              if (trel === 'query') {
+                layer.queryable = true;
+              }
+              if(!includesZoom && zoomInput) {
+                inputs.push(zoomInput);
+              }
+              // template has a matching input for every variable reference {varref}
+              templateVars.push({
+                template:decodeURI(new URL(template, base)), 
+                linkEl: t,
+                title:title, 
+                rel: trel, 
+                type: ttype, 
+                values: inputs, 
+                zoomBounds:zoomBounds,
+                extentPCRSFallback: {bounds: extentFallback.bounds}, 
+                projectionMatch: projectionMatch,
+                projection:serverExtent.getAttribute("units") || FALLBACK_PROJECTION,
+                tms:tms,
+              });
+            }
+          }
+          return templateVars;
+        }
+
         function _processInitialExtent(content) {
+          //TODO: include inline extents
             var mapml = this.responseXML || content;
             if(mapml.querySelector && mapml.querySelector('map-feature'))layer._content = mapml;
             if(!this.responseXML && this.responseText) mapml = new DOMParser().parseFromString(this.responseText,'text/xml');
             if (this.readyState === this.DONE && mapml.querySelector && !mapml.querySelector("parsererror")) {
-                var serverExtent = mapml.querySelector('map-extent') || mapml.querySelector('map-meta[name=projection]'), projection;
-
-                if (serverExtent.tagName.toLowerCase() === "map-extent" && serverExtent.hasAttribute('units')){
-                  projection = serverExtent.getAttribute("units");
-                } else if (serverExtent.tagName.toLowerCase() === "map-meta" && serverExtent.hasAttribute('content')) {
-                  projection = M.metaContentToObject(serverExtent.getAttribute('content')).content;
-                }
+                var serverExtent = mapml.querySelectorAll('map-extent'), projection, projectionMatch, serverMeta;
                     
-                var projectionMatch = projection && projection === layer.options.mapprojection,
-                    metaExtent = mapml.querySelector('map-meta[name=extent]'),
+                
+                if(!serverExtent.length){
+                  serverMeta = mapml.querySelector('map-meta[name=projection]');
+                }
+
+                // check whether all map-extent elements have the same units
+                if(serverExtent.length >= 1){
+                  for(let i = 0; i < serverExtent.length; i++){
+                    if (serverExtent[i].tagName.toLowerCase() === "map-extent" && serverExtent[i].hasAttribute('units')){
+                      projection = serverExtent[i].getAttribute("units");
+                    }
+                    projectionMatch = projection && projection === layer.options.mapprojection;
+                    if(!projectionMatch){
+                      break;
+                    }
+                  }
+                } else if(serverMeta){
+                  if (serverMeta.tagName.toLowerCase() === "map-meta" && serverMeta.hasAttribute('content')) {
+                    projection = M.metaContentToObject(serverMeta.getAttribute('content')).content;
+                    projectionMatch = projection && projection === layer.options.mapprojection;
+                  }
+                }  
+                
+                var metaExtent = mapml.querySelector('map-meta[name=extent]'),
                     selectedAlternate = !projectionMatch && mapml.querySelector('map-head map-link[rel=alternate][projection='+layer.options.mapprojection+']'),
                     
                     base = 
       (new URL(mapml.querySelector('map-base') ? mapml.querySelector('map-base').getAttribute('href') : mapml.baseURI || this.responseURL, this.responseURL)).href;
                 
-                if (!serverExtent) {
-                    serverExtent = layer._synthesizeExtent(mapml);
-                    // the mapml resource does not have a (complete) extent form, save
-                    // its content if any so we don't have to revisit the server, ever.
-                    if (mapml.querySelector('map-feature,map-tile')) {
-                        layer._content = mapml;
-                    }
-                } else if (!projectionMatch && selectedAlternate && selectedAlternate.hasAttribute('href')) {
+                if (!projectionMatch && selectedAlternate && selectedAlternate.hasAttribute('href')) {
                      
                     layer.fire('changeprojection', {href:  (new URL(selectedAlternate.getAttribute('href'), base)).href}, false);
                     return;
                 } else if (!projectionMatch && layer._map && layer._map.options.mapEl.querySelectorAll("layer-").length === 1){
                   layer._map.options.mapEl.projection = projection;
                   return;
-                } else if (serverExtent.querySelector('map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query]') &&
-                        serverExtent.hasAttribute("units")) {
-                  layer._templateVars = [];
-                  // set up the URL template and associated inputs (which yield variable values when processed)
-                  var tlist = serverExtent.querySelectorAll('map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query]'),
-                      varNamesRe = (new RegExp('(?:\{)(.*?)(?:\})','g')),
-                      zoomInput = serverExtent.querySelector('map-input[type="zoom" i]'),
-                      includesZoom = false, extentFallback = {};
-
-                  extentFallback.zoom = 0;
-                  if (metaExtent){
-                    // if the extent is not in PCRS or GCRS, the user should supply
-                    // a zoom=n key within the meta content, so that the PCRS bounds
-                    // can be calculated
-                    let content = M.metaContentToObject(metaExtent.getAttribute("content"));
-                    
-                    // the extentFallback.zoom is used to calculate the PCRS bounds
-                    extentFallback.zoom = content.zoom || extentFallback.zoom;
-    
-                    let metaKeys = Object.keys(content);
-                    for(let i =0;i<metaKeys.length;i++){
-                      if(!metaKeys[i].includes("zoom")){
-                        // deduce the CS from the first recognized axis name, quit
-                        extentFallback.cs = M.axisToCS(metaKeys[i].split("-")[2]);
-                        break;
-                      }
-                    }
-                    let axes = M.csToAxes(extentFallback.cs);
-                    extentFallback.bounds = M.boundsToPCRSBounds(
-                      L.bounds(L.point(+content[`top-left-${axes[0]}`],+content[`top-left-${axes[1]}`]),
-                      L.point(+content[`bottom-right-${axes[0]}`],+content[`bottom-right-${axes[1]}`])),
-                      extentFallback.zoom, projection, extentFallback.cs);
-                    
-                  } else {
-                    extentFallback.bounds = M[projection].options.crs.pcrs.bounds;
-                    extentFallback.cs = "PCRS";
+                } else if (!serverMeta){
+                  layer._extent = {};
+                  if(projectionMatch){
+                    layer._extent.crs = M[projection];
                   }
-                    
-                  for (var i=0;i< tlist.length;i++) {
-                    var t = tlist[i], template = t.getAttribute('tref'); 
-                    if(!template){
-                      template = BLANK_TT_TREF;
-                      let blankInputs = mapml.querySelectorAll('map-input');
-                      for (let i of blankInputs){
-                        template += `{${i.getAttribute("name")}}`;
-                      }
-                    }
-                    
-                    var v,
-                        title = t.hasAttribute('title') ? t.getAttribute('title') : 'Query this layer',
-                        vcount=template.match(varNamesRe),
-                        trel = (!t.hasAttribute('rel') || t.getAttribute('rel').toLowerCase() === 'tile') ? 'tile' : t.getAttribute('rel').toLowerCase(),
-                        ttype = (!t.hasAttribute('type')? 'image/*':t.getAttribute('type').toLowerCase()),
-                        inputs = [],
-                        tms = t && t.hasAttribute("tms");
-                        var zoomBounds = mapml.querySelector('map-meta[name=zoom]')?
-                                          M.metaContentToObject(mapml.querySelector('map-meta[name=zoom]').getAttribute('content')):
-                                          undefined;
-                    while ((v = varNamesRe.exec(template)) !== null) {
-                      var varName = v[1],
-                          inp = serverExtent.querySelector('map-input[name='+varName+'],map-select[name='+varName+']');
-                      if (inp) {
-                        // if location input is missing min/max, force set the
-                        // fallback min/max from the extentFallback
-                        if ((inp.hasAttribute("type") && inp.getAttribute("type")==="location") && 
-                            (!inp.hasAttribute("min" || !inp.hasAttribute("max"))) && 
-                            (inp.hasAttribute("axis") && !["i","j"].includes(inp.getAttribute("axis").toLowerCase()))){
-                          zoomInput.setAttribute("value", extentFallback.zoom);
-                          // set location input min/max axis values based on calculated 
-                          // and potentially converted from PCRS bounds read
-                          // from the <map-meta> element.  This is a fallback, but it only
-                          // works when the file includes location inputs.
-                          let axis = inp.getAttribute("axis"), 
-                              axisBounds = M.convertPCRSBounds(extentFallback.bounds, extentFallback.zoom, projection, M.axisToCS(axis));
-                          inp.setAttribute("min", axisBounds.min[M.axisToXY(axis)]);
-                          inp.setAttribute("max", axisBounds.max[M.axisToXY(axis)]);
-                        }
+                  layer._extent._mapExtents = []; // stores all the map-extent elements in the layer
+                  layer._extent._templateVars = []; // stores all template variables coming from all extents
+                  for(let j = 0; j < serverExtent.length; j++){
+                    if (serverExtent[j].querySelector('map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query]') &&
+                        serverExtent[j].hasAttribute("units")) {
+                          layer._extent._mapExtents.push(serverExtent[j]);
+                          projectionMatch = projectionMatch || selectedAlternate;
+                          let templateVars = _initTemplateVars.call(layer, serverExtent[j], metaExtent, projection, mapml, base, projectionMatch);
+                          layer._extent._mapExtents[j]._templateVars = templateVars;
+                          layer._extent._templateVars = layer._extent._templateVars.concat(templateVars);
+                        } 
+                      }     
+                } else {
+                  layer._extent = serverMeta;
+                }  
+                layer._parseLicenseAndLegend(mapml, layer, projection);
 
-                        inputs.push(inp);
-                        includesZoom = includesZoom || inp.hasAttribute("type") && inp.getAttribute("type").toLowerCase() === "zoom";
-                        if (inp.hasAttribute('shard')) {
-                          var id = inp.getAttribute('list');
-                          inp.servers = [];
-                          var servers = serverExtent.querySelectorAll('map-datalist#'+id + ' > map-option');
-                          if (servers.length === 0 && inp.hasAttribute('value')) {
-                            servers = inp.getAttribute('value').split('');
-                          }
-                          for (var s=0;s < servers.length;s++) {
-                            if (servers[s].getAttribute) {
-                              inp.servers.push(servers[s].getAttribute('value'));
-                            } else {
-                              inp.servers.push(servers[s]);
-                            }
-                          }
-                        } else if (inp.tagName.toLowerCase() === 'map-select') {
-                          // use a throwaway div to parse the input from MapML into HTML
-                          var div =document.createElement("div");
-                          div.insertAdjacentHTML("afterbegin",inp.outerHTML);
-                          // parse
-                          inp.htmlselect = div.querySelector("map-select");
-                          inp.htmlselect = transcribe(inp.htmlselect);
-
-                          // this goes into the layer control, so add a listener
-                          L.DomEvent.on(inp.htmlselect, 'change', layer.redraw, layer);
-                          if (!layer._userInputs) {
-                            layer._userInputs = [];
-                          }
-                          layer._userInputs.push(inp.htmlselect);
-                        }
-                        // TODO: if this is an input@type=location 
-                        // get the TCRS min,max attribute values at the identified zoom level 
-                        // save this information as properties of the serverExtent,
-                        // perhaps as a bounds object so that it can be easily used
-                        // later by the layer control to determine when to enable
-                        // disable the layer for drawing.
-                      } else {
-                        console.log('input with name='+varName+' not found for template variable of same name');
-                        // no match found, template won't be used
-                        break;
-                      }
-                    }
-                    if (template && vcount.length === inputs.length || template === BLANK_TT_TREF) {
-                      if (trel === 'query') {
-                        layer.queryable = true;
-                      }
-                      if(!includesZoom && zoomInput) {
-                        inputs.push(zoomInput);
-                      }
-                      // template has a matching input for every variable reference {varref}
-                      layer._templateVars.push({
-                        template:decodeURI(new URL(template, base)), 
-                        linkEl: t,
-                        title:title, 
-                        rel: trel, 
-                        type: ttype, 
-                        values: inputs, 
-                        zoomBounds:zoomBounds, 
-                        extentPCRSFallback: {bounds: extentFallback.bounds}, 
-                        projectionMatch: projectionMatch || selectedAlternate,
-                        projection:serverExtent.getAttribute("units") || FALLBACK_PROJECTION,
-                        tms:tms,
-                      });
-                    }
-                  }
-                }
-                layer._parseLicenseAndLegend(mapml, layer);
-                layer._extent = serverExtent;
-                
-                
                 var zoomin = mapml.querySelector('map-link[rel=zoomin]'),
                     zoomout = mapml.querySelector('map-link[rel=zoomout]');
                 delete layer._extent.zoomin;
                 delete layer._extent.zoomout;
                 if (zoomin) {
-                    layer._extent.zoomin = (new URL(zoomin.getAttribute('href'), base)).href;
+                  layer._extent.zoomin = (new URL(zoomin.getAttribute('href'), base)).href;
                 }
                 if (zoomout) {
-                    layer._extent.zoomout = (new URL(zoomout.getAttribute('href'), base)).href;
+                  layer._extent.zoomout = (new URL(zoomout.getAttribute('href'), base)).href;
                 }
-                if (layer._templatedLayer) {
-                  layer._templatedLayer.reset(layer._templateVars);
+                if (layer._extent._mapExtents) {
+                  for(let i = 0; i < layer._extent._mapExtents.length; i++){
+                    if(layer._extent._mapExtents[i].templatedLayer){
+                      layer._extent._mapExtents[i].templatedLayer.reset(layer._extent._mapExtents[i]._templateVars, layer._extent._mapExtents[i].extentZIndex);
+                    }
+                  }
+                  
                 }
                 if (mapml.querySelector('map-tile')) {
                   var tiles = document.createElement("map-tiles"),
@@ -859,6 +1078,16 @@ export var MapMLLayer = L.Layer.extend({
                   layer._mapmlTileContainer.appendChild(tiles);
                 }
                 M.parseStylesheetAsHTML(mapml, base, layer._container);
+
+                // add multiple extents
+                if(layer._extent._mapExtents){
+                  for(let j = 0; j < layer._extent._mapExtents.length; j++){
+                    var labelName = layer._extent._mapExtents[j].getAttribute('label');
+                    var extentElement = layer.getLayerExtentHTML(labelName, j);
+                    layer._extent._mapExtents[j].extentAnatomy = extentElement;
+                  }
+                }
+
                 var styleLinks = mapml.querySelectorAll('map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]');
                 if (styleLinks.length > 1) {
                   var stylesControl = document.createElement('details'),
@@ -874,7 +1103,7 @@ export var MapMLLayer = L.Layer.extend({
                     styleOptionInput = styleOption.appendChild(document.createElement('input'));
                     styleOptionInput.setAttribute("type", "radio");
                     styleOptionInput.setAttribute("id", "rad-"+L.stamp(styleOptionInput));
-                    styleOptionInput.setAttribute("name", "styles-"+layer._title);
+                    styleOptionInput.setAttribute("name", "styles-"+this._title);
                     styleOptionInput.setAttribute("value", styleLinks[j].getAttribute('title'));
                     styleOptionInput.setAttribute("data-href", new URL(styleLinks[j].getAttribute('href'),base).href);
                     var styleOptionLabel = styleOption.appendChild(document.createElement('label'));
@@ -911,191 +1140,38 @@ export var MapMLLayer = L.Layer.extend({
             layer._layerEl.dispatchEvent(new CustomEvent('extentload', {detail: layer,}));
         }
     },
-    _createExtent: function () {
-    
-        var extent = document.createElement('map-extent'),
-            xminInput = document.createElement('map-input'),
-            yminInput = document.createElement('map-input'),
-            xmaxInput = document.createElement('map-input'),
-            ymaxInput = document.createElement('map-input'),
-            zoom = document.createElement('map-input'),
-            projection = document.createElement('map-input');
-    
-        zoom.setAttribute('type','zoom');
-        zoom.setAttribute('min','0');
-        zoom.setAttribute('max','0');
-        
-        xminInput.setAttribute('type','xmin');
-        xminInput.setAttribute('min','');
-        xminInput.setAttribute('max','');
-        
-        yminInput.setAttribute('type','ymin');
-        yminInput.setAttribute('min','');
-        yminInput.setAttribute('max','');
-        
-        xmaxInput.setAttribute('type','xmax');
-        xmaxInput.setAttribute('min','');
-        xmaxInput.setAttribute('max','');
-
-        ymaxInput.setAttribute('type','ymax');
-        ymaxInput.setAttribute('min','');
-        ymaxInput.setAttribute('max','');
-        
-        projection.setAttribute('type','projection');
-        projection.setAttribute('value','WGS84');
-        
-        extent.appendChild(xminInput);
-        extent.appendChild(yminInput);
-        extent.appendChild(xmaxInput);
-        extent.appendChild(ymaxInput);
-        extent.appendChild(zoom);
-        extent.appendChild(projection);
-
-        return extent;
-    },
     _validateExtent: function () {
       // TODO: change so that the _extent bounds are set based on inputs
-        var serverExtent = this._extent;
-        if (!serverExtent || !serverExtent.querySelector || !this._map) {
+      if(!this._extent || !this._map){
+        return;
+      }
+      var serverExtent = this._extent._mapExtents ? this._extent._mapExtents : [this._extent], lp;
+        
+        // loop through the map-extent elements and assign each one its crs
+        for(let i = 0; i < serverExtent.length; i++){
+          if (!serverExtent[i].querySelector) {
             return;
-        }
-        if (serverExtent.querySelector('[type=xmin][min=""], [type=xmin][max=""], [type=xmax][min=""], [type=xmax][max=""], [type=ymin][min=""], [type=ymin][max=""]')) {
-            var xmin = serverExtent.querySelector('[type=xmin]'),
-                ymin = serverExtent.querySelector('[type=ymin]'),
-                xmax = serverExtent.querySelector('[type=xmax]'),
-                ymax = serverExtent.querySelector('[type=ymax]'),
-                proj = serverExtent.querySelector('[type=projection][value]'),
-                bounds, projection;
-            if (proj) {
-                projection = proj.getAttribute('value');
-                if (projection && projection === 'WGS84') {
-                    bounds = this._map.getBounds();
-                    xmin.setAttribute('min',bounds.getWest());
-                    xmin.setAttribute('max',bounds.getEast());
-                    ymin.setAttribute('min',bounds.getSouth());
-                    ymin.setAttribute('max',bounds.getNorth());
-                    xmax.setAttribute('min',bounds.getWest());
-                    xmax.setAttribute('max',bounds.getEast());
-                    ymax.setAttribute('min',bounds.getSouth());
-                    ymax.setAttribute('max',bounds.getNorth());
-                } else if (projection) {
-                    // needs testing.  Also, this will likely be
-                    // messing with a server-generated extent.
-                    bounds = this._map.getPixelBounds();
-                    xmin.setAttribute('min',bounds.getBottomLeft().x);
-                    xmin.setAttribute('max',bounds.getTopRight().x);
-                    ymin.setAttribute('min',bounds.getTopRight().y);
-                    ymin.setAttribute('max',bounds.getBottomLeft().y);
-                    xmax.setAttribute('min',bounds.getBottomLeft().x);
-                    xmax.setAttribute('max',bounds.getTopRight().x);
-                    ymax.setAttribute('min',bounds.getTopRight().y);
-                    ymax.setAttribute('max',bounds.getBottomLeft().y);
-                }
-            } else {
-                this.error = true;
-            }
-
-        }
-        if (serverExtent.querySelector('[type=zoom][min=""], [type=zoom][max=""]')) {
-            var zoom = serverExtent.querySelector('[type=zoom]');
+          }
+        if (serverExtent[i].querySelector('[type=zoom][min=""], [type=zoom][max=""]')) {
+            var zoom = serverExtent[i].querySelector('[type=zoom]');
             zoom.setAttribute('min',this._map.getMinZoom());
             zoom.setAttribute('max',this._map.getMaxZoom());
         }
-        var lp = serverExtent.hasAttribute("units") ? serverExtent.getAttribute("units") : null;
-        if (lp && M[lp]) {
-          this.crs = M[lp];
-        } else {
-          this.crs = M.OSMTILE;
+          lp = serverExtent[i].hasAttribute("units") ? serverExtent[i].getAttribute("units") : null;
+          if (lp && M[lp]) {
+            if(this._extent._mapExtents) this._extent._mapExtents[i].crs = M[lp];
+            else this._extent.crs = M[lp];
+          } else {
+            if(this._extent._mapExtents) this._extent._mapExtents[i].crs = M.OSMTILE;
+            else this._extent.crs = M.OSMTILE;
+          }
         }
-    },
-    _getMapMLExtent: function (bounds, zooms, proj) {
-        
-        var extent = this._createExtent(),
-            zoom = extent.querySelector('map-input[type=zoom]'),
-            xminInput = extent.querySelector('map-input[type=xmin]'),
-            yminInput = extent.querySelector('map-input[type=ymin]'),
-            xmaxInput = extent.querySelector('map-input[type=xmax]'),
-            ymaxInput = extent.querySelector('map-input[type=ymax]'),
-            projection = extent.querySelector('map-input[type=projection]'),
-            zmin = zooms[0] !== undefined && zooms[1] !== undefined ? Math.min(zooms[0],zooms[1]) : '',
-            zmax = zooms[0] !== undefined && zooms[1] !== undefined ? Math.max(zooms[0],zooms[1]) : '',
-            xmin = bounds ? bounds._southWest ? bounds.getWest() : bounds.getBottomLeft().x : '',
-            ymin = bounds ? bounds._southWest ? bounds.getSouth() : bounds.getTopRight().y : '',
-            xmax = bounds ? bounds._southWest ? bounds.getEast() : bounds.getTopRight().x : '',
-            ymax = bounds ? bounds._southWest ? bounds.getNorth() : bounds.getBottomLeft().y : '';
-    
-        zoom.setAttribute('min', typeof(zmin) === 'number' && isNaN(zmin)? '' : zmin);
-        zoom.setAttribute('max', typeof(zmax) === 'number' && isNaN(zmax)? '' : zmax);
-        
-        xminInput.setAttribute('min',xmin);
-        xminInput.setAttribute('max',xmax);
-        
-        yminInput.setAttribute('min',ymin);
-        yminInput.setAttribute('max',ymax);
-        
-        xmaxInput.setAttribute('min',xmin);
-        xmaxInput.setAttribute('max',xmax);
-
-        ymaxInput.setAttribute('min',ymin);
-        ymaxInput.setAttribute('max',ymax);
-        
-        projection.setAttribute('value',bounds && bounds._southWest && !proj ? 'WGS84' : proj);
-
-        return extent;
-    },
-    _synthesizeExtent: function (mapml) {
-        var metaZoom = mapml.querySelectorAll('map-meta[name=zoom]')[0],
-            metaExtent = mapml.querySelector('map-meta[name=extent]'),
-            metaProjection = mapml.querySelector('map-meta[name=projection]'),
-            proj = metaProjection ? metaProjection.getAttribute('content'): FALLBACK_PROJECTION,
-            i,expressions,bounds,zmin,zmax,xmin,ymin,xmax,ymax,expr,lhs,rhs;
-        if (metaZoom) {
-            expressions = metaZoom.getAttribute('content').split(',');
-            for (i=0;i<expressions.length;i++) {
-              expr = expressions[i].split('=');
-              lhs = expr[0];
-              rhs=expr[1];
-              if (lhs === 'min') {
-                zmin = parseInt(rhs);
-              }
-              if (lhs === 'max') {
-                zmax = parseInt(rhs);
-              }
-            }
-        }  
-        if (metaExtent) {
-            expressions = metaExtent.getAttribute('content').split(',');
-            for (i=0;i<expressions.length;i++) {
-              expr = expressions[i].split('=');
-              lhs = expr[0];
-              rhs=expr[1];
-              if (lhs === 'xmin') {
-                xmin = parseFloat(rhs);
-              }
-              if (lhs === 'xmax') {
-                xmax = parseFloat(rhs);
-              }
-              if (lhs === 'ymin') {
-                ymin = parseFloat(rhs);
-              }
-              if (lhs === 'ymax') {
-                ymax = parseFloat(rhs);
-              }
-            }
-        }
-        if (xmin && ymin && xmax && ymax && proj === 'WGS84') {
-            var sw = L.latLng(ymin,xmin), ne = L.latLng(ymax,xmax);
-            bounds = L.latLngBounds(sw,ne);
-        } else if (xmin && ymin && xmax && ymax) {
-            // needs testing
-            bounds = L.bounds([[xmin,ymin],[xmax,ymax]]);
-        }
-        return this._getMapMLExtent(bounds, [zmin,zmax], proj);
     },
     // a layer must share a projection with the map so that all the layers can
     // be overlayed in one coordinate space.  WGS84 is a 'wildcard', sort of.
     getProjection: function () {
-      let extent = this._extent;
+      if(!this._extent) { return; }
+      let extent = this._extent._mapExtents ? this._extent._mapExtents[0] : this._extent; // the projections for each extent eould be the same (as) validated in _validProjection, so can use mapExtents[0]
       if(!extent) return FALLBACK_PROJECTION;
       switch (extent.tagName.toUpperCase()) {
         case "MAP-EXTENT":
@@ -1128,29 +1204,16 @@ export var MapMLLayer = L.Layer.extend({
           layer._legendUrl = legendLink.getAttribute('href');
         }
     },
-    // return the LatLngBounds of the map unprojected such that the whole
-    // map is covered, not just a band defined by the projected map bounds.
-    _getUnprojectedMapLatLngBounds: function(map) {
-      
-        map = map||this._map; 
-        var origin = map.getPixelOrigin(),
-          bounds = map.getPixelBounds(),
-          nw = map.unproject(origin),
-          sw = map.unproject(bounds.getBottomLeft()),
-          ne = map.unproject(bounds.getTopRight()),
-          se = map.unproject(origin.add(map.getSize()));
-        return L.latLngBounds(sw,ne).extend(se).extend(nw);
-    },
-    // this takes into account that WGS84 is considered a wildcard match.
-    _projectionMatches: function(map) {
-        map = map||this._map;
-        var projection = this.getProjection();
-        if (!map.options.projection || projection !== 'WGS84' && map.options.projection !== projection) return false;
-        return true;
-    },
-    getQueryTemplates: function() {
-        if (this._templatedLayer && this._templatedLayer._queries) {
-          return this._templatedLayer._queries;
+    getQueryTemplates: function(pcrsClick) {
+        if (this._extent && this._extent._queries) {
+          var templates = [];
+          // only return queries that are in bound
+          for(let i = 0; i < this._extent._queries.length; i++){
+            if(this._extent._queries[i].extentBounds.contains(pcrsClick)){
+              templates.push(this._extent._queries[i]);
+            }
+          }
+          return templates;
         }
     },
     _attachSkipButtons: function(e){

@@ -3,16 +3,20 @@ export var TemplatedLayer = L.Layer.extend({
     this._templates =  templates;
     L.setOptions(this, options);
     this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
+    this._container.style.opacity = this.options.opacity;
     L.DomUtil.addClass(this._container,'mapml-templatedlayer-container');
 
     for (var i=0;i<templates.length;i++) {
       if (templates[i].rel === 'tile') {
+          this.setZIndex(options.extentZIndex);
           this._templates[i].layer = M.templatedTileLayer(templates[i], 
-            L.Util.extend(options, {errorTileUrl: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==", zIndex: i, pane: this._container}));
+            L.Util.extend(options, {errorTileUrl: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==", zIndex: options.extentZIndex, pane: this._container}));
       } else if (templates[i].rel === 'image') {
-          this._templates[i].layer = M.templatedImageLayer(templates[i], L.Util.extend(options, {zIndex: i, pane: this._container}));
+          this.setZIndex(options.extentZIndex);
+          this._templates[i].layer = M.templatedImageLayer(templates[i], L.Util.extend(options, {zIndex: options.extentZIndex, pane: this._container}));
       } else if (templates[i].rel === 'features') {
-          this._templates[i].layer = M.templatedFeaturesLayer(templates[i], L.Util.extend(options, {zIndex: i, pane: this._container}));
+          this.setZIndex(options.extentZIndex);
+          this._templates[i].layer = M.templatedFeaturesLayer(templates[i], L.Util.extend(options, {zIndex: options.extentZIndex, pane: this._container}));
       } else if (templates[i].rel === 'query') {
           // add template to array of queryies to be added to map and processed
           // on click/tap events
@@ -21,7 +25,7 @@ export var TemplatedLayer = L.Layer.extend({
             this._queries = [];
           }
           let inputData = M.extractInputBounds(templates[i]);
-          templates[i].layerBounds = inputData.bounds;
+          templates[i].extentBounds = inputData.bounds;
           templates[i].zoomBounds = inputData.zoomBounds;
           this._queries.push(L.extend(templates[i], this._setupQueryVars(templates[i])));
       }
@@ -43,7 +47,6 @@ export var TemplatedLayer = L.Layer.extend({
   _onZoomStart: function() {
       this.closePopup();
   },
-
 
   _setupQueryVars: function(template) {
       // process the inputs associated to template and create an object named
@@ -169,7 +172,7 @@ export var TemplatedLayer = L.Layer.extend({
       queryVarNames.query.title = template.title;
       return queryVarNames;
   },
-  reset: function (templates) {
+  reset: function (templates, extentZIndex) {
     if (!templates) {return;}
     if (!this._map) {return;}
     var addToMap = this._map && this._map.hasLayer(this),
@@ -181,11 +184,11 @@ export var TemplatedLayer = L.Layer.extend({
     for (var i=0;i<templates.length;i++) {
       if (templates[i].rel === 'tile') {
           this._templates[i].layer = M.templatedTileLayer(templates[i],
-            L.Util.extend(this.options, {errorTileUrl: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==", zIndex: i, pane: this._container}));
+            L.Util.extend(this.options, {errorTileUrl: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==", zIndex: extentZIndex, pane: this._container}));
       } else if (templates[i].rel === 'image') {
-          this._templates[i].layer = M.templatedImageLayer(templates[i], L.Util.extend(this.options, {zIndex: i, pane: this._container}));
+          this._templates[i].layer = M.templatedImageLayer(templates[i], L.Util.extend(this.options, {zIndex: extentZIndex, pane: this._container}));
       } else if (templates[i].rel === 'features') {
-          this._templates[i].layer = M.templatedFeaturesLayer(templates[i], L.Util.extend(this.options, {zIndex: i, pane: this._container}));
+          this._templates[i].layer = M.templatedFeaturesLayer(templates[i], L.Util.extend(this.options, {zIndex: extentZIndex, pane: this._container}));
       } else if (templates[i].rel === 'query') {
           if (!this._queries) {
             this._queries = [];
@@ -209,17 +212,22 @@ export var TemplatedLayer = L.Layer.extend({
       }
     }
   },
-//  setZIndex: function (zIndex) {
-//      this.options.zIndex = zIndex;
-//      this._updateZIndex();
-//
-//      return this;
-//  },
-//  _updateZIndex: function () {
-//      if (this._container && this.options.zIndex !== undefined && this.options.zIndex !== null) {
-//          this._container.style.zIndex = this.options.zIndex;
-//      }
-//  },
+  //addTo: function(map) {
+    //for(let i = 0; i < this._templates.length; i++){
+  //    this._templates[0].layer.addTo(map);
+    //}
+  //},
+  setZIndex: function (zIndex) {
+      this.options.zIndex = zIndex;
+      this._updateZIndex();
+
+      return this;
+  },
+  _updateZIndex: function () {
+      if (this._container && this.options.zIndex !== undefined && this.options.zIndex !== null) {
+          this._container.style.zIndex = this.options.zIndex;
+      }
+  },
   onRemove: function (map) {
     L.DomUtil.remove(this._container);
     for (var i=0;i<this._templates.length;i++) {
@@ -241,6 +249,10 @@ export var TemplatedLayer = L.Layer.extend({
       this._count++;
       this._map.fire("featurepagination", {i: this._count, popup: this});
     }
+  },
+
+  changeOpacity: function(opacity){
+    this._container.style.opacity = opacity;
   },
 
 });

@@ -5,8 +5,9 @@ export var TemplatedImageLayer =  L.Layer.extend({
         L.DomUtil.addClass(this._container, 'mapml-image-container');
         let inputData = M.extractInputBounds(template);
         this.zoomBounds = inputData.zoomBounds;
-        this.layerBounds=inputData.bounds;
+        this.extentBounds=inputData.bounds;
         this.isVisible = true;
+        delete options.opacity;
         L.extend(options, this.zoomBounds);
         L.setOptions(this, L.extend(options,this._setUpExtentTemplateVars(template)));
     },
@@ -36,7 +37,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
       let mapZoom = this._map.getZoom();
       let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
       this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && 
-                        this.layerBounds.overlaps(mapBounds);
+                        this.extentBounds.overlaps(mapBounds);
       if(!(this.isVisible)){
         this._clearLayer();
         return;
