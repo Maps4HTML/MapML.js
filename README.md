@@ -31,8 +31,8 @@ children of `<mapml-viewer>`.
 The map provides a default set of controls which are turned on or off with the
 map's `controls` boolean attribute.
 
-The `width` and `height` attributes of the map should be specified,
-and can be overriden using CSS properties.
+<!--The `width` and `height` attributes of the map should be specified,
+and can be overriden using CSS properties.-->
 
 The initial zoom and location of the map are controlled by the `zoom`,
 `lat` and `lon` attributes.
@@ -41,7 +41,7 @@ The default `projection` is `OSMTILE` (Web Mercator).
 ### Example markup of a basic map
 
 ```html
-<mapml-viewer zoom="3" lat="0" lon="0" width="800" height="400" controls>
+<mapml-viewer zoom="3" lat="0" lon="0" controls>
   <layer- src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" label="OpenStreetMap" checked></layer->
 </mapml-viewer>
 ```
