@@ -17,6 +17,13 @@ app.get('/data/query/us_map_query', (req, res, next) => {
     }
   });
 });
+app.get('/data/query/html_query_response', (req, res, next) => {
+  res.sendFile(__dirname + "/e2e/data/tiles/cbmt/html_query_response.html", { headers: { "Content-Type": "text/html" } }, (err) => {
+    if (err) {
+      res.status(403).send("Error.");
+    }
+  });
+});
 
 app.use("/data", express.static(path.join(__dirname, "e2e/data/tiles/cbmt")));
 app.use("/data", express.static(path.join(__dirname, "e2e/data/tiles/wgs84")));
