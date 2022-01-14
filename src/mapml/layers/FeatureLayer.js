@@ -83,10 +83,10 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     },
 
     _getNativeVariables: function(mapml){
-      let nativeZoom = mapml.querySelector("map-meta[name=zoom]") &&
-          +M.metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value || 0;
-      let nativeCS = mapml.querySelector("map-meta[name=cs]") &&
-          M.metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content || "GCRS";
+      let nativeZoom = (mapml.querySelector && mapml.querySelector("map-meta[name=zoom]") &&
+          +M.metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value) || 0;
+      let nativeCS = (mapml.querySelector && mapml.querySelector("map-meta[name=cs]") &&
+          M.metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content) || "PCRS";
       return {zoom:nativeZoom, cs: nativeCS};
     },
 
@@ -306,24 +306,26 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     },
   geometryToLayer: function (mapml, vectorOptions, nativeCS, zoom, title) {
     let geometry = mapml.tagName.toUpperCase() === 'MAP-FEATURE' ? mapml.getElementsByTagName('map-geometry')[0] : mapml,
-        cs = geometry.getAttribute("cs") || nativeCS, group = [], svgGroup = L.SVG.create('g'), copyOptions = Object.assign({}, vectorOptions);
-    for(let geo of geometry.querySelectorAll('map-polygon, map-linestring, map-multilinestring, map-point, map-multipoint')){
-      group.push(M.feature(geo, Object.assign(copyOptions,
-        { nativeCS: cs,
-          nativeZoom: zoom,
-          projection: this.options.projection,
-          featureID: mapml.id,
-          group: svgGroup,
-          wrappers: this._getGeometryParents(geo.parentElement),
-          featureLayer: this,
-          _leafletLayer: this.options._leafletLayer,
-        })));
-    }
-    let groupOptions = {group:svgGroup, featureID: mapml.id, accessibleTitle: title, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties, _leafletLayer: this.options._leafletLayer,},
-      collections = geometry.querySelector('map-multipolygon') || geometry.querySelector('map-geometrycollection');
-    if(collections) groupOptions.wrappers = this._getGeometryParents(collections.parentElement);
+        cs = geometry?.getAttribute("cs") || nativeCS, group = [], groupOptions = {}, svgGroup = L.SVG.create('g'), copyOptions = Object.assign({}, vectorOptions);
+    if (geometry) {
+      for(let geo of geometry.querySelectorAll('map-polygon, map-linestring, map-multilinestring, map-point, map-multipoint')){
+        group.push(M.feature(geo, Object.assign(copyOptions,
+          { nativeCS: cs,
+            nativeZoom: zoom,
+            projection: this.options.projection,
+            featureID: mapml.id,
+            group: svgGroup,
+            wrappers: this._getGeometryParents(geo.parentElement),
+            featureLayer: this,
+            _leafletLayer: this.options._leafletLayer,
+          })));
+      }
+      let groupOptions = {group:svgGroup, featureID: mapml.id, accessibleTitle: title, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties, _leafletLayer: this.options._leafletLayer,},
+        collections = geometry.querySelector('map-multipolygon') || geometry.querySelector('map-geometrycollection');
+        if(collections) groupOptions.wrappers = this._getGeometryParents(collections.parentElement);
 
-    return M.featureGroup(group, groupOptions);
+      return M.featureGroup(group, groupOptions);
+    }
   },
 
   _getGeometryParents: function(subType, elems = []){

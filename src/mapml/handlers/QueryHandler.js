@@ -61,32 +61,39 @@ export var QueryHandler = L.Handler.extend({
 
       let point = this._map.project(e.latlng),
           scale = this._map.options.crs.scale(this._map.getZoom()),
-          pcrsClick = this._map.options.crs.transformation.untransform(point,scale),
-          contenttype;
-      var templates = layer.getQueryTemplates(pcrsClick);
+          pcrsClick = this._map.options.crs.transformation.untransform(point,scale);
+      let templates = layer.getQueryTemplates(pcrsClick);
 
       var fetchFeatures = function(template, obj, lastOne) {
-        fetch(L.Util.template(template.template, obj), { redirect: 'follow' }).then((response) => {
-        contenttype = response.headers.get("Content-Type");
-        if (response.status >= 200 && response.status < 300) {
-          return response.text();
-        } else {
-          throw new Error(response.status);
-        }
-      }).then((mapml) => {
-        if (contenttype.startsWith("text/mapml")) {
-          //if(!this.mapml) this.mapml = "";
-          //this.mapml = this.mapml.concat(mapml);
-          if(!layer._mapmlFeatures) layer._mapmlFeatures = [];
-          let parser = new DOMParser(),
-              mapmldoc = parser.parseFromString(mapml, "application/xml"),
+        const parser = new DOMParser();
+        fetch(L.Util.template(template.template, obj), { redirect: 'follow' })
+          .then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+              return response.text().then( text => {
+                return {
+                  contenttype: response.headers.get("Content-Type"),
+                  text: text
+                };
+              });
+            } else {
+              throw new Error(response.status);
+            }
+      }).then((response) => {
+        if(!layer._mapmlFeatures) layer._mapmlFeatures = [];
+        if (response.contenttype.startsWith("text/mapml")) {
+          // the mapmldoc could have <map-meta> elements that are important, perhaps
+          // also, the mapmldoc can have many features
+          let mapmldoc = parser.parseFromString(response.text, "application/xml"),
               features = Array.prototype.slice.call(mapmldoc.querySelectorAll("map-feature"));
-              if(features.length) layer._mapmlFeatures = layer._mapmlFeatures.concat(features);
-              mapmldoc.features = layer._mapmlFeatures;
-          if(lastOne) return handleMapMLResponse(mapmldoc, e.latlng);
+          if(features.length) layer._mapmlFeatures = layer._mapmlFeatures.concat(features);
         } else {
-          return handleOtherResponse(mapml, layer, e.latlng);
+          // synthesize a single feature from text or html content
+          let geom = "<map-geometry cs='gcrs'>"+e.latlng.lng+" "+e.latlng.lat+"</map-geometry>",
+              feature = parser.parseFromString("<map-feature><map-properties>"+
+                response.text+"</map-properties>"+geom+"</map-feature>", "text/html").querySelector("map-feature");
+          layer._mapmlFeatures.push(feature);
         }
+        if(lastOne) return displayFeaturesPopup(layer._mapmlFeatures, e.latlng);
       }).catch((err) => {
         console.log('Looks like there was a problem. Status: ' + err.message);
       });
@@ -148,21 +155,9 @@ export var QueryHandler = L.Handler.extend({
         fetchFeatures(template, obj, lastOne);
       }
     }
-      function handleMapMLResponse(mapmldoc, loc) {
+      function displayFeaturesPopup(features, loc) {
 
-        for(let feature of mapmldoc.features){
-          if(!feature.querySelector('map-geometry')){
-            let geo = document.createElement('map-geometry'), point = document.createElement('map-point'),
-              coords = document.createElement('map-coordinates');
-            geo.setAttribute("cs", "gcrs");
-            coords.innerHTML = `${loc.lng} ${loc.lat}`;
-            point.appendChild(coords);
-            geo.appendChild(point);
-            feature.appendChild(geo);
-          }
-        }
-
-        let f = M.mapMlFeatures(mapmldoc, {
+        let f = M.mapMlFeatures(features, {
             // pass the vector layer a renderer of its own, otherwise leaflet
             // puts everything into the overlayPane
             renderer: M.featureRenderer(),
@@ -183,27 +178,18 @@ export var QueryHandler = L.Handler.extend({
         let div = L.DomUtil.create("div", "mapml-popup-content"),
             c = L.DomUtil.create("iframe");
         c.style = "border: none";
-        c.srcdoc = mapmldoc.querySelector('map-feature map-properties').innerHTML;
+        c.srcdoc = features[0].querySelector('map-feature map-properties').innerHTML;
         c.setAttribute("sandbox","allow-same-origin allow-forms");
         div.appendChild(c);
         // passing a latlng to the popup is necessary for when there is no
         // geometry / null geometry
-        layer._totalFeatureCount = mapmldoc.features.length;
+        layer._totalFeatureCount = features.length;
         layer.bindPopup(div, popupOptions).openPopup(loc);
         layer.on('popupclose', function() {
             map.removeLayer(f);
         });
         f.showPaginationFeature({i: 0, popup: layer._popup});
 
-      }
-      function handleOtherResponse(text, layer, loc) {
-        let div = L.DomUtil.create("div", "mapml-popup-content"),
-            c = L.DomUtil.create("iframe");
-        c.style = "border: none";
-        c.srcdoc = text;
-        c.setAttribute("sandbox","allow-same-origin allow-forms");
-        div.appendChild(c);
-        layer.bindPopup(div, popupOptions).openPopup(loc);
       }
     }
 });

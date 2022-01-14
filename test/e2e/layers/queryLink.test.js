@@ -153,15 +153,15 @@ describe("Playwright Query Link Tests", () => {
     test("Synthesized point, valid location ", async () => {
       await page.click("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)");
       const feature = await page.$eval(
-        "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path",
-        (tile) => tile.getAttribute("d")
+        "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g",
+        (g) => g.firstElementChild ? g.firstElementChild : false
       );
       const popup = await page.$eval(
         "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe",
         (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
       );
 
-      await expect(feature).toEqual("M250 250 L237.5 220 C237.5 200, 262.5 200, 262.5 220 L250 250z");
+      await expect(feature).toBeFalsy();
       await expect(popup).toEqual("No Geometry");
     });
   });

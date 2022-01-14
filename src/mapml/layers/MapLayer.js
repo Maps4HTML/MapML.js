@@ -50,6 +50,10 @@ export var MapMLLayer = L.Layer.extend({
         // above.  Not going to change this, but failing to understand ATM.
         // may revisit some time.
         this.validProjection = true; 
+        
+        // _mapmlLayerItem is set to the root element representing this layer
+        // in the layer control, iff the layer is not 'hidden' 
+        this._mapmlLayerItem = {};
     },
     setZIndex: function (zIndex) {
         this.options.zIndex = zIndex;
@@ -457,7 +461,7 @@ export var MapMLLayer = L.Layer.extend({
         extentsettingsButton.setAttribute('aria-expanded', false);
         extentsettingsButton.classList.add('mapml-button');
         L.DomEvent.on(extentsettingsButton, 'click', (e)=>{
-          if(extentSettings.hidden == true){
+          if(extentSettings.hidden === true){
             extentsettingsButton.setAttribute('aria-expanded', true);
             extentSettings.hidden = false;
           } else {
@@ -583,6 +587,7 @@ export var MapMLLayer = L.Layer.extend({
         extentsFieldset = L.DomUtil.create('fieldset', 'mapml-layer-grouped-extents'),
         mapEl = this._layerEl.parentNode;
         this.opacityEl = opacity;
+        this._mapmlLayerItem = fieldset;
 
         // append the paths in svg for the remove layer and toggle icons
         svgSettingsControlIcon.setAttribute('viewBox', '0 0 24 24');
@@ -628,7 +633,7 @@ export var MapMLLayer = L.Layer.extend({
         itemSettingControlButton.setAttribute('aria-expanded', false);
         itemSettingControlButton.classList.add('mapml-button');
         L.DomEvent.on(itemSettingControlButton, 'click', (e)=>{
-          if(layerItemSettings.hidden == true){
+          if(layerItemSettings.hidden === true){
             itemSettingControlButton.setAttribute('aria-expanded', true);
             layerItemSettings.hidden = false;
           } else {
@@ -783,7 +788,7 @@ export var MapMLLayer = L.Layer.extend({
           if(!allHidden) layerItemSettings.appendChild(extentsFieldset);
         }
 
-        return fieldset;
+        return this._mapmlLayerItem;
     },
     _initialize: function(content) {
         if (!this._href && !content) {return;}
@@ -1207,13 +1212,28 @@ export var MapMLLayer = L.Layer.extend({
     getQueryTemplates: function(pcrsClick) {
         if (this._extent && this._extent._queries) {
           var templates = [];
-          // only return queries that are in bound
-          for(let i = 0; i < this._extent._queries.length; i++){
-            if(this._extent._queries[i].extentBounds.contains(pcrsClick)){
-              templates.push(this._extent._queries[i]);
+          // only return queries that are in bounds
+          if (this._layerEl.checked && !this._layerEl.hidden && this._mapmlLayerItem) {
+            let layerAndExtents = this._mapmlLayerItem.querySelectorAll(".mapml-layer-item-name");
+            for(let i = 0; i < layerAndExtents.length; i++){
+              if (layerAndExtents[i].extent || this._extent._mapExtents.length === 1) { // the layer won't have an .extent property, this is kind of a hack
+                let extent = layerAndExtents[i].extent || this._extent._mapExtents[0];
+                for (let j = 0; j < extent._templateVars.length; j++) {
+                  if (extent.checked) {
+                    let template = extent._templateVars[j];
+                    // for each template in the extent, see if it corresponds to one in the this._extent._queries array
+                    for (let k = 0; k < this._extent._queries.length; k++) {
+                      let queryTemplate = this._extent._queries[k];
+                      if (template === queryTemplate && queryTemplate.extentBounds.contains(pcrsClick)) {
+                        templates.push(queryTemplate);
+                      }
+                    }
+                  }
+                }
+              }
             }
+            return templates;
           }
-          return templates;
         }
     },
     _attachSkipButtons: function(e){
