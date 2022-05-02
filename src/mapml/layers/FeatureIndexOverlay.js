@@ -78,7 +78,7 @@ export var FeatureIndexOverlay = L.Layer.extend({
 
     _updateOutput: function (label, index, key) {
         let span = document.createElement("span");
-        span.setAttribute("index", index);
+        span.setAttribute("data-index", index);
         span.innerHTML = `<kbd>${key}</kbd>` + " " + label;
         return span;
     },
@@ -117,7 +117,7 @@ export var FeatureIndexOverlay = L.Layer.extend({
     },
 
     _newContent: function (body, direction) {
-        let index = body.firstChild.getAttribute("index");
+        let index = body.firstChild.getAttribute("data-index");
         let newContent = body.allFeatures[Math.floor(((index - 1) / 7) + direction)];
         if(newContent && newContent.length > 0){
             body.innerHTML = "";
