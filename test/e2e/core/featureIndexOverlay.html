@@ -5,6 +5,11 @@
   <title>Feature Index Overlay</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    let options = document.createElement("map-options");
+    options.innerHTML = '{"featureIndexOverlayOption":true}';
+    document.head.appendChild(options);
+  </script>
   <script type="module" src="mapml-viewer.js"></script>
 </head>
 

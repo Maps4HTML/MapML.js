@@ -1,4 +1,5 @@
 export var Options = {
+  featureIndexOverlayOption: false,
   announceMovement: false,
   locale: {
     cmBack: "Back",
