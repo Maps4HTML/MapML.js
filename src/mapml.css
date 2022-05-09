@@ -810,39 +810,60 @@ label.mapml-layer-item-toggle {
 * Feature Index
  */
 .mapml-feature-index-box {
-  margin: -60px 0 0 -60px;
-  width: 120px;
-  height: 120px;
+  margin: -8% 0 0 -8%;
+  width: 16%;
   left: 50%;
   top: 50%;
-  content: '';
-  display: block;
   position: absolute;
   z-index: 10000;
   outline: 2px solid #fff;
 }
 
+.mapml-feature-index-box:after{
+  display: block;
+  content: '';
+  padding-top: 100%;
+}
+
+.mapml-feature-index-box > svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
 .mapml-feature-index {
+  outline: 1px solid #000000;
   contain: content;
-  max-height: 100%;
-  max-width: 100%;
   border-radius: 4px;
   background-color: #fff;
   cursor: default;
   z-index: 1000;
   position: absolute;
-  display: block;
   top: auto;
-  right: 5px;
-  bottom: 5px;
-  left: 5px;
-  padding: 5px 10px;
-  width: -webkit-fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-  font: inherit;
+  left: 50%;
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+  bottom: 30px;
+  padding-top: 5px;
+  height: 92px;
+  width: 450px;
+  font-size: 16px;
 }
+
 .mapml-feature-index-content > span{
-  display: block;
+  width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.mapml-feature-index-content > span > kbd{
+  background-color: lightgrey;
+  padding-right: 4px;
+  padding-left: 4px;
+  border-radius: 4px;
 }
 

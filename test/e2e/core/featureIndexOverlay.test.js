@@ -1,4 +1,4 @@
-describe("Announce movement test", ()=> {
+describe("Feature Index Overlay test", ()=> {
     beforeAll(async () => {
         await page.goto(PATH + "featureIndexOverlay.html");
     });
@@ -66,11 +66,11 @@ describe("Announce movement test", ()=> {
             (span) => span.innerText
         );
         const prevResults = await page.$eval(
-            "div > output.mapml-feature-index > span > span:nth-child(8)",
+            "div > output.mapml-feature-index > span > span:nth-child(5)",
             (span) => span.innerText
         );
 
-        await expect(spanCount).toEqual(9);
+        await expect(spanCount).toEqual(5);
         await expect(firstFeature).toEqual("1 Pennsylvania");
         await expect(prevResults).toEqual("8 Previous results");
     });
@@ -86,7 +86,7 @@ describe("Announce movement test", ()=> {
     });
 
     test("Feature index content is correct on moveend", async () => {
-        await page.keyboard.press("ArrowUp");
+        await page.keyboard.press("ArrowRight");
         await page.waitForTimeout(1000);
         const spanCount = await page.$eval(
             "div > output.mapml-feature-index > span",
@@ -97,7 +97,7 @@ describe("Announce movement test", ()=> {
             (span) => span.innerText
         );
 
-        await expect(spanCount).toEqual(1);
+        await expect(spanCount).toEqual(2);
         await expect(firstFeature).toEqual("1 Maine");
     });
 
