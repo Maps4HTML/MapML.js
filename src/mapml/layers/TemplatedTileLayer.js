@@ -447,7 +447,19 @@ export var TemplatedTileLayer = L.TileLayer.extend({
               pcrs2tilematrix(pcrsBounds.max,z)) :
                       L.bounds(L.point([-1,-1]),L.point([-1,-1])));
       }
-    }
+    },
+    _clampZoom: function (zoom) {
+        let clamp = L.GridLayer.prototype._clampZoom.call(this, zoom);
+        if(!this._template.step) return clamp;
+        if(zoom !== clamp){
+            zoom = clamp;
+        } else {
+            if(zoom % this._template.step !== 0){
+                zoom = Math.floor(zoom / this._template.step) * this._template.step;
+            }
+        }
+        return zoom;
+    },
 });
 export var templatedTileLayer = function(template, options) {
   return new TemplatedTileLayer(template, options);
