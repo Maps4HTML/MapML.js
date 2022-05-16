@@ -7,22 +7,22 @@ describe("Input step test", ()=> {
         await context.close();
     });
 
-    test("Step = 1, Zooming to zoom level 1", async ()=>{
+    test("Step = 1, Zooming to zoom level 2", async ()=>{
         let requests = 0;
         page.on('request', request => {requests += 1});
         await page.keyboard.press("Tab");
         await page.waitForTimeout(1000);
         await page.keyboard.press("Equal");
         await page.waitForTimeout(1000);
-        await expect(requests).toEqual(4);
+        await expect(requests).toEqual(9);
     });
 
-    test("Step = 1, Zooming to zoom level 2", async ()=>{
+    test("Step = 1, Zooming to zoom level 3", async ()=>{
         let requests = 0;
         page.on('request', request => {requests += 1});
         await page.keyboard.press("Equal");
         await page.waitForTimeout(1000);
-        await expect(requests).toEqual(9);
+        await expect(requests).toEqual(12);
     });
 
     test("Step = 3, Zooming from level 0 - 2", async ()=>{
