@@ -25,22 +25,39 @@ describe("Input step test", ()=> {
         await expect(requests).toEqual(9);
     });
 
-    test("Step = 3, Zooming to zoom level 4", async ()=>{
-        await page.goto(PATH + "step.html")
+    test("Step = 3, Zooming from level 0 - 2", async ()=>{
+        await page.goto(PATH + "step.html");
+        await page.waitForTimeout(1000);
         let requests = 0;
         page.on('request', request => {requests += 1});
         await page.keyboard.press("Tab");
         await page.waitForTimeout(1000);
 
-        for(let i = 0; i < 4; i++){
+        for(let i = 0; i < 2; i++){
             await page.keyboard.press("Equal");
             await page.waitForTimeout(1000);
         }
 
+        await expect(requests).toEqual(0);
+    });
+
+    test("Step = 3, Zooming to zoom level 3 - request new tiles", async ()=>{
+        let requests = 0;
+        page.on('request', request => {requests += 1});
+        await page.keyboard.press("Equal");
+        await page.waitForTimeout(1000);
         await expect(requests).toEqual(12);
     });
 
-    test("Step = 3, Zooming out of max native zoom", async ()=>{
+    test("Step = 3, Zooming to zoom level 4", async ()=>{
+        let requests = 0;
+        page.on('request', request => {requests += 1});
+        await page.keyboard.press("Equal");
+        await page.waitForTimeout(1000);
+        await expect(requests).toEqual(0);
+    });
+
+    test("Step = 3, Zooming out of max native zoom - request new tiles", async ()=>{
         let requests = 0;
         page.on('request', request => {requests += 1});
         await page.keyboard.press("Equal");
