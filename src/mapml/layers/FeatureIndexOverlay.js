@@ -13,7 +13,7 @@ export var FeatureIndexOverlay = L.Layer.extend({
         this._body.index = 0;
 
         map.on("layerchange layeradd layerremove overlayremove", this._toggleEvents, this);
-        map.on('moveend focus', this._checkOverlap, this);
+        map.on('moveend focus layeradd', this._checkOverlap, this);
         map.on("keydown", this._onKeyDown, this);
         this._addOrRemoveFeatureIndex();
     },
@@ -107,7 +107,9 @@ export var FeatureIndexOverlay = L.Layer.extend({
         let body = this._body;
         let key = e.originalEvent.keyCode;
         if (key >= 49 && key <= 55){
+            if(!body.allFeatures[body.index]) return;
             let feature = body.allFeatures[body.index][key - 49];
+            if (!feature) return;
             let layer = feature.layer;
             if (layer) {
                 this._map.featureIndex.currentIndex = feature.index - 1;
