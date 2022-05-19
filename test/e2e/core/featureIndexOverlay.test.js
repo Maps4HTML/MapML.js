@@ -118,27 +118,53 @@ describe("Feature Index Overlay test", ()=> {
         await expect(reticle).toEqual(false);
     });
 
-    test("Feature index", async () => {
+    test("Popup test with templated features", async () => {
         await page.mouse.click(10, 600);
         await page.waitForTimeout(500);
         await page.focus('#map2 > div');
         await page.waitForTimeout(500);
 
-        for(let i = 0; i < 2; i++){
-            await page.keyboard.press("ArrowLeft");
-            await page.waitForTimeout(1000);
-        }
+        await page.keyboard.press("ArrowRight");
+        await page.waitForTimeout(1000);
+        await page.keyboard.press("Control+ArrowUp");
+        await page.waitForTimeout(1000);
 
         await page.keyboard.press("1");
         await page.waitForTimeout(500);
 
-        const hasPopup = await page.$eval(
+        const popupCount = await page.$eval(
             "#map2 > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane",
-            (popup) => popup.hasChildNodes()
+            (popup) => popup.childElementCount
+        );
+        const popupName = await page.$eval(
+            "#map2 > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane",
+            (popup) => popup.children[0].innerText
         );
 
-        await expect(hasPopup).toEqual(true)
+        await expect(popupCount).toEqual(1);
+        await expect(popupName).toContain("Hareg Cafe & Variety");
+    });
 
-    })
+    test("Opening another popup with index keys closes already open popup", async () => {
+        await page.keyboard.press("2");
+        await page.waitForTimeout(500);
+
+        const popupCount = await page.$eval(
+            "#map2 > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane",
+            (popup) => popup.childElementCount
+        );
+        const popupName = await page.$eval(
+            "#map2 > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane",
+            (popup) => popup.children[0].innerText
+        );
+        const overlay = await page.$eval(
+            "#map2 > div > output.mapml-feature-index",
+            (output) => output.classList.contains("mapml-screen-reader-output")
+        );
+
+        await expect(popupCount).toEqual(1);
+        await expect(popupName).toContain("Banditos");
+        await expect(overlay).toEqual(false);
+    });
 
 });

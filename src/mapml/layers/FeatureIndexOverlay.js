@@ -113,7 +113,10 @@ export var FeatureIndexOverlay = L.Layer.extend({
             let layer = feature.layer;
             if (layer) {
                 this._map.featureIndex.currentIndex = feature.index - 1;
-                if (layer._popup) layer.openPopup();
+                if (layer._popup){
+                    this._map.closePopup();
+                    layer.openPopup();
+                }
                 else layer.options.group.focus();
             }
         } else if(key === 56){
@@ -152,6 +155,11 @@ export var FeatureIndexOverlay = L.Layer.extend({
             if (e && e.type === "focus") {
                 obj._container.removeAttribute("hidden");
                 if (features !== 0) obj._output.classList.remove("mapml-screen-reader-output");
+            } else if (e && e.originalEvent && e.originalEvent.type === 'pointermove') {
+                obj._container.setAttribute("hidden", "");
+                obj._output.classList.add("mapml-screen-reader-output");
+            } else if (e && e.target._popup) {
+
             } else if (e && e.type === "blur") {
                 obj._container.setAttribute("hidden", "");
                 obj._output.classList.add("mapml-screen-reader-output");
