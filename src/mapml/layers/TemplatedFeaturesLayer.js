@@ -117,6 +117,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       _pullFeatureFeed(this._getfeaturesUrl(), MAX_PAGES)
         .then(function() { 
           map.addLayer(features);
+          map.fire("templatedfeatureslayeradd");
           M.TemplatedFeaturesLayer.prototype._updateTabIndex(context);
         })
         .catch(function (error) { console.log(error);});

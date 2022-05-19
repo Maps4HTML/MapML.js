@@ -118,4 +118,27 @@ describe("Feature Index Overlay test", ()=> {
         await expect(reticle).toEqual(false);
     });
 
+    test("Feature index", async () => {
+        await page.mouse.click(10, 600);
+        await page.waitForTimeout(500);
+        await page.focus('#map2 > div');
+        await page.waitForTimeout(500);
+
+        for(let i = 0; i < 2; i++){
+            await page.keyboard.press("ArrowLeft");
+            await page.waitForTimeout(1000);
+        }
+
+        await page.keyboard.press("1");
+        await page.waitForTimeout(500);
+
+        const hasPopup = await page.$eval(
+            "#map2 > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane",
+            (popup) => popup.hasChildNodes()
+        );
+
+        await expect(hasPopup).toEqual(true)
+
+    })
+
 });

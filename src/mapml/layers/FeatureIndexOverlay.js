@@ -13,7 +13,7 @@ export var FeatureIndexOverlay = L.Layer.extend({
         this._body.index = 0;
 
         map.on("layerchange layeradd layerremove overlayremove", this._toggleEvents, this);
-        map.on('moveend focus layeradd', this._checkOverlap, this);
+        map.on('moveend focus templatedfeatureslayeradd', this._checkOverlap, this);
         map.on("keydown", this._onKeyDown, this);
         this._addOrRemoveFeatureIndex();
     },
