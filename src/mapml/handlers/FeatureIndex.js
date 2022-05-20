@@ -90,8 +90,7 @@ export var FeatureIndex = L.Handler.extend({
       b.dist = Math.sqrt(Math.pow(bc.x - mc.x, 2) + Math.pow(bc.y - mc.y, 2));
       return a.dist - b.dist;
     });
-
-    this.inBoundFeatures[0].path.setAttribute("tabindex", 0);
+    if(!M.options.featureIndexOverlayOption) this.inBoundFeatures[0].path.setAttribute("tabindex", 0);
   },
 
   /**
