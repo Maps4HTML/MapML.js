@@ -59,7 +59,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @private
    */
   _handleFocus: function(e) {
-    if((e.keyCode === 9 || e.keyCode === 16) && e.type === "keydown"){
+    if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 27) && e.type === "keydown"){
       let index = this._map.featureIndex.currentIndex;
       if(e.keyCode === 9 && e.shiftKey) {
         if(index === this._map.featureIndex.inBoundFeatures.length - 1)
@@ -78,13 +78,13 @@ export var FeatureGroup = L.FeatureGroup.extend({
           this._map.featureIndex.inBoundFeatures[0].path.setAttribute("tabindex", -1);
           this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", 0);
         }
+      } else if(e.keyCode === 27 && this._map.options.mapEl.shadowRoot.activeElement.nodeName === "g"){
+        this._map.featureIndex.currentIndex = 0;
+        this._map._container.focus();
       }
     } else if (!([9, 16, 13, 27, 49, 50, 51, 52, 53, 54, 55].includes(e.keyCode))){
       this._map.featureIndex.currentIndex = 0;
       this._map.featureIndex.inBoundFeatures[0].path.focus();
-    } else if(e.keyCode === 27){
-      this._map.featureIndex.currentIndex = 0;
-      this._map._container.focus();
     }
 
     if(e.target.tagName.toUpperCase() !== "G") return;

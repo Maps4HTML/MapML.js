@@ -49,8 +49,8 @@ describe("Feature Index Overlay test", ()=> {
         );
 
         await expect(spanCount).toEqual(8);
-        await expect(firstFeature).toEqual("1 Vermont");
-        await expect(moreResults).toEqual("9 More results");
+        await expect(firstFeature).toContain("1 Vermont");
+        await expect(moreResults).toContain("9 More results");
     });
 
     test("Feature index more results are correct", async () => {
@@ -71,8 +71,8 @@ describe("Feature Index Overlay test", ()=> {
         );
 
         await expect(spanCount).toEqual(5);
-        await expect(firstFeature).toEqual("1 Pennsylvania");
-        await expect(prevResults).toEqual("8 Previous results");
+        await expect(firstFeature).toContain("1 Pennsylvania");
+        await expect(prevResults).toContain("8 Previous results");
     });
 
     test("Feature index previous results are correct", async () => {
@@ -98,7 +98,7 @@ describe("Feature Index Overlay test", ()=> {
         );
 
         await expect(spanCount).toEqual(2);
-        await expect(firstFeature).toEqual("1 Maine");
+        await expect(firstFeature).toContain("1 Maine");
     });
 
     test("Feature index overlay is hidden when empty, reticle still visible", async () => {

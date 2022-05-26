@@ -867,3 +867,13 @@ label.mapml-layer-item-toggle {
   border-radius: 4px;
 }
 
+.mapml-feature-index-content > span > span{
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: pre;
+  width: 1px;
+}
+
