@@ -183,7 +183,7 @@ export var FeatureIndexOverlay = L.Layer.extend({
             this._container.setAttribute("hidden", "");
             this._output.classList.add("mapml-screen-reader-output");
         } else if (e && e.target._popup) {
-
+            this._container.setAttribute("hidden", "");
         } else if (e && e.type === "blur") {
             this._container.setAttribute("hidden", "");
             this._output.classList.add("mapml-screen-reader-output");
