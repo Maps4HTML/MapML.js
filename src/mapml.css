@@ -430,6 +430,7 @@
 }
 
 /* Disable pointer events where they'd interfere with the intended action. */
+.mapml-feature-index-box,
 .leaflet-tooltip,
 .leaflet-crosshair *,
 .mapml-layer-item-settings .mapml-control-layers summary label,
@@ -649,7 +650,7 @@ button.mapml-button:disabled,
   box-sizing: border-box;
 }
 
-.mapml-layer-item, 
+.mapml-layer-item,
 .mapml-layer-grouped-extents,
 .mapml-layer-extent {
   background-color: #fff;
@@ -751,7 +752,7 @@ label.mapml-layer-item-toggle {
 /*
  * Feature styles.
  */
- 
+
 .mapml-vector-container svg :is(
   [role="link"]:focus,
   [role="link"]:hover,
@@ -801,5 +802,78 @@ label.mapml-layer-item-toggle {
 .mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-controls{
   position: absolute;
   right: 0;
+}
+
+
+
+/**
+* Feature Index
+ */
+.mapml-feature-index-box {
+  margin: -8% 0 0 -8%;
+  width: 16%;
+  left: 50%;
+  top: 50%;
+  position: absolute;
+  z-index: 10000;
+  outline: 2px solid #fff;
+}
+
+.mapml-feature-index-box:after{
+  display: block;
+  content: '';
+  padding-top: 100%;
+}
+
+.mapml-feature-index-box > svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.mapml-feature-index {
+  outline: 1px solid #000000;
+  contain: content;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: default;
+  z-index: 1000;
+  position: absolute;
+  top: auto;
+  left: 50%;
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+  bottom: 30px;
+  padding-top: 5px;
+  height: 92px;
+  width: 450px;
+  font-size: 16px;
+}
+
+.mapml-feature-index-content > span{
+  width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.mapml-feature-index-content > span > kbd{
+  background-color: lightgrey;
+  padding-right: 4px;
+  padding-left: 4px;
+  border-radius: 4px;
+}
+
+.mapml-feature-index-content > span > span{
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: pre;
+  width: 1px;
 }
 

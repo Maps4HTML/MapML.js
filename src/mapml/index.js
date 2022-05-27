@@ -61,6 +61,7 @@ import {AnnounceMovement} from "./handlers/AnnounceMovement";
 import { FeatureIndex } from "./handlers/FeatureIndex";
 import { Options } from "./options";
 import "./keyboard";
+import {featureIndexOverlay, FeatureIndexOverlay} from "./layers/FeatureIndexOverlay";
 
 /* global L, Node */
 (function (window, document, undefined) {
@@ -654,6 +655,9 @@ M.debugOverlay = debugOverlay;
 
 M.Crosshair = Crosshair;
 M.crosshair = crosshair;
+
+M.FeatureIndexOverlay = FeatureIndexOverlay;
+M.featureIndexOverlay = featureIndexOverlay;
 
 M.Feature = Feature;
 M.feature = feature;

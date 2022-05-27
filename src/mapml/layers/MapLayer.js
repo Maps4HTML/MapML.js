@@ -1314,7 +1314,7 @@ export var MapMLLayer = L.Layer.extend({
       
       content.focus();
 
-      if(group) {
+      if(group && !M.options.featureIndexOverlayOption) {
         // e.target = this._map
         // Looks for keydown, more specifically tab and shift tab
         group.setAttribute("aria-expanded", "true");
@@ -1349,15 +1349,15 @@ export var MapMLLayer = L.Layer.extend({
 
         if((focusEvent.originalEvent.keyCode === 13 && path[0].classList.contains("leaflet-popup-close-button")) || focusEvent.originalEvent.keyCode === 27 ){
           L.DomEvent.stopPropagation(focusEvent);
-          map._container.focus();
           map.closePopup(popup);
+          map._container.focus();
           if(focusEvent.originalEvent.keyCode !== 27)map._popupClosed = true;
         } else if (isTab && path[0].classList.contains("leaflet-popup-close-button")){
           map.closePopup(popup);
         } else if ((path[0].title==="Focus Map" || path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
+          map.closePopup(popup);
           setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
             L.DomEvent.stop(focusEvent);
-            map.closePopup(popup);
             map._container.focus();
           }, 0);
         }
