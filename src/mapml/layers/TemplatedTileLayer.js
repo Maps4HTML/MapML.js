@@ -450,7 +450,9 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     },
     _clampZoom: function (zoom) {
         let clamp = L.GridLayer.prototype._clampZoom.call(this, zoom);
-        if(!this._template.step) return clamp;
+        if(!this._template.step || this._template.step === "0" || isNaN(this._template.step)) return clamp;
+        if(this._template.step > this.zoomBounds.maxNativeZoom) this._template.step = this.zoomBounds.maxNativeZoom;
+
         if(zoom !== clamp){
             zoom = clamp;
         } else {
