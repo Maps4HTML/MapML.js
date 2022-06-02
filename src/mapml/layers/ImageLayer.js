@@ -18,7 +18,7 @@ export var ImageOverlay = L.ImageOverlay.extend({
 			viewreset: this._reset
 		};
 
-		if (this._zoomAnimated) {
+		if (this._zoomAnimated && this._step <= 1) {
 			events.zoomanim = this._animateZoom;
 		}
 

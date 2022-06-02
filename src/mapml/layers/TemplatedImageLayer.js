@@ -20,7 +20,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
     onAdd: function () {
         this._map._addZoomLimit(this);  //used to set the zoom limit of the map
         this.setZIndex(this.options.zIndex);
-        this._onMoveEnd();
+        this._onAdd();
     },
     redraw: function() {
         this._onMoveEnd();
@@ -33,26 +33,78 @@ export var TemplatedImageLayer =  L.Layer.extend({
       }
     },
 
-    _onMoveEnd: function() {
-      let mapZoom = this._map.getZoom();
-      let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
-      this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && 
-                        this.extentBounds.overlaps(mapBounds);
-      if(!(this.isVisible)){
-        this._clearLayer();
-        return;
-      }
-      var map = this._map,
-        loc = map.getPixelBounds().min.subtract(map.getPixelOrigin()),
-        size = map.getSize(),
-        src = this.getImageUrl(),
-        overlayToRemove = this._imageOverlay;
-        this._imageOverlay = M.imageOverlay(src,loc,size,0,this._container);
-          
-      this._imageOverlay.addTo(map);
-      if (overlayToRemove) {
-        this._imageOverlay.on('load error', function () {map.removeLayer(overlayToRemove);});
-      }
+    _addImage: function (bounds, zoom, loc) {
+        let map = this._map;
+        let overlayToRemove = this._imageOverlay;
+        let src = this.getImageUrl(bounds, zoom);
+        let size = map.getSize();
+        this._imageOverlay = M.imageOverlay(src, loc, size, 0, this._container);
+        this._imageOverlay._step = this._template.step;
+        this._imageOverlay.addTo(map);
+        if (overlayToRemove) {
+            this._imageOverlay.on('load error', function () {map.removeLayer(overlayToRemove);});
+        }
+    },
+
+    _scaleImage: function (bounds, zoom) {
+        let step = this._template.step;
+        let steppedZoom = Math.floor(zoom / step) * step;
+        let scale = this._map.getZoomScale(zoom, steppedZoom);
+        let translate = bounds.min.multiplyBy(scale)
+            .subtract(this._map._getNewPixelOrigin(this._map.getCenter(), zoom)).round();
+        L.DomUtil.setTransform(this._imageOverlay._image, translate, scale);
+    },
+
+    _onAdd: function () {
+        let zoom = this._map.getZoom();
+        let steppedZoom = zoom;
+        let step = this._template.step;
+
+        if (zoom % step !== 0) steppedZoom = Math.floor(zoom / step) * step;
+        let bounds = this._map.getPixelBounds(this._map.getCenter(), steppedZoom);
+        this._addImage(bounds, steppedZoom, L.point(0,0));
+        this._pixelOrigins = {};
+        this._pixelOrigins[steppedZoom] = bounds.min;
+        if(zoom !== steppedZoom) {
+            this._scaleImage(bounds, zoom);
+        }
+    },
+
+    _onMoveEnd: function(e) {
+        let mapZoom = this._map.getZoom();
+        let history = this._map.options.mapEl._history;
+        let step = this._template.step;
+        let steppedZoom =   Math.floor(mapZoom / step) * step;
+        let bounds = this._map.getPixelBounds(this._map.getCenter(), steppedZoom);
+        //Zooming from one 'step zoom level' into a lower one
+        if((step !== "1") && ((mapZoom + 1) % step === 0) &&
+            history[history.length - 1].zoom === history[history.length - 2].zoom - 1){
+            this._addImage(bounds, steppedZoom, L.point(0,0));
+            this._scaleImage(bounds, mapZoom);
+        //Zooming or panning within a 'step zoom level'
+        } else if (e && mapZoom % step !== 0) {
+            let history = this._map.options.mapEl._history;
+            if (history[history.length - 1].zoom !== history[history.length - 2].zoom) {
+                this._scaleImage(bounds, mapZoom);
+            } else {
+                let pixelOrigin = this._pixelOrigins[steppedZoom];
+                let loc = bounds.min.subtract(pixelOrigin);
+                if(this.getImageUrl(bounds, steppedZoom) === this._imageOverlay._url) return;
+                this._addImage(bounds, steppedZoom, loc);
+                this._scaleImage(bounds, mapZoom);
+            }
+        } else {
+            let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
+            this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom &&
+            this.extentBounds.overlaps(mapBounds);
+            if(!(this.isVisible)){
+                this._clearLayer();
+                return;
+            }
+            var map = this._map, loc = map.getPixelBounds().min.subtract(map.getPixelOrigin());
+            this._addImage(map.getPixelBounds(), mapZoom, loc);
+            this._pixelOrigins[mapZoom] = map.getPixelOrigin();
+        }
     },
     setZIndex: function (zIndex) {
         this.options.zIndex = zIndex;
@@ -70,14 +122,14 @@ export var TemplatedImageLayer =  L.Layer.extend({
       map._removeZoomLimit(this);
       this._container = null;
     },
-    getImageUrl: function() {
+    getImageUrl: function(pixelBounds, zoom) {
         var obj = {};
         obj[this.options.extent.width] = this._map.getSize().x;
         obj[this.options.extent.height] = this._map.getSize().y;
-        obj[this.options.extent.bottom] = this._TCRSToPCRS(this._map.getPixelBounds().max,this._map.getZoom()).y;
-        obj[this.options.extent.left] = this._TCRSToPCRS(this._map.getPixelBounds().min, this._map.getZoom()).x;
-        obj[this.options.extent.top] = this._TCRSToPCRS(this._map.getPixelBounds().min, this._map.getZoom()).y;
-        obj[this.options.extent.right] = this._TCRSToPCRS(this._map.getPixelBounds().max,this._map.getZoom()).x;
+        obj[this.options.extent.bottom] = this._TCRSToPCRS(pixelBounds.max, zoom).y;
+        obj[this.options.extent.left] = this._TCRSToPCRS(pixelBounds.min, zoom).x;
+        obj[this.options.extent.top] = this._TCRSToPCRS(pixelBounds.min, zoom).y;
+        obj[this.options.extent.right] = this._TCRSToPCRS(pixelBounds.max, zoom).x;
         // hidden and other variables that may be associated
         for (var v in this.options.extent) {
             if (["width","height","left","right","top","bottom"].indexOf(v) < 0) {
