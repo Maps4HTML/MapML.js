@@ -65,6 +65,10 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
               }
             }));
           };
+        if(map.getZoom() % this._template.step !== 0) {
+            map.fire('moveend');
+            return;
+        }
       _pullFeatureFeed(this._getfeaturesUrl(), 10)
         .then(function() { 
               map.addLayer(features);
