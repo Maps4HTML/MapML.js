@@ -63,19 +63,22 @@ export var ImageOverlay = L.ImageOverlay.extend({
 			L.DomUtil.setPosition(this._image, translate);
 		}
 	},
-        _reset: function () {
+    _reset: function (e) {
 		var image = this._image,
 		    location = this._location,
                     size = this._size,
                     angle = 0.0;
+		// TBD use the angle to establish the image rotation in CSS
 
-                // TBD use the angle to establish the image rotation in CSS
-
+		if(e && this._step > 1 &&
+			(this._overlayToRemove === undefined || this._url === this._overlayToRemove)) {
+			return;
+		}
 		L.DomUtil.setPosition(image, location);
 
 		image.style.width  = size.x + 'px';
 		image.style.height = size.y + 'px';
-        },
+    },
 	_updateOpacity: function () {
 		if (!this._map) { return; }
 

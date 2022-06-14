@@ -42,17 +42,21 @@ export var TemplatedImageLayer =  L.Layer.extend({
         this._imageOverlay._step = this._template.step;
         this._imageOverlay.addTo(map);
         if (overlayToRemove) {
+            this._imageOverlay._overlayToRemove = overlayToRemove._url;
             this._imageOverlay.on('load error', function () {map.removeLayer(overlayToRemove);});
         }
     },
 
     _scaleImage: function (bounds, zoom) {
-        let step = this._template.step;
-        let steppedZoom = Math.floor(zoom / step) * step;
-        let scale = this._map.getZoomScale(zoom, steppedZoom);
-        let translate = bounds.min.multiplyBy(scale)
-            .subtract(this._map._getNewPixelOrigin(this._map.getCenter(), zoom)).round();
-        L.DomUtil.setTransform(this._imageOverlay._image, translate, scale);
+        let obj = this;
+        setTimeout(function () {
+            let step = obj._template.step;
+            let steppedZoom = Math.floor(zoom / step) * step;
+            let scale = obj._map.getZoomScale(zoom, steppedZoom);
+            let translate = bounds.min.multiplyBy(scale)
+                .subtract(obj._map._getNewPixelOrigin(obj._map.getCenter(), zoom)).round();
+            L.DomUtil.setTransform(obj._imageOverlay._image, translate, scale);
+        });
     },
 
     _onAdd: function () {
@@ -85,6 +89,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
             this._scaleImage(bounds, mapZoom);
         //Zooming or panning within a step increment
         } else if (e && mapZoom % step !== 0) {
+            this._imageOverlay._overlayToRemove = this._imageOverlay._url;
             if (current.zoom !== previous.zoom) {
                 //Zoomed from within one step increment into another
                 if(steppedZoom !== Math.floor(previous.zoom / step) * step)
