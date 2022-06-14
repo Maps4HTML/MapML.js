@@ -73,18 +73,22 @@ export var TemplatedImageLayer =  L.Layer.extend({
     _onMoveEnd: function(e) {
         let mapZoom = this._map.getZoom();
         let history = this._map.options.mapEl._history;
+        let current = history[history.length - 1];
+        let previous = history[history.length - 2];
         let step = this._template.step;
         let steppedZoom =   Math.floor(mapZoom / step) * step;
         let bounds = this._map.getPixelBounds(this._map.getCenter(), steppedZoom);
-        //Zooming from one 'step zoom level' into a lower one
+        //Zooming from one step increment into a lower one
         if((step !== "1") && ((mapZoom + 1) % step === 0) &&
-            history[history.length - 1].zoom === history[history.length - 2].zoom - 1){
+            current.zoom === previous.zoom - 1){
             this._addImage(bounds, steppedZoom, L.point(0,0));
             this._scaleImage(bounds, mapZoom);
-        //Zooming or panning within a 'step zoom level'
+        //Zooming or panning within a step increment
         } else if (e && mapZoom % step !== 0) {
-            let history = this._map.options.mapEl._history;
-            if (history[history.length - 1].zoom !== history[history.length - 2].zoom) {
+            if (current.zoom !== previous.zoom) {
+                //Zoomed from within one step increment into another
+                if(steppedZoom !== Math.floor(previous.zoom / step) * step)
+                    this._addImage(bounds, steppedZoom, L.point(0,0));
                 this._scaleImage(bounds, mapZoom);
             } else {
                 let pixelOrigin = this._pixelOrigins[steppedZoom];
