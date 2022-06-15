@@ -92,8 +92,10 @@ export var TemplatedImageLayer =  L.Layer.extend({
             this._imageOverlay._overlayToRemove = this._imageOverlay._url;
             if (current.zoom !== previous.zoom) {
                 //Zoomed from within one step increment into another
-                if(steppedZoom !== Math.floor(previous.zoom / step) * step)
+                if(steppedZoom !== Math.floor(previous.zoom / step) * step){
                     this._addImage(bounds, steppedZoom, L.point(0,0));
+                    this._pixelOrigins[steppedZoom] = bounds.min;
+                }
                 this._scaleImage(bounds, mapZoom);
             } else {
                 let pixelOrigin = this._pixelOrigins[steppedZoom];
