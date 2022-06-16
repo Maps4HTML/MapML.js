@@ -90,12 +90,14 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
 
     _onMoveEnd: function() {
       let history = this._map.options.mapEl._history;
+      let current = history[history.length - 1];
+      let previous = history[history.length - 2];
       let step = this._template.step;
       let mapZoom = this._map.getZoom();
       let steppedZoom = mapZoom;
-      if (((step !== "1") && ((mapZoom + 1) % step === 0) &&
-          history[history.length - 1].zoom === history[history.length - 2].zoom - 1) ||
-          (history[history.length - 1].zoom === history[history.length - 2].zoom)) {
+      if (((step !== "1") && ((mapZoom + 1) % step === 0) && current.zoom === previous.zoom - 1) ||
+          (current.zoom === previous.zoom) ||
+          (Math.floor(mapZoom / step) * step !== Math.floor(previous.zoom / step) * step)) {
           steppedZoom = Math.floor(mapZoom / step) * step;
       }
       else if(mapZoom % this._template.step !== 0) return;
