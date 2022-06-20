@@ -79,6 +79,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
         let history = this._map.options.mapEl._history;
         let current = history[history.length - 1];
         let previous = history[history.length - 2];
+        if(!previous) previous = current;
         let step = this._template.step;
         let steppedZoom =   Math.floor(mapZoom / step) * step;
         let bounds = this._map.getPixelBounds(this._map.getCenter(), steppedZoom);

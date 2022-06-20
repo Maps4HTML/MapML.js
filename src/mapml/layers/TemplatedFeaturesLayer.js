@@ -66,7 +66,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
             }));
           };
         if(map.getZoom() % this._template.step !== 0) {
-            map.fire('moveend');
+            this._onMoveEnd();
             return;
         }
       _pullFeatureFeed(this._getfeaturesUrl(), 10)
@@ -92,6 +92,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       let history = this._map.options.mapEl._history;
       let current = history[history.length - 1];
       let previous = history[history.length - 2];
+      if(!previous) previous = current;
       let step = this._template.step;
       let mapZoom = this._map.getZoom();
       let steppedZoom = mapZoom;
