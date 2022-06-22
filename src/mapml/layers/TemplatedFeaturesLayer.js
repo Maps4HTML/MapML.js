@@ -91,8 +91,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
     _onMoveEnd: function() {
       let history = this._map.options.mapEl._history;
       let current = history[history.length - 1];
-      let previous = history[history.length - 2];
-      if(!previous) previous = current;
+      let previous = history[history.length - 2] ?? current;
       let step = this._template.step;
       let mapZoom = this._map.getZoom();
       let steppedZoom = mapZoom;
@@ -116,6 +115,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       
       this._features.clearLayers();
       this._removeCSS();
+      //Leave the layers cleared if the layer is not visible
       if(!(this.isVisible) && steppedZoom === mapZoom){
         this._url = "";
         return;
@@ -153,6 +153,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       _pullFeatureFeed(url, MAX_PAGES)
         .then(function() { 
           map.addLayer(features);
+          //Fires event for feature index overlay
           map.fire("templatedfeatureslayeradd");
           M.TemplatedFeaturesLayer.prototype._updateTabIndex(context);
         })
