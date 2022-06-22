@@ -96,15 +96,18 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       let step = this._template.step;
       let mapZoom = this._map.getZoom();
       let steppedZoom = mapZoom;
+      //If zooming out from one step interval into a lower one or panning, set the stepped zoom
       if (((step !== "1") && ((mapZoom + 1) % step === 0) && current.zoom === previous.zoom - 1) ||
           (current.zoom === previous.zoom) ||
           (Math.floor(mapZoom / step) * step !== Math.floor(previous.zoom / step) * step)) {
           steppedZoom = Math.floor(mapZoom / step) * step;
       }
+      //No request needed if in a step interval (unless panning)
       else if(mapZoom % this._template.step !== 0) return;
 
       let scaleBounds = this._map.getPixelBounds(this._map.getCenter(), steppedZoom);
       let url = this._getfeaturesUrl(steppedZoom, scaleBounds);
+      //No request needed if the current template url is the same as the url to request
       if(url === this._url) return;
 
       let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
