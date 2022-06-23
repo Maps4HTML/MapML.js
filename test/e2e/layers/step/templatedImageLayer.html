@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Templated Image Test</title>
+  <meta charset="utf-8" />
+  <script type="module" src="../mapml-viewer.js"></script>
+  <style>
+    html {
+      height: 100%
+    }
+
+    body,
+    map {
+      height: inherit
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+<mapml-viewer projection="CBMTILE" zoom="1" lat="53.331" lon="-91.667" controls>
+  <layer- label="Toporama" checked>
+    <map-meta name="zoom" content="min=0,max=5"></map-meta>
+    <map-extent units="CBMTILE">
+      <map-input name="z" type="zoom" value="19" step="3"></map-input>
+      <map-input name="w" type="width" ></map-input>
+      <map-input name="h" type="height" ></map-input>
+      <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="-6207743.103886206"
+                 max="3952277.216154434" ></map-input>
+      <map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" min="-3362085.3441706896"
+                 max="3952277.216154434" ></map-input>
+      <map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" min="-6207743.103886206"
+                 max="3952277.216154434" ></map-input>
+      <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="-3362085.3441706896"
+                 max="3952277.216154434" ></map-input>
+      <map-link rel="image"
+                tref="http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&amp;REQUEST=GetMap&amp;FORMAT=image/jpeg&amp;TRANSPARENT=FALSE&amp;STYLES=&amp;VERSION=1.3.0&amp;LAYERS=WMS-Toporama&amp;WIDTH={w}&amp;HEIGHT={h}&amp;CRS=EPSG:3978&amp;BBOX={xmin},{ymin},{xmax},{ymax}&amp;m4h=t" ></map-link>
+    </map-extent>
+  </layer->
+</mapml-viewer>
+</body>
+
+</html>

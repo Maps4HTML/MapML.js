@@ -65,6 +65,10 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
               }
             }));
           };
+        if(map.getZoom() % this._template.step !== 0) {
+            this._onMoveEnd();
+            return;
+        }
       _pullFeatureFeed(this._getfeaturesUrl(), 10)
         .then(function() { 
               map.addLayer(features);
@@ -76,14 +80,44 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
         this._onMoveEnd();
     },
 
+    _removeCSS: function () {
+        let toDelete = this._container.querySelectorAll("link[rel=stylesheet],style");
+        for(let i = 0; i < toDelete.length;i++){
+            let parent = toDelete[i].parentNode;
+            parent.removeChild(toDelete[i]);
+        }
+    },
+
     _onMoveEnd: function() {
+      let history = this._map.options.mapEl._history;
+      let current = history[history.length - 1];
+      let previous = history[history.length - 2] ?? current;
+      let step = this._template.step;
       let mapZoom = this._map.getZoom();
+      let steppedZoom = mapZoom;
+      //If zooming out from one step interval into a lower one or panning, set the stepped zoom
+      if (((step !== "1") && ((mapZoom + 1) % step === 0) && current.zoom === previous.zoom - 1) ||
+          (current.zoom === previous.zoom) ||
+          (Math.floor(mapZoom / step) * step !== Math.floor(previous.zoom / step) * step)) {
+          steppedZoom = Math.floor(mapZoom / step) * step;
+      }
+      //No request needed if in a step interval (unless panning)
+      else if(mapZoom % this._template.step !== 0) return;
+
+      let scaleBounds = this._map.getPixelBounds(this._map.getCenter(), steppedZoom);
+      let url = this._getfeaturesUrl(steppedZoom, scaleBounds);
+      //No request needed if the current template url is the same as the url to request
+      if(url === this._url) return;
+
       let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
       this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom && 
                         this.extentBounds.overlaps(mapBounds);
       
       this._features.clearLayers();
-      if(!(this.isVisible)){
+      this._removeCSS();
+      //Leave the layers cleared if the layer is not visible
+      if(!(this.isVisible) && steppedZoom === mapZoom){
+        this._url = "";
         return;
       }
 
@@ -114,9 +148,12 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
             }
           }));
         };
-      _pullFeatureFeed(this._getfeaturesUrl(), MAX_PAGES)
+
+      this._url = url;
+      _pullFeatureFeed(url, MAX_PAGES)
         .then(function() { 
           map.addLayer(features);
+          //Fires event for feature index overlay
           map.fire("templatedfeatureslayeradd");
           M.TemplatedFeaturesLayer.prototype._updateTabIndex(context);
         })
@@ -153,10 +190,12 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
     onRemove: function () {
       this._map.removeLayer(this._features);
     },
-    _getfeaturesUrl: function() {
+    _getfeaturesUrl: function(zoom, bounds) {
+        if(zoom === undefined) zoom = this._map.getZoom();
+        if(bounds === undefined) bounds = this._map.getPixelBounds();
         var obj = {};
         if (this.options.feature.zoom) {
-          obj[this.options.feature.zoom] = this._map.getZoom();
+          obj[this.options.feature.zoom] = zoom;
         }
         if (this.options.feature.width) {
           obj[this.options.feature.width] = this._map.getSize().x;
@@ -165,16 +204,16 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
           obj[this.options.feature.height] = this._map.getSize().y;
         }
         if (this.options.feature.bottom) {
-          obj[this.options.feature.bottom] = this._TCRSToPCRS(this._map.getPixelBounds().max,this._map.getZoom()).y;
+          obj[this.options.feature.bottom] = this._TCRSToPCRS(bounds.max, zoom).y;
         }
         if (this.options.feature.left) {
-          obj[this.options.feature.left] = this._TCRSToPCRS(this._map.getPixelBounds().min, this._map.getZoom()).x;
+          obj[this.options.feature.left] = this._TCRSToPCRS(bounds.min, zoom).x;
         }
         if (this.options.feature.top) {
-          obj[this.options.feature.top] = this._TCRSToPCRS(this._map.getPixelBounds().min, this._map.getZoom()).y;
+          obj[this.options.feature.top] = this._TCRSToPCRS(bounds.min, zoom).y;
         }
         if (this.options.feature.right) {
-          obj[this.options.feature.right] = this._TCRSToPCRS(this._map.getPixelBounds().max,this._map.getZoom()).x;
+          obj[this.options.feature.right] = this._TCRSToPCRS(bounds.max, zoom).x;
         }
         // hidden and other variables that may be associated
         for (var v in this.options.feature) {

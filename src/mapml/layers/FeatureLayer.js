@@ -66,7 +66,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
         };
       }
       return {
-        'moveend':this._removeCSS
       };
     },
 

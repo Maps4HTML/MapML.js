@@ -969,6 +969,8 @@ export var MapMLLayer = L.Layer.extend({
               if(!includesZoom && zoomInput) {
                 inputs.push(zoomInput);
               }
+              let step = zoomInput ? zoomInput.getAttribute("step") : 1;
+              if(!step || step === "0" || isNaN(step)) step = 1;
               // template has a matching input for every variable reference {varref}
               templateVars.push({
                 template:decodeURI(new URL(template, base)), 
@@ -982,6 +984,7 @@ export var MapMLLayer = L.Layer.extend({
                 projectionMatch: projectionMatch,
                 projection:serverExtent.getAttribute("units") || FALLBACK_PROJECTION,
                 tms:tms,
+                step:step,
               });
             }
           }
