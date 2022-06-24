@@ -20,9 +20,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
     },
     onAdd: function () {
       this._map._addZoomLimit(this);
-      var mapml, headers = new Headers({'Accept': 'text/mapml'});
-          var parser = new DOMParser(),
-          opacity = this.options.opacity || 1,
+      var opacity = this.options.opacity || 1,
           container = this._container,
           map = this._map;
       if (!this._features) {
@@ -45,36 +43,8 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
           }
         });
       }
-      // this was tricky...recursion alwasy breaks my brain
-      var features = this._features,
-          _pullFeatureFeed = function (url, limit) {
-            return (fetch (url,{redirect: 'follow',headers: headers})
-                    .then( function (response) {return response.text();})
-                    .then( function (text) {
-              mapml = parser.parseFromString(text,"application/xml");
-              var base = (new URL(mapml.querySelector('map-base') ? mapml.querySelector('map-base').getAttribute('href') : url)).href;
-              url = mapml.querySelector('map-link[rel=next]')? mapml.querySelector('map-link[rel=next]').getAttribute('href') : null;
-              url =  url ? (new URL(url, base)).href: null;
-              let nativeZoom = mapml.querySelector("map-meta[name=zoom]") &&
-                +M.metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value || 0;
-              let nativeCS = mapml.querySelector("map-meta[name=cs]") &&
-                      M.metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content || "GCRS";
-              features.addData(mapml, nativeCS, nativeZoom);
-              if (url && --limit) {
-                return _pullFeatureFeed(url, limit);
-              }
-            }));
-          };
-        if(map.getZoom() % this._template.step !== 0) {
-            this._onMoveEnd();
-            return;
-        }
-      _pullFeatureFeed(this._getfeaturesUrl(), 10)
-        .then(function() { 
-              map.addLayer(features);
-              map.fire('moveend');  // TODO: replace with moveend handler for layer and not entire map
-        })
-        .catch(function (error) { console.log(error);});
+
+      map.fire('moveend');  // TODO: replace with moveend handler for layer and not entire map
     },
     redraw: function() {
         this._onMoveEnd();
