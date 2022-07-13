@@ -98,50 +98,6 @@ export class MapViewer extends HTMLElement {
     // Always call super first in constructor
     super();
     this._source = this.outerHTML;
-    let tmpl = document.createElement('template');
-    tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
-    
-    let shadowRoot = this.attachShadow({mode: 'open'});
-    this._container = document.createElement('div');
-
-    let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
-    this._container.insertAdjacentHTML("beforeend", output);
-
-    // Set default styles for the map element.
-    let mapDefaultCSS = document.createElement('style');
-    mapDefaultCSS.innerHTML =
-    `:host {` +
-    `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
-    `contain: layout size;` + // Contain layout and size calculations within the map element.
-    `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
-    `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
-    `width: 300px;` +
-    `border-width: 2px;` + // Set a default border for contrast, similar to UA default for iframes.
-    `border-style: inset;` +
-    `}` +
-    `:host([frameborder="0"]) {` +
-    `border-width: 0;` +
-    `}` +
-    `:host([hidden]) {` +
-    `display: none!important;` +
-    `}` +
-    `:host .leaflet-control-container {` +
-    `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154).
-    `}`;
-    
-    // Hide all (light DOM) children of the map element.
-    let hideElementsCSS = document.createElement('style');
-    hideElementsCSS.innerHTML =
-    `mapml-viewer > * {` +
-    `display: none!important;` +
-    `}`;
-
-    shadowRoot.appendChild(mapDefaultCSS);
-    shadowRoot.appendChild(tmpl.content.cloneNode(true));
-    shadowRoot.appendChild(this._container);
-
-    this.appendChild(hideElementsCSS);
-
     this._toggleState = false;
     this.controlsListObserver = new MutationObserver((m) => {
       m.forEach((change)=>{
@@ -153,6 +109,50 @@ export class MapViewer extends HTMLElement {
   }
   connectedCallback() {
     if (this.isConnected) {
+      let tmpl = document.createElement('template');
+      tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
+
+      let shadowRoot = this.attachShadow({mode: 'open'});
+      this._container = document.createElement('div');
+
+      let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
+      this._container.insertAdjacentHTML("beforeend", output);
+
+      // Set default styles for the map element.
+      let mapDefaultCSS = document.createElement('style');
+      mapDefaultCSS.innerHTML =
+      `:host {` +
+      `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
+      `contain: layout size;` + // Contain layout and size calculations within the map element.
+      `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
+      `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
+      `width: 300px;` +
+      `border-width: 2px;` + // Set a default border for contrast, similar to UA default for iframes.
+      `border-style: inset;` +
+      `}` +
+      `:host([frameborder="0"]) {` +
+      `border-width: 0;` +
+      `}` +
+      `:host([hidden]) {` +
+      `display: none!important;` +
+      `}` +
+      `:host .leaflet-control-container {` +
+      `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154).
+      `}`;
+
+      // Hide all (light DOM) children of the map element.
+      let hideElementsCSS = document.createElement('style');
+      hideElementsCSS.innerHTML =
+      `mapml-viewer > * {` +
+      `display: none!important;` +
+      `}`;
+
+      shadowRoot.appendChild(mapDefaultCSS);
+      shadowRoot.appendChild(tmpl.content.cloneNode(true));
+      shadowRoot.appendChild(this._container);
+
+      this.appendChild(hideElementsCSS);
+
 
       // the dimension attributes win, if they're there. A map does not
       // have an intrinsic size, unlike an image or video, and so must
@@ -259,7 +259,7 @@ export class MapViewer extends HTMLElement {
         }
       }
 
-      if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl && this.layers.length > 0){
+      if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl){
         this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
         //if this is the initial setup the layers dont need to be readded, causes issues if they are
         if(!setup){
