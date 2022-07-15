@@ -4,7 +4,7 @@ import { MapLayer } from './layer.js';
 
 export class MapViewer extends HTMLElement {
   static get observedAttributes() {
-    return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls'];
+    return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls', 'controlslist'];
   }
   // see comments below regarding attributeChangedCallback vs. getter/setter
   // usage.  Effectively, the user of the element must use the property, not
@@ -20,7 +20,6 @@ export class MapViewer extends HTMLElement {
       this.setAttribute('controls', '');
     else
       this.removeAttribute('controls');
-    this._toggleControls(hasControls);
   }
   get controlslist() {
     return this.hasAttribute('controlslist') ? this.getAttribute("controlslist") : "";
@@ -98,61 +97,51 @@ export class MapViewer extends HTMLElement {
     // Always call super first in constructor
     super();
     this._source = this.outerHTML;
-    this._toggleState = false;
-    this.controlsListObserver = new MutationObserver((m) => {
-      m.forEach((change)=>{
-        if(change.type==="attributes" && change.attributeName === "controlslist")
-          this.setControls(false,false,false);
-      });
-    });
-    this.controlsListObserver.observe(this, {attributes:true});
+    let tmpl = document.createElement('template');
+    tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
+
+    let shadowRoot = this.attachShadow({mode: 'open'});
+    this._container = document.createElement('div');
+
+    let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
+    this._container.insertAdjacentHTML("beforeend", output);
+
+    // Set default styles for the map element.
+    let mapDefaultCSS = document.createElement('style');
+    mapDefaultCSS.innerHTML =
+    `:host {` +
+    `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
+    `contain: layout size;` + // Contain layout and size calculations within the map element.
+    `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
+    `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
+    `width: 300px;` +
+    `border-width: 2px;` + // Set a default border for contrast, similar to UA default for iframes.
+    `border-style: inset;` +
+    `}` +
+    `:host([frameborder="0"]) {` +
+    `border-width: 0;` +
+    `}` +
+    `:host([hidden]) {` +
+    `display: none!important;` +
+    `}` +
+    `:host .leaflet-control-container {` +
+    `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154).
+    `}`;
+    
+    shadowRoot.appendChild(mapDefaultCSS);
+    shadowRoot.appendChild(tmpl.content.cloneNode(true));
+    shadowRoot.appendChild(this._container);
+   
   }
   connectedCallback() {
     if (this.isConnected) {
-      let tmpl = document.createElement('template');
-      tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
-
-      let shadowRoot = this.attachShadow({mode: 'open'});
-      this._container = document.createElement('div');
-
-      let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
-      this._container.insertAdjacentHTML("beforeend", output);
-
-      // Set default styles for the map element.
-      let mapDefaultCSS = document.createElement('style');
-      mapDefaultCSS.innerHTML =
-      `:host {` +
-      `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
-      `contain: layout size;` + // Contain layout and size calculations within the map element.
-      `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
-      `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
-      `width: 300px;` +
-      `border-width: 2px;` + // Set a default border for contrast, similar to UA default for iframes.
-      `border-style: inset;` +
-      `}` +
-      `:host([frameborder="0"]) {` +
-      `border-width: 0;` +
-      `}` +
-      `:host([hidden]) {` +
-      `display: none!important;` +
-      `}` +
-      `:host .leaflet-control-container {` +
-      `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154).
-      `}`;
-
       // Hide all (light DOM) children of the map element.
       let hideElementsCSS = document.createElement('style');
       hideElementsCSS.innerHTML =
       `mapml-viewer > * {` +
       `display: none!important;` +
       `}`;
-
-      shadowRoot.appendChild(mapDefaultCSS);
-      shadowRoot.appendChild(tmpl.content.cloneNode(true));
-      shadowRoot.appendChild(this._container);
-
       this.appendChild(hideElementsCSS);
-
 
       // the dimension attributes win, if they're there. A map does not
       // have an intrinsic size, unlike an image or video, and so must
@@ -213,7 +202,11 @@ export class MapViewer extends HTMLElement {
           // the attribution control is not optional
           M.attributionControl(this);
 
-          this.setControls(false,false,true);
+          const toggle = (function (fromState) {
+              this._toggleControls(fromState);
+              }).bind(this);
+          // add call to event queue, so that layers have a chance to load first
+          setTimeout(toggle, 0, !this.controls);
           this._crosshair = M.crosshair().addTo(this._map);
           if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
           // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
@@ -242,54 +235,53 @@ export class MapViewer extends HTMLElement {
   adoptedCallback() {
 //    console.log('Custom map element moved to new page.');
   }
-
-  setControls(isToggle, toggleShow, setup){
-    if (this.controls && this._map) {
+  // if the map has controls, it won't after _toggleContols, and vice versa
+  _toggleControls(hasControls) {
+    if (this._map) {
       let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl"],
           options = ["nozoom", "noreload", "nofullscreen", 'nolayer'],
           mapSize = this._map.getSize().y,
           totalSize = 0;
 
-      //removes the left hand controls, if not done they will be re-added in the incorrect order
-      //better to just reset them
-      for(let i = 0 ; i<3;i++){
-        if(this[controls[i]]){
-          this._map.removeControl(this[controls[i]]);
-          delete this[controls[i]];
-        }
-      }
-
-      if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl){
-        this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
-        //if this is the initial setup the layers dont need to be readded, causes issues if they are
-        if(!setup){
-          for (var i=0;i<this.layers.length;i++) {
-            if (!this.layers[i].hidden) {
-              this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
-              this._map.on('moveend', this.layers[i]._validateDisabled,  this.layers[i]);
-              this.layers[i]._layerControl = this._layerControl;
+      if (hasControls) { // remove controls
+        for(let i = 0 ; i<4;i++){
+          if(this[controls[i]]){
+            this._map.removeControl(this[controls[i]]);
+            if (i < 3) {
+              // this is necessary for the left hand controls
+              // for some reason they don't like to be removed and re-added to
+              // the map (they don't show up when re-added)
+              delete this[controls[i]];
             }
           }
-          this._map.fire("validate");
         }
-      }
-      if (!this.controlslist.toLowerCase().includes("nozoom") && !this._zoomControl && (totalSize + 93) <= mapSize){
-        totalSize += 93;
-        this._zoomControl = L.control.zoom().addTo(this._map);
-      }
-      if (!this.controlslist.toLowerCase().includes("noreload") && !this._reloadButton && (totalSize + 49) <= mapSize){
-        totalSize += 49;
-        this._reloadButton = M.reloadButton().addTo(this._map);
-      }
-      if (!this.controlslist.toLowerCase().includes("nofullscreen") && !this._fullScreenControl && (totalSize + 49) <= mapSize){
-        totalSize += 49;
-        this._fullScreenControl = M.fullscreenButton().addTo(this._map);
-      }
-      //removes any control layers that are not needed, either by the toggling or by the controlslist attribute
-      for(let i in options){
-        if(this[controls[i]] && (this.controlslist.toLowerCase().includes(options[i]) || (isToggle && !toggleShow ))){
-          this._map.removeControl(this[controls[i]]);
-          delete this[controls[i]];
+      } else { // show controls
+        if (!this.controlslist.toLowerCase().includes("nolayer")) {
+          const lcLayers = this?._layerControl?._layers?.length ?? 0;
+          this._layerControl = this._layerControl ?? M.mapMlLayerControl(null,{"collapsed": true, mapEl: this});
+          if(lcLayers === 0 && this.layers.length > 0) { 
+            for (var i=0;i<this.layers.length;i++) {
+              if (!this.layers[i].hidden) {
+                this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
+                this._map.on('moveend', this.layers[i]._validateDisabled,  this.layers[i]);
+                this.layers[i]._layerControl = this._layerControl;
+              }
+            }
+            this._map.fire("validate");
+          }
+          this._layerControl.addTo(this._map);
+        }
+        if (!this.controlslist.toLowerCase().includes("nozoom") && !this._zoomControl && (totalSize + 93) <= mapSize){
+          totalSize += 93;
+          this._zoomControl = L.control.zoom().addTo(this._map);
+        }
+        if (!this.controlslist.toLowerCase().includes("noreload") && !this._reloadButton && (totalSize + 49) <= mapSize){
+          totalSize += 49;
+          this._reloadButton = M.reloadButton().addTo(this._map);
+        }
+        if (!this.controlslist.toLowerCase().includes("nofullscreen") && !this._fullScreenControl && (totalSize + 49) <= mapSize){
+          totalSize += 49;
+          this._fullScreenControl = M.fullscreenButton().addTo(this._map);
         }
       }
     }
@@ -302,16 +294,25 @@ export class MapViewer extends HTMLElement {
     // note that the example is misleading, since the user can't use
     // setAttribute or removeAttribute to set the property, they need to use
     // the property directly in their API usage, which kinda sucks
-    /*
-  const hasValue = newValue !== null;
-  switch (name) {
-    case 'checked':
-      // Note the attributeChangedCallback is only handling the *side effects*
-      // of setting the attribute.
-      this.setAttribute('aria-checked', hasValue);
-      break;
-    ...
-  }     */
+    const hasValue = newValue !== null;
+    const hasOldValue = oldValue !== null;
+    switch (name) {
+        case 'controls':
+          const hasControls = hasOldValue;
+          // Note the attributeChangedCallback is only handling the *side effects*
+          // of setting the attribute.
+          // acording to https://web.dev/custom-elements-best-practices/#attributes-and-properties
+          // this should only be used for **side effects**
+          // is showing the controls a side effect?
+          this._toggleControls(hasControls);
+          break;
+        case 'controlslist':
+          this._toggleControls(this.controls);
+          this._toggleControls(!this.controls);
+          break;
+          
+        
+    }
   }
   _dropHandler(event) {
     event.preventDefault();
@@ -479,13 +480,6 @@ export class MapViewer extends HTMLElement {
           {target: this}}));
       }, this);
   }
-  _toggleControls() {
-    if (this._map) {
-      this.setControls(true, this._toggleState, false);
-      this._toggleState = !this._toggleState;
-    }
-  }
-
   toggleDebug(){
     if(this._debug){
       this._debug.remove();

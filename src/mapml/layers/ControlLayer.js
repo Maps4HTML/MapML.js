@@ -28,10 +28,8 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         L.DomEvent.on(this._container, 'keydown', this._focusFirstLayer, this._container);
         this._update();
         //this._validateExtents();
-        if(this._layers.length < 1 && !this._map._showControls){
+        if(this._layers.length < 1){
           this._container.setAttribute("hidden","");
-        } else{
-          this._map._showControls = true;
         }
         return this._container;
     },
@@ -60,7 +58,6 @@ export var MapMLLayerControl = L.Control.Layers.extend({
       }
       if(this._layers.length > 0){
         this._container.removeAttribute("hidden");
-        this._map._showControls = true;
       }
       return (this._map) ? this._update() : this;
     },
