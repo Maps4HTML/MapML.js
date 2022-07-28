@@ -53,17 +53,7 @@ export class WebMap extends HTMLMapElement {
   set projection(val) {
     if(val && M[val]){
       this.setAttribute('projection', val);
-      if (this._map && this._map.options.projection !== val){
-        this._map.options.crs = M[val];
-        this._map.options.projection = val;
-        for(let layer of this.querySelectorAll("layer-")){
-          layer.removeAttribute("disabled");
-          let reAttach = this.removeChild(layer);
-          this.appendChild(reAttach);
-        }
-        if(this._debug) for(let i = 0; i<2;i++) this.toggleDebug();
-      } else this.dispatchEvent(new CustomEvent('createmap'));
-    } else throw new Error("Undefined Projection");
+    }
   }
   get zoom() {
     return this.hasAttribute("zoom") ? this.getAttribute("zoom") : 0;
@@ -342,19 +332,37 @@ export class WebMap extends HTMLMapElement {
   const hasValue = newValue !== null;
     const hasOldValue = oldValue !== null;
   switch (name) {
-        case 'controls':
-          const hasControls = hasOldValue;
-          // Note the attributeChangedCallback is only handling the *side effects*
-          // of setting the attribute.
-          // acording to https://web.dev/custom-elements-best-practices/#attributes-and-properties
-          // this should only be used for **side effects**
-          // is showing the controls a side effect?
-          this._toggleControls(hasControls);
-          break;
-        case 'controlslist':
-          this._toggleControls(this.controls);
-          this._toggleControls(!this.controls);
-          break;
+    case 'controls':
+      const hasControls = hasOldValue;
+      // Note the attributeChangedCallback is only handling the *side effects*
+      // of setting the attribute.
+      // acording to https://web.dev/custom-elements-best-practices/#attributes-and-properties
+      // this should only be used for **side effects**
+      // is showing the controls a side effect?
+      this._toggleControls(hasControls);
+      break;
+    case 'controlslist':
+      this._toggleControls(this.controls);
+      this._toggleControls(!this.controls);
+      break;
+    case 'projection':
+      if(hasValue && M[newValue]){
+        if (this._map && this._map.options.projection !== newValue){
+          this._map.options.crs = M[newValue];
+          this._map.options.projection = newValue;
+          for(let layer of this.querySelectorAll("layer-")){
+            layer.removeAttribute("disabled");
+            let reAttach = this.removeChild(layer);
+            this.appendChild(reAttach);
+          }
+          if(this._debug) for(let i = 0; i<2;i++) this.toggleDebug();
+        } else {
+          this.dispatchEvent(new CustomEvent('createmap'));
+        }
+      } else {
+        throw new Error("Undefined Projection");
+      }
+      break;
     }
   }
   _dropHandler(event) {
