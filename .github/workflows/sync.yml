@@ -62,7 +62,7 @@ jobs:
       with:
         source_folder: 'dist'
         destination_repo: 'Maps4HTML/mapml-extension'
-        destination_folder: 'test/dist'
+        destination_folder: 'src/dist'
         user_email: 'peter.rushforth@gmail.com'
         user_name: 'prushforth'
         commit_msg: '[AUTO] Sync MapML Build'
