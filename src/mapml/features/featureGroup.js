@@ -65,22 +65,32 @@ export var FeatureGroup = L.FeatureGroup.extend({
       // Up/left arrow keys replicate shift-tabbing through the feature index
       if(e.keyCode === 37 || e.keyCode === 38) {
         L.DomEvent.stop(e);
-        if(index !== 0){
-          this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", -1);
+        this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", -1);
+        if(index === 0) {
+          this._map.featureIndex.inBoundFeatures[this._map.featureIndex.inBoundFeatures.length - 1].path.setAttribute("tabindex", 0);
+          this._map.featureIndex.inBoundFeatures[this._map.featureIndex.inBoundFeatures.length - 1].path.focus();
+          this._map.featureIndex.currentIndex = this._map.featureIndex.inBoundFeatures.length - 1;
+        } else {
           this._map.featureIndex.inBoundFeatures[index - 1].path.setAttribute("tabindex", 0);
           this._map.featureIndex.inBoundFeatures[index - 1].path.focus();
           this._map.featureIndex.currentIndex--;
         }
       } else if (e.keyCode === 39 || e.keyCode === 40) {
         L.DomEvent.stop(e);
-        if(index !== this._map.featureIndex.inBoundFeatures.length - 1) {
-          this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", -1);
+        this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", -1);
+        if(index === this._map.featureIndex.inBoundFeatures.length - 1) {
+          this._map.featureIndex.inBoundFeatures[0].path.setAttribute("tabindex", 0);
+          this._map.featureIndex.inBoundFeatures[0].path.focus();
+          this._map.featureIndex.currentIndex = 0;
+        } else {
           this._map.featureIndex.inBoundFeatures[index + 1].path.setAttribute("tabindex", 0);
           this._map.featureIndex.inBoundFeatures[index + 1].path.focus();
           this._map.featureIndex.currentIndex++;
         }
-      } else if(e.keyCode === 27 && this._map.options.mapEl.shadowRoot.activeElement.nodeName === "g"){
-        this._map.featureIndex.currentIndex = 0;
+      } else if(e.keyCode === 27){
+        let shadowRoot = this._map.options.mapEl.shadowRoot ? this._map.options.mapEl.shadowRoot :
+            this._map.options.mapEl.querySelector(".mapml-web-map").shadowRoot;
+        if(shadowRoot.activeElement.nodeName !== "g") return;
         this._map._container.focus();
       }
     } else if (!([9, 16, 13, 27, 37, 38, 39, 40, 49, 50, 51, 52, 53, 54, 55].includes(e.keyCode))){
