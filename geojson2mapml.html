@@ -49,8 +49,8 @@ function properties2Table(json) {
 // Takes GeoJSON Objects and returns a <layer-> Element
 // geoJsonObj2MapMl: GeoJSON-OBJ <layer-> -> <layer->
 function geoJsonObj2MapMl(obj, MapML = null) {
-    let geometryType = ["Point", "LineString", "Polygon", "MultiPoint", "MultiLinestring", "MultiPolygon", "GeometryCollection"];
-    let jsonType = obj.type;
+    let geometryType = ["POINT", "LINESTRING", "POLYGON", "MULTIPOINT", "MULTILINESTRING", "MULTIPOLYGON", "GEOMETRYCOLLECTION"];
+    let jsonType = obj.type.toUpperCase();
     let layer = MapML;
     let out = "";
 
@@ -87,6 +87,9 @@ function geoJsonObj2MapMl(obj, MapML = null) {
     let xmlStringMultiPolygon = "<map-multipolygon></map-multipolygon>";
     let multiPolygon = parser.parseFromString(xmlStringMultiPolygon, "text/html");
 
+    let xmlStringgeometrycollection = "<map-geometrycollection></map-geometrycollection>";
+    let geometrycollection = parser.parseFromString(xmlStringgeometrycollection, "text/html");
+
     let xmlStringFeature = "<map-feature class='child' zoom='2'><map-featurecaption></map-featurecaption><map-geometry></map-geometry><map-properties></map-properties></map-feature>";
     let feature = parser.parseFromString(xmlStringFeature, "text/html");
 
@@ -95,13 +98,13 @@ function geoJsonObj2MapMl(obj, MapML = null) {
     let coords = parser.parseFromString(xmlStringCoords, "text/html");
     
     //console.log(layer);
-    if (jsonType == "FeatureCollection") {
+    if (jsonType === "FEATURECOLLECTION") {
         let features = obj.features;
-        for (i=0;i<features.length;i++) {
-            //console.log(features[i]);
-            geoJsonObj2MapMl(features[i], layer);
+        //console.log("Features length - " + features.length);
+        for (l=0;l<features.length;l++) {
+            geoJsonObj2MapMl(features[l], layer);
         }
-    } else if (jsonType == "Feature") {
+    } else if (jsonType === "FEATURE") {
 
         let clone_feature = feature.cloneNode(true);
         let curr_feature = clone_feature.querySelector('map-feature');
@@ -122,7 +125,7 @@ function geoJsonObj2MapMl(obj, MapML = null) {
     } else if (geometryType.includes(jsonType)) {
         console.log("Geometry Type - " + jsonType);
         switch(jsonType){
-            case "Point": // ---------------------------------------------------------------------------
+            case "POINT": // ---------------------------------------------------------------------------
                 out = obj.coordinates[0] + " " + obj.coordinates[1];
                 
                 // Create Point element
@@ -139,7 +142,7 @@ function geoJsonObj2MapMl(obj, MapML = null) {
                 //console.log(clone_point);
                 return clone_point;
 
-            case "LineString": // ---------------------------------------------------------------------------
+            case "LINESTRING": // ---------------------------------------------------------------------------
                 let clone_linestring = linestring.cloneNode(true);
                 let linestring_coordindates = clone_linestring.querySelector("map-coordinates");
                 
@@ -153,7 +156,7 @@ function geoJsonObj2MapMl(obj, MapML = null) {
                 //console.log(clone_linestring.querySelector('map-linestring'));
                 return (clone_linestring.querySelector('map-linestring'));
 
-            case "Polygon": // ---------------------------------------------------------------------------
+            case "POLYGON": // ---------------------------------------------------------------------------
                 let clone_polygon = polygon.cloneNode(true);
                 clone_polygon = clone_polygon.querySelector("map-polygon");
                 
@@ -176,7 +179,7 @@ function geoJsonObj2MapMl(obj, MapML = null) {
                 //console.log(clone_polygon);
                 return clone_polygon;
 
-            case "MultiPoint": // ---------------------------------------------------------------------------
+            case "MULTIPOINT": // ---------------------------------------------------------------------------
                 out = "";
                 // Create multipoint element
                 let clone_multipoint = multiPoint.cloneNode(true);
@@ -188,7 +191,7 @@ function geoJsonObj2MapMl(obj, MapML = null) {
                 clone_multipoint.querySelector('map-coordinates').innerHTML = out;
                 return clone_multipoint;
 
-            case "MultiLinestring": // ---------------------------------------------------------------------------
+            case "MULTILINESTRING": // ---------------------------------------------------------------------------
                 let clone_multilinestring = multilinestring.cloneNode(true);
                 clone_multilinestring = clone_multilinestring.querySelector("map-multilinestring");
 
@@ -204,7 +207,7 @@ function geoJsonObj2MapMl(obj, MapML = null) {
                 }
                 return clone_multilinestring;
 
-            case "MultiPolygon": // ---------------------------------------------------------------------------
+            case "MULTIPOLYGON": // ---------------------------------------------------------------------------
                 let m = multiPolygon.cloneNode(true);
                 m = m.querySelector('map-multiPolygon');
 
@@ -232,9 +235,15 @@ function geoJsonObj2MapMl(obj, MapML = null) {
                     m.appendChild(clone_polygon);
                 }
                 return m;
-            case "GeometryCollection": // ---------------------------------------------------------------------------
-                // TO DO
-                break;
+            case "GEOMETRYCOLLECTION": // ---------------------------------------------------------------------------
+                let g = geometrycollection.cloneNode(true);
+                g = g.querySelector('map-geometrycollection');
+                //console.log(obj.geometries);
+                for (i=0;i<obj.geometries.length;i++) {
+                    let fg = geoJsonObj2MapMl(obj.geometries[i], 1);
+                    g.appendChild(fg);
+                }
+                return g;
         }
     }
     return layer;
@@ -248,6 +257,9 @@ console.log(geoJsonObj2MapMl(geojson).querySelector('layer-'));
 //console.log(geoJsonObj2MapMl(Canada)); // MultiPolygon
 //console.log(geoJsonObj2MapMl(geojsonMultiPoint));
 //console.log(geoJsonObj2MapMl(geojsonMultiLineString));
+//console.log(geoJsonObj2MapMl(geojsonGeometryCollection));
+//console.log(geoJsonObj2MapMl(Lake).querySelector('layer-'));
+//console.log(geoJsonObj2MapMl(Coastline).querySelector('layer-'));
 
 
 
