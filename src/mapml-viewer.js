@@ -192,11 +192,9 @@ export class MapViewer extends HTMLElement {
           // the attribution control is not optional
           M.attributionControl(this);
 
-          const toggle = (function (fromState) {
-              this._toggleControls(fromState);
-              }).bind(this);
-          // add call to event queue, so that layers have a chance to load first
-          setTimeout(toggle, 0, !this.controls);
+          if (this.controls) {
+            this._addControls(true);
+          }
           this._crosshair = M.crosshair().addTo(this._map);
           if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
           // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
@@ -229,9 +227,7 @@ export class MapViewer extends HTMLElement {
   _toggleControls(hasControls) {
     if (this._map) {
       let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl"],
-          options = ["nozoom", "noreload", "nofullscreen", 'nolayer'],
-          mapSize = this._map.getSize().y,
-          totalSize = 0;
+          options = ["nozoom", "noreload", "nofullscreen", 'nolayer'];
 
       if (hasControls) { // remove controls
         for(let i = 0 ; i<4;i++){
@@ -246,34 +242,38 @@ export class MapViewer extends HTMLElement {
           }
         }
       } else { // show controls
-        if (!this.controlslist.toLowerCase().includes("nolayer")) {
-          const lcLayers = this?._layerControl?._layers?.length ?? 0;
-          this._layerControl = this._layerControl ?? M.mapMlLayerControl(null,{"collapsed": true, mapEl: this});
-          if(lcLayers === 0 && this.layers.length > 0) { 
-            for (var i=0;i<this.layers.length;i++) {
-              if (!this.layers[i].hidden) {
-                this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
-                this._map.on('moveend', this.layers[i]._validateDisabled,  this.layers[i]);
-                this.layers[i]._layerControl = this._layerControl;
-              }
-            }
-            this._map.fire("validate");
-          }
-          this._layerControl.addTo(this._map);
-        }
-        if (!this.controlslist.toLowerCase().includes("nozoom") && !this._zoomControl && (totalSize + 93) <= mapSize){
-          totalSize += 93;
-          this._zoomControl = L.control.zoom().addTo(this._map);
-        }
-        if (!this.controlslist.toLowerCase().includes("noreload") && !this._reloadButton && (totalSize + 49) <= mapSize){
-          totalSize += 49;
-          this._reloadButton = M.reloadButton().addTo(this._map);
-        }
-        if (!this.controlslist.toLowerCase().includes("nofullscreen") && !this._fullScreenControl && (totalSize + 49) <= mapSize){
-          totalSize += 49;
-          this._fullScreenControl = M.fullscreenButton().addTo(this._map);
-        }
+        this._addControls(false);
       }
+    }
+  }
+  _addControls(setup) {
+    let mapSize = this._map.getSize().y,
+        totalSize = 0;
+    if (!this.controlslist.toLowerCase().includes("nolayer")) {
+      this._layerControl = this._layerControl ?? M.mapMlLayerControl(null,{"collapsed": true, mapEl: this});
+      if(!setup && this.layers.length > 0) { 
+        for (var i=0;i<this.layers.length;i++) {
+          if (!this.layers[i].hidden) {
+            this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
+            this._map.on('moveend', this.layers[i]._validateDisabled,  this.layers[i]);
+            this.layers[i]._layerControl = this._layerControl;
+          }
+        }
+            this._map.fire("validate");
+      }
+      this._layerControl.addTo(this._map);
+    }
+    if (!this.controlslist.toLowerCase().includes("nozoom") && !this._zoomControl && (totalSize + 93) <= mapSize){
+      totalSize += 93;
+      this._zoomControl = L.control.zoom().addTo(this._map);
+    }
+    if (!this.controlslist.toLowerCase().includes("noreload") && !this._reloadButton && (totalSize + 49) <= mapSize){
+      totalSize += 49;
+      this._reloadButton = M.reloadButton().addTo(this._map);
+    }
+    if (!this.controlslist.toLowerCase().includes("nofullscreen") && !this._fullScreenControl && (totalSize + 49) <= mapSize){
+      totalSize += 49;
+      this._fullScreenControl = M.fullscreenButton().addTo(this._map);
     }
   }
   attributeChangedCallback(name, oldValue, newValue) {

@@ -152,7 +152,7 @@ test.describe("Playwright Map Element Tests", () => {
 
   });
 
-  test("Layer deselected then reselected 1", async () => {
+  test("Layer checked off should remove its extent from debug view", async () => {
     await page.hover(".leaflet-top.leaflet-right");
     await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span");
     const feature = await page.$eval(
@@ -162,7 +162,7 @@ test.describe("Playwright Map Element Tests", () => {
     expect(feature).toEqual(5);
   });
 
-  test("Layer deselected then reselected 2", async () => {
+  test("Layer checked on should add its extent to debug view", async () => {
     await page.hover(".leaflet-top.leaflet-right");
     await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span");
     const feature = await page.$eval(

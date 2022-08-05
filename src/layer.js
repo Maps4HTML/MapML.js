@@ -225,7 +225,6 @@ export class MapLayer extends HTMLElement {
           this.removeAttribute("disabled");
           this.disabled = false;
         }
-        map.fire("validate");
       }
     }, 0);
   }
