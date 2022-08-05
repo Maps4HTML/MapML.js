@@ -1,20 +1,26 @@
-describe("Playwright Checked Attribute Tests", () => {
-  beforeAll(async () => {
-    await page.goto(PATH + "mapml-viewer.html");
+import { test, expect, chromium } from '@playwright/test';
+
+test.describe("Playwright Checked Attribute Tests", () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    await page.goto("mapml-viewer.html");
   });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await context.close();
   });
 
   test("Check attribute removed", async () => {
     await page.$eval("body > mapml-viewer > layer-",
       (layer) => layer.removeAttribute("checked"));
-    await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > a');
+    await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right');
     const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div > label > input",
       (controller) => controller.checked);
 
-    await expect(layerController).toEqual(false);
+    expect(layerController).toEqual(false);
   });
   test("Check attribute added", async () => {
     await page.$eval("body > mapml-viewer > layer-",
@@ -22,10 +28,10 @@ describe("Playwright Checked Attribute Tests", () => {
     const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div > label > input",
       (controller) => controller.checked);
 
-    await expect(layerController).toEqual(true);
+    expect(layerController).toEqual(true);
   });
 
-  describe(
+  test.describe(
     "Hidden attribute tests", () => {
       test("Control panel hidden when no layers/all layers hidden", async () => {
         await page.$eval("body > mapml-viewer > layer-",
@@ -34,7 +40,7 @@ describe("Playwright Checked Attribute Tests", () => {
           "css=body > mapml-viewer:nth-child(1) >> css=div > div.leaflet-control-container >> .leaflet-control-layers.leaflet-control",
           (elem) => elem.hasAttribute("hidden")
         );
-        await expect(controlsHidden).toEqual(true);
+        expect(controlsHidden).toEqual(true);
       });
       test("Control panel unhidden when at least one layer with no hidden attribute", async () => {
         await page.$eval("body > mapml-viewer > layer-",
@@ -45,7 +51,7 @@ describe("Playwright Checked Attribute Tests", () => {
           "css=body > mapml-viewer:nth-child(1) >> css=div > div.leaflet-control-container >> .leaflet-control-layers.leaflet-control",
           (elem) => elem.hasAttribute("hidden")
         );
-        await expect(controlsHidden).toEqual(true);
+        expect(controlsHidden).toEqual(true);
         // so far so good
         await page.$eval("body > mapml-viewer > layer-",
           (layer) => layer.removeAttribute("hidden"));
@@ -53,7 +59,7 @@ describe("Playwright Checked Attribute Tests", () => {
           "css=body > mapml-viewer:nth-child(1) >> css=div > div.leaflet-control-container >> .leaflet-control-layers.leaflet-control",
           (elem) => elem.hasAttribute("hidden")
         );
-        await expect(controlsHidden).toEqual(false);
+        expect(controlsHidden).toEqual(false);
       });
       //        test("[" + browserType + "]" + " Initial map element extent", async () => {
       //          await page.$eval("body > mapml-viewer > layer-",
@@ -66,7 +72,7 @@ describe("Playwright Checked Attribute Tests", () => {
     }
   );
 
-  describe("Disabled attributes test", () => {
+  test.describe("Disabled attributes test", () => {
       test("Setting disabled, attribute reset on update/move", async () => {
         await page.$eval("body > mapml-viewer > layer-",
           (layer) => layer.setAttribute("disabled", ""));
@@ -76,25 +82,25 @@ describe("Playwright Checked Attribute Tests", () => {
 
         let disabled = await page.$eval("body > mapml-viewer > layer-",
           (layer) => layer.hasAttribute("disabled", ""));
-        await expect(disabled).toEqual(false);
+        expect(disabled).toEqual(false);
       });
     }
   );
 
-  describe("Opacity setters & getters test", () => {
+  test.describe("Opacity setters & getters test", () => {
       test("Setting opacity", async () => {
         await page.reload();
         await page.$eval("body > mapml-viewer > layer-",
           (layer) => layer.opacity = 0.4);
         let value = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div:nth-child(2) > details > input[type=range]",
           (input) => input.value);
-        await expect(value).toEqual("0.4");
+        expect(value).toEqual("0.4");
       });
 
       test("Getting appropriate opacity", async () => {
         let value = await page.$eval("body > mapml-viewer > layer-",
           (layer) => layer.opacity);
-        await expect(value).toEqual("0.4");
+        expect(value).toEqual("0.4");
       });
     }
   );

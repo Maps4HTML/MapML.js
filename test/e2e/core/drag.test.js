@@ -1,11 +1,16 @@
-let page;
-describe("UI Drag&Drop Test", () => {
-  beforeEach(async () => {
+import { test, expect, chromium } from '@playwright/test';
+
+test.describe("UI Drag&Drop Test", () => {
+  let page;
+  let context;
+  test.beforeEach(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
     page = await context.newPage();
-    await page.goto(PATH + "drag.html");
+    await page.goto("drag.html");
   });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await context.close();
   });
 
@@ -14,33 +19,33 @@ describe("UI Drag&Drop Test", () => {
       new DataTransfer().setData("text/uri-list", "http://example.com")
     );
     await page.dispatchEvent(".leaflet-control-zoom-in", "dragstart", {
-      dataTransfer,
+      dataTransfer
     });
 
-    await page.dispatchEvent("xpath=//html/body/map", "drop", {
-      dataTransfer,
+    await page.dispatchEvent("map", "drop", {
+      dataTransfer
     });
     await page.hover(".leaflet-top.leaflet-right");
-    let vars = await page.$$("xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset");
-    await expect(vars.length).toBe(3);
+    let vars = await page.$$(".leaflet-control-layers-overlays > fieldset");
+    expect(vars.length).toBe(3);
   });
 
   test("Drag and drop of layers", async () => {
     await page.hover(".leaflet-top.leaflet-right");
-    let control = await page.$("xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1)");
+    let control = await page.$(".leaflet-control-layers-overlays > fieldset:nth-child(1)");
     let controlBBox = await control.boundingBox();
     await page.mouse.move(controlBBox.x + controlBBox.width / 2, controlBBox.y + controlBBox.height / 2);
     await page.mouse.down();
     await page.mouse.move(50, 50);
     await page.mouse.up();
     await page.hover(".leaflet-top.leaflet-right");
-    let vars = await page.$$("xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset");
-    await expect(vars.length).toBe(3);
+    let vars = await page.$$(".leaflet-control-layers-overlays > fieldset");
+    expect(vars.length).toBe(3);
   });
 
   test("Moving layer down one in control overlay", async () => {
     await page.hover(".leaflet-top.leaflet-right");
-    let control = await page.$("xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1)");
+    let control = await page.$(".leaflet-control-layers-overlays > fieldset:nth-child(1)");
     let controlBBox = await control.boundingBox();
     await page.mouse.move(controlBBox.x + controlBBox.width / 2, controlBBox.y + controlBBox.height / 2);
     await page.mouse.down();
@@ -49,11 +54,11 @@ describe("UI Drag&Drop Test", () => {
     await page.hover(".leaflet-top.leaflet-right");
 
     const controlText = await page.$eval(
-      "xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > div:nth-child(1) > label > span",
+      ".leaflet-control-layers-overlays > fieldset:nth-child(2) > div:nth-child(1) > label > span",
       (span) => span.innerText
     );
     const layerIndex = await page.$eval(
-      "xpath=//html/body/map >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1)",
+      ".leaflet-pane.leaflet-overlay-pane > div:nth-child(1)",
       (div) => div.style.zIndex
     );
     const domLayer = await page.$eval(
@@ -61,14 +66,14 @@ describe("UI Drag&Drop Test", () => {
       (div) => div.label
     );
 
-    await expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
-    await expect(layerIndex).toEqual("2");
-    await expect(controlText).toBe("Canada Base Map - Transportation (CBMT)");
+    expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
+    expect(layerIndex).toEqual("2");
+    expect(controlText).toBe("Canada Base Map - Transportation (CBMT)");
   });
 
   test("Moving layer up one in control overlay", async () => {
     await page.hover(".leaflet-top.leaflet-right");
-    let control = await page.$("xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2)");
+    let control = await page.$(".leaflet-control-layers-overlays > fieldset:nth-child(2)");
     let controlBBox = await control.boundingBox();
     await page.mouse.move(controlBBox.x + controlBBox.width / 2, controlBBox.y + controlBBox.height / 2);
     await page.mouse.down();
@@ -77,21 +82,21 @@ describe("UI Drag&Drop Test", () => {
     await page.hover(".leaflet-top.leaflet-right");
 
     const controlText = await page.$eval(
-      "xpath=//html/body/map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span",
+      ".leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span",
       (span) => span.innerText
     );
     const layerIndex = await page.$eval(
-      "xpath=//html/body/map >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2)",
+      ".leaflet-overlay-pane > div:nth-child(2)",
       (div) => div.style.zIndex
     );
     const domLayer = await page.$eval(
-      "body > map > layer-:nth-child(3)",
+      "map > layer-:nth-child(3)",
       (div) => div.label
     );
 
-    await expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
-    await expect(layerIndex).toEqual("1");
-    await expect(controlText).toBe("Static MapML With Tiles");
+    expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
+    expect(layerIndex).toEqual("1");
+    expect(controlText).toBe("Static MapML With Tiles");
   });
 
 });

@@ -1,10 +1,17 @@
-const playwright = require("playwright");
-describe("Playwright Mismatched Layers Test", () => {
-  beforeEach(async () => {
-    await page.goto(PATH);
+import { test, expect, chromium } from '@playwright/test';
+
+test.describe("Playwright Mismatched Layers Test", () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+  });
+  test.beforeEach(async () => {
+    page = await context.newPage();
+    await page.goto("empty.html");
   });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await context.close();
   });
 
@@ -29,14 +36,14 @@ describe("Playwright Mismatched Layers Test", () => {
             </html>
         `);
     await page.waitForLoadState('networkidle');
-    await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > a');
+    await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right');
     const cbmtileLayer = await page.$eval("body > map > layer-:nth-child(1)",
       (controller) => controller.hasAttribute('disabled'));
     const osmtileLayer = await page.$eval("#checkMe",
-      (controller) => controller.hasAttribute('disabled'))
+      (controller) => controller.hasAttribute('disabled'));
 
-    await expect(cbmtileLayer).toEqual(false);
-    await expect(osmtileLayer).toEqual(true);
+    expect(cbmtileLayer).toEqual(false);
+    expect(osmtileLayer).toEqual(true);
   });
 
   test("OSMTILE Map with CBMTILE layer", async () => {
@@ -60,15 +67,15 @@ describe("Playwright Mismatched Layers Test", () => {
             </html>
         `);
     await page.waitForLoadState('networkidle');
-    await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > a');
+    await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right');
     const cbmtileLayer = await page.$eval("#checkMe",
       (controller) => controller.hasAttribute('disabled'));
     const osmtileLayer = await page.$eval("body > mapml-viewer > layer-:nth-child(2)",
-      (controller) => controller.hasAttribute('disabled'))
+      (controller) => controller.hasAttribute('disabled'));
 
     await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
     await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span",
-      { button: "right" });
+      { button: "right", force: true });
 
     const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
     const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
@@ -76,9 +83,9 @@ describe("Playwright Mismatched Layers Test", () => {
 
     const menuDisplay = await (await page.evaluateHandle(elem => elem.style.display, resultHandle)).jsonValue();
 
-    await expect(menuDisplay).toEqual("");
+    expect(menuDisplay).toEqual("");
 
-    await expect(cbmtileLayer).toEqual(true);
-    await expect(osmtileLayer).toEqual(false);
+    expect(cbmtileLayer).toEqual(true);
+    expect(osmtileLayer).toEqual(false);
   });
 });

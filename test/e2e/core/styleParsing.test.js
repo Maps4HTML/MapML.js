@@ -1,9 +1,15 @@
-describe("Style Parsed and Implemented Test", () => {
-  beforeAll(async () => {
-    await page.goto(PATH + "styleParsing.html");
+import { test, expect, chromium } from '@playwright/test';
+
+test.describe("Style Parsed and Implemented Test", () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    await page.goto("styleParsing.html");
   });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await context.close();
   });
 

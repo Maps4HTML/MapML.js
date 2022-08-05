@@ -1,9 +1,15 @@
-describe("Playwright zoomin zoomout Projection Change Tests", () => {
-  beforeAll(async () => {
-    await page.goto(PATH + "zoomChangeProjection.html");
+import { test, expect, chromium } from '@playwright/test';
+
+test.describe("Playwright zoomin zoomout Projection Change Tests", () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    await page.goto("zoomChangeProjection.html");
   });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await context.close();
   });
 
@@ -18,8 +24,8 @@ describe("Playwright zoomin zoomout Projection Change Tests", () => {
       'body > map > layer-',
       (layer) => !layer.hasAttribute('disabled')
     )
-    await expect(newProjection).toEqual("OSMTILE");
-    await expect(layerValid).toEqual(true);
+    expect(newProjection).toEqual("OSMTILE");
+    expect(layerValid).toEqual(true);
   });
 
   test("zoomout link changes projections", async () => {
@@ -33,7 +39,7 @@ describe("Playwright zoomin zoomout Projection Change Tests", () => {
       'body > map > layer-',
       (layer) => !layer.hasAttribute('disabled')
     )
-    await expect(newProjection).toEqual("CBMTILE");
-    await expect(layerValid).toEqual(true);
+    expect(newProjection).toEqual("CBMTILE");
+    expect(layerValid).toEqual(true);
   });
 });

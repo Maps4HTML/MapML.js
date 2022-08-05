@@ -1,11 +1,17 @@
-describe("Playwright Client Tile Tests", () => {
-  beforeAll(async () => {
-    await page.goto(PATH + "clientTemplatedTileLayer.html");
-  });
+import { test, expect, chromium } from '@playwright/test';
 
-  afterAll(async function () {
-    await browser.close();
-  });
+test.describe("Playwright Client Tile Tests", () => {
+    let page;
+    let context;
+    test.beforeAll(async function() {
+      context = await chromium.launchPersistentContext('');
+      page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+      await page.goto("clientTemplatedTileLayer.html");
+    });
+
+    test.afterAll(async function () {
+      await context.close();
+    });
 
   test("Custom Tiles Loaded In, Accurate Coordinates", async () => {
     const one = await page.$eval(
@@ -41,14 +47,14 @@ describe("Playwright Client Tile Tests", () => {
       (tile) => tile.textContent
     );
 
-    await expect(one).toEqual("101");
-    await expect(two).toEqual("001");
-    await expect(three).toEqual("201");
-    await expect(four).toEqual("111");
-    await expect(five).toEqual("011");
-    await expect(six).toEqual("211");
-    await expect(seven).toEqual("301");
-    await expect(eight).toEqual("311");
+    expect(one).toEqual("101");
+    expect(two).toEqual("001");
+    expect(three).toEqual("201");
+    expect(four).toEqual("111");
+    expect(five).toEqual("011");
+    expect(six).toEqual("211");
+    expect(seven).toEqual("301");
+    expect(eight).toEqual("311");
 
   });
 });

@@ -1,9 +1,15 @@
-describe("UI Drag&Drop Test", () => {
-  beforeAll(async () => {
-    await page.goto(PATH + "axisInferring.html");
+import { test, expect, chromium } from '@playwright/test';
+
+test.describe("UI Drag&Drop Test", () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    await page.goto("axisInferring.html");
   });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await context.close();
   });
 
@@ -13,8 +19,8 @@ describe("UI Drag&Drop Test", () => {
       (layer) => layer.extent
     );
 
-    await expect(layerExtent.topLeft.tilematrix[0]).toEqual({ horizontal: 0, vertical: 1 });
-    await expect(layerExtent.bottomRight.tilematrix[0]).toEqual({ horizontal: 4, vertical: 5 });
+    expect(layerExtent.topLeft.tilematrix[0]).toEqual({ horizontal: 0, vertical: 1 });
+    expect(layerExtent.bottomRight.tilematrix[0]).toEqual({ horizontal: 4, vertical: 5 });
   });
 
   test("TCRS inferring", async () => {
@@ -23,8 +29,8 @@ describe("UI Drag&Drop Test", () => {
       (layer) => layer.extent
     );
 
-    await expect(layerExtent.topLeft.tcrs[0]).toEqual({ horizontal: 0, vertical: 256 });
-    await expect(layerExtent.bottomRight.tcrs[0]).toEqual({ horizontal: 256, vertical: 512 });
+    expect(layerExtent.topLeft.tcrs[0]).toEqual({ horizontal: 0, vertical: 256 });
+    expect(layerExtent.bottomRight.tcrs[0]).toEqual({ horizontal: 256, vertical: 512 });
   });
 
   test("PCRS inferring", async () => {
@@ -32,8 +38,8 @@ describe("UI Drag&Drop Test", () => {
       "body > map > layer-:nth-child(3)",
       (layer) => layer.extent
     );
-    await expect(layerExtent.topLeft.pcrs).toEqual({ horizontal: 100, vertical: 600 });
-    await expect(layerExtent.bottomRight.pcrs).toEqual({ horizontal: 500, vertical: 150 });
+    expect(layerExtent.topLeft.pcrs).toEqual({ horizontal: 100, vertical: 600 });
+    expect(layerExtent.bottomRight.pcrs).toEqual({ horizontal: 500, vertical: 150 });
   });
 
   test("GCRS inferring", async () => {
@@ -41,7 +47,7 @@ describe("UI Drag&Drop Test", () => {
       "body > map > layer-:nth-child(4)",
       (layer) => layer.extent
     );
-    await expect(layerExtent.topLeft.gcrs).toEqual({ horizontal: -92, vertical: 52.999999999993484 });
-    await expect(layerExtent.bottomRight.gcrs).toEqual({ horizontal: -62, vertical: 33.99999999999964 });
+    expect(layerExtent.topLeft.gcrs).toEqual({ horizontal: -92, vertical: 52.999999999993484 });
+    expect(layerExtent.bottomRight.gcrs).toEqual({ horizontal: -62, vertical: 33.99999999999964 });
   });
 });

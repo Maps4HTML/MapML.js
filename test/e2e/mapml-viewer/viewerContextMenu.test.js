@@ -1,3 +1,5 @@
+import { test, expect, chromium } from '@playwright/test';
+
 //expected topLeft values in the different cs, at the different
 //positions the map goes in
 let expectedPCRS = [
@@ -13,12 +15,17 @@ let expectedFirstTCRS = [
   { horizontal: 659, vertical: 730 },
   { horizontal: 771.4482758620691, vertical: 753.8620689655173 }];
 
-describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
-  beforeAll(async () => {
-    await page.goto(PATH + "mapml-viewer.html");
+test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    page = await context.newPage();
+    await page.goto("mapml-viewer.html");
   });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await context.close();
   });
 
@@ -31,7 +38,7 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    await expect(name).toEqual("Back (B)");
+    expect(name).toEqual("Back (B)");
   });
 
   test("Context menu tab goes to next item", async () => {
@@ -42,7 +49,7 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    await expect(name).toEqual("Forward (F)");
+    expect(name).toEqual("Forward (F)");
   });
 
 
@@ -54,7 +61,7 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    await expect(name).toEqual("Back (B)");
+    expect(name).toEqual("Back (B)");
   });
 
   test("Submenu opens on C with focus on first item", async () => {
@@ -65,7 +72,7 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    await expect(name).toEqual("tile");
+    expect(name).toEqual("tile");
   });
 
   test("Context menu displaying on map", async () => {
@@ -74,7 +81,7 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       "div > div.mapml-contextmenu",
       (menu) => window.getComputedStyle(menu).getPropertyValue("display")
     );
-    await expect(contextMenu).toEqual("block");
+    expect(contextMenu).toEqual("block");
   });
   test("Context menu, back item", async () => {
     await page.$eval(
@@ -90,12 +97,12 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       (map) => map.extent
     );
 
-    await expect(extent.projection).toEqual("CBMTILE");
-    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
-    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
-    await expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
-    await expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
+    expect(extent.projection).toEqual("CBMTILE");
+    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
+    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
+    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
   });
   test("Context menu, back item at intial location", async () => {
     await page.click("body > mapml-viewer", { button: "right" });
@@ -106,12 +113,12 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       (map) => map.extent
     );
 
-    await expect(extent.projection).toEqual("CBMTILE");
-    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
-    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
-    await expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
-    await expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
+    expect(extent.projection).toEqual("CBMTILE");
+    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
+    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
+    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
   });
   test("Context menu, forward item", async () => {
     await page.click("body > mapml-viewer", { button: "right" });
@@ -122,11 +129,11 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       (map) => map.extent
     );
 
-    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
-    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
-    await expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
-    await expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
+    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
+    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
+    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
+    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
   });
   test("Context menu, forward item at most recent location", async () => {
     await page.click("body > mapml-viewer", { button: "right" });
@@ -137,14 +144,14 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       (map) => map.extent
     );
 
-    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
-    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
-    await expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
-    await expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
+    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
+    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
+    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
+    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
   });
 
-  describe("Context Menu, Toggle Controls ", () => {
+  test.describe("Context Menu, Toggle Controls ", () => {
     test("Context menu, toggle controls off", async () => {
       const controlsOn = await page.$eval(
         "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
@@ -159,8 +166,8 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
         (controls) => controls.childElementCount
       );
 
-      await expect(controlsOn).toEqual(3);
-      await expect(controlsOff).toEqual(0);
+      expect(controlsOn).toEqual(3);
+      expect(controlsOff).toEqual(0);
     });
 
     test("Context menu, toggle controls on", async () => {
@@ -177,8 +184,8 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
         (controls) => controls.childElementCount
       );
 
-      await expect(controlsOn).toEqual(0);
-      await expect(controlsOff).toEqual(3);
+      expect(controlsOn).toEqual(0);
+      expect(controlsOff).toEqual(3);
     });
 
     test("Context menu, toggle controls after changing opacity", async () => {
@@ -196,7 +203,7 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
         "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div:nth-child(2) > details > input",
         (opacity) => opacity.value
       );
-      await expect(valueBefore).toEqual("0.5");
+      expect(valueBefore).toEqual("0.5");
 
       await page.click("body > mapml-viewer", { button: "right" });
       await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
@@ -208,7 +215,7 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
         (opacity) => opacity.value
       );
 
-      await expect(valueAfter).toEqual("0.5");
+      expect(valueAfter).toEqual("0.5");
     });
   });
 
@@ -236,7 +243,7 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     expected += "pcrs: easting:562957.94, northing:3641449.50\n";
     expected += "gcrs: lon :-62.729466, lat:80.881921";
 
-    await expect(copyValue).toEqual(expected);
+    expect(copyValue).toEqual(expected);
   });
 
   test("Submenu, copy all coordinate systems", async () => {
@@ -262,6 +269,6 @@ describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     expected += "pcrs: easting:562957.94, northing:3641449.50\n";
     expected += "gcrs: lon :-62.729466, lat:80.881921";
 
-    await expect(copyValue).toEqual(expected);
+    expect(copyValue).toEqual(expected);
   });
 });

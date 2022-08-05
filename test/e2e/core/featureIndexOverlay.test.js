@@ -1,9 +1,15 @@
-describe("Feature Index Overlay test", ()=> {
-    beforeAll(async () => {
-        await page.goto(PATH + "featureIndexOverlay.html");
+import { test, expect, chromium } from '@playwright/test';
+
+test.describe("Feature Index Overlay test", ()=> {
+    let page;
+    let context;
+    test.beforeAll(async () => {
+        context = await chromium.launchPersistentContext('');
+        page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+        await page.goto("featureIndexOverlay.html");
     });
 
-    afterAll(async function () {
+    test.afterAll(async function () {
         await context.close();
     });
 
@@ -28,10 +34,10 @@ describe("Feature Index Overlay test", ()=> {
             (div) => div.hasAttribute("hidden")
         );
 
-        await expect(hiddenOverlay).toEqual(true);
-        await expect(hiddenReticle).toEqual(true);
-        await expect(afterTabOverlay).toEqual(false);
-        await expect(afterTabReticle).toEqual(false);
+        expect(hiddenOverlay).toEqual(true);
+        expect(hiddenReticle).toEqual(true);
+        expect(afterTabOverlay).toEqual(false);
+        expect(afterTabReticle).toEqual(false);
     });
 
     test("Feature index content is correct", async () => {
@@ -48,9 +54,9 @@ describe("Feature Index Overlay test", ()=> {
             (span) => span.innerText
         );
 
-        await expect(spanCount).toEqual(8);
-        await expect(firstFeature).toContain("1 Vermont");
-        await expect(moreResults).toContain("9 More results");
+        expect(spanCount).toEqual(8);
+        expect(firstFeature).toContain("1 Vermont");
+        expect(moreResults).toContain("9 More results");
     });
 
     test("Feature index more results are correct", async () => {
@@ -70,9 +76,9 @@ describe("Feature Index Overlay test", ()=> {
             (span) => span.innerText
         );
 
-        await expect(spanCount).toEqual(5);
-        await expect(firstFeature).toContain("1 Pennsylvania");
-        await expect(prevResults).toContain("8 Previous results");
+        expect(spanCount).toEqual(5);
+        expect(firstFeature).toContain("1 Pennsylvania");
+        expect(prevResults).toContain("8 Previous results");
     });
 
     test("Feature index previous results are correct", async () => {
@@ -82,7 +88,7 @@ describe("Feature Index Overlay test", ()=> {
             (span) => span.childElementCount
         );
 
-        await expect(spanCount).toEqual(8);
+        expect(spanCount).toEqual(8);
     });
 
     test("Feature index content is correct on moveend", async () => {
@@ -97,8 +103,8 @@ describe("Feature Index Overlay test", ()=> {
             (span) => span.innerText
         );
 
-        await expect(spanCount).toEqual(2);
-        await expect(firstFeature).toContain("1 Maine");
+        expect(spanCount).toEqual(2);
+        expect(firstFeature).toContain("1 Maine");
     });
 
     test("Feature index overlay is hidden when empty, reticle still visible", async () => {
@@ -114,8 +120,8 @@ describe("Feature Index Overlay test", ()=> {
             (div) => div.hasAttribute("hidden")
         );
 
-        await expect(overlay).toEqual(true);
-        await expect(reticle).toEqual(false);
+        expect(overlay).toEqual(true);
+        expect(reticle).toEqual(false);
     });
 
     test("Popup test with templated features", async () => {
@@ -141,8 +147,8 @@ describe("Feature Index Overlay test", ()=> {
             (popup) => popup.children[0].innerText
         );
 
-        await expect(popupCount).toEqual(1);
-        await expect(popupName).toContain("Hareg Cafe & Variety");
+        expect(popupCount).toEqual(1);
+        expect(popupName).toContain("Hareg Cafe & Variety");
     });
 
     test("Opening another popup with index keys closes already open popup", async () => {
@@ -162,9 +168,9 @@ describe("Feature Index Overlay test", ()=> {
             (output) => output.classList.contains("mapml-screen-reader-output")
         );
 
-        await expect(popupCount).toEqual(1);
-        await expect(popupName).toContain("Banditos");
-        await expect(overlay).toEqual(false);
+        expect(popupCount).toEqual(1);
+        expect(popupName).toContain("Banditos");
+        expect(overlay).toEqual(false);
     });
 
 });
