@@ -1,3 +1,5 @@
+import { test, expect, chromium } from '@playwright/test';
+
 const isVisible = require("./general/isVisible");
 const zoomLimit = require("./general/zoomLimit");
 const extentProperty = require("./general/extentProperty");
@@ -22,37 +24,44 @@ let expectedPCRS = {
   },
 };
 
-describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
+
+
+test.describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
   isVisible.test("mapMLTemplatedFeatures.html", 3, 2);
   zoomLimit.test("mapMLTemplatedFeatures.html", 2, 1);
   extentProperty.test("mapMLTemplatedFeatures.html", expectedPCRS, expectedGCRS);
 
-  beforeAll(async () => {
-    await page.goto(PATH + "mapMLTemplatedFeatures.html");
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    await page.goto("mapMLTemplatedFeatures.html");
   });
-  afterAll(async function () {
+
+  test.afterAll(async function () {
     await context.close();
   });
   
-  describe("Templated Features Zoom To Extent Tests", () => {
+  test.describe("Templated Features Zoom To Extent Tests", () => {
     test("Zoom to layer applies meta extent", async () => {
       const startTopLeft = await page.evaluate(`document.querySelector('#map2').extent.topLeft.pcrs`);
       const startBottomRight = await page.evaluate(`document.querySelector('#map2').extent.bottomRight.pcrs`);
-      await expect(startTopLeft.horizontal).toBe(1509616.5079163536);
-      await expect(startTopLeft.vertical).toBe(-170323.5596054569);
-      await expect(startBottomRight.horizontal).toBe(1511931.6167132407);
-      await expect(startBottomRight.vertical).toBe(-172638.668402344);
+      expect(startTopLeft.horizontal).toBe(1509616.5079163536);
+      expect(startTopLeft.vertical).toBe(-170323.5596054569);
+      expect(startBottomRight.horizontal).toBe(1511931.6167132407);
+      expect(startBottomRight.vertical).toBe(-172638.668402344);
       await page.evaluate(`document.querySelector('#map2 > layer-').focus()`);
       const endTopLeft = await page.evaluate(`document.querySelector('#map2').extent.topLeft.pcrs`);
       const endBottomRight = await page.evaluate(`document.querySelector('#map2').extent.bottomRight.pcrs`);
-      await expect(endTopLeft.horizontal).toBe(1508601.8288036585);
-      await expect(endTopLeft.vertical).toBe(-169068.77063754946);
-      await expect(endBottomRight.horizontal).toBe(1512570.5867411792);
-      await expect(endBottomRight.vertical).toBe(-173037.52857506275);
+      expect(endTopLeft.horizontal).toBe(1508601.8288036585);
+      expect(endTopLeft.vertical).toBe(-169068.77063754946);
+      expect(endBottomRight.horizontal).toBe(1512570.5867411792);
+      expect(endBottomRight.vertical).toBe(-173037.52857506275);
     });
   });
   
-  describe("Retreived Features Loading Tests", () => {
+  test.describe("Retreived Features Loading Tests", () => {
 
     test("Loading in tilematrix feature", async () => {
       await page.waitForTimeout(200);
@@ -60,7 +69,7 @@ describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
         "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(3) > path.leaflet-interactive",
         (tile) => tile.getAttribute("d")
       );
-      await expect(feature).toEqual("M382 -28L809 -28L809 399L382 399z");
+      expect(feature).toEqual("M382 -28L809 -28L809 399L382 399z");
     });
 
     test("Loading in pcrs feature", async () => {
@@ -68,7 +77,7 @@ describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
         "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(1) > path.leaflet-interactive",
         (tile) => tile.getAttribute("d")
       );
-      await expect(feature).toEqual("M88 681L21 78L-436 201L-346 561z");
+      expect(feature).toEqual("M88 681L21 78L-436 201L-346 561z");
     });
 
     test("Loading in tcrs feature", async () => {
@@ -76,7 +85,7 @@ describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
         "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(2) > path.leaflet-interactive",
         (tile) => tile.getAttribute("d")
       );
-      await expect(feature).toEqual("M307 456L599 467L612 629L381 599z");
+      expect(feature).toEqual("M307 456L599 467L612 629L381 599z");
     });
   });
 });

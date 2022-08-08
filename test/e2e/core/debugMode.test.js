@@ -1,9 +1,15 @@
-describe("Playwright Map Element Tests", () => {
-  beforeAll(async () => {
-    await page.goto(PATH + "debugMode.html");
+import { test, expect, chromium } from '@playwright/test';
+
+test.describe("Playwright Map Element Tests", () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    await page.goto("debugMode.html");
   });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await context.close();
   });
 
@@ -27,11 +33,11 @@ describe("Playwright Map Element Tests", () => {
     const grid = await page.$eval(
       "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-layer.mapml-debug-grid",
       (gridElem) => gridElem.childElementCount
-    )
+    );
 
-    await expect(panel).toEqual(6);
-    await expect(banner).toEqual("DEBUG MODE");
-    await expect(grid).toEqual(1);
+    expect(panel).toEqual(6);
+    expect(banner).toEqual("DEBUG MODE");
+    expect(grid).toEqual(1);
 
   });
 
@@ -40,7 +46,7 @@ describe("Playwright Map Element Tests", () => {
       "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(2)",
       (tile) => tile.getAttribute("d")
     );
-    await expect(feature).toEqual("M82.51724137931035 332.27586206896535L347.34482758620686 332.27586206896535L347.34482758620686 -38.48275862068965L82.51724137931035 -38.48275862068965z");
+    expect(feature).toEqual("M82.51724137931035 332.27586206896535L347.34482758620686 332.27586206896535L347.34482758620686 -38.48275862068965L82.51724137931035 -38.48275862068965z");
   });
 
   test("Large debug layer extent created", async () => {
@@ -48,7 +54,7 @@ describe("Playwright Map Element Tests", () => {
       "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(4)",
       (tile) => tile.getAttribute("d")
     );
-    await expect(feature).toEqual("M-659 500L365 500L365 -780L-659 -780z");
+    expect(feature).toEqual("M-659 500L365 500L365 -780L-659 -780z");
   });
 
   test("Debug layer extent beyond ((0,0), (5,5))  created", async () => {
@@ -56,7 +62,7 @@ describe("Playwright Map Element Tests", () => {
       "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(6)",
       (tile) => tile.getAttribute("d")
     );
-    await expect(feature).toEqual("M-1683 1268L1133 1268L1133 -1292L-1683 -1292z");
+    expect(feature).toEqual("M-1683 1268L1133 1268L1133 -1292L-1683 -1292z");
   });
 
   test("Accurate debug coordinates", async () => {
@@ -86,12 +92,12 @@ describe("Playwright Map Element Tests", () => {
       (gcrsElem) => gcrsElem.innerText
     );
 
-    await expect(tile).toEqual("tile: i: 141, j: 6");
-    await expect(matrix).toEqual("tilematrix: column: 3, row: 4");
-    await expect(map).toEqual("map: i: 250, j: 250");
-    await expect(tcrs).toEqual("tcrs: x: 909, y: 1030");
-    await expect(pcrs).toEqual("pcrs: easting: 217676.00, northing: -205599.86");
-    await expect(gcrs).toEqual("gcrs: lon: -92.152897, lat: 47.114275");
+    expect(tile).toEqual("tile: i: 141, j: 6");
+    expect(matrix).toEqual("tilematrix: column: 3, row: 4");
+    expect(map).toEqual("map: i: 250, j: 250");
+    expect(tcrs).toEqual("tcrs: x: 909, y: 1030");
+    expect(pcrs).toEqual("pcrs: easting: 217676.00, northing: -205599.86");
+    expect(gcrs).toEqual("gcrs: lon: -92.152897, lat: 47.114275");
   });
 
   test("Layer disabled attribute update when controls are toggled off", async () => {
@@ -112,7 +118,7 @@ describe("Playwright Map Element Tests", () => {
       (elem) => elem.hasAttribute("disabled")
     );
 
-    await expect(layer).toEqual(true);
+    expect(layer).toEqual(true);
   });
 
   test("Debug mode correctly re-enabled after disabling", async () => {
@@ -138,31 +144,31 @@ describe("Playwright Map Element Tests", () => {
     const grid = await page.$eval(
       "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-layer.mapml-debug-grid",
       (gridElem) => gridElem.childElementCount
-    )
+    );
 
-    await expect(panel).toEqual(6);
-    await expect(banner).toEqual("DEBUG MODE");
-    await expect(grid).toEqual(1);
+    expect(panel).toEqual(6);
+    expect(banner).toEqual("DEBUG MODE");
+    expect(grid).toEqual(1);
 
   });
 
-  test("Layer deselected then reselected", async () => {
+  test("Layer deselected then reselected 1", async () => {
     await page.hover(".leaflet-top.leaflet-right");
     await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span");
     const feature = await page.$eval(
       "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g",
       (tile) => tile.childElementCount
     );
-    await expect(feature).toEqual(5);
+    expect(feature).toEqual(5);
   });
 
-  test("Layer deselected then reselected", async () => {
+  test("Layer deselected then reselected 2", async () => {
     await page.hover(".leaflet-top.leaflet-right");
     await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span");
     const feature = await page.$eval(
       "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(6)",
       (tile) => tile.getAttribute("d")
     );
-    await expect(feature).toEqual("M82.51724137931035 332.27586206896535L347.34482758620686 332.27586206896535L347.34482758620686 -38.48275862068965L82.51724137931035 -38.48275862068965z");
+    expect(feature).toEqual("M82.51724137931035 332.27586206896535L347.34482758620686 332.27586206896535L347.34482758620686 -38.48275862068965L82.51724137931035 -38.48275862068965z");
   });
 });

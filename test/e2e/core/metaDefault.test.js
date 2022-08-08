@@ -1,4 +1,4 @@
-const playwright = require("playwright");
+import { test, expect, chromium } from '@playwright/test';
 
 let expectedPCRSFirstLayer = {
   topLeft: {
@@ -40,12 +40,16 @@ let expectedPCRSSecondLayer = {
   },
 };
 
-describe("Playwright Missing Min Max Attribute, Meta Default Tests", () => {
-  beforeAll(async () => {
-    await page.goto(PATH + "metaDefault.html");
+test.describe("Playwright Missing Min Max Attribute, Meta Default Tests", () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    await page.goto("metaDefault.html");
   });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await context.close();
   });
 
@@ -54,14 +58,14 @@ describe("Playwright Missing Min Max Attribute, Meta Default Tests", () => {
       "body > mapml-viewer > layer-:nth-child(1)",
       (layer) => layer.extent
     );
-    await expect(extent.hasOwnProperty("zoom")).toBeTruthy();
-    await expect(extent.hasOwnProperty("topLeft")).toBeTruthy();
-    await expect(extent.hasOwnProperty("bottomRight")).toBeTruthy();
-    await expect(extent.hasOwnProperty("projection")).toBeTruthy();
-    await expect(extent.topLeft.pcrs).toEqual(expectedPCRSFirstLayer.topLeft);
-    await expect(extent.bottomRight.pcrs).toEqual(expectedPCRSFirstLayer.bottomRight);
-    await expect(extent.topLeft.gcrs).toEqual(expectedGCRSFirstLayer.topLeft);
-    await expect(extent.bottomRight.gcrs).toEqual(expectedGCRSFirstLayer.bottomRight);
+    expect(extent.hasOwnProperty("zoom")).toBeTruthy();
+    expect(extent.hasOwnProperty("topLeft")).toBeTruthy();
+    expect(extent.hasOwnProperty("bottomRight")).toBeTruthy();
+    expect(extent.hasOwnProperty("projection")).toBeTruthy();
+    expect(extent.topLeft.pcrs).toEqual(expectedPCRSFirstLayer.topLeft);
+    expect(extent.bottomRight.pcrs).toEqual(expectedPCRSFirstLayer.bottomRight);
+    expect(extent.topLeft.gcrs).toEqual(expectedGCRSFirstLayer.topLeft);
+    expect(extent.bottomRight.gcrs).toEqual(expectedGCRSFirstLayer.bottomRight);
   });
   test("Fetched layer extent test", async () => {
     const extent = await page.$eval(
@@ -69,13 +73,13 @@ describe("Playwright Missing Min Max Attribute, Meta Default Tests", () => {
       (layer) => layer.extent
     );
 
-    await expect(extent.hasOwnProperty("zoom")).toBeTruthy();
-    await expect(extent.hasOwnProperty("topLeft")).toBeTruthy();
-    await expect(extent.hasOwnProperty("bottomRight")).toBeTruthy();
-    await expect(extent.hasOwnProperty("projection")).toBeTruthy();
-    await expect(extent.topLeft.pcrs).toEqual(expectedPCRSSecondLayer.topLeft);
-    await expect(extent.bottomRight.pcrs).toEqual(expectedPCRSSecondLayer.bottomRight);
-    await expect(extent.topLeft.gcrs).toEqual(expectedGCRSSecondLayer.topLeft);
-    await expect(extent.bottomRight.gcrs).toEqual(expectedGCRSSecondLayer.bottomRight);
+    expect(extent.hasOwnProperty("zoom")).toBeTruthy();
+    expect(extent.hasOwnProperty("topLeft")).toBeTruthy();
+    expect(extent.hasOwnProperty("bottomRight")).toBeTruthy();
+    expect(extent.hasOwnProperty("projection")).toBeTruthy();
+    expect(extent.topLeft.pcrs).toEqual(expectedPCRSSecondLayer.topLeft);
+    expect(extent.bottomRight.pcrs).toEqual(expectedPCRSSecondLayer.bottomRight);
+    expect(extent.topLeft.gcrs).toEqual(expectedGCRSSecondLayer.topLeft);
+    expect(extent.bottomRight.gcrs).toEqual(expectedGCRSSecondLayer.bottomRight);
   });
 });

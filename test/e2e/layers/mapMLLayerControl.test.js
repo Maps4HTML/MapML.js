@@ -1,10 +1,16 @@
-describe("Playwright mapMLLayerControl Tests", () => {
-  describe("Control Layer Panel Tests", () => {
-    beforeAll(async () => {
-      await page.goto(PATH + "mapMLLayerControl.html");
+import { test, expect, chromium } from '@playwright/test';
+
+test.describe("Playwright mapMLLayerControl Tests", () => {
+  test.describe("Control Layer Panel Tests", () => {
+    let page;
+    let context;
+    test.beforeAll(async function() {
+      context = await chromium.launchPersistentContext('');
+      page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+      await page.goto("mapMLLayerControl.html");
     });
 
-    afterAll(async function () {
+    test.afterAll(async function () {
       await context.close();
     });
 
@@ -13,7 +19,7 @@ describe("Playwright mapMLLayerControl Tests", () => {
         "css=body > mapml-viewer:nth-child(1) >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div",
         (elem) => elem.hasAttribute("hidden")
       );
-      await expect(controlsHidden).toEqual(true);
+      expect(controlsHidden).toEqual(true);
     });
 
     test("Control panel shown when layers are on map", async () => {
@@ -21,7 +27,7 @@ describe("Playwright mapMLLayerControl Tests", () => {
         "css=body > mapml-viewer:nth-child(2) >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div",
         (elem) => elem.hasAttribute("hidden")
       );
-      await expect(controlsHidden).toEqual(false);
+      expect(controlsHidden).toEqual(false);
     });
   });
 });

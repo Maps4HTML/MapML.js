@@ -1,3 +1,5 @@
+import { test, expect, chromium } from '@playwright/test';
+
 //expected topLeft values in the different cs, at the different
 //positions the map goes in
 let expectedPCRS = [
@@ -18,20 +20,25 @@ let controls = ["leaflet-control-zoom leaflet-bar leaflet-control",
   "leaflet-control-fullscreen leaflet-bar leaflet-control"];
 let options = ["nozoom", "noreload", "nofullscreen"];
 
-describe("Playwright mapml-viewer Element Tests", () => {
-  beforeAll(async () => {
-    await page.goto(PATH + "mapml-viewer.html");
+test.describe("Playwright mapml-viewer Element Tests", () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    page = await context.newPage();
+    await page.goto("mapml-viewer.html");
   });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await context.close();
   });
   
   test("Ensure attribution control has role='group' aria-label='Map data attribution'", async () => {
     let role = await page.evaluate(`document.querySelector('mapml-viewer')._attributionControl.getContainer().getAttribute('role')`);
-    await expect(role).toEqual("group");
+    expect(role).toEqual("group");
     let arialabel = await page.evaluate(`document.querySelector('mapml-viewer')._attributionControl.getContainer().getAttribute('aria-label')`);
-    await expect(arialabel).toEqual("Map data attribution");
+    expect(arialabel).toEqual("Map data attribution");
   });
 
 
@@ -41,12 +48,12 @@ describe("Playwright mapml-viewer Element Tests", () => {
       (map) => map.extent
     );
 
-    await expect(extent.projection).toEqual("CBMTILE");
-    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
-    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
-    await expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
-    await expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
+    expect(extent.projection).toEqual("CBMTILE");
+    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
+    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
+    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
   });
   test("Panned and zoomed initial map's extent", async () => {
     await page.$eval(
@@ -59,16 +66,16 @@ describe("Playwright mapml-viewer Element Tests", () => {
       (map) => map.extent
     );
 
-    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
-    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
-    await expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
-    await expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
+    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
+    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
+    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
+    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
   });
 
-  describe("Attributes Tests", () => {
+  test.describe("Attributes Tests", () => {
     for (let i in controls) {
-      describe("Controls List " + options[i] + " Attribute Tests", () => {
+      test.describe("Controls List " + options[i] + " Attribute Tests", () => {
         test(options[i] + " removes controls", async () => {
           await page.$eval("body > mapml-viewer",
             (layer, context) => layer.setAttribute("controlslist", context.options[context.i]), { options: options, i: i });
@@ -78,7 +85,7 @@ describe("Playwright mapml-viewer Element Tests", () => {
           for (let [key, value] of Object.entries(children)) {
             if (value.className === controls[i]) found = true;
           }
-          await expect(found).toEqual(false);
+          expect(found).toEqual(false);
         });
         test("Toggle controls, controls aren't re-enabled", async () => {
           await page.click("body > mapml-viewer", { button: "right" });
@@ -91,27 +98,26 @@ describe("Playwright mapml-viewer Element Tests", () => {
           for (let [key, value] of Object.entries(children)) {
             if (value.className === controls[i]) found = true;
           }
-          await expect(found).toEqual(false);
+          expect(found).toEqual(false);
         });
 
       });
     }
-    describe("Controls List nolayer Attribute Tests", () => {
-      test("Nolayer removes controls", async () => {
+    test.describe("Controls List nolayer Attribute Tests", () => {
+      test("controlslist=nolayer removes layer control", async () => {
+        await page.pause();
         await page.$eval("body > mapml-viewer",
           (layer) => layer.setAttribute("controlslist", "nolayer"));
 
-        let children = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right", (div) => div.childElementCount);
-        await expect(children).toEqual(0);
-      });
-      test("Toggle controls, controls aren't re-enabled", async () => {
+        let children = await page.$eval(".leaflet-top.leaflet-right", (div) => div.childElementCount);
+        expect(children).toEqual(0);
         await page.click("body > mapml-viewer", { button: "right" });
         await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
         await page.click("body > mapml-viewer", { button: "right" });
         await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
 
-        let children = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right", (div) => div.childElementCount);
-        await expect(children).toEqual(0);
+        children = await page.$eval(".leaflet-top.leaflet-right", (div) => div.childElementCount);
+        expect(children).toEqual(0);
       });
     });
   });

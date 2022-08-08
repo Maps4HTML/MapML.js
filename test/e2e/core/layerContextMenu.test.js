@@ -1,9 +1,15 @@
-describe("Playwright Layer Context Menu Tests", () => {
-  beforeAll(async () => {
-    await page.goto(PATH + "layerContextMenu.html");
+import { test, expect, chromium } from '@playwright/test';
+
+test.describe("Playwright Layer Context Menu Tests", () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    await page.goto("layerContextMenu.html");
   });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await context.close();
   });
 
@@ -18,7 +24,7 @@ describe("Playwright Layer Context Menu Tests", () => {
 
     const menuDisplay = await (await page.evaluateHandle(elem => window.getComputedStyle(elem).getPropertyValue("display"), resultHandle)).jsonValue();
 
-    await expect(menuDisplay).toEqual("block");
+    expect(menuDisplay).toEqual("block");
   });
 
   test("Layer context menu copy layer extent", async () => {
@@ -30,13 +36,13 @@ describe("Playwright Layer Context Menu Tests", () => {
       (text) => text.value
     );
 
-    await expect(copyValue).toEqual("<map-meta name=\"extent\" content=\"top-left-easting=-6207743.103886206, top-left-northing=10861943.103886206, bottom-right-easting=3952277.216154434, bottom-right-northing=-3362085.3441706896\"></map-meta>");
+    expect(copyValue).toEqual("<map-meta name=\"extent\" content=\"top-left-easting=-6207743.103886206, top-left-northing=10861943.103886206, bottom-right-easting=3952277.216154434, bottom-right-northing=-3362085.3441706896\"></map-meta>");
   });
 
   test("Map zooms in to layer 2", async () => {
     await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
     await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > div:nth-child(1) > label > span",
-      { button: "right" });
+      { button: "right", force: true });
     await page.keyboard.press("z");
     await page.waitForTimeout(1000);
     const mapLocation = await page.$eval(
@@ -49,8 +55,8 @@ describe("Playwright Layer Context Menu Tests", () => {
       (text) => text._map.getZoom()
     );
 
-    await expect(mapZoom).toEqual(11);
-    await expect(mapLocation).toEqual({ max: { x: 43130, y: 43130 }, min: { x: 42630, y: 42630 } });
+    expect(mapZoom).toEqual(11);
+    expect(mapLocation).toEqual({ max: { x: 43130, y: 43130 }, min: { x: 42630, y: 42630 } });
   });
 
   test("Map zooms out to layer 3", async () => {
@@ -60,7 +66,7 @@ describe("Playwright Layer Context Menu Tests", () => {
     }
     await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
     await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(3) > div:nth-child(1) > label > span",
-      { button: "right" });
+      { button: "right", force: true });
     await page.keyboard.press("z");
     await page.waitForTimeout(1000);
     const mapLocation = await page.$eval(
@@ -73,8 +79,8 @@ describe("Playwright Layer Context Menu Tests", () => {
       (text) => text._map.getZoom()
     );
 
-    await expect(mapZoom).toEqual(11);
-    await expect(mapLocation).toEqual({ max: { x: 43130, y: 43557 }, min: { x: 42630, y: 43057 } });
+    expect(mapZoom).toEqual(11);
+    expect(mapLocation).toEqual({ max: { x: 43130, y: 43557 }, min: { x: 42630, y: 43057 } });
   });
 
   test("Map zooms out to layer 4", async () => {
@@ -84,7 +90,7 @@ describe("Playwright Layer Context Menu Tests", () => {
     }
     await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
     await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(4) > div:nth-child(1) > label > span",
-      { button: "right" });
+      { button: "right", force: true });
     await page.keyboard.press("z");
     await page.waitForTimeout(1000);
     const mapLocation = await page.$eval(
@@ -97,7 +103,7 @@ describe("Playwright Layer Context Menu Tests", () => {
       (text) => text._map.getZoom()
     );
 
-    await expect(mapZoom).toEqual(5);
-    await expect(mapLocation).toEqual({ max: { x: 8084, y: 8084 }, min: { x: 7584, y: 7584 } });
+    expect(mapZoom).toEqual(5);
+    expect(mapLocation).toEqual({ max: { x: 8084, y: 8084 }, min: { x: 7584, y: 7584 } });
   });
 });
