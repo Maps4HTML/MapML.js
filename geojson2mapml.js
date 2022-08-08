@@ -245,9 +245,9 @@ function geojson2mapml(json, MapML = null) {
 
 
 function breakArray(arr) {
-    var size = 2; 
-    var arrayOfArrays = [];
-    for (var i=0; i<arr.length; i+=size) {
+    let size = 2; 
+    let arrayOfArrays = [];
+    for (let i=0; i<arr.length; i+=size) {
         arrayOfArrays.push(arr.slice(i,i+size));
     }
     return arrayOfArrays;
@@ -274,7 +274,6 @@ function mapml2geojson(element) {
     let num = 0;
     features.forEach((feature) => {
         console.log(feature);
-        console.dir(feature);
 
         json.features[num] = {"type": "Feature"};
         json.features[num].geometry = {};
@@ -299,21 +298,54 @@ function mapml2geojson(element) {
                 let coords = geom.querySelector('map-coordinates').innerHTML.split(" ");
                 coords = breakArray(coords);
                 json.features[num].geometry.coordinates = coords;
-                console.log(coords);
-                // TO DO
+                //console.log(coords);
                 break;
             case "MAP-POLYGON":
-                console.log("Polygon");
                 json.features[num].geometry.type = "Polygon";
-                
+                json.features[num].geometry.coordinates = [];
+                let x = 0
+                // not yet tested with holes
+                geom.querySelectorAll('map-coordinates').forEach((coord) => {
+                    coord = coord.innerHTML.split(" ");
+                    coord = breakArray(coord);
+                    json.features[num].geometry.coordinates[x] = coord;
+                    //console.log(coord);
+                    x++;
+                });
+                break;
+            case "MAP-MULTIPOINT": // NOT TESTED
+                json.features[num].geometry.type = "MultiPoint";
+                coord = breakArray(geom.querySelector('map-coordinates').innerHTML.split(" "));
+                json.features[num].geometry.coordinates = coord;
+                break;
+            case "MAP-MULTILINESTRING": // NOT TESTED
+                json.features[num].geometry.type = "MultiLineString";
+                json.features[num].geometry.coordinates = [];
+                let i = 0;
+                geom.querySelectorAll('map-coordinates').forEach((coord) => {
+                    coord = coord.innerHTML.split(" ");
+                    coord = breakArray(coord);
+                    json.features[num].geometry.coordinates[i] = coord;
+                    //console.log(coord);
+                    i++;
+                });
                 // TO DO
                 break;
-            case "MAP-MULTIPOINT":
-                // TO DO
-            case "MAP-MULTILINESTRING":
-                // TO DO
-            case "MAP-MULTIPOLYGON":
-                // TO DO
+            case "MAP-MULTIPOLYGON": // NOT TESTED
+                json.features[num].geometry.type = "MultiPolygon";
+                json.features[num].geometry.coordinates = [];
+                let l = 0;
+                geom.querySelectorAll('map-polygon').forEach((poly) => {
+                    let y = 0;
+                    poly.querySelectorAll('map-coordinates').forEach((coord) => {
+                        coord = coord.innerHTML.split(" ");
+                        coord = breakArray(coord);
+                        json.features[num].geometry.coordinates[l][y] = coord;
+                        y++;
+                    });
+                    l++;
+                });
+                break;
             case "MAP-GEOMETRYCOLLECTION":
                 // TO DO
         }
