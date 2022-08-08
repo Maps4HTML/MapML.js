@@ -244,6 +244,25 @@ function geojson2mapml(json, MapML = null) {
 }
 
 
+function breakArray(arr) {
+    var size = 2; 
+    var arrayOfArrays = [];
+    for (var i=0; i<arr.length; i+=size) {
+        arrayOfArrays.push(arr.slice(i,i+size));
+    }
+    return arrayOfArrays;
+}
+
+function table2properties(table) {
+    let json = {};
+    table.querySelectorAll('tr').forEach((tr) => {
+        let k = tr.querySelector('th').innerHTML;
+        let v = tr.querySelector('td').innerHTML;
+        json[k] = v;
+    });
+    return json;
+}
+
 
 function mapml2geojson(element) {
     let json = {};
@@ -255,26 +274,40 @@ function mapml2geojson(element) {
     let num = 0;
     features.forEach((feature) => {
         console.log(feature);
+        console.dir(feature);
 
         json.features[num] = {"type": "Feature"};
         json.features[num].geometry = {};
         json.features[num].properties = {};
 
+        // setting properties if table presented
+        if (feature.querySelector("map-properties").querySelector('tbody') != null) {
+            let properties = table2properties(feature.querySelector("map-properties").querySelector('tbody'));
+            json.features[num].properties = properties;
+        }
+
         let geom = feature.querySelector("map-geometry");
-        console.log(geom.children[0].nodeName);
-        switch(geom.children[0].nodeName) {
+        elem = geom.children[0].nodeName;
+        console.log(elem.toUpperCase())
+        switch(elem.toUpperCase()) {
             case "MAP-POINT":
                 json.features[num].geometry.type = "Point";
                 json.features[num].geometry.coordinates = geom.querySelector('map-coordinates').innerHTML.split(" ");
-                return;
+                break;
             case "MAP-LINESTRING":
                 json.features[num].geometry.type = "LineString";
                 let coords = geom.querySelector('map-coordinates').innerHTML.split(" ");
+                coords = breakArray(coords);
+                json.features[num].geometry.coordinates = coords;
                 console.log(coords);
                 // TO DO
-                return;
+                break;
             case "MAP-POLYGON":
+                console.log("Polygon");
+                json.features[num].geometry.type = "Polygon";
+                
                 // TO DO
+                break;
             case "MAP-MULTIPOINT":
                 // TO DO
             case "MAP-MULTILINESTRING":
@@ -284,7 +317,7 @@ function mapml2geojson(element) {
             case "MAP-GEOMETRYCOLLECTION":
                 // TO DO
         }
-        // going to next feature
+        //going to next feature
         num++;
     });
 
