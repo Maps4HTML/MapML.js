@@ -1,10 +1,16 @@
-describe("Playwright Map Element Tests", () => {
-  beforeAll(async () => {
-    await page.goto(PATH + "tms.html");
+import { test, expect, chromium } from '@playwright/test';
+
+test.describe("Playwright Map Element Tests", () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    await page.goto("tms.html");
   });
 
-  afterAll(async function () {
-    await browser.close();
+  test.afterAll(async function () {
+    await context.close();
   });
 
   test("Painting tiles are in proper order", async () => {
@@ -14,7 +20,7 @@ describe("Playwright Map Element Tests", () => {
         `xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div:nth-child(${i + 1}) > img`,
         (tile) => tile.getAttribute("src")
       );
-      await expect(feature).toEqual(`https://maps4html.org/TiledArt-Rousseau/TheBanksOfTheBièvreNearBicêtre/${tileOrder[i]}.png`);
+      expect(feature).toEqual(`https://maps4html.org/TiledArt-Rousseau/TheBanksOfTheBièvreNearBicêtre/${tileOrder[i]}.png`);
     }
   });
 });

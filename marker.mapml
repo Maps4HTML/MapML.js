@@ -3,17 +3,20 @@
     <map-meta charset="utf-8"></map-meta>
     <map-meta http-equiv="Content-Type" content="text/mapml"></map-meta>
     <map-title>A point in Map Markup Language</map-title>
-    <map-meta name="projection" content="WGS84"></map-meta>
-    <map-meta name="zoom" content="15"></map-meta>
+    <map-meta name="projection" content="CBMTILE"></map-meta>
+    <map-meta name="zoom" content="min=0,max=20,value=17"></map-meta>
+    <map-meta name="extent" content="top-left-longitude=-75.708482,top-left-latitude=45.399184,bottom-right-longitude=-75.70522069931032,bottom-right-latitude=45.393552994546624"></map-meta>
     <map-link rel="license" href="foo" title="Foo © Natural Resources Canada"></map-link>
   </map-head>
   <map-body>
     <map-feature id="aPoint">
-      <map-geometry>
+      <map-featurecaption>A Thing</map-featurecaption>
+      <map-properties></map-properties>
+      <map-geometry cs="gcrs">
         <map-point>
           <map-coordinates>-75.706646 45.3972513</map-coordinates>
         </map-point>
-      </geometry>
+      </map-geometry>
     </map-feature>
   </map-body>
 </mapml->

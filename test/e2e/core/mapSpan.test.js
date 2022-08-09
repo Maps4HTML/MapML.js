@@ -1,14 +1,20 @@
-const playwright = require("playwright");
-describe("<map-span> test ", ()=> {
-  beforeAll(async () => {
-    await page.goto(PATH + "mapSpan.html");
+import { test, expect, chromium } from '@playwright/test';
+
+test.describe("<map-span> test ", ()=> {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    await page.goto("mapSpan.html");
   });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await context.close();
   });
 
   test("<map-span> hides tile boundaries", async ()=>{
+    await page.waitForTimeout(1000);
     const total = await page.$eval(
       'body > mapml-viewer:nth-child(1) div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div:nth-child(1) > svg > g > g:nth-child(1) > path:nth-child(2)',
       (path) => path.getAttribute("style")
@@ -22,15 +28,15 @@ describe("<map-span> test ", ()=> {
       'body > mapml-viewer:nth-child(1) div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div:nth-child(1) > svg > g > g:nth-child(1) > path.noline.fclass._2',
       (path) => path.getAttribute("d")
     );
-    await expect(featureOutline).not.toBe(null);
+    expect(featureOutline).not.toBe(null);
 
     const d = await featureOutline.getAttribute("d");
     const spliced = await hidden.slice(3, hidden.length);
     //Makes sure that the part that should be hidden is not part of the feature outline
     let index = d.indexOf(spliced);
 
-    await expect(total).toEqual("stroke: none;");
-    await expect(index).toEqual(-1);
+    expect(total).toEqual("stroke: none;");
+    expect(index).toEqual(-1);
   });
 
   //https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/559#issuecomment-959805896
@@ -41,6 +47,6 @@ describe("<map-span> test ", ()=> {
       (path) => path.getAttribute("d")
     );
 
-    await expect(feature).toEqual("M0 217L0 217L0 217L2 217L4 218L6 218L6 218L6 216L2 214L0 216L0 216");
+    expect(feature).toEqual("M0 217L0 217L0 217L2 217L4 218L6 218L6 218L6 216L2 214L0 216L0 216");
   });
 });

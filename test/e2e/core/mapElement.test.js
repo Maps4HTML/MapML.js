@@ -1,6 +1,7 @@
+import { test, expect, chromium } from '@playwright/test';
 //expected topLeft values in the different cs, at the different
 //positions the map goes in
-const playwright = require("playwright");
+
 let expectedPCRS = [
   { horizontal: -9373489.01871137, vertical: 11303798.154262971 },
   { horizontal: -5059449.140631609, vertical: 10388337.990009308 }];
@@ -14,12 +15,16 @@ let expectedFirstTCRS = [
   { horizontal: 659, vertical: 730 },
   { horizontal: 771.4482758620691, vertical: 753.8620689655173 }];
 
-describe("Playwright Map Element Tests", () => {
-  beforeAll(async () => {
-    await page.goto(PATH + "mapElement.html");
+test.describe("Playwright Map Element Tests", () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    await page.goto("mapElement.html");
   });
-
-  afterAll(async function () {
+  
+  test.afterAll(async function () {
     await context.close();
   });
 

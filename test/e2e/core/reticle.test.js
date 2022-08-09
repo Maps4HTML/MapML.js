@@ -1,19 +1,25 @@
-describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
-  beforeAll(async () => {
-    await page.goto(PATH + "reticle.html");
-  });
+import { test, expect, chromium } from '@playwright/test';
 
-  afterAll(async function () {
+test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    await page.goto("reticle.html");
+  });
+  
+  test.afterAll(async function () {
     await context.close();
   });
 
-  describe("Crosshair Reticle Tests", () => {
+  test.describe("Crosshair Reticle Tests", () => {
     test("Crosshair hidden onload, shows on focus", async () => {
       const beforeTabHidden = await page.$eval("div > div.mapml-crosshair", (div) => window.getComputedStyle(div).getPropertyValue("display"));
       await page.keyboard.press("Tab");
       const afterTab = await page.$eval("div > div.mapml-crosshair", (div) => window.getComputedStyle(div).getPropertyValue("display"));
-      await expect(beforeTabHidden).toEqual("none");
-      await expect(afterTab).toEqual("block");
+      expect(beforeTabHidden).toEqual("none");
+      expect(afterTab).toEqual("block");
     });
 
     test("Crosshair remains on map move with arrow keys", async () => {
@@ -26,7 +32,7 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.keyboard.press("ArrowRight");
       await page.waitForTimeout(1000);
       const afterMove = await page.$eval("div > div.mapml-crosshair", (div) => window.getComputedStyle(div).getPropertyValue("display"));
-      await expect(afterMove).toEqual("block");
+      expect(afterMove).toEqual("block");
     });
 
     test("Crosshair shows on esc but hidden on tab out", async () => {
@@ -39,8 +45,8 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.keyboard.press("Tab");
       const afterTab = await page.$eval("div > div.mapml-crosshair", (div) => window.getComputedStyle(div).getPropertyValue("display"));
 
-      await expect(afterEsc).toEqual("block");
-      await expect(afterTab).toEqual("none");
+      expect(afterEsc).toEqual("block");
+      expect(afterTab).toEqual("none");
     });
 
     test("Crosshair hidden when queryable layer is unselected, shows on reselect", async () => {
@@ -53,8 +59,8 @@ describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.evaluateHandle(() => document.querySelector("layer-").setAttribute("checked", ""));
       const afterCheck = await page.$eval("div > div.mapml-crosshair", (div) => window.getComputedStyle(div).getPropertyValue("display"));
 
-      await expect(afterUncheck).toEqual("none");
-      await expect(afterCheck).toEqual("block");
+      expect(afterUncheck).toEqual("none");
+      expect(afterCheck).toEqual("block");
     });
   });
 });
