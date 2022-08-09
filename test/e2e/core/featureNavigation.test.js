@@ -61,6 +61,40 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
 
       expect(focusedNext).toEqual("Connecticut"); // spelling error https://en.wikipedia.org/wiki/Caractacus_Pott
     });
+
+    test("When at last feature, arrow down goes to first feature", async () => {
+      await page.goto("mapMLTemplatedFeaturesFilter.html");
+      await page.waitForTimeout(1000);
+
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+
+      for(let i = 0; i < 5; i++) {
+        await page.keyboard.press("ArrowDown");
+      }
+
+      const activeFeature = await page.$eval("body > mapml-viewer",
+          (map) => map.shadowRoot.activeElement.getAttribute("aria-label"));
+
+      await page.keyboard.press("ArrowDown");
+      await page.waitForTimeout(500);
+      const nextActiveFeature = await page.$eval("body > mapml-viewer",
+          (map) => map.shadowRoot.activeElement.getAttribute("aria-label"));
+
+      await expect(activeFeature).toEqual("Hung Sum Restaurant");
+      await expect(nextActiveFeature).toEqual("Sushi 88");
+    });
+
+    test("Center feature is always refocused", async () => {
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.press("Shift+Tab");
+      await page.keyboard.press("Tab");
+
+      const activeFeature = await page.$eval("body > mapml-viewer",
+          (map) => map.shadowRoot.activeElement.getAttribute("aria-label"));
+      await expect(activeFeature).toEqual("Sushi 88");
+    });
   });
 
 });
