@@ -6,14 +6,14 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext('');
     page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
-    await page.goto("tabFeatureNavigation.html");
+    await page.goto("featureNavigation.html");
   });
 
   test.afterAll(async function () {
     await context.close();
   });
 
-  test.describe("Tab Navigable Tests", () => {
+  test.describe("Arrow Key Navigable Tests", () => {
     test("Tab focuses inline features", async () => {
       await page.click("body");
       await page.keyboard.press("Tab");
@@ -29,7 +29,7 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       let tooltipCount = await page.$eval("mapml-viewer .leaflet-tooltip-pane", div => div.childElementCount);
       expect(tooltipCount).toEqual(1);
 
-      await page.keyboard.press("Tab");
+      await page.keyboard.press("ArrowDown");
       await page.waitForTimeout(500);
       const aHandleNext = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nextHandleNext = await page.evaluateHandle(doc => doc.shadowRoot, aHandleNext);
@@ -48,15 +48,15 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.keyboard.press("Tab"); // focus the map
 
       await page.keyboard.press("Tab"); // Vermont (features are sorted by distance from map centre)
-      await page.keyboard.press("Tab"); // New York
-      await page.keyboard.press("Tab"); // New Hampshire
-      await page.keyboard.press("Tab"); // Massachusetts
+      await page.keyboard.press("ArrowDown"); // New York
+      await page.keyboard.press("ArrowDown"); // New Hampshire
+      await page.keyboard.press("ArrowDown"); // Massachusetts
       const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
       const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
       const focused = await page.evaluate(root => root.activeElement.getAttribute("aria-label").trim(), nextHandle);
       expect(focused).toEqual("Massachusetts");
 
-      await page.keyboard.press("Tab");
+      await page.keyboard.press("ArrowDown");
       const focusedNext = await page.evaluate(root => root.activeElement.getAttribute("aria-label").trim(), nextHandle);
 
       expect(focusedNext).toEqual("Connecticut"); // spelling error https://en.wikipedia.org/wiki/Caractacus_Pott

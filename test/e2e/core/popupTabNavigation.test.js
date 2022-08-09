@@ -106,7 +106,7 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
     });
 
     test("Previous feature button focuses previous feature", async () => {
-      await page.keyboard.press("Tab"); // focus next feature
+      await page.keyboard.press("ArrowDown"); // focus next feature
       await page.waitForTimeout(500);
       await page.keyboard.press("Enter"); // popup 
       await page.waitForTimeout(500);
