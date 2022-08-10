@@ -80,6 +80,14 @@ module.exports = function(grunt) {
           },
           {
             expand: true,
+            cwd: 'src/geojson',
+            flatten: true,
+            filter: 'isFile',
+            src: ['geojson.js'],
+            dest: 'dist/lib/'
+          },
+          {
+            expand: true,
             cwd: 'src',
             flatten: true,
             filter: 'isFile',
