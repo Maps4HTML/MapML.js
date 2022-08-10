@@ -27,6 +27,17 @@ export var Options = {
     amEastBound: "Reached east bound, panning east disabled",
     amWestBound: "Reached west bound, panning west disabled",
     amNorthBound: "Reached north bound, panning north disabled",
-    amSouthBound: "Reached south bound, panning south disabled"
+    amSouthBound: "Reached south bound, panning south disabled",
+    kbdShortcuts: "Keyboard shortcuts",
+    kbdMovement: "Movement keys",
+    kbdFeature: "Feature navigation keys",
+    kbdPanUp: "Pan up",
+    kbdPanDown: "Pan down",
+    kbdPanLeft: "Pan left",
+    kbdPanRight: "Pan right",
+    kbdPanIncrement: "pan increment",
+    kbdZoom: "Zoom in/out 3 levels",
+    kbdPrevFeature: "Previous feature",
+    kbdNextFeature: "Next feature",
   }
 };
