@@ -9,6 +9,7 @@
 </head>
 
 <body>
+  <!--All the mapml layers- that will be converted to geojson go in the mapml-viewer-->
     <mapml-viewer projection="OSMTILE" zoom="10" lon="-75.7" lat="45.4" controls>
         
       <layer- label="Point Geometry" checked>
@@ -194,8 +195,47 @@
             <map-properties><h2>This is a Polygon with holes</h2></map-properties>
           </map-feature>
         </layer->
+
+        <layer- label="Geometry Collection" checked>
+           <map-meta name="projection" content="OSMTILE"></map-meta>
+           <map-meta name="cs" content="gcrs"></map-meta>
+           <map-feature>
+              <map-featurecaption></map-featurecaption>
+              <map-geometry>
+                 <map-geometrycollection>
+                    <map-polygon>
+                       <map-coordinates>-75.5859375 45.465669 -75.6813812 45.4533876 -75.6961441 45.4239978 -75.7249832 45.4083331 -75.7792282 45.3772317 -75.753479 45.3294614 -75.5831909 45.3815724 -75.602417 45.4273712 -75.5673981 45.4639834 -75.5859375 45.465669 </map-coordinates>
+                    </map-polygon>
+                    <map-linestring>
+                       <map-coordinates>-75.6168365 45.471929 -75.6855011 45.458445 -75.7016373 45.4391764 -75.7030106 45.4259255 -75.7236099 45.4208652 -75.7565689 45.4117074 -75.7833481 45.384225 -75.8197403 45.3714435 -75.8516693 45.377714 </map-coordinates>
+                    </map-linestring>
+                    <map-point>
+                       <map-coordinates>-75.6916809 45.4186964</map-coordinates>
+                    </map-point>
+                 </map-geometrycollection>
+              </map-geometry>
+              <map-properties>
+                <table>
+                  <thead>
+                    <tr>
+                      <th role="columnheader" scope="col">Property name</th>
+                      <th role="columnheader" scope="col">Property value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">prop0</th>
+                      <td itemprop="prop0">This is a Geometry Collection</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </map-properties>
+           </map-feature>
+        </layer->
+
       </mapml-viewer>
 
+      <!--mapml2geojson json output goes here dynamically-->
       <p id="json0"></p>
       <p id="json1"></p>
       <p id="json2"></p>
@@ -203,6 +243,7 @@
       <p id="json4"></p>
       <p id="json5"></p>
       <p id="json6"></p>
+      <p id="json7"></p>
 
       <script>
         window.onload = function() {
@@ -235,6 +276,10 @@
             json = mapml2geojson(document.querySelectorAll("layer-")[6]);
             json = JSON.stringify(json);
             document.getElementById('json6').innerHTML = json;
+
+            json = mapml2geojson(document.querySelectorAll("layer-")[7]);
+            json = JSON.stringify(json);
+            document.getElementById('json7').innerHTML = json;
         };
       </script>
     

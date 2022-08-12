@@ -61,8 +61,6 @@ test.describe("GeoJSON API - mapml2geojson", () => {
    expect(out5).toEqual(multipolygon);
  });
 
- // Add Geometry Collection Test
-
  test("Feature Collections", async () => {
   const out6 = await page.$eval(
     "body > p#json6",
@@ -70,6 +68,14 @@ test.describe("GeoJSON API - mapml2geojson", () => {
   );
   expect(out6).toEqual(featurecollection);
 });
+
+test("Geometry Collection", async () => {
+   const out7 = await page.$eval(
+     "body > p#json7",
+     (p) => JSON.parse(p.innerHTML)
+   );
+   expect(out7).toEqual(geometrycollection);
+ });
 
 });
 
@@ -618,3 +624,55 @@ let featurecollection = {
        }
     ]
  };
+
+ let geometrycollection = {
+   "title": "Geometry Collection",
+   "type": "FeatureCollection",
+   "features": [{
+       "type": "Feature",
+       "geometry": {
+            "type": "GeometryCollection",
+            "geometries": 
+            [
+             {
+              "type": "Polygon",
+              "coordinates": [
+                  [
+                     [-75.5859375, 45.4656690],
+                     [-75.6813812, 45.4533876],
+                     [-75.6961441, 45.4239978],
+                     [-75.7249832, 45.4083331],
+                     [-75.7792282, 45.3772317],
+                     [-75.7534790, 45.3294614],
+                     [-75.5831909, 45.3815724],
+                     [-75.6024170, 45.4273712],
+                     [-75.5673981, 45.4639834],
+                     [-75.5859375, 45.4656690]
+                 ]
+              ]
+             },
+             {
+                 "type": "LineString",
+                 "coordinates": [
+                     [-75.6168365, 45.471929],
+                     [-75.6855011, 45.458445],
+                     [-75.7016373, 45.4391764],
+                     [-75.7030106, 45.4259255],
+                     [-75.7236099, 45.4208652],
+                     [-75.7565689, 45.4117074],
+                     [-75.7833481, 45.384225],
+                     [-75.8197403, 45.3714435],
+                     [-75.8516693, 45.377714]
+                 ]
+             },
+             {
+                 "type": "Point",
+                 "coordinates": [-75.6916809, 45.4186964]
+             }
+            ]
+        },
+                "properties": {
+            "prop0": "This is a Geometry Collection"
+        }
+    }]
+};

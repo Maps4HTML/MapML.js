@@ -37,8 +37,6 @@ function properties2Table(json) {
     return table;
 }
 
-
-
 // Takes GeoJSON Objects and returns a <layer-> Element
 // geojson2mapml: geojson <layer-> -> <layer->
 function geojson2mapml(json, MapML = null) {
@@ -53,11 +51,13 @@ function geojson2mapml(json, MapML = null) {
     // initializing layer
     if (layer == null) {
         // creating an empty mapml layer
-        let xmlStringLayer = "<layer- label='' checked=''><map-meta name='projection' content='OSMTILE'></map-meta><map-meta name='cs' content='gcrs'></map-meta></layer->";
+        let xmlStringLayer = "<layer- label='' checked><map-meta name='projection' content='OSMTILE'></map-meta><map-meta name='cs' content='gcrs'></map-meta></layer->";
         layer = parser.parseFromString(xmlStringLayer, "text/html");
         //console.log(layer)
         if (json.name) {
             layer.querySelector("layer-").setAttribute("label", json.name);
+        } else if (json.title) {
+            layer.querySelector("layer-").setAttribute("label", json.title);
         } else{
             layer.querySelector("layer-").setAttribute("label", "Layer");
         }
@@ -83,7 +83,7 @@ function geojson2mapml(json, MapML = null) {
     let geometrycollection = "<map-geometrycollection></map-geometrycollection>";
     geometrycollection = parser.parseFromString(geometrycollection, "text/html");
 
-    let feature = "<map-feature class='child' zoom='2'><map-featurecaption></map-featurecaption><map-geometry></map-geometry><map-properties></map-properties></map-feature>";
+    let feature = "<map-feature><map-featurecaption></map-featurecaption><map-geometry></map-geometry><map-properties></map-properties></map-feature>";
     feature = parser.parseFromString(feature, "text/html");
 
     // Template to add coordinates to Geometries
@@ -118,7 +118,7 @@ function geojson2mapml(json, MapML = null) {
     } else if (geometryType.includes(jsonType)) {
         //console.log("Geometry Type - " + jsonType);
         switch(jsonType){
-            case "POINT": // ---------------------------------------------------------------------------
+            case "POINT":
                 out = json.coordinates[0] + " " + json.coordinates[1];
                 
                 // Create Point element
@@ -135,7 +135,7 @@ function geojson2mapml(json, MapML = null) {
                 //console.log(clone_point);
                 return clone_point;
 
-            case "LINESTRING": // ---------------------------------------------------------------------------
+            case "LINESTRING":
                 let clone_linestring = linestring.cloneNode(true);
                 let linestring_coordindates = clone_linestring.querySelector("map-coordinates");
                 
@@ -149,7 +149,7 @@ function geojson2mapml(json, MapML = null) {
                 //console.log(clone_linestring.querySelector('map-linestring'));
                 return (clone_linestring.querySelector('map-linestring'));
 
-            case "POLYGON": // ---------------------------------------------------------------------------
+            case "POLYGON":
                 let clone_polygon = polygon.cloneNode(true);
                 clone_polygon = clone_polygon.querySelector("map-polygon");
                 
@@ -172,7 +172,7 @@ function geojson2mapml(json, MapML = null) {
                 //console.log(clone_polygon);
                 return clone_polygon;
 
-            case "MULTIPOINT": // ---------------------------------------------------------------------------
+            case "MULTIPOINT":
                 out = "";
                 // Create multipoint element
                 let clone_multipoint = multiPoint.cloneNode(true);
@@ -184,7 +184,7 @@ function geojson2mapml(json, MapML = null) {
                 clone_multipoint.querySelector('map-coordinates').innerHTML = out;
                 return clone_multipoint;
 
-            case "MULTILINESTRING": // ---------------------------------------------------------------------------
+            case "MULTILINESTRING":
                 let clone_multilinestring = multilinestring.cloneNode(true);
                 clone_multilinestring = clone_multilinestring.querySelector("map-multilinestring");
 
@@ -200,7 +200,7 @@ function geojson2mapml(json, MapML = null) {
                 }
                 return clone_multilinestring;
 
-            case "MULTIPOLYGON": // ---------------------------------------------------------------------------
+            case "MULTIPOLYGON":
                 let m = multiPolygon.cloneNode(true);
                 m = m.querySelector('map-multiPolygon');
 
@@ -242,10 +242,6 @@ function geojson2mapml(json, MapML = null) {
     return layer;
 }
 
-
-
-
-
 // Takes an array of length n to return an array of arrays with length 2, helper function
 //    for mapml2geojson
 // breakArray: arr(float) -> arr(arr(float, float))
@@ -273,6 +269,71 @@ function table2properties(table) {
     return json;
 }
 
+// Converts a geometry element to geojson, helper function
+//    for mapml2geojson
+// geometry2geojson: (child of <map-geometry>) -> geojson
+function geometry2geojson(el) {
+    let elem = el.nodeName;
+    let j = {};
+    switch(elem.toUpperCase()) {
+        case "MAP-POINT":
+            j.type = "Point";
+            j.coordinates = (el.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g)).map(Number);
+            break;
+        case "MAP-LINESTRING":
+            j.type = "LineString";
+            let coords = el.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g);
+            coords = breakArray(coords);
+            j.coordinates = coords;
+            break;
+        case "MAP-POLYGON":
+            j.type = "Polygon";
+            j.coordinates = [];
+            let x = 0;
+            el.querySelectorAll('map-coordinates').forEach((coord) => {
+                coord = coord.innerHTML.split(/[<>\ ]/g);
+                coord = breakArray(coord);
+                j.coordinates[x] = coord;
+                x++;
+            });
+            break;
+        case "MAP-MULTIPOINT":
+            j.type = "MultiPoint";
+            let coord = breakArray(el.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g));
+            j.coordinates = coord;
+            break;
+        case "MAP-MULTILINESTRING":
+            j.type = "MultiLineString";
+            j.coordinates = [];
+            let i = 0;
+            el.querySelectorAll('map-coordinates').forEach((coord) => {
+                coord = coord.innerHTML.split(/[<>\ ]/g);
+                coord = breakArray(coord);
+                j.coordinates[i] = coord;
+                i++;
+            });
+            break;
+        case "MAP-MULTIPOLYGON":
+            j.type = "MultiPolygon";
+            j.coordinates = [];
+            let p = 0;
+            el.querySelectorAll('map-polygon').forEach((poly) => {
+                let y = 0;
+                j.coordinates.push([]);
+                poly.querySelectorAll('map-coordinates').forEach((coord) => {
+                    coord = coord.innerHTML.split(/[<>\ ]/g);
+                    coord = breakArray(coord);
+                    j.coordinates[p].push([]);
+                    j.coordinates[p][y] = coord;
+                    y++;
+                });
+                p++;
+            });
+            break;
+    }
+    return j;
+}
+
 // Takes an <layer-> element and returns a geojson feature collection object 
 // mapml2geojson: <layer-> -> geojson
 function mapml2geojson(element) {
@@ -284,8 +345,10 @@ function mapml2geojson(element) {
     // Iterating over each feature
     let features = element.querySelectorAll("map-feature");
     let num = 0;
+
+    // Going over each feature in the layer
     features.forEach((feature) => {
-        console.log(feature);
+        //console.log(feature);
 
         json.features[num] = {"type": "Feature"};
         json.features[num].geometry = {};
@@ -302,66 +365,19 @@ function mapml2geojson(element) {
 
         let geom = feature.querySelector("map-geometry");
         let elem = geom.children[0].nodeName;
-        console.log(elem.toUpperCase());
-        switch(elem.toUpperCase()) {
-            case "MAP-POINT":
-                json.features[num].geometry.type = "Point";
-                json.features[num].geometry.coordinates = (geom.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g)).map(Number);
-                break;
-            case "MAP-LINESTRING":
-                json.features[num].geometry.type = "LineString";
-                let coords = geom.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g);
-                coords = breakArray(coords);
-                json.features[num].geometry.coordinates = coords;
-                //console.log(coords);
-                break;
-            case "MAP-POLYGON":
-                json.features[num].geometry.type = "Polygon";
-                json.features[num].geometry.coordinates = [];
-                let x = 0;
-                geom.querySelectorAll('map-coordinates').forEach((coord) => {
-                    coord = coord.innerHTML.split(/[<>\ ]/g);
-                    coord = breakArray(coord);
-                    json.features[num].geometry.coordinates[x] = coord;
-                    x++;
-                });
-                break;
-            case "MAP-MULTIPOINT":
-                json.features[num].geometry.type = "MultiPoint";
-                let coord = breakArray(geom.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g));
-                json.features[num].geometry.coordinates = coord;
-                break;
-            case "MAP-MULTILINESTRING":
-                json.features[num].geometry.type = "MultiLineString";
-                json.features[num].geometry.coordinates = [];
-                let i = 0;
-                geom.querySelectorAll('map-coordinates').forEach((coord) => {
-                    coord = coord.innerHTML.split(/[<>\ ]/g);
-                    coord = breakArray(coord);
-                    json.features[num].geometry.coordinates[i] = coord;
-                    //console.log(coord);
-                    i++;
-                });
-                break;
-            case "MAP-MULTIPOLYGON":
-                json.features[num].geometry.type = "MultiPolygon";
-                json.features[num].geometry.coordinates = [];
-                let p = 0;
-                geom.querySelectorAll('map-polygon').forEach((poly) => {
-                    let y = 0;
-                    json.features[num].geometry.coordinates.push([]);
-                    poly.querySelectorAll('map-coordinates').forEach((coord) => {
-                        coord = coord.innerHTML.split(/[<>\ ]/g);
-                        coord = breakArray(coord);
-                        json.features[num].geometry.coordinates[p].push([]);
-                        json.features[num].geometry.coordinates[p][y] = coord;
-                        y++;
-                    });
-                    p++;
-                });
-                break;
-            case "MAP-GEOMETRYCOLLECTION":
-                // TO DO
+
+        // Adding Geometry
+        if (elem.toUpperCase() != "MAP-GEOMETRYCOLLECTION"){
+            json.features[num].geometry = geometry2geojson(geom.children[0]);
+        } else {
+            json.features[num].geometry.type = "GeometryCollection";
+            json.features[num].geometry.geometries = [];
+            
+            let geoms = geom.querySelector('map-geometrycollection').children;
+            Array.from(geoms).forEach((g) => {
+                g = geometry2geojson(g);
+                json.features[num].geometry.geometries.push(g);
+            });
         }
         //going to next feature
         num++;
