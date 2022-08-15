@@ -7,7 +7,7 @@ export var attributionControl = function (map) {
     dialog.onclick = function (e) {
         e.stopPropagation();
     };
-    dialog.innerHTML = `<b>${M.options.locale.kbdShortcuts} </b><button onclick='this.parentElement.close()'>X</button>` +
+    dialog.innerHTML = `<b>${M.options.locale.kbdShortcuts} </b><button aria-label="Close" onclick='this.parentElement.close()'>X</button>` +
         `<ul><b>${M.options.locale.kbdMovement}</b><li><kbd>&#8593</kbd> ${M.options.locale.kbdPanUp}</li><li><kbd>&#8595</kbd> ${M.options.locale.kbdPanDown}</li><li><kbd>&#8592</kbd> ${M.options.locale.kbdPanLeft}</li><li><kbd>&#8594</kbd> ${M.options.locale.kbdPanRight}</li><li><kbd>+</kbd> ${M.options.locale.btnZoomIn}</li><li><kbd>-</kbd> ${M.options.locale.btnZoomOut}</li><li><kbd>shift</kbd> + <kbd>&#8592/&#8593/&#8594/&#8595</kbd> 3x ${M.options.locale.kbdPanIncrement}</li><li><kbd>ctrl</kbd> + <kbd>&#8592/&#8593/&#8594/&#8595</kbd> 0.2x ${M.options.locale.kbdPanIncrement}</li><li><kbd>shift</kbd> + <kbd>+/-</kbd> ${M.options.locale.kbdZoom}</li></ul>` +
         `<ul><b>${M.options.locale.kbdFeature}</b><li><kbd>&#8592/&#8593</kbd> ${M.options.locale.kbdPrevFeature}</li><li><kbd>&#8594/&#8595</kbd> ${M.options.locale.kbdNextFeature}</li></ul>`;
     map._container.appendChild(dialog);
