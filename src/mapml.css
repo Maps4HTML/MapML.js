@@ -259,7 +259,7 @@
   background-color: #fff;
   cursor: default;
   position: absolute;
-  width: 160px;
+/*  width: 160px;*/ /* how to calculate in CSS? See ContextMenu.js L111-L117 for style attribute hack */
   z-index: 10001;
 }
 

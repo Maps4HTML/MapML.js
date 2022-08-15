@@ -116,9 +116,13 @@ export var ContextMenu = L.Handler.extend({
     this._container = L.DomUtil.create("div", "mapml-contextmenu", map._container);
     this._container.setAttribute('hidden', '');
     
+    var longest = 0;
     for (let i = 0; i < 6; i++) {
       this._items[i].el = this._createItem(this._container, this._items[i]);
+      if (this._items[i].text?.length > longest) longest = this._items[i].text.length;
     }
+    longest = ((longest + 5) * 0.66).toFixed();
+    this._container.setAttribute("style","width: "+ longest +"ch");
 
     this._coordMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-submenu", this._container);
     this._coordMenu.id = "mapml-copy-submenu";
