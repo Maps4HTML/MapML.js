@@ -39,7 +39,11 @@ function properties2Table(json) {
 
 // Takes GeoJSON Objects and returns a <layer-> Element
 // geojson2mapml: geojson <layer-> -> <layer->
-function geojson2mapml(json, MapML = null) {
+function geojson2mapml(json, properties = null, geometryFunction = null, MapML = null) {
+    // If string json is received
+    if (typeof json === "string") {
+        json = JSON.parse(json);
+    }
     let geometryType = ["POINT", "LINESTRING", "POLYGON", "MULTIPOINT", "MULTILINESTRING", "MULTIPOLYGON", "GEOMETRYCOLLECTION"];
     let jsonType = json.type.toUpperCase();
     let layer = MapML;
@@ -95,7 +99,7 @@ function geojson2mapml(json, MapML = null) {
         let features = json.features;
         //console.log("Features length - " + features.length);
         for (l=0;l<features.length;l++) {
-            geojson2mapml(features[l], layer);
+            geojson2mapml(features[l], properties, geometryFunction, layer);
         }
     } else if (jsonType === "FEATURE") {
 
@@ -103,14 +107,26 @@ function geojson2mapml(json, MapML = null) {
         let curr_feature = clone_feature.querySelector('map-feature');
 
         // Setting Properties
-        let p = properties2Table(json.properties);
+        let p;
+        // If no properties function or string is passed
+        if (properties == null) {
+            p = properties2Table(json.properties);
+        } else if (typeof properties === "string") { // if properties string is passed
+            p = parser.parseFromString(properties, "text/xml").childNodes[0];
+        } else if (typeof properties === "function") { // if properties function is passed
+            p = properties(json.properties);
+        }
+        
         //console.log(p);
         curr_feature.querySelector('map-properties').appendChild(p);
 
         // Setting map-geometry
-        let g = geojson2mapml(json.geometry, 1);
-        //console.log(g);
-        curr_feature.querySelector('map-geometry').appendChild(g);
+        let g = geojson2mapml(json.geometry, properties, geometryFunction, 1);
+        if (geometryFunction === null) {
+            curr_feature.querySelector('map-geometry').appendChild(g);
+        } else if (typeof geometryFunction === "function") {
+            curr_feature.querySelector('map-geometry').appendChild(geometryFunction(g, json));
+        }
         
         // Appending feature to layer
         layer.querySelector('layer-').appendChild(curr_feature);
@@ -233,13 +249,13 @@ function geojson2mapml(json, MapML = null) {
                 g = g.querySelector('map-geometrycollection');
                 //console.log(json.geometries);
                 for (i=0;i<json.geometries.length;i++) {
-                    let fg = geojson2mapml(json.geometries[i], 1);
+                    let fg = geojson2mapml(json.geometries[i], properties, geometryFunction, 1);
                     g.appendChild(fg);
                 }
                 return g;
         }
     }
-    return layer;
+    return layer.querySelector('layer-');
 }
 
 // Takes an array of length n to return an array of arrays with length 2, helper function

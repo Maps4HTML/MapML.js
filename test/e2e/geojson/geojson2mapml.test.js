@@ -13,7 +13,7 @@ test.describe("GeoJSON API - geojson2mapml", () => {
       await context.close();
     });
 
-  test("Point Geometry", async () => {
+  test("Point Geometry (string json)", async () => {
     const out = await page.$eval(
       "body > mapml-viewer#output > layer-:nth-child(1)", 
       (node) => node.outerHTML

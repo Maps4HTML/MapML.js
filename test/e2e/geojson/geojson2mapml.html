@@ -35,20 +35,7 @@
 
     <!--All the goejson that will be converted to <layer->-->
     <script>
-        let point = {
-           "title": "Point Geometry",
-           "type": "FeatureCollection",
-           "features": [{
-               "type": "Feature",
-               "geometry": {
-           "type": "Point",
-           "coordinates": [-75.6916809, 45.4186964]
-       },
-               "properties": {
-           "prop0": "This is a Point"
-       }
-           }]
-          };
+        let point = '{"title":"Point Geometry","type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[-75.6916809,45.4186964]},"properties":{"prop0":"This is a Point"}}]}';
       
         let line = {
          "title": "Line Geometry",
@@ -638,28 +625,28 @@
           let layer;
 
           layer = geojson2mapml(point);
-          mapml.appendChild(layer.querySelector('layer-'));
+          mapml.appendChild(layer);
 
           layer = geojson2mapml(line);
-          mapml.appendChild(layer.querySelector('layer-'));
+          mapml.appendChild(layer);
 
           layer = geojson2mapml(polygon);
-          mapml.appendChild(layer.querySelector('layer-'));
+          mapml.appendChild(layer);
 
           layer = geojson2mapml(multipoint);
-          mapml.appendChild(layer.querySelector('layer-'));
+          mapml.appendChild(layer);
 
           layer = geojson2mapml(multilinestring);
-          mapml.appendChild(layer.querySelector('layer-'));
+          mapml.appendChild(layer);
 
           layer = geojson2mapml(multipolygon);
-          mapml.appendChild(layer.querySelector('layer-'));
+          mapml.appendChild(layer);
 
           layer = geojson2mapml(geometrycollection);
-          mapml.appendChild(layer.querySelector('layer-'));
+          mapml.appendChild(layer);
 
           layer = geojson2mapml(featurecollection);
-          mapml.appendChild(layer.querySelector('layer-'))
+          mapml.appendChild(layer)
 
     </script>
 </body>
