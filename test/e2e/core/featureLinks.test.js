@@ -15,8 +15,12 @@ test.describe("Playwright Feature Links Tests", () => {
 
     test.describe("Sub Part Link Tests", () => {
       test("Sub-point link adds new layer", async () => {
-        for(let i = 0; i < 5; i++) {
+        for(let i = 0; i < 2; i++) {
           await page.keyboard.press("Tab");
+          await page.waitForTimeout(200);
+        }
+        for(let i = 0; i < 3; i++) {
+          await page.keyboard.press("ArrowDown");
           await page.waitForTimeout(200);
         }
         await page.keyboard.press("Enter"); // Press enter on the point subpart of the 'Accessible Square' feature
@@ -33,8 +37,9 @@ test.describe("Playwright Feature Links Tests", () => {
         await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > div:nth-child(1) > div > button:nth-child(1)");
         await page.waitForTimeout(850);
         await page.click("body > map");
-        for(let i = 0; i < 10; i++) {
-          await page.keyboard.press("Tab");
+        await page.keyboard.press("Tab");
+        for(let i = 0; i < 9; i++) {
+          await page.keyboard.press("ArrowDown");
           await page.waitForTimeout(200);
         }
         const extentBeforeLink = await page.$eval(
@@ -68,8 +73,9 @@ test.describe("Playwright Feature Links Tests", () => {
         await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > div:nth-child(1) > div > button:nth-child(1)");
         await page.waitForTimeout(850);
         await page.click("body > map");
-        for(let i = 0; i < 9; i++) {
-          await page.keyboard.press("Tab");
+        await page.keyboard.press("Tab");
+        for(let i = 0; i < 8; i++) {
+          await page.keyboard.press("ArrowDown");
           await page.waitForTimeout(200);
         }
         await page.keyboard.press("Enter"); // Press enter on main part of 'Inplace' feature
