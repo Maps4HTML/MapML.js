@@ -108,13 +108,13 @@ function geojson2mapml(json, properties = null, geometryFunction = null, MapML =
 
         // Setting Properties
         let p;
-        // If no properties function or string is passed
-        if (properties == null) {
-            p = properties2Table(json.properties);
+        // if properties function is passed
+        if (typeof properties === "function") {
+            p = properties(json.properties);
         } else if (typeof properties === "string") { // if properties string is passed
             p = parser.parseFromString(properties, "text/xml").childNodes[0];
-        } else if (typeof properties === "function") { // if properties function is passed
-            p = properties(json.properties);
+        } else { // If no properties function or string is passed
+            p = properties2Table(json.properties);
         }
         
         //console.log(p);
@@ -122,10 +122,10 @@ function geojson2mapml(json, properties = null, geometryFunction = null, MapML =
 
         // Setting map-geometry
         let g = geojson2mapml(json.geometry, properties, geometryFunction, 1);
-        if (geometryFunction === null) {
-            curr_feature.querySelector('map-geometry').appendChild(g);
-        } else if (typeof geometryFunction === "function") {
+        if (typeof geometryFunction === "function") {
             curr_feature.querySelector('map-geometry').appendChild(geometryFunction(g, json));
+        } else {
+            curr_feature.querySelector('map-geometry').appendChild(g);
         }
         
         // Appending feature to layer
@@ -352,7 +352,7 @@ function geometry2geojson(el) {
 
 // Takes an <layer-> element and returns a geojson feature collection object 
 // mapml2geojson: <layer-> -> geojson
-function mapml2geojson(element) {
+function mapml2geojson(element, propertyFunction = null) {
     let json = {};
     json.type = "FeatureCollection";
     json.title = element.getAttribute('label');
@@ -370,14 +370,18 @@ function mapml2geojson(element) {
         json.features[num].geometry = {};
         json.features[num].properties = {};
 
-        // setting properties if table presented
-        if (feature.querySelector("map-properties").querySelector('tbody') != null) {
+        // setting properties when function presented
+        if (typeof propertyFunction === "function") {
+            let properties = propertyFunction(feature.querySelector("map-properties"));
+            json.features[num].properties = properties;
+        } else if (feature.querySelector("map-properties").querySelector('tbody') != null) { 
+            // setting properties when table presented
             let properties = table2properties(feature.querySelector("map-properties").querySelector('tbody'));
             json.features[num].properties = properties;
         } else {
-            // when no table present, strip html tags to only get text
+            // when no table present, strip any possible html tags to only get text
             json.features[num].properties = {prop0: (feature.querySelector("map-properties").innerHTML).replace( /(<([^>]+)>)/ig, '')};
-        } // can put option for function parameter to customize styling
+        }
 
         let geom = feature.querySelector("map-geometry");
         let elem = geom.children[0].nodeName;
