@@ -59,36 +59,48 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @private
    */
   _handleFocus: function(e) {
-    if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 27) && e.type === "keydown"){
+    if(([9, 16, 27, 37, 38, 39, 40].includes(e.keyCode)) && e.type === "keydown"){
       let index = this._map.featureIndex.currentIndex;
-      if(e.keyCode === 9 && e.shiftKey) {
-        if(index === this._map.featureIndex.inBoundFeatures.length - 1)
-          this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", -1);
-        if(index !== 0){
-          L.DomEvent.stop(e);
+      // Down/right arrow keys replicate tabbing through the feature index
+      // Up/left arrow keys replicate shift-tabbing through the feature index
+      if(e.keyCode === 37 || e.keyCode === 38) {
+        L.DomEvent.stop(e);
+        this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", -1);
+        if(index === 0) {
+          this._map.featureIndex.inBoundFeatures[this._map.featureIndex.inBoundFeatures.length - 1].path.focus();
+          this._map.featureIndex.currentIndex = this._map.featureIndex.inBoundFeatures.length - 1;
+        } else {
           this._map.featureIndex.inBoundFeatures[index - 1].path.focus();
           this._map.featureIndex.currentIndex--;
         }
-      } else if (e.keyCode === 9) {
-        if(index !== this._map.featureIndex.inBoundFeatures.length - 1) {
-          L.DomEvent.stop(e);
+      } else if (e.keyCode === 39 || e.keyCode === 40) {
+        L.DomEvent.stop(e);
+        this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", -1);
+        if(index === this._map.featureIndex.inBoundFeatures.length - 1) {
+          this._map.featureIndex.inBoundFeatures[0].path.focus();
+          this._map.featureIndex.currentIndex = 0;
+        } else {
           this._map.featureIndex.inBoundFeatures[index + 1].path.focus();
           this._map.featureIndex.currentIndex++;
-        } else {
-          this._map.featureIndex.inBoundFeatures[0].path.setAttribute("tabindex", -1);
-          this._map.featureIndex.inBoundFeatures[index].path.setAttribute("tabindex", 0);
         }
-      } else if(e.keyCode === 27 && this._map.options.mapEl.shadowRoot.activeElement.nodeName === "g"){
-        this._map.featureIndex.currentIndex = 0;
+      } else if(e.keyCode === 27){
+        let shadowRoot = this._map.options.mapEl.shadowRoot ? this._map.options.mapEl.shadowRoot :
+            this._map.options.mapEl.querySelector(".mapml-web-map").shadowRoot;
+        if(shadowRoot.activeElement.nodeName !== "g") return;
         this._map._container.focus();
+      } else if (e.keyCode === 9) {
+        let obj = this;
+        setTimeout(function () {
+          obj._map.featureIndex.inBoundFeatures[0].path.setAttribute("tabindex", 0);
+        }, 0);
       }
-    } else if (!([9, 16, 13, 27, 49, 50, 51, 52, 53, 54, 55].includes(e.keyCode))){
+    } else if (!([9, 16, 13, 27, 37, 38, 39, 40, 49, 50, 51, 52, 53, 54, 55].includes(e.keyCode))){
       this._map.featureIndex.currentIndex = 0;
       this._map.featureIndex.inBoundFeatures[0].path.focus();
     }
 
     if(e.target.tagName.toUpperCase() !== "G") return;
-    if((e.keyCode === 9 || e.keyCode === 16 || e.keyCode === 13 || (e.keyCode >= 49 && e.keyCode <= 55)) && e.type === "keyup") {
+    if(([9, 13, 16, 37, 38, 39, 40, 49, 50, 51, 52, 53, 54, 55].includes(e.keyCode)) && e.type === "keyup") {
       this.openTooltip();
     } else if (e.keyCode === 13 || e.keyCode === 32){
       this.closeTooltip();

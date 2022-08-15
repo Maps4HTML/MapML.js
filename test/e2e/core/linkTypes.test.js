@@ -16,8 +16,10 @@ test.describe("Playwright Feature Links Tests", () => {
     test.describe("HTML Link Type Tests", () => {
       test("HTML _self target navigates to new page", async () => {
         await page.click("body > map");
-        for(let i = 0; i < 9; i++) {
-          await page.keyboard.press("Tab");
+        await page.keyboard.press("Tab");
+        await page.waitForTimeout(200);
+        for(let i = 0; i < 8; i++) {
+          await page.keyboard.press("ArrowDown");
           await page.waitForTimeout(200);
         }
         await page.keyboard.press("Enter"); // Press enter on the feature in the top-left
@@ -29,10 +31,10 @@ test.describe("Playwright Feature Links Tests", () => {
         await page.goBack();
         await page.waitForTimeout(1000);
         await page.click("body > map");
-        for(let i = 0; i < 2; i++) {
-          await page.keyboard.press("Tab");
-          await page.waitForTimeout(200);
-        }
+        await page.keyboard.press("Tab");
+        await page.waitForTimeout(200);
+        await page.keyboard.press("ArrowDown");
+        await page.waitForTimeout(200);
         await page.keyboard.press("Enter"); // Press enter on the top point feature in the top left
         await page.waitForTimeout(1000);
         const url = await page.url();
@@ -42,8 +44,10 @@ test.describe("Playwright Feature Links Tests", () => {
         await page.goBack();
         await page.waitForTimeout(1000);
         await page.click("body > map");
-        for(let i = 0; i < 9; i++) {
-          await page.keyboard.press("Tab");
+        await page.keyboard.press("Tab");
+        await page.waitForTimeout(200);
+        for(let i = 0; i < 8; i++) {
+          await page.keyboard.press("ArrowDown");
           await page.waitForTimeout(200);
         }
         await page.keyboard.press("Enter"); // Press enter on the second feature in the top left
@@ -55,10 +59,8 @@ test.describe("Playwright Feature Links Tests", () => {
         await page.goBack();
         await page.waitForTimeout(1000);
         await page.click("body > map");
-        for(let i = 0; i < 1; i++) {
-          await page.keyboard.press("Tab");
-          await page.waitForTimeout(200);
-        }
+        await page.keyboard.press("Tab");
+        await page.waitForTimeout(200);
         await page.keyboard.press("Enter"); // Press enter on the second point in the top left
         await page.waitForTimeout(1000);
         const extent = await page.$eval(
