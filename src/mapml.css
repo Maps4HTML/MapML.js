@@ -860,6 +860,7 @@ label.mapml-layer-item-toggle {
   padding-right: 5px;
 }
 
+.shortcuts-dialog > ul > li > kbd,
 .mapml-feature-index-content > span > kbd{
   background-color: lightgrey;
   padding-right: 4px;
@@ -877,3 +878,11 @@ label.mapml-layer-item-toggle {
   width: 1px;
 }
 
+.shortcuts-dialog > button{
+  font-size: inherit;
+}
+
+.shortcuts-dialog > ul {
+  padding: 0;
+  list-style-type:none;
+}
