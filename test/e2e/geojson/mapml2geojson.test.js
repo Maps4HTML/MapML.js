@@ -7,6 +7,7 @@ test.describe("GeoJSON API - mapml2geojson", () => {
       context = await chromium.launchPersistentContext('');
       page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
       await page.goto("mapml2geojson.html");
+      //await page.waitForTimeout(10000);
     });
 
     test.afterAll(async function () {

@@ -1,5 +1,3 @@
-import '../mapml-viewer.js';
-
 // Takes GeoJSON Properties to return an HTML table, helper function
 //    for geojson2mapml
 // properties2Table: geojson -> HTML Table
@@ -41,7 +39,7 @@ function properties2Table(json) {
 
 // Takes GeoJSON Objects and returns a <layer-> Element
 // geojson2mapml: geojson <layer-> -> <layer->
-export function geojson2mapml(json, properties = null, geometryFunction = null, MapML = null) {
+function geojson2mapml(json, properties = null, geometryFunction = null, MapML = null) {
     // If string json is received
     if (typeof json === "string") {
         json = JSON.parse(json);
@@ -387,17 +385,21 @@ function pcrsToGcrs (arr, source, dest) {
 
 // Takes an <layer-> element and returns a geojson feature collection object 
 // mapml2geojson: <layer-> -> geojson
-export function mapml2geojson(element, propertyFunction = null, transform = true) {
+function mapml2geojson(element, propertyFunction = null, transform = true) {
     let json = {};
     json.type = "FeatureCollection";
     json.title = element.getAttribute('label');
     json.features = [];
 
     // Transforming Coordinates to gcrs if transformation = true and coordinate is not (EPSG:3857 or EPSG:4326)
-    let source = new proj4.Proj(element.parentElement._map.options.crs.code);
-    let dest = new proj4.Proj('EPSG:4326');
-    if (element.parentElement._map.options.crs.code == "EPSG:3857" || element.parentElement._map.options.crs.code == "EPSG:4326") {
-        transform = false;
+    let source = null;
+    let dest = null;
+    if (transform) {
+        source = new proj4.Proj(element.parentElement._map.options.crs.code);
+        dest = new proj4.Proj('EPSG:4326');
+        if (element.parentElement._map.options.crs.code == "EPSG:3857" || element.parentElement._map.options.crs.code == "EPSG:4326") {
+            transform = false;
+        }   
     }
 
     // Iterating over each feature

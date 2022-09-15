@@ -7,6 +7,7 @@ test.describe("GeoJSON API - geojson2mapml", () => {
       context = await chromium.launchPersistentContext('');
       page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
       await page.goto("geojson2mapml.html");
+      //await page.waitForTimeout(10000);
     });
 
     test.afterAll(async function () {
@@ -15,7 +16,7 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("Point Geometry (string json)", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(2)", 
+      "body > mapml-viewer#output > layer-:nth-child(1)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
@@ -28,7 +29,7 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("Line Geometry", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(3)", 
+      "body > mapml-viewer#output > layer-:nth-child(2)", 
       (node) => node.innerHTML//.replace(" ", "")
     );
     const exp = await page.$eval(
@@ -40,7 +41,7 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("Polygon Geometry", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(4)", 
+      "body > mapml-viewer#output > layer-:nth-child(3)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
@@ -52,7 +53,7 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("MultiPoint Geometry", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(5)", 
+      "body > mapml-viewer#output > layer-:nth-child(4)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
@@ -64,7 +65,7 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("MultiLineString Geometry", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(6)", 
+      "body > mapml-viewer#output > layer-:nth-child(5)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
@@ -76,7 +77,7 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("MultiPolygon Geometry", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(7)", 
+      "body > mapml-viewer#output > layer-:nth-child(6)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
@@ -88,7 +89,7 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("Geometry Collection", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(8)", 
+      "body > mapml-viewer#output > layer-:nth-child(7)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
@@ -100,7 +101,7 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("Feature Collection", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(9)", 
+      "body > mapml-viewer#output > layer-:nth-child(8)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
