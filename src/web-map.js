@@ -228,9 +228,7 @@ export class WebMap extends HTMLMapElement {
           });
           this._addToHistory();
           // the attribution control is not optional
-          this._attributionControl =  this._map.attributionControl.setPrefix('<a href="https://www.w3.org/community/maps4html/" title="W3C Maps for HTML Community Group">Maps4HTML</a> | <img src="data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTIiIGhlaWdodD0iOCI+PHBhdGggZmlsbD0iIzRDN0JFMSIgZD0iTTAgMGgxMnY0SDB6Ii8+PHBhdGggZmlsbD0iI0ZGRDUwMCIgZD0iTTAgNGgxMnYzSDB6Ii8+PHBhdGggZmlsbD0iI0UwQkMwMCIgZD0iTTAgN2gxMnYxSDB6Ii8+PC9zdmc+" style="padding-right: 0.3em;" alt="Slava Ukraini"><a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
-          this._attributionControl.getContainer().setAttribute("role","group");
-          this._attributionControl.getContainer().setAttribute("aria-label","Map data attribution");
+          M.attributionControl(this);
 
           this.setControls(false,false,true);
           this._crosshair = M.crosshair().addTo(this._map);

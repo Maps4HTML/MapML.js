@@ -53,6 +53,7 @@ import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
 import { ReloadButton, reloadButton } from './control/ReloadButton';
 import { FullscreenButton, fullscreenButton } from './control/FullscreenButton';
+import {attributionControl} from "./control/AttributionControl";
 import { Crosshair, crosshair } from "./layers/Crosshair";
 import { Feature, feature } from "./features/feature";
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
@@ -646,6 +647,8 @@ M.reloadButton = reloadButton;
 
 M.FullscreenButton = FullscreenButton;
 M.fullscreenButton = fullscreenButton;
+
+M.attributionControl = attributionControl;
 
 M.MapMLStaticTileLayer = MapMLStaticTileLayer;
 M.mapMLStaticTileLayer = mapMLStaticTileLayer;
