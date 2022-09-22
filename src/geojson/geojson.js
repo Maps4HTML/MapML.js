@@ -87,7 +87,7 @@ function geojson2mapml(json, properties = null, geometryFunction = null, MapML =
     let geometrycollection = "<map-geometrycollection></map-geometrycollection>";
     geometrycollection = parser.parseFromString(geometrycollection, "text/html");
 
-    let feature = "<map-feature><map-featurecaption></map-featurecaption><map-geometry></map-geometry><map-properties></map-properties></map-feature>";
+    let feature = "<map-feature><map-featurecaption>" + layer.querySelector("layer-").getAttribute('label') + "</map-featurecaption><map-geometry></map-geometry><map-properties></map-properties></map-feature>";
     feature = parser.parseFromString(feature, "text/html");
 
     // Template to add coordinates to Geometries
@@ -121,7 +121,7 @@ function geojson2mapml(json, properties = null, geometryFunction = null, MapML =
         curr_feature.querySelector('map-properties').appendChild(p);
 
         // Setting map-geometry
-        let g = geojson2mapml(json.geometry, properties, geometryFunction, 1);
+        let g = geojson2mapml(json.geometry, properties, geometryFunction, layer);
         if (typeof geometryFunction === "function") {
             curr_feature.querySelector('map-geometry').appendChild(geometryFunction(g, json));
         } else {
@@ -249,7 +249,7 @@ function geojson2mapml(json, properties = null, geometryFunction = null, MapML =
                 g = g.querySelector('map-geometrycollection');
                 //console.log(json.geometries);
                 for (let i=0;i<json.geometries.length;i++) {
-                    let fg = geojson2mapml(json.geometries[i], properties, geometryFunction, 1);
+                    let fg = geojson2mapml(json.geometries[i], properties, geometryFunction, layer);
                     g.appendChild(fg);
                 }
                 return g;
