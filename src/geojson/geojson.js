@@ -38,22 +38,21 @@ function properties2Table(json) {
 }
 
 // Takes GeoJSON Objects and returns a <layer-> Element
-// geojson2mapml: geojson <layer-> -> <layer->
-function geojson2mapml(json, properties = null, geometryFunction = null, MapML = null) {
+// geojson2mapml: geojson function(geojson.properties) function(<layer->, geojson) <layer-> -> <layer->
+function geojson2mapml(json, properties = null, geometryFunction = null, layer = null) {
     // If string json is received
     if (typeof json === "string") {
         json = JSON.parse(json);
     }
     let geometryType = ["POINT", "LINESTRING", "POLYGON", "MULTIPOINT", "MULTILINESTRING", "MULTIPOLYGON", "GEOMETRYCOLLECTION"];
     let jsonType = json.type.toUpperCase();
-    let layer = MapML;
     let out = "";
 
     // HTML parser
     let parser = new DOMParser();
 
     // initializing layer
-    if (layer == null) {
+    if (layer === null) {
         // creating an empty mapml layer
         let xmlStringLayer = "<layer- label='' checked><map-meta name='projection' content='OSMTILE'></map-meta><map-meta name='cs' content='gcrs'></map-meta></layer->";
         layer = parser.parseFromString(xmlStringLayer, "text/html");
@@ -384,7 +383,7 @@ function pcrsToGcrs (arr, source, dest) {
 }
 
 // Takes an <layer-> element and returns a geojson feature collection object 
-// mapml2geojson: <layer-> -> geojson
+// mapml2geojson: <layer-> function(<map-properties>) Bool -> geojson
 function mapml2geojson(element, propertyFunction = null, transform = true) {
     let json = {};
     json.type = "FeatureCollection";
@@ -397,7 +396,7 @@ function mapml2geojson(element, propertyFunction = null, transform = true) {
     if (transform) {
         source = new proj4.Proj(element.parentElement._map.options.crs.code);
         dest = new proj4.Proj('EPSG:4326');
-        if (element.parentElement._map.options.crs.code == "EPSG:3857" || element.parentElement._map.options.crs.code == "EPSG:4326") {
+        if (element.parentElement._map.options.crs.code === "EPSG:3857" || element.parentElement._map.options.crs.code === "EPSG:4326") {
             transform = false;
         }   
     }
