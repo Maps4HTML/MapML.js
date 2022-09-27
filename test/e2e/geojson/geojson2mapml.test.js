@@ -111,5 +111,29 @@ test.describe("GeoJSON API - geojson2mapml", () => {
     expect(out).toEqual(exp);
   });
 
+  test("BBOX, Options label, caption + properties string", async () => {
+    const out = await page.$eval(
+      "body > mapml-viewer#output > layer-:nth-child(9)", 
+      (node) => node.outerHTML
+    );
+    const exp = await page.$eval(
+      "body > mapml-viewer#expected9 > layer-", 
+      (node) => node.outerHTML
+    );
+    expect(out).toEqual(exp);
+  });
+
+  test("BBOX, Options label, caption + properties function", async () => {
+    const out = await page.$eval(
+      "body > mapml-viewer#output > layer-:nth-child(10)", 
+      (node) => node.outerHTML
+    );
+    const exp = await page.$eval(
+      "body > mapml-viewer#expected10 > layer-", 
+      (node) => node.outerHTML
+    );
+    expect(out).toEqual(exp);
+  });
+
 
 });

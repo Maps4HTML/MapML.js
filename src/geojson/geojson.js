@@ -37,9 +37,25 @@ function properties2Table(json) {
     return table;
 }
 
-// Takes GeoJSON Objects and returns a <layer-> Element
-// geojson2mapml: geojson function(geojson.properties) function(<layer->, geojson) <layer-> -> <layer->
-function geojson2mapml(json, properties = null, geometryFunction = null, layer = null) {
+// Takes a GeoJSON geojson and an options Object which returns a <layer-> Element
+// The options object can contain the following:
+//      label            - String, contains the layer name, if included overrides the default label mapping
+//      projection       - String, contains the projection of the layer (OSMTILE, WGS84, CBMTILE, APSTILE), defaults to OSMTILE
+//      caption          - Function | String, function accepts one argument being the feature object which produces the featurecaption string OR a string that is the name of the property that will be mapped to featurecaption
+//      properties       - Function | String | HTMLElement, a function which maps the geojson feature properties to an HTMLElement or a string that will be parsed as an HTMLElement or an HTMLElement
+//      geometryFunction - Function, A function you supply that can add classes, hyperlinks and spans to the created <map-geometry> element, default would be the plain map-geometry element
+// geojson2mapml: geojson Object <layer-> -> <layer->
+function geojson2mapml(json, options = {}, layer = null) {
+    let defaults = {
+        label: null,
+        projection: "OSMTILE",
+        caption: null,
+        properties: null,
+        geometryFunction: null
+    };
+    // assign default values for undefined options
+    options = Object.assign({}, defaults, options) ;
+
     // If string json is received
     if (typeof json === "string") {
         json = JSON.parse(json);
@@ -54,10 +70,12 @@ function geojson2mapml(json, properties = null, geometryFunction = null, layer =
     // initializing layer
     if (layer === null) {
         // creating an empty mapml layer
-        let xmlStringLayer = "<layer- label='' checked><map-meta name='projection' content='OSMTILE'></map-meta><map-meta name='cs' content='gcrs'></map-meta></layer->";
+        let xmlStringLayer = "<layer- label='' checked><map-meta name='projection' content='" + options.projection + "'></map-meta><map-meta name='cs' content='gcrs'></map-meta></layer->";
         layer = parser.parseFromString(xmlStringLayer, "text/html");
         //console.log(layer)
-        if (json.name) {
+        if (options.label !== null) {
+            layer.querySelector("layer-").setAttribute("label", options.label);
+        } else if (json.name) {
             layer.querySelector("layer-").setAttribute("label", json.name);
         } else if (json.title) {
             layer.querySelector("layer-").setAttribute("label", json.title);
@@ -86,7 +104,7 @@ function geojson2mapml(json, properties = null, geometryFunction = null, layer =
     let geometrycollection = "<map-geometrycollection></map-geometrycollection>";
     geometrycollection = parser.parseFromString(geometrycollection, "text/html");
 
-    let feature = "<map-feature><map-featurecaption>" + layer.querySelector("layer-").getAttribute('label') + "</map-featurecaption><map-geometry></map-geometry><map-properties></map-properties></map-feature>";
+    let feature = "<map-feature><map-featurecaption></map-featurecaption><map-geometry></map-geometry><map-properties></map-properties></map-feature>";
     feature = parser.parseFromString(feature, "text/html");
 
     // Template to add coordinates to Geometries
@@ -95,34 +113,58 @@ function geojson2mapml(json, properties = null, geometryFunction = null, layer =
     
     //console.log(layer);
     if (jsonType === "FEATURECOLLECTION") {
+        
+        // Setting bbox if it exists
+        if (json.bbox) {
+            layer.querySelector("layer-").insertAdjacentHTML("afterbegin", "<map-meta name='extent' content='top-left-longitude=" + json.bbox[0] + ", top-left-latitude=" + json.bbox[1] + ", bottom-right-longitude=" + json.bbox[2] + ",bottom-right-latitude=" + json.bbox[3] + "'></map-meta>");
+        }
+
         let features = json.features;
         //console.log("Features length - " + features.length);
         for (let l=0;l<features.length;l++) {
-            geojson2mapml(features[l], properties, geometryFunction, layer);
+            geojson2mapml(features[l], options, layer);
         }
     } else if (jsonType === "FEATURE") {
 
         let clone_feature = feature.cloneNode(true);
         let curr_feature = clone_feature.querySelector('map-feature');
+        
+        // Setting bbox if it exists
+        if (json.bbox) {
+            layer.querySelector("layer-").insertAdjacentHTML("afterbegin", "<map-meta name='extent' content='top-left-longitude=" + json.bbox[0] + ", top-left-latitude=" + json.bbox[1] + ", bottom-right-longitude=" + json.bbox[2] + ",bottom-right-latitude=" + json.bbox[3] + "'></map-meta>");
+        }
+
+        // Setting featurecaption
+        let featureCaption = layer.querySelector("layer-").getAttribute('label');
+        if (typeof options.caption === "function") {
+            featureCaption = options.caption(json);
+        } else if (typeof options.caption === "string") {
+            featureCaption = json.properties[options.caption];
+        }
+        curr_feature.querySelector("map-featurecaption").innerHTML = featureCaption;
 
         // Setting Properties
         let p;
         // if properties function is passed
-        if (typeof properties === "function") {
-            p = properties(json.properties);
-        } else if (typeof properties === "string") { // if properties string is passed
-            p = parser.parseFromString(properties, "text/xml").childNodes[0];
-        } else { // If no properties function or string is passed
+        if (typeof options.properties === "function") {
+            p = options.properties(json.properties);
+        } else if (typeof options.properties === "string") { // if properties string is passed
+            curr_feature.querySelector('map-properties').insertAdjacentHTML("beforeend", options.properties);
+            p = false;
+        } else if (options.properties instanceof HTMLElement) { // if an HTMLElement is passed - NOT TESTED
+            p = options.properties;
+        } else { // If no properties function, string or HTMLElement is passed
             p = properties2Table(json.properties);
         }
         
-        //console.log(p);
-        curr_feature.querySelector('map-properties').appendChild(p);
+        if (p) {
+            curr_feature.querySelector('map-properties').appendChild(p);
+        }
 
         // Setting map-geometry
-        let g = geojson2mapml(json.geometry, properties, geometryFunction, layer);
-        if (typeof geometryFunction === "function") {
-            curr_feature.querySelector('map-geometry').appendChild(geometryFunction(g, json));
+        let g = geojson2mapml(json.geometry, options, layer);
+        if (typeof options.geometryFunction === "function") {
+            curr_feature.querySelector('map-geometry').appendChild(options.geometryFunction(g, json));
         } else {
             curr_feature.querySelector('map-geometry').appendChild(g);
         }
@@ -248,7 +290,7 @@ function geojson2mapml(json, properties = null, geometryFunction = null, layer =
                 g = g.querySelector('map-geometrycollection');
                 //console.log(json.geometries);
                 for (let i=0;i<json.geometries.length;i++) {
-                    let fg = geojson2mapml(json.geometries[i], properties, geometryFunction, layer);
+                    let fg = geojson2mapml(json.geometries[i], options, layer);
                     g.appendChild(fg);
                 }
                 return g;
@@ -417,7 +459,7 @@ function mapml2geojson(element, propertyFunction = null, transform = true) {
         if (typeof propertyFunction === "function") {
             let properties = propertyFunction(feature.querySelector("map-properties"));
             json.features[num].properties = properties;
-        } else if (feature.querySelector("map-properties").querySelector('tbody') != null) { 
+        } else if (feature.querySelector("map-properties").querySelector('tbody') !== null) { 
             // setting properties when table presented
             let properties = table2properties(feature.querySelector("map-properties").querySelector('tbody'));
             json.features[num].properties = properties;
@@ -430,7 +472,7 @@ function mapml2geojson(element, propertyFunction = null, transform = true) {
         let elem = geom.children[0].nodeName;
 
         // Adding Geometry
-        if (elem.toUpperCase() != "MAP-GEOMETRYCOLLECTION"){
+        if (elem.toUpperCase() !== "MAP-GEOMETRYCOLLECTION"){
             json.features[num].geometry = geometry2geojson(geom.children[0], source, dest, transform);
         } else {
             json.features[num].geometry.type = "GeometryCollection";
