@@ -293,6 +293,7 @@ let featurecollection = {
              ]
           },
           "properties":{
+             "Property name": "Property value",
              "id":"24e21a60be4811d892e2080020a0f4c9",
              "label_fr":"Québec",
              "label_en":"Québec",
@@ -673,6 +674,7 @@ let featurecollection = {
             ]
         },
                 "properties": {
+            "Property name": "Property value",
             "prop0": "This is a Geometry Collection"
         }
     }]

@@ -705,7 +705,7 @@
           }
           let prop = function f(p) {
             let parser = new DOMParser();
-            return parser.parseFromString("<h1>" + p.prop0 + " - with a featurecaption function</h1>", "text/html").body.firstChild;
+            return parser.parseFromString("<h1>" + p.properties.prop0 + " - with a featurecaption function</h1>", "text/html").body.firstChild;
           }
           layer = geojson2mapml(bbox_label_properties_and_caption_function, {label: "Point 1", caption: cap, properties: prop})
           mapml.appendChild(layer)
