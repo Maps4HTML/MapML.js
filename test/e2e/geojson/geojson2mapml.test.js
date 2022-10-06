@@ -16,11 +16,11 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("Point Geometry (string json)", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(1)", 
+      "body > #output > layer-:nth-child(1)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
-      "body > mapml-viewer#expected1 > layer-", 
+      "body > #expected > layer-:nth-child(1)", 
       (node) => node.outerHTML
     );
     expect(out).toEqual(exp);
@@ -29,11 +29,11 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("Line Geometry", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(2)", 
+      "body > #output > layer-:nth-child(2)", 
       (node) => node.innerHTML//.replace(" ", "")
     );
     const exp = await page.$eval(
-        "body > mapml-viewer#expected2 > layer-", 
+        "body > #expected > layer-:nth-child(2)", 
         (node) => node.innerHTML//.replace(" ", "")
       );
     expect(out).toEqual(exp);
@@ -41,11 +41,11 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("Polygon Geometry", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(3)", 
+      "body > #output > layer-:nth-child(3)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
-      "body > mapml-viewer#expected3 > layer-", 
+      "body > #expected > layer-:nth-child(3)", 
       (node) => node.outerHTML
     );
     expect(out).toEqual(exp);
@@ -53,11 +53,11 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("MultiPoint Geometry", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(4)", 
+      "body > #output > layer-:nth-child(4)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
-      "body > mapml-viewer#expected4 > layer-", 
+      "body > #expected > layer-:nth-child(4)", 
       (node) => node.outerHTML
     );
     expect(out).toEqual(exp);
@@ -65,11 +65,11 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("MultiLineString Geometry", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(5)", 
+      "body > #output > layer-:nth-child(5)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
-      "body > mapml-viewer#expected5 > layer-", 
+      "body > #expected > layer-:nth-child(5)", 
       (node) => node.outerHTML
     );
     expect(out).toEqual(exp);
@@ -77,11 +77,11 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("MultiPolygon Geometry", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(6)", 
+      "body > #output > layer-:nth-child(6)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
-      "body > mapml-viewer#expected6 > layer-", 
+      "body > #expected > layer-:nth-child(6)", 
       (node) => node.outerHTML
     );
     expect(out).toEqual(exp);
@@ -89,11 +89,11 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("Geometry Collection", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(7)", 
+      "body > #output > layer-:nth-child(7)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
-      "body > mapml-viewer#expected7 > layer-", 
+      "body > #expected > layer-:nth-child(7)", 
       (node) => node.outerHTML
     );
     expect(out).toEqual(exp);
@@ -101,11 +101,11 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("Feature Collection", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(8)", 
+      "body > #output > layer-:nth-child(8)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
-      "body > mapml-viewer#expected8 > layer-", 
+      "body > #expected > layer-:nth-child(8)", 
       (node) => node.outerHTML
     );
     expect(out).toEqual(exp);
@@ -113,11 +113,11 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("BBOX, Options label, caption + properties string", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(9)", 
+      "body > #output > layer-:nth-child(9)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
-      "body > mapml-viewer#expected9 > layer-", 
+      "body > #expected > layer-:nth-child(9)", 
       (node) => node.outerHTML
     );
     expect(out).toEqual(exp);
@@ -125,11 +125,11 @@ test.describe("GeoJSON API - geojson2mapml", () => {
 
   test("BBOX, Options label, caption + properties function", async () => {
     const out = await page.$eval(
-      "body > mapml-viewer#output > layer-:nth-child(10)", 
+      "body > #output > layer-:nth-child(10)", 
       (node) => node.outerHTML
     );
     const exp = await page.$eval(
-      "body > mapml-viewer#expected10 > layer-", 
+      "body > #expected > layer-:nth-child(10)", 
       (node) => node.outerHTML
     );
     expect(out).toEqual(exp);

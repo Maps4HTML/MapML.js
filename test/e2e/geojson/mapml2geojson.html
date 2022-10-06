@@ -6,6 +6,8 @@
   <meta charset="UTF-8">
   <script type="module" src="mapml-viewer.js"></script>
   <script src="lib/geojson.js"></script>
+  <!--Expected output geoJSON are stored here-->
+  <script src="mapml2geojsonJSON.js"></script>
 </head>
 
 <body>
@@ -233,6 +235,53 @@
            </map-feature>
         </layer->
 
+        <layer- label="Point Geometry" checked>
+          <map-meta name="projection" content="OSMTILE"></map-meta>
+          <map-meta name="extent" content="top-left-longitude=-75.916809, top-left-latitude=45.886964, bottom-right-longitude=-75.516809,bottom-right-latitude=45.26964"></map-meta>
+          <map-feature>
+            <map-featurecaption>Point</map-featurecaption>
+            <!-- Setting the geometry coordinates to gcrs, as the default is pcrs -->
+            <map-geometry cs="gcrs">
+              <map-point class="point">
+                <map-coordinates>-75.6916809 45.4186964</map-coordinates>
+              </map-point>
+            </map-geometry>
+            <map-properties>
+              <h2>This is <div>bolded and emphasized</div>.</h2>
+            </map-properties>
+          </map-feature>
+        </layer->
+
+        <layer- label="Point Geometry" checked>
+          <map-meta name="projection" content="OSMTILE"></map-meta>
+          <map-meta name="extent" content="top-left-longitude=-75.916809, top-left-latitude=45.886964, bottom-right-longitude=-75.516809,bottom-right-latitude=45.26964"></map-meta>
+          <map-feature>
+            <map-featurecaption>Point</map-featurecaption>
+            <!-- Setting the geometry coordinates to gcrs, as the default is pcrs -->
+            <map-geometry cs="gcrs">
+              <map-point class="point">
+                <map-coordinates>-75.6916809 45.4186964</map-coordinates>
+              </map-point>
+            </map-geometry>
+            <map-properties>
+              <table>
+                <thead>
+                  <tr>
+                    <th role="columnheader" scope="col">Property name</th>
+                    <th role="columnheader" scope="col">Property value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">prop0</th>
+                    <td itemprop="prop0">This is a Point</td>
+                  </tr>
+                </tbody>
+              </table>
+            </map-properties>
+          </map-feature>
+        </layer->
+
       </mapml-viewer>
 
       <!--mapml2geojson json output goes here dynamically-->
@@ -244,9 +293,45 @@
       <p id="json5"></p>
       <p id="json6"></p>
       <p id="json7"></p>
+      <p id="json8"></p>
+      <p id="json9"></p>
+
+      <!--mapml2geojson expected json-->
+      <p id="exp0"></p>
+      <p id="exp1"></p>
+      <p id="exp2"></p>
+      <p id="exp3"></p>
+      <p id="exp4"></p>
+      <p id="exp5"></p>
+      <p id="exp6"></p>
+      <p id="exp7"></p>
+      <p id="exp8"></p>
+      <p id="exp9"></p>
 
       <script>
         window.onload = function() {
+            // Putting expected output at their relevant spots
+            point = JSON.stringify(point);
+            document.getElementById('exp0').innerHTML = point;
+            line = JSON.stringify(line);
+            document.getElementById('exp1').innerHTML = line;
+            polygon = JSON.stringify(polygon);
+            document.getElementById('exp2').innerHTML = polygon;
+            multipoint = JSON.stringify(multipoint);
+            document.getElementById('exp3').innerHTML = multipoint;
+            multilinestring = JSON.stringify(multilinestring);
+            document.getElementById('exp4').innerHTML = multilinestring;
+            multipolygon = JSON.stringify(multipolygon);
+            document.getElementById('exp5').innerHTML = multipolygon;
+            featurecollection = JSON.stringify(featurecollection);
+            document.getElementById('exp6').innerHTML = featurecollection;
+            geometrycollection = JSON.stringify(geometrycollection);
+            document.getElementById('exp7').innerHTML = geometrycollection;
+            propertyFunction = JSON.stringify(propertyFunction);
+            document.getElementById('exp8').innerHTML = propertyFunction;
+            transform = JSON.stringify(transform);
+            document.getElementById('exp9').innerHTML = transform;
+
             let json;
 
             json = mapml2geojson(document.querySelectorAll("layer-")[0]);
@@ -280,6 +365,20 @@
             json = mapml2geojson(document.querySelectorAll("layer-")[7]);
             json = JSON.stringify(json);
             document.getElementById('json7').innerHTML = json;
+
+            // propertyFunction
+            let propF = function f(p) {
+              let prop = {};
+              prop["name"] = p.querySelector("div").innerHTML;
+              return prop;
+            }
+            json = mapml2geojson(document.querySelectorAll("layer-")[8], {propertyFunction: propF});
+            json = JSON.stringify(json);
+            document.getElementById('json8').innerHTML = json;
+
+            json = mapml2geojson(document.querySelectorAll("layer-")[9], {transform: false});
+            json = JSON.stringify(json);
+            document.getElementById('json9').innerHTML = json;
         };
       </script>
     

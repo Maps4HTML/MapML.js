@@ -152,6 +152,11 @@ function geojson2mapml(json, options = {}, layer = null) {
         // if properties function is passed
         if (typeof options.properties === "function") {
             p = options.properties(json);
+            // if function output is not an element, ignore the properties.
+            if (!(p instanceof Element)) {
+                p = false;
+                console.error("options.properties function returns a string instead of an HTMLElement.");
+            }
         } else if (typeof options.properties === "string") { // if properties string is passed
             curr_feature.querySelector('map-properties').insertAdjacentHTML("beforeend", options.properties);
             p = false;
@@ -321,6 +326,11 @@ function breakArray(arr) {
 //    for mapml2geojson
 // table2properties: HTML Table -> geojson
 function table2properties(table) {
+    // removing thead, if it exists
+    let head = table.querySelector("thead");
+    if (head !== null) {
+        table.querySelector("thead").remove();
+    }
     let json = {};
     table.querySelectorAll('tr').forEach((tr) => {
         let tableData = tr.querySelectorAll('th, td');
@@ -455,6 +465,24 @@ function mapml2geojson(element, options = {}) {
             options.transform = false;
         }   
     }
+
+    // Setting all meta settings, if any
+    let metas = element.querySelectorAll("map-meta");
+    metas.forEach((meta) => {
+        let name = meta.getAttribute('name');
+        if (name === "extent") {
+            let content = meta.getAttribute('content');;
+            let arr = content.split(",");
+            let ex = {};
+            for (let i=0; i<arr.length; i++) {
+                let s = arr[i].split("=");
+                s[0] = s[0].trim(); // removing whitespace
+                s[1] = parseFloat(s[1]);
+                ex[s[0]] = s[1];
+            }
+            json.bbox = [ex['top-left-longitude'], ex['top-left-latitude'], ex['bottom-right-longitude'], ex['bottom-right-latitude']];
+        }
+    });
 
     // Iterating over each feature
     let features = element.querySelectorAll("map-feature");
