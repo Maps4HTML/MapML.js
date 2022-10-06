@@ -471,7 +471,7 @@ function mapml2geojson(element, options = {}) {
     metas.forEach((meta) => {
         let name = meta.getAttribute('name');
         if (name === "extent") {
-            let content = meta.getAttribute('content');;
+            let content = meta.getAttribute('content');
             let arr = content.split(",");
             let ex = {};
             for (let i=0; i<arr.length; i++) {
