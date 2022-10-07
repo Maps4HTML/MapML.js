@@ -33,7 +33,7 @@ cp -rf $INPUT_SOURCE_FOLDER/. $CLONE_DIR/$INPUT_DESTINATION_FOLDER/
 cd "$CLONE_DIR"
 
 echo "Adding git commit"
-git add .
+git add -f .
 if git status | grep -q "Changes to be committed"
 then
   git commit --message "$INPUT_COMMIT_MSG"
