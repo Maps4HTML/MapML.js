@@ -243,15 +243,11 @@ export var ContextMenu = L.Handler.extend({
       .readText()
       .then(
           (layer) => {
-            mapEl.insertAdjacentHTML("beforeend", layer);
-            //// Check if layer is an layer-HTMLElement (or geojson)
-            //// Remove comments and whitespace
-            //layer = layer.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').replaceAll(' ', '').replace(/(\r\n|\n|\r)/gm,"");
-            //// need to check if layer is an HTMLElementlayer- (or geojson)
-            //if ((layer.slice(0,7) === "<layer-") && (layer.slice(-9) === "</layer->")) {
-            //  
-            //}
-          }
+            layer = layer.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
+            if ((layer.slice(0,7) === "<layer-") && (layer.slice(-9) === "</layer->")) {
+              mapEl.insertAdjacentHTML("beforeend", layer);
+            }
+        }
       );
   },
 

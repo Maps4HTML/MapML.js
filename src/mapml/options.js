@@ -9,7 +9,7 @@ export var Options = {
     cmCopyCoords: "Copy Coordinates",
     cmToggleDebug: "Toggle Debug Mode",
     cmCopyMapML: "Copy MapML",
-    cmPasteLayer: "Paste Layer",
+    cmPasteLayer: "Paste",
     cmViewSource: "View Map Source",
     cmCopyAll: "All",
     lmZoomToLayer: "Zoom To Layer",

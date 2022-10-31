@@ -20,6 +20,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
   let context;
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext('');
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
     await page.goto("mapElement.html");
   });
@@ -223,10 +224,10 @@ test.describe("Playwright Map Context Menu Tests", () => {
     await page.keyboard.press("Enter");
     await page.click("#mapml-copy-submenu > button:nth-child(10)");
 
-    await page.click("body > textarea");
+    await page.click("body > textarea#coord");
     await page.keyboard.press("Control+v");
     const copyValue = await page.$eval(
-      "body > textarea",
+      "body > textarea#coord",
       (text) => text.value
     );
     let expected = "z:1\n";
@@ -238,5 +239,36 @@ test.describe("Playwright Map Context Menu Tests", () => {
     expected += "gcrs: lon :-62.729466, lat:80.881921";
 
     expect(copyValue).toEqual(expected);
+  });
+
+  test("Paste valid Layer to map", async () => {
+    await page.click("body > textarea#layer");
+    await page.keyboard.press("Control+a");
+    await page.keyboard.press("Control+c");
+
+    await page.click("body > map");
+    await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("p");
+
+    const layerLabel = await page.$eval(
+      "body > map",
+      (map) => map.layers[1].label
+    );
+    expect(layerLabel).toEqual("Test Layer");
+  });
+
+  test("Paste invalid element to map", async () => {
+    await page.click("body > textarea#invalidLayer");
+    await page.keyboard.press("Control+a");
+    await page.keyboard.press("Control+c");
+
+    await page.click("body > map");
+    await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("p");
+    const layerCount = await page.$eval(
+      "body > map",
+      (map) => map.children.length
+    );
+    expect(layerCount).toEqual(4);
   });
 });
