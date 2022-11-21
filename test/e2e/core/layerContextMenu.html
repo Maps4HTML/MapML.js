@@ -25,10 +25,10 @@
   <mapml-viewer style="width: 500px;height: 500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls>
     <layer- label="CBMT - INLINE" checked>
       <map-extent units="CBMTILE">
-        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3" ></map-input>
-        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21" ></map-input>
-        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19" ></map-input>
-        <map-link rel='tile' tref='/data/cbmt/{zoomLevel}/c{col}_r{row}.png' ></map-link>
+        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
+        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>
+        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>
+        <map-link rel="tile" tref="/data/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>
       </map-extent>
     </layer->
     <layer- label="Layer 2" checked>
@@ -58,7 +58,8 @@
       <map-tile zoom="6" row="51" col="51" src="/data/cbmt/2/c9_r10.png"></map-tile>
     </layer->
   </mapml-viewer>
-  <textarea name="message" rows="10" cols="100"></textarea>
+  <textarea id="messageExtent" name="messageExtent" rows="10" cols="100"></textarea>
+  <textarea id="messageLayer" name="messageLayer" rows="10" cols="100"></textarea>
 </body>
 
 </html>

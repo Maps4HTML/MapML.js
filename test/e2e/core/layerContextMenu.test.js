@@ -29,14 +29,30 @@ test.describe("Playwright Layer Context Menu Tests", () => {
 
   test("Layer context menu copy layer extent", async () => {
     await page.keyboard.press("c");
-    await page.click("body > textarea");
+    await page.click("body > textarea#messageExtent");
     await page.keyboard.press("Control+v");
     const copyValue = await page.$eval(
-      "body > textarea",
+      "body > textarea#messageExtent",
       (text) => text.value
     );
 
     expect(copyValue).toEqual("<map-meta name=\"extent\" content=\"top-left-easting=-6207743.103886206, top-left-northing=10861943.103886206, bottom-right-easting=3952277.216154434, bottom-right-northing=-3362085.3441706896\"></map-meta>");
+  });
+
+  test("Layer context menu copy layer", async () => {
+    await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
+    await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span",
+      { button: "right" });
+    
+    await page.keyboard.press("l");
+    await page.click("body > textarea#messageLayer");
+    await page.keyboard.press("Control+v");
+    const copyLayer = await page.$eval(
+      "body > textarea#messageLayer",
+      (text) => text.value
+    );
+    
+    expect(copyLayer).toEqual("<layer- label=\"CBMT - INLINE\" checked=\"\">\n      <map-extent units=\"CBMTILE\" hidden=\"\">\n        <map-input name=\"zoomLevel\" type=\"zoom\" value=\"3\" min=\"0\" max=\"3\"></map-input>\n        <map-input name=\"row\" type=\"location\" axis=\"row\" units=\"tilematrix\" min=\"14\" max=\"21\"></map-input>\n        <map-input name=\"col\" type=\"location\" axis=\"column\" units=\"tilematrix\" min=\"14\" max=\"19\"></map-input>\n        <map-link rel=\"tile\" tref=\"/data/cbmt/{zoomLevel}/c{col}_r{row}.png\"></map-link>\n      </map-extent>\n    </layer->");
   });
 
   test("Map zooms in to layer 2", async () => {
