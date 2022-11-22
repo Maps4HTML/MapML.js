@@ -119,10 +119,9 @@ export var ContextMenu = L.Handler.extend({
     var longest = 0;
     for (let i = 0; i < 6; i++) {
       this._items[i].el = this._createItem(this._container, this._items[i]);
-      if (this._items[i].text?.length > longest) longest = this._items[i].text.length;
     }
-    longest = ((longest + 5) * 0.66).toFixed();
-    this._container.setAttribute("style","width: "+ longest +"ch");
+    // "ch" is the width of the "0" glyph in the _container's font
+    this._container.setAttribute("style","width: " + this._getMenuWidth(this._items) + "ch");
 
     this._coordMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-submenu", this._container);
     this._coordMenu.id = "mapml-copy-submenu";
@@ -144,6 +143,8 @@ export var ContextMenu = L.Handler.extend({
     for (let i = 0; i < this._layerItems.length; i++) {
       this._createItem(this._layerMenu, this._layerItems[i]);
     }
+    // "ch" is the width of the "0" glyph in the _container's font
+    this._layerMenu.setAttribute("style", "width:" + this._getMenuWidth(this._layerItems) + "ch");
 
     L.DomEvent
       .on(this._container, 'click', L.DomEvent.stop)
@@ -154,6 +155,15 @@ export var ContextMenu = L.Handler.extend({
       .on(this._layerMenu, 'mousedown', L.DomEvent.stop)
       .on(this._layerMenu, 'dblclick', L.DomEvent.stop)
       .on(this._layerMenu, 'contextmenu', L.DomEvent.stop);
+  },
+  _getMenuWidth(items) {
+    var longest = 0;
+    for (let i=0;i < items.length;i++) {
+      if (items[i].text?.length > longest) 
+        longest = items[i].text.length;
+    }
+    //heuristic aka hack
+    return ((longest + 5) * 0.66).toFixed();
   },
 
   addHooks: function () {
