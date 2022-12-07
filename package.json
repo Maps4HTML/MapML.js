@@ -1,6 +1,6 @@
 {
   "name": "@maps4html/web-map-custom-element",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "web-map customized built-in HTML <map> or custom <mapml-viewer>",
   "keywords": [
     "web-components",
@@ -18,7 +18,7 @@
     "type": "git",
     "url": "git://github.com/Maps4HTML/Web-Map-Custom-Element.git"
   },
-  "website": "http://maps4html.github.io/Web-Map-Custom-Element/",
+  "website": "http://maps4html.org/Web-Map-Doc/",
   "bugs": {
     "url": "https://github.com/Maps4HTML/Web-Map-Custom-Element/issues"
   },
