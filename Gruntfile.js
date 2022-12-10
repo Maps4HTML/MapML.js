@@ -2,15 +2,6 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-//    concat: {
-//      options: {
-//        separator: ';'
-//      },
-//      dist: {
-//        src: ['dist/mapml.js'],
-//        dest: 'dist/c.js'
-//      }
-//    },
     cssmin: {
       options: {
         mergeIntoShorthands: false,
@@ -28,8 +19,16 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'dist/mapml.min.js': ['<%= rollup.main.dest %>']
-        }
+          'dist/mapml.min.js':    ['<%= rollup.main.dest %>'],
+          'dist/web-map.js':      ['src/web-map.js'],
+          'dist/mapml-viewer.js': ['src/mapml-viewer.js'],
+          'dist/map-area.js':     ['src/map-area.js'],
+          'dist/layer.js':        ['src/layer.js'],
+          'dist/leaflet.min.js':  ['dist/leaflet-src.js',
+                                   'dist/proj4-src.js',
+                                   'dist/proj4leaflet.js'],
+          'dist/lib/geojson.js':  ['src/geojson/geojson.js']
+        } 
       }
     },
     jshint: {
@@ -80,14 +79,6 @@ module.exports = function(grunt) {
           },
           {
             expand: true,
-            cwd: 'src/geojson',
-            flatten: true,
-            filter: 'isFile',
-            src: ['geojson.js'],
-            dest: 'dist/lib/'
-          },
-          {
-            expand: true,
             cwd: 'src',
             flatten: true,
             filter: 'isFile',
@@ -127,8 +118,8 @@ module.exports = function(grunt) {
               return content.replace(wndoh, "}(window, (function () { 'use strict';");
             } else if (srcpath.includes('index.html')) {
               console.log('MODIFYING: ', srcpath);
-              var pathToModuleRE =  /dist\/web-map\.js/gi;
-              return content.replace(pathToModuleRE,"web-map.js");
+              var pathToModuleRE =  /dist\/mapml-viewer\.js/gi;
+              return content.replace(pathToModuleRE,"./mapml-viewer.js");
             } else {
               return content;
             }
@@ -152,35 +143,30 @@ module.exports = function(grunt) {
       }
     },
     clean: {
-      dist: ['dist']
+      dist: ['dist'],
+      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js','dist/mapml.js']
     },
     rollup: {
       options: {
-        format: 'iife',
+        format: 'iife'
       },
       main: {
         dest: 'dist/mapml.js',
-        src: 'src/mapml/index.js', // Only one source file is permitted
-      },
-    },
+        src: 'src/mapml/index.js' // Only one source file is permitted
+      }
+    }
   });
 
-  /*grunt.loadNpmTasks('grunt-html');*/
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
-//  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-rollup');
 
-/* grunt.loadNpmTasks('grunt-processhtml'); */
-
-
   grunt.registerTask('test', ['jshint']);
-
-  grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'rollup', 'uglify', 'cssmin']);
-  grunt.registerTask('build', ['rollup']);
+  grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'rollup', 
+                                 'uglify', 'cssmin','clean:tidyup']);
 
 };
