@@ -1,2 +1,2 @@
-require("../dist/leaflet.min.js");
-require("../dist/mapml.min.js");
+require("../dist/leaflet.js");
+require("../dist/mapml.js");

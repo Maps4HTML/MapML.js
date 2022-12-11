@@ -1,5 +1,5 @@
-import './leaflet.min.js';  // bundled with proj4, proj4leaflet, modularized
-import './mapml.min.js';   
+import './leaflet.js';  // bundled with proj4, proj4leaflet, modularized
+import './mapml.js';   
 import { MapLayer } from './layer.js';
 
 export class MapViewer extends HTMLElement {

@@ -15,16 +15,19 @@ module.exports = function(grunt) {
     },
     uglify: {
       options: {
-       banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
+        sourceMap: {
+          includeSources: true
+        }
       },
       dist: {
         files: {
-          'dist/mapml.min.js':    ['<%= rollup.main.dest %>'],
+          'dist/mapml.js':        ['<%= rollup.main.dest %>'],
           'dist/web-map.js':      ['src/web-map.js'],
           'dist/mapml-viewer.js': ['src/mapml-viewer.js'],
           'dist/map-area.js':     ['src/map-area.js'],
           'dist/layer.js':        ['src/layer.js'],
-          'dist/leaflet.min.js':  ['dist/leaflet-src.js',
+          'dist/leaflet.js':      ['dist/leaflet-src.js',
                                    'dist/proj4-src.js',
                                    'dist/proj4leaflet.js'],
           'dist/lib/geojson.js':  ['src/geojson/geojson.js']
@@ -79,14 +82,6 @@ module.exports = function(grunt) {
           },
           {
             expand: true,
-            cwd: 'src',
-            flatten: true,
-            filter: 'isFile',
-            src: ['*.js','*.css','*.md','index.html','package.json'],
-            dest: 'dist/'
-          },
-          {
-            expand: true,
             flatten: true,
             filter: 'isFile',
             src: ['index.html'],
@@ -134,7 +129,7 @@ module.exports = function(grunt) {
     },
     clean: {
       dist: ['dist'],
-      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js','dist/mapml.js']
+      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js']
     },
     rollup: {
       options: {

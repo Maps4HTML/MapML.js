@@ -1,5 +1,5 @@
-import './leaflet.min.js';  // a lightly modified version of Leaflet for use as browser module
-import './mapml.min.js';       // modified URI to make the function a property of window scope (possibly a bad thing to do).
+import './leaflet.js';  // a lightly modified version of Leaflet for use as browser module
+import './mapml.js';       // modified URI to make the function a property of window scope (possibly a bad thing to do).
 
 export class MapLayer extends HTMLElement {
   static get observedAttributes() {

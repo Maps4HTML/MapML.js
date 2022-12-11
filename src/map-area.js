@@ -1,5 +1,5 @@
-import './leaflet.min.js';  // a lightly modified version of Leaflet for use as browser module
-import './mapml.min.js';       // refactored URI usage, replaced with URL standard
+import './leaflet.js';  // a lightly modified version of Leaflet for use as browser module
+import './mapml.js';       // refactored URI usage, replaced with URL standard
 
 export class MapArea extends HTMLAreaElement {
   static get observedAttributes() {
