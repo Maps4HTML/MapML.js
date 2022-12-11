@@ -71,7 +71,7 @@ module.exports = function(grunt) {
           },
           {
             expand: true,
-            cwd: 'node_modules/proj4leaflet/src/',
+            cwd: 'src/proj4leaflet/',
             flatten: true,
             filter: 'isFile',
             src: ['proj4leaflet.js'],
@@ -102,16 +102,6 @@ module.exports = function(grunt) {
               console.log('MODIFYING: ', srcpath);
               wndoh = /\}\(this\, \(function \(exports\) \{ \'use strict\'\;/gi;
               return content.replace(wndoh,"}(window, (function (exports) { 'use strict';");
-            } else if (srcpath.includes('proj4leaflet.js')) {
-              console.log('PATCHING: ', srcpath);
-              // replace:
-              // return new L.LatLng(point2[1], point2[0], unbounded);
-              // with:
-              // return new L.LatLng(point2[1] || 0, point2[0] || 0, unbounded);
-              // so that Leaflet doesn't barf on the NaN that is recently
-              // returned by proj4js (where it used to return 0)
-              unproject = /return new L\.LatLng\(point2\[1\]\, point2\[0\]\, unbounded\)\;/gi;
-              return content.replace(unproject, "return new L.LatLng(point2[1] || 0, point2[0] || 0, unbounded);");
             } else if (srcpath.includes('proj4-src.js')) {
               console.log('MODIFYING: ', srcpath);
               wndoh = /\}\(this\, \(function \(\) \{ \'use strict\'\;/gi;
