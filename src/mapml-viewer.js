@@ -1,7 +1,5 @@
-import './leaflet-src.js';  // a (very slightly) modified version of Leaflet for use as browser module
-import './proj4-src.js';        // modified version of proj4; could be stripped down for mapml
-import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use.
-import './mapml.js';       // refactored URI usage, replaced with URL standard
+import './leaflet.js';  // bundled with proj4, proj4leaflet, modularized
+import './mapml.js';   
 import { MapLayer } from './layer.js';
 
 export class MapViewer extends HTMLElement {

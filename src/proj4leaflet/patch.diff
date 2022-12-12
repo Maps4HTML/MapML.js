@@ -1,0 +1,20 @@
+--- input
++++ output
+@@ -3,7 +3,7 @@
+ 	if (typeof define === 'function' && define.amd) {
+ 		// AMD
+ 		define(['leaflet', 'proj4'], factory);
+-	} else if (typeof module === 'object' && typeof module.exports === "object") {
++	} else if ((typeof process !== 'undefined') && (process.release.name.search(/node|io.js/) !== -1)) {
+ 		// Node/CommonJS
+ 		L = require('leaflet');
+ 		proj4 = require('proj4');
+@@ -43,7 +43,7 @@
+ 
+ 		unproject: function (point, unbounded) {
+ 			var point2 = this._proj.inverse([point.x, point.y]);
+-			return new L.LatLng(point2[1], point2[0], unbounded);
++			return new L.LatLng(point2[1] || 0, point2[0] || 0, unbounded);
+ 		},
+ 
+ 		_projFromCodeDef: function(code, def) {
