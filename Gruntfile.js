@@ -1,5 +1,5 @@
 module.exports = function(grunt) {
-
+  const Diff = require('diff');
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     cssmin: {
@@ -74,7 +74,7 @@ module.exports = function(grunt) {
           },
           {
             expand: true,
-            cwd: 'src/proj4leaflet/',
+            cwd: 'node_modules/proj4leaflet/src/',
             flatten: true,
             filter: 'isFile',
             src: ['proj4leaflet.js'],
@@ -101,6 +101,10 @@ module.exports = function(grunt) {
               console.log('MODIFYING: ', srcpath);
               wndoh = /\}\(this\, \(function \(\) \{ \'use strict\'\;/gi;
               return content.replace(wndoh, "}(window, (function () { 'use strict';");
+            } else if (srcpath.includes('proj4leaflet.js')) {
+              console.log('PATCHING: ', srcpath);
+              const patch = grunt.file.read('src/proj4leaflet/patch.diff');
+              return Diff.applyPatch(content, patch);
             } else if (srcpath.includes('index.html')) {
               console.log('MODIFYING: ', srcpath);
               var pathToModuleRE =  /dist\/mapml-viewer\.js/gi;

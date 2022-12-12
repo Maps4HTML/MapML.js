@@ -13,13 +13,7 @@ running on node, and so it slips through to thinking it's running on windows,
 yet the window object is undefined, so it fails with a message about Leaflet
 and proj4 needing to be defined first, which is not reflective of the problem.
 
-I set up a diff patch that can make these changes to the node_modules version of
-proj4leaflet.js, but I need to figure out how to apply the patch as I copy the
-source file before uglifying it.  I think that jsdiff can be used, in the 
-copy.process, but I need to figure out how to work with that api.
-
-Of course, these things could be fixed if the proj4leaflet and leaflet projects
-would accept a PR, but my impression was that they weren't interested, perhaps
-because projections other than Web Mercator aren't of so much interest to them.
+patch.diff contains these two fixes, and is applied to the proj4leaflet.js file 
+as it is copied from node_modules.
 
 PR 2022-12-10
