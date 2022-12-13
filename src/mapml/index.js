@@ -606,6 +606,13 @@ M.parseStylesheetAsHTML = Util.parseStylesheetAsHTML;
 M.pointToPCRSPoint = Util.pointToPCRSPoint;
 M.pixelToPCRSPoint = Util.pixelToPCRSPoint;
 M.gcrsToTileMatrix = Util.gcrsToTileMatrix;
+M.properties2Table = Util.properties2Table;
+M.geojson2mapml = Util.geojson2mapml;
+M.breakArray = Util.breakArray;
+M.table2properties = Util.table2properties;
+M.geometry2geojson = Util.geometry2geojson;
+M.pcrsToGcrs = Util.pcrsToGcrs;
+M.mapml2geojson = Util.mapml2geojson;
 
 M.QueryHandler = QueryHandler;
 M.ContextMenu = ContextMenu;
