@@ -246,6 +246,12 @@ export var ContextMenu = L.Handler.extend({
             layer = layer.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
             if ((layer.slice(0,7) === "<layer-") && (layer.slice(-9) === "</layer->")) {
               mapEl.insertAdjacentHTML("beforeend", layer);
+            } else {
+              try {
+                mapEl.geojson2mapml(JSON.parse(layer));
+              } catch {
+                console.log("Invalid Paste!");
+              }
             }
         }
       );

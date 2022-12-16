@@ -788,6 +788,15 @@ export class WebMap extends HTMLMapElement {
     return t.projection;
   }
 
+  geojson2mapml(json, options = {}){
+    if (options.projection === undefined) {
+      options.projection = this.projection;
+    }
+    let geojsonLayer = M.geojson2mapml(json, options);
+    this.appendChild(geojsonLayer);
+    return geojsonLayer;
+  }
+
   _ready() {
     if (this.hasAttribute('name')) {
       var name = this.getAttribute('name');

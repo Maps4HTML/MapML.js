@@ -32,37 +32,17 @@
           // --------------------------------------------------------------------------------- //
         window.onload = function() {
           let mapml = document.getElementById('output'); 
-          // let mapml = document.querySelector('mapml-viewer');
-          // let layer;
 
-          //layer = geojson2mapml(point);
-          //mapml.appendChild(layer);
           mapml.geojson2mapml(point);
-
           mapml.geojson2mapml(line);
-          //mapml.appendChild(layer);
-
           mapml.geojson2mapml(polygon);
-          //mapml.appendChild(layer);
-
           mapml.geojson2mapml(multipoint);
-          //mapml.appendChild(layer);
-
           mapml.geojson2mapml(multilinestring);
-          //mapml.appendChild(layer);
-
           mapml.geojson2mapml(multipolygon);
-          //mapml.appendChild(layer);
-
           mapml.geojson2mapml(geometrycollection);
-          //mapml.appendChild(layer);
-
           mapml.geojson2mapml(featurecollection);
-          //mapml.appendChild(layer)
-
           mapml.geojson2mapml(bbox_label_properties_and_caption_string, {label: "Point", caption: "prop0", properties: "<h1>String Properties test</h1>"})
-          //mapml.appendChild(layer)
-
+          
           let cap = function c(j) {
             return "caption test";
           }

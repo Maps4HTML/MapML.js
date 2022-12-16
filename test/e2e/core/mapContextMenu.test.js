@@ -271,4 +271,38 @@ test.describe("Playwright Map Context Menu Tests", () => {
     );
     expect(layerCount).toEqual(4);
   });
+
+  test("Paste geojson to map", async () => {
+    await page.click("body > textarea#geojson");
+    await page.keyboard.press("Control+a");
+    await page.keyboard.press("Control+c");
+
+    await page.click("body > map");
+    await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("p");
+    const layerLabel = await page.$eval(
+      "body > map",
+      (map) => map.layers[2].outerHTML
+    );
+    const expected = await page.$eval(
+      "body > textarea#geojsonExpected",
+      (textarea) => textarea.value
+    );
+    expect(layerLabel).toEqual(expected);
+  });
+
+  test("Paste invalid geojson to map", async () => {
+    await page.click("body > textarea#geojsonInvalid");
+    await page.keyboard.press("Control+a");
+    await page.keyboard.press("Control+c");
+
+    await page.click("body > map");
+    await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("p");
+    const layerCount = await page.$eval(
+      "body > map",
+      (map) => map.children.length
+    );
+    expect(layerCount).toEqual(5);
+  });
 });
