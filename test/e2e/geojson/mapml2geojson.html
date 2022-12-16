@@ -5,7 +5,6 @@
   <title>MapML 2 geoJSON</title>
   <meta charset="UTF-8">
   <script type="module" src="mapml-viewer.js"></script>
-  <script src="lib/geojson.js"></script>
   <!--Expected output geoJSON are stored here-->
   <script src="mapml2geojsonJSON.js"></script>
 </head>
@@ -334,35 +333,35 @@
 
             let json;
 
-            json = mapml2geojson(document.querySelectorAll("layer-")[0]);
+            json = document.querySelectorAll("layer-")[0].mapml2geojson();
             json = JSON.stringify(json);
             document.getElementById('json0').innerHTML = json;
 
-            json = mapml2geojson(document.querySelectorAll("layer-")[1]);
+            json = document.querySelectorAll("layer-")[1].mapml2geojson();
             json = JSON.stringify(json);
             document.getElementById('json1').innerHTML = json;
 
-            json = mapml2geojson(document.querySelectorAll("layer-")[2]);
+            json = document.querySelectorAll("layer-")[2].mapml2geojson();
             json = JSON.stringify(json);
             document.getElementById('json2').innerHTML = json;
             
-            json = mapml2geojson(document.querySelectorAll("layer-")[3]);
+            json = document.querySelectorAll("layer-")[3].mapml2geojson();
             json = JSON.stringify(json);
             document.getElementById('json3').innerHTML = json;
 
-            json = mapml2geojson(document.querySelectorAll("layer-")[4]);
+            json = document.querySelectorAll("layer-")[4].mapml2geojson();
             json = JSON.stringify(json);
             document.getElementById('json4').innerHTML = json;
 
-            json = mapml2geojson(document.querySelectorAll("layer-")[5]);
+            json = document.querySelectorAll("layer-")[5].mapml2geojson();
             json = JSON.stringify(json);
             document.getElementById('json5').innerHTML = json;
 
-            json = mapml2geojson(document.querySelectorAll("layer-")[6]);
+            json = document.querySelectorAll("layer-")[6].mapml2geojson();
             json = JSON.stringify(json);
             document.getElementById('json6').innerHTML = json;
 
-            json = mapml2geojson(document.querySelectorAll("layer-")[7]);
+            json = document.querySelectorAll("layer-")[7].mapml2geojson();
             json = JSON.stringify(json);
             document.getElementById('json7').innerHTML = json;
 
@@ -372,11 +371,11 @@
               prop["name"] = p.querySelector("div").innerHTML;
               return prop;
             }
-            json = mapml2geojson(document.querySelectorAll("layer-")[8], {propertyFunction: propF});
+            json = document.querySelectorAll("layer-")[8].mapml2geojson({propertyFunction: propF});
             json = JSON.stringify(json);
             document.getElementById('json8').innerHTML = json;
 
-            json = mapml2geojson(document.querySelectorAll("layer-")[9], {transform: false});
+            json = document.querySelectorAll("layer-")[9].mapml2geojson({transform: false});
             json = JSON.stringify(json);
             document.getElementById('json9').innerHTML = json;
         };

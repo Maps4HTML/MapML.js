@@ -746,6 +746,15 @@ export class MapViewer extends HTMLElement {
     M[t.projection.toUpperCase()] = M[t.projection]; //adds the projection uppercase to global M
     return t.projection;
   }
+
+  geojson2mapml(json, options = {}){
+    if (options.projection === undefined) {
+      options.projection = this.projection;
+    }
+    let geojsonLayer = M.geojson2mapml(json, options);
+    this.appendChild(geojsonLayer);
+    return geojsonLayer;
+  }
 }
 // need to provide options { extends: ... }  for custom built-in elements
 window.customElements.define('mapml-viewer', MapViewer);

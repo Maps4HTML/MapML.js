@@ -550,7 +550,9 @@ export var Util = {
             if (featureCaption === undefined) {
                 featureCaption = options.caption;
             }
-        }
+        } else if (json.id) { // when no caption option available try setting id as featurecaption
+          featureCaption = json.id;
+        } 
         curr_feature.querySelector("map-featurecaption").innerHTML = featureCaption;
 
         // Setting Properties
@@ -912,7 +914,7 @@ export var Util = {
               json.features[num].properties = properties;
           } else {
               // when no table present, strip any possible html tags to only get text
-              json.features[num].properties = {prop0: (feature.querySelector("map-properties").innerHTML).replace( /(<([^>] +)>)/ig, '')};
+              json.features[num].properties = {prop0: (feature.querySelector("map-properties").innerHTML).replace( /(<([^>]+)>)/ig, '')};
           }
 
           let geom = feature.querySelector("map-geometry");
