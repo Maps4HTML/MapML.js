@@ -120,5 +120,12 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
         expect(children).toEqual(0);
       });
     });
+    test("Toggle controls context menu disabled when map created with no controls", async () => {
+      const disabled = await page.$eval(
+        "body > #nocontrols", 
+        (map) => map._map.contextMenu._items[4].el.el.hasAttribute("disabled")
+      );
+      expect(disabled).toEqual(true);
+    });
   });
 });
