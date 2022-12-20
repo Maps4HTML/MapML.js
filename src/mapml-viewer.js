@@ -368,6 +368,24 @@ export class MapViewer extends HTMLElement {
               {target: this}}));
       }
     });
+    // pasting layer- and geojson using Ctrl+V 
+    this.parentElement.addEventListener('keydown', function (e) {
+      if(e.keyCode === 86 && e.ctrlKey && document.activeElement.nodeName === "MAPML-VIEWER"){
+        navigator.clipboard
+          .readText()
+          .then(
+            (layer) => {
+              layer = layer.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
+              if ((layer.slice(0,7) === "<layer-") && (layer.slice(-9) === "</layer->")) {
+                document.activeElement.insertAdjacentHTML("beforeend", layer);
+              } else {
+                try {
+                  document.activeElement.geojson2mapml(JSON.parse(layer));
+                } catch {
+                  console.log("Invalid Paste!");
+                }}});
+      }
+    });
     this.parentElement.addEventListener('mousedown', function (e) {
       if(document.activeElement.nodeName === "MAPML-VIEWER"){
         document.activeElement.dispatchEvent(new CustomEvent('mapfocused', {detail:

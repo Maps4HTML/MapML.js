@@ -25,6 +25,7 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
   let context;
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext('');
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
     page = await context.newPage();
     await page.goto("mapml-viewer.html");
@@ -120,5 +121,18 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
         expect(children).toEqual(0);
       });
     });
+  });
+  test("Paste Layer to map using ctrl+v", async () => {
+   await page.click("body > textarea#copyGeoJSON");
+   await page.keyboard.press("Control+a");
+   await page.keyboard.press("Control+c");
+
+   await page.click("body > mapml-viewer");
+   await page.keyboard.press('Control+v');
+   const layerCount = await page.$eval(
+     "body > mapml-viewer", 
+     (map) => map.layers.length
+   );
+   expect(layerCount).toEqual(2);
   });
 });
