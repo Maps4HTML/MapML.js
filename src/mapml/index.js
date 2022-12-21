@@ -607,6 +607,7 @@ M.pointToPCRSPoint = Util.pointToPCRSPoint;
 M.pixelToPCRSPoint = Util.pixelToPCRSPoint;
 M.gcrsToTileMatrix = Util.gcrsToTileMatrix;
 M.properties2Table = Util.properties2Table;
+M.updateExtent = Util.updateExtent;
 M.geojson2mapml = Util.geojson2mapml;
 M.breakArray = Util.breakArray;
 M.table2properties = Util.table2properties;

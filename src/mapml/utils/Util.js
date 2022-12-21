@@ -443,6 +443,20 @@ export var Util = {
     return table;
   },
 
+  // Takes bbox array and a x,y coordinate to possibly update the extent, returns extent
+  //    for geojson2mapml
+  // updateExtent: [min x, min y, max x, max y], x, y -> [min x, min y, max x, max y]
+  updateExtent: function (bboxExtent, x, y) {
+    if (bboxExtent === {}) {
+      return bboxExtent;
+    }
+    bboxExtent[0] = Math.min(x, bboxExtent[0]);
+    bboxExtent[1] = Math.min(y, bboxExtent[1]);
+    bboxExtent[2] = Math.max(x, bboxExtent[2]);
+    bboxExtent[3] = Math.max(y, bboxExtent[3]);
+    return bboxExtent;
+  },
+
   // Takes a GeoJSON geojson and an options Object which returns a <layer-> Element
   // The options object can contain the following:
   //      label            - String, contains the layer name, if included overrides the default label mapping
@@ -450,8 +464,8 @@ export var Util = {
   //      caption          - Function | String, function accepts one argument being the feature object which produces the   featurecaption string OR a string that is the name of the property that will be mapped to featurecaption
   //      properties       - Function | String | HTMLElement, a function which maps the geojson feature to an HTMLElement   or a string that will be parsed as an HTMLElement or an HTMLElement
   //      geometryFunction - Function, A function you supply that can add classes, hyperlinks and spans to the created  <map-geometry> element, default would be the plain map-geometry element
-  // geojson2mapml: geojson Object <layer-> -> <layer->
-  geojson2mapml: function (json, options = {}, layer = null) {
+  // geojson2mapml: geojson Object <layer-> [min x, min y, max x, max y] -> <layer->
+  geojson2mapml: function (json, options = {}, layer = null, bboxExtent={}) {
     let defaults = {
         label: null,
         projection: "OSMTILE",
@@ -469,12 +483,16 @@ export var Util = {
     let geometryType = ["POINT", "LINESTRING", "POLYGON", "MULTIPOINT", "MULTILINESTRING", "MULTIPOLYGON", "GEOMETRYCOLLECTION"];
     let jsonType = json.type.toUpperCase();
     let out = "";
+    let setExtent = false;
 
     // HTML parser
     let parser = new DOMParser();
 
     // initializing layer
     if (layer === null) {
+        if (!json.bbox) {
+          setExtent = true;
+        }
         // creating an empty mapml layer
         let xmlStringLayer = "<layer- label='' checked><map-meta name='projection' content='" + options.projection + "'></map-meta><map-meta name='cs' content='gcrs'></map-meta></layer->";
         layer = parser.parseFromString(xmlStringLayer, "text/html");
@@ -523,22 +541,19 @@ export var Util = {
         // Setting bbox if it exists
         if (json.bbox) {
             layer.querySelector("layer-").insertAdjacentHTML("afterbegin", "<map-meta name='extent' content='top-left-longitude=" + json.bbox[0] + ", top-left-latitude=" + json.bbox[1] + ", bottom-right-longitude=" + json.bbox[2] + ",bottom-right-latitude=" + json.bbox[3] + "'></map-meta>");
+        } else {
+          bboxExtent = [Infinity, Infinity, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY];
         }
 
         let features = json.features;
         //console.log("Features length - " + features.length);
         for (let l=0;l<features.length;l++) {
-            M.geojson2mapml(features[l], options, layer);
+            M.geojson2mapml(features[l], options, layer, bboxExtent);
         }
     } else if (jsonType === "FEATURE") {
 
         let clone_feature = feature.cloneNode(true);
         let curr_feature = clone_feature.querySelector('map-feature');
-        
-        // Setting bbox if it exists
-        if (json.bbox) {
-            layer.querySelector("layer-").insertAdjacentHTML("afterbegin", "<map-meta name='extent' content='top-left-longitude=" + json.bbox[0] + ", top-left-latitude=" + json.bbox[1] + ", bottom-right-longitude=" + json.bbox[2] + ",bottom-right-latitude=" + json.bbox[3] + "'></map-meta>");
-        }
 
         // Setting featurecaption
         let featureCaption = layer.querySelector("layer-").getAttribute('label');
@@ -579,7 +594,7 @@ export var Util = {
         }
 
         // Setting map-geometry
-        let g = M.geojson2mapml(json.geometry, options, layer);
+        let g = M.geojson2mapml(json.geometry, options, layer, bboxExtent);
         if (typeof options.geometryFunction === "function") {
             curr_feature.querySelector('map-geometry').appendChild(options.geometryFunction(g, json));
         } else {
@@ -593,6 +608,7 @@ export var Util = {
         //console.log("Geometry Type - " + jsonType);
         switch(jsonType){
             case "POINT":
+                bboxExtent = M.updateExtent(bboxExtent, json.coordinates[0], json.coordinates[1]);
                 out = json.coordinates[0] + " " + json.coordinates[1];
                 
                 // Create Point element
@@ -616,6 +632,7 @@ export var Util = {
                 out = "";
 
                 for (let x=0;x<json.coordinates.length;x++) {
+                    bboxExtent = M.updateExtent(bboxExtent, json.coordinates[x][0], json.coordinates[x][1]);
                     out = out + json.coordinates[x][0] + " " + json.coordinates[x][1] + " ";
                 }
 
@@ -635,6 +652,7 @@ export var Util = {
 
                     // Going over coordinates for the polygon
                     for (let x=0;x<json.coordinates[y].length;x++) {
+                        bboxExtent = M.updateExtent(bboxExtent, json.coordinates[y][x][0], json.coordinates[y][x][1]);
                         out = out + json.coordinates[y][x][0] + " " + json.coordinates[y][x][1] + " ";
                     }
 
@@ -653,6 +671,7 @@ export var Util = {
                 clone_multipoint = clone_multipoint.querySelector('map-multipoint');
 
                 for (let i=0;i<json.coordinates.length;i++) {
+                    bboxExtent = M.updateExtent(bboxExtent, json.coordinates[i][0], json.coordinates[i][1]);
                     out = out + json.coordinates[i][0] + " " + json.coordinates[i][1] + " ";
                 }
                 clone_multipoint.querySelector('map-coordinates').innerHTML = out;
@@ -667,6 +686,7 @@ export var Util = {
                     let clone_coords = coords.cloneNode(true);
                     clone_coords = clone_coords.querySelector("map-coordinates");
                     for(let y=0;y<json.coordinates[i].length;y++) {
+                        bboxExtent = M.updateExtent(bboxExtent, json.coordinates[i][y][0], json.coordinates[i][y][1]);
                         out = out + json.coordinates[i][y][0] + " " + json.coordinates[i][y][1] + " ";
                     }
                     clone_coords.innerHTML = out;
@@ -691,6 +711,7 @@ export var Util = {
 
                         // Going over coordinates for the polygon
                         for (let x=0;x<json.coordinates[i][y].length;x++) {
+                            bboxExtent = M.updateExtent(bboxExtent, json.coordinates[i][y][x][0], json.coordinates[i][y][x][1]);
                             out = out + json.coordinates[i][y][x][0] + " " + json.coordinates[i][y][x][1] + " ";
                         }
 
@@ -707,11 +728,15 @@ export var Util = {
                 g = g.querySelector('map-geometrycollection');
                 //console.log(json.geometries);
                 for (let i=0;i<json.geometries.length;i++) {
-                    let fg = M.geojson2mapml(json.geometries[i], options, layer);
+                    let fg = M.geojson2mapml(json.geometries[i], options, layer, bboxExtent);
                     g.appendChild(fg);
                 }
                 return g;
         }
+    }
+    //Add default bbox
+    if (setExtent){
+      layer.querySelector("layer-").insertAdjacentHTML("afterbegin", "<map-meta name='extent' content='top-left-longitude=" + bboxExtent[0] + ", top-left-latitude=" + bboxExtent[1] + ", bottom-right-longitude=" + bboxExtent[2] + ",bottom-right-latitude=" + bboxExtent[3] + "'></map-meta>");
     }
     return layer.querySelector('layer-');
   },
