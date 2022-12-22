@@ -315,7 +315,10 @@ export class MapViewer extends HTMLElement {
   }
   _dropHandler(event) {
     event.preventDefault();
-    // create a new <layer-> child of this <mapml-viewer> element
+    let text = event.dataTransfer.getData("text");
+    try {
+      new URL(text);
+      // create a new <layer-> child of this <mapml-viewer> element
       let l = new MapLayer();
       l.src = event.dataTransfer.getData("text");
       l.label = 'Layer';
@@ -329,20 +332,31 @@ export class MapViewer extends HTMLElement {
         // garbage collect it
         l = null;
       });
+    } catch (err) {
+      text = text.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
+      if ((text.slice(0,7) === "<layer-") && (text.slice(-9) === "</layer->")) {
+        this.insertAdjacentHTML("beforeend", text);
+      } else {
+        try {
+          this.geojson2mapml(JSON.parse(text));
+        } catch {
+          console.log("Invalid Input!");
+        }}
+    }
   }
   _dragoverHandler(event) {
-    function contains(list, value) {
-      for( var i = 0; i < list.length; ++i ) {
-        if(list[i] === value) return true;
-      }
-      return false;
-    }
-    // check if the thing being dragged is a URL
-    var isLink = contains( event.dataTransfer.types, "text/uri-list");
-    if (isLink) {
-      event.preventDefault();
-      event.dataTransfer.dropEffect = "copy";
-    }
+    //function contains(list, value) {
+    //  for( var i = 0; i < list.length; ++i ) {
+    //    if(list[i] === value) return true;
+    //  }
+    //  return false;
+    //}
+    //// check if the thing being dragged is a URL
+    //var isLink = contains( event.dataTransfer.types, "text/uri-list");
+    //if (isLink) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+    //}
   }
   _removeEvents() {
     if (this._map) {
