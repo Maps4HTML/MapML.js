@@ -96,7 +96,7 @@ test.describe("UI Drag&Drop Test", () => {
 
     expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
     expect(layerIndex).toEqual("1");
-    expect(controlText).toBe("Static MapML With Tiles");
+    expect(controlText).toBe("Static MapML with tiles");
   });
 
 });
