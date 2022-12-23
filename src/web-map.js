@@ -386,18 +386,8 @@ export class WebMap extends HTMLMapElement {
     }
   }
   _dragoverHandler(event) {
-    //function contains(list, value) {
-    //  for( var i = 0; i < list.length; ++i ) {
-    //    if(list[i] === value) return true;
-    //  }
-    //  return false;
-    //}
-    //// check if the thing being dragged is a URL
-    //var isLink = contains( event.dataTransfer.types, "text/uri-list");
-    //if (isLink) {
-      event.preventDefault();
-      event.dataTransfer.dropEffect = "copy";
-  //}
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
   }
   _removeEvents() {
     if (this._map) {
@@ -425,7 +415,7 @@ export class WebMap extends HTMLMapElement {
     });
     // pasting layer- and geojson using Ctrl+V 
     this.parentElement.addEventListener('keydown', function (e) {
-      if(e.keyCode === 86 && e.ctrlKey && document.activeElement.nodeName === "MAPML-VIEWER"){
+      if(e.keyCode === 86 && e.ctrlKey && document.activeElement.nodeName === "DIV"){
         navigator.clipboard
           .readText()
           .then(
@@ -435,7 +425,7 @@ export class WebMap extends HTMLMapElement {
                 document.activeElement.insertAdjacentHTML("beforeend", layer);
               } else {
                 try {
-                  document.activeElement.geojson2mapml(JSON.parse(layer));
+                  document.activeElement.parentElement.geojson2mapml(JSON.parse(layer));
                 } catch {
                   console.log("Invalid Paste!");
                 }}});

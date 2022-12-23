@@ -5,7 +5,6 @@ test.describe("Drag and Drop Layers (layer-, GeoJSON, Link)", () => {
   let context;
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext('');
-    await context.grantPermissions(["clipboard-read", "clipboard-write"]); // ------------------
     page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
     page = await context.newPage();
     await page.goto("dragDrop.html");

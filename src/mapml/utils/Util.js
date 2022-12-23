@@ -504,7 +504,7 @@ export var Util = {
         } else if (json.title) {
             layer.querySelector("layer-").setAttribute("label", json.title);
         } else{
-            layer.querySelector("layer-").setAttribute("label", "Layer");
+            layer.querySelector("layer-").setAttribute("label", M.options.locale.dfLayer);
         }
     }
     let point = "<map-point></map-point>";

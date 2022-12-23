@@ -345,18 +345,8 @@ export class MapViewer extends HTMLElement {
     }
   }
   _dragoverHandler(event) {
-    //function contains(list, value) {
-    //  for( var i = 0; i < list.length; ++i ) {
-    //    if(list[i] === value) return true;
-    //  }
-    //  return false;
-    //}
-    //// check if the thing being dragged is a URL
-    //var isLink = contains( event.dataTransfer.types, "text/uri-list");
-    //if (isLink) {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = "copy";
-    //}
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
   }
   _removeEvents() {
     if (this._map) {
