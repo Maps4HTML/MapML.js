@@ -10,6 +10,7 @@ app.use(express.static(path.join(__dirname, "e2e/data")));
 app.use(express.static(path.join(__dirname, "e2e/geojson")));
 app.use(express.static(path.join(__dirname, "e2e/layers")));
 app.use(express.static(path.join(__dirname, "e2e/mapml-viewer")));
+app.use(express.static(path.join(__dirname, "e2e/web-map")));
 
 app.get('/data/query/us_map_query', (req, res, next) => {
   res.sendFile(__dirname + "/e2e/data/tiles/cbmt/us_map_query.mapml", { headers: { "Content-Type": "text/mapml" } }, (err) => {
@@ -20,6 +21,13 @@ app.get('/data/query/us_map_query', (req, res, next) => {
 });
 app.get('/data/query/html_query_response', (req, res, next) => {
   res.sendFile(__dirname + "/e2e/data/tiles/cbmt/html_query_response.html", { headers: { "Content-Type": "text/html" } }, (err) => {
+    if (err) {
+      res.status(403).send("Error.");
+    }
+  });
+});
+app.get('/data/query/DouglasFir', (req, res, next) => {
+  res.sendFile(__dirname + "/e2e/data/tiles/cbmt/DouglasFir.mapml", { headers: { "Content-Type": "text/mapml" } }, (err) => {
     if (err) {
       res.status(403).send("Error.");
     }

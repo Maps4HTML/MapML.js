@@ -1,0 +1,20 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+    <map-head>
+        <map-title>Natural Resources Canada - Douglas Fir (Genus Pseudotsuga) 250m resolution</map-title>
+        <map-meta http-equiv="Content-Type" content="text/mapml;projection=CBMTILE"></map-meta>
+        <map-meta charset="utf-8"></map-meta>
+        <map-base href="/mapml/en/cbmtile/kNN_Genus_Pseu/"></map-base>
+        <map-link rel="license" href="http://open.canada.ca/en/open-government-licence-canada" title="Open Government Licence - Canada"></map-link>
+        <map-link rel="legend" href="http://nfi.nfis.org/mapserver/cgi-bin/nfis-kNN.cgi?service=WMS&amp;version=1.3.0&amp;request=GetLegendGraphic&amp;sld_version=1.1.0&amp;format=image/png&amp;layer=kNN_Genus_Pseu&amp;style=default"></map-link>
+    </map-head>
+    <map-body>
+        <map-extent units="CBMTILE">
+            <map-input name="z" type="zoom" value="19" min="0" max="19"></map-input>
+            <map-input name="txmin" type="location" units="tilematrix" position="top-left" axis="easting" min="-7786477.0" max="7148753.0"></map-input>
+            <map-input name="tymin" type="location" units="tilematrix" position="bottom-left" axis="northing" min="-927808.0" max="7928344.0"></map-input>
+            <map-input name="txmax" type="location" units="tilematrix" position="top-right" axis="easting" min="-7786477.0" max="7148753.0"></map-input>
+            <map-input name="tymax" type="location" units="tilematrix" position="top-left" axis="northing" min="-927808.0" max="7928344.0"></map-input>
+            <map-link rel="tile" tref="http://nfi.nfis.org/mapserver/cgi-bin/nfis-kNN.cgi?SERVICE=WMS&amp;VERSION=1.3.0&amp;CRS=EPSG:3978&amp;LAYERS=kNN_Genus_Pseu&amp;BBOX={txmin},{tymin},{txmax},{tymax}&amp;REQUEST=GetMap&amp;FORMAT=image/png&amp;TRANSPARENT=TRUE&amp;WIDTH=256&amp;HEIGHT=256&amp;STYLES=&amp;m4h=t"></map-link>
+        </map-extent>
+    </map-body>
+</mapml->

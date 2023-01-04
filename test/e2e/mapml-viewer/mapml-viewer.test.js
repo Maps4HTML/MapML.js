@@ -135,4 +135,47 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
    );
    expect(layerCount).toEqual(2);
   });
+
+  test("Paste Link to map using ctrl+v", async () => {
+    await page.click("body > textarea#copyLink");
+    await page.keyboard.press("Control+a");
+    await page.keyboard.press("Control+c");
+ 
+    await page.click("body > mapml-viewer");
+    await page.keyboard.press('Control+v');
+    const layerCount = await page.$eval(
+      "body > mapml-viewer", 
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(3);
+   });
+
+   test("Paste Invalid text to map using ctrl+v", async () => {
+    await page.click("body > textarea#invalidText");
+    await page.keyboard.press("Control+a");
+    await page.keyboard.press("Control+c");
+ 
+    await page.click("body > mapml-viewer");
+    await page.keyboard.press('Control+v');
+    const layerCount = await page.$eval(
+      "body > mapml-viewer", 
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(3);
+   });
+
+   test("Paste Invalid link to map using ctrl+v", async () => {
+    await page.click("body > textarea#invalidLink");
+    await page.keyboard.press("Control+a");
+    await page.keyboard.press("Control+c");
+ 
+    await page.click("body > mapml-viewer");
+    await page.keyboard.press('Control+v');
+    await page.waitForTimeout(500);
+    const layerCount = await page.$eval(
+      "body > mapml-viewer", 
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(3);
+   });
 });

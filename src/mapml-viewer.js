@@ -321,7 +321,7 @@ export class MapViewer extends HTMLElement {
       // create a new <layer-> child of this <mapml-viewer> element
       let l = new MapLayer();
       l.src = event.dataTransfer.getData("text");
-      l.label = 'Layer';
+      l.label = M.options.locale.dfLayer;
       l.checked = 'true';
       this.appendChild(l);
       l.addEventListener("error", function () {
@@ -379,17 +379,34 @@ export class MapViewer extends HTMLElement {
           .readText()
           .then(
             (layer) => {
-              layer = layer.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
-              if ((layer.slice(0,7) === "<layer-") && (layer.slice(-9) === "</layer->")) {
-                document.activeElement.insertAdjacentHTML("beforeend", layer);
-              } else {
-                try {
-                  document.activeElement.geojson2mapml(JSON.parse(layer));
-                } catch {
-                  console.log("Invalid Paste!");
-                }}});
-      }
-    });
+              try {
+                new URL(layer);
+                // create a new <layer-> child of this <mapml-viewer> element
+                let l = new MapLayer();
+                l.src = layer;
+                l.label = M.options.locale.dfLayer;
+                l.checked = 'true';
+                document.activeElement.appendChild(l);
+                l.addEventListener("error", function () {
+                  if (l.parentElement) {
+                    // should invoke lifecyle callbacks automatically by removing it from DOM
+                    l.parentElement.removeChild(l);
+                  }
+                  // garbage collect it
+                  l = null;
+                });
+              } catch (err) {
+                layer = layer.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
+                if ((layer.slice(0,7) === "<layer-") && (layer.slice(-9) === "</layer->")) {
+                  document.activeElement.insertAdjacentHTML("beforeend", layer);
+                } else {
+                  try {
+                    document.activeElement.geojson2mapml(JSON.parse(layer));
+                  } catch {
+                    console.log("Invalid Paste!");
+                  }}
+              }});
+      }});
     this.parentElement.addEventListener('mousedown', function (e) {
       if(document.activeElement.nodeName === "MAPML-VIEWER"){
         document.activeElement.dispatchEvent(new CustomEvent('mapfocused', {detail:
