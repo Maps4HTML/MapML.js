@@ -51,7 +51,7 @@
     "jest-circus": "^26.6.3",
     "jest-environment-node": "^26.6.1",
     "jest-playwright-preset": "^1.7.0",
-    "leaflet": "^1.7.1",
+    "leaflet": "^1.9.1",
     "path": "^0.12.7",
     "@playwright/test": "^1.24.2",
     "playwright": "^1.24.2",
