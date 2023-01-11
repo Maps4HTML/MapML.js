@@ -1,4 +1,3 @@
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/owner/my-element)
 ![Build Status](https://api.travis-ci.com/Maps4HTML/Web-Map-Custom-Element.svg?branch=master)
 ![Continuous Testing](https://github.com/Maps4HTML/Web-Map-Custom-Element/workflows/Continuous%20Testing/badge.svg)
 
