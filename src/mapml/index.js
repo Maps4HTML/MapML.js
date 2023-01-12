@@ -606,6 +606,7 @@ M.parseStylesheetAsHTML = Util.parseStylesheetAsHTML;
 M.pointToPCRSPoint = Util.pointToPCRSPoint;
 M.pixelToPCRSPoint = Util.pixelToPCRSPoint;
 M.gcrsToTileMatrix = Util.gcrsToTileMatrix;
+M.pasteLayer = Util.pasteLayer;
 M.properties2Table = Util.properties2Table;
 M.updateExtent = Util.updateExtent;
 M.geojson2mapml = Util.geojson2mapml;

@@ -243,22 +243,7 @@ export var ContextMenu = L.Handler.extend({
       .readText()
       .then(
           (layer) => {
-            try {
-              new URL(layer);
-              // create a new <layer-> child of this <mapml-viewer> element
-              let l = '<layer- src="' + layer + '" label="' + M.options.locale.dfLayer + '" checked=""></layer->';
-              mapEl.insertAdjacentHTML("beforeend", l);
-            } catch (err) {
-              layer = layer.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
-              if ((layer.slice(0,7) === "<layer-") && (layer.slice(-9) === "</layer->")) {
-                mapEl.insertAdjacentHTML("beforeend", layer);
-              } else {
-                try {
-                  mapEl.geojson2mapml(JSON.parse(layer));
-                } catch {
-                  console.log("Invalid Input!");
-                }}
-            }
+            M.pasteLayer(mapEl, layer);
         }
       );
   },

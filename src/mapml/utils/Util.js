@@ -405,6 +405,37 @@ export var Util = {
     return [column, row];
   },
 
+  // Pastes text to a mapml-viewer/map element(mapEl), text can be a mapml link, geojson, or a layer-
+  //    used for pasting layers through ctrl+v, drag/drop, and pasting through the contextmenu
+  // pasteLayer: HTMLElement Str -> None
+  // Effects: append a layer- element to mapEl, if it is valid
+  pasteLayer: function (mapEl, text) {
+    try {
+      new URL(text);
+      // create a new <layer-> child of the <mapml-viewer> element
+      let l = '<layer- src="' + text + '" label="' + M.options.locale.dfLayer + '" checked=""></layer->';
+      mapEl.insertAdjacentHTML("beforeend", l);
+      mapEl.lastChild.addEventListener("error", function () {
+        if (mapEl) {
+          // should invoke lifecyle callbacks automatically by removing it from DOM
+          mapEl.removeChild(mapEl.lastChild);
+        }
+        // garbage collect it
+        l = null;
+      });
+    } catch (err) {
+      text = text.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
+      if ((text.slice(0,7) === "<layer-") && (text.slice(-9) === "</layer->")) {
+        mapEl.insertAdjacentHTML("beforeend", text);
+      } else {
+        try {
+          mapEl.geojson2mapml(JSON.parse(text));
+        } catch {
+          console.log("Invalid Input!");
+        }}
+    }
+  },
+
   // Takes GeoJSON Properties to return an HTML table, helper function
   //    for geojson2mapml
   // properties2Table: geojson -> HTML Table

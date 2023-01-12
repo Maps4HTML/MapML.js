@@ -316,33 +316,7 @@ export class MapViewer extends HTMLElement {
   _dropHandler(event) {
     event.preventDefault();
     let text = event.dataTransfer.getData("text");
-    try {
-      new URL(text);
-      // create a new <layer-> child of this <mapml-viewer> element
-      let l = new MapLayer();
-      l.src = event.dataTransfer.getData("text");
-      l.label = M.options.locale.dfLayer;
-      l.checked = 'true';
-      this.appendChild(l);
-      l.addEventListener("error", function () {
-        if (l.parentElement) {
-          // should invoke lifecyle callbacks automatically by removing it from DOM
-          l.parentElement.removeChild(l);
-        }
-        // garbage collect it
-        l = null;
-      });
-    } catch (err) {
-      text = text.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
-      if ((text.slice(0,7) === "<layer-") && (text.slice(-9) === "</layer->")) {
-        this.insertAdjacentHTML("beforeend", text);
-      } else {
-        try {
-          this.geojson2mapml(JSON.parse(text));
-        } catch {
-          console.log("Invalid Input!");
-        }}
-    }
+    M.pasteLayer(this, text);
   }
   _dragoverHandler(event) {
     event.preventDefault();
@@ -372,40 +346,15 @@ export class MapViewer extends HTMLElement {
               {target: this}}));
       }
     });
-    // pasting layer- and geojson using Ctrl+V 
+    // pasting layer-, links and geojson using Ctrl+V 
     this.parentElement.addEventListener('keydown', function (e) {
       if(e.keyCode === 86 && e.ctrlKey && document.activeElement.nodeName === "MAPML-VIEWER"){
         navigator.clipboard
           .readText()
           .then(
             (layer) => {
-              try {
-                new URL(layer);
-                // create a new <layer-> child of this <mapml-viewer> element
-                let l = new MapLayer();
-                l.src = layer;
-                l.label = M.options.locale.dfLayer;
-                l.checked = 'true';
-                document.activeElement.appendChild(l);
-                l.addEventListener("error", function () {
-                  if (l.parentElement) {
-                    // should invoke lifecyle callbacks automatically by removing it from DOM
-                    l.parentElement.removeChild(l);
-                  }
-                  // garbage collect it
-                  l = null;
-                });
-              } catch (err) {
-                layer = layer.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
-                if ((layer.slice(0,7) === "<layer-") && (layer.slice(-9) === "</layer->")) {
-                  document.activeElement.insertAdjacentHTML("beforeend", layer);
-                } else {
-                  try {
-                    document.activeElement.geojson2mapml(JSON.parse(layer));
-                  } catch {
-                    console.log("Invalid Paste!");
-                  }}
-              }});
+              M.pasteLayer(document.activeElement, layer);
+            });
       }});
     this.parentElement.addEventListener('mousedown', function (e) {
       if(document.activeElement.nodeName === "MAPML-VIEWER"){
