@@ -106,7 +106,6 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
     }
     test.describe("Controls List nolayer Attribute Tests", () => {
       test("controlslist=nolayer removes layer control", async () => {
-        await page.pause();
         await page.$eval("body > mapml-viewer",
           (layer) => layer.setAttribute("controlslist", "nolayer"));
 
@@ -122,7 +121,7 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
       });
     });
   });
-  test("Paste Layer to map using ctrl+v", async () => {
+  test("Paste geojson Layer to map using ctrl+v", async () => {
    await page.click("body > textarea#copyGeoJSON");
    await page.keyboard.press("Control+a");
    await page.keyboard.press("Control+c");

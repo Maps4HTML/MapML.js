@@ -407,9 +407,9 @@ export var Util = {
 
   // Pastes text to a mapml-viewer/map element(mapEl), text can be a mapml link, geojson, or a layer-
   //    used for pasting layers through ctrl+v, drag/drop, and pasting through the contextmenu
-  // pasteLayer: HTMLElement Str -> None
+  // _pasteLayer: HTMLElement Str -> None
   // Effects: append a layer- element to mapEl, if it is valid
-  pasteLayer: function (mapEl, text) {
+  _pasteLayer: function (mapEl, text) {
     try {
       new URL(text);
       // create a new <layer-> child of the <mapml-viewer> element
@@ -438,8 +438,8 @@ export var Util = {
 
   // Takes GeoJSON Properties to return an HTML table, helper function
   //    for geojson2mapml
-  // properties2Table: geojson -> HTML Table
-  properties2Table: function (json) {
+  // _properties2Table: geojsonPropertiesOBJ -> HTML Table
+  _properties2Table: function (json) {
     let table = document.createElement('table');
 
     // Creating a Table Header
@@ -476,8 +476,8 @@ export var Util = {
 
   // Takes bbox array and a x,y coordinate to possibly update the extent, returns extent
   //    for geojson2mapml
-  // updateExtent: [min x, min y, max x, max y], x, y -> [min x, min y, max x, max y]
-  updateExtent: function (bboxExtent, x, y) {
+  // _updateExtent: [min x, min y, max x, max y], x, y -> [min x, min y, max x, max y]
+  _updateExtent: function (bboxExtent, x, y) {
     if (bboxExtent === {}) {
       return bboxExtent;
     }
@@ -617,7 +617,7 @@ export var Util = {
         } else if (options.properties instanceof HTMLElement) { // if an HTMLElement is passed - NOT TESTED
             p = options.properties;
         } else { // If no properties function, string or HTMLElement is passed
-            p = M.properties2Table(json.properties);
+            p = M._properties2Table(json.properties);
         }
         
         if (p) {
@@ -639,7 +639,7 @@ export var Util = {
         //console.log("Geometry Type - " + jsonType);
         switch(jsonType){
             case "POINT":
-                bboxExtent = M.updateExtent(bboxExtent, json.coordinates[0], json.coordinates[1]);
+                bboxExtent = M._updateExtent(bboxExtent, json.coordinates[0], json.coordinates[1]);
                 out = json.coordinates[0] + " " + json.coordinates[1];
                 
                 // Create Point element
@@ -663,7 +663,7 @@ export var Util = {
                 out = "";
 
                 for (let x=0;x<json.coordinates.length;x++) {
-                    bboxExtent = M.updateExtent(bboxExtent, json.coordinates[x][0], json.coordinates[x][1]);
+                    bboxExtent = M._updateExtent(bboxExtent, json.coordinates[x][0], json.coordinates[x][1]);
                     out = out + json.coordinates[x][0] + " " + json.coordinates[x][1] + " ";
                 }
 
@@ -683,7 +683,7 @@ export var Util = {
 
                     // Going over coordinates for the polygon
                     for (let x=0;x<json.coordinates[y].length;x++) {
-                        bboxExtent = M.updateExtent(bboxExtent, json.coordinates[y][x][0], json.coordinates[y][x][1]);
+                        bboxExtent = M._updateExtent(bboxExtent, json.coordinates[y][x][0], json.coordinates[y][x][1]);
                         out = out + json.coordinates[y][x][0] + " " + json.coordinates[y][x][1] + " ";
                     }
 
@@ -702,7 +702,7 @@ export var Util = {
                 clone_multipoint = clone_multipoint.querySelector('map-multipoint');
 
                 for (let i=0;i<json.coordinates.length;i++) {
-                    bboxExtent = M.updateExtent(bboxExtent, json.coordinates[i][0], json.coordinates[i][1]);
+                    bboxExtent = M._updateExtent(bboxExtent, json.coordinates[i][0], json.coordinates[i][1]);
                     out = out + json.coordinates[i][0] + " " + json.coordinates[i][1] + " ";
                 }
                 clone_multipoint.querySelector('map-coordinates').innerHTML = out;
@@ -717,7 +717,7 @@ export var Util = {
                     let clone_coords = coords.cloneNode(true);
                     clone_coords = clone_coords.querySelector("map-coordinates");
                     for(let y=0;y<json.coordinates[i].length;y++) {
-                        bboxExtent = M.updateExtent(bboxExtent, json.coordinates[i][y][0], json.coordinates[i][y][1]);
+                        bboxExtent = M._updateExtent(bboxExtent, json.coordinates[i][y][0], json.coordinates[i][y][1]);
                         out = out + json.coordinates[i][y][0] + " " + json.coordinates[i][y][1] + " ";
                     }
                     clone_coords.innerHTML = out;
@@ -742,7 +742,7 @@ export var Util = {
 
                         // Going over coordinates for the polygon
                         for (let x=0;x<json.coordinates[i][y].length;x++) {
-                            bboxExtent = M.updateExtent(bboxExtent, json.coordinates[i][y][x][0], json.coordinates[i][y][x][1]);
+                            bboxExtent = M._updateExtent(bboxExtent, json.coordinates[i][y][x][0], json.coordinates[i][y][x][1]);
                             out = out + json.coordinates[i][y][x][0] + " " + json.coordinates[i][y][x][1] + " ";
                         }
 
@@ -774,8 +774,8 @@ export var Util = {
 
   // Takes an array of length n to return an array of arrays with length 2, helper function
   //    for mapml2geojson
-  // breakArray: arr(float) -> arr(arr(float, float))
-  breakArray: function (arr) {
+  // _breakArray: arr(float) -> arr(arr(float, float))
+  _breakArray: function (arr) {
     let size = 2; 
     let arrayOfArrays = [];
     // removing anything other than numbers, ., - (used to remove <map-span> tags)
@@ -788,8 +788,8 @@ export var Util = {
 
   // Takes an HTML Table to return geojson properties, helper function
   //    for mapml2geojson
-  // table2properties: HTML Table -> geojson
-  table2properties: function (table) {
+  // _table2properties: HTML Table -> geojson
+  _table2properties: function (table) {
     // removing thead, if it exists
     let head = table.querySelector("thead");
     if (head !== null) {
@@ -805,8 +805,8 @@ export var Util = {
 
   // Converts a geometry element to geojson, helper function
   //    for mapml2geojson
-  // geometry2geojson: (child of <map-geometry>), Proj4, Proj4, Bool -> geojson
-  geometry2geojson: function (el, source, dest, transform) {
+  // _geometry2geojson: (child of <map-geometry>), Proj4, Proj4, Bool -> geojson
+  _geometry2geojson: function (el, source, dest, transform) {
     let elem = el.nodeName;
     let j = {};
     let coord;
@@ -824,9 +824,9 @@ export var Util = {
         case "MAP-LINESTRING":
             j.type = "LineString";
             coord = el.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g);
-            coord = M.breakArray(coord);
+            coord = M._breakArray(coord);
             if (transform) {
-                coord = M.pcrsToGcrs(coord, source, dest);
+                coord = M._pcrsToGcrs(coord, source, dest);
             }
             j.coordinates = coord;
             break;
@@ -836,9 +836,9 @@ export var Util = {
             let x = 0;
             el.querySelectorAll('map-coordinates').forEach((coord) => {
                 coord = coord.innerHTML.split(/[<>\ ]/g);
-                coord = M.breakArray(coord);
+                coord = M._breakArray(coord);
                 if (transform) {
-                    coord = M.pcrsToGcrs(coord, source, dest);
+                    coord = M._pcrsToGcrs(coord, source, dest);
                 }
                 j.coordinates[x] = coord;
                 x++;
@@ -846,9 +846,9 @@ export var Util = {
             break;
         case "MAP-MULTIPOINT":
             j.type = "MultiPoint";
-            coord = M.breakArray(el.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g));
+            coord = M._breakArray(el.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g));
             if (transform) {
-                coord = M.pcrsToGcrs(coord, source, dest);
+                coord = M._pcrsToGcrs(coord, source, dest);
             }
             j.coordinates = coord;
             break;
@@ -858,9 +858,9 @@ export var Util = {
             let i = 0;
             el.querySelectorAll('map-coordinates').forEach((coord) => {
                 coord = coord.innerHTML.split(/[<>\ ]/g);
-                coord = M.breakArray(coord);
+                coord = M._breakArray(coord);
                 if (transform) {
-                    coord = M.pcrsToGcrs(coord, source, dest);
+                    coord = M._pcrsToGcrs(coord, source, dest);
                 }
                 j.coordinates[i] = coord;
                 i++;
@@ -875,9 +875,9 @@ export var Util = {
                 j.coordinates.push([]);
                 poly.querySelectorAll('map-coordinates').forEach((coord) => {
                     coord = coord.innerHTML.split(/[<>\ ]/g);
-                    coord = M.breakArray(coord);
+                    coord = M._breakArray(coord);
                     if (transform) {
-                        coord = M.pcrsToGcrs(coord, source, dest);
+                        coord = M._pcrsToGcrs(coord, source, dest);
                     }
                     j.coordinates[p].push([]);
                     j.coordinates[p][y] = coord;
@@ -890,8 +890,8 @@ export var Util = {
     return j;
   },
 
-  // pcrsToGcrs: arrof([x,y]) Proj4, Proj4 -> arrof[x,y]
-  pcrsToGcrs: function (arr, source, dest) {
+  // _pcrsToGcrs: arrof([x,y]) Proj4, Proj4 -> arrof[x,y]
+  _pcrsToGcrs: function (arr, source, dest) {
     let newArr = [];
     for (let i=0; i<arr.length; i++) {
         let conv = proj4.transform(source, dest, arr[i]);
@@ -966,7 +966,7 @@ export var Util = {
               json.features[num].properties = properties;
           } else if (feature.querySelector("map-properties").querySelector('table') !== null) { 
               // setting properties when table presented
-              let properties = M.table2properties(feature.querySelector("map-properties").querySelector('table'));
+              let properties = M._table2properties(feature.querySelector("map-properties").querySelector('table'));
               json.features[num].properties = properties;
           } else {
               // when no table present, strip any possible html tags to only get text
@@ -978,14 +978,14 @@ export var Util = {
 
           // Adding Geometry
           if (elem.toUpperCase() !== "MAP-GEOMETRYCOLLECTION"){
-              json.features[num].geometry = M.geometry2geojson(geom.children[0], source, dest, options.transform);
+              json.features[num].geometry = M._geometry2geojson(geom.children[0], source, dest, options.transform);
           } else {
               json.features[num].geometry.type = "GeometryCollection";
               json.features[num].geometry.geometries = [];
 
               let geoms = geom.querySelector('map-geometrycollection').children;
               Array.from(geoms).forEach((g) => {
-                  g = M.geometry2geojson(g, source, dest, options.transform);
+                  g = M._geometry2geojson(g, source, dest, options.transform);
                   json.features[num].geometry.geometries.push(g);
               });
           }

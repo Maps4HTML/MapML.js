@@ -316,7 +316,7 @@ export class MapViewer extends HTMLElement {
   _dropHandler(event) {
     event.preventDefault();
     let text = event.dataTransfer.getData("text");
-    M.pasteLayer(this, text);
+    M._pasteLayer(this, text);
   }
   _dragoverHandler(event) {
     event.preventDefault();
@@ -353,7 +353,7 @@ export class MapViewer extends HTMLElement {
           .readText()
           .then(
             (layer) => {
-              M.pasteLayer(document.activeElement, layer);
+              M._pasteLayer(document.activeElement, layer);
             });
       }});
     this.parentElement.addEventListener('mousedown', function (e) {
