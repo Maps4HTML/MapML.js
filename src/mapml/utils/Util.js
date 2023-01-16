@@ -586,6 +586,13 @@ export var Util = {
         let clone_feature = feature.cloneNode(true);
         let curr_feature = clone_feature.querySelector('map-feature');
 
+        // Setting bbox if it exists
+        if (json.bbox) {
+          layer.querySelector("layer-").insertAdjacentHTML("afterbegin", "<map-meta name='extent' content='top-left-longitude=" + json.bbox[0] + ", top-left-latitude=" + json.bbox[1] + ", bottom-right-longitude=" + json.bbox[2] + ",bottom-right-latitude=" + json.bbox[3] + "'></map-meta>");
+        } else if ((typeof bboxExtent === 'object') && (bboxExtent.length === undefined)) {
+          bboxExtent = [Infinity, Infinity, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY];
+        }
+
         // Setting featurecaption
         let featureCaption = layer.querySelector("layer-").getAttribute('label');
         if (typeof options.caption === "function") {
