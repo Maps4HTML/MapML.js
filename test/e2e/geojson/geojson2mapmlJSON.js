@@ -615,3 +615,25 @@ let bbox_label_properties_and_caption_function = {
        }
    }]
   };
+
+// test case from geogratis geoname API
+let feature = {
+   "type": "Feature",
+   "geometry": {
+   "type": "MultiPoint",
+   "coordinates": [
+   [
+   -112.0866667,
+   49.15
+   ]
+   ]
+   },
+   "properties": {
+   "id": "7d615dd1d05511d892e2080020a0f4c9",
+   "label_fr": "Milk River",
+   "label_en": "Milk River",
+   "label_ab": "Milk River",
+   "type_fr": "TOWN-Ville",
+   "type_en": "TOWN-Town"
+   }
+   }

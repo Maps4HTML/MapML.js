@@ -135,5 +135,17 @@ test.describe("GeoJSON API - geojson2mapml", () => {
     expect(out).toEqual(exp);
   });
 
+  test("Feature", async () => {
+    const out = await page.$$eval(
+      "layer-", 
+      (node) => node[10].outerHTML
+    );
+    const exp = await page.$eval(
+      "body > #expected > layer-:nth-child(11)", 
+      (node) => node.outerHTML
+    );
+    expect(out).toEqual(exp);
+  });
+
 
 });
