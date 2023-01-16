@@ -642,12 +642,12 @@ export class MapViewer extends HTMLElement {
           horizontal: {
             name: "x",
             min: 0, 
-            max: zoom => (M[t.projection].options.bounds.getSize().x / M[t.projection].options.resolutions[zoom]).toFixed()
+            max: zoom => (Math.round(M[t.projection].options.bounds.getSize().x / M[t.projection].options.resolutions[zoom]))
           },
           vertical: {
             name: "y",
             min:0, 
-            max: zoom => (M[t.projection].options.bounds.getSize().y / M[t.projection].options.resolutions[zoom]).toFixed()
+            max: zoom => (Math.round(M[t.projection].options.bounds.getSize().y / M[t.projection].options.resolutions[zoom]))
           },
           bounds: zoom => L.bounds([M[t.projection].options.crs.tcrs.horizontal.min,
             M[t.projection].options.crs.tcrs.vertical.min],
@@ -716,12 +716,12 @@ export class MapViewer extends HTMLElement {
           horizontal: {
             name: "column",
             min: 0,
-            max: zoom => (M[t.projection].options.crs.tcrs.horizontal.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().x).toFixed()
+            max: zoom => (Math.round(M[t.projection].options.crs.tcrs.horizontal.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().x))
           },
           vertical: {
             name: "row",
             min: 0,
-            max: zoom => (M[t.projection].options.crs.tcrs.vertical.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().y).toFixed()
+            max: zoom => (Math.round(M[t.projection].options.crs.tcrs.vertical.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().y))
           },
           bounds: zoom => L.bounds(
                    [M[t.projection].options.crs.tilematrix.horizontal.min,
