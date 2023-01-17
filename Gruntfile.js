@@ -29,8 +29,7 @@ module.exports = function(grunt) {
           'dist/layer.js':        ['src/layer.js'],
           'dist/leaflet.js':      ['dist/leaflet-src.js',
                                    'dist/proj4-src.js',
-                                   'dist/proj4leaflet.js'],
-          'dist/lib/geojson.js':  ['src/geojson/geojson.js']
+                                   'dist/proj4leaflet.js']
         } 
       }
     },

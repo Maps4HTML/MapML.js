@@ -41,5 +41,6 @@ export var Options = {
     kbdZoom: "Zoom in/out 3 levels",
     kbdPrevFeature: "Previous feature",
     kbdNextFeature: "Next feature",
+    dfLayer: "Layer",
   }
 };

@@ -81,7 +81,7 @@ let multipoint = {
 
 let multilinestring = {
  "title": "MultiLineString Geometry",
- "bbox": [-75.916809, 45.886964, -75.516809, 45.26964],
+ "bbox": [-75.916809, 45.886964, -75.516809, 45.26965],
  "type": "FeatureCollection",
  "features": [{
      "type": "Feature",
@@ -590,7 +590,6 @@ let bbox_label_properties_and_caption_string = {
    "type": "FeatureCollection",
    "features": [{
        "type": "Feature",
-       //"bbox": [-75.916809, 45.886964, -75.516809, 45.26964],
        "geometry": {
            "type": "Point",
            "coordinates": [-75.6916809, 45.4186964]
@@ -607,7 +606,6 @@ let bbox_label_properties_and_caption_function = {
    "type": "FeatureCollection",
    "features": [{
        "type": "Feature",
-       //"bbox": [-75.916809, 45.886964, -75.516809, 45.26964],
        "geometry": {
            "type": "Point",
            "coordinates": [-75.6916809, 45.4186964]
@@ -617,3 +615,25 @@ let bbox_label_properties_and_caption_function = {
        }
    }]
   };
+
+// test case from geogratis geoname API
+let feature = {
+   "type": "Feature",
+   "geometry": {
+   "type": "MultiPoint",
+   "coordinates": [
+   [
+   -112.0866667,
+   49.15
+   ]
+   ]
+   },
+   "properties": {
+   "id": "7d615dd1d05511d892e2080020a0f4c9",
+   "label_fr": "Milk River",
+   "label_en": "Milk River",
+   "label_ab": "Milk River",
+   "type_fr": "TOWN-Ville",
+   "type_en": "TOWN-Town"
+   }
+   }
