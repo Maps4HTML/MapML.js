@@ -266,7 +266,7 @@ window.M = M;
         vertical: {
           name: "y",
           min:0, 
-          max: zoom => (Math.round(M.CBMTILE.options.bounds.getSize().y / M.CBMTILE.options.resolutions)[zoom])
+          max: zoom => (Math.round(M.CBMTILE.options.bounds.getSize().y / M.CBMTILE.options.resolutions[zoom]))
         },
         bounds: zoom => L.bounds([M.CBMTILE.options.crs.tcrs.horizontal.min,
                           M.CBMTILE.options.crs.tcrs.vertical.min],
@@ -384,7 +384,7 @@ window.M = M;
         vertical: {
           name: "y",
           min:0, 
-          max: zoom => (Math.round(M.APSTILE.options.bounds.getSize().y / M.APSTILE.options.resolutions)[zoom])
+          max: zoom => (Math.round(M.APSTILE.options.bounds.getSize().y / M.APSTILE.options.resolutions[zoom]))
         },
         bounds: zoom => L.bounds([M.APSTILE.options.crs.tcrs.horizontal.min,
                           M.APSTILE.options.crs.tcrs.vertical.min],
