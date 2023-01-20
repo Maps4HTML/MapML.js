@@ -74,7 +74,7 @@ export class MapLayer extends HTMLElement {
     super();
   }
   disconnectedCallback() {
-//    console.log('Custom map element removed from page.');
+    //    console.log('Custom map element removed from page.');
     // if the map-layer node is removed from the dom, the layer should be
     // removed from the map and the layer control 
 
@@ -109,7 +109,7 @@ export class MapLayer extends HTMLElement {
     if(this.parentNode._map)this.parentNode.dispatchEvent(new CustomEvent('createmap'));
   }
   adoptedCallback() {
-//    console.log('Custom map element moved to new page.');
+  //    console.log('Custom map element moved to new page.');
   }
   attributeChangedCallback(name, oldValue, newValue) {
     switch(name) {
@@ -292,7 +292,7 @@ export class MapLayer extends HTMLElement {
     // for one thing, layers which are checked by the author before 
     // adding to the map are displayed despite that they are not visible
     // See issue #26
-//        this._layer._map.fire('moveend');
+    //        this._layer._map.fire('moveend');
   }
   _removeEvents() {
     if (this._layer) {
@@ -361,5 +361,8 @@ export class MapLayer extends HTMLElement {
     }
     if(zOffset === 1 && newZoom - 1 >= 0) newZoom--;
     map.setView(center, newZoom, {animate: false});
+  }
+  mapml2geojson(options = {}){
+    return M.mapml2geojson(this, options);
   }
 }

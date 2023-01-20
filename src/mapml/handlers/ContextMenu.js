@@ -88,7 +88,7 @@ export var ContextMenu = L.Handler.extend({
       },
       {
         text: M.options.locale.cmPasteLayer + " (<kbd>P</kbd>)",
-        callback:this._pasteLayer,
+        callback:this._paste,
       },
       {
         text: M.options.locale.cmViewSource + " (<kbd>V</kbd>)",
@@ -236,17 +236,14 @@ export var ContextMenu = L.Handler.extend({
   },
 
   // Add support for pasting GeoJSON in the future
-  _pasteLayer: function(e){
+  _paste: function(e){
     let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
       mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
     navigator.clipboard
       .readText()
       .then(
           (layer) => {
-            layer = layer.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
-            if ((layer.slice(0,7) === "<layer-") && (layer.slice(-9) === "</layer->")) {
-              mapEl.insertAdjacentHTML("beforeend", layer);
-            }
+            M._pasteLayer(mapEl, layer);
         }
       );
   },
@@ -622,7 +619,7 @@ export var ContextMenu = L.Handler.extend({
           this._copyLayer(e);
         break;
       case 80: //P KEY
-        this._pasteLayer(e);
+        this._paste(e);
         break;
       case 82: //R KEY
         this._reload(e);
