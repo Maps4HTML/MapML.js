@@ -8,6 +8,7 @@ exports.test = (path, zoomIn, zoomOut) => {
     context = await chromium.launchPersistentContext('', {slowMo: 250});
     page = await context.newPage();
     await page.goto(path);
+    // removes the 2nd layer element in the 1st map
     await page.$eval("xpath=/html/body/map",
       (controller) => controller.removeChild(controller.children[1]));
     });
@@ -33,7 +34,7 @@ exports.test = (path, zoomIn, zoomOut) => {
       });
 
       test("Limit map zooming (zooming out)", async () => {
-        for (let i = 0; i < zoomOut + zoomIn - 1; i++) {
+        for (let i = 0; i < zoomOut + zoomIn - 2; i++) {
           await page.click('.leaflet-control-zoom-out');
           await page.waitForTimeout(500);
         }
