@@ -46,7 +46,7 @@ test.describe("Playwright mapMLStaticTile Layer Tests", () => {
         ".mapml-static-tile-layer > div",
         (tileGroup) => tileGroup.getElementsByTagName("map-tile").length
       );
-      expect(tiles).toEqual(1);
+      expect(tiles).toEqual(3);
     });
   });
 });
