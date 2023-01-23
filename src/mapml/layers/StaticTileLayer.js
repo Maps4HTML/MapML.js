@@ -96,7 +96,7 @@ export var MapMLStaticTileLayer = L.GridLayer.extend({
 
   _getZoomBounds: function(container, maxZoomBound){
     if(!container) return null;
-    let meta = M.metaContentToObject(container.getElementsByTagName('map-tiles')[0].getAttribute('zoom')),
+    let meta = M._metaContentToObject(container.getElementsByTagName('map-tiles')[0].getAttribute('zoom')),
         zoom = {},tiles = container.getElementsByTagName("map-tile");
     zoom.nativeZoom = +meta.value || 0;
     zoom.maxNativeZoom = 0;

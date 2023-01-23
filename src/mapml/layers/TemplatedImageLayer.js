@@ -3,7 +3,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
         this._template = template;
         this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
         L.DomUtil.addClass(this._container, 'mapml-image-container');
-        let inputData = M.extractInputBounds(template);
+        let inputData = M._extractInputBounds(template);
         this.zoomBounds = inputData.zoomBounds;
         this.extentBounds=inputData.bounds;
         this.isVisible = true;

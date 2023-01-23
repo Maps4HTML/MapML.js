@@ -165,7 +165,7 @@ describe("M.Util Bounds Related Tests", () => {
   //  projection:"CBMTILE"
   //  zoomBounds:{max:, min:}
   //}
-  describe("M.extractInputBounds utility function tests", () => {
+  describe("M._extractInputBounds utility function tests", () => {
     test("Valid template with 3 inputs, tilematrix", async () => {
       let template = {};
       let inputContainer = document.createElement("div");
@@ -180,12 +180,12 @@ describe("M.Util Bounds Related Tests", () => {
       // <map-meta name="zoom" content="min=n,max=n+k"></map-meta>
       // the code responsible for creating template.zoomBounds looks like this
       template.zoomBounds = inputContainer.querySelector('map-meta[name=zoom]')?
-        M.metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
+        M._metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
         undefined;
       template.extentPCRSFallback = {};
       template.projection = "WGS84";
 
-      let extractedBounds = M.extractInputBounds(template);
+      let extractedBounds = M._extractInputBounds(template);
 
       await expect(extractedBounds).toEqual({ bounds: { max: { x: 0, y: 90 }, min: { x: -180, y: -90 } }, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
     });
@@ -199,12 +199,12 @@ describe("M.Util Bounds Related Tests", () => {
       template.values = inputContainer.querySelectorAll("map-input");
       // the code responsible for creating template.zoomBounds looks like this
       template.zoomBounds = inputContainer.querySelector('map-meta[name=zoom]')?
-        M.metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
+        M._metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
         undefined;
       template.extentPCRSFallback = {};
       template.projection = "WGS84";
 
-      let extractedBounds = M.extractInputBounds(template);
+      let extractedBounds = M._extractInputBounds(template);
 
       await expect(extractedBounds).toEqual({ bounds: { max: { x: 10, y: 10 }, min: { x: 5, y: 5 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
     });
@@ -218,11 +218,11 @@ describe("M.Util Bounds Related Tests", () => {
       template.values = inputContainer.querySelectorAll("map-input");
       // the code responsible for creating template.zoomBounds looks like this
       template.zoomBounds = inputContainer.querySelector('map-meta[name=zoom]')?
-        M.metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
+        M._metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
         undefined;
       template.projection = "OSMTILE";
 
-      let extractedBounds = M.extractInputBounds(template);
+      let extractedBounds = M._extractInputBounds(template);
 
       await expect(extractedBounds).toEqual({ bounds: { max: { x: 10, y: 10 }, min: { x: 5, y: 5 } }, zoomBounds: { maxNativeZoom: 24, maxZoom: 16, minNativeZoom: 1, minZoom: 1 } });
     });
@@ -240,11 +240,11 @@ describe("M.Util Bounds Related Tests", () => {
       template.values = inputContainer.querySelectorAll("map-input");
       // the code responsible for creating template.zoomBounds looks like this
       template.zoomBounds = inputContainer.querySelector('map-meta[name=zoom]')?
-        M.metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
+        M._metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
         undefined;
       template.projection = "CBMTILE";
 
-      let extractedBounds = M.extractInputBounds(template);
+      let extractedBounds = M._extractInputBounds(template);
 
       await expect(extractedBounds).toEqual({ bounds: { max: { x: 38608077, y: 42672085 }, min: { x: 28448056, y: 28448056 } }, zoomBounds: { maxNativeZoom: 19, maxZoom: 23, minNativeZoom: 0, minZoom: 0 } });
     });
@@ -262,11 +262,11 @@ describe("M.Util Bounds Related Tests", () => {
       template.values = inputContainer.querySelectorAll("map-input");
       // the code responsible for creating template.zoomBounds looks like this
       template.zoomBounds = inputContainer.querySelector('map-meta[name=zoom]')?
-        M.metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
+        M._metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
         undefined;
       template.projection = "CBMTILE";
 
-      let extractedBounds = M.extractInputBounds(template);
+      let extractedBounds = M._extractInputBounds(template);
 
       await expect(extractedBounds).toEqual({ bounds: { max: { x: 500, y: 500 }, min: { x: 0, y: 0 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 15, minNativeZoom: 3, minZoom: 2 } });
     });
@@ -278,12 +278,12 @@ describe("M.Util Bounds Related Tests", () => {
       template.values = inputContainer.querySelectorAll("map-input");
       // the code responsible for creating template.zoomBounds looks like this
       template.zoomBounds = inputContainer.querySelector('map-meta[name=zoom]')?
-        M.metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
+        M._metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
         undefined;
       template.extentPCRSFallback = {bounds: null};
       template.projection = "WGS84";
 
-      let extractedBounds = M.extractInputBounds(template);
+      let extractedBounds = M._extractInputBounds(template);
 
       await expect(extractedBounds).toEqual({ bounds: { max: { x: 180, y: 90 }, min: { x: -180, y: -90 } }, zoomBounds: { maxNativeZoom: 5, maxZoom: 12, minNativeZoom: 1, minZoom: 1 } });
     });
@@ -294,12 +294,12 @@ describe("M.Util Bounds Related Tests", () => {
       template.values = inputContainer.querySelectorAll("map-input");
       // the code responsible for creating template.zoomBounds looks like this
       template.zoomBounds = inputContainer.querySelector('map-meta[name=zoom]')?
-        M.metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
+        M._metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
         undefined;
       template.extentPCRSFallback = {bounds: { max: { x: 170, y: 20 }, min: { x: 0, y: 0 }}};
       template.projection = "WGS84";
 
-      let extractedBounds = M.extractInputBounds(template);
+      let extractedBounds = M._extractInputBounds(template);
 
       await expect(extractedBounds).toEqual({ bounds: { max: { x: 170, y: 20 }, min: { x: 0, y: 0 }}, zoomBounds: { maxNativeZoom: 21, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
     });
@@ -310,13 +310,13 @@ describe("M.Util Bounds Related Tests", () => {
       template.values = inputContainer.querySelectorAll("map-input");
       // the code responsible for creating template.zoomBounds looks like this
       template.zoomBounds = inputContainer.querySelector('map-meta[name=zoom]')?
-        M.metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
+        M._metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
         undefined;
       template.projection = "WGS84";
       // this is necessary. WHY?
       template.extentPCRSFallback = {};
       
-      let extractedBounds = M.extractInputBounds(template);
+      let extractedBounds = M._extractInputBounds(template);
 
       await expect(extractedBounds).toEqual( { bounds: M.WGS84.options.crs.pcrs.bounds, zoomBounds: { maxNativeZoom: 21, maxZoom: 12, minNativeZoom: 0, minZoom: 3 } });
     });
@@ -330,10 +330,10 @@ describe("M.Util Bounds Related Tests", () => {
       template.values = inputContainer.querySelectorAll("map-input");
       // the code responsible for creating template.zoomBounds looks like this
       template.zoomBounds = inputContainer.querySelector('map-meta[name=zoom]')?
-        M.metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
+        M._metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
         undefined;
 
-      let extractedBounds = M.extractInputBounds(template);
+      let extractedBounds = M._extractInputBounds(template);
       // this expect is logically equal, but not arithmetically equal to the
       // numbers used below, because the default projection is OSMTILE, but we
       // have to convert the provided bounds from tilematrix to pcrs coords,
@@ -351,15 +351,15 @@ describe("M.Util Bounds Related Tests", () => {
       template.values = inputContainer.querySelectorAll("map-input");
       // the code responsible for creating template.zoomBounds looks like this
       template.zoomBounds = inputContainer.querySelector('map-meta[name=zoom]')?
-        M.metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
+        M._metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
         undefined;
       template.extentPCRSFallback = {};
       
-      let extractedBounds = M.extractInputBounds(template);
+      let extractedBounds = M._extractInputBounds(template);
       await expect(extractedBounds).toEqual({ bounds: M.OSMTILE.options.crs.pcrs.bounds, zoomBounds: { maxNativeZoom: 2, maxZoom: 5, minNativeZoom: 1, minZoom: 0 } });
     });
     test("Null template", async () => {
-      let extractedBounds = M.extractInputBounds(null);
+      let extractedBounds = M._extractInputBounds(null);
 
       await expect(extractedBounds).toEqual(undefined);
     });
@@ -369,9 +369,9 @@ describe("M.Util Bounds Related Tests", () => {
       inputContainer.innerHTML = '<map-input name="z" type="zoom" value="18" min="2" max="18"></map-input>';
       template.values = inputContainer.querySelectorAll("map-input");
       template.zoomBounds = inputContainer.querySelector('map-meta[name=zoom]')?
-        M.metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
+        M._metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
         undefined;
-      let extractedZoomBounds = M.extractInputBounds(template).zoomBounds;
+      let extractedZoomBounds = M._extractInputBounds(template).zoomBounds;
       await expect(extractedZoomBounds).toEqual( { maxNativeZoom: 18, maxZoom: 24, minNativeZoom: 2, minZoom: 0 } );
     });
     test("Test that zoom bounds reflects map-meta zoom bounds", async() => {
@@ -381,19 +381,19 @@ describe("M.Util Bounds Related Tests", () => {
       inputContainer.innerHTML += '<map-input name="z" type="zoom" value="18" min="2" max="18"></map-input>';
       template.values = inputContainer.querySelectorAll("map-input");
       template.zoomBounds = inputContainer.querySelector('map-meta[name=zoom]')?
-        M.metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
+        M._metaContentToObject(inputContainer.querySelector('map-meta[name=zoom]').getAttribute('content')):
         undefined;
-      let extractedZoomBounds = M.extractInputBounds(template).zoomBounds;
+      let extractedZoomBounds = M._extractInputBounds(template).zoomBounds;
       await expect(extractedZoomBounds).toEqual( { maxNativeZoom: 18, maxZoom: 5, minNativeZoom: 2, minZoom: 0 } );
     });
-    test("Test that extractInputBounds doesn't use template.zoomBounds.minZoom, template.zoomBounds.maxZoom", async() => {
+    test("Test that _extractInputBounds doesn't use template.zoomBounds.minZoom, template.zoomBounds.maxZoom", async() => {
       let template = {};
       let inputContainer = document.createElement("div");
       inputContainer.innerHTML += '<map-input name="z" type="zoom" value="18" min="2" max="18"></map-input>';
       template.values = inputContainer.querySelectorAll("map-input");
       // min, max are expected but don't exist; minZoom, maxZoom properties should have no effect
       template.zoomBounds = { minZoom: 2, maxZoom: 5 }; 
-      let extractedZoomBounds = M.extractInputBounds(template).zoomBounds;
+      let extractedZoomBounds = M._extractInputBounds(template).zoomBounds;
       await expect(extractedZoomBounds).toEqual( { maxNativeZoom: 18, maxZoom: 24, minNativeZoom: 2, minZoom: 0 } );
     });
   });

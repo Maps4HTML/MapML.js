@@ -77,7 +77,7 @@ export var Util = {
       projection:map.options.projection
     };
   },
-  extractInputBounds: function(template){
+  _extractInputBounds: function(template){
     if(!template) return undefined;
 
     //sets variables with their respective fallback values incase content is missing from the template
@@ -233,7 +233,7 @@ export var Util = {
     }
   },
 
-  pointToPCRSPoint: function(point, zoom, projection, cs){
+  _pointToPCRSPoint: function(point, zoom, projection, cs){
     if(!point || (!zoom && zoom !== 0) || !Number.isFinite(+zoom) || !cs || !projection) return undefined;
     projection = (typeof projection === "string") ? M[projection] : projection;
     let tileSize = projection.options.crs.tile.bounds.max.x;
@@ -260,7 +260,7 @@ export var Util = {
   boundsToPCRSBounds: function(bounds, zoom, projection, cs){
     if(!bounds || !bounds.max || !bounds.min || (!zoom && zoom !== 0) || !Number.isFinite(+zoom) || !projection || !cs) return undefined;
     projection = (typeof projection === "string") ? M[projection] : projection;
-    return L.bounds(M.pointToPCRSPoint(bounds.min, zoom, projection, cs), M.pointToPCRSPoint(bounds.max, zoom, projection, cs));
+    return L.bounds(M._pointToPCRSPoint(bounds.min, zoom, projection, cs), M._pointToPCRSPoint(bounds.max, zoom, projection, cs));
   },
 
   //L.bounds have fixed point positions, where min is always topleft, max is always bottom right, and the values are always sorted by leaflet
@@ -272,7 +272,7 @@ export var Util = {
   },
   //meta content is the content attribute of meta
   // input "max=5,min=4" => [[max,5][min,5]]
-  metaContentToObject: function(input){
+  _metaContentToObject: function(input){
     if(!input || input instanceof Object)return {};
     let content = input.split(/\s+/).join("");
     let contentArray = {};
@@ -285,14 +285,14 @@ export var Util = {
     if(contentArray !== "" && stringSplit[0].split("=").length ===1)contentArray.content = stringSplit[0];
     return contentArray;
   },
-  coordsToArray: function(containerPoints) {
-    // returns an array of arrays of coordinate pairs coordsToArray("1,2,3,4") -> [[1,2],[3,4]]
+  _coordsToArray: function(containerPoints) {
+    // returns an array of arrays of coordinate pairs _coordsToArray("1,2,3,4") -> [[1,2],[3,4]]
     for (var i=1, pairs = [], coords = containerPoints.split(",");i<coords.length;i+=2) {
       pairs.push([parseInt(coords[i-1]),parseInt(coords[i])]);
     }
     return pairs;
   },
-  parseStylesheetAsHTML: function(mapml, base, container) {
+  _parseStylesheetAsHTML: function(mapml, base, container) {
       if (!(container instanceof Element) || !mapml || !mapml.querySelector('map-link[rel=stylesheet],map-style')) return;
 
       if(base instanceof Element) {
@@ -329,17 +329,17 @@ export var Util = {
       }
   },
 
-  splitCoordinate: function(element, index, array) {
+  _splitCoordinate: function(element, index, array) {
     var a = [];
-    element.split(/\s+/gim).forEach(M.parseNumber,a);
+    element.split(/\s+/gim).forEach(M._parseNumber,a);
     this.push(a);
   },
 
-  parseNumber : function(element, index, array){
+  _parseNumber : function(element, index, array){
     this.push(parseFloat(element));
   },
 
-  handleLink: function (link, leafletLayer) {
+  _handleLink: function (link, leafletLayer) {
     let zoomTo, justPan = false, layer, map = leafletLayer._map, opacity;
     if(link.type === "text/html" && link.target !== "_blank"){  // all other target values other than blank behave as _top
       link.target = "_top";

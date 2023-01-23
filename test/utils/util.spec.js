@@ -14,7 +14,7 @@ describe("M.Util Tests", () => {
       // base is a valid base
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       var testcontainer = document.createElement('div');
-      M.parseStylesheetAsHTML(mapml, base, testcontainer);
+      M._parseStylesheetAsHTML(mapml, base, testcontainer);
       await expect(testcontainer.querySelector('link')).toBeFalsy();
       await expect(testcontainer.querySelector('style')).toBeTruthy();
       await expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}');
@@ -30,7 +30,7 @@ describe("M.Util Tests", () => {
 
 
       // we expect both the link and the inline style to be copied
-      M.parseStylesheetAsHTML(mapml, base, testcontainer);
+      M._parseStylesheetAsHTML(mapml, base, testcontainer);
       await expect(mapml.firstChild.firstChild.nodeName).toEqual("map-head");
       await expect(testcontainer.querySelector('link')).toBeTruthy();
       await expect(testcontainer.querySelector('style')).toBeTruthy();
@@ -42,7 +42,7 @@ describe("M.Util Tests", () => {
     test("M.parseStylesheetToHTML(mapml with inline styles only, base, container)", async () => {
       var testcontainer = document.createElement('div');
       var mapml = parser.parseFromString(mapmlString, "application/xml");
-      M.parseStylesheetAsHTML(mapml, base, testcontainer);
+      M._parseStylesheetAsHTML(mapml, base, testcontainer);
       await expect(testcontainer.querySelector('link')).toBeFalsy();
       await expect(testcontainer.querySelector('style')).toBeTruthy();
       await expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}');
@@ -53,7 +53,7 @@ describe("M.Util Tests", () => {
       mapml.firstChild.firstChild.append(base);
       mapml.firstChild.firstChild.append(link);
 
-      M.parseStylesheetAsHTML(mapml, base, testcontainer);
+      M._parseStylesheetAsHTML(mapml, base, testcontainer);
       await expect(testcontainer.querySelector('link')).toBeTruthy();
       await expect(testcontainer.querySelector('style')).toBeTruthy();
       await expect(testcontainer.querySelector('style').textContent).toEqual('.css {property:cool}');
@@ -68,7 +68,7 @@ describe("M.Util Tests", () => {
       mapml.firstChild.firstChild.append(styleLinkTwo);
       mapml.firstChild.firstChild.append(styleLinkThree);
 
-      M.parseStylesheetAsHTML(mapml, base, testcontainer);
+      M._parseStylesheetAsHTML(mapml, base, testcontainer);
 
       await expect(testcontainer.children[1].href).toEqual(base + "remote.css");
       await expect(testcontainer.children[2].href).toEqual(base + "styleTwo.css");
@@ -79,7 +79,7 @@ describe("M.Util Tests", () => {
 
     //base = null
     test("(null, null, null) should do nothing", async () => {
-      var check = M.parseStylesheetAsHTML(null, null, null);
+      var check = M._parseStylesheetAsHTML(null, null, null);
       await expect(check).toBeFalsy();
     });
 
@@ -87,7 +87,7 @@ describe("M.Util Tests", () => {
       var testcontainer = document.createElement('div');
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       mapml.firstChild.firstChild.append(link);
-      var check = M.parseStylesheetAsHTML(mapml, null, testcontainer);
+      var check = M._parseStylesheetAsHTML(mapml, null, testcontainer);
 
       await expect(testcontainer).toEqual(document.createElement('div'));
       await expect(check).toBeFalsy();
@@ -103,7 +103,7 @@ describe("M.Util Tests", () => {
       mapml.firstChild.firstChild.append(styleLinkTwo);
       mapml.firstChild.firstChild.append(styleLinkThree);
 
-      var check = M.parseStylesheetAsHTML(mapml, null, testcontainer);
+      var check = M._parseStylesheetAsHTML(mapml, null, testcontainer);
       await expect(testcontainer).toEqual(document.createElement('div'));
       await expect(check).toBeFalsy();
     });
@@ -115,7 +115,7 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       mapml.firstChild.firstChild.append(nullBase);
       mapml.firstChild.firstChild.append(link);
-      M.parseStylesheetAsHTML(mapml, nullBase, testcontainer);
+      M._parseStylesheetAsHTML(mapml, nullBase, testcontainer);
       await expect(testcontainer.querySelector('link').href).toEqual(document.URL + 'remote.css');
     });
 
@@ -125,7 +125,7 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       mapml.firstChild.firstChild.append(testBase);
       mapml.firstChild.firstChild.append(link);
-      M.parseStylesheetAsHTML(mapml, testBase, testcontainer);
+      M._parseStylesheetAsHTML(mapml, testBase, testcontainer);
       await expect(testcontainer.querySelector('link').href).toEqual('http://test.com/remote.css');
     });
 
@@ -135,7 +135,7 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
 
       mapml.firstChild.firstChild.append(link);
-      var check = M.parseStylesheetAsHTML(mapml, {}, testcontainer);
+      var check = M._parseStylesheetAsHTML(mapml, {}, testcontainer);
       await expect(testcontainer).toEqual(document.createElement('div'));
       await expect(check).toBeFalsy();
     });
@@ -146,7 +146,7 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
       mapml.firstChild.firstChild.append(testBase);
       mapml.firstChild.firstChild.append(link);
-      var check = M.parseStylesheetAsHTML(mapml, base, null);
+      var check = M._parseStylesheetAsHTML(mapml, base, null);
       await expect(testcontainer).toEqual(document.createElement('div'));
       await expect(check).toBeFalsy();
     });
@@ -156,136 +156,136 @@ describe("M.Util Tests", () => {
       var mapml = parser.parseFromString(mapmlString, "application/xml");
 
       mapml.firstChild.firstChild.append(link);
-      var check = M.parseStylesheetAsHTML(mapml, base, {});
+      var check = M._parseStylesheetAsHTML(mapml, base, {});
       await expect(testcontainer).toEqual(document.createElement('div'));
       await expect(check).toBeFalsy();
     });
   });
 
-  describe("M.coordsToArray(containerPoints) utility function tests", () => {
+  describe("M._coordsToArray(containerPoints) utility function tests", () => {
 
     /* test("Null input", () => {
-      var output = M.coordsToArray(null);
+      var output = M._coordsToArray(null);
       await expect(output).toEqual([])
     });
 
     test("Array of numbers input", () => {
       var inputArray = [1, 2, 3, 4];
 
-      var output = M.coordsToArray(inputArray);
+      var output = M._coordsToArray(inputArray);
       await expect(output).toEqual([[1, 2], [3, 4]])
     });
 
     test("Single number array input", () => {
       var inputArray = [1];
 
-      var output = M.coordsToArray(inputArray);
+      var output = M._coordsToArray(inputArray);
       await expect(output).toEqual([])
     });
 
     test("Empty array input", () => {
       var inputArray = [];
 
-      var output = M.coordsToArray(inputArray);
+      var output = M._coordsToArray(inputArray);
       await expect(output).toEqual([])
     }); */
 
     test("Even number of input coords", async () => {
       var inputArray = "1,2,3,4";
 
-      var output = M.coordsToArray(inputArray);
+      var output = M._coordsToArray(inputArray);
       await expect(output).toEqual([[1, 2], [3, 4]]);
     });
 
     test("Odd number of input coords", async () => {
       var inputArray = "1,2,3,4,5";
 
-      var output = M.coordsToArray(inputArray);
+      var output = M._coordsToArray(inputArray);
       await expect(output).toEqual([[1, 2], [3, 4]]);
     });
 
     test("Single number input", async () => {
       var inputArray = "1";
 
-      var output = M.coordsToArray(inputArray);
+      var output = M._coordsToArray(inputArray);
       await expect(output).toEqual([]);
     });
 
     test("Empty string input", async () => {
       var inputArray = "";
 
-      var output = M.coordsToArray(inputArray);
+      var output = M._coordsToArray(inputArray);
       await expect(output).toEqual([]);
     });
 
   });
 
-  describe("M.metaContentToObject(content) utility function tests", () => {
+  describe("M._metaContentToObject(content) utility function tests", () => {
     test("Null object passed", async () => {
-      let output = M.metaContentToObject(null);
+      let output = M._metaContentToObject(null);
 
       await expect(output).toEqual({});
     });
 
     test("Valid single input", async () => {
-      let output = M.metaContentToObject("max=5");
+      let output = M._metaContentToObject("max=5");
 
       await expect(output).toEqual({ max: "5" });
     });
 
     test("Valid multiple input", async () => {
-      let output = M.metaContentToObject("max=5,min=23,zoom=65,x=65");
+      let output = M._metaContentToObject("max=5,min=23,zoom=65,x=65");
 
       await expect(output).toEqual({ max: "5", min: "23", zoom: "65", x: "65" });
     });
 
     test("Empty string", async () => {
-      let output = M.metaContentToObject("");
+      let output = M._metaContentToObject("");
 
       await expect(output).toEqual({});
     });
     test("No equal sign just value", async () => {
-      let output = M.metaContentToObject("noequal");
+      let output = M._metaContentToObject("noequal");
       await expect(output).toEqual({ content: "noequal" });
     });
 
     test("Invalid object", async () => {
-      let output = M.metaContentToObject({});
+      let output = M._metaContentToObject({});
       await expect(output).toEqual({});
     });
   });
 
-  describe("M.metaContentToObject(content) utility function tests", () => {
+  describe("M._metaContentToObject(content) utility function tests", () => {
     test("Null object passed", async () => {
-      let output = M.metaContentToObject(null);
+      let output = M._metaContentToObject(null);
 
       await expect(output).toEqual({});
     });
 
     test("Valid single input", async () => {
-      let output = M.metaContentToObject("max=5");
+      let output = M._metaContentToObject("max=5");
 
       await expect(output).toEqual({ max: "5" });
     });
 
     test("Valid multiple input", async () => {
-      let output = M.metaContentToObject("max=5,min=23,zoom=65,x=65");
+      let output = M._metaContentToObject("max=5,min=23,zoom=65,x=65");
 
       await expect(output).toEqual({ max: "5", min: "23", zoom: "65", x: "65" });
     });
 
     test("Empty string", async  () => {
-      let output = M.metaContentToObject("");
+      let output = M._metaContentToObject("");
 
       await expect(output).toEqual({});
     });
     test("No equal sign just value", async () => {
-      let output = M.metaContentToObject("noequal");
+      let output = M._metaContentToObject("noequal");
       await expect(output).toEqual({ content: "noequal" });
     });
 
     test("Invalid object", async () => {
-      let output = M.metaContentToObject({});
+      let output = M._metaContentToObject({});
       await expect(output).toEqual({});
     });
   });
@@ -376,7 +376,7 @@ describe("M.Util Tests", () => {
     });
   });
 
-  describe("M.pointToPCRSPoint() utility function tests", () => {
+  describe("M._pointToPCRSPoint() utility function tests", () => {
     let expected = [
       [
         {"x": 63557729.76039286, "y": -58903529.76039286},
@@ -404,7 +404,7 @@ describe("M.Util Tests", () => {
     for(let i in csArray ){
       for(let j in projArray ){
         test(`Valid conversion in ${projArray[j]} + ${csArray[i]}`, async () => {
-          let output = M.pointToPCRSPoint(point, 0, projArray[j], csArray[i]);
+          let output = M._pointToPCRSPoint(point, 0, projArray[j], csArray[i]);
           await expect(output).toEqual(expected[i][j]);
         });
       }
@@ -412,19 +412,19 @@ describe("M.Util Tests", () => {
     /* jshint ignore:end */
 
     test("Null point", async () => {
-      let output = M.pointToPCRSPoint(null, 0, "CBMTILE");
+      let output = M._pointToPCRSPoint(null, 0, "CBMTILE");
       await expect(output).toEqual(undefined);
     });
     test("Null zoom", async () => {
-      let output = M.pointToPCRSPoint(point, null, "CBMTILE");
+      let output = M._pointToPCRSPoint(point, null, "CBMTILE");
       await expect(output).toEqual(undefined);
     });
     test("Null projection", async () => {
-      let output = M.pointToPCRSPoint(point, 1, null);
+      let output = M._pointToPCRSPoint(point, 1, null);
       await expect(output).toEqual(undefined);
     });
     test("Null cs", async () => {
-      let output = M.pointToPCRSPoint(point, 1, "CBMTILE", null);
+      let output = M._pointToPCRSPoint(point, 1, "CBMTILE", null);
       await expect(output).toEqual(undefined);
     });
   });

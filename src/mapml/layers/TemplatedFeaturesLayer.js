@@ -1,7 +1,7 @@
 export var TemplatedFeaturesLayer =  L.Layer.extend({
   // this and M.ImageLayer could be merged or inherit from a common parent
     initialize: function(template, options) {
-      let inputData = M.extractInputBounds(template);
+      let inputData = M._extractInputBounds(template);
       this.zoomBounds = inputData.zoomBounds;
       this.extentBounds=inputData.bounds;
       this.isVisible = true;
@@ -109,9 +109,9 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
               url =  url ? (new URL(url, base)).href: null;
               // TODO if the xml parser barfed but the response is application/geo+json, use the parent addData method
             let nativeZoom = mapml.querySelector("map-meta[name=zoom]") &&
-                              +M.metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value || 0;
+                              +M._metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value || 0;
             let nativeCS = mapml.querySelector("map-meta[name=cs]") &&
-                              M.metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content || "GCRS";
+                              M._metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content || "GCRS";
             features.addData(mapml, nativeCS, nativeZoom);
             if (url && --limit) {
               return _pullFeatureFeed(url, limit);
