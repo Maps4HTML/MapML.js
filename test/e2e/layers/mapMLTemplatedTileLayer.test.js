@@ -46,7 +46,7 @@ test.describe("Playwright mapMLTemplatedTile Layer Tests", () => {
         "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div",
         (tileGroup) => tileGroup.getElementsByTagName("svg").length
       );
-      expect(tiles).toEqual(2);
+      expect(tiles).toEqual(8);
     });
   });
 
