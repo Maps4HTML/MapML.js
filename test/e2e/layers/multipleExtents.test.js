@@ -200,7 +200,9 @@ test("Layer bounds are recalculated, should equal remaining extent bounds when o
   });
 
   test("Layer is disabled in layer control when all extents are out of bounds", async () => {
-    await page.pause();
+    // if debug mode is enabled, can't focus on map @ leaflet 1.9.3 see issue #720
+    // so turn it off here
+    await page.$eval("body > mapml-viewer", (map) => map.toggleDebug());
     await page.click("mapml-viewer");
     for (let i = 0; i < 5; i++){
         await page.keyboard.press("ArrowDown");
