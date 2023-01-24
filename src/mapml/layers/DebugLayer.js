@@ -238,6 +238,13 @@ export var debugVectors = function (options) {
 
 
 var ProjectedExtent = L.Path.extend({
+  
+  getCenter: function (round) {
+    let crs = this._map.options.crs;
+    return crs.unproject(L.bounds(this._locations).getCenter());
+  
+  },
+
   options: {
     className: "mapml-debug-extent",
   },
