@@ -333,6 +333,8 @@ export class WebMap extends HTMLMapElement {
           delete this[controls[i]];
         }
       }
+    }else if (!this.controls && this._map) {
+      this._map.contextMenu._items[4].el.el.setAttribute("disabled", "");
     }
   }
   attributeChangedCallback(name, oldValue, newValue) {
