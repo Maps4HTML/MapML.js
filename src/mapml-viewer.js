@@ -292,7 +292,10 @@ export class MapViewer extends HTMLElement {
           delete this[controls[i]];
         }
       }
+    } else if (!this.controls && this._map) {
+      this._map.contextMenu._items[4].el.el.setAttribute("disabled", "");
     }
+
   }
   attributeChangedCallback(name, oldValue, newValue) {
 //    console.log('Attribute: ' + name + ' changed from: '+ oldValue + ' to: '+newValue);
