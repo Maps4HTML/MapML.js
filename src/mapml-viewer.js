@@ -355,6 +355,8 @@ export class MapViewer extends HTMLElement {
             (layer) => {
               M._pasteLayer(document.activeElement, layer);
             });
+      } else if (e.keyCode === 32 && document.activeElement.nodeName === "MAPML-VIEWER") {
+        e.preventDefault();
       }});
     this.parentElement.addEventListener('mousedown', function (e) {
       if(document.activeElement.nodeName === "MAPML-VIEWER"){

@@ -396,6 +396,8 @@ export class WebMap extends HTMLMapElement {
             (layer) => {
               M._pasteLayer(document.activeElement.parentElement, layer);
             });
+      } else if (e.keyCode === 32 && document.activeElement.nodeName === "DIV") {
+        e.preventDefault();
       }
     });
     this.parentElement.addEventListener('mousedown', function (e) {

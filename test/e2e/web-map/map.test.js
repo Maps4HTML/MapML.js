@@ -71,4 +71,20 @@ test.describe("Playwright web-map Element Tests", () => {
     );
     expect(layerCount).toEqual(3);
    });
+
+   test("Press spacebar when focus is on map", async () => {
+    await page.click("body > textarea");
+    const pos = await page.$eval(
+      "body > map",
+      () => window.pageYOffset
+    )
+    await page.click("body > map");
+    await page.keyboard.press('Space');
+    await page.waitForTimeout(300);
+    const currPos = await page.$eval(
+      "body > map",
+      () => window.pageYOffset
+    );
+    expect(currPos).toEqual(pos);
+   });
 });
