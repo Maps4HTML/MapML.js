@@ -122,15 +122,16 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
     });
   });
 
-  test.only("Press spacebar when focus is on map", async () => {
+   test.only("Press spacebar when focus is on map", async () => {
     await page.click("body > textarea");
     const pos = await page.$eval(
       "body > mapml-viewer",
       () => window.pageYOffset
     )
     await page.click("body > mapml-viewer");
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(300);
     await page.keyboard.press('Space');
+    await page.waitForTimeout(300);
     const currPos = await page.$eval(
       "body > mapml-viewer",
       () => window.pageYOffset
