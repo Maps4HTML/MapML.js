@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-test.describe("Playwright mapml-viewer Element Tests", () => {
+test.describe("Playwright mapml-viewer Element Controls Test", () => {
     let page;
     let context;
     test.beforeAll(async () => {
