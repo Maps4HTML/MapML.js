@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Basic Mapml-Viewer</title>
+  <meta charset="UTF-8">
+  <script>
+    let options = document.createElement("map-options");
+    options.innerHTML = '{"announceMovement":true}';
+    document.head.appendChild(options);
+  </script>
+  <script type="module" src="mapml-viewer.js"></script>
+  <style>
+    html {
+      height: 100%
+    }
+
+    body {
+      height: inherit
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <mapml-viewer id="nocontrols" style="height: 600px;width:500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92">
+  </mapml-viewer>
+  <textarea name="message" rows="10" cols="100"></textarea>
+  <textarea id="copyGeoJSON" name="message" rows="10" cols="100">{"type": "FeatureCollection","features": [{"type": "Feature","properties": {},"geometry": {"coordinates": [29.93926429273742,26.465501185936787],"type": "Point"}}]}</textarea>
+  <textarea id="invalidLink" name="message" rows="10" cols="100">http://google.com</textarea>
+  <textarea id="invalidText" name="message" rows="10" cols="100">asdasdasdadsasd</textarea>
+  <textarea id="copyLink" name="message" rows="10" cols="100">http://localhost:30001/data/query/DouglasFir</textarea>
+</body>
+
+</html>
