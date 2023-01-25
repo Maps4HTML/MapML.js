@@ -9,7 +9,7 @@
     options.innerHTML = '{"announceMovement":true}';
     document.head.appendChild(options);
   </script>
-  <script type="module" src="mapml-viewer.js"></script>
+  <script type="module" src="web-map.js"></script>
   <style>
     html {
       height: 100%
@@ -27,8 +27,9 @@
 </head>
 
 <body>
-  <mapml-viewer style="height: 600px;width:500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls>
-    <layer- label="CBMT - INLINE" checked>
+  <map is="web-map" style="width: 500px;height: 500px;" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344"
+  	controls>
+  	<layer- label="CBMT - INLINE" checked>
       <map-extent units="CBMTILE">
         <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3" ></map-input>
         <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21" ></map-input>
@@ -36,9 +37,8 @@
         <map-link rel='tile' tref='/data/cbmt/{zoomLevel}/c{col}_r{row}.png' ></map-link>
       </map-extent>
     </layer->
-  </mapml-viewer>
-  <textarea name="message" rows="10" cols="100"></textarea>
-  <textarea id="copyGeoJSON" name="message" rows="10" cols="100">{"type": "FeatureCollection","features": [{"type": "Feature","properties": {},"geometry": {"coordinates": [29.93926429273742,26.465501185936787],"type": "Point"}}]}</textarea>
+  </map>
+  <textarea id="copyGeoJSON" name="message" rows="10" cols="100">{"type": "FeatureCollection","features": [{"type": "Feature","properties": {},"geometry": {"coordinates": [-83.22289418030245, 48.63126690901518],"type": "Point"}}]}</textarea>
   <textarea id="invalidLink" name="message" rows="10" cols="100">http://google.com</textarea>
   <textarea id="invalidText" name="message" rows="10" cols="100">asdasdasdadsasd</textarea>
   <textarea id="copyLink" name="message" rows="10" cols="100">http://localhost:30001/data/query/DouglasFir</textarea>

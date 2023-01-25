@@ -23,7 +23,7 @@ exports.test = (path, zoomIn, zoomOut) => {
     });
     test("isVisible property false when zoomed out of bounds (zooming out)", async () => {
 
-      for (let i = 0; i < zoomOut + zoomIn; i++) {
+      for (let i = 0; i < zoomOut + zoomIn - 1; i++) {
         await page.click('.leaflet-control-zoom-out');
         await page.waitForTimeout(300);
       }

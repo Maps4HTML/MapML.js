@@ -135,12 +135,12 @@ window.M = M;
         horizontal: {
           name: "x",
           min: 0, 
-          max: zoom => (M.WGS84.options.bounds.getSize().x / M.WGS84.options.resolutions[zoom]).toFixed()
+          max: zoom => (Math.round(M.WGS84.options.bounds.getSize().x / M.WGS84.options.resolutions[zoom]))
         },
         vertical: {
           name: "y",
           min:0, 
-          max: zoom => (M.WGS84.options.bounds.getSize().y / M.WGS84.options.resolutions[zoom]).toFixed()
+          max: zoom => (Math.round(M.WGS84.options.bounds.getSize().y / M.WGS84.options.resolutions[zoom]))
         },
         bounds: zoom => L.bounds([M.WGS84.options.crs.tcrs.horizontal.min,
                           M.WGS84.options.crs.tcrs.vertical.min],
@@ -209,12 +209,12 @@ window.M = M;
         horizontal: {
           name: "column",
           min: 0,
-          max: zoom => (M.WGS84.options.crs.tcrs.horizontal.max(zoom) / M.WGS84.options.crs.tile.bounds.getSize().x).toFixed()
+          max: zoom => (Math.round(M.WGS84.options.crs.tcrs.horizontal.max(zoom) / M.WGS84.options.crs.tile.bounds.getSize().x))
         },
         vertical: {
           name: "row",
           min: 0,
-          max: zoom => (M.WGS84.options.crs.tcrs.vertical.max(zoom) / M.WGS84.options.crs.tile.bounds.getSize().y).toFixed()
+          max: zoom => (Math.round(M.WGS84.options.crs.tcrs.vertical.max(zoom) / M.WGS84.options.crs.tile.bounds.getSize().y))
         },
         bounds: zoom => L.bounds(
                  [M.WGS84.options.crs.tilematrix.horizontal.min,
@@ -261,12 +261,12 @@ window.M = M;
         horizontal: {
           name: "x",
           min: 0, 
-          max: zoom => (M.CBMTILE.options.bounds.getSize().x / M.CBMTILE.options.resolutions[zoom]).toFixed()
+          max: zoom => (Math.round(M.CBMTILE.options.bounds.getSize().x / M.CBMTILE.options.resolutions[zoom]))
         },
         vertical: {
           name: "y",
           min:0, 
-          max: zoom => (M.CBMTILE.options.bounds.getSize().y / M.CBMTILE.options.resolutions[zoom]).toFixed()
+          max: zoom => (Math.round(M.CBMTILE.options.bounds.getSize().y / M.CBMTILE.options.resolutions[zoom]))
         },
         bounds: zoom => L.bounds([M.CBMTILE.options.crs.tcrs.horizontal.min,
                           M.CBMTILE.options.crs.tcrs.vertical.min],
@@ -335,12 +335,12 @@ window.M = M;
         horizontal: {
           name: "column",
           min: 0,
-          max: zoom => (M.CBMTILE.options.crs.tcrs.horizontal.max(zoom) / M.CBMTILE.options.crs.tile.bounds.getSize().x).toFixed()
+          max: zoom => (Math.round(M.CBMTILE.options.crs.tcrs.horizontal.max(zoom) / M.CBMTILE.options.crs.tile.bounds.getSize().x))
         },
         vertical: {
           name: "row",
           min: 0,
-          max: zoom => (M.CBMTILE.options.crs.tcrs.vertical.max(zoom) / M.CBMTILE.options.crs.tile.bounds.getSize().y).toFixed()
+          max: zoom => (Math.round(M.CBMTILE.options.crs.tcrs.vertical.max(zoom) / M.CBMTILE.options.crs.tile.bounds.getSize().y))
         },
         bounds: zoom => L.bounds([0,0],
                  [M.CBMTILE.options.crs.tilematrix.horizontal.max(zoom),
@@ -379,12 +379,12 @@ window.M = M;
         horizontal: {
           name: "x",
           min: 0, 
-          max: zoom => (M.APSTILE.options.bounds.getSize().x / M.APSTILE.options.resolutions[zoom]).toFixed()
+          max: zoom => (Math.round(M.APSTILE.options.bounds.getSize().x / M.APSTILE.options.resolutions[zoom]))
         },
         vertical: {
           name: "y",
           min:0, 
-          max: zoom => (M.APSTILE.options.bounds.getSize().y / M.APSTILE.options.resolutions[zoom]).toFixed()
+          max: zoom => (Math.round(M.APSTILE.options.bounds.getSize().y / M.APSTILE.options.resolutions[zoom]))
         },
         bounds: zoom => L.bounds([M.APSTILE.options.crs.tcrs.horizontal.min,
                           M.APSTILE.options.crs.tcrs.vertical.min],
@@ -453,12 +453,12 @@ window.M = M;
         horizontal: {
           name: "column",
           min: 0,
-          max: zoom => (M.APSTILE.options.crs.tcrs.horizontal.max(zoom) / M.APSTILE.options.crs.tile.bounds.getSize().x).toFixed()
+          max: zoom => (Math.round(M.APSTILE.options.crs.tcrs.horizontal.max(zoom) / M.APSTILE.options.crs.tile.bounds.getSize().x))
         },
         vertical: {
           name: "row",
           min: 0,
-          max: zoom => (M.APSTILE.options.crs.tcrs.vertical.max(zoom) / M.APSTILE.options.crs.tile.bounds.getSize().y).toFixed()
+          max: zoom => (Math.round(M.APSTILE.options.crs.tcrs.vertical.max(zoom) / M.APSTILE.options.crs.tile.bounds.getSize().y))
         },
         bounds: zoom => L.bounds([0,0],
                  [M.APSTILE.options.crs.tilematrix.horizontal.max(zoom),
@@ -502,12 +502,12 @@ window.M = M;
         horizontal: {
           name: "x",
           min: 0, 
-          max: zoom => (M.OSMTILE.options.bounds.getSize().x / M.OSMTILE.options.resolutions[zoom]).toFixed()
+          max: zoom => (Math.round(M.OSMTILE.options.bounds.getSize().x / M.OSMTILE.options.resolutions[zoom]))
         },
         vertical: {
           name: "y",
           min:0, 
-          max: zoom => (M.OSMTILE.options.bounds.getSize().y / M.OSMTILE.options.resolutions[zoom]).toFixed()
+          max: zoom => (Math.round(M.OSMTILE.options.bounds.getSize().y / M.OSMTILE.options.resolutions[zoom]))
         },
         bounds: zoom => L.bounds([M.OSMTILE.options.crs.tcrs.horizontal.min,
                           M.OSMTILE.options.crs.tcrs.vertical.min],
@@ -574,12 +574,12 @@ window.M = M;
         horizontal: {
           name: "column",
           min: 0,
-          max: zoom => (M.OSMTILE.options.crs.tcrs.horizontal.max(zoom) / M.OSMTILE.options.crs.tile.bounds.getSize().x).toFixed()
+          max: zoom => (Math.round(M.OSMTILE.options.crs.tcrs.horizontal.max(zoom) / M.OSMTILE.options.crs.tile.bounds.getSize().x))
         },
         vertical: {
           name: "row",
           min: 0,
-          max: zoom => (M.OSMTILE.options.crs.tcrs.vertical.max(zoom) / M.OSMTILE.options.crs.tile.bounds.getSize().y).toFixed()
+          max: zoom => (Math.round(M.OSMTILE.options.crs.tcrs.vertical.max(zoom) / M.OSMTILE.options.crs.tile.bounds.getSize().y))
         },
         bounds: zoom => L.bounds([0,0],
                  [M.OSMTILE.options.crs.tilematrix.horizontal.max(zoom),
@@ -606,6 +606,15 @@ M.parseStylesheetAsHTML = Util.parseStylesheetAsHTML;
 M.pointToPCRSPoint = Util.pointToPCRSPoint;
 M.pixelToPCRSPoint = Util.pixelToPCRSPoint;
 M.gcrsToTileMatrix = Util.gcrsToTileMatrix;
+M._pasteLayer = Util._pasteLayer;
+M._properties2Table = Util._properties2Table;
+M._updateExtent = Util._updateExtent;
+M.geojson2mapml = Util.geojson2mapml;
+M._breakArray = Util._breakArray;
+M._table2properties = Util._table2properties;
+M._geometry2geojson = Util._geometry2geojson;
+M._pcrsToGcrs = Util._pcrsToGcrs;
+M.mapml2geojson = Util.mapml2geojson;
 
 M.QueryHandler = QueryHandler;
 M.ContextMenu = ContextMenu;

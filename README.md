@@ -1,82 +1,67 @@
-# &lt;mapml-viewer&gt; custom element
-
 ![Build Status](https://api.travis-ci.com/Maps4HTML/Web-Map-Custom-Element.svg?branch=master)
 ![Continuous Testing](https://github.com/Maps4HTML/Web-Map-Custom-Element/workflows/Continuous%20Testing/badge.svg)
 
-The `<mapml-viewer>` custom element is a prototype implementation of the
-[`<map>` media element](https://maps4html.org/MapML/spec/#web-maps)
-defined in the MapML (Map Markup Language)
-[specification](https://maps4html.org/MapML/spec/).
+# &lt;mapml-viewer>
+
+The &lt;mapml-viewer> is a declarative vocabulary for Web mapping that extends
+HTML to include modern Web maps.  It is a pilot / reference implementation of the
+proposed and evolving [Map Markup Language](https://maps4html.org/web-map-doc/docs/) 
+Web standard.
 
 ## Installation
 
-Beginning with `v0.8.2`, &lt;mapml-viewer&gt; can be loaded from the [UNPKG content delivery network](https://unpkg.com/) –
-```html
-<script type="module" src="https://unpkg.com/@maps4html/web-map-custom-element@latest/dist/mapml-viewer.js"></script>
+```console
+$ npm install @maps4html/web-map-custom-element
 ```
 
-– or installed using npm.
-```bash
-npm install @maps4html/web-map-custom-element
-```
-
-Note: `v0.8.X` npm releases are functionally equivalent to [standalone release`v0.8.0`](https://github.com/Maps4HTML/Web-Map-Custom-Element/releases/tag/v0.8.0).
+See [instructions](https://maps4html.org/web-map-doc/docs/installation#install-the-mapml-viewer-suite-of-custom-elements) for further details.
 
 ## Usage
 
-The HTML author can add MapML
-sources (layers) by specifying one or more `<layer->` custom elements as
-children of `<mapml-viewer>`.
-
-The map provides a default set of controls which are turned on or off with the
-map's `controls` boolean attribute.
-
-<!--The `width` and `height` attributes of the map should be specified,
-and can be overriden using CSS properties.-->
-
-The initial zoom and location of the map are controlled by the `zoom`,
-`lat` and `lon` attributes.
-The default `projection` is `OSMTILE` (Web Mercator).
-
-### Example markup of a basic map
+You create a map with one or more layers via the &lt;mapml-viewer> HTML tag. Add
+layers via the &lt;layer-> tag with content OR a src attribute pointing to a 
+MapML document (must be served as either `text/mapml` or `application/xml` content
+type):
 
 ```html
-<mapml-viewer zoom="3" lat="0" lon="0" controls>
-  <layer- src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" label="OpenStreetMap" checked></layer->
+<mapml-viewer projection="OSMTILE" zoom="0" lat="0.0" lon="0.0" controls>
+  <layer- label="OpenStreetMap" src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" checked></layer->
+</mapml-viewer>
+```
+OR inline content
+```html
+<mapml-viewer projection="OSMTILE" lat="10" lon="0" zoom="1" controls>
+  <layer- label="OpenStreetMap" checked>
+    <map-extent units="OSMTILE">
+      <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
+      <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+      <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+      <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
+    </map-extent>
+  </layer->
 </mapml-viewer>
 ```
 
-### Styling the map element
+## Contributing
 
-It is recommended to use the
-[`:defined`](https://developer.mozilla.org/en-US/docs/Web/CSS/:defined)
-pseudo-class to progressively style the map element.
-It ensures styles only apply in
-[browsers that support custom elements](https://caniuse.com/custom-elementsv1).
+0. Join our [Community Group](https://www.w3.org/community/wp-login.php?redirect_to=%2Fcommunity%2Fmaps4html%2Fjoin)
+1. Fork it!
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request :D
 
-```css
-mapml-viewer:defined {
-  background-color: black; /* custom background color */
-  border: none; /* remove default border */
-  max-width: 100%; /* responsive map */
-}
-```
+## History
 
-## A parallel customized built-in element
+TODO: Write history
 
-The `<map is="web-map">` customized built-in element is developed in parallel
-to the `<mapml-viewer>` autonomous custom element.
-Please note that `<map>` as a customized built-in element has proven to have
-a critical [accessibility issue](https://github.com/w3c/html-aam/issues/292)
-in some browsers, which causes screen readers not to announce any of the map
-element's content,
-it is therefore recommended not to use `<map is="web-map">` in production.
+## Credits
 
-## Maps for HTML Community Group
+Map for HTML Community members and supporters past, present and future.
 
-MapML and the custom map elements are being developed by the
-W3C [Maps for HTML Community Group](http://www.w3.org/community/maps4html/).
-Membership in the group is encouraged, however you do not have to join to use
-the information found here.
-If you wish to contribute, please join the Maps For HTML Community Group,
-and help us make the Web a map-friendly platform for everyone, everywhere!
+## License
+
+All Reports in this Repository are licensed by Contributors under the 
+[W3C Software and Document License](http://www.w3.org/Consortium/Legal/2015/copyright-software-and-document).  
+Contributions to Specifications are made under the
+[W3C CLA](https://www.w3.org/community/about/agreements/cla/).

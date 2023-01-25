@@ -333,6 +333,8 @@ export class WebMap extends HTMLMapElement {
           delete this[controls[i]];
         }
       }
+    }else if (!this.controls && this._map) {
+      this._map.contextMenu._items[4].el.el.setAttribute("disabled", "");
     }
   }
   attributeChangedCallback(name, oldValue, newValue) {
@@ -356,34 +358,12 @@ export class WebMap extends HTMLMapElement {
   }
   _dropHandler(event) {
     event.preventDefault();
-    // create a new <layer-> child of this <map> element
-      let l = new MapLayer();
-      l.src = event.dataTransfer.getData("text");
-      l.label = 'Layer';
-      l.checked = 'true';
-      this.appendChild(l);
-      l.addEventListener("error", function () {
-        if (l.parentElement) {
-          // should invoke lifecyle callbacks automatically by removing it from DOM
-          l.parentElement.removeChild(l);
-        }
-        // garbage collect it
-        l = null;
-      });
+    let text = event.dataTransfer.getData("text");
+    M._pasteLayer(this, text);
   }
   _dragoverHandler(event) {
-    function contains(list, value) {
-      for( var i = 0; i < list.length; ++i ) {
-        if(list[i] === value) return true;
-      }
-      return false;
-    }
-    // check if the thing being dragged is a URL
-    var isLink = contains( event.dataTransfer.types, "text/uri-list");
-    if (isLink) {
-      event.preventDefault();
-      event.dataTransfer.dropEffect = "copy";
-    }
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
   }
   _removeEvents() {
     if (this._map) {
@@ -407,6 +387,20 @@ export class WebMap extends HTMLMapElement {
       if(e.keyCode === 9 && document.activeElement.nodeName === "MAPML-VIEWER"){
         document.activeElement.dispatchEvent(new CustomEvent('mapfocused', {detail:
               {target: this}}));
+      }
+    });
+    // pasting layer-, links and geojson using Ctrl+V 
+    this.addEventListener('keydown', function (e) {
+      if(e.keyCode === 86 && e.ctrlKey){
+        navigator.clipboard
+          .readText()
+          .then(
+            (layer) => {
+              M._pasteLayer(this, layer);
+            });
+      } else if (e.keyCode === 32) {
+        e.preventDefault();
+        this._map.fire('keypress', {originalEvent: e});
       }
     });
     this.parentElement.addEventListener('mousedown', function (e) {
@@ -695,12 +689,12 @@ export class WebMap extends HTMLMapElement {
           horizontal: {
             name: "x",
             min: 0, 
-            max: zoom => (M[t.projection].options.bounds.getSize().x / M[t.projection].options.resolutions[zoom]).toFixed()
+            max: zoom => (Math.round(M[t.projection].options.bounds.getSize().x / M[t.projection].options.resolutions[zoom]))
           },
           vertical: {
             name: "y",
             min:0, 
-            max: zoom => (M[t.projection].options.bounds.getSize().y / M[t.projection].options.resolutions[zoom]).toFixed()
+            max: zoom => (Math.round(M[t.projection].options.bounds.getSize().y / M[t.projection].options.resolutions[zoom]))
           },
           bounds: zoom => L.bounds([M[t.projection].options.crs.tcrs.horizontal.min,
             M[t.projection].options.crs.tcrs.vertical.min],
@@ -769,12 +763,12 @@ export class WebMap extends HTMLMapElement {
           horizontal: {
             name: "column",
             min: 0,
-            max: zoom => (M[t.projection].options.crs.tcrs.horizontal.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().x).toFixed()
+            max: zoom => (Math.round(M[t.projection].options.crs.tcrs.horizontal.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().x))
           },
           vertical: {
             name: "row",
             min: 0,
-            max: zoom => (M[t.projection].options.crs.tcrs.vertical.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().y).toFixed()
+            max: zoom => (Math.round(M[t.projection].options.crs.tcrs.vertical.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().y))
           },
           bounds: zoom => L.bounds(
                    [M[t.projection].options.crs.tilematrix.horizontal.min,
@@ -786,6 +780,15 @@ export class WebMap extends HTMLMapElement {
     });      //creates crs using L.Proj
     M[t.projection.toUpperCase()] = M[t.projection]; //adds the projection uppercase to global M
     return t.projection;
+  }
+
+  geojson2mapml(json, options = {}){
+    if (options.projection === undefined) {
+      options.projection = this.projection;
+    }
+    let geojsonLayer = M.geojson2mapml(json, options);
+    this.appendChild(geojsonLayer);
+    return geojsonLayer;
   }
 
   _ready() {
