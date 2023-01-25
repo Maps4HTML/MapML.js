@@ -388,13 +388,13 @@ export class WebMap extends HTMLMapElement {
       }
     });
     // pasting layer-, links and geojson using Ctrl+V 
-    this.parentElement.addEventListener('keydown', function (e) {
+    this.addEventListener('keydown', function (e) {
       if(e.keyCode === 86 && e.ctrlKey){
         navigator.clipboard
           .readText()
           .then(
             (layer) => {
-              M._pasteLayer(this.parentElement, layer);
+              M._pasteLayer(this, layer);
             });
       } else if (e.keyCode === 32) {
         e.preventDefault();
