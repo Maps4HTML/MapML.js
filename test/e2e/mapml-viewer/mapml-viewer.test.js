@@ -177,4 +177,18 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
     );
     expect(layerCount).toEqual(3);
    });
+
+   test("Press spacebar when focus is on map", async () => {
+    // scroll to the top
+    await page.mouse.wheel(0,-1000);
+    await page.waitForTimeout(300);
+    await page.click("body > mapml-viewer");
+    await page.keyboard.press('Space');
+    await page.waitForTimeout(300);
+    const currPos = await page.$eval(
+      "body > mapml-viewer",
+      () => window.pageYOffset
+    );
+    expect(currPos).toEqual(0);
+   });
 });

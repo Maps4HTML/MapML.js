@@ -390,14 +390,17 @@ export class WebMap extends HTMLMapElement {
       }
     });
     // pasting layer-, links and geojson using Ctrl+V 
-    this.parentElement.addEventListener('keydown', function (e) {
-      if(e.keyCode === 86 && e.ctrlKey && document.activeElement.nodeName === "DIV"){
+    this.addEventListener('keydown', function (e) {
+      if(e.keyCode === 86 && e.ctrlKey){
         navigator.clipboard
           .readText()
           .then(
             (layer) => {
-              M._pasteLayer(document.activeElement.parentElement, layer);
+              M._pasteLayer(this, layer);
             });
+      } else if (e.keyCode === 32) {
+        e.preventDefault();
+        this._map.fire('keypress', {originalEvent: e});
       }
     });
     this.parentElement.addEventListener('mousedown', function (e) {
