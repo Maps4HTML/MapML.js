@@ -73,11 +73,9 @@ test.describe("Playwright web-map Element Tests", () => {
    });
 
    test("Press spacebar when focus is on map", async () => {
-    await page.click("body > textarea");
-    const pos = await page.$eval(
-      "body > map",
-      () => window.pageYOffset
-    )
+    //  scroll to the top
+    await page.mouse.wheel(0, -1000);
+    await page.waitForTimeout(300);
     await page.click("body > map");
     await page.keyboard.press('Space');
     await page.waitForTimeout(300);
@@ -85,6 +83,6 @@ test.describe("Playwright web-map Element Tests", () => {
       "body > map",
       () => window.pageYOffset
     );
-    expect(currPos).toEqual(pos);
+    expect(currPos).toEqual(0);
    });
 });
