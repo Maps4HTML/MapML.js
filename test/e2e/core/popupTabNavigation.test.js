@@ -130,7 +130,7 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
     test("Tooltip appears after pressing esc key", async () => {
       await page.keyboard.press("Enter"); 
       await page.waitForTimeout(500);
-      await page.keyboard.press("Shift+Tab"); // focus back on feature
+      await page.keyboard.press("Escape"); // focus back on feature
       await page.waitForTimeout(500);
 
       const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
