@@ -100,7 +100,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
     }
 
     if(e.target.tagName.toUpperCase() !== "G") return;
-    if(([9, 13, 16, 37, 38, 39, 40, 49, 50, 51, 52, 53, 54, 55].includes(e.keyCode)) && e.type === "keyup") {
+    if(([9, 13, 16, 37, 38, 39, 40, 49, 50, 51, 52, 53, 54, 55, 27].includes(e.keyCode)) && e.type === "keyup") {
       this.openTooltip();
     } else if (e.keyCode === 13 || e.keyCode === 32){
       this.closeTooltip();
