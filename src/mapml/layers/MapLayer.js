@@ -1330,7 +1330,7 @@ export var MapMLLayer = L.Layer.extend({
         let path = focusEvent.originalEvent.path || focusEvent.originalEvent.composedPath();
         let isTab = focusEvent.originalEvent.keyCode === 9,
             shiftPressed = focusEvent.originalEvent.shiftKey;
-        if((path[0].classList.contains("leaflet-popup-close-button") && isTab && !shiftPressed) || focusEvent.originalEvent.keyCode === 27){
+            if((path[0].classList.contains("leaflet-popup-close-button") && isTab && !shiftPressed) || focusEvent.originalEvent.keyCode === 27 || path[0].classList.contains("leaflet-popup-close-button") && focusEvent.originalEvent.keyCode === 13){
           setTimeout(() => {
             L.DomEvent.stop(focusEvent);
             map.closePopup(popup);
