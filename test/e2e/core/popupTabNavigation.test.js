@@ -127,6 +127,42 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       expect(f).toEqual("M330 83L586 83L586 339L330 339z");
     });
 
+    test("Tooltip appears after pressing esc key", async () => {
+      await page.keyboard.press("Enter"); 
+      await page.waitForTimeout(500);
+      await page.keyboard.press("Shift+Tab"); // focus back on feature
+      await page.waitForTimeout(500);
+
+      const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+      const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
+      const rh = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nh);
+      const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
+
+      let tooltipCount = await page.$eval("mapml-viewer .leaflet-tooltip-pane", div => div.childElementCount);
+      expect(f).toEqual("M330 83L586 83L586 339L330 339z");
+    });
+  
+    test("Tooltip appears after pressing enter on close button", async () => {
+      await page.keyboard.press("Enter"); // focus back into popup
+      await page.keyboard.press("Tab"); 
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab"); // focus on x button
+      await page.keyboard.press("Enter"); // press x button
+      await page.waitForTimeout(500);
+
+      const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+      const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
+      const rh = await page.evaluateHandle(root => root.activeElement.querySelector(".leaflet-interactive"), nh);
+      const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
+
+      let tooltipCount = await page.$eval("mapml-viewer .leaflet-tooltip-pane", div => div.childElementCount);
+      expect(f).toEqual("M330 83L586 83L586 339L330 339z");
+  
+    });
+
     test("Next feature button focuses next feature", async () => {
       await page.keyboard.press("Enter"); // popup with link
       await page.waitForTimeout(500);
