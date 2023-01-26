@@ -98,7 +98,8 @@ export var FeatureGroup = L.FeatureGroup.extend({
       this._map.featureIndex.currentIndex = 0;
       this._map.featureIndex.inBoundFeatures[0].path.focus();
     }
-
+  
+    // 27 added so that the tooltip opens when dismissing popup with 'esc' key
     if(e.target.tagName.toUpperCase() !== "G") return;
     if(([9, 13, 16, 37, 38, 39, 40, 49, 50, 51, 52, 53, 54, 55, 27].includes(e.keyCode)) && e.type === "keyup") {
       this.openTooltip();
