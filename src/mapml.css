@@ -258,7 +258,8 @@
   background-color: #fff;
   cursor: default;
   position: absolute;
-  width: 160px;
+  width: fit-content;
+  display: inline-block;
   z-index: 10001;
 }
 
@@ -272,6 +273,7 @@
   border-bottom: 1px solid transparent;
   cursor: default;
   width: 100%;
+  display: block;
 }
 
 .mapml-contextmenu button.mapml-contextmenu-item.over {
@@ -288,6 +290,7 @@
 .mapml-contextmenu.mapml-submenu {
   width: 80px;
   margin-bottom: -2rem;
+  width: fit-content;
 }
 
 @supports (contain: layout) {

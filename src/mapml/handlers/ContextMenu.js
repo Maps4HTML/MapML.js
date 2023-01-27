@@ -442,6 +442,8 @@ export var ContextMenu = L.Handler.extend({
 
   _show: function (e) {
     if(this._mapMenuVisible) this._hide();
+    // the 'hidden' attribute must be removed before any attempt to get the size of container
+    else this._container.removeAttribute('hidden');
     this._clickEvent = e;
     let elem = e.originalEvent.target;
     if(elem.closest("fieldset")){
@@ -646,17 +648,19 @@ export var ContextMenu = L.Handler.extend({
     copyEl.setAttribute("aria-expanded","true");
     menu.removeAttribute('hidden');
 
-    if (click.containerPoint.x + 160 + 80 > mapSize.x) {
+    const menuWidth = this._container.offsetWidth,
+        submenuWidth = menu.offsetWidth;
+    if (click.containerPoint.x + menuWidth + submenuWidth > mapSize.x) {
       menu.style.left = 'auto';
-      menu.style.right = 160 + 'px';
+      menu.style.right = menuWidth + 'px';
     } else {
-      menu.style.left = 160 + 'px';
+      menu.style.left = menuWidth + 'px';
       menu.style.right = 'auto';
     }
 
     if (click.containerPoint.y + 160 > mapSize.y) {
       menu.style.top = 'auto';
-      menu.style.bottom = 20 + 'px';
+      menu.style.bottom = 32 + 'px'; // to make submenu show completely when clicking at the bottom of the map
     } else {
       menu.style.top = 100 + 'px';
       menu.style.bottom = 'auto';
@@ -665,8 +669,9 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _hideCoordMenu: function(e){
-    if(e.srcElement.parentElement.classList.contains("mapml-submenu") ||
-        e.srcElement.innerText === (M.options.locale.cmCopyCoords + " (C)"))return;
+    if(!e.relatedTarget || !e.relatedTarget.parentElement || 
+        e.relatedTarget.parentElement.classList.contains("mapml-submenu") ||
+        e.relatedTarget.classList.contains("mapml-submenu"))return;
     let menu = this._coordMenu, copyEl = this._items[5].el.el;
     copyEl.setAttribute("aria-expanded","false");
     menu.setAttribute('hidden', '');
