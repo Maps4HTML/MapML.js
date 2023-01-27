@@ -15,6 +15,16 @@ let expectedFirstTCRS = [
   { horizontal: 659, vertical: 730 },
   { horizontal: 771.4482758620691, vertical: 753.8620689655173 }];
 
+// expected extent top-left and bottom-right value at different zoom levels (0 and 1)
+let expectedExtentPCRS_0 = [
+  {horizontal: -9373489.01871137, vertical: 11303798.154262971},
+  {horizontal: 9808841.01261536, vertical: -11714997.883329108}
+];
+let expectedExtentPCRS_1 = [
+  {horizontal: -5396793.565320458, vertical: 6520121.920243833},
+  {horizontal: 5848020.590974525, vertical: -6973655.06731014}
+];
+
 test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
   let page;
   let context;
@@ -49,7 +59,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Copy Coordinates (C)");
+    expect(name).toEqual("Copy (C)");
   });
 
 
@@ -72,7 +82,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("tile");
+    expect(name).toEqual("Map");
   });
 
   test("Context menu displaying on map", async () => {
@@ -226,57 +236,89 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     });
   });
 
-  test("Submenu, copy all coordinate systems using tab + enter to access", async () => {
-    await page.click("body > mapml-viewer");
-    await page.keyboard.press("Shift+F10");
-    for (let i = 0; i < 3; i++)
+  test("Submenu, copy using tab + enter to access", async () => {
+    await page.reload();
+    let expected = "";
+    const currDefCS = await page.$eval(
+      "body > mapml-viewer",
+      (map) => ({ext: map._map.contextMenu.defExtCS, loc: map._map.contextMenu.defLocCS})
+    );
+    // set cs to pcrs for copying extent test, gcrs for copying location test 
+    for (let i = 0; i < 4; i++) {
+      await page.click("body > mapml-viewer");
+      // zoom in
+      if (i === 2) {
+        await page.keyboard.press('Tab');
+        await page.keyboard.press('Enter');
+        await page.waitForTimeout(1000);
+        await page.click("body > mapml-viewer");
+      }
+      await page.keyboard.press("Shift+F10");
+      await page.$eval(
+        "body > mapml-viewer",
+        (map) => {
+          map._map.contextMenu.defExtCS = 'pcrs';
+          map._map.contextMenu.defLocCS = 'gcrs';
+        }
+      )
       await page.keyboard.press("Tab");
+      if (i >= 2) {
+        for (let k = 0; k < 2; k++) {
+          await page.keyboard.press("Tab");
+        }
+      }
 
-    await page.keyboard.press("Enter");
+      await page.keyboard.press("Enter");
 
-    await page.click("#mapml-copy-submenu > button:nth-child(10)");
-
-    await page.click("body > textarea");
-    await page.keyboard.press("Control+v");
-    const copyValue = await page.$eval(
-      "body > textarea",
-      (text) => text.value
-    );
-    let expected = "z:1\n";
-    expected += "tile: i:30, j:50\n";
-    expected += "tilematrix: column:6, row:6\n";
-    expected += "map: i:250, j:300\n";
-    expected += "tcrs: x:1566, y:1586\n";
-    expected += "pcrs: easting:562957.94, northing:3641449.50\n";
-    expected += "gcrs: lon :-62.729466, lat:80.881921";
-
-    expect(copyValue).toEqual(expected);
-  });
-
-  test("Submenu, copy all coordinate systems", async () => {
-    await page.click("body > mapml-viewer");
-    await page.keyboard.press("Shift+F10");
-    await page.keyboard.press("c");
-
-    await page.click("#mapml-copy-submenu > button:nth-child(10)");
-
-    await page.click("body > textarea");
-    await page.keyboard.press("Control+a");
-    await page.keyboard.press("Backspace");
-    await page.keyboard.press("Control+v");
-    const copyValue = await page.$eval(
-      "body > textarea",
-      (text) => text.value
-    );
-    let expected = "z:1\n";
-    expected += "tile: i:30, j:50\n";
-    expected += "tilematrix: column:6, row:6\n";
-    expected += "map: i:250, j:300\n";
-    expected += "tcrs: x:1566, y:1586\n";
-    expected += "pcrs: easting:562957.94, northing:3641449.50\n";
-    expected += "gcrs: lon :-62.729466, lat:80.881921";
-
-    expect(copyValue).toEqual(expected);
+      for (let j = 0; j < i; j++) {
+        if ((i === 2 && j === 1) || (i === 3 && j === 2)) {
+          break;
+        }
+        await page.keyboard.press("Tab");
+      }
+      await page.keyboard.press("Enter");
+      await page.click("body > textarea#coord");
+      await page.keyboard.press("Control+v");
+      const copyValue = await page.$eval(
+        "body > textarea#coord",
+        (text) => text.value
+      );
+      switch(i) {
+        case 0: 
+          expected = `<mapml-viewer style="height: 600px;width:500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls="" role="application">
+    <layer- label="CBMT - INLINE" checked="">
+      <map-extent units="CBMTILE" hidden="">
+        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
+        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>
+        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>
+        <map-link rel="tile" tref="/data/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>
+      </map-extent>
+    </layer->
+  </mapml-viewer>`;
+          break;
+        case 1:
+          // first test for copying extent (zoom = 0)
+          expected = `<map-meta name="extent" content="top-left-easting=${expectedExtentPCRS_0[0].horizontal}, top-left-northing=${expectedExtentPCRS_0[0].vertical}, bottom-right-easting=${expectedExtentPCRS_0[1].horizontal}, bottom-right-northing=${expectedExtentPCRS_0[1].vertical}"></map-meta>`;
+          break;
+        case 2:
+          // second test for copying extent (zoom = 1)
+          expected = `<map-meta name="extent" content="top-left-easting=${expectedExtentPCRS_1[0].horizontal}, top-left-northing=${expectedExtentPCRS_1[0].vertical}, bottom-right-easting=${expectedExtentPCRS_1[1].horizontal}, bottom-right-northing=${expectedExtentPCRS_1[1].vertical}"></map-meta>`;
+          break;
+        case 3:
+          expected = "lon :-92.062002, lat:46.922393";
+          break;
+        }
+      expect(copyValue).toEqual(expected);
+      await page.locator("body > textarea#coord").fill('');
+    }
+    await page.$eval(
+      "body > mapml-viewer",
+      (map, currDefCS) => {
+        map._map.contextMenu.defExtCS = currDefCS.ext;
+        map._map.contextMenu.defLocCS = currDefCS.loc;
+      }, 
+      currDefCS
+    )
   });
 
   test("Context menu, All buttons enabled when fwd and back history present", async () => {
