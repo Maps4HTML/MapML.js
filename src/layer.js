@@ -3,7 +3,7 @@ import './mapml.js';       // modified URI to make the function a property of wi
 
 export class MapLayer extends HTMLElement {
   static get observedAttributes() {
-    return ['src', 'label', 'checked', 'hidden'];
+    return ['src', 'label', 'checked', 'hidden', 'opacity'];
   }
   get src() {
     return this.hasAttribute('src')?this.getAttribute('src'):'';
@@ -71,7 +71,7 @@ export class MapLayer extends HTMLElement {
 
   constructor() {
     // Always call super first in constructor
-    super();
+    super();    
   }
   disconnectedCallback() {
     //    console.log('Custom map element removed from page.');
@@ -129,7 +129,7 @@ export class MapLayer extends HTMLElement {
           this.dispatchEvent(new Event("change", { bubbles: true }));
         }
       break;
-    case 'hidden':
+      case 'hidden':
       var map = this.parentElement && this.parentElement._map;
       if (map && this.parentElement.controls) {
           if (typeof newValue === "string") {
@@ -142,6 +142,11 @@ export class MapLayer extends HTMLElement {
               this._validateDisabled();
           }
       }
+      break;
+      case 'opacity':
+        if (oldValue !== newValue && this._layer) {
+          this.opacity = newValue;
+        }
       break;
     }
   }
@@ -245,7 +250,8 @@ export class MapLayer extends HTMLElement {
     // be parsed from the second parameter here
     // IE 11 did not have a value for this.baseURI for some reason
     var base = this.baseURI ? this.baseURI : document.baseURI;
-    this._layer = M.mapMLLayer(this.src ? (new URL(this.src, base)).href: null, this, {mapprojection:this.parentElement._map.options.projection});
+    let opacity_value = this.hasAttribute("opacity")?this.getAttribute("opacity"):"1.0";
+    this._layer = M.mapMLLayer(this.src ? (new URL(this.src, base)).href: null, this, {mapprojection:this.parentElement._map.options.projection,opacity:opacity_value});
     this._layer.on('extentload', this._onLayerExtentLoad, this);
     this._setUpEvents();
   }
