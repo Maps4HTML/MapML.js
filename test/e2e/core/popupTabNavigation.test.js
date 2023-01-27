@@ -139,9 +139,10 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
 
       let tooltipCount = await page.$eval("mapml-viewer .leaflet-tooltip-pane", div => div.childElementCount);
+      expect(tooltipCount).toEqual(1);
       expect(f).toEqual("M330 83L586 83L586 339L330 339z");
     });
-  
+
     test("Tooltip appears after pressing enter on close button", async () => {
       await page.keyboard.press("Enter"); // focus back into popup
       await page.keyboard.press("Tab"); 
@@ -159,6 +160,7 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       const f = await (await page.evaluateHandle(elem => elem.getAttribute("d"), rh)).jsonValue();
 
       let tooltipCount = await page.$eval("mapml-viewer .leaflet-tooltip-pane", div => div.childElementCount);
+      expect(tooltipCount).toEqual(1);
       expect(f).toEqual("M330 83L586 83L586 339L330 339z");
   
     });
