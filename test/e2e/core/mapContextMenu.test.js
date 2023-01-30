@@ -305,4 +305,37 @@ test.describe("Playwright Map Context Menu Tests", () => {
     );
     expect(layerCount).toEqual(5);
   });
+
+  test("Context menu, click at margin and move mouse out when submenu is visible", async () => {
+    // click at the right-bottom margin of map
+    await page.mouse.wheel(0, 200);
+    await page.waitForTimeout(200);
+    await page.click("body > map", {
+      button: 'right',
+      position: {x: 495, y: 580}
+    });
+    const contextMenu = await page.locator('div > div.mapml-contextmenu').first();
+    expect(await contextMenu.isVisible()).toBeTruthy();
+    const mapSize = await page.$eval(
+      "body > map",
+      (map) => { return {x: map.width, y: map.height} }
+    );
+    const contextMenuSize = await page.$eval(
+      "div > div.mapml-contextmenu",
+      (menu) => {
+        return {
+          x: menu.offsetWidth + menu.getBoundingClientRect().left,
+          y: menu.offsetHeight + menu.getBoundingClientRect().top
+        }
+      }
+    );
+    expect(contextMenuSize.x <= mapSize.x && contextMenuSize.y <= mapSize.y).toBeTruthy();
+
+    // move the mouse from "copy" to another button in the main contextmenu
+    await contextMenu.hover();
+    const submenu = await page.locator('div > div#mapml-copy-submenu').first();
+    expect(await submenu.isVisible()).toBeTruthy();
+    await page.hover("div > div.mapml-contextmenu > button:nth-child(5)");
+    expect(await submenu.isHidden()).toBeTruthy();
+  });
 });
