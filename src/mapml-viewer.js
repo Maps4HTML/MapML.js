@@ -84,7 +84,7 @@ export class MapViewer extends HTMLElement {
         map.getPixelBounds(),
         map.getZoom(),
         map.options.projection);
-    let formattedExtent = M.convertAndFormatPCRS(pcrsBounds, map);
+    let formattedExtent = M._convertAndFormatPCRS(pcrsBounds, map);
     if(map.getMaxZoom() !== Infinity){
       formattedExtent.zoom = {
         minZoom:map.getMinZoom(),

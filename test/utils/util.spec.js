@@ -376,7 +376,7 @@ describe("M.Util Tests", () => {
     });
   });
 
-  describe("M._pointToPCRSPoint() utility function tests", () => {
+  describe("M.pointToPCRSPoint() utility function tests", () => {
     let expected = [
       [
         {"x": 63557729.76039286, "y": -58903529.76039286},
@@ -404,7 +404,7 @@ describe("M.Util Tests", () => {
     for(let i in csArray ){
       for(let j in projArray ){
         test(`Valid conversion in ${projArray[j]} + ${csArray[i]}`, async () => {
-          let output = M._pointToPCRSPoint(point, 0, projArray[j], csArray[i]);
+          let output = M.pointToPCRSPoint(point, 0, projArray[j], csArray[i]);
           await expect(output).toEqual(expected[i][j]);
         });
       }
@@ -412,19 +412,19 @@ describe("M.Util Tests", () => {
     /* jshint ignore:end */
 
     test("Null point", async () => {
-      let output = M._pointToPCRSPoint(null, 0, "CBMTILE");
+      let output = M.pointToPCRSPoint(null, 0, "CBMTILE");
       await expect(output).toEqual(undefined);
     });
     test("Null zoom", async () => {
-      let output = M._pointToPCRSPoint(point, null, "CBMTILE");
+      let output = M.pointToPCRSPoint(point, null, "CBMTILE");
       await expect(output).toEqual(undefined);
     });
     test("Null projection", async () => {
-      let output = M._pointToPCRSPoint(point, 1, null);
+      let output = M.pointToPCRSPoint(point, 1, null);
       await expect(output).toEqual(undefined);
     });
     test("Null cs", async () => {
-      let output = M._pointToPCRSPoint(point, 1, "CBMTILE", null);
+      let output = M.pointToPCRSPoint(point, 1, "CBMTILE", null);
       await expect(output).toEqual(undefined);
     });
   });

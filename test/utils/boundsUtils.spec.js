@@ -399,7 +399,7 @@ describe("M.Util Bounds Related Tests", () => {
   });
 
   /* jshint ignore:start */
-  describe("M.convertAndFormatPCRS utility function tests", () => {
+  describe("M._convertAndFormatPCRS utility function tests", () => {
     let projections = ["CBMTILE", "OSMTILE", "WGS84", "APSTILE"];
     //all expected results are in the order of projections (CBMTILE then OSMTILE...)
     //all referring to bottomRight
@@ -437,7 +437,7 @@ describe("M.Util Bounds Related Tests", () => {
           fadeAnimation: true
         });
         let pcrsBounds = L.bounds(L.point(14, 16), L.point(643, 24454));
-        let conversion = M.convertAndFormatPCRS(pcrsBounds, map);
+        let conversion = M._convertAndFormatPCRS(pcrsBounds, map);
         await expect(conversion.bottomRight.pcrs).toEqual(expectedPCRS[i]);
         await expect(conversion.bottomRight.gcrs).toEqual(expectedGCRS[i]);
         await expect(conversion.bottomRight.tilematrix[0]).toEqual(expectedFirstTileMatrix[i]);
@@ -456,7 +456,7 @@ describe("M.Util Bounds Related Tests", () => {
           fadeAnimation: true
         });
         let pcrsBounds = L.bounds(L.point(14, 16), L.point(643, 24454));
-        let conversion = M.convertAndFormatPCRS(pcrsBounds, map);
+        let conversion = M._convertAndFormatPCRS(pcrsBounds, map);
         await expect(conversion.bottomRight.tilematrix.length).toEqual(M[projections[i]].options.resolutions.length);
         await expect(conversion.bottomRight.tcrs.length).toEqual(M[projections[i]].options.resolutions.length);
       });
