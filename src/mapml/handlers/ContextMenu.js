@@ -442,8 +442,6 @@ export var ContextMenu = L.Handler.extend({
 
   _show: function (e) {
     if(this._mapMenuVisible) this._hide();
-    // the 'hidden' attribute must be removed before any attempt to get the size of container
-    else this._container.removeAttribute('hidden');
     this._clickEvent = e;
     let elem = e.originalEvent.target;
     if(elem.closest("fieldset")){
@@ -451,10 +449,13 @@ export var ContextMenu = L.Handler.extend({
       elem = (elem.className === "mapml-layer-extent") ? elem.closest("fieldset").parentNode.parentNode.parentNode.querySelector("span") : elem.querySelector("span");
       if(!elem.layer.validProjection) return;
       this._layerClicked = elem;
+      this._layerMenu.removeAttribute('hidden');
       this._showAtPoint(e.containerPoint, e, this._layerMenu);
     } else if(elem.classList.contains("leaflet-container") || elem.classList.contains("mapml-debug-extent") ||
-      elem.tagName === "path") {
+    elem.tagName === "path") {
       this._layerClicked = undefined;
+      // the 'hidden' attribute must be removed before any attempt to get the size of container
+      this._container.removeAttribute('hidden');
       this._showAtPoint(e.containerPoint, e, this._container);
     }
     if(e.originalEvent.button === 0 || e.originalEvent.button === -1){
