@@ -660,7 +660,9 @@ export var ContextMenu = L.Handler.extend({
       menu.style.right = 'auto';
     }
 
-    if (click.containerPoint.y + menuHeight + 73 > mapSize.y) {
+    // height difference between the main contextmenu and submenu
+    const heightDiff = 73;
+    if (click.containerPoint.y + menuHeight + heightDiff > mapSize.y) {
       menu.style.top = 'auto';
       // to make submenu show completely when clicking at the bottom of the map
       menu.style.bottom = 32 + 'px';
