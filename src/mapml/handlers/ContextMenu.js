@@ -119,22 +119,22 @@ export var ContextMenu = L.Handler.extend({
     for (let i = 0; i < 6; i++) {
       this._items[i].el = this._createItem(this._container, this._items[i]);
     }
-
+    
     this._coordMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-submenu", this._container);
     this._coordMenu.id = "mapml-copy-submenu";
     this._coordMenu.setAttribute('hidden', '');
-
+    
     this._clickEvent = null;
-
+    
     for(let i =0;i<this._items[5].submenu.length;i++){
       this._createItem(this._coordMenu,this._items[5].submenu[i],i);
     }
-
+    
     this._items[6].el = this._createItem(this._container, this._items[6]);
     this._items[7].el = this._createItem(this._container, this._items[7]);
     this._items[8].el = this._createItem(this._container, this._items[8]);
     this._items[9].el = this._createItem(this._container, this._items[9]);
-
+    
     this._layerMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-layer-menu", map._container);
     this._layerMenu.setAttribute('hidden', '');
     for (let i = 0; i < this._layerItems.length; i++) {
@@ -650,7 +650,8 @@ export var ContextMenu = L.Handler.extend({
     menu.removeAttribute('hidden');
 
     const menuWidth = this._container.offsetWidth,
-        submenuWidth = menu.offsetWidth;
+          menuHeight = this._container.offsetHeight,
+          submenuWidth = menu.offsetWidth;
     if (click.containerPoint.x + menuWidth + submenuWidth > mapSize.x) {
       menu.style.left = 'auto';
       menu.style.right = menuWidth + 'px';
@@ -659,9 +660,10 @@ export var ContextMenu = L.Handler.extend({
       menu.style.right = 'auto';
     }
 
-    if (click.containerPoint.y + 160 > mapSize.y) {
+    if (click.containerPoint.y + menuHeight + 73 > mapSize.y) {
       menu.style.top = 'auto';
-      menu.style.bottom = 32 + 'px'; // to make submenu show completely when clicking at the bottom of the map
+      // to make submenu show completely when clicking at the bottom of the map
+      menu.style.bottom = 32 + 'px';
     } else {
       menu.style.top = 100 + 'px';
       menu.style.bottom = 'auto';
