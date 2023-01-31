@@ -1330,17 +1330,19 @@ export var MapMLLayer = L.Layer.extend({
         let path = focusEvent.originalEvent.path || focusEvent.originalEvent.composedPath();
         let isTab = focusEvent.originalEvent.keyCode === 9,
             shiftPressed = focusEvent.originalEvent.shiftKey;
-        if((path[0].classList.contains("leaflet-popup-close-button") && isTab && !shiftPressed) || focusEvent.originalEvent.keyCode === 27){
+        if ((path[0].classList.contains("leaflet-popup-close-button") && isTab && !shiftPressed) || 
+          focusEvent.originalEvent.keyCode === 27 || 
+          path[0].classList.contains("leaflet-popup-close-button") && focusEvent.originalEvent.keyCode === 13){
           setTimeout(() => {
-            L.DomEvent.stop(focusEvent);
             map.closePopup(popup);
             group.focus();
+            L.DomEvent.stop(focusEvent);
           }, 0);
         } else if ((path[0].title==="Focus Map" || path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
           setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
-            L.DomEvent.stop(focusEvent);
             map.closePopup(popup);
             group.focus();
+            L.DomEvent.stop(focusEvent);
           }, 0);
         }
       }
