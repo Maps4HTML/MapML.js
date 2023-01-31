@@ -130,7 +130,9 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
     test("Tooltip appears after pressing esc key", async () => {
       await page.keyboard.press("Enter"); 
       await page.waitForTimeout(500);
-      await page.keyboard.press("Escape"); // focus back on feature
+      await page.keyboard.down("Escape"); // focus back on feature
+      await page.waitForTimeout(500);
+      await page.keyboard.up("Escape");
       await page.waitForTimeout(500);
 
       const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
@@ -151,7 +153,8 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.keyboard.press("Tab");
       await page.keyboard.press("Tab");
       await page.keyboard.press("Tab"); // focus on x button
-      await page.keyboard.press("Enter"); // press x button
+      await page.keyboard.down("Enter"); // press x button
+      await page.keyboard.up("Enter");
       await page.waitForTimeout(500);
 
       const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
