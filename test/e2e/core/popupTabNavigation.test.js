@@ -131,7 +131,6 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.keyboard.press("Enter"); 
       await page.waitForTimeout(500);
       await page.keyboard.down("Escape"); // focus back on feature
-      await page.waitForTimeout(500);
       await page.keyboard.up("Escape");
       await page.waitForTimeout(500);
 
