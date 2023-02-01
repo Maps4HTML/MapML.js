@@ -10,7 +10,7 @@
     "maps",
     "map",
     "web-map",
-    "map layer"
+    "layer"
   ],
   "main": "mapml-viewer.js",
   "module": "mapml-viewer.js",
