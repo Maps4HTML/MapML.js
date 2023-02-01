@@ -1,3 +1,13 @@
+# proj4leaflet is an adapter for the proj4 library to allow
+# leaflet to use non-Web Mercator projections.
+# at some point, proj4 changed what it returns from the unproject
+# function for situations in which there's no corresponding
+# geographic location for a given projected coordinate; it used
+# to return 0,0 but now it will return NaN when that is appropriate
+# Leaflet crs handling still expects 0,0 and throws when you give
+# it a NaN in some situations.
+# This patch substitutes 0 for NaN when that happens.
+# See https://github.com/kartena/Proj4Leaflet/issues/180
 --- input
 +++ output
 @@ -3,7 +3,7 @@

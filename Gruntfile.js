@@ -88,21 +88,15 @@ module.exports = function(grunt) {
           }
         ],
         options: {
-          // leaflet and proj4 need to set their global variable on the window
-          // object in order to use them as modules (it seems).
           process: function (content, srcpath) {
-            var wndoh;
-            if (srcpath.includes('leaflet-src.js')) {
-              console.log('MODIFYING: ', srcpath);
-              wndoh = /\}\(this\, \(function \(exports\) \{ \'use strict\'\;/gi;
-              return content.replace(wndoh,"}(window, (function (exports) { 'use strict';");
-            } else if (srcpath.includes('proj4-src.js')) {
-              console.log('MODIFYING: ', srcpath);
-              wndoh = /\}\(this\, \(function \(\) \{ \'use strict\'\;/gi;
-              return content.replace(wndoh, "}(window, (function () { 'use strict';");
-            } else if (srcpath.includes('proj4leaflet.js')) {
+            // see patch.diff file for comments on why patching is necessary
+            if (srcpath.includes('proj4leaflet.js')) {
               console.log('PATCHING: ', srcpath);
               const patch = grunt.file.read('src/proj4leaflet/patch.diff');
+              return Diff.applyPatch(content, patch);
+            } else if (srcpath.includes('proj4-src.js')) {
+              console.log('PATCHING: ', srcpath);
+              const patch = grunt.file.read('src/proj4/patch.diff');
               return Diff.applyPatch(content, patch);
             } else if (srcpath.includes('index.html')) {
               console.log('MODIFYING: ', srcpath);

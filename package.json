@@ -3,13 +3,14 @@
   "version": "0.10.1",
   "description": "web-map customized built-in HTML <map> or custom <mapml-viewer>",
   "keywords": [
+    "mapml-viewer",
+    "mapml",
     "web-components",
     "web",
     "maps",
     "map",
     "web-map",
-    "geo-map",
-    "map layer"
+    "layer"
   ],
   "main": "mapml-viewer.js",
   "module": "mapml-viewer.js",

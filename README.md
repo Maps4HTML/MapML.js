@@ -1,4 +1,3 @@
-![Build Status](https://api.travis-ci.com/Maps4HTML/Web-Map-Custom-Element.svg?branch=master)
 ![Continuous Testing](https://github.com/Maps4HTML/Web-Map-Custom-Element/workflows/Continuous%20Testing/badge.svg)
 
 # &lt;mapml-viewer>
@@ -43,6 +42,8 @@ OR inline content
 ```
 
 ## Contributing
+
+See [CONTRIBUTING](https://github.com/Maps4HTML/Web-Map-Custom-Element/blob/main/CONTRIBUTING.md#contributing-to-mapml) for details, but generally:
 
 0. Join our [Community Group](https://www.w3.org/community/wp-login.php?redirect_to=%2Fcommunity%2Fmaps4html%2Fjoin)
 1. Fork it!
