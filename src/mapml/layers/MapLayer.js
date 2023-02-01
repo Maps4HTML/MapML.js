@@ -7,7 +7,8 @@ export var MapMLLayer = L.Layer.extend({
     options: {
         maxNext: 10,
         zIndex: 0,
-        maxZoom: 25
+        maxZoom: 25,
+        opacity: '1.0'
     },
     // initialize is executed before the layer is added to a map
     initialize: function (href, content, options) {
@@ -26,6 +27,7 @@ export var MapMLLayer = L.Layer.extend({
         }
         L.setOptions(this, options);
         this._container = L.DomUtil.create('div', 'leaflet-layer');
+        this.changeOpacity(this.options.opacity);
         L.DomUtil.addClass(this._container,'mapml-layer');
         this._imageContainer = L.DomUtil.create('div', 'leaflet-layer', this._container);
         L.DomUtil.addClass(this._imageContainer,'mapml-image-container');

@@ -108,12 +108,12 @@ test.describe("Adding and Removing Multiple Extents", () => {
     await page.click("text='Multiple Extents'");
     const cbmtClass = await page.$eval("div.mapml-templatedlayer-container[style='opacity: 0.5; z-index: 0;'] > div", (div) => div.className);
     const alabamaClass = await page.$eval("div.mapml-templatedlayer-container[style='opacity: 0.5; z-index: 1;'] > div", (div) => div.className);
-    const layerClass = await page.$eval("div.mapml-layer[style='z-index: 1; opacity: 0.5;']", (div) => div.className);
+    const layerClass = await page.$eval("div.mapml-layer", (div) => div.style.opacity);
     const layerOpacity = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > details > input[type=range]", (opacity) => opacity.value);
     const cbmtOpacity = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1) > div.mapml-layer-item-settings > details > input[type=range]", (opacity) => opacity.value);
     const alabamaOpacity = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(2) > div.mapml-layer-item-settings > details > input[type=range]", (opacity) => opacity.value);
     // layer opacity is tested by the selector
-    expect(layerClass).toEqual("leaflet-layer mapml-layer");
+    expect(layerClass).toEqual("0.5");
     // alabama opacity is tested by the selector
     expect(alabamaClass).toEqual("leaflet-layer mapml-features-container");
     // cbmt opacity is tested by the selector
