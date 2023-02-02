@@ -466,7 +466,7 @@ export var ContextMenu = L.Handler.extend({
         this._layerMenuTabs = 1;
         this._layerMenu.firstChild.focus();
       } else {
-        this._container.firstChild.focus();
+        this._container.querySelectorAll("button:not([disabled])")[0].focus();
       }
 
     }

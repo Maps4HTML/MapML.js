@@ -46,7 +46,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Back (B)");
+    expect(name).toEqual("Toggle Controls (T)");
   });
 
   test("Context menu tab goes to next item", async () => {
@@ -57,7 +57,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Forward (F)");
+    expect(name).toEqual("Copy Coordinates (C)");
   });
 
   test("Submenu opens on C with focus on first item", async () => {
@@ -102,8 +102,6 @@ test.describe("Playwright Map Context Menu Tests", () => {
   });
   test("Context menu, back item at intial location", async () => {
     await page.click("body > map", { button: "right" });
-    await page.click("div > div.mapml-contextmenu > button:nth-child(1)");
-    await page.waitForTimeout(1000);
     const extent = await page.$eval(
       "body > map",
       (map) => map.extent
@@ -133,8 +131,6 @@ test.describe("Playwright Map Context Menu Tests", () => {
   });
   test("Context menu, forward item at most recent location", async () => {
     await page.click("body > map", { button: "right" });
-    await page.click("div > div.mapml-contextmenu > button:nth-child(2)");
-    await page.waitForTimeout(1000);
     const extent = await page.$eval(
       "body > map",
       (map) => map.extent
@@ -218,7 +214,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     await page.click("body > map");
     await page.keyboard.press("Shift+F10");
 
-    for (let i = 0; i < 4; i++)
+    for (let i = 0; i < 3; i++)
       await page.keyboard.press("Tab");
 
     await page.keyboard.press("Enter");
