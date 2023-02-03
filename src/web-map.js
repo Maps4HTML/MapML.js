@@ -2,6 +2,7 @@ import './leaflet.js';  // a lightly modified version of Leaflet for use as brow
 import './mapml.js';       // refactored URI usage, replaced with URL standard
 import { MapLayer } from './layer.js';
 import { MapArea } from './map-area.js';
+import { MapCaption } from './map-caption.js';
 
 export class WebMap extends HTMLMapElement {
   static get observedAttributes() {
@@ -844,3 +845,4 @@ export class WebMap extends HTMLMapElement {
 window.customElements.define('web-map', WebMap,  { extends: 'map' });
 window.customElements.define('layer-', MapLayer);
 window.customElements.define('map-area', MapArea, {extends: 'area'});
+window.customElements.define('map-caption',MapCaption);
