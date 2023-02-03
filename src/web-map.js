@@ -578,6 +578,20 @@ export class WebMap extends HTMLMapElement {
     };
     this._historyIndex++;
     this._history.splice(this._historyIndex, 0, location);
+    // Remove future history and overwrite it when map pan/zoom while inside history
+    if (this._historyIndex + 1 !== this._history.length) {
+      this._history.length = this._historyIndex + 1;
+    }
+    if (this._historyIndex === 0) {
+      // when at initial state of map, disable back, forward, and reload items
+      this._map.contextMenu._items[0].el.el.disabled = true; // back contextmenu item
+      this._map.contextMenu._items[1].el.el.disabled = true; // forward contextmenu item
+      this._map.contextMenu._items[2].el.el.disabled = true; // reload contextmenu item
+    } else {
+      this._map.contextMenu._items[0].el.el.disabled = false; // back contextmenu item
+      this._map.contextMenu._items[1].el.el.disabled = true; // forward contextmenu item
+      this._map.contextMenu._items[2].el.el.disabled = false; // reload contextmenu item
+    }
   }
 
   /**
@@ -588,8 +602,14 @@ export class WebMap extends HTMLMapElement {
     let curr = history[this._historyIndex];
 
     if(this._historyIndex > 0){
+      this._map.contextMenu._items[1].el.el.disabled = false; // forward contextmenu item
       this._historyIndex--;
       let prev = history[this._historyIndex];
+      // Disable back, reload contextmenu item when at the end of history
+      if (this._historyIndex === 0) {
+        this._map.contextMenu._items[0].el.el.disabled = true; // back contextmenu item
+        this._map.contextMenu._items[2].el.el.disabled = true; // reload contextmenu item
+      }
 
       if(prev.zoom !== curr.zoom){
         this._traversalCall = 2;  // allows the next 2 moveends to be ignored from history
@@ -615,8 +635,14 @@ export class WebMap extends HTMLMapElement {
     let history = this._history;
     let curr = history[this._historyIndex];
     if(this._historyIndex < history.length - 1){
+      this._map.contextMenu._items[0].el.el.disabled = false; // back contextmenu item
+      this._map.contextMenu._items[2].el.el.disabled = false; // reload contextmenu item
       this._historyIndex++;
       let next = history[this._historyIndex];
+      // disable forward contextmenu item, when at the end of forward history
+      if (this._historyIndex + 1 === this._history.length) {
+        this._map.contextMenu._items[1].el.el.disabled = true; // forward contextmenu item
+      }
 
       if(next.zoom !== curr.zoom){
         this._traversalCall = 2; // allows the next 2 moveends to be ignored from history
@@ -646,6 +672,10 @@ export class WebMap extends HTMLMapElement {
       x:mapLocation.x,
       y:mapLocation.y,
     };
+
+    this._map.contextMenu._items[0].el.el.disabled = true; // back contextmenu item
+    this._map.contextMenu._items[1].el.el.disabled = true; // forward contextmenu item
+    this._map.contextMenu._items[2].el.el.disabled = true; // reload contextmenu item
 
     this._history = [initialLocation];
     this._historyIndex = 0;
