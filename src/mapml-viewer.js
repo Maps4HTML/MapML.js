@@ -537,7 +537,12 @@ export class MapViewer extends HTMLElement {
     };
     this._historyIndex++;
     this._history.splice(this._historyIndex, 0, location);
+    // Remove future history and overwrite it when map pan/zoom while inside history
+    if (this._historyIndex + 1 !== this._history.length) {
+      this._history.length = this._historyIndex + 1;
+    }
     if (this._historyIndex === 0) {
+      // when at initial state of map, disable back, forward, and reload items
       this._map.contextMenu._items[0].el.el.disabled = true; // back contextmenu item
       this._map.contextMenu._items[1].el.el.disabled = true; // forward contextmenu item
       this._map.contextMenu._items[2].el.el.disabled = true; // reload contextmenu item
