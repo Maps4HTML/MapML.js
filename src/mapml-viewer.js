@@ -31,6 +31,18 @@ export class MapViewer extends HTMLElement {
     if (this.controlslist.includes(lowerVal) || !options.includes(lowerVal))return;
     this.setAttribute("controlslist", this.controlslist+` ${lowerVal}`);
   }
+  get width() {
+    return this.hasAttribute('width') ? this.getAttribute("width") : (window.getComputedStyle(this).width).replace('px','');
+  }
+  set width(val) {
+    this.setAttribute("width", val);
+  }
+  get height() {
+    return this.hasAttribute('height') ? this.getAttribute("height") : (window.getComputedStyle(this).height).replace('px','');
+  }
+  set height(val) {
+    this.setAttribute("height", val);
+  }
   get lat() {
     return this.hasAttribute("lat") ? this.getAttribute("lat") : "0";
   }
@@ -315,6 +327,18 @@ export class MapViewer extends HTMLElement {
       break;
     ...
   }     */
+    switch(name) {
+      case 'height': 
+        if (oldValue !== newValue) {
+          this._changeHeight(newValue);
+        }
+      break;  
+      case 'width': 
+      if (oldValue !== newValue) {
+        this._changeWidth(newValue);
+      }
+      break;  
+    }
   }
   _dropHandler(event) {
     event.preventDefault();
@@ -489,14 +513,14 @@ export class MapViewer extends HTMLElement {
     }
   }
   
-  _widthChanged(width) {
+  _changeWidth(width) {
     this.style.width = width+"px";
     this._container.style.width = width+"px";
     if (this._map) {
         this._map.invalidateSize(false);
     }
   }
-  _heightChanged(height) {
+  _changeHeight(height) {
     this.style.height = height+"px";
     this._container.style.height = height+"px";
     if (this._map) {
