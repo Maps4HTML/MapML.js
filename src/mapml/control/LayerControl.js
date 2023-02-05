@@ -1,4 +1,4 @@
-export var MapMLLayerControl = L.Control.Layers.extend({
+export var LayerControl = L.Control.Layers.extend({
     /* removes 'base' layers as a concept */
     options: {
       autoZIndex: false,
@@ -157,6 +157,6 @@ export var MapMLLayerControl = L.Control.Layers.extend({
             latlng: latlng });
     }
 });
-export var mapMlLayerControl = function (layers, options) {
-	return new MapMLLayerControl(layers, options);
+export var layerControl = function (layers, options) {
+	return new LayerControl(layers, options);
 };

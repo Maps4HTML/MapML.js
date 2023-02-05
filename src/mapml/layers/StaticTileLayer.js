@@ -1,4 +1,4 @@
-export var MapMLStaticTileLayer = L.GridLayer.extend({
+export var StaticTileLayer = L.GridLayer.extend({
 
   initialize: function (options) {
     this.zoomBounds = this._getZoomBounds(options.tileContainer,options.maxZoomBound);
@@ -136,6 +136,6 @@ export var MapMLStaticTileLayer = L.GridLayer.extend({
   },
 });
 
-export var mapMLStaticTileLayer = function(options) {
-  return new MapMLStaticTileLayer(options);
+export var staticTileLayer = function(options) {
+  return new StaticTileLayer(options);
 };

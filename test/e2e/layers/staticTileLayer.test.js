@@ -24,17 +24,17 @@ let expectedPCRS = {
   }
 };
 
-test.describe("Playwright mapMLStaticTile Layer Tests", () => {
-  isVisible.test("mapMLStaticTileLayer.html", 3, 3);
-  zoomLimit.test("mapMLStaticTileLayer.html", 2, 2);
-  extentProperty.test("mapMLStaticTileLayer.html", expectedPCRS, expectedGCRS);
+test.describe("Playwright StaticTile Layer Tests", () => {
+  isVisible.test("staticTileLayer.html", 3, 3);
+  zoomLimit.test("staticTileLayer.html", 2, 2);
+  extentProperty.test("staticTileLayer.html", expectedPCRS, expectedGCRS);
   test.describe("General Tests ", () => {
     let page;
     let context;
     test.beforeAll(async () => {
       context = await chromium.launchPersistentContext('');
       page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
-      await page.goto("mapMLStaticTileLayer.html");
+      await page.goto("staticTileLayer.html");
     });
 
     test.afterAll(async function () {

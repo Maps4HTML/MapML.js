@@ -126,7 +126,7 @@ export var MapMLLayer = L.Layer.extend({
         this._map = map;
         if(this._content){
           if (!this._mapmlvectors) {
-            this._mapmlvectors = M.mapMlFeatures(this._content, {
+            this._mapmlvectors = M.featureLayer(this._content, {
               // pass the vector layer a renderer of its own, otherwise leaflet
               // puts everything into the overlayPane
               renderer: M.featureRenderer(),
@@ -158,7 +158,7 @@ export var MapMLLayer = L.Layer.extend({
               return;
             }
             if (!this._mapmlvectors) {
-              this._mapmlvectors = M.mapMlFeatures(this._content, {
+              this._mapmlvectors = M.featureLayer(this._content, {
                   // pass the vector layer a renderer of its own, otherwise leaflet
                   // puts everything into the overlayPane
                   renderer: M.featureRenderer(),
@@ -198,7 +198,7 @@ export var MapMLLayer = L.Layer.extend({
         if((!this._staticTileLayer || this._staticTileLayer._container === null) && 
           this._mapmlTileContainer.getElementsByTagName("map-tiles").length > 0)
         {
-          this._staticTileLayer = M.mapMLStaticTileLayer({
+          this._staticTileLayer = M.staticTileLayer({
             pane:this._container,
             _leafletLayer: this,
             className:"mapml-static-tile-layer",

@@ -1,13 +1,13 @@
 import { test, expect, chromium } from '@playwright/test';
 
-test.describe("Playwright mapMLLayerControl Tests", () => {
+test.describe("Playwright layerControl Tests", () => {
   test.describe("Control Layer Panel Tests", () => {
     let page;
     let context;
     test.beforeAll(async function() {
       context = await chromium.launchPersistentContext('');
       page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
-      await page.goto("mapMLLayerControl.html");
+      await page.goto("layerControl.html");
     });
 
     test.afterAll(async function () {

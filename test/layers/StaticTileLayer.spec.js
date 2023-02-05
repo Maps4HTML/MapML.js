@@ -1,5 +1,5 @@
 /* global assert, M */
-describe("MapMLStaticTileLayer Tests", function () {
+describe("StaticTileLayer Tests", function () {
   var map, container;
   beforeEach(() => {
     map = L.map(document.createElement("map"), {center:[0, 0], zoom: 0});
@@ -10,7 +10,7 @@ describe("MapMLStaticTileLayer Tests", function () {
   test("Setting Tile Layer options", async () => {
     let tileContainer = document.createElement("div");
     tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-    const layer = M.mapMLStaticTileLayer({
+    const layer = M.staticTileLayer({
       pane: container,
       className: "tempGridML",
       tileContainer: tileContainer,
@@ -28,7 +28,7 @@ describe("MapMLStaticTileLayer Tests", function () {
   test("Creating tile group map",  async () => {
     let tileContainer = document.createElement("div");
     tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-    const layer = M.mapMLStaticTileLayer({
+    const layer = M.staticTileLayer({
       pane: container,
       className: "tempGridML",
       tileContainer: tileContainer,
@@ -47,7 +47,7 @@ describe("MapMLStaticTileLayer Tests", function () {
   test("Creating tile group map with multiple img in one tile in document order", async () => {
     let tileContainer = document.createElement("div");
     tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-    const layer = M.mapMLStaticTileLayer({
+    const layer = M.staticTileLayer({
       pane: container,
       className: "tempGridML",
       tileContainer: tileContainer,
@@ -61,11 +61,11 @@ describe("MapMLStaticTileLayer Tests", function () {
     await expect(result["17:18:3"][1].src).toEqual("data/cbmt/2/c11_r10.png");
   });
 
-  describe("Deriving zoom bounds with MapMLStaticTileLayer._getZoomBounds()", function () {
+  describe("Deriving zoom bounds with StaticTileLayer._getZoomBounds()", function () {
     test("max=null,min=null,nativeMax=3,nativeMin=2", async () => {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<map-tiles><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-      const layer = M.mapMLStaticTileLayer({
+      const layer = M.staticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
@@ -80,7 +80,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     test("max=18,min=null,nativeMax=3,nativeMin=2", async () => {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<map-tiles zoom="max=18"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-      const layer = M.mapMLStaticTileLayer({
+      const layer = M.staticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
@@ -102,7 +102,7 @@ describe("MapMLStaticTileLayer Tests", function () {
       tileContainer.innerHTML += '</map-tile><map-tile zoom="18" row="11" col="9" src="data/cbmt/2/c11_r11.png">';
       tileContainer.innerHTML += '</map-tile></map-tiles>';
 
-      const layer = M.mapMLStaticTileLayer({
+      const layer = M.staticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
@@ -117,7 +117,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     test("max=0,min=0,nativeMax=0,nativeMin=0", async () => {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<map-tiles zoom="min=0,max=0"><map-tile zoom="0" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="0" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="0" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-      const layer = M.mapMLStaticTileLayer({
+      const layer = M.staticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
@@ -132,7 +132,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     test("max=5,min=18,nativeMax=3,nativeMin=2", async () => {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<map-tiles zoom="min=5,max=18"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-      const layer = M.mapMLStaticTileLayer({
+      const layer = M.staticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
@@ -147,7 +147,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     test("max=string,min=string,nativeMax=19,nativeMin=2", async () => {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<map-tiles zoom="min=test,max=test"><map-tile zoom="19" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="19" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="15" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="12" row="11" col="9" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="5" row="11" col="9" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-      const layer = M.mapMLStaticTileLayer({
+      const layer = M.staticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
@@ -160,11 +160,11 @@ describe("MapMLStaticTileLayer Tests", function () {
       await expect(zoomBounds.minZoom).toBeFalsy();
     });
   });
-  describe("Creating tiles with MapMLStaticTileLayer.createTile()", () => {
+  describe("Creating tiles with StaticTileLayer.createTile()", () => {
     test("One image element in tile", async () => {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="2" row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-      let layer = M.mapMLStaticTileLayer({
+      let layer = M.staticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
@@ -182,7 +182,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     test("Multiple image element in tile", async () => {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-      let layer = M.mapMLStaticTileLayer({
+      let layer = M.staticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
@@ -200,7 +200,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     test("Multiple image element in tile in order", async () => {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-      let layer = M.mapMLStaticTileLayer({
+      let layer = M.staticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
@@ -219,11 +219,11 @@ describe("MapMLStaticTileLayer Tests", function () {
 
   //Testing _getLayerBounds method
   //returns the appropriate bounds of each zoom level of tiles
-  describe("Deriving layer bounds with MapMLStaticTileLayer._getLayerBounds()", () => {
+  describe("Deriving layer bounds with StaticTileLayer._getLayerBounds()", () => {
     test("Reasonable tiles", async () => {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="18" col="17" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="3" col="2" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="3" col="3" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-      let layer = M.mapMLStaticTileLayer({
+      let layer = M.staticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
@@ -239,7 +239,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     test("Different set of reasonable tiles", async () => {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="3" row="20" col="12" src="data/cbmt/2/c11_r12.png"></map-tile><map-tile zoom="3" row="19" col="13" src="data/cbmt/2/c11_r10.png"></map-tile><map-tile zoom="2" row="8" col="11" src="data/cbmt/2/c9_r10.png"></map-tile><map-tile zoom="2" row="8" col="13" src="data/cbmt/2/c9_r11.png"></map-tile><map-tile zoom="0" row="1" col="1" src="data/cbmt/2/c10_r11.png"></map-tile><map-tile zoom="0" row="0" col="0" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-      let layer = M.mapMLStaticTileLayer({
+      let layer = M.staticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
@@ -255,7 +255,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     test("Single tile", async () => {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"><map-tile zoom="0" row="0" col="0" src="data/cbmt/2/c11_r11.png"></map-tile></map-tiles>';
-      let layer = M.mapMLStaticTileLayer({
+      let layer = M.staticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,
@@ -269,7 +269,7 @@ describe("MapMLStaticTileLayer Tests", function () {
     test("Empty tiles container", async () => {
       let tileContainer = document.createElement("div");
       tileContainer.innerHTML = '<map-tiles zoom="min=0,max=24"></map-tiles>';
-      let layer = M.mapMLStaticTileLayer({
+      let layer = M.staticTileLayer({
         pane: container,
         className: "tempGridML",
         tileContainer: tileContainer,

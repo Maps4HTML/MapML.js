@@ -6,7 +6,7 @@ test.describe("Simple query by select values without map extent filter tests", (
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext('', {slowMo: 250});
     page = await context.newPage();
-    await page.goto("mapMLTemplatedFeaturesFilter.html");
+    await page.goto("templatedFeaturesFilter.html");
   });
 
   test.afterAll(async function () {
