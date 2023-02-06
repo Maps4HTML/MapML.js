@@ -25,16 +25,16 @@ let expectedPCRS = {
 };
 
 test.describe("Playwright mapMLTemplatedTile Layer Tests", () => {
-  isVisible.test("mapMLTemplatedTileLayer.html", 2, 2);
-  zoomLimit.test("mapMLTemplatedTileLayer.html", 1, 0);
-  extentProperty.test("mapMLTemplatedTileLayer.html", expectedPCRS, expectedGCRS);
+  isVisible.test("templatedTileLayer.html", 2, 2);
+  zoomLimit.test("templatedTileLayer.html", 1, 0);
+  extentProperty.test("templatedTileLayer.html", expectedPCRS, expectedGCRS);
   test.describe("General Tests ", () => {
     let page;
     let context;
     test.beforeAll(async () => {
       context = await chromium.launchPersistentContext('');
       page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
-      await page.goto("mapMLTemplatedTileLayer.html");
+      await page.goto("templatedTileLayer.html");
     });
 
     test.afterAll(async function () {

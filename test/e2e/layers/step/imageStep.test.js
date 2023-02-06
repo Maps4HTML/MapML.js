@@ -4,7 +4,7 @@ const request = require('./request');
 
 test.describe("Templated image layer with step", () => {
 
-    request.test("step/templatedImageLayer.html", 0, 1, 0, 0,
+    request.test("step/templatedImageLayerStep.html", 0, 1, 0, 0,
         "http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/jpeg&TRANSPARENT=FALSE&STYLES=&VERSION=1.3.0&LAYERS=WMS-Toporama&WIDTH=300&HEIGHT=150&CRS=EPSG:3978&BBOX=",
         "-5537023.0124460235,-2392385.4881043136,5972375.006350018,3362313.521293707&m4h=t",
         "",
@@ -19,7 +19,7 @@ test.describe("Templated image layer with step", () => {
       test.beforeAll(async () => {
         context = await chromium.launchPersistentContext('');
         page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
-        await page.goto("step/templatedImageLayer.html");
+        await page.goto("step/templatedImageLayerStep.html");
       });
       test.afterAll(async function () {
         await context.close();

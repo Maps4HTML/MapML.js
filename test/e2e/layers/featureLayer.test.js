@@ -24,17 +24,17 @@ let expectedPCRS = {
   }
 };
 
-test.describe("Playwright mapMLFeatures (Static Features) Layer Tests", () => {
-  isVisible.test("mapMLFeatures.html", 5, 2);
-  zoomLimit.test("mapMLFeatures.html", 3, 1);
-  extentProperty.test("mapMLFeatures.html", expectedPCRS, expectedGCRS);
+test.describe("Playwright featureLayer (Static Features) Layer Tests", () => {
+  isVisible.test("featureLayer.html", 5, 2);
+  zoomLimit.test("featureLayer.html", 3, 1);
+  extentProperty.test("featureLayer.html", expectedPCRS, expectedGCRS);
   test.describe("Retrieved Static Features Tests", () => {
     let page;
     let context;
     test.beforeAll(async function() {
       context = await chromium.launchPersistentContext('');
       page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
-      await page.goto("mapMLFeatures.html");
+      await page.goto("featureLayer.html");
     });
     test.afterAll(async function () {
       await context.close();
@@ -92,7 +92,7 @@ test.describe("Playwright mapMLFeatures (Static Features) Layer Tests", () => {
     test.beforeAll(async function() {
       context = await chromium.launchPersistentContext('');
       page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
-      await page.goto("mapMLFeatures.html");
+      await page.goto("featureLayer.html");
     });
 
     test.afterAll(async function () {
