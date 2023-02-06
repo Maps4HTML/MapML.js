@@ -73,6 +73,17 @@
 .mapml-layer-item-name a {
   color: revert;
 }
+/* Style Legend */
+.legendLink span { 
+	position: absolute;
+	visibility: hidden;
+}
+.legendLink:hover, .legendLink:hover span { 
+	visibility:visible;
+  left: 0;
+	right: auto;
+	z-index: 1;
+}
 
  .leaflet-top .leaflet-control {
    margin-top: 5px;
