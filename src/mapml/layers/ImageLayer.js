@@ -1,4 +1,4 @@
-export var ImageOverlay = L.ImageOverlay.extend({
+export var ImageLayer = L.ImageOverlay.extend({
 	initialize: function (url, location, size, angle, container, options) { // (String, Point, Point, Number, Element, Object)
                 this._container = container;
 		this._url = url;
@@ -103,6 +103,6 @@ export var ImageOverlay = L.ImageOverlay.extend({
 	}
         
 });
-export var imageOverlay = function (url, location, size, angle, container, options) {
-        return new ImageOverlay(url, location, size, angle, container, options);
+export var imageLayer = function (url, location, size, angle, container, options) {
+        return new ImageLayer(url, location, size, angle, container, options);
 };
