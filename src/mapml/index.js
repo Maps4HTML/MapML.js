@@ -45,9 +45,9 @@ import { TemplatedTileLayer, templatedTileLayer } from './layers/TemplatedTileLa
 import { TemplatedLayer, templatedLayer } from './layers/TemplatedLayer';
 import { TemplatedFeaturesLayer, templatedFeaturesLayer } from './layers/TemplatedFeaturesLayer';
 import { TemplatedImageLayer, templatedImageLayer } from './layers/TemplatedImageLayer';
-import { ImageOverlay, imageOverlay } from './layers/ImageLayer';
+import { ImageLayer, imageLayer } from './layers/ImageLayer';
 import { MapMLLayer, mapMLLayer } from './layers/MapMLLayer';
-import { DebugOverlay, debugOverlay} from './layers/DebugLayer';
+import { DebugOverlay, debugOverlay} from './layers/DebugOverlay';
 import { QueryHandler } from './handlers/QueryHandler';
 import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
@@ -630,8 +630,8 @@ L.Map.addInitHook('addHandler', 'featureIndex', M.FeatureIndex);
 M.MapMLLayer = MapMLLayer;
 M.mapMLLayer = mapMLLayer;
 
-M.ImageOverlay = ImageOverlay;
-M.imageOverlay = imageOverlay;
+M.ImageLayer = ImageLayer;
+M.imageLayer = imageLayer;
 
 M.TemplatedImageLayer = TemplatedImageLayer;
 M.templatedImageLayer = templatedImageLayer;
