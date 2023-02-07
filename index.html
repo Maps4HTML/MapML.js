@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Current version 0.10.1</title>
+<base href="./architecture/">
+<link href="css/ea.css" rel="stylesheet" type="text/css" />
+<script>
+
+  function switchProjectProperties() {
+			if (document.getElementById("proj00").style.display == "none") {
+				document.getElementById("proj00").style.display = "revert";
+				document.getElementById("proj01").style.display = "revert";
+				document.getElementById("proj02").style.display = "revert";
+				document.getElementById("proj03").style.display = "revert";
+				document.getElementById("proj04").style.display = "revert";
+				document.getElementById("proj05").style.display = "revert";
+			} else {
+				document.getElementById("proj00").style.display = "none";
+				document.getElementById("proj01").style.display = "none";
+				document.getElementById("proj02").style.display = "none";
+				document.getElementById("proj03").style.display = "none";
+				document.getElementById("proj04").style.display = "none";
+				document.getElementById("proj05").style.display = "none";
+			}
+}
+
+		function switchAdvancedProperties(){
+
+			if (document.getElementById("adv00").style.display == "none") {;
+				document.getElementById("adv00").style.display = "revert";
+				document.getElementById("adv01").style.display = "revert";
+			} else {
+				document.getElementById("adv00").style.display = "none";
+				document.getElementById("adv01").style.display = "none";
+			}
+		}
+		function initPage()
+        {			
+			var divs = document.getElementsByClassName("ObjectDetailsNotes");
+			for (var j = 0; j < divs.length; j++) {
+				var tmpStr = divs[j].innerHTML;
+				tmpStr = tmpStr.replace(/&gt;/g, ">");
+				tmpStr = tmpStr.replace(/&lt;/g, "<");
+
+				tmpStr = tmpStr.replace(/#gt;/g, "&gt;");
+				tmpStr = tmpStr.replace(/#lt;/g, "&lt;");
+
+				divs[j].innerHTML = tmpStr;
+			}
+
+            if (document.getElementById('TableGroup') != null)
+            {
+                toggleItem(document.getElementById('TableGroup').getElementsByTagName('li')[0].id.replace("Title", ""));
+            }
+
+        }
+</script>
+<style>
+
+</style>
+</head>
+<body>
+<div class="section group" >
+
+		<div class="col span_2_of_2 header_frame">
+			<h1> Current version 0.10.1 </h1>
+			<img class="header_image" src="images/ea-banner.png" align="right" alt="Header Image" />
+		</div>
+		<div class="col span_2_of_2 breadcrumb_frame">
+			<p></p>
+		</div>
+		
+		<table class="contentmaintable">
+			<!-- <tfoot>
+				<tr>
+					<td>foot1</td>
+					<td>foot2</td>
+				</tr>
+			</tfoot> -->
+			<tbody>
+				<tr>
+					<td class="indexcell">
+						<div class="projectBrowserTitle">Project: </div>
+						<ul>
+<li><img src="images/175.png" alt="Diagram"/> <a href="./EARoot/EA1.html">Class view</a></li>
+<li><img src="images/175.png" alt="Diagram"/> <a href="./EARoot/EA3.html">File / directory components</a></li>
+<li><img src="images/175.png" alt="Diagram"/> <a href="./EARoot/EA5.html">Overview</a></li>
+<li><img src="images/175.png" alt="Diagram"/> <a href="./EARoot/EA7.html">Utilities</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA10.html"><area is="map-area"></a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA68.html"><area is="map-area"></a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA11.html"><layer-></a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA69.html"><layer-></a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA12.html"><map is="web-map"></a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA70.html"><map is="web-map"></a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA13.html"><mapml-viewer></a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA71.html"><mapml-viewer></a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA16.html">L.Control.Zoom</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA17.html">L.CRS</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA18.html">L.CRS.EPSG3857</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA19.html">L.Keyboard</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA20.html">L.Proj.CRS</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA21.html">M</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA22.html">M.AnnounceMovement</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA23.html">M.APSTILE</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA24.html">M.AttributionControl</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA25.html">M.CBMTILE</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA26.html">M.ContextMenu</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA27.html">M.Crosshair</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA28.html">M.DebugGrid</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA29.html">M.DebugOverlay</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA30.html">M.DebugPanel</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA31.html">M.DebugVectors</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA32.html">M.Feature</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA33.html">M.FeatureGroup</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA34.html">M.FeatureIndex</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA35.html">M.FeatureIndexOverlay</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA36.html">M.FeatureLayer</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA37.html">M.FeatureRenderer</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA38.html">M.FullscreenButton</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA39.html">M.ImageLayer</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA40.html">M.LayerControl</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA41.html">M.MapMLLayer</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA42.html">M.Options</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA43.html">M.OSMTILE</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA44.html">M.ProjectedExtent</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA45.html">M.QueryHandler</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA46.html">M.ReloadButton</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA47.html">M.StaticTileLayer</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA48.html">M.TemplatedFeaturesLayer</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA49.html">M.TemplatedImageLayer</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA50.html">M.TemplatedLayer</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA51.html">M.TemplatedTileLayer</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA52.html">M.WGS84</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA55.html">MapArea</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA76.html">MapArea</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA56.html">MapLayer</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA77.html">MapLayer</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA58.html">MapViewer</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA78.html">MapViewer</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA66.html">TCRS</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA67.html">WebMap</a></li>
+<li><img src="images/5.png" alt="Class"/> <a href="./EARoot/EA79.html">WebMap</a></li>
+<li><img src="images/8.png" alt="Interface"/> <a href="./EARoot/EA14.html">HTMLLayerElement</a></li>
+<li><img src="images/8.png" alt="Interface"/> <a href="./EARoot/EA72.html">HTMLLayerElement</a></li>
+<li><img src="images/8.png" alt="Interface"/> <a href="./EARoot/EA15.html">HTMLMapmlViewerElement</a></li>
+<li><img src="images/8.png" alt="Interface"/> <a href="./EARoot/EA73.html">HTMLMapmlViewerElement</a></li>
+<li><img src="images/10.png" alt="Component"/> <a href="./EARoot/EA53.html">Map Layer</a></li>
+<li><img src="images/10.png" alt="Component"/> <a href="./EARoot/EA74.html">Map Layer</a></li>
+<li><img src="images/10.png" alt="Component"/> <a href="./EARoot/EA54.html">Map Viewer</a></li>
+<li><img src="images/10.png" alt="Component"/> <a href="./EARoot/EA75.html">Map Viewer</a></li>
+<li><img src="images/10.png" alt="Component"/> <a href="./EARoot/EA57.html">mapml.js</a></li>
+<li><img src="images/10.png" alt="Component"/> <a href="./EARoot/EA59.html">root-directory</a></li>
+<li><img src="images/10.png" alt="Component"/> <a href="./EARoot/EA60.html">src/leaflet</a></li>
+<li><img src="images/10.png" alt="Component"/> <a href="./EARoot/EA61.html">src/mapml/layers/Crosshair.js</a></li>
+<li><img src="images/10.png" alt="Component"/> <a href="./EARoot/EA62.html">src/mapml/layers/DebugLayer.js</a></li>
+<li><img src="images/10.png" alt="Component"/> <a href="./EARoot/EA63.html">src/mapml/layers/FeatureIndexOverlay.js</a></li>
+<li><img src="images/10.png" alt="Component"/> <a href="./EARoot/EA64.html">src/mapml/layers/FeatureLayer.js</a></li>
+<li><img src="images/10.png" alt="Component"/> <a href="./EARoot/EA65.html">src/mapml/layers/ImageLayer.js</a></li>
+</ul>
+
+					</td>
+					<td class="contentcell">	
+						<div class="welcome_message">
+						<h2>Welcome to your model</h2>
+						<p>To get started navigate through the model via the index on the left</p> 
+						</div>
+						<div class="PageBody">
+	<div class="diagram_image"> 
+<img src="./EARoot/EA2.png" usemap="#EA2" border="0" />
+
+<MAP NAME="EA2">
+<area shape="rect" coords="1328,386,1428,466" href="./EARoot/EA18.html" target="_self">
+<area shape="rect" coords="898,386,998,466" href="./EARoot/EA20.html" target="_self">
+<area shape="rect" coords="1110,386,1210,466" href="./EARoot/EA17.html" target="_self">
+<area shape="rect" coords="898,796,998,876" href="./EARoot/EA23.html" target="_self">
+<area shape="rect" coords="1328,656,1428,736" href="./EARoot/EA25.html" target="_self">
+<area shape="rect" coords="1328,526,1428,606" href="./EARoot/EA43.html" target="_self">
+<area shape="rect" coords="1108,526,1208,606" href="./EARoot/EA66.html" target="_self">
+<area shape="rect" coords="1328,796,1428,876" href="./EARoot/EA52.html" target="_self">
+<area shape="rect" coords="298,10,398,90" href="./EARoot/EA42.html" target="_self">
+<area shape="rect" coords="708,436,815,506" href="./EARoot/EA19.html" target="_self">
+<area shape="rect" coords="709,208,814,278" href="./EARoot/EA45.html" target="_self">
+<area shape="rect" coords="709,283,814,353" href="./EARoot/EA34.html" target="_self">
+<area shape="rect" coords="709,358,814,428" href="./EARoot/EA26.html" target="_self">
+<area shape="rect" coords="708,133,813,203" href="./EARoot/EA22.html" target="_self">
+<area shape="rect" coords="598,570,688,640" href="./EARoot/EA37.html" target="_self">
+<area shape="rect" coords="126,663,216,733" href="./EARoot/EA33.html" target="_self">
+<area shape="rect" coords="126,770,216,840" href="./EARoot/EA32.html" target="_self">
+<area shape="rect" coords="10,576,100,646" href="./EARoot/EA44.html" target="_self">
+<area shape="rect" coords="10,475,100,545" href="./EARoot/EA31.html" target="_self">
+<area shape="rect" coords="134,453,224,523" href="./EARoot/EA28.html" target="_self">
+<area shape="rect" coords="134,570,224,644" href="./EARoot/EA30.html" target="_self">
+<area shape="rect" coords="10,357,100,427" href="./EARoot/EA29.html" target="_self">
+<area shape="rect" coords="11,162,101,232" href="./EARoot/EA46.html" target="_self">
+<area shape="rect" coords="11,87,101,157" href="./EARoot/EA38.html" target="_self">
+<area shape="rect" coords="715,880,820,950" href="./EARoot/EA24.html" target="_self">
+<area shape="rect" coords="11,10,101,80" href="./EARoot/EA16.html" target="_self">
+<area shape="rect" coords="302,146,423,317" href="./EARoot/EA58.html" target="_self">
+<area shape="rect" coords="433,364,523,434" href="./EARoot/EA56.html" target="_self">
+<area shape="rect" coords="709,10,814,80" href="./EARoot/EA40.html" target="_self">
+<area shape="rect" coords="143,359,233,429" href="./EARoot/EA27.html" target="_self">
+<area shape="rect" coords="287,359,395,429" href="./EARoot/EA35.html" target="_self">
+<area shape="rect" coords="249,514,348,584" href="./EARoot/EA47.html" target="_self">
+<area shape="rect" coords="243,658,377,728" href="./EARoot/EA36.html" target="_self">
+<area shape="rect" coords="722,771,812,841" href="./EARoot/EA39.html" target="_self">
+<area shape="rect" coords="582,658,704,728" href="./EARoot/EA48.html" target="_self">
+<area shape="rect" coords="423,771,535,841" href="./EARoot/EA49.html" target="_self">
+<area shape="rect" coords="249,771,349,841" href="./EARoot/EA51.html" target="_self">
+<area shape="rect" coords="434,658,524,728" href="./EARoot/EA50.html" target="_self">
+<area shape="rect" coords="434,514,524,584" href="./EARoot/EA41.html" target="_self">
+</MAP>
+ </div>
+	<div class="ObjectTitle">Class view : Class diagram</div>
+	<table border="0" cellpadding="0" cellspacing="0" class="ObjectDetails">
+		<tr>
+			<td width="15%" class="ObjectDetailsTopic">Created:</td>
+			<td width="85%" class="ObjectDetailsValue">2023-02-02 1:05:32 PM</td>
+		</tr>
+		<tr>
+			<td width="15%" class="ObjectDetailsTopic">Modified:</td>
+			<td width="85%" class="ObjectDetailsValue">2023-02-07 10:22:29 AM</td>
+		</tr>
+		<tr style="padding-top: 10px;">
+			<td width="15%" class="ObjectDetailsTopic"><button onclick="switchProjectProperties()"><img src="./images//plus03.gif" align="absmiddle" id="proj" /></button>Project:</td>
+			<td width="85%" class="ObjectDetailsValue"></td>			
+		</tr>
+		<tr id="proj00" style="display: none;">
+			<td width="15%" class="ObjectDetailsTopic" style="padding-left: 18px;">Author:</td>
+			<td width="85%" class="ObjectDetailsValue">prushfor</td>
+		</tr>
+		<tr id="proj01" style="display: none;">
+			<td width="15%" class="ObjectDetailsTopic" style="padding-left: 18px;">Version:</td>
+			<td width="85%" class="ObjectDetailsValue">1.0</td>
+		</tr>
+		<tr>
+			<td width="15%" class="ObjectDetailsTopic"><button onclick="switchAdvancedProperties()"><img src="./images//plus03.gif" align="absmiddle" id="adv" /></button>Advanced:</td>
+			<td width="85%" class="ObjectDetailsValue"></td>			
+		</tr>
+		<tr id="adv00" style="display: none;">
+			<td width="15%" class="ObjectDetailsTopic" style="padding-left: 18px;">ID:</td>
+			<td width="85%" class="ObjectDetailsValue">{BEAFF732-676B-4fa0-8D35-CBF3F4A05356}</td>
+		</tr>
+	</table>
+	
+</div>
+
+
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+
+</div>
+</body>
+</html>

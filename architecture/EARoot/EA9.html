@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Current version 0.10.1</title>
+<link href="../css/ea.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="../js/displayToc.js" type="text/javascript"></script>
+<script>
+
+  function switchProjectProperties() {
+			if (document.getElementById("proj00").style.display == "none") {
+				document.getElementById("proj00").style.display = "revert";
+				document.getElementById("proj01").style.display = "revert";
+				document.getElementById("proj02").style.display = "revert";
+				document.getElementById("proj03").style.display = "revert";
+				document.getElementById("proj04").style.display = "revert";
+				document.getElementById("proj05").style.display = "revert";
+			} else {
+				document.getElementById("proj00").style.display = "none";
+				document.getElementById("proj01").style.display = "none";
+				document.getElementById("proj02").style.display = "none";
+				document.getElementById("proj03").style.display = "none";
+				document.getElementById("proj04").style.display = "none";
+				document.getElementById("proj05").style.display = "none";
+			}
+}
+
+		function switchAdvancedProperties(){
+
+			if (document.getElementById("adv00").style.display == "none") {;
+				document.getElementById("adv00").style.display = "revert";
+				document.getElementById("adv01").style.display = "revert";
+			} else {
+				document.getElementById("adv00").style.display = "none";
+				document.getElementById("adv01").style.display = "none";
+			}
+		}
+		function initPage()
+        {			
+			var divs = document.getElementsByClassName("ObjectDetailsNotes");
+			for (var j = 0; j < divs.length; j++) {
+				var tmpStr = divs[j].innerHTML;
+				tmpStr = tmpStr.replace(/#gt;/g, "&gt;");
+				tmpStr = tmpStr.replace(/#lt;/g, "&lt;");
+
+				tmpStr = tmpStr.replace(/&gt;/g, ">");
+				tmpStr = tmpStr.replace(/&lt;/g, "<");
+
+				divs[j].innerHTML = tmpStr;
+			}
+
+            if (document.getElementById('TableGroup') != null)
+            {
+                toggleItem(document.getElementById('TableGroup').getElementsByTagName('li')[0].id.replace("Title", ""));
+            }
+
+        }
+</script>
+<style>
+
+</style>
+</head>
+<body onload="initPage();">
+<div class="section group" >
+
+		<div class="col span_2_of_2 header_frame">
+			<h1> Current version 0.10.1 </h1>
+			<!-- <img class="header_image" src="../images/ea-banner.png" align="right" alt="Header Image" />-->
+			<img class="header_image" src="../images/ea-banner.png" align="right" alt="Header Image" />
+		</div>
+		<div class="col span_2_of_2 breadcrumb_frame">
+			<p><a href="../EARoot/EA9.html">Current version 0.10.1</a></p>
+		</div>
+			
+		<table class="contentmaintable">
+			<!-- <tfoot>
+				<tr>
+					<td>foot1</td>
+					<td>foot2</td>
+				</tr>
+			</tfoot> -->
+			<tbody>
+				<tr>
+					<td class="indexcell">
+						<div class="projectBrowserTitle">Project: </div>
+						<ul>
+<li><img src="../images/175.png" alt="Diagram"/> <a href="EA1.html">Class view</a></li>
+<li><img src="../images/175.png" alt="Diagram"/> <a href="EA3.html">File / directory components</a></li>
+<li><img src="../images/175.png" alt="Diagram"/> <a href="EA5.html">Overview</a></li>
+<li><img src="../images/175.png" alt="Diagram"/> <a href="EA7.html">Utilities</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA10.html"><area is="map-area"></a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA68.html"><area is="map-area"></a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA11.html"><layer-></a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA69.html"><layer-></a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA12.html"><map is="web-map"></a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA70.html"><map is="web-map"></a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA13.html"><mapml-viewer></a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA71.html"><mapml-viewer></a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA16.html">L.Control.Zoom</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA17.html">L.CRS</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA18.html">L.CRS.EPSG3857</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA19.html">L.Keyboard</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA20.html">L.Proj.CRS</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA21.html">M</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA22.html">M.AnnounceMovement</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA23.html">M.APSTILE</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA24.html">M.AttributionControl</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA25.html">M.CBMTILE</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA26.html">M.ContextMenu</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA27.html">M.Crosshair</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA28.html">M.DebugGrid</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA29.html">M.DebugOverlay</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA30.html">M.DebugPanel</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA31.html">M.DebugVectors</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA32.html">M.Feature</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA33.html">M.FeatureGroup</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA34.html">M.FeatureIndex</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA35.html">M.FeatureIndexOverlay</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA36.html">M.FeatureLayer</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA37.html">M.FeatureRenderer</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA38.html">M.FullscreenButton</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA39.html">M.ImageLayer</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA40.html">M.LayerControl</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA41.html">M.MapMLLayer</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA42.html">M.Options</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA43.html">M.OSMTILE</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA44.html">M.ProjectedExtent</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA45.html">M.QueryHandler</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA46.html">M.ReloadButton</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA47.html">M.StaticTileLayer</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA48.html">M.TemplatedFeaturesLayer</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA49.html">M.TemplatedImageLayer</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA50.html">M.TemplatedLayer</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA51.html">M.TemplatedTileLayer</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA52.html">M.WGS84</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA55.html">MapArea</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA76.html">MapArea</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA56.html">MapLayer</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA77.html">MapLayer</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA58.html">MapViewer</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA78.html">MapViewer</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA66.html">TCRS</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA67.html">WebMap</a></li>
+<li><img src="../images/5.png" alt="Class"/> <a href="EA79.html">WebMap</a></li>
+<li><img src="../images/8.png" alt="Interface"/> <a href="EA14.html">HTMLLayerElement</a></li>
+<li><img src="../images/8.png" alt="Interface"/> <a href="EA72.html">HTMLLayerElement</a></li>
+<li><img src="../images/8.png" alt="Interface"/> <a href="EA15.html">HTMLMapmlViewerElement</a></li>
+<li><img src="../images/8.png" alt="Interface"/> <a href="EA73.html">HTMLMapmlViewerElement</a></li>
+<li><img src="../images/10.png" alt="Component"/> <a href="EA53.html">Map Layer</a></li>
+<li><img src="../images/10.png" alt="Component"/> <a href="EA74.html">Map Layer</a></li>
+<li><img src="../images/10.png" alt="Component"/> <a href="EA54.html">Map Viewer</a></li>
+<li><img src="../images/10.png" alt="Component"/> <a href="EA75.html">Map Viewer</a></li>
+<li><img src="../images/10.png" alt="Component"/> <a href="EA57.html">mapml.js</a></li>
+<li><img src="../images/10.png" alt="Component"/> <a href="EA59.html">root-directory</a></li>
+<li><img src="../images/10.png" alt="Component"/> <a href="EA60.html">src/leaflet</a></li>
+<li><img src="../images/10.png" alt="Component"/> <a href="EA61.html">src/mapml/layers/Crosshair.js</a></li>
+<li><img src="../images/10.png" alt="Component"/> <a href="EA62.html">src/mapml/layers/DebugLayer.js</a></li>
+<li><img src="../images/10.png" alt="Component"/> <a href="EA63.html">src/mapml/layers/FeatureIndexOverlay.js</a></li>
+<li><img src="../images/10.png" alt="Component"/> <a href="EA64.html">src/mapml/layers/FeatureLayer.js</a></li>
+<li><img src="../images/10.png" alt="Component"/> <a href="EA65.html">src/mapml/layers/ImageLayer.js</a></li>
+</ul>
+
+					</td>
+					<td class="contentcell"><div class="pageHeader"></div>
+<div class="PageBody">
+	<span class="ObjectTitle">Current version 0.10.1  : Public   Package</span>
+	<table border="0" class="ObjectDetails">
+		<tr>
+			<td width="15%" class="ObjectDetailsTopic">Created:</td>
+			<td width="85%" class="ObjectDetailsValue">2023-01-20 1:00:39 PM</td>
+		</tr>
+		<tr>
+			<td class="ObjectDetailsTopic">Modified:</td>
+			<td class="ObjectDetailsValue">2023-02-01 9:36:27 AM</td>
+		</tr>
+		<tr style="height: 10px"><td colspan="2"></td></tr>
+		<tr>
+			<td class="ObjectDetailsTopic"><button onclick="switchProjectProperties()"><img src="../images/plus03.gif" align="absmiddle" id="proj" /></button>Project:</td>
+			<td class="ObjectDetailsValue"></td>
+		</tr>
+		<tr id="proj00" style="display: none;">
+			<td class="ObjectDetailsTopic" style="padding-left: 18px;">Author:</td>
+			<td class="ObjectDetailsValue">prushfor</td>
+		</tr>
+		<tr id="proj01" style="display: none;">
+			<td class="ObjectDetailsTopic" style="padding-left: 18px;">Version:</td>
+			<td class="ObjectDetailsValue">0.10.1</td>
+		</tr>
+		<tr id="proj02" style="display: none;">
+			<td class="ObjectDetailsTopic" style="padding-left: 18px;">Phase:</td>
+			<td class="ObjectDetailsValue">1.0</td>
+		</tr>
+		<tr id="proj03" style="display: none;">
+			<td class="ObjectDetailsTopic" style="padding-left: 18px;">Status:</td>
+			<td class="ObjectDetailsValue">Implemented</td>
+		</tr>
+		<tr id="proj04" style="display: none;">
+			<td class="ObjectDetailsTopic" style="padding-left: 18px;">Complexity:</td>
+			<td class="ObjectDetailsValue">Easy</td>
+		</tr>
+		<tr id="proj05" style="display: none;">
+			<td class="ObjectDetailsTopic" style="padding-left: 18px;">Difficulty:</td>
+			<td class="ObjectDetailsValue"></td>
+		</tr>
+		<tr id="proj06" style="display: none;">
+			<td class="ObjectDetailsTopic" style="padding-left: 18px;">Priority:</td>
+			<td class="ObjectDetailsValue"></td>
+		</tr>
+		<tr id="proj05" style="display: none;">
+			<td class="ObjectDetailsTopic" >Multiplicity:</td>
+			<td class="ObjectDetailsValue"></td>
+		</tr>
+		<tr>
+			<td class="ObjectDetailsTopic"><button onclick="switchAdvancedProperties()"><img src="../images/plus03.gif" align="absmiddle" id="adv" /></button>Advanced:</td>
+			<td class="ObjectDetailsValue"></td>
+		</tr>
+		<tr id="adv00" style="display: none;">
+			<td class="ObjectDetailsTopic" style="padding-left: 18px;">UUID:</td>
+			<td class="ObjectDetailsValue">{48E0D2AC-CA00-4832-B1A7-7F96A0A69AE4}</td>
+		</tr>
+		<tr id="adv01" style="display: none;">
+			<td class="ObjectDetailsTopic" style="padding-left: 18px;">Appears In:</td>
+			<td class="ObjectDetailsValue"></td>
+		</tr>
+	</table>
+	
+ </div>
+ </td>
+				</tr>
+			</tbody>
+		</table>
+		
+</div>
+</body>
+</html>
+
