@@ -6,6 +6,8 @@ to deal in the Software without restriction, including without limitation the ri
 and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
+/* global M */
+
 export var ContextMenu = L.Handler.extend({
   _touchstart: L.Browser.msPointer ? 'MSPointerDown' : L.Browser.pointer ? 'pointerdown' : 'touchstart',
 
@@ -16,22 +18,18 @@ export var ContextMenu = L.Handler.extend({
     this._items = [
       {
         text: M.options.locale.cmBack + " (<kbd>B</kbd>)",
-        callback:this._goBack,
+        callback:this._goBack
       },
       {
         text: M.options.locale.cmForward + " (<kbd>F</kbd>)",
-        callback:this._goForward,
+        callback:this._goForward
       },
       {
         text: M.options.locale.cmReload + " (<kbd>R</kbd>)",
-        callback:this._reload,
+        callback:this._reload
       },
       {
-        spacer:"-",
-      },
-      {
-        text: M.options.locale.cmToggleControls + " (<kbd>T</kbd>)",
-        callback:this._toggleControls,
+        spacer:"-"
       },
       {
         text: M.options.locale.cmCopyCoords + " (<kbd>C</kbd>)<span></span>",
@@ -41,30 +39,36 @@ export var ContextMenu = L.Handler.extend({
         submenu:[
           {
             text: M.options.locale.cmCopyMapML,
-            callback:this._copyMapML,
+            callback:this._copyMapML
           },
           {
             text: M.options.locale.cmCopyExtent,
-            callback:this._copyExtent,
+            callback:this._copyExtent
           },
           {
             text: M.options.locale.cmCopyLocation,
-            callback:this._copyLocation,
+            callback:this._copyLocation
           }
         ]
       },
       {
-        text: M.options.locale.cmToggleDebug + " (<kbd>D</kbd>)",
-        callback:this._toggleDebug,
+        text: M.options.locale.cmPasteLayer + " (<kbd>P</kbd>)",
+        callback:this._paste
       },
       {
-        text: M.options.locale.cmPasteLayer + " (<kbd>P</kbd>)",
-        callback:this._paste,
+        spacer:"-"
+      },
+      {
+        text: M.options.locale.cmToggleControls + " (<kbd>T</kbd>)",
+        callback:this._toggleControls
+      },      {
+        text: M.options.locale.cmToggleDebug + " (<kbd>D</kbd>)",
+        callback:this._toggleDebug
       },
       {
         text: M.options.locale.cmViewSource + " (<kbd>V</kbd>)",
-        callback:this._viewSource,
-      },
+        callback:this._viewSource
+      }
     ];
 
     // setting the default cs for copying location and extent
@@ -79,7 +83,7 @@ export var ContextMenu = L.Handler.extend({
       {
         text: M.options.locale.lmCopyLayer + " (<kbd>L</kbd>)",
         callback:this._copyLayer
-      },
+      }
     ];
     this._mapMenuVisible = false;
     this._keyboardEvent = false;
@@ -87,7 +91,7 @@ export var ContextMenu = L.Handler.extend({
     this._container = L.DomUtil.create("div", "mapml-contextmenu", map._container);
     this._container.setAttribute('hidden', '');
     
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 5; i++) {
       this._items[i].el = this._createItem(this._container, this._items[i]);
     }
     
@@ -97,13 +101,15 @@ export var ContextMenu = L.Handler.extend({
     
     this._clickEvent = null;
     
-    for(let i =0;i<this._items[5].submenu.length;i++){
-      this._createItem(this._coordMenu,this._items[5].submenu[i],i);
+    for(let i =0;i<this._items[4].submenu.length;i++){
+      this._createItem(this._coordMenu,this._items[4].submenu[i],i);
     }
     
+    this._items[5].el = this._createItem(this._container, this._items[5]);
     this._items[6].el = this._createItem(this._container, this._items[6]);
     this._items[7].el = this._createItem(this._container, this._items[7]);
     this._items[8].el = this._createItem(this._container, this._items[8]);
+    this._items[9].el = this._createItem(this._container, this._items[9]);
     
     this._layerMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-layer-menu", map._container);
     this._layerMenu.setAttribute('hidden', '');
@@ -684,7 +690,7 @@ export var ContextMenu = L.Handler.extend({
     if(!e.relatedTarget || !e.relatedTarget.parentElement || 
         e.relatedTarget.parentElement.classList.contains("mapml-submenu") ||
         e.relatedTarget.classList.contains("mapml-submenu"))return;
-    let menu = this._coordMenu, copyEl = this._items[5].el.el;
+    let menu = this._coordMenu, copyEl = this._items[4].el.el;
     copyEl.setAttribute("aria-expanded","false");
     menu.setAttribute('hidden', '');
   },
