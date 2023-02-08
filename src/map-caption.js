@@ -12,8 +12,6 @@ export class MapCaption extends HTMLElement {
         this.observer = new MutationObserver(() => {
             this.parentElement.setAttribute('aria-label', this.textContent); 
         });
-
-        this.map = this.parentElement;  
     }
     // function to retrieve caption content 
     get ariaLabel() {
@@ -32,13 +30,17 @@ export class MapCaption extends HTMLElement {
             attributes: true,
             childList: true
         });
-        const ariaLabel = this.textContent;
-        this.parentElement.setAttribute('aria-label', ariaLabel);
+        
+        // don't change aria-label if one already exists from user  (checks when element is first created)
+        if (!this.parentElement.hasAttribute('aria-label'))
+        {
+            const ariaLabel = this.textContent;
+            this.parentElement.setAttribute('aria-label', ariaLabel);
+        }
     }
     disconnectedCallback() {
         this.observer.disconnect();
 
-        // removes aria-label when map-caption is removed
-        this.map.removeAttribute('aria-label');
+        // add deleting function which allows it to delete latest map-caption tag, and don't allow delete if aria-label already existed
     }
 }
