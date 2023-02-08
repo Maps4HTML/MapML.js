@@ -603,8 +603,8 @@ export var ContextMenu = L.Handler.extend({
       if(this._layerMenuTabs === 0 || this._layerMenuTabs === 4 || key === 27){
         L.DomEvent.stop(e);
         this._focusOnLayerControl();
-      } 
-    } else if(key !== 16 && key!== 9 && !(!(this._layerClicked.className.includes('mapml-layer-item')) && key === 67) && path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)")){
+      }
+    } else if(key !== 16 && key!== 9 && !(!(this._layerClicked.className.includes('mapml-layer-item')) && key === 67) && (path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)") || key === 27)){
       this._hide();
     }
     switch(key){
@@ -673,16 +673,8 @@ export var ContextMenu = L.Handler.extend({
       menu.style.right = 'auto';
     }
 
-    // height difference between the main contextmenu and submenu
-    const heightDiff = 73;
-    if (click.containerPoint.y + menuHeight + heightDiff > mapSize.y) {
-      menu.style.top = 'auto';
-      // to make submenu show completely when clicking at the bottom of the map
-      menu.style.bottom = 32 + 'px';
-    } else {
-      menu.style.top = 100 + 'px';
-      menu.style.bottom = 'auto';
-    }
+    menu.style.top = 100 - 22 + 'px';
+    menu.style.bottom = 'auto';
     if(this._keyboardEvent)menu.firstChild.focus();
   },
 
