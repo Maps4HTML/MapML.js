@@ -112,9 +112,11 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
         let children = await page.$eval(".leaflet-top.leaflet-right", (div) => div.childElementCount);
         expect(children).toEqual(0);
         await page.click("body > mapml-viewer", { button: "right" });
-        await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
+        // toggle controls
+        await page.click(".mapml-contextmenu > button:nth-of-type(6)");
         await page.click("body > mapml-viewer", { button: "right" });
-        await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
+        // toggle controls
+        await page.click(".mapml-contextmenu > button:nth-of-type(6)");
 
         children = await page.$eval(".leaflet-top.leaflet-right", (div) => div.childElementCount);
         expect(children).toEqual(0);

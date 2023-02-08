@@ -30,6 +30,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
   let context;
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext('');
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
     page = await context.newPage();
     await page.goto("mapml-viewer.html");
@@ -48,7 +49,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Toggle Controls (T)");
+    expect(name).toEqual("Copy (C)");
   });
 
   test("Context menu tab goes to next item", async () => {
@@ -59,7 +60,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Copy (C)");
+    expect(name).toEqual("Paste (P)");
   });
 
 
@@ -71,7 +72,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Toggle Controls (T)");
+    expect(name).toEqual("Copy (C)");
   });
 
   test("Submenu opens on C with focus on first item", async () => {
@@ -176,7 +177,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       );
 
       await page.click("body > mapml-viewer", { button: "right" });
-      await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
+      await page.click("div > div.mapml-contextmenu > button:nth-of-type(6)");
 
       const controlsOff = await page.$eval(
         "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
@@ -194,7 +195,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       );
 
       await page.click("body > mapml-viewer", { button: "right" });
-      await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
+      await page.click("div > div.mapml-contextmenu > button:nth-of-type(6)");
 
       const controlsOff = await page.$eval(
         "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
@@ -238,7 +239,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
 
   test("Submenu, copy using tab + enter to access", async () => {
     await page.reload();
-    let expected = "";
+      let expected = "";
     const currDefCS = await page.$eval(
       "body > mapml-viewer",
       (map) => ({ext: map._map.contextMenu.defExtCS, loc: map._map.contextMenu.defLocCS})
@@ -260,7 +261,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
           map._map.contextMenu.defExtCS = 'pcrs';
           map._map.contextMenu.defLocCS = 'gcrs';
         }
-      )
+      );
       await page.keyboard.press("Tab");
       if (i >= 2) {
         for (let k = 0; k < 2; k++) {
@@ -318,7 +319,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
         map._map.contextMenu.defLocCS = currDefCS.loc;
       }, 
       currDefCS
-    )
+    );
   });
 
   test("Context menu, All buttons enabled when fwd and back history present", async () => {
