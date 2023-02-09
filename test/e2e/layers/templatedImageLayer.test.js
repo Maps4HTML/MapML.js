@@ -24,8 +24,8 @@ let expectedPCRS = {
   }
 };
 
-test.describe("Playwright mapMLTemplatedImage Layer Tests", () => {
-  isVisible.test("mapMLTemplatedImageLayer.html", 2, 1);
-  zoomLimit.test("mapMLTemplatedImageLayer.html", 1, 0);
-  extentProperty.test("mapMLTemplatedImageLayer.html", expectedPCRS, expectedGCRS);
+test.describe("Playwright templatedImage Layer Tests", () => {
+  isVisible.test("templatedImageLayer.html", 2, 1);
+  zoomLimit.test("templatedImageLayer.html", 1, 0);
+  extentProperty.test("templatedImageLayer.html", expectedPCRS, expectedGCRS);
 });

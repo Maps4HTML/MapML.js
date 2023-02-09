@@ -7,7 +7,8 @@ export var MapMLLayer = L.Layer.extend({
     options: {
         maxNext: 10,
         zIndex: 0,
-        maxZoom: 25
+        maxZoom: 25,
+        opacity: '1.0'
     },
     // initialize is executed before the layer is added to a map
     initialize: function (href, content, options) {
@@ -26,6 +27,7 @@ export var MapMLLayer = L.Layer.extend({
         }
         L.setOptions(this, options);
         this._container = L.DomUtil.create('div', 'leaflet-layer');
+        this.changeOpacity(this.options.opacity);
         L.DomUtil.addClass(this._container,'mapml-layer');
         this._imageContainer = L.DomUtil.create('div', 'leaflet-layer', this._container);
         L.DomUtil.addClass(this._imageContainer,'mapml-image-container');
@@ -124,7 +126,7 @@ export var MapMLLayer = L.Layer.extend({
         this._map = map;
         if(this._content){
           if (!this._mapmlvectors) {
-            this._mapmlvectors = M.mapMlFeatures(this._content, {
+            this._mapmlvectors = M.featureLayer(this._content, {
               // pass the vector layer a renderer of its own, otherwise leaflet
               // puts everything into the overlayPane
               renderer: M.featureRenderer(),
@@ -156,7 +158,7 @@ export var MapMLLayer = L.Layer.extend({
               return;
             }
             if (!this._mapmlvectors) {
-              this._mapmlvectors = M.mapMlFeatures(this._content, {
+              this._mapmlvectors = M.featureLayer(this._content, {
                   // pass the vector layer a renderer of its own, otherwise leaflet
                   // puts everything into the overlayPane
                   renderer: M.featureRenderer(),
@@ -196,7 +198,7 @@ export var MapMLLayer = L.Layer.extend({
         if((!this._staticTileLayer || this._staticTileLayer._container === null) && 
           this._mapmlTileContainer.getElementsByTagName("map-tiles").length > 0)
         {
-          this._staticTileLayer = M.mapMLStaticTileLayer({
+          this._staticTileLayer = M.staticTileLayer({
             pane:this._container,
             _leafletLayer: this,
             className:"mapml-static-tile-layer",
@@ -1330,17 +1332,19 @@ export var MapMLLayer = L.Layer.extend({
         let path = focusEvent.originalEvent.path || focusEvent.originalEvent.composedPath();
         let isTab = focusEvent.originalEvent.keyCode === 9,
             shiftPressed = focusEvent.originalEvent.shiftKey;
-        if((path[0].classList.contains("leaflet-popup-close-button") && isTab && !shiftPressed) || focusEvent.originalEvent.keyCode === 27){
+        if ((path[0].classList.contains("leaflet-popup-close-button") && isTab && !shiftPressed) || 
+          focusEvent.originalEvent.keyCode === 27 || 
+          path[0].classList.contains("leaflet-popup-close-button") && focusEvent.originalEvent.keyCode === 13){
           setTimeout(() => {
-            L.DomEvent.stop(focusEvent);
             map.closePopup(popup);
             group.focus();
+            L.DomEvent.stop(focusEvent);
           }, 0);
         } else if ((path[0].title==="Focus Map" || path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
           setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
-            L.DomEvent.stop(focusEvent);
             map.closePopup(popup);
             group.focus();
+            L.DomEvent.stop(focusEvent);
           }, 0);
         }
       }

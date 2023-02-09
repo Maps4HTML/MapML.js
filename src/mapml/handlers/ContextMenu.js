@@ -119,22 +119,22 @@ export var ContextMenu = L.Handler.extend({
     for (let i = 0; i < 6; i++) {
       this._items[i].el = this._createItem(this._container, this._items[i]);
     }
-
+    
     this._coordMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-submenu", this._container);
     this._coordMenu.id = "mapml-copy-submenu";
     this._coordMenu.setAttribute('hidden', '');
-
+    
     this._clickEvent = null;
-
+    
     for(let i =0;i<this._items[5].submenu.length;i++){
       this._createItem(this._coordMenu,this._items[5].submenu[i],i);
     }
-
+    
     this._items[6].el = this._createItem(this._container, this._items[6]);
     this._items[7].el = this._createItem(this._container, this._items[7]);
     this._items[8].el = this._createItem(this._container, this._items[8]);
     this._items[9].el = this._createItem(this._container, this._items[9]);
-
+    
     this._layerMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-layer-menu", map._container);
     this._layerMenu.setAttribute('hidden', '');
     for (let i = 0; i < this._layerItems.length; i++) {
@@ -449,10 +449,13 @@ export var ContextMenu = L.Handler.extend({
       elem = (elem.className === "mapml-layer-extent") ? elem.closest("fieldset").parentNode.parentNode.parentNode.querySelector("span") : elem.querySelector("span");
       if(!elem.layer.validProjection) return;
       this._layerClicked = elem;
+      this._layerMenu.removeAttribute('hidden');
       this._showAtPoint(e.containerPoint, e, this._layerMenu);
     } else if(elem.classList.contains("leaflet-container") || elem.classList.contains("mapml-debug-extent") ||
-      elem.tagName === "path") {
+    elem.tagName === "path") {
       this._layerClicked = undefined;
+      // the 'hidden' attribute must be removed before any attempt to get the size of container
+      this._container.removeAttribute('hidden');
       this._showAtPoint(e.containerPoint, e, this._container);
     }
     if(e.originalEvent.button === 0 || e.originalEvent.button === -1){
@@ -463,7 +466,7 @@ export var ContextMenu = L.Handler.extend({
         this._layerMenuTabs = 1;
         this._layerMenu.firstChild.focus();
       } else {
-        this._container.firstChild.focus();
+        this._container.querySelectorAll("button:not([disabled])")[0].focus();
       }
 
     }
@@ -646,17 +649,23 @@ export var ContextMenu = L.Handler.extend({
     copyEl.setAttribute("aria-expanded","true");
     menu.removeAttribute('hidden');
 
-    if (click.containerPoint.x + 160 + 80 > mapSize.x) {
+    const menuWidth = this._container.offsetWidth,
+          menuHeight = this._container.offsetHeight,
+          submenuWidth = menu.offsetWidth;
+    if (click.containerPoint.x + menuWidth + submenuWidth > mapSize.x) {
       menu.style.left = 'auto';
-      menu.style.right = 160 + 'px';
+      menu.style.right = menuWidth + 'px';
     } else {
-      menu.style.left = 160 + 'px';
+      menu.style.left = menuWidth + 'px';
       menu.style.right = 'auto';
     }
 
-    if (click.containerPoint.y + 160 > mapSize.y) {
+    // height difference between the main contextmenu and submenu
+    const heightDiff = 73;
+    if (click.containerPoint.y + menuHeight + heightDiff > mapSize.y) {
       menu.style.top = 'auto';
-      menu.style.bottom = 20 + 'px';
+      // to make submenu show completely when clicking at the bottom of the map
+      menu.style.bottom = 32 + 'px';
     } else {
       menu.style.top = 100 + 'px';
       menu.style.bottom = 'auto';
@@ -665,8 +674,9 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _hideCoordMenu: function(e){
-    if(e.srcElement.parentElement.classList.contains("mapml-submenu") ||
-        e.srcElement.innerText === (M.options.locale.cmCopyCoords + " (C)"))return;
+    if(!e.relatedTarget || !e.relatedTarget.parentElement || 
+        e.relatedTarget.parentElement.classList.contains("mapml-submenu") ||
+        e.relatedTarget.classList.contains("mapml-submenu"))return;
     let menu = this._coordMenu, copyEl = this._items[5].el.el;
     copyEl.setAttribute("aria-expanded","false");
     menu.setAttribute('hidden', '');

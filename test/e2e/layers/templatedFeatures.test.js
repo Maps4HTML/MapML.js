@@ -26,17 +26,17 @@ let expectedPCRS = {
 
 
 
-test.describe("Playwright mapMLTemplatedFeatures Layer Tests", () => {
-  isVisible.test("mapMLTemplatedFeatures.html", 3, 2);
-  zoomLimit.test("mapMLTemplatedFeatures.html", 2, 1);
-  extentProperty.test("mapMLTemplatedFeatures.html", expectedPCRS, expectedGCRS);
+test.describe("Playwright templatedFeatures Layer Tests", () => {
+  isVisible.test("templatedFeatures.html", 3, 2);
+  zoomLimit.test("templatedFeatures.html", 2, 1);
+  extentProperty.test("templatedFeatures.html", expectedPCRS, expectedGCRS);
 
   let page;
   let context;
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext('');
     page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
-    await page.goto("mapMLTemplatedFeatures.html");
+    await page.goto("templatedFeatures.html");
   });
 
   test.afterAll(async function () {

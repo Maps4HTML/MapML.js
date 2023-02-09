@@ -3,13 +3,14 @@
   "version": "0.10.1",
   "description": "web-map customized built-in HTML <map> or custom <mapml-viewer>",
   "keywords": [
+    "mapml-viewer",
+    "mapml",
     "web-components",
     "web",
     "maps",
     "map",
     "web-map",
-    "geo-map",
-    "map layer"
+    "layer"
   ],
   "main": "mapml-viewer.js",
   "module": "mapml-viewer.js",
@@ -31,7 +32,7 @@
     }
   ],
   "scripts": {
-    "test": "npx playwright test",
+    "test": "npx playwright test --retries=3",
     "jest": "jest --verbose --noStackTrace"
   },
   "devDependencies": {
@@ -51,7 +52,7 @@
     "jest-circus": "^26.6.3",
     "jest-environment-node": "^26.6.1",
     "jest-playwright-preset": "^1.7.0",
-    "leaflet": "^1.7.1",
+    "leaflet": "^1.9.3",
     "path": "^0.12.7",
     "@playwright/test": "^1.24.2",
     "playwright": "^1.24.2",

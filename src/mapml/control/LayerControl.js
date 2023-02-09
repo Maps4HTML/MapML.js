@@ -1,4 +1,4 @@
-export var MapMLLayerControl = L.Control.Layers.extend({
+export var LayerControl = L.Control.Layers.extend({
     /* removes 'base' layers as a concept */
     options: {
       autoZIndex: false,
@@ -26,6 +26,7 @@ export var MapMLLayerControl = L.Control.Layers.extend({
         this._map.on('validate', this._validateInput, this);
         L.DomEvent.on(this.options.mapEl, "layerchange", this._validateInput, this);
         L.DomEvent.on(this._container, 'keydown', this._focusFirstLayer, this._container);
+        L.DomEvent.on(this._container, 'contextmenu', this._preventDefaultContextMenu, this);
         this._update();
         //this._validateExtents();
         if(this._layers.length < 1 && !this._map._showControls){
@@ -145,8 +146,17 @@ export var MapMLLayerControl = L.Control.Layers.extend({
 
       L.DomUtil.removeClass(this._container, 'leaflet-control-layers-expanded');
 		  return this;
+    },
+    _preventDefaultContextMenu: function (e) {
+        let latlng = this._map.mouseEventToLatLng(e);
+        let containerPoint = this._map.mouseEventToContainerPoint(e);
+        e.preventDefault();
+        this._map.fire('contextmenu', 
+          { originalEvent: {target: e.target}, 
+            containerPoint: containerPoint, 
+            latlng: latlng });
     }
 });
-export var mapMlLayerControl = function (layers, options) {
-	return new MapMLLayerControl(layers, options);
+export var layerControl = function (layers, options) {
+	return new LayerControl(layers, options);
 };

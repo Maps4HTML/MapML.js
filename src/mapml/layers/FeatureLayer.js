@@ -1,6 +1,6 @@
 import { FALLBACK_CS, FALLBACK_PROJECTION } from '../utils/Constants';
 
-export var MapMLFeatures = L.FeatureGroup.extend({
+export var FeatureLayer = L.FeatureGroup.extend({
   /*
    * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.
    */
@@ -337,6 +337,6 @@ export var MapMLFeatures = L.FeatureGroup.extend({
     }
   },
 });
-export var mapMlFeatures = function (mapml, options) {
-	return new MapMLFeatures(mapml, options);
+export var featureLayer = function (mapml, options) {
+	return new FeatureLayer(mapml, options);
 };

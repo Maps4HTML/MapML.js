@@ -4,7 +4,7 @@ const request = require('./request');
 
 test.describe("Templated features layer with step", () => {
 
-    request.test("step/templatedFeaturesLayer.html", 0, 1, 0, 0,
+    request.test("step/templatedFeaturesLayerStep.html", 0, 1, 0, 0,
         "http://localhost:30001/data/alabama_feature.mapml?",
         "-8030725.916518498-9758400.22013378111151604.1148082329423929.8111929520",
         "",

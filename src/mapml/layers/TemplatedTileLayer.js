@@ -127,7 +127,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       let svg = L.SVG.create('svg'), g = L.SVG.create('g'), tileSize = this._map.options.crs.options.crs.tile.bounds.max.x,
           xOffset = coords.x * tileSize, yOffset = coords.y * tileSize;
 
-      let tileFeatures = M.mapMlFeatures(markup, {
+      let tileFeatures = M.featureLayer(markup, {
         projection: this._map.options.projection,
         static: false,
         interactive: false,

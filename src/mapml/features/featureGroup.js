@@ -59,6 +59,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @private
    */
   _handleFocus: function(e) {
+    // tab, shift, cr, esc, up, left, down, right, 
     if(([9, 16, 27, 37, 38, 39, 40].includes(e.keyCode)) && e.type === "keydown"){
       let index = this._map.featureIndex.currentIndex;
       // Down/right arrow keys replicate tabbing through the feature index
@@ -94,13 +95,17 @@ export var FeatureGroup = L.FeatureGroup.extend({
           obj._map.featureIndex.inBoundFeatures[0].path.setAttribute("tabindex", 0);
         }, 0);
       }
+      // tab, shift, cr, esc, right, left, up, down, 
+      // 1, 2, 3, 4, 5, 6, 7 (featureIndexOverlay available index items 
+      // [8, 9] being allocated to next, previous menu items).
     } else if (!([9, 16, 13, 27, 37, 38, 39, 40, 49, 50, 51, 52, 53, 54, 55].includes(e.keyCode))){
       this._map.featureIndex.currentIndex = 0;
       this._map.featureIndex.inBoundFeatures[0].path.focus();
     }
-
+  
+    // 27 added so that the tooltip opens when dismissing popup with 'esc' key
     if(e.target.tagName.toUpperCase() !== "G") return;
-    if(([9, 13, 16, 37, 38, 39, 40, 49, 50, 51, 52, 53, 54, 55].includes(e.keyCode)) && e.type === "keyup") {
+    if(([9, 13, 16, 37, 38, 39, 40, 49, 50, 51, 52, 53, 54, 55, 27].includes(e.keyCode)) && e.type === "keyup") {
       this.openTooltip();
     } else if (e.keyCode === 13 || e.keyCode === 32){
       this.closeTooltip();

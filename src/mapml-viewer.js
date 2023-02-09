@@ -260,7 +260,7 @@ export class MapViewer extends HTMLElement {
       }
 
       if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl && this.layers.length > 0){
-        this._layerControl = M.mapMlLayerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
+        this._layerControl = M.layerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
         //if this is the initial setup the layers dont need to be readded, causes issues if they are
         if(!setup){
           for (var i=0;i<this.layers.length;i++) {
@@ -292,7 +292,10 @@ export class MapViewer extends HTMLElement {
           delete this[controls[i]];
         }
       }
+    } else if (!this.controls && this._map) {
+      this._map.contextMenu._items[4].el.el.setAttribute("disabled", "");
     }
+
   }
   attributeChangedCallback(name, oldValue, newValue) {
 //    console.log('Attribute: ' + name + ' changed from: '+ oldValue + ' to: '+newValue);
@@ -347,14 +350,17 @@ export class MapViewer extends HTMLElement {
       }
     });
     // pasting layer-, links and geojson using Ctrl+V 
-    this.parentElement.addEventListener('keydown', function (e) {
-      if(e.keyCode === 86 && e.ctrlKey && document.activeElement.nodeName === "MAPML-VIEWER"){
+    this.addEventListener('keydown', function (e) {
+      if(e.keyCode === 86 && e.ctrlKey){
         navigator.clipboard
           .readText()
           .then(
             (layer) => {
-              M._pasteLayer(document.activeElement, layer);
+              M._pasteLayer(this, layer);
             });
+      } else if (e.keyCode === 32) {
+        e.preventDefault();
+        this._map.fire('keypress', {originalEvent: e});
       }});
     this.parentElement.addEventListener('mousedown', function (e) {
       if(document.activeElement.nodeName === "MAPML-VIEWER"){
@@ -531,6 +537,20 @@ export class MapViewer extends HTMLElement {
     };
     this._historyIndex++;
     this._history.splice(this._historyIndex, 0, location);
+    // Remove future history and overwrite it when map pan/zoom while inside history
+    if (this._historyIndex + 1 !== this._history.length) {
+      this._history.length = this._historyIndex + 1;
+    }
+    if (this._historyIndex === 0) {
+      // when at initial state of map, disable back, forward, and reload items
+      this._map.contextMenu._items[0].el.el.disabled = true; // back contextmenu item
+      this._map.contextMenu._items[1].el.el.disabled = true; // forward contextmenu item
+      this._map.contextMenu._items[2].el.el.disabled = true; // reload contextmenu item
+    } else {
+      this._map.contextMenu._items[0].el.el.disabled = false; // back contextmenu item
+      this._map.contextMenu._items[1].el.el.disabled = true; // forward contextmenu item
+      this._map.contextMenu._items[2].el.el.disabled = false; // reload contextmenu item
+    }
   }
 
   /**
@@ -541,8 +561,14 @@ export class MapViewer extends HTMLElement {
     let curr = history[this._historyIndex];
 
     if(this._historyIndex > 0){
+      this._map.contextMenu._items[1].el.el.disabled = false; // forward contextmenu item
       this._historyIndex--;
       let prev = history[this._historyIndex];
+      // Disable back, reload contextmenu item when at the end of history
+      if (this._historyIndex === 0) {
+        this._map.contextMenu._items[0].el.el.disabled = true; // back contextmenu item
+        this._map.contextMenu._items[2].el.el.disabled = true; // reload contextmenu item
+      }
 
       if(prev.zoom !== curr.zoom){
         this._traversalCall = 2;  // allows the next 2 moveends to be ignored from history
@@ -568,8 +594,14 @@ export class MapViewer extends HTMLElement {
     let history = this._history;
     let curr = history[this._historyIndex];
     if(this._historyIndex < history.length - 1){
+      this._map.contextMenu._items[0].el.el.disabled = false; // back contextmenu item
+      this._map.contextMenu._items[2].el.el.disabled = false; // reload contextmenu item
       this._historyIndex++;
       let next = history[this._historyIndex];
+      // disable forward contextmenu item, when at the end of forward history
+      if (this._historyIndex + 1 === this._history.length) {
+        this._map.contextMenu._items[1].el.el.disabled = true; // forward contextmenu item
+      }
 
       if(next.zoom !== curr.zoom){
         this._traversalCall = 2; // allows the next 2 moveends to be ignored from history
@@ -599,6 +631,10 @@ export class MapViewer extends HTMLElement {
       x:mapLocation.x,
       y:mapLocation.y,
     };
+
+    this._map.contextMenu._items[0].el.el.disabled = true; // back contextmenu item
+    this._map.contextMenu._items[1].el.el.disabled = true; // forward contextmenu item
+    this._map.contextMenu._items[2].el.el.disabled = true; // reload contextmenu item
 
     this._history = [initialLocation];
     this._historyIndex = 0;
@@ -642,12 +678,12 @@ export class MapViewer extends HTMLElement {
           horizontal: {
             name: "x",
             min: 0, 
-            max: zoom => (M[t.projection].options.bounds.getSize().x / M[t.projection].options.resolutions[zoom]).toFixed()
+            max: zoom => (Math.round(M[t.projection].options.bounds.getSize().x / M[t.projection].options.resolutions[zoom]))
           },
           vertical: {
             name: "y",
             min:0, 
-            max: zoom => (M[t.projection].options.bounds.getSize().y / M[t.projection].options.resolutions[zoom]).toFixed()
+            max: zoom => (Math.round(M[t.projection].options.bounds.getSize().y / M[t.projection].options.resolutions[zoom]))
           },
           bounds: zoom => L.bounds([M[t.projection].options.crs.tcrs.horizontal.min,
             M[t.projection].options.crs.tcrs.vertical.min],
@@ -716,12 +752,12 @@ export class MapViewer extends HTMLElement {
           horizontal: {
             name: "column",
             min: 0,
-            max: zoom => (M[t.projection].options.crs.tcrs.horizontal.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().x).toFixed()
+            max: zoom => (Math.round(M[t.projection].options.crs.tcrs.horizontal.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().x))
           },
           vertical: {
             name: "row",
             min: 0,
-            max: zoom => (M[t.projection].options.crs.tcrs.vertical.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().y).toFixed()
+            max: zoom => (Math.round(M[t.projection].options.crs.tcrs.vertical.max(zoom) / M[t.projection].options.crs.tile.bounds.getSize().y))
           },
           bounds: zoom => L.bounds(
                    [M[t.projection].options.crs.tilematrix.horizontal.min,

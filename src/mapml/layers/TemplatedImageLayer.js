@@ -35,10 +35,10 @@ export var TemplatedImageLayer =  L.Layer.extend({
 
     _addImage: function (bounds, zoom, loc) {
         let map = this._map;
-        let overlayToRemove = this._imageOverlay;
+        let overlayToRemove = this._imageLayer;
         let src = this.getImageUrl(bounds, zoom);
         let size = map.getSize();
-        this._imageOverlay = M.imageOverlay(src, loc, size, 0, this._container);
+        this._imageOverlay = M.imageLayer(src, loc, size, 0, this._container);
         this._imageOverlay._step = this._template.step;
         this._imageOverlay.addTo(map);
         if (overlayToRemove) {

@@ -63,7 +63,7 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
     });
 
     test("When at last feature, arrow down goes to first feature", async () => {
-      await page.goto("mapMLTemplatedFeaturesFilter.html");
+      await page.goto("templatedFeaturesFilter.html");
       await page.waitForTimeout(1000);
 
       await page.keyboard.press("Tab");

@@ -24,7 +24,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
           container = this._container,
           map = this._map;
       if (!this._features) {
-        this._features = M.mapMlFeatures( null, {
+        this._features = M.featureLayer( null, {
           // pass the vector layer a renderer of its own, otherwise leaflet
           // puts everything into the overlayPane
           renderer: M.featureRenderer(),

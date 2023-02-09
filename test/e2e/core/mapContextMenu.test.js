@@ -46,7 +46,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Back (B)");
+    expect(name).toEqual("Toggle Controls (T)");
   });
 
   test("Context menu tab goes to next item", async () => {
@@ -57,7 +57,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Forward (F)");
+    expect(name).toEqual("Copy Coordinates (C)");
   });
 
   test("Submenu opens on C with focus on first item", async () => {
@@ -100,21 +100,24 @@ test.describe("Playwright Map Context Menu Tests", () => {
     expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
     expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
   });
-  test("Context menu, back item at intial location", async () => {
+  test("Context menu, back and reload item at initial location disabled", async () => {
     await page.click("body > map", { button: "right" });
-    await page.click("div > div.mapml-contextmenu > button:nth-child(1)");
-    await page.waitForTimeout(1000);
-    const extent = await page.$eval(
-      "body > map",
-      (map) => map.extent
+    const backBtn = await page.$eval(
+      "div > div.mapml-contextmenu > button:nth-child(1)",
+      (btn) => btn.disabled
+    );
+    const fwdBtn = await page.$eval(
+      "div > div.mapml-contextmenu > button:nth-child(2)",
+      (btn) => btn.disabled
+    );
+    const reloadBtn = await page.$eval(
+      "div > div.mapml-contextmenu > button:nth-child(3)",
+      (btn) => btn.disabled
     );
 
-    expect(extent.projection).toEqual("CBMTILE");
-    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
-    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
-    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
+    expect(backBtn).toEqual(true);
+    expect(fwdBtn).toEqual(false);
+    expect(reloadBtn).toEqual(true);
   });
   test("Context menu, forward item", async () => {
     await page.click("body > map", { button: "right" });
@@ -131,20 +134,24 @@ test.describe("Playwright Map Context Menu Tests", () => {
     expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
     expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
   });
-  test("Context menu, forward item at most recent location", async () => {
+  test("Context menu, forward item at most recent location disabled", async () => {
     await page.click("body > map", { button: "right" });
-    await page.click("div > div.mapml-contextmenu > button:nth-child(2)");
-    await page.waitForTimeout(1000);
-    const extent = await page.$eval(
-      "body > map",
-      (map) => map.extent
+    const backBtn = await page.$eval(
+      "div > div.mapml-contextmenu > button:nth-child(1)",
+      (btn) => btn.disabled
+    );
+    const fwdBtn = await page.$eval(
+      "div > div.mapml-contextmenu > button:nth-child(2)",
+      (btn) => btn.disabled
+    );
+    const reloadBtn = await page.$eval(
+      "div > div.mapml-contextmenu > button:nth-child(3)",
+      (btn) => btn.disabled
     );
 
-    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
-    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
-    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
+    expect(backBtn).toEqual(false);
+    expect(fwdBtn).toEqual(true);
+    expect(reloadBtn).toEqual(false);
   });
 
   test.describe("Context Menu, Toggle Controls ", () => {
@@ -218,7 +225,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     await page.click("body > map");
     await page.keyboard.press("Shift+F10");
 
-    for (let i = 0; i < 4; i++)
+    for (let i = 0; i < 3; i++)
       await page.keyboard.press("Tab");
 
     await page.keyboard.press("Enter");
@@ -304,5 +311,71 @@ test.describe("Playwright Map Context Menu Tests", () => {
       (map) => map.children.length
     );
     expect(layerCount).toEqual(5);
+  });
+
+  test("Context menu, click at margin and move mouse out when submenu is visible", async () => {
+    // click at the right-bottom margin of map
+    await page.mouse.wheel(0, 200);
+    await page.waitForTimeout(200);
+    await page.click("body > map", {
+      button: 'right',
+      position: {x: 495, y: 580}
+    });
+    const contextMenu = await page.locator('div > div.mapml-contextmenu').first();
+    expect(await contextMenu.isVisible()).toBeTruthy();
+    const mapSize = await page.$eval(
+      "body > map",
+      (map) => { return {x: map.width, y: map.height} }
+    );
+    const contextMenuSize = await page.$eval(
+      "div > div.mapml-contextmenu",
+      (menu) => {
+        return {
+          x: menu.offsetWidth + menu.getBoundingClientRect().left,
+          y: menu.offsetHeight + menu.getBoundingClientRect().top
+        }
+      }
+    );
+    expect(contextMenuSize.x <= mapSize.x && contextMenuSize.y <= mapSize.y).toBeTruthy();
+
+    // move the mouse from "copy" to another button in the main contextmenu
+    await contextMenu.hover();
+    const submenu = await page.locator('div > div#mapml-copy-submenu').first();
+    expect(await submenu.isVisible()).toBeTruthy();
+    await page.hover("div > div.mapml-contextmenu > button:nth-child(5)");
+    expect(await submenu.isHidden()).toBeTruthy();
+  });
+  
+  test("Context menu, All buttons enabled when fwd and back history present", async () => {
+    await page.click("body > map");
+    await page.$eval(
+      "body > map",
+      (map) => map.zoomTo(81, -63, 3)
+    );
+    await page.waitForTimeout(1000);
+    await page.$eval(
+      "body > map",
+      (map) => map.zoomTo(81, -63, 5)
+    );
+    await page.waitForTimeout(1000);
+    await page.click("body > map", { button: "right" });
+    await page.click("div > div.mapml-contextmenu > button:nth-child(1)");
+    await page.click("body > map", { button: "right" });
+    const backBtn = await page.$eval(
+      "div > div.mapml-contextmenu > button:nth-child(1)",
+      (btn) => btn.disabled
+    );
+    const fwdBtn = await page.$eval(
+      "div > div.mapml-contextmenu > button:nth-child(2)",
+      (btn) => btn.disabled
+    );
+    const reloadBtn = await page.$eval(
+      "div > div.mapml-contextmenu > button:nth-child(3)",
+      (btn) => btn.disabled
+    );
+
+    expect(backBtn).toEqual(false);
+    expect(fwdBtn).toEqual(false);
+    expect(reloadBtn).toEqual(false);
   });
 });
