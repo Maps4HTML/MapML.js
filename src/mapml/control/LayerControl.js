@@ -104,7 +104,7 @@ export var LayerControl = L.Control.Layers.extend({
 
     // focus the first layer in the layer control when enter is pressed
     _focusFirstLayer: function(e){
-      if(e.key === 'Enter' && this.className != 'leaflet-control-layers leaflet-control leaflet-control-layers-expanded'){
+      if(e.key === 'Enter' && this.className === 'leaflet-control-layers leaflet-control leaflet-control-layers-expanded'){
         var elem = this.children[1].children[2].children[0].children[0].children[0].children[0];
         if(elem) setTimeout(() => elem.focus(), 0);
         }
@@ -152,7 +152,7 @@ export var LayerControl = L.Control.Layers.extend({
         let containerPoint = this._map.mouseEventToContainerPoint(e);
         e.preventDefault();
         this._map.fire('contextmenu', 
-          { originalEvent: {target: e.target}, 
+          { originalEvent: {target: e}, 
             containerPoint: containerPoint, 
             latlng: latlng });
     }

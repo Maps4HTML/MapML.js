@@ -443,7 +443,16 @@ export var ContextMenu = L.Handler.extend({
   _show: function (e) {
     if(this._mapMenuVisible) this._hide();
     this._clickEvent = e;
-    let elem = e.originalEvent.target;
+    let elem;
+    try {
+      // For layer contextmenu
+      elem = e.originalEvent.target.target;
+    } catch (err) { }
+    if (elem === undefined) {
+      // For map contextmenu
+      elem = e.originalEvent.target;
+    }  
+    
     if(elem.closest("fieldset")){
       elem = elem.closest("fieldset");
       elem = (elem.className === "mapml-layer-extent") ? elem.closest("fieldset").parentNode.parentNode.parentNode.querySelector("span") : elem.querySelector("span");
@@ -458,7 +467,8 @@ export var ContextMenu = L.Handler.extend({
       this._container.removeAttribute('hidden');
       this._showAtPoint(e.containerPoint, e, this._container);
     }
-    if(e.originalEvent.button === 0 || e.originalEvent.button === -1){
+    if(e.originalEvent.button === 0 || e.originalEvent.button === -1 || 
+       e.originalEvent.target.button === 0 || e.originalEvent.target.button === -1 ) {
       this._keyboardEvent = true;
       if(this._layerClicked){
         let activeEl = document.activeElement;
