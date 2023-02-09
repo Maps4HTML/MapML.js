@@ -183,13 +183,11 @@ export var ContextMenu = L.Handler.extend({
         if (coord === 'pcrs') {
           data = `<map-meta name="extent" content="top-left-easting=${tL.horizontal}, top-left-northing=${tL.vertical}, bottom-right-easting=${bR.horizontal}, bottom-right-northing=${bR.vertical}"></map-meta>`;
         } else if (coord === 'gcrs') {
-          data = `<map-meta name="extent" content="top-left-longitude=${tL.horizontal},top-left-latitude=${tL.vertical},bottom-right-longitude=${bR.horizontal},bottom-right-latitude=${bR.vertical}"></map-meta>`;
+          data = `<map-meta name="extent" content="top-left-longitude=${tL.horizontal}, top-left-latitude=${tL.vertical}, bottom-right-longitude=${bR.horizontal}, bottom-right-latitude=${bR.vertical}"></map-meta>`;
         } else if (coord === 'tcrs') {
-          data = `<map-meta name="extent" content="top-left-x=${tL[0].horizontal},top-left-y=${tL[0].vertical},
-                  bottom-right-x=${bR[bR.length - 1].horizontal},bottom-right-y=${bR[bR.length - 1].vertical}"></map-meta>`;
+          data = `<map-meta name="extent" content="top-left-x=${tL[0].horizontal}, top-left-y=${tL[0].vertical}, bottom-right-x=${bR[bR.length - 1].horizontal}, bottom-right-y=${bR[bR.length - 1].vertical}"></map-meta>`;
         } else if (coord === 'tilematrix') {          
-          data = `<map-meta name="extent" content="top-left-column=${tL[0].horizontal},top-left-row=${tL[0].vertical},
-                  bottom-right-column=${bR[bR.length - 1].horizontal},bottom-right-row=${bR[bR.length - 1].vertical}"></map-meta>`;
+          data = `<map-meta name="extent" content="top-left-column=${tL[0].horizontal}, top-left-row=${tL[0].vertical}, bottom-right-column=${bR[bR.length - 1].horizontal}, bottom-right-row=${bR[bR.length - 1].vertical}"></map-meta>`;
         } else {
           console.log('not support');
         }
@@ -461,7 +459,9 @@ export var ContextMenu = L.Handler.extend({
     let elem = e.originalEvent.target;
     if(elem.closest("fieldset")){
       elem = elem.closest("fieldset");
-      elem = (elem.className === "mapml-layer-extent") ? elem.closest("fieldset").parentNode.parentNode.parentNode.querySelector("span") : elem.querySelector("span");
+      elem = (elem.className === "mapml-layer-extent") ? 
+              elem.closest("fieldset").parentNode.parentNode.parentNode.querySelector("span") : 
+              elem.querySelector("span");
       if(!elem.layer.validProjection) return;
       this._layerClicked = elem;
       this._layerMenu.removeAttribute('hidden');
@@ -604,7 +604,9 @@ export var ContextMenu = L.Handler.extend({
         L.DomEvent.stop(e);
         this._focusOnLayerControl();
       }
-    } else if(key !== 16 && key!== 9 && !(!(this._layerClicked.className.includes('mapml-layer-item')) && key === 67) && (path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)") || key === 27)){
+    } else if(key !== 16 && key!== 9 && 
+              !(!(this._layerClicked.className.includes('mapml-layer-item')) && key === 67) && 
+              (path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)") || key === 27)){
       this._hide();
     }
     switch(key){
