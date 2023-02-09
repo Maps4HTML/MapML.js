@@ -378,4 +378,43 @@ test.describe("Playwright Map Context Menu Tests", () => {
     expect(fwdBtn).toEqual(false);
     expect(reloadBtn).toEqual(false);
   });
+
+  test("Layer Context menu, Pressing enter on contextmenu focuses on checkbox element", async () => {
+    await page.click("body > map");
+    for (let i = 0; i < 5; i++) {
+      await page.keyboard.press("Tab");
+    }
+    await page.keyboard.press("Enter");
+    const aHandle = await page.evaluateHandle(() => document.querySelector(".mapml-web-map"));
+    const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
+    const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
+    const nameHandle = await page.evaluateHandle(name => name.nodeName, resultHandle);
+    let name = await nameHandle.jsonValue();
+    await nameHandle.dispose();
+    expect(name).toEqual("INPUT");
+  });
+
+  test("Layer Context menu, Opening contextmenu focuses on first layer contextmenu", async () => {
+    await page.keyboard.press("Shift+F10");
+    const aHandle = await page.evaluateHandle(() => document.querySelector(".mapml-web-map"));
+    const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
+    const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
+    const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
+    let name = await nameHandle.jsonValue();
+    await nameHandle.dispose();
+    expect(name).toEqual("Zoom To Layer (Z)");
+  });
+
+  test("Layer Context menu, Tabbing through the contextmenu takes you back to the checkbox element", async () => {
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    const aHandle = await page.evaluateHandle(() => document.querySelector(".mapml-web-map"));
+    const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
+    const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
+    const nameHandle = await page.evaluateHandle(name => name.nodeName, resultHandle);
+    let name = await nameHandle.jsonValue();
+    await nameHandle.dispose();
+    expect(name).toEqual("INPUT");
+  });
 });

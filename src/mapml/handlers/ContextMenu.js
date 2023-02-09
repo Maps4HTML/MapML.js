@@ -444,7 +444,6 @@ export var ContextMenu = L.Handler.extend({
     if(this._mapMenuVisible) this._hide();
     this._clickEvent = e;
     let elem = e.originalEvent.target;
-    
     if(elem.closest("fieldset")){
       elem = elem.closest("fieldset");
       elem = (elem.className === "mapml-layer-extent") ? elem.closest("fieldset").parentNode.parentNode.parentNode.querySelector("span") : elem.querySelector("span");
