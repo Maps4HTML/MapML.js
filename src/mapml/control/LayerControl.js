@@ -152,7 +152,7 @@ export var LayerControl = L.Control.Layers.extend({
         let containerPoint = this._map.mouseEventToContainerPoint(e);
         e.preventDefault();
         this._map.fire('contextmenu', 
-          { originalEvent: {target: e.target, button: e.button}, 
+          { originalEvent: e,
             containerPoint: containerPoint, 
             latlng: latlng });
     }
