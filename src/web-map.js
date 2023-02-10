@@ -282,7 +282,7 @@ export class WebMap extends HTMLMapElement {
       2. only deletes aria-label if the aria-label was defined by the map caption element itself
     */
 
-    let mapcaption = document.querySelector('map-caption');
+    let mapcaption = this.querySelector('map-caption');
     
     if (mapcaption != null){
       setTimeout(() => {
@@ -290,7 +290,7 @@ export class WebMap extends HTMLMapElement {
   
         if (ariaupdate == mapcaption.innerHTML) {
           this.mapCaptionObserver = new MutationObserver((m) => {
-            let mapcaptionupdate = document.querySelector('map-caption');
+            let mapcaptionupdate = this.querySelector('map-caption');
             if (mapcaptionupdate != mapcaption)
             {
               this.removeAttribute('aria-label');

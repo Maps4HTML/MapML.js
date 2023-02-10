@@ -14,14 +14,14 @@ export class MapCaption extends HTMLElement {
     connectedCallback() {
 
         // calls MutationObserver; needed to observe changes to content between <map-caption> tags and update to aria-label
-        let mapcaption = document.querySelector('map-caption').innerHTML;
+        let mapcaption = this.parentElement.querySelector('map-caption').innerHTML;
 
         this.observer = new MutationObserver(() => {
-            let mapcaptionupdate = document.querySelector('map-caption').innerHTML;
+            let mapcaptionupdate = this.parentElement.querySelector('map-caption').innerHTML;
 
             if (mapcaptionupdate != mapcaption)
             {
-                this.parentElement.setAttribute('aria-label', document.querySelector('map-caption').textContent);
+                this.parentElement.setAttribute('aria-label', this.parentElement.querySelector('map-caption').textContent);
             }
         });
 
