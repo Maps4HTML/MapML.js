@@ -181,7 +181,7 @@ export var ContextMenu = L.Handler.extend({
       case 'MapML':
       default: 
         if (coord === 'pcrs') {
-          data = `<map-meta name="extent" content="top-left-easting=${tL.horizontal}, top-left-northing=${tL.vertical}, bottom-right-easting=${bR.horizontal}, bottom-right-northing=${bR.vertical}"></map-meta>`;
+          data = `<map-meta name="extent" content="top-left-easting=${Math.trunc(tL.horizontal)}, top-left-northing=${Math.trunc(tL.vertical)}, bottom-right-easting=${Math.trunc(bR.horizontal)}, bottom-right-northing=${Math.trunc(bR.vertical)}"></map-meta>`;
         } else if (coord === 'gcrs') {
           data = `<map-meta name="extent" content="top-left-longitude=${tL.horizontal}, top-left-latitude=${tL.vertical}, bottom-right-longitude=${bR.horizontal}, bottom-right-latitude=${bR.vertical}"></map-meta>`;
         } else if (coord === 'tcrs') {
@@ -312,7 +312,7 @@ export var ContextMenu = L.Handler.extend({
         point = mapEl._map.project(click.latlng),
         scale = mapEl._map.options.crs.scale(+mapEl.zoom),
         pcrs = mapEl._map.options.crs.transformation.untransform(point,scale);
-    this.contextMenu._copyData(`easting:${pcrs.x.toFixed(2)}, northing:${pcrs.y.toFixed(2)}`);
+    this.contextMenu._copyData(`easting:${Math.trunc(pcrs.x)}, northing:${Math.trunc(pcrs.y)}`);
   },
 
   _copyTile: function(e){
