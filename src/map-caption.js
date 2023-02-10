@@ -8,13 +8,6 @@ not being able to read out map-caption and stating that it's an interactive map 
 export class MapCaption extends HTMLElement {
     constructor() {
         super();
-        // calls MutationObserver; needed to observe changes to content between <map-caption> tags and update to aria-label
-        this.observer = new MutationObserver(() => {
-            if (document.querySelector('map-caption').innerHTML == this.parentElement.getAttribute('aria-label'))
-            {
-                this.parentElement.setAttribute('aria-label', this.textContent); 
-            }
-        });
     }
     // function to retrieve caption content 
     get ariaLabel() {
@@ -23,6 +16,19 @@ export class MapCaption extends HTMLElement {
 
     // called when element is inserted into DOM (setup code)
     connectedCallback() {
+
+        // calls MutationObserver; needed to observe changes to content between <map-caption> tags and update to aria-label
+        let mapcaption = document.querySelector('map-caption').innerHTML;
+
+        this.observer = new MutationObserver(() => {
+            let mapcaptionupdate = document.querySelector('map-caption').innerHTML;
+
+            if (mapcaptionupdate != mapcaption)
+            {
+                this.parentElement.setAttribute('aria-label', document.querySelector('map-caption').textContent);
+            }
+        });
+
         this.observer.observe(this, {
             characterData: true,
             subtree: true,

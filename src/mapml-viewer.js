@@ -241,29 +241,21 @@ export class MapViewer extends HTMLElement {
       2. only deletes aria-label if the aria-label was defined by the map caption element itself
     */
     
-    let mapcaptioncount = document.querySelectorAll('map-caption').length; 
-    let prevmapcaption = false;
-    let firstmapcaption = document.querySelector('map-caption').innerHTML;
+    let mapcaption = document.querySelector('map-caption');
 
-    if (mapcaptioncount === 1 && (this.getAttribute('aria-label') == firstmapcaption)) {
-      prevmapcaption = true;
-    }
-
-    this.mapCaptionObserver = new MutationObserver(() => {
-
-      mapcaptioncount = document.querySelectorAll('map-caption').length; 
-
-      if (prevmapcaption == true && mapcaptioncount === 0) {
+    this.mapCaptionObserver = new MutationObserver((m) => {
+      let mapcaptionupdate = document.querySelector('map-caption');
+      if (mapcaptionupdate != mapcaption)
+      {
         this.removeAttribute('aria-label');
       }
-
-      if (mapcaptioncount === 1 && (this.getAttribute('aria-label') == firstmapcaption)) {
-        prevmapcaption = true;
-      }
-
+      
     });
 
     this.mapCaptionObserver.observe(this, {
+      characterData: true,
+      subtree: true,
+      attributes: true,
       childList: true
     });
   }
