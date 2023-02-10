@@ -23,7 +23,8 @@ test.describe("Adding Width and Height Attribute to mapml-viewer", () => {
     expect(width_with_px).toEqual(width_attribute_value+"px");
   });
 
-  test("Window Size Change", async () => {
+  test("Map Property Dimension Match On Window Size Change", async () => {
+    await page.goto("windowSizeChange.html");
     //change initial viewport of the map
     await page.setViewportSize({ width: 300, height: 300 });
     //actual height and width value of the map
