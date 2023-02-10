@@ -2,7 +2,7 @@ import { FALLBACK_CS, FALLBACK_PROJECTION } from './Constants';
 
 export var Util = {
   // _convertAndFormatPCRS returns the converted CRS and formatted pcrsBounds in gcrs, pcrs, tcrs, and tilematrix. Used for setting extent for the map and layer (map.extent, layer.extent).
-  // _convertAndFormatPCRS: pcrsBounds, _map -> {...}
+  // _convertAndFormatPCRS: L.Bounds, _map -> {...}
   _convertAndFormatPCRS : function(pcrsBounds, map){
     if(!pcrsBounds || !map) return {};
 
@@ -268,7 +268,7 @@ export var Util = {
     }
   },
 
-  // pixelToPCRSPoint takes a L.point, the zoom and projection and returns a L.point in pcrs
+  // pixelToPCRSPoint takes a pixel L.point, the zoom and projection and returns a L.point in pcrs
   // pixelToPCRSPoint: L.Point, Int, L.CRS|Str -> L.point
   pixelToPCRSPoint: function(point, zoom, projection){
     if(!point || (!zoom && zoom !== 0) || !Number.isFinite(+zoom) || !projection) return undefined;

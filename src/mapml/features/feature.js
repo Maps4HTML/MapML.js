@@ -72,7 +72,7 @@ export var Feature = L.Path.extend({
         nextLayer = nextLayer.nextElementSibling;
       }
       if(onTop && dragStart) {
-        //M.handleLink gets called twice, once in the target phase on the path element, then in the bubble phase on the g element
+        //M._handleLink gets called twice, once in the target phase on the path element, then in the bubble phase on the g element
         //Using stopPropagation leaves the mouse in the mousedown state
         if(e.eventPhase === Event.BUBBLING_PHASE) return;
         let dist = Math.sqrt(Math.pow(dragStart.x - e.clientX, 2) + Math.pow(dragStart.y - e.clientY, 2));
