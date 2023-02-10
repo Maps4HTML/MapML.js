@@ -281,24 +281,31 @@ export class WebMap extends HTMLMapElement {
       1. only deletes aria-label when the last (only remaining) map caption is removed
       2. only deletes aria-label if the aria-label was defined by the map caption element itself
     */
-    
+
     let mapcaption = document.querySelector('map-caption');
     
-    this.mapCaptionObserver = new MutationObserver((m) => {
-      let mapcaptionupdate = document.querySelector('map-caption');
-      if (mapcaptionupdate != mapcaption)
-      {
-        this.removeAttribute('aria-label');
-      }
-      
-    });
-
-    this.mapCaptionObserver.observe(this, {
-      characterData: true,
-      subtree: true,
-      attributes: true,
-      childList: true
-    });
+    if (mapcaption != null){
+      setTimeout(() => {
+        let ariaupdate = this.getAttribute('aria-label');
+  
+        if (ariaupdate == mapcaption.innerHTML) {
+          this.mapCaptionObserver = new MutationObserver((m) => {
+            let mapcaptionupdate = document.querySelector('map-caption');
+            if (mapcaptionupdate != mapcaption)
+            {
+              this.removeAttribute('aria-label');
+            }
+            
+          });
+          this.mapCaptionObserver.observe(this, {
+            characterData: true,
+            subtree: true,
+            attributes: true,
+            childList: true
+          });
+        }
+      }, 0);
+    }
   }
   disconnectedCallback() {
     //this._removeEvents();

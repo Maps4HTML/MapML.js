@@ -9,10 +9,6 @@ export class MapCaption extends HTMLElement {
     constructor() {
         super();
     }
-    // function to retrieve caption content 
-    get ariaLabel() {
-        return this.textContent;
-    }
 
     // called when element is inserted into DOM (setup code)
     connectedCallback() {
