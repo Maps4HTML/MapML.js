@@ -10,18 +10,17 @@ export class MapCaption extends HTMLElement {
         super();
         // calls MutationObserver; needed to observe changes to content between <map-caption> tags and update to aria-label
         this.observer = new MutationObserver(() => {
-            this.parentElement.setAttribute('aria-label', this.textContent); 
+            if (document.querySelector('map-caption').innerHTML == this.parentElement.getAttribute('aria-label'))
+            {
+                this.parentElement.setAttribute('aria-label', this.textContent); 
+            }
         });
     }
     // function to retrieve caption content 
     get ariaLabel() {
         return this.textContent;
     }
-    // function to allow changing of caption content programmatically (changes both aria-label and map-caption content)
-    set ariaLabel (val) {
-        this.innerHTML = val;
-        this.parentElement.setAttribute('aria-label', val);
-    }
+
     // called when element is inserted into DOM (setup code)
     connectedCallback() {
         this.observer.observe(this, {
@@ -40,7 +39,5 @@ export class MapCaption extends HTMLElement {
     }
     disconnectedCallback() {
         this.observer.disconnect();
-
-        // add deleting function which allows it to delete latest map-caption tag, and don't allow delete if aria-label already existed
     }
 }

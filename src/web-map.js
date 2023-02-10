@@ -276,6 +276,37 @@ export class WebMap extends HTMLMapElement {
         this.dispatchEvent(new CustomEvent('createmap'));
       }
     }
+
+    /*
+      1. only deletes aria-label when the last (only remaining) map caption is removed
+      2. only deletes aria-label if the aria-label was defined by the map caption element itself
+    */
+    
+    let mapcaptioncount = document.querySelectorAll('map-caption').length; 
+    let prevmapcaption = false;
+    let firstmapcaption = document.querySelector('map-caption').innerHTML;
+
+    if (mapcaptioncount === 1 && (this.getAttribute('aria-label') == firstmapcaption)) {
+      prevmapcaption = true;
+    }
+
+    this.mapCaptionObserver = new MutationObserver(() => {
+
+      mapcaptioncount = document.querySelectorAll('map-caption').length; 
+
+      if (prevmapcaption == true && mapcaptioncount === 0) {
+        this.removeAttribute('aria-label');
+      }
+
+      if (mapcaptioncount === 1 && (this.getAttribute('aria-label') == firstmapcaption)) {
+        prevmapcaption = true;
+      }
+
+    });
+
+    this.mapCaptionObserver.observe(this, {
+      childList: true
+    });
   }
   disconnectedCallback() {
     //this._removeEvents();
