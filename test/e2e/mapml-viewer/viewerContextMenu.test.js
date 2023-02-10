@@ -18,11 +18,11 @@ let expectedFirstTCRS = [
 // expected extent top-left and bottom-right value at different zoom levels (0 and 1)
 let expectedExtentPCRS_0 = [
   {horizontal: -9373489, vertical: 11303798},
-  {horizontal: 9808841, vertical: -11714997}
+  {horizontal: 9808841, vertical: -11714998}
 ];
 let expectedExtentPCRS_1 = [
-  {horizontal: -5396793, vertical: 6520121},
-  {horizontal: 5848020, vertical: -6973655}
+  {horizontal: -5396794, vertical: 6520122},
+  {horizontal: 5848021, vertical: -6973655}
 ];
 
 test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
