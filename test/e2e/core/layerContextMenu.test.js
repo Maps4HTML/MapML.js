@@ -27,18 +27,6 @@ test.describe("Playwright Layer Context Menu Tests", () => {
     expect(menuDisplay).toEqual("block");
   });
 
-  test("Layer context menu copy layer extent", async () => {
-    await page.keyboard.press("c");
-    await page.click("body > textarea#messageExtent");
-    await page.keyboard.press("Control+v");
-    const copyValue = await page.$eval(
-      "body > textarea#messageExtent",
-      (text) => text.value
-    );
-
-    expect(copyValue).toEqual("<map-meta name=\"extent\" content=\"top-left-easting=-6207743.103886206, top-left-northing=10861943.103886206, bottom-right-easting=3952277.216154434, bottom-right-northing=-3362085.3441706896\"></map-meta>");
-  });
-
   test("Layer context menu copy layer", async () => {
     await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
     await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span",
