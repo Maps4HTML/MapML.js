@@ -600,7 +600,7 @@ export var ContextMenu = L.Handler.extend({
       } else {
         this._layerMenuTabs += 1;
       }
-      if(this._layerMenuTabs === 0 || this._layerMenuTabs === 4 || key === 27){
+      if(this._layerMenuTabs === 0 || this._layerMenuTabs === 3 || key === 27){
         L.DomEvent.stop(e);
         this._focusOnLayerControl();
       }

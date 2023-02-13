@@ -515,7 +515,6 @@ test.describe("Playwright Map Context Menu Tests", () => {
   test("Layer Context menu, Tabbing through the contextmenu takes you back to the checkbox element", async () => {
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
     const aHandle = await page.evaluateHandle(() => document.querySelector(".mapml-web-map"));
     const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
     const resultHandle = await page.evaluateHandle(root => root.activeElement, nextHandle);
@@ -523,5 +522,16 @@ test.describe("Playwright Map Context Menu Tests", () => {
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
     expect(name).toEqual("INPUT");
+  });
+  
+  test("Layer Context menu, Pressing enter on checkbox button toggles layer", async () => {
+    await page.keyboard.press("Enter");
+    const layerCheck = await page.$eval(
+      "body > map",
+      (map) => {
+        return map.layers[0].checked
+      }
+    );
+    expect(layerCheck).toEqual(false);
   });
 });
