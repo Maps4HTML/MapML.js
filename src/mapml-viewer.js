@@ -243,23 +243,18 @@ export class MapViewer extends HTMLElement {
     
     let mapcaption = this.querySelector('map-caption');
     
-    if (mapcaption != null){
+    if (mapcaption != null) {
       setTimeout(() => {
         let ariaupdate = this.getAttribute('aria-label');
   
-        if (ariaupdate == mapcaption.innerHTML) {
+        if (ariaupdate === mapcaption.innerHTML) {
           this.mapCaptionObserver = new MutationObserver((m) => {
             let mapcaptionupdate = this.querySelector('map-caption');
-            if (mapcaptionupdate != mapcaption)
-            {
+            if (mapcaptionupdate !== mapcaption) {
               this.removeAttribute('aria-label');
-            }
-            
+            }     
           });
           this.mapCaptionObserver.observe(this, {
-            characterData: true,
-            subtree: true,
-            attributes: true,
             childList: true
           });
         }
