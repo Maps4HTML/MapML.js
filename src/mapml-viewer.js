@@ -175,21 +175,7 @@ export class MapViewer extends HTMLElement {
         wpx = s.width, hpx=s.height,
         w = this.hasAttribute("width") ? this.getAttribute("width") : parseInt(wpx.replace('px','')),
         h = this.hasAttribute("height") ? this.getAttribute("height") : parseInt(hpx.replace('px',''));
-      // if (!this.width || this.width !== w) {
-      //   this._container.style.width = wpx;
-      // } else {
-      //   this._container.style.width = this.width+"px";
-      // }
-   
       this._changeWidth(w);
-       
-
-      // if (!this.height || this.height !== h) {
-      //   this._container.style.height = hpx;
-      // } else {
-      //   this._container.style.height = this.height+"px";
-      // }
-     
       this._changeHeight(h);
       
 
@@ -515,7 +501,6 @@ export class MapViewer extends HTMLElement {
   }
   
   _changeWidth(width) {
-    // this.style.width = width+"px";
     this._container.style.width = width+"px";
     this.shadowRoot.styleSheets[0].cssRules[0].style.width = width+"px";
     if (this._map) {
@@ -523,7 +508,6 @@ export class MapViewer extends HTMLElement {
     }
   }
   _changeHeight(height) {
-    // this.style.height = height+"px";
     this._container.style.height = height+"px";
     this.shadowRoot.styleSheets[0].cssRules[0].style.height = height+"px";
     if (this._map) {

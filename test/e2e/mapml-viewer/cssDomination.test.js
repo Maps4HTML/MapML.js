@@ -23,6 +23,8 @@ test.describe("Adding Width and Height Attribute to mapml-viewer", () => {
     expect(width_attribute_value).not.toEqual(map_width);
     expect(map_width).toEqual("300");
     expect(map_height).toEqual("300");
+    expect(height_attribute_value).toEqual("600");
+    expect(width_attribute_value).toEqual("600");
   });
 });
 

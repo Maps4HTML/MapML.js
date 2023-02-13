@@ -12,7 +12,18 @@ test.describe("Adding Width and Height Attribute to mapml-viewer", () => {
     await context.close();
   });
 
-  test("Setting Width and Height Attibute to mapml-viewer", async () => {
+  test("Setting New Width and Height Attributes to mapml-viewer", async () => {
+    //setting new height and width attribute values in the mapml-viewer tag
+    await page.$eval("body > mapml-viewer", (viewer) => viewer.setAttribute("width","700"));
+    await page.$eval("body > mapml-viewer", (viewer) => viewer.setAttribute("height","700"));
+    //actual height and width value of the map
+    let height_without_px = await page.$eval("body > mapml-viewer", (viewer) => viewer.height);
+    let width_without_px = await page.$eval("body > mapml-viewer", (viewer) => viewer.width);
+    expect(height_without_px).toEqual("700");
+    expect(width_without_px).toEqual("700");
+  });
+  
+  test("Testing Validity of Width and Height Attributes", async () => {
     //height and width attribute value in the mapml-viewer tag
     let height_attribute_value = await page.$eval("body > mapml-viewer",(viewer) => viewer.getAttribute("height"));
     let width_attribute_value = await page.$eval("body > mapml-viewer",(viewer) => viewer.getAttribute("width"));
