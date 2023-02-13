@@ -31,6 +31,20 @@ export class MapViewer extends HTMLElement {
     if (this.controlslist.includes(lowerVal) || !options.includes(lowerVal))return;
     this.setAttribute("controlslist", this.controlslist+` ${lowerVal}`);
   }
+  get width() {
+    return (window.getComputedStyle(this).width).replace('px','');
+  }
+  set width(val) {
+    //img.height or img.width setters change or add the corresponding attributes
+    this.setAttribute("width", val);
+  }
+  get height() {
+    return (window.getComputedStyle(this).height).replace('px','');
+  }
+  set height(val) {
+    //img.height or img.width setters change or add the corresponding attributes
+    this.setAttribute("height", val);
+  }
   get lat() {
     return this.hasAttribute("lat") ? this.getAttribute("lat") : "0";
   }
@@ -159,26 +173,11 @@ export class MapViewer extends HTMLElement {
       // have a defined width and height.
       var s = window.getComputedStyle(this),
         wpx = s.width, hpx=s.height,
-        w = parseInt(wpx.replace('px','')),
-        h = parseInt(hpx.replace('px',''));
-
-      if (wpx === "" || hpx === "") {
-         return;
-      }
-
-      if (!this.width || this.width !== w) {
-        this._container.style.width = wpx;
-        this.width = w;
-      } else {
-        this._container.style.width = this.width+"px";
-      }
-
-      if (!this.height || this.height !== h) {
-        this._container.style.height = hpx;
-        this.height = h;
-      } else {
-        this._container.style.height = this.height+"px";
-      }
+        w = this.hasAttribute("width") ? this.getAttribute("width") : parseInt(wpx.replace('px','')),
+        h = this.hasAttribute("height") ? this.getAttribute("height") : parseInt(hpx.replace('px',''));
+      this._changeWidth(w);
+      this._changeHeight(h);
+      
 
       // create an array to track the history of the map and the current index
       if(!this._history){
@@ -315,6 +314,18 @@ export class MapViewer extends HTMLElement {
       break;
     ...
   }     */
+    switch(name) {
+      case 'height': 
+        if (oldValue !== newValue) {
+          this._changeHeight(newValue);
+        }
+      break;  
+      case 'width': 
+      if (oldValue !== newValue) {
+        this._changeWidth(newValue);
+      }
+      break;  
+    }
   }
   _dropHandler(event) {
     event.preventDefault();
@@ -489,16 +500,16 @@ export class MapViewer extends HTMLElement {
     }
   }
   
-  _widthChanged(width) {
-    this.style.width = width+"px";
+  _changeWidth(width) {
     this._container.style.width = width+"px";
+    this.shadowRoot.styleSheets[0].cssRules[0].style.width = width+"px";
     if (this._map) {
         this._map.invalidateSize(false);
     }
   }
-  _heightChanged(height) {
-    this.style.height = height+"px";
+  _changeHeight(height) {
     this._container.style.height = height+"px";
+    this.shadowRoot.styleSheets[0].cssRules[0].style.height = height+"px";
     if (this._map) {
         this._map.invalidateSize(false);
     }
