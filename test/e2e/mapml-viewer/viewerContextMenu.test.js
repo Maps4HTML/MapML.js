@@ -466,7 +466,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
   });
 
   test("Layer Context menu, Pressing enter on checkbox button toggles layer", async () => {
-    await page.keyboard.press("Enter");
+    await page.keyboard.press("Space");
     const layerCheck = await page.$eval(
       "body > mapml-viewer",
       (map) => {
