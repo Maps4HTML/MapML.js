@@ -38,6 +38,10 @@ test.describe("Playwright mapml-viewer map-captions Test", () => {
       let arialabel = await page.evaluate(`document.querySelector('mapml-viewer').getAttribute('aria-label')`);
       expect(arialabel).toEqual(null); // since aria-label is removed, should = null
     });
+    test("Map Caption doesn't create aria-label on a layer", async () => {
+      let arialabel = await page.evaluate(`document.querySelector('layer-').getAttribute('aria-label')`);
+      expect(arialabel).toEqual(null);
+    });
 
 
 });

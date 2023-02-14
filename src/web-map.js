@@ -284,7 +284,7 @@ export class WebMap extends HTMLMapElement {
    
     let mapcaption = this.querySelector('map-caption');
   
-    if (mapcaption != null) {
+    if (mapcaption !== null) {
       setTimeout(() => {
         let ariaupdate = this.getAttribute('aria-label');
   

@@ -23,11 +23,15 @@
 
 <body>
 
-    <map is="web-map" style="width: 500px;height: 500px;" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344">
-        <map-caption>This is a test for web-map</map-caption>
-        <map-caption id="test2">Test2</map-caption>
-        <map-caption id="test3">Test3</map-caption>
-    </map>
+  <map is="web-map" style="width: 500px;height: 500px;" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344">
+    <map-caption>This is a test for web-map</map-caption>
+    <map-caption id="test2">Test2</map-caption>
+    <map-caption id="test3">Test3</map-caption>
+    
+    <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked>
+      <map-caption> Layer Test</map-caption>
+    </layer->
+  </map>
 
 </body>
 </html>
