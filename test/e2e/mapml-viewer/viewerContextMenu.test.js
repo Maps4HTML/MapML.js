@@ -15,11 +15,23 @@ let expectedFirstTCRS = [
   { horizontal: 659, vertical: 730 },
   { horizontal: 771.4482758620691, vertical: 753.8620689655173 }];
 
+// expected extent top-left and bottom-right value at different zoom levels (0 and 1)
+let expectedExtentPCRS_0 = [
+  {horizontal: -9373489, vertical: 11303798},
+  {horizontal: 9808841, vertical: -11714998}
+];
+let expectedExtentPCRS_1 = [
+  {horizontal: -5396794, vertical: 6520122},
+  {horizontal: 5848021, vertical: -6973655}
+];
+
 test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
   let page;
   let context;
+  let currExtCS, currLocCS;
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext('');
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
     page = await context.newPage();
     await page.goto("mapml-viewer.html");
@@ -38,7 +50,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Toggle Controls (T)");
+    expect(name).toEqual("Copy (C)");
   });
 
   test("Context menu tab goes to next item", async () => {
@@ -49,7 +61,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Copy Coordinates (C)");
+    expect(name).toEqual("Paste (P)");
   });
 
 
@@ -61,7 +73,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Toggle Controls (T)");
+    expect(name).toEqual("Copy (C)");
   });
 
   test("Submenu opens on C with focus on first item", async () => {
@@ -72,7 +84,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("tile");
+    expect(name).toEqual("Map");
   });
 
   test("Context menu displaying on map", async () => {
@@ -166,7 +178,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       );
 
       await page.click("body > mapml-viewer", { button: "right" });
-      await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
+      await page.click("div > div.mapml-contextmenu > button:nth-of-type(6)");
 
       const controlsOff = await page.$eval(
         "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
@@ -184,7 +196,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       );
 
       await page.click("body > mapml-viewer", { button: "right" });
-      await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
+      await page.click("div > div.mapml-contextmenu > button:nth-of-type(6)");
 
       const controlsOff = await page.$eval(
         "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
@@ -226,57 +238,127 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     });
   });
 
-  test("Submenu, copy all coordinate systems using tab + enter to access", async () => {
+  test("Submenu, copy map (MapML)", async () => {
+    await page.reload();
     await page.click("body > mapml-viewer");
     await page.keyboard.press("Shift+F10");
-    for (let i = 0; i < 3; i++)
-      await page.keyboard.press("Tab");
-
+    await page.keyboard.press("Enter");
     await page.keyboard.press("Enter");
 
-    await page.click("#mapml-copy-submenu > button:nth-child(10)");
-
-    await page.click("body > textarea");
+    await page.click("body > textarea#coord");
     await page.keyboard.press("Control+v");
     const copyValue = await page.$eval(
-      "body > textarea",
+      "body > textarea#coord",
       (text) => text.value
     );
-    let expected = "z:1\n";
-    expected += "tile: i:30, j:50\n";
-    expected += "tilematrix: column:6, row:6\n";
-    expected += "map: i:250, j:300\n";
-    expected += "tcrs: x:1566, y:1586\n";
-    expected += "pcrs: easting:562957.94, northing:3641449.50\n";
-    expected += "gcrs: lon :-62.729466, lat:80.881921";
-
+    const expected = `<mapml-viewer style="height: 600px;width:500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls="" role="application">
+    <layer- label="CBMT - INLINE" checked="">
+      <map-extent units="CBMTILE" hidden="">
+        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
+        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>
+        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>
+        <map-link rel="tile" tref="/data/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>
+      </map-extent>
+    </layer->
+  </mapml-viewer>`;
     expect(copyValue).toEqual(expected);
+    await page.locator("body > textarea#coord").fill('');
   });
 
-  test("Submenu, copy all coordinate systems", async () => {
+  test("Submenu, copy extent with zoom level = 0", async () => {
+    currExtCS = await page.$eval(
+      "body > mapml-viewer",
+      (map) => (map._map.contextMenu.defExtCS)
+    );
+    // set cs to pcrs for copying extent test
+    await page.$eval(
+      "body > mapml-viewer",
+      (map) => {map._map.contextMenu.defExtCS = 'pcrs';}
+    );
     await page.click("body > mapml-viewer");
     await page.keyboard.press("Shift+F10");
-    await page.keyboard.press("c");
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
 
-    await page.click("#mapml-copy-submenu > button:nth-child(10)");
-
-    await page.click("body > textarea");
-    await page.keyboard.press("Control+a");
-    await page.keyboard.press("Backspace");
+    await page.click("body > textarea#coord");
     await page.keyboard.press("Control+v");
     const copyValue = await page.$eval(
-      "body > textarea",
+      "body > textarea#coord",
       (text) => text.value
     );
-    let expected = "z:1\n";
-    expected += "tile: i:30, j:50\n";
-    expected += "tilematrix: column:6, row:6\n";
-    expected += "map: i:250, j:300\n";
-    expected += "tcrs: x:1566, y:1586\n";
-    expected += "pcrs: easting:562957.94, northing:3641449.50\n";
-    expected += "gcrs: lon :-62.729466, lat:80.881921";
-
+    const expected = `<map-meta name="extent" content="top-left-easting=${expectedExtentPCRS_0[0].horizontal}, top-left-northing=${expectedExtentPCRS_0[0].vertical}, bottom-right-easting=${expectedExtentPCRS_0[1].horizontal}, bottom-right-northing=${expectedExtentPCRS_0[1].vertical}"></map-meta>`;
     expect(copyValue).toEqual(expected);
+    await page.locator("body > textarea#coord").fill('');
+  });
+
+  test("Submenu, copy extent with zoom level = 1", async () => {
+    // zoom in
+    await page.click("body > mapml-viewer");
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(1000);
+
+    await page.click("body > mapml-viewer");
+    await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+
+    await page.click("body > textarea#coord");
+    await page.keyboard.press("Control+v");
+    const copyValue = await page.$eval(
+      "body > textarea#coord",
+      (text) => text.value
+    );
+    const expected = `<map-meta name="extent" content="top-left-easting=${expectedExtentPCRS_1[0].horizontal}, top-left-northing=${expectedExtentPCRS_1[0].vertical}, bottom-right-easting=${expectedExtentPCRS_1[1].horizontal}, bottom-right-northing=${expectedExtentPCRS_1[1].vertical}"></map-meta>`;
+    expect(copyValue).toEqual(expected);
+    await page.locator("body > textarea#coord").fill('');
+    await page.$eval(
+      "body > mapml-viewer",
+      (map, currExtCS) => {
+        map._map.contextMenu.defExtCS = currExtCS;
+      }, 
+      currExtCS
+    );
+  });
+
+  test("Submenu, copy location", async () => {
+    currLocCS = await page.$eval(
+      "body > mapml-viewer",
+      (map) => (map._map.contextMenu.defLocCS)
+    )
+    // set cs to pcrs for copying location test
+    await page.$eval(
+      "body > mapml-viewer",
+      (map) => {map._map.contextMenu.defLocCS = 'gcrs';}
+    );
+    await page.click("body > mapml-viewer");
+    await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+    await page.click("body > textarea#coord");
+    await page.keyboard.press("Control+v");
+    const copyValue = await page.$eval(
+      "body > textarea#coord",
+      (text) => text.value
+    );
+    const expected = "lon :-92.062002, lat:46.922393";
+    expect(copyValue).toEqual(expected);
+    await page.locator("body > textarea#coord").fill('');
+    await page.$eval(
+      "body > mapml-viewer",
+      (map, currLocCS) => {
+        map._map.contextMenu.defLocCS = currLocCS;
+      }, 
+      currLocCS
+    );
   });
 
   test("Context menu, All buttons enabled when fwd and back history present", async () => {
@@ -310,5 +392,38 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     expect(backBtn).toEqual(false);
     expect(fwdBtn).toEqual(false);
     expect(reloadBtn).toEqual(false);
+  });
+
+  test("Context menu, click at margin and move mouse out when submenu is visible", async () => {
+    // click at the right-bottom margin of map
+    await page.mouse.wheel(0, 200);
+    await page.waitForTimeout(200);
+    await page.click("body > mapml-viewer", {
+      button: 'right',
+      position: {x: 495, y: 580}
+    });
+    const contextMenu = await page.locator('div > div.mapml-contextmenu').first();
+    expect(await contextMenu.isVisible()).toBeTruthy();
+    const mapSize = await page.$eval(
+      "body > mapml-viewer",
+      (map) => { return {x: map.width, y: map.height} }
+    );
+    const contextMenuSize = await page.$eval(
+      "div > div.mapml-contextmenu",
+      (menu) => {
+        return {
+          x: menu.offsetWidth + menu.getBoundingClientRect().left,
+          y: menu.offsetHeight + menu.getBoundingClientRect().top
+        }
+      }
+    );
+    expect(contextMenuSize.x <= mapSize.x && contextMenuSize.y <= mapSize.y).toBeTruthy();
+
+    // move the mouse from "copy" to another button in the main contextmenu
+    await page.hover("div > div.mapml-contextmenu > button:nth-of-type(4)");
+    const submenu = await page.locator('div > div#mapml-copy-submenu').first();
+    expect(await submenu.isVisible()).toBeTruthy();
+    await page.hover("div > div.mapml-contextmenu > button:nth-of-type(5)");
+    expect(await submenu.isHidden()).toBeTruthy();
   });
 });

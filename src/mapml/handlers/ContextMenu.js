@@ -6,6 +6,8 @@ to deal in the Software without restriction, including without limitation the ri
 and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
+/* global M */
+
 export var ContextMenu = L.Handler.extend({
   _touchstart: L.Browser.msPointer ? 'MSPointerDown' : L.Browser.pointer ? 'pointerdown' : 'touchstart',
 
@@ -16,22 +18,18 @@ export var ContextMenu = L.Handler.extend({
     this._items = [
       {
         text: M.options.locale.cmBack + " (<kbd>B</kbd>)",
-        callback:this._goBack,
+        callback:this._goBack
       },
       {
         text: M.options.locale.cmForward + " (<kbd>F</kbd>)",
-        callback:this._goForward,
+        callback:this._goForward
       },
       {
         text: M.options.locale.cmReload + " (<kbd>R</kbd>)",
-        callback:this._reload,
+        callback:this._reload
       },
       {
-        spacer:"-",
-      },
-      {
-        text: M.options.locale.cmToggleControls + " (<kbd>T</kbd>)",
-        callback:this._toggleControls,
+        spacer:"-"
       },
       {
         text: M.options.locale.cmCopyCoords + " (<kbd>C</kbd>)<span></span>",
@@ -40,75 +38,52 @@ export var ContextMenu = L.Handler.extend({
         popup:true,
         submenu:[
           {
-            text:"tile",
-            callback:this._copyTile,
+            text: M.options.locale.cmCopyMapML,
+            callback:this._copyMapML
           },
           {
-            text:"tilematrix",
-            callback:this._copyTileMatrix,
+            text: M.options.locale.cmCopyExtent,
+            callback:this._copyExtent
           },
           {
-            spacer:"-",
-          },
-          {
-            text:"map",
-            callback:this._copyMap,
-          },
-          {
-            spacer:"-",
-          },
-          {
-            text:"tcrs",
-            callback:this._copyTCRS,
-          },
-          {
-            text:"pcrs",
-            callback:this._copyPCRS,
-          },
-          {
-            text:"gcrs",
-            callback:this._copyGCRS,
-          },
-          {
-            spacer:"-",
-          },
-          {
-            text: M.options.locale.cmCopyAll,
-            callback:this._copyAllCoords,
+            text: M.options.locale.cmCopyLocation,
+            callback:this._copyLocation
           }
         ]
       },
       {
-        text: M.options.locale.cmToggleDebug + " (<kbd>D</kbd>)",
-        callback:this._toggleDebug,
-      },
-      {
-        text: M.options.locale.cmCopyMapML + " (<kbd>M</kbd>)",
-        callback:this._copyMapML,
-      },
-      {
         text: M.options.locale.cmPasteLayer + " (<kbd>P</kbd>)",
-        callback:this._paste,
+        callback:this._paste
+      },
+      {
+        spacer:"-"
+      },
+      {
+        text: M.options.locale.cmToggleControls + " (<kbd>T</kbd>)",
+        callback:this._toggleControls
+      },      {
+        text: M.options.locale.cmToggleDebug + " (<kbd>D</kbd>)",
+        callback:this._toggleDebug
       },
       {
         text: M.options.locale.cmViewSource + " (<kbd>V</kbd>)",
-        callback:this._viewSource,
-      },
+        callback:this._viewSource
+      }
     ];
 
+    // setting the default cs for copying location and extent
+    // should be public as they are used in tests
+    this.defExtCS = M.options.defaultExtCoor;
+    this.defLocCS = M.options.defaultLocCoor;
     this._layerItems = [
       {
         text: M.options.locale.lmZoomToLayer + " (<kbd>Z</kbd>)",
         callback:this._zoomToLayer
       },
       {
-        text: M.options.locale.lmCopyExtent + " (<kbd>C</kbd>)",
-        callback:this._copyLayerExtent
-      },
-      {
         text: M.options.locale.lmCopyLayer + " (<kbd>L</kbd>)",
         callback:this._copyLayer
-      },
+      }
     ];
     this._mapMenuVisible = false;
     this._keyboardEvent = false;
@@ -116,7 +91,7 @@ export var ContextMenu = L.Handler.extend({
     this._container = L.DomUtil.create("div", "mapml-contextmenu", map._container);
     this._container.setAttribute('hidden', '');
     
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 5; i++) {
       this._items[i].el = this._createItem(this._container, this._items[i]);
     }
     
@@ -126,10 +101,11 @@ export var ContextMenu = L.Handler.extend({
     
     this._clickEvent = null;
     
-    for(let i =0;i<this._items[5].submenu.length;i++){
-      this._createItem(this._coordMenu,this._items[5].submenu[i],i);
+    for(let i =0;i<this._items[4].submenu.length;i++){
+      this._createItem(this._coordMenu,this._items[4].submenu[i],i);
     }
     
+    this._items[5].el = this._createItem(this._container, this._items[5]);
     this._items[6].el = this._createItem(this._container, this._items[6]);
     this._items[7].el = this._createItem(this._container, this._items[7]);
     this._items[8].el = this._createItem(this._container, this._items[8]);
@@ -188,13 +164,35 @@ export var ContextMenu = L.Handler.extend({
     }, this);
   },
 
-  _copyLayerExtent: function (e) {
-    let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
-        layerElem = context._layerClicked.layer._layerEl,
-        tL = layerElem.extent.topLeft.pcrs,
-        bR = layerElem.extent.bottomRight.pcrs;
+  _updateCS: function () {
+    if (this.defExtCS !== M.options.defaultExtCoor || this.defLocCS !== M.options.defaultLocCoor) {
+      this.defExtCS = M.options.defaultExtCoor;
+      this.defLocCS = M.options.defaultLocCoor;
+    }
+  },
 
-    let data = `<map-meta name="extent" content="top-left-easting=${tL.horizontal}, top-left-northing=${tL.vertical}, bottom-right-easting=${bR.horizontal}, bottom-right-northing=${bR.vertical}"></map-meta>`;
+  _copyExtent: function (e) {
+    let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
+        coord = context.defExtCS? context.defExtCS.toLowerCase() : 'pcrs',
+        tL = e instanceof KeyboardEvent? this.extent.topLeft[coord] : this.options.mapEl.extent.topLeft[coord],
+        bR = e instanceof KeyboardEvent? this.extent.bottomRight[coord] : this.options.mapEl.extent.bottomRight[coord],
+        data = "";
+    switch(coord) {
+      case 'MapML':
+      default: 
+        if (coord === 'pcrs') {
+          data = `<map-meta name="extent" content="top-left-easting=${Math.round(tL.horizontal)}, top-left-northing=${Math.round(tL.vertical)}, bottom-right-easting=${Math.round(bR.horizontal)}, bottom-right-northing=${Math.round(bR.vertical)}"></map-meta>`;
+        } else if (coord === 'gcrs') {
+          data = `<map-meta name="extent" content="top-left-longitude=${tL.horizontal}, top-left-latitude=${tL.vertical}, bottom-right-longitude=${bR.horizontal}, bottom-right-latitude=${bR.vertical}"></map-meta>`;
+        } else if (coord === 'tcrs') {
+          data = `<map-meta name="extent" content="top-left-x=${tL[0].horizontal}, top-left-y=${tL[0].vertical}, bottom-right-x=${bR[bR.length - 1].horizontal}, bottom-right-y=${bR[bR.length - 1].vertical}"></map-meta>`;
+        } else if (coord === 'tilematrix') {          
+          data = `<map-meta name="extent" content="top-left-column=${tL[0].horizontal}, top-left-row=${tL[0].vertical}, bottom-right-column=${bR[bR.length - 1].horizontal}, bottom-right-row=${bR[bR.length - 1].vertical}"></map-meta>`;
+        } else {
+          console.log('not support');
+        }
+        break;
+    }
     context._copyData(data);
   },
 
@@ -272,10 +270,25 @@ export var ContextMenu = L.Handler.extend({
     document.body.removeChild(el);
   },
 
+  _copyLocation: function(e){
+    const menu = this.contextMenu;
+    switch(menu.defLocCS.toLowerCase()) {
+      case 'tile': menu._copyTile.call(this, e); break;
+      case 'tilematrix': menu._copyTileMatrix.call(this, e); break;
+      case 'map': menu._copyMap.call(this, e); break;
+      case 'tcrs': menu._copyTCRS.call(this, e); break;
+      case 'pcrs': menu._copyPCRS.call(this, e); break;
+      case 'gcrs': 
+      default: 
+        menu._copyGCRS.call(this, e);
+        break;
+    }
+  },
+
   _copyGCRS: function(e){
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent;
-    this.contextMenu._copyData(`z:${mapEl.zoom}, lon :${click.latlng.lng.toFixed(6)}, lat:${click.latlng.lat.toFixed(6)}`);
+    this.contextMenu._copyData(`lon :${click.latlng.lng.toFixed(6)}, lat:${click.latlng.lat.toFixed(6)}`);
   },
 
   _copyTCRS: function(e){
@@ -299,7 +312,7 @@ export var ContextMenu = L.Handler.extend({
         point = mapEl._map.project(click.latlng),
         scale = mapEl._map.options.crs.scale(+mapEl.zoom),
         pcrs = mapEl._map.options.crs.transformation.untransform(point,scale);
-    this.contextMenu._copyData(`z:${mapEl.zoom}, easting:${pcrs.x.toFixed(2)}, northing:${pcrs.y.toFixed(2)}`);
+    this.contextMenu._copyData(`easting:${Math.round(pcrs.x)}, northing:${Math.round(pcrs.y)}`);
   },
 
   _copyTile: function(e){
@@ -446,21 +459,25 @@ export var ContextMenu = L.Handler.extend({
     let elem = e.originalEvent.target;
     if(elem.closest("fieldset")){
       elem = elem.closest("fieldset");
-      elem = (elem.className === "mapml-layer-extent") ? elem.closest("fieldset").parentNode.parentNode.parentNode.querySelector("span") : elem.querySelector("span");
+      elem = (elem.className === "mapml-layer-extent") ? 
+              elem.closest("fieldset").parentNode.parentNode.parentNode.querySelector("span") : 
+              elem.querySelector("span");
       if(!elem.layer.validProjection) return;
       this._layerClicked = elem;
       this._layerMenu.removeAttribute('hidden');
       this._showAtPoint(e.containerPoint, e, this._layerMenu);
     } else if(elem.classList.contains("leaflet-container") || elem.classList.contains("mapml-debug-extent") ||
     elem.tagName === "path") {
-      this._layerClicked = undefined;
+      let layerList = this._map.options.mapEl.layers;
+      this._layerClicked = Array.from(layerList).find(el => el.checked);
       // the 'hidden' attribute must be removed before any attempt to get the size of container
       this._container.removeAttribute('hidden');
       this._showAtPoint(e.containerPoint, e, this._container);
+      this._updateCS();
     }
     if(e.originalEvent.button === 0 || e.originalEvent.button === -1){
       this._keyboardEvent = true;
-      if(this._layerClicked){
+      if(this._layerClicked.className.includes('mapml-layer-item')){
         let activeEl = document.activeElement;
         this._elementInFocus = activeEl.shadowRoot.activeElement;
         this._layerMenuTabs = 1;
@@ -586,8 +603,10 @@ export var ContextMenu = L.Handler.extend({
       if(this._layerMenuTabs === 0 || this._layerMenuTabs === 4 || key === 27){
         L.DomEvent.stop(e);
         this._focusOnLayerControl();
-      } 
-    } else if(key !== 16 && key!== 9 && !(!this._layerClicked && key === 67) && path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)")){
+      }
+    } else if(key !== 16 && key!== 9 && 
+              !(!(this._layerClicked.className.includes('mapml-layer-item')) && key === 67) && 
+              (path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)") || key === 27)){
       this._hide();
     }
     switch(key){
@@ -600,13 +619,9 @@ export var ContextMenu = L.Handler.extend({
         this._goBack(e);
         break;
       case 67: //C KEY
-        if(this._layerClicked){
-          this._copyLayerExtent(e);
-        } else {
-          this._copyCoords({
-            latlng:this._map.getCenter()
-          });
-        }
+        this._copyCoords({
+          latlng:this._map.getCenter()
+        });
         break;
       case 68: //D KEY
         this._toggleDebug(e);
@@ -618,7 +633,7 @@ export var ContextMenu = L.Handler.extend({
         this._goForward(e);
         break;
       case 76: //L KEY
-        if(this._layerClicked)
+        if(this._layerClicked.className.includes('mapml-layer-item'))
           this._copyLayer(e);
         break;
       case 80: //P KEY
@@ -634,7 +649,7 @@ export var ContextMenu = L.Handler.extend({
         this._viewSource(e);
         break;
       case 90: //Z KEY
-        if(this._layerClicked)
+        if(this._layerClicked.className.includes('mapml-layer-item'))
           this._zoomToLayer(e);
         break;
     }
@@ -660,16 +675,8 @@ export var ContextMenu = L.Handler.extend({
       menu.style.right = 'auto';
     }
 
-    // height difference between the main contextmenu and submenu
-    const heightDiff = 73;
-    if (click.containerPoint.y + menuHeight + heightDiff > mapSize.y) {
-      menu.style.top = 'auto';
-      // to make submenu show completely when clicking at the bottom of the map
-      menu.style.bottom = 32 + 'px';
-    } else {
-      menu.style.top = 100 + 'px';
-      menu.style.bottom = 'auto';
-    }
+    menu.style.top = 100 - 22 + 'px';
+    menu.style.bottom = 'auto';
     if(this._keyboardEvent)menu.firstChild.focus();
   },
 
@@ -677,7 +684,7 @@ export var ContextMenu = L.Handler.extend({
     if(!e.relatedTarget || !e.relatedTarget.parentElement || 
         e.relatedTarget.parentElement.classList.contains("mapml-submenu") ||
         e.relatedTarget.classList.contains("mapml-submenu"))return;
-    let menu = this._coordMenu, copyEl = this._items[5].el.el;
+    let menu = this._coordMenu, copyEl = this._items[4].el.el;
     copyEl.setAttribute("aria-expanded","false");
     menu.setAttribute('hidden', '');
   },
