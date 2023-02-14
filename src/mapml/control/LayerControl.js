@@ -114,11 +114,19 @@ export var LayerControl = L.Control.Layers.extend({
       }
     },
 
-    // toggle layer when enter or spacebar is pressed
+    // toggle layer when spacebar is pressed
     _toggleLayer: function(e) {
-      if(e.code === 'Enter' || e.code === 'Space'){
+      if(e.code === 'Space'){
         let elem = document.activeElement.shadowRoot.activeElement;
         if (elem.nodeName === "INPUT") {
+          // the commented code does not toggle the layer, but only toggles the checkbox
+          //if (elem.checked === true) {
+          //  elem.checked = false;
+          //} else {
+          //  elem.checked = true;
+          //}
+          
+          // using the code below as a temp. fix
           elem.click();
         }
       }
