@@ -10,7 +10,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     initialize: function(template, options) {
       // _setUpTileTemplateVars needs options.crs, not available unless we set
       // options first...
-      let inputData = M.extractInputBounds(template);
+      let inputData = M._extractInputBounds(template);
       this.zoomBounds = inputData.zoomBounds;
       this.extentBounds=inputData.bounds;
       this.isVisible = true;
@@ -121,7 +121,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
         let base = markup.querySelector('map-base') && markup.querySelector('map-base').hasAttribute('href') ?
           new URL(markup.querySelector('map-base').getAttribute('href')).href :
           markup.URL;
-        M.parseStylesheetAsHTML(markup,base,tile);
+        M._parseStylesheetAsHTML(markup,base,tile);
       }
 
       let svg = L.SVG.create('svg'), g = L.SVG.create('g'), tileSize = this._map.options.crs.options.crs.tile.bounds.max.x,

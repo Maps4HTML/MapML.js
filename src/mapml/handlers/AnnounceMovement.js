@@ -27,7 +27,7 @@ export var AnnounceMovement = L.Handler.extend({
                  mapEl.shadowRoot.querySelector(".leaflet-container");
 
              let mapZoom = mapEl._map.getZoom();
-             let location = M.gcrsToTileMatrix(mapEl);
+             let location = M._gcrsToTileMatrix(mapEl);
              let standard = M.options.locale.amZoom + " " + mapZoom + " " + M.options.locale.amColumn + " " + location[0] + " " + M.options.locale.amRow + " " + location[1];
 
              if(mapZoom === mapEl._map._layersMaxZoom){
@@ -61,7 +61,7 @@ export var AnnounceMovement = L.Handler.extend({
             this.shadowRoot.querySelector(".mapml-screen-reader-output");
 
         //GCRS to TileMatrix
-        let location = M.gcrsToTileMatrix(this);
+        let location = M._gcrsToTileMatrix(this);
         let standard = M.options.locale.amZoom + " " + mapZoom + " " + M.options.locale.amColumn + " " + location[0] + " " + M.options.locale.amRow + " " + location[1];
 
         if(!visible){
