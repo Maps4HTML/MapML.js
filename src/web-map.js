@@ -2,6 +2,7 @@ import './leaflet.js';  // a lightly modified version of Leaflet for use as brow
 import './mapml.js';       // refactored URI usage, replaced with URL standard
 import { MapLayer } from './layer.js';
 import { MapArea } from './map-area.js';
+import { MapCaption } from './map-caption.js';
 
 export class WebMap extends HTMLMapElement {
   static get observedAttributes() {
@@ -272,6 +273,31 @@ export class WebMap extends HTMLMapElement {
       // if the page doesn't use nav.js or isn't custom then dispatch createmap event	
       if(!custom){	
         this.dispatchEvent(new CustomEvent('createmap'));
+      }
+
+      /*
+        1. only deletes aria-label when the last (only remaining) map caption is removed
+        2. only deletes aria-label if the aria-label was defined by the map caption element itself
+      */
+      
+      let mapcaption = this.querySelector('map-caption');
+      
+      if (mapcaption !== null) {
+        setTimeout(() => {
+          let ariaupdate = this.getAttribute('aria-label');
+        
+          if (ariaupdate === mapcaption.innerHTML) {
+            this.mapCaptionObserver = new MutationObserver((m) => {
+              let mapcaptionupdate = this.querySelector('map-caption');
+              if (mapcaptionupdate !== mapcaption) {
+                this.removeAttribute('aria-label');
+              }     
+            });
+            this.mapCaptionObserver.observe(this, {
+              childList: true
+            });
+          }
+        }, 0);
       }
     }
   }
@@ -855,3 +881,4 @@ export class WebMap extends HTMLMapElement {
 window.customElements.define('web-map', WebMap,  { extends: 'map' });
 window.customElements.define('layer-', MapLayer);
 window.customElements.define('map-area', MapArea, {extends: 'area'});
+window.customElements.define('map-caption',MapCaption);
