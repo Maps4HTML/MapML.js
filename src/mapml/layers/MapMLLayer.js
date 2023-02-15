@@ -886,7 +886,8 @@ export var MapMLLayer = L.Layer.extend({
           }
             
           for (var i=0;i< tlist.length;i++) {
-            var t = tlist[i], template = t.getAttribute('tref'); 
+            var t = tlist[i], template = t.getAttribute('tref');
+            t.zoomInput = zoomInput;
             if(!template){
               template = BLANK_TT_TREF;
               let blankInputs = mapml.querySelectorAll('map-input');
@@ -909,9 +910,9 @@ export var MapMLLayer = L.Layer.extend({
               var varName = v[1],
                   inp = serverExtent.querySelector('map-input[name='+varName+'],map-select[name='+varName+']');
               if (inp) {
-
+                
                 if ((inp.hasAttribute("type") && inp.getAttribute("type")==="location") && 
-                    (!inp.hasAttribute("min" || !inp.hasAttribute("max"))) && 
+                    (!inp.hasAttribute("min") || !inp.hasAttribute("max")) && 
                     (inp.hasAttribute("axis") && !["i","j"].includes(inp.getAttribute("axis").toLowerCase()))){
                   zoomInput.setAttribute("value", extentFallback.zoom);
                   

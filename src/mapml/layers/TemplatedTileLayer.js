@@ -153,10 +153,15 @@ export var TemplatedTileLayer = L.TileLayer.extend({
                 !this._template.tilematrix.bounds[coords.z].contains(coords)) {
           return '';
         }
-        var obj = {};
+        var obj = {},
+            linkEl = this._template.linkEl,
+            zoomInput = linkEl.zoomInput;
         obj[this._template.tilematrix.col.name] = coords.x;
         obj[this._template.tilematrix.row.name] = coords.y;
-        obj[this._template.zoom.name] = this._getZoomForUrl();
+        if (zoomInput && (linkEl.hasAttribute('tref') && 
+            linkEl.getAttribute('tref').includes(`{${zoomInput.getAttribute('name')}}`))) {
+          obj[this._template.zoom.name] = this._getZoomForUrl();
+        }
         obj[this._template.pcrs.easting.left] = this._tileMatrixToPCRSPosition(coords, 'top-left').x;
         obj[this._template.pcrs.easting.right] = this._tileMatrixToPCRSPosition(coords, 'top-right').x;
         obj[this._template.pcrs.northing.top] = this._tileMatrixToPCRSPosition(coords, 'top-left').y;
