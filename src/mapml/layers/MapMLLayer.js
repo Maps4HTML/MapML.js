@@ -914,8 +914,9 @@ export var MapMLLayer = L.Layer.extend({
                 if ((inp.hasAttribute("type") && inp.getAttribute("type")==="location") && 
                     (!inp.hasAttribute("min") || !inp.hasAttribute("max")) && 
                     (inp.hasAttribute("axis") && !["i","j"].includes(inp.getAttribute("axis").toLowerCase()))){
-                  zoomInput.setAttribute("value", extentFallback.zoom);
-                  
+                  if (zoomInput && template.includes(`{${zoomInput.getAttribute('name')}}`)) {
+                    zoomInput.setAttribute("value", extentFallback.zoom);
+                  }
                   let axis = inp.getAttribute("axis"), 
                       axisBounds = M.convertPCRSBounds(extentFallback.bounds, extentFallback.zoom, projection, M.axisToCS(axis));
                   inp.setAttribute("min", axisBounds.min[M.axisToXY(axis)]);
