@@ -244,7 +244,7 @@ export class MapViewer extends HTMLElement {
         this.dispatchEvent(new CustomEvent('createmap'));
       }
 
-      if(this._map&&this.hasAttribute('static')){
+      if (this._map && this.hasAttribute('static')) {
         this._toggleStatic();
       }
 

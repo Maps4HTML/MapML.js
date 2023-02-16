@@ -285,7 +285,7 @@ export class WebMap extends HTMLMapElement {
         this.dispatchEvent(new CustomEvent('createmap'));
       }
       
-      if(this._map&&this.hasAttribute('static')){
+      if (this._map && this.hasAttribute('static')) {
         this._toggleStatic();
       }
 
