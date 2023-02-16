@@ -244,7 +244,7 @@ export class MapViewer extends HTMLElement {
         this.dispatchEvent(new CustomEvent('createmap'));
       }
       if(this._map&&this.hasAttribute('static')){
-        this.setAttribute('static', '');
+        this._toggleStatic();
       }
 
       /*
@@ -368,25 +368,31 @@ export class MapViewer extends HTMLElement {
       const isStatic = this.hasAttribute('static');
       if (this._map) {
         if (isStatic) {
-          this._map.dragging.disable();
-          this._map.touchZoom.disable();
-          this._map.doubleClickZoom.disable();
-          this._map.scrollWheelZoom.disable();
-          this._map.boxZoom.disable();
-          this._map.keyboard.disable();
-          this._zoomControl.disable();
+          this._toggleStatic();
         } else {
-          this._map.dragging.enable();
-          this._map.touchZoom.enable();
-          this._map.doubleClickZoom.enable();
-          this._map.scrollWheelZoom.enable();
-          this._map.boxZoom.enable();
-          this._map.keyboard.enable();
-          this._zoomControl.enable();
+          this._toggleNonStatic();
         }
       }
       break;   
     }
+  }
+  _toggleStatic(){
+    this._map.dragging.disable();
+    this._map.touchZoom.disable();
+    this._map.doubleClickZoom.disable();
+    this._map.scrollWheelZoom.disable();
+    this._map.boxZoom.disable();
+    this._map.keyboard.disable();
+    this._zoomControl.disable();
+  }
+  _toggleNonStatic(){
+    this._map.dragging.enable();
+    this._map.touchZoom.enable();
+    this._map.doubleClickZoom.enable();
+    this._map.scrollWheelZoom.enable();
+    this._map.boxZoom.enable();
+    this._map.keyboard.enable();
+    this._zoomControl.enable();
   }
   _dropHandler(event) {
     event.preventDefault();
