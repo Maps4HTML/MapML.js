@@ -121,10 +121,10 @@ export class MapViewer extends HTMLElement {
       
       let shadowRoot = this.attachShadow({mode: 'open'});
       this._container = document.createElement('div');
-      
+
       let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
       this._container.insertAdjacentHTML("beforeend", output);
-      
+
       // Set default styles for the map element.
       let mapDefaultCSS = document.createElement('style');
       mapDefaultCSS.innerHTML =
@@ -153,13 +153,13 @@ export class MapViewer extends HTMLElement {
       `mapml-viewer > * {` +
       `display: none!important;` +
       `}`;
-      
+
       shadowRoot.appendChild(mapDefaultCSS);
       shadowRoot.appendChild(tmpl.content.cloneNode(true));
       shadowRoot.appendChild(this._container);
-      
+
       this.appendChild(hideElementsCSS);
-      
+
       this._toggleState = false;
       this.controlsListObserver = new MutationObserver((m) => {
         m.forEach((change)=>{
@@ -259,7 +259,7 @@ export class MapViewer extends HTMLElement {
         }
       }
 
-      if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl && this.layers.length > 0){
+      if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl){
         this._layerControl = M.layerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
         //if this is the initial setup the layers dont need to be readded, causes issues if they are
         if(!setup){

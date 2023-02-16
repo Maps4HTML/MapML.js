@@ -123,16 +123,16 @@ export class WebMap extends HTMLMapElement {
 
       let tmpl = document.createElement('template');
       tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
-      
+
       const rootDiv = document.createElement('div');
       rootDiv.classList.add('mapml-web-map');
-      
+
       let shadowRoot = rootDiv.attachShadow({mode: 'open'});
       this._container = document.createElement('div');
-      
+
       let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
       this._container.insertAdjacentHTML("beforeend", output);
-      
+
       // Set default styles for the map element.
       let mapDefaultCSS = document.createElement('style');
       mapDefaultCSS.innerHTML =
@@ -299,7 +299,7 @@ export class WebMap extends HTMLMapElement {
         }
       }
 
-      if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl && this.layers.length > 0){
+      if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl){
         this._layerControl = M.layerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
         //if this is the initial setup the layers dont need to be readded, causes issues if they are
         if(!setup){
