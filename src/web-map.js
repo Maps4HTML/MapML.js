@@ -115,75 +115,75 @@ export class WebMap extends HTMLMapElement {
   constructor() {
     // Always call super first in constructor
     super();
-
     this._source = this.outerHTML;
-    let tmpl = document.createElement('template');
-    tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
-
-    const rootDiv = document.createElement('div');
-    rootDiv.classList.add('mapml-web-map');
-
-    let shadowRoot = rootDiv.attachShadow({mode: 'open'});
-    this._container = document.createElement('div');
-
-    let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
-    this._container.insertAdjacentHTML("beforeend", output);
-
-    // Set default styles for the map element.
-    let mapDefaultCSS = document.createElement('style');
-    mapDefaultCSS.innerHTML =
-    `[is="web-map"] {` +
-    `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
-    `contain: layout size;` + // Contain layout and size calculations within the map element.
-    `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
-    `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
-    `width: 300px;` +
-    `border-width: 2px;` + // Set a default border for contrast, similar to UA default for iframes.
-    `border-style: inset;` +
-    `box-sizing: inherit;` + // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/350#issuecomment-888361985
-    `}` +
-    `[is="web-map"][frameborder="0"] {` +
-  	`border-width: 0;` +
-  	`}` +
-    `[is="web-map"][hidden] {` +
-    `display: none!important;` +
-    `}` +
-    `[is="web-map"] .mapml-web-map {` +
-    `display: contents;` + // This div doesn't have to participate in layout by generating its own box.
-    `}`;
-    
-    let shadowRootCSS = document.createElement('style');
-    shadowRootCSS.innerHTML =
-    `:host .leaflet-control-container {` +
-    `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154).
-    `}`;
-    
-    // Hide all (light DOM) children of the map element except for the
-    // `<area>` and `<div class="mapml-web-map">` (shadow root host) elements.
-    let hideElementsCSS = document.createElement('style');
-    hideElementsCSS.innerHTML =
-    `[is="web-map"] > :not(area):not(.mapml-web-map) {` +
-    `display: none!important;` +
-    `}`;
-    
-    shadowRoot.appendChild(shadowRootCSS);
-    shadowRoot.appendChild(tmpl.content.cloneNode(true));
-    shadowRoot.appendChild(this._container);
-    this.appendChild(rootDiv);
-    this.appendChild(hideElementsCSS);
-    document.head.insertAdjacentElement('afterbegin', mapDefaultCSS);
-    this._toggleState = false;
-    this.controlsListObserver = new MutationObserver((m) => {
-      m.forEach((change)=>{
-        if(change.type==="attributes" && change.attributeName === "controlslist")
-          this.setControls(false,false,false);
-      });
-    });
-    this.controlsListObserver.observe(this, {attributes:true});
   }
 
   connectedCallback() {
     if (this.isConnected) {
+
+      let tmpl = document.createElement('template');
+      tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
+      
+      const rootDiv = document.createElement('div');
+      rootDiv.classList.add('mapml-web-map');
+      
+      let shadowRoot = rootDiv.attachShadow({mode: 'open'});
+      this._container = document.createElement('div');
+      
+      let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
+      this._container.insertAdjacentHTML("beforeend", output);
+      
+      // Set default styles for the map element.
+      let mapDefaultCSS = document.createElement('style');
+      mapDefaultCSS.innerHTML =
+      `[is="web-map"] {` +
+      `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
+      `contain: layout size;` + // Contain layout and size calculations within the map element.
+      `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
+      `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
+      `width: 300px;` +
+      `border-width: 2px;` + // Set a default border for contrast, similar to UA default for iframes.
+      `border-style: inset;` +
+      `box-sizing: inherit;` + // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/350#issuecomment-888361985
+      `}` +
+      `[is="web-map"][frameborder="0"] {` +
+  	  `border-width: 0;` +
+  	  `}` +
+      `[is="web-map"][hidden] {` +
+      `display: none!important;` +
+      `}` +
+      `[is="web-map"] .mapml-web-map {` +
+      `display: contents;` + // This div doesn't have to participate in layout by generating its own box.
+      `}`;
+      
+      let shadowRootCSS = document.createElement('style');
+      shadowRootCSS.innerHTML =
+      `:host .leaflet-control-container {` +
+      `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154).
+      `}`;
+      
+      // Hide all (light DOM) children of the map element except for the
+      // `<area>` and `<div class="mapml-web-map">` (shadow root host) elements.
+      let hideElementsCSS = document.createElement('style');
+      hideElementsCSS.innerHTML =
+      `[is="web-map"] > :not(area):not(.mapml-web-map) {` +
+      `display: none!important;` +
+      `}`;
+      
+      shadowRoot.appendChild(shadowRootCSS);
+      shadowRoot.appendChild(tmpl.content.cloneNode(true));
+      shadowRoot.appendChild(this._container);
+      this.appendChild(rootDiv);
+      this.appendChild(hideElementsCSS);
+      document.head.insertAdjacentElement('afterbegin', mapDefaultCSS);
+      this._toggleState = false;
+      this.controlsListObserver = new MutationObserver((m) => {
+        m.forEach((change)=>{
+          if(change.type==="attributes" && change.attributeName === "controlslist")
+            this.setControls(false,false,false);
+        });
+      });
+      this.controlsListObserver.observe(this, {attributes:true});
 
       // the dimension attributes win, if they're there. A map does not
       // have an intrinsic size, unlike an image or video, and so must
