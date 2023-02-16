@@ -48,6 +48,16 @@ test.describe("Playwright mapMLTemplatedTile Layer Tests", () => {
       );
       expect(tiles).toEqual(8);
     });
+
+    test("Templated tile layer works without <map-input> for zoom level", async () => {
+      // tests fix for https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/669
+      await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
+      const layerCount = await page.$eval(
+        "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays",
+        (el) => el.children.length
+      );
+      expect(layerCount).toEqual(3);
+    });
   });
 
 });
