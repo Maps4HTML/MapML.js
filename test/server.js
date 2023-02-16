@@ -6,6 +6,7 @@ const port = 30001;
 //then loads in the index file
 app.use(express.static(path.join(__dirname, "../dist")));
 app.use(express.static(path.join(__dirname, "e2e/core")));
+app.use(express.static(path.join(__dirname, "e2e/api")));
 app.use(express.static(path.join(__dirname, "e2e/data")));
 app.use(express.static(path.join(__dirname, "e2e/geojson")));
 app.use(express.static(path.join(__dirname, "e2e/layers")));
