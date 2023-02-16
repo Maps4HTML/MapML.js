@@ -243,6 +243,7 @@ export class MapViewer extends HTMLElement {
       if(!custom){	
         this.dispatchEvent(new CustomEvent('createmap'));
       }
+
       if(this._map&&this.hasAttribute('static')){
         this._toggleStatic();
       }
@@ -360,13 +361,13 @@ export class MapViewer extends HTMLElement {
         }
       break;  
       case 'width': 
-      if (oldValue !== newValue) {
-        this._changeWidth(newValue);
-      }
+        if (oldValue !== newValue) {
+          this._changeWidth(newValue);
+        }
       break;
       case 'static':
-      this._toggleStatic();
-      break;   
+        this._toggleStatic();
+      break;
     }
   }
   _toggleStatic(){

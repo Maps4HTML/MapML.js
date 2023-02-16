@@ -14,7 +14,9 @@ test.describe("Adding Static Attribute to mapml-viewer", () => {
 
   test("Setting New Static Attribute to mapml-viewer", async () => {
     //setting static attribute in the mapml-viewer tag
-    await page.$eval("body > mapml-viewer", (viewer) => viewer.setAttribute("static",""));
+    await page.$eval("body > mapml-viewer", (viewer) => viewer.static = true);
+    let attribute = await page.$eval("body > mapml-viewer", (viewer) => viewer.hasAttribute("static"));
+    expect(attribute).toEqual(true);
     //panning, zooming, etc. disabled
     let drag = await page.$eval("body > mapml-viewer", (viewer) => viewer._map.dragging._enabled);
     let touchZoom = await page.$eval("body > mapml-viewer", (viewer) => viewer._map.touchZoom._enabled);
@@ -35,7 +37,9 @@ test.describe("Adding Static Attribute to mapml-viewer", () => {
   
   test("Removing Static Attribute", async () => {
     //removing static attribute in the mapml-viewer tag
-    await page.$eval("body > mapml-viewer", (viewer) => viewer.removeAttribute("static"));
+    await page.$eval("body > mapml-viewer", (viewer) => viewer.static = false);
+    let attribute = await page.$eval("body > mapml-viewer", (viewer) => viewer.hasAttribute("static"));
+    expect(attribute).toEqual(false);
     //panning, zooming, etc. enabled
     let drag = await page.$eval("body > mapml-viewer", (viewer) => viewer._map.dragging._enabled);
     let touchZoom = await page.$eval("body > mapml-viewer", (viewer) => viewer._map.touchZoom._enabled);

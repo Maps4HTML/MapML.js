@@ -284,6 +284,7 @@ export class WebMap extends HTMLMapElement {
       if(!custom){	
         this.dispatchEvent(new CustomEvent('createmap'));
       }
+      
       if(this._map&&this.hasAttribute('static')){
         this._toggleStatic();
       }
@@ -400,12 +401,12 @@ export class WebMap extends HTMLMapElement {
         }
       break;  
       case 'width': 
-      if (oldValue !== newValue) {
-        this._changeWidth(newValue);
-      }
+        if (oldValue !== newValue) {
+          this._changeWidth(newValue);
+        }
       break;  
       case 'static':
-      this._toggleStatic();
+        this._toggleStatic();
       break;  
     }
   }
