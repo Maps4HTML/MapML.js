@@ -28,7 +28,7 @@ export var LayerControl = L.Control.Layers.extend({
         // Adding event on layer control button
         L.DomEvent.on(this._container.getElementsByTagName("a")[0], 'keydown', this._focusFirstLayer, this._container);
         // Adding event on layer checkbox
-        L.DomEvent.on(this._container, 'keydown', this._toggleLayer, this._container);
+        L.DomEvent.on(this._container, 'keyup', this._toggleLayer, this._container);
         L.DomEvent.on(this._container, 'contextmenu', this._preventDefaultContextMenu, this);
         this._update();
         //this._validateExtents();
@@ -42,7 +42,7 @@ export var LayerControl = L.Control.Layers.extend({
     onRemove: function (map) {
         map.off('validate', this._validateInput, this);
         L.DomEvent.off(this._container.getElementsByTagName("a")[0], 'keydown', this._focusFirstLayer, this._container);
-        L.DomEvent.off(this._container, 'keydown', this._toggleLayer, this._container);
+        L.DomEvent.off(this._container, 'keyup', this._toggleLayer, this._container);
         // remove layer-registerd event handlers so that if the control is not
         // on the map it does not generate layer events
         for (var i = 0; i < this._layers.length; i++) {
@@ -108,7 +108,7 @@ export var LayerControl = L.Control.Layers.extend({
 
     // focus the first layer in the layer control when enter is pressed
     _focusFirstLayer: function(e){
-      if(e.key === 'Enter' && this.className === 'leaflet-control-layers leaflet-control leaflet-control-layers-expanded'){
+      if (e.key === 'Enter' && this.className === 'leaflet-control-layers leaflet-control leaflet-control-layers-expanded') {
         var elem = this.children[1].children[2].children[0].children[0].children[0].children[0];
         if(elem) setTimeout(() => elem.focus(), 0);
       }
@@ -116,17 +116,9 @@ export var LayerControl = L.Control.Layers.extend({
 
     // toggle layer when spacebar is pressed
     _toggleLayer: function(e) {
-      if(e.code === 'Space'){
+      if (e.code === 'Space') {
         let elem = document.activeElement.shadowRoot.activeElement;
         if (elem.nodeName === "INPUT") {
-          // the commented code does not toggle the layer, but only toggles the checkbox
-          //if (elem.checked === true) {
-          //  elem.checked = false;
-          //} else {
-          //  elem.checked = true;
-          //}
-          
-          // using the code below as a temp. fix
           elem.click();
         }
       }
