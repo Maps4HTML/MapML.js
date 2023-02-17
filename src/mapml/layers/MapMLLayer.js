@@ -646,6 +646,7 @@ export var MapMLLayer = L.Layer.extend({
 
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
+        input.setAttribute('class','leaflet-control-layers-selector');
         layerItemName.layer = this;
 
         if (this._legendUrl) {
