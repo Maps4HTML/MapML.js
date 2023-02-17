@@ -138,7 +138,7 @@ export var LayerControl = L.Control.Layers.extend({
     _addItem: function (obj) {
       var layercontrols  =  obj.layer.getLayerUserControlsHTML();
       // the input is required by Leaflet...
-      obj.input = layercontrols.querySelector('input');
+      obj.input = layercontrols.querySelector('input.leaflet-control-layers-selector');
 
       this._layerControlInputs.push(obj.input);
     		obj.input.layerId = L.stamp(obj.layer);
