@@ -21,6 +21,9 @@ export var TemplatedImageLayer =  L.Layer.extend({
         this._map._addZoomLimit(this);  //used to set the zoom limit of the map
         this.setZIndex(this.options.zIndex);
         this._onAdd();
+        // make sure templatedImage Layer is placed at (0,0) of the cs
+        // when it is added to the map (solve issue #759)
+        this.redraw();
     },
     redraw: function() {
         this._onMoveEnd();
