@@ -524,7 +524,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     expect(name).toEqual("INPUT");
   });
   
-  test("Layer Context menu, Pressing enter on checkbox button toggles layer", async () => {
+  test("Layer Context menu, Pressing space on checkbox button toggles layer", async () => {
     await page.keyboard.press("Space");
     const layerCheck = await page.$eval(
       "body > map",
