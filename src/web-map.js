@@ -404,8 +404,7 @@ export class WebMap extends HTMLMapElement {
   }
   _removeEvents() {
     if (this._map) {
-      this._map.off('preclick click dblclick mousemove mouseover mouseout mousedown mouseup contextmenu', false, this);
-      this._map.off('load movestart move moveend zoomstart zoom zoomend', false, this);
+      this._map.off();
       this.removeEventListener("drop", this._dropHandler, false);
       this.removeEventListener("dragover", this._dragoverHandler, false);
     }
