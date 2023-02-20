@@ -433,10 +433,13 @@ export class MapViewer extends HTMLElement {
             (layer) => {
               M._pasteLayer(this, layer);
             });
-      } else if (e.keyCode === 32) {
+      // Prevents default spacebar event on all of mapml-viewer
+      } else if (e.keyCode === 32 &&
+                 this.shadowRoot.activeElement.nodeName !== "INPUT") {
         e.preventDefault();
         this._map.fire('keypress', {originalEvent: e});
-      }});
+      }
+    });
     this.parentElement.addEventListener('mousedown', function (e) {
       if(document.activeElement.nodeName === "MAPML-VIEWER"){
         document.activeElement.dispatchEvent(new CustomEvent('mapfocused', {detail:
