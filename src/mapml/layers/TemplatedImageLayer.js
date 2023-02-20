@@ -1,6 +1,7 @@
 export var TemplatedImageLayer =  L.Layer.extend({
     initialize: function(template, options) {
         this._template = template;
+        this._layer = options.pane.parentElement;
         this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
         L.DomUtil.addClass(this._container, 'mapml-image-container');
         let inputData = M._extractInputBounds(template);
@@ -23,7 +24,10 @@ export var TemplatedImageLayer =  L.Layer.extend({
         this._onAdd();
         // make sure templatedImage Layer is placed at (0,0) of the cs
         // when it is added to the map (solve issue #759)
-        this.redraw();
+        if (this._layer.isUnChecked) {
+            this.redraw();
+            this._layer.isUnChecked = false;
+        }
     },
     redraw: function() {
         this._onMoveEnd();
@@ -135,6 +139,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
     onRemove: function (map) {
       this._clearLayer();
       map._removeZoomLimit(this);
+      this._layer.isUnChecked = true;
       this._container = null;
     },
     getImageUrl: function(pixelBounds, zoom) {
