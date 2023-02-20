@@ -25,7 +25,7 @@ test.describe("Templated image layer with step", () => {
         await context.close();
       });
 
-      let selector = ".leaflet-layer.mapml-templatedlayer-container > div > img";
+      let selector = ".leaflet-layer.mapml-templatedlayer-container > div > img:last-child";
       test("Scale layer on add", async () => {
           await page.reload();
           await page.waitForTimeout(500);

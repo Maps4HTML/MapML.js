@@ -281,7 +281,7 @@ export var MapMLLayer = L.Layer.extend({
           if(type === "_templatedLayer"){
             for(let i = 0; i < this._extent._mapExtents.length; i++){
               for(let j = 0; j < this._extent._mapExtents[i]._templateVars.length; j++){
-                let inputData = M.extractInputBounds(this._extent._mapExtents[i]._templateVars[j]);
+                let inputData = M._extractInputBounds(this._extent._mapExtents[i]._templateVars[j]);
                 this._extent._mapExtents[i]._templateVars[j].tempExtentBounds = inputData.bounds;
                 this._extent._mapExtents[i]._templateVars[j].extentZoomBounds = inputData.zoomBounds;
               }
@@ -333,7 +333,7 @@ export var MapMLLayer = L.Layer.extend({
       if(bounds){
         //assigns the formatted extent object to .extent and spreads the zoom ranges to .extent also
         this._layerEl.extent = (Object.assign(
-                                  M.convertAndFormatPCRS(bounds,this._map),
+                                  M._convertAndFormatPCRS(bounds,this._map),
                                   {zoom:zoomBounds}));
       }
     },
@@ -646,6 +646,7 @@ export var MapMLLayer = L.Layer.extend({
 
         input.defaultChecked = this._map ? true: false;
         input.type = 'checkbox';
+        input.setAttribute('class','leaflet-control-layers-selector');
         layerItemName.layer = this;
 
         if (this._legendUrl) {
@@ -871,7 +872,7 @@ export var MapMLLayer = L.Layer.extend({
 
           extentFallback.zoom = 0;
           if (metaExtent){
-            let content = M.metaContentToObject(metaExtent.getAttribute("content")), cs;
+            let content = M._metaContentToObject(metaExtent.getAttribute("content")), cs;
             
             extentFallback.zoom = content.zoom || extentFallback.zoom;
 
@@ -893,7 +894,8 @@ export var MapMLLayer = L.Layer.extend({
           }
             
           for (var i=0;i< tlist.length;i++) {
-            var t = tlist[i], template = t.getAttribute('tref'); 
+            var t = tlist[i], template = t.getAttribute('tref');
+            t.zoomInput = zoomInput;
             if(!template){
               template = BLANK_TT_TREF;
               let blankInputs = mapml.querySelectorAll('map-input');
@@ -910,18 +912,19 @@ export var MapMLLayer = L.Layer.extend({
                 inputs = [],
                 tms = t && t.hasAttribute("tms");
                 var zoomBounds = mapml.querySelector('map-meta[name=zoom]')?
-                                  M.metaContentToObject(mapml.querySelector('map-meta[name=zoom]').getAttribute('content')):
+                                  M._metaContentToObject(mapml.querySelector('map-meta[name=zoom]').getAttribute('content')):
                                   undefined;
             while ((v = varNamesRe.exec(template)) !== null) {
               var varName = v[1],
                   inp = serverExtent.querySelector('map-input[name='+varName+'],map-select[name='+varName+']');
               if (inp) {
-
+                
                 if ((inp.hasAttribute("type") && inp.getAttribute("type")==="location") && 
-                    (!inp.hasAttribute("min" || !inp.hasAttribute("max"))) && 
+                    (!inp.hasAttribute("min") || !inp.hasAttribute("max")) && 
                     (inp.hasAttribute("axis") && !["i","j"].includes(inp.getAttribute("axis").toLowerCase()))){
-                  zoomInput.setAttribute("value", extentFallback.zoom);
-                  
+                  if (zoomInput && template.includes(`{${zoomInput.getAttribute('name')}}`)) {
+                    zoomInput.setAttribute("value", extentFallback.zoom);
+                  }
                   let axis = inp.getAttribute("axis"), 
                       axisBounds = M.convertPCRSBounds(extentFallback.bounds, extentFallback.zoom, projection, M.axisToCS(axis));
                   inp.setAttribute("min", axisBounds.min[M.axisToXY(axis)]);
@@ -1026,7 +1029,7 @@ export var MapMLLayer = L.Layer.extend({
                   }
                 } else if(serverMeta){
                   if (serverMeta.tagName.toLowerCase() === "map-meta" && serverMeta.hasAttribute('content')) {
-                    projection = M.metaContentToObject(serverMeta.getAttribute('content')).content;
+                    projection = M._metaContentToObject(serverMeta.getAttribute('content')).content;
                     projectionMatch = projection && projection === layer.options.mapprojection;
                   }
                 }  
@@ -1094,7 +1097,7 @@ export var MapMLLayer = L.Layer.extend({
                   }
                   layer._mapmlTileContainer.appendChild(tiles);
                 }
-                M.parseStylesheetAsHTML(mapml, base, layer._container);
+                M._parseStylesheetAsHTML(mapml, base, layer._container);
 
                 // add multiple extents
                 if(layer._extent._mapExtents){
@@ -1201,7 +1204,7 @@ export var MapMLLayer = L.Layer.extend({
           break;
         case "MAP-META":
           if(extent.hasAttribute('content'))
-            return M.metaContentToObject(extent.getAttribute('content')).content.toUpperCase(); 
+            return M._metaContentToObject(extent.getAttribute('content')).content.toUpperCase(); 
           break;
         default:
           return FALLBACK_PROJECTION; 

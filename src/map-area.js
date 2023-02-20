@@ -132,7 +132,7 @@ export class MapArea extends HTMLAreaElement {
     delete this._feature;
   }
   _coordsToArray(containerPoints) {
-    // returns an array of arrays of coordinate pairs coordsToArray("1,2,3,4") -> [[1,2],[3,4]]
+    // returns an array of arrays of coordinate pairs _coordsToArray("1,2,3,4") -> [[1,2],[3,4]]
     for (var i=1, points = [], coords = containerPoints.split(",");i<coords.length;i+=2) {
       points.push([parseInt(coords[i-1]),parseInt(coords[i])]);
     }

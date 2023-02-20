@@ -3,7 +3,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
         this._template = template;
         this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
         L.DomUtil.addClass(this._container, 'mapml-image-container');
-        let inputData = M.extractInputBounds(template);
+        let inputData = M._extractInputBounds(template);
         this.zoomBounds = inputData.zoomBounds;
         this.extentBounds=inputData.bounds;
         this.isVisible = true;
@@ -35,10 +35,10 @@ export var TemplatedImageLayer =  L.Layer.extend({
 
     _addImage: function (bounds, zoom, loc) {
         let map = this._map;
-        let overlayToRemove = this._imageOverlay;
+        let overlayToRemove = this._imageLayer;
         let src = this.getImageUrl(bounds, zoom);
         let size = map.getSize();
-        this._imageOverlay = M.imageOverlay(src, loc, size, 0, this._container);
+        this._imageOverlay = M.imageLayer(src, loc, size, 0, this._container);
         this._imageOverlay._step = this._template.step;
         this._imageOverlay.addTo(map);
         if (overlayToRemove) {

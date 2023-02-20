@@ -83,9 +83,9 @@ export var FeatureLayer = L.FeatureGroup.extend({
 
     _getNativeVariables: function(mapml){
       let nativeZoom = (mapml.querySelector && mapml.querySelector("map-meta[name=zoom]") &&
-          +M.metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value) || 0;
+          +M._metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value) || 0;
       let nativeCS = (mapml.querySelector && mapml.querySelector("map-meta[name=cs]") &&
-          M.metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content) || "PCRS";
+          M._metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content) || "PCRS";
       return {zoom:nativeZoom, cs: nativeCS};
     },
 
@@ -115,13 +115,13 @@ export var FeatureLayer = L.FeatureGroup.extend({
       if (!container) return null;
       let cs = FALLBACK_CS,
           projection = container.querySelector('map-meta[name=projection]') &&
-                    M.metaContentToObject(
+                    M._metaContentToObject(
                       container.querySelector('map-meta[name=projection]').getAttribute('content'))
                       .content.toUpperCase() || FALLBACK_PROJECTION;
       try{
 
         let meta = container.querySelector('map-meta[name=extent]') &&
-                    M.metaContentToObject(
+                    M._metaContentToObject(
                       container.querySelector('map-meta[name=extent]').getAttribute('content'));
 
         let zoom = meta.zoom || 0;
@@ -189,8 +189,8 @@ export var FeatureLayer = L.FeatureGroup.extend({
         nMin = Math.min(nMin, lZoom);
       }
       try{
-        projection = M.metaContentToObject(container.querySelector('map-meta[name=projection]').getAttribute('content')).content;
-        meta = M.metaContentToObject(container.querySelector('map-meta[name=zoom]').getAttribute('content'));
+        projection = M._metaContentToObject(container.querySelector('map-meta[name=projection]').getAttribute('content')).content;
+        meta = M._metaContentToObject(container.querySelector('map-meta[name=zoom]').getAttribute('content'));
       } catch(error){
         return {
           minZoom:0,
@@ -216,7 +216,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         var base = mapml.querySelector('map-base') && mapml.querySelector('map-base').hasAttribute('href') ? 
             new URL(mapml.querySelector('map-base').getAttribute('href')).href : 
             mapml.URL;
-        M.parseStylesheetAsHTML(mapml,base,this._container);
+        M._parseStylesheetAsHTML(mapml,base,this._container);
       }
       if (features) {
        for (i = 0, len = features.length; i < len; i++) {

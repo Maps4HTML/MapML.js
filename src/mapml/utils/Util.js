@@ -1,7 +1,9 @@
 import { FALLBACK_CS, FALLBACK_PROJECTION } from './Constants';
 
 export var Util = {
-  convertAndFormatPCRS : function(pcrsBounds, map){
+  // _convertAndFormatPCRS returns the converted CRS and formatted pcrsBounds in gcrs, pcrs, tcrs, and tilematrix. Used for setting extent for the map and layer (map.extent, layer.extent).
+  // _convertAndFormatPCRS: L.Bounds, _map -> {...}
+  _convertAndFormatPCRS : function(pcrsBounds, map){
     if(!pcrsBounds || !map) return {};
 
     let tcrsTopLeft = [], tcrsBottomRight = [],
@@ -77,7 +79,10 @@ export var Util = {
       projection:map.options.projection
     };
   },
-  extractInputBounds: function(template){
+
+  // _extractInputBounds extracts and returns Input Bounds from the provided template
+  // _extractInputBounds: Object -> {zoomBounds: ..., bounds: ...}
+  _extractInputBounds: function(template){
     if(!template) return undefined;
 
     //sets variables with their respective fallback values incase content is missing from the template
@@ -146,6 +151,9 @@ export var Util = {
     };
   },
 
+  // axisToCS returns the CRS when given the axis:
+  // https://maps4html.org/web-map-doc/docs/elements/input/#axis
+  // axisToCS: (Axis String) -> (CRS String)
   axisToCS : function(axis){
     try{
       switch(axis.toLowerCase()){
@@ -170,7 +178,9 @@ export var Util = {
     } catch (e) {return undefined;}
   },
 
-  //takes a given cs and retuns the axes, first horizontal then vertical
+  // csToAxes takes a given cs and retuns the axes, first horizontal then vertical
+  // https://maps4html.org/web-map-doc/docs/elements/input/#axis
+  // csToAxes: (CRS String) -> [(horizontal axis String), (Vertical axis String)]
   csToAxes: function(cs){
     try{
       switch(cs.toLowerCase()){
@@ -189,6 +199,9 @@ export var Util = {
     } catch (e) {return undefined;}
   },
 
+  // axisToXY takes horizontal axis and returns 'x', or takes vertical axis and returns 'y'
+  // https://maps4html.org/web-map-doc/docs/elements/input/#axis
+  // axisToXY: (Axis String) -> 'x' or 'y'
   axisToXY: function(axis){
     try{
       switch(axis.toLowerCase()){
@@ -210,7 +223,9 @@ export var Util = {
       }
     } catch (e) {return undefined;}
   },
-
+  
+  // convertPCRSBounds converts pcrsBounds to the given cs Bounds.
+  // convertPCRSBounds: L.Bounds, Int, L.CRS, Str('PCRS'|'TCRS'|'TILEMATRIX'|'GCRS') -> L.Bounds
   convertPCRSBounds: function(pcrsBounds, zoom, projection, cs){
     if(!pcrsBounds || (!zoom && zoom !== 0) || !Number.isFinite(+zoom) || !projection || !cs) return undefined;
     projection = (typeof projection === "string") ? M[projection] : projection;
@@ -233,6 +248,8 @@ export var Util = {
     }
   },
 
+  // pointToPCRSPoint takes a point, with a projection and cs and converts it to a pcrs L.point/L.latLng
+  //pointToPCRSPoint: L.Point, Int, L.CRS, Str('PCRS'|'TCRS'|'TILEMATRIX'|'GCRS') -> L.point|L.latLng
   pointToPCRSPoint: function(point, zoom, projection, cs){
     if(!point || (!zoom && zoom !== 0) || !Number.isFinite(+zoom) || !cs || !projection) return undefined;
     projection = (typeof projection === "string") ? M[projection] : projection;
@@ -251,12 +268,16 @@ export var Util = {
     }
   },
 
+  // pixelToPCRSPoint takes a pixel L.point, the zoom and projection and returns a L.point in pcrs
+  // pixelToPCRSPoint: L.Point, Int, L.CRS|Str -> L.point
   pixelToPCRSPoint: function(point, zoom, projection){
     if(!point || (!zoom && zoom !== 0) || !Number.isFinite(+zoom) || !projection) return undefined;
     projection = (typeof projection === "string") ? M[projection] : projection;
     return projection.transformation.untransform(point,projection.scale(zoom));
   },
 
+  // boundsToPCRSBounds converts bounds with projection and cs to PCRS bounds
+  // boundsToPCRSBounds: L.bounds, Int, L.CRS|Str, Str('PCRS'|'TCRS'|'TILEMATRIX'|'GCRS') -> L.bounds
   boundsToPCRSBounds: function(bounds, zoom, projection, cs){
     if(!bounds || !bounds.max || !bounds.min || (!zoom && zoom !== 0) || !Number.isFinite(+zoom) || !projection || !cs) return undefined;
     projection = (typeof projection === "string") ? M[projection] : projection;
@@ -270,9 +291,10 @@ export var Util = {
     projection = (typeof projection === "string") ? M[projection] : projection;
     return L.bounds(M.pixelToPCRSPoint(bounds.min, zoom, projection), M.pixelToPCRSPoint(bounds.max, zoom, projection));
   },
+
   //meta content is the content attribute of meta
   // input "max=5,min=4" => [[max,5][min,5]]
-  metaContentToObject: function(input){
+  _metaContentToObject: function(input){
     if(!input || input instanceof Object)return {};
     let content = input.split(/\s+/).join("");
     let contentArray = {};
@@ -285,14 +307,18 @@ export var Util = {
     if(contentArray !== "" && stringSplit[0].split("=").length ===1)contentArray.content = stringSplit[0];
     return contentArray;
   },
-  coordsToArray: function(containerPoints) {
-    // returns an array of arrays of coordinate pairs coordsToArray("1,2,3,4") -> [[1,2],[3,4]]
+
+  // _coordsToArray returns an array of arrays of coordinate pairs 
+  // _coordsToArray: ("1,2,3,4") -> [[1,2],[3,4]]
+  _coordsToArray: function(containerPoints) {
     for (var i=1, pairs = [], coords = containerPoints.split(",");i<coords.length;i+=2) {
       pairs.push([parseInt(coords[i-1]),parseInt(coords[i])]);
     }
     return pairs;
   },
-  parseStylesheetAsHTML: function(mapml, base, container) {
+
+  // _parseStylesheetAsHTML parses map-link and map-style from mapml and inserts them to the container as HTML
+  _parseStylesheetAsHTML: function(mapml, base, container) {
       if (!(container instanceof Element) || !mapml || !mapml.querySelector('map-link[rel=stylesheet],map-style')) return;
 
       if(base instanceof Element) {
@@ -329,17 +355,20 @@ export var Util = {
       }
   },
 
-  splitCoordinate: function(element, index, array) {
+  // _splitCoordinate splits string coordinates to an array as floating point numbers 
+  _splitCoordinate: function(element, index, array) {
     var a = [];
-    element.split(/\s+/gim).forEach(M.parseNumber,a);
+    element.split(/\s+/gim).forEach(M._parseNumber,a);
     this.push(a);
   },
 
-  parseNumber : function(element, index, array){
+  // _parseNumber parses a string as a floating point number, helper function for _splitCoordinate
+  _parseNumber : function(element, index, array){
     this.push(parseFloat(element));
   },
 
-  handleLink: function (link, leafletLayer) {
+  // _handleLink handles map-a links, when clicked on a map-a link
+  _handleLink: function (link, leafletLayer) {
     let zoomTo, justPan = false, layer, map = leafletLayer._map, opacity;
     if(link.type === "text/html" && link.target !== "_blank"){  // all other target values other than blank behave as _top
       link.target = "_top";
@@ -396,8 +425,10 @@ export var Util = {
       if(opacity) layer.opacity = opacity;
     }
   },
-
-  gcrsToTileMatrix: function (mapEl) {
+  
+  // _gcrsToTileMatrix returns the [column, row] of the tiles at map center. Used for Announce movement for screen readers
+  // _gcrsToTileMatrix: map/mapml-viewer -> [column, row]
+  _gcrsToTileMatrix: function (mapEl) {
     let point = mapEl._map.project(mapEl._map.getCenter());
     let tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.y;
     let column = Math.trunc(point.x / tileSize);

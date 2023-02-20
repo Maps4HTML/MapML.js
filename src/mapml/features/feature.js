@@ -72,7 +72,7 @@ export var Feature = L.Path.extend({
         nextLayer = nextLayer.nextElementSibling;
       }
       if(onTop && dragStart) {
-        //M.handleLink gets called twice, once in the target phase on the path element, then in the bubble phase on the g element
+        //M._handleLink gets called twice, once in the target phase on the path element, then in the bubble phase on the g element
         //Using stopPropagation leaves the mouse in the mousedown state
         if(e.eventPhase === Event.BUBBLING_PHASE) return;
         let dist = Math.sqrt(Math.pow(dragStart.x - e.clientX, 2) + Math.pow(dragStart.y - e.clientY, 2));
@@ -80,7 +80,7 @@ export var Feature = L.Path.extend({
           link.visited = true;
           elem.setAttribute("stroke", "#6c00a2");
           elem.classList.add("map-a-visited");
-          M.handleLink(link, leafletLayer);
+          M._handleLink(link, leafletLayer);
         }
       }
     }, this);
@@ -90,7 +90,7 @@ export var Feature = L.Path.extend({
         link.visited = true;
         elem.setAttribute("stroke", "#6c00a2");
         elem.classList.add("map-a-visited");
-        M.handleLink(link, leafletLayer);
+        M._handleLink(link, leafletLayer);
       }
     }, this);
     L.DomEvent.on(elem, 'mouseenter keyup', (e) => {
@@ -289,7 +289,7 @@ export var Feature = L.Path.extend({
         pairs = noSpan.match(/(\S+\s+\S+)/gim), local = [], bounds;
     for (let p of pairs) {
       let numPair = [];
-      p.split(/\s+/gim).forEach(M.parseNumber, numPair);
+      p.split(/\s+/gim).forEach(M._parseNumber, numPair);
       let point = M.pointToPCRSPoint(L.point(numPair), this.options.zoom, this.options.projection, this.options.nativeCS);
       local.push(point);
       bounds = bounds ? bounds.extend(point) : L.bounds(point, point);
