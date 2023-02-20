@@ -63,11 +63,11 @@ test.describe("mapml-viewer DOM API Tests", () => {
 
     // takes a couple of seconds for the tiles to load
 
-    //await page.waitForLoadState('networkidle');
-    //const layerVisible = await page.$eval(
-    //        "body > mapml-viewer .leaflet-tile-loaded:nth-child(1)", 
-    //        (tileDiv) => tileDiv.firstChild.nodeName === "IMG");
-    //expect(layerVisible).toBe(true);
+    await page.waitForLoadState('networkidle');
+    const layerVisible = await page.$eval(
+            "body > mapml-viewer .leaflet-tile-loaded:nth-child(1)", 
+            (tileDiv) => tileDiv.firstChild.nodeName === "IMG");
+    expect(layerVisible).toBe(true);
 
   });
 
@@ -85,7 +85,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
       "div.leaflet-control-container > div.leaflet-top.leaflet-right",
       (elem) => elem.childElementCount === 0
     );
-    //expect(mapControlsHidden).toBe(true);
+    expect(mapControlsHidden).toBe(true);
 
   });  
 

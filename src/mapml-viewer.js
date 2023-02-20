@@ -16,11 +16,12 @@ export class MapViewer extends HTMLElement {
   }
   set controls(value) {
     const hasControls = Boolean(value);
-    if (hasControls)
-      this.setAttribute('controls', '');
-    else
+    if (hasControls) {
+      this.setAttribute('controls','');
+    }
+    else {
       this.removeAttribute('controls');
-    this._toggleControls(hasControls);
+    }
   }
   get controlslist() {
     return this.hasAttribute('controlslist') ? this.getAttribute("controlslist") : "";
@@ -161,13 +162,6 @@ export class MapViewer extends HTMLElement {
       this.appendChild(hideElementsCSS);
 
       this._toggleState = false;
-      this.controlsListObserver = new MutationObserver((m) => {
-        m.forEach((change)=>{
-          if(change.type==="attributes" && change.attributeName === "controlslist")
-            this.setControls(false,false,false);
-        });
-      });
-      this.controlsListObserver.observe(this, {attributes:true});
 
       // the dimension attributes win, if they're there. A map does not
       // have an intrinsic size, unlike an image or video, and so must
@@ -177,8 +171,7 @@ export class MapViewer extends HTMLElement {
         w = this.hasAttribute("width") ? this.getAttribute("width") : parseInt(wpx.replace('px','')),
         h = this.hasAttribute("height") ? this.getAttribute("height") : parseInt(hpx.replace('px',''));
       this._changeWidth(w);
-      this._changeHeight(h);
-      
+      this._changeHeight(h);      
 
       // create an array to track the history of the map and the current index
       if(!this._history){
@@ -212,7 +205,7 @@ export class MapViewer extends HTMLElement {
           this._addToHistory();
           // the attribution control is not optional
           M.attributionControl(this);
-
+  
           this.setControls(false,false,true);
           this._crosshair = M.crosshair().addTo(this._map);
           if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
@@ -233,6 +226,26 @@ export class MapViewer extends HTMLElement {
       if(!custom){	
         this.dispatchEvent(new CustomEvent('createmap'));
       }
+
+      this.controlsListObserver = new MutationObserver((m) => {
+        m.forEach((change)=>{
+          if (change.type === "attributes" && change.attributeName === "controls" && !change.target.hasAttribute("controls") && change.oldValue !== null) {
+            this.setControls(true,false,false);
+          }
+          else if (change.type === "attributes" && change.attributeName === "controls") {
+            this.setControls(true,true,false);
+          }
+        });
+      });
+      this.controlsListObserver.observe(this, {attributes: true, attributeOldValue: true});
+
+      window.onload = function () {
+
+        if (!document.querySelector("mapml-viewer").hasAttribute("controls")) {
+          document.querySelector("mapml-viewer").setControls(true,false,false);
+        }
+
+      };
     }
   }
   disconnectedCallback() {
@@ -244,7 +257,7 @@ export class MapViewer extends HTMLElement {
   }
 
   setControls(isToggle, toggleShow, setup){
-    if (this.controls && this._map) {
+    if (this._map) {
       let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl"],
           options = ["nozoom", "noreload", "nofullscreen", 'nolayer'],
           mapSize = this._map.getSize().y,
@@ -292,8 +305,8 @@ export class MapViewer extends HTMLElement {
           delete this[controls[i]];
         }
       }
-    } else if (!this.controls && this._map) {
-      this._map.contextMenu._items[4].el.el.setAttribute("disabled", "");
+    } if (!this.controls && this._map) {
+      this._map.contextMenu._items[4].el.el.setAttribute("disabled", ""); // potential issue with this [4] is copy not toggle menu [6]
     }
 
   }
