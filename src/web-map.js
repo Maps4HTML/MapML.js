@@ -473,7 +473,9 @@ export class WebMap extends HTMLMapElement {
             (layer) => {
               M._pasteLayer(this, layer);
             });
-      } else if (e.keyCode === 32) {
+      // Prevents default spacebar event on all of web-map
+      } else if (e.keyCode === 32 &&
+                 this.shadowRoot.activeElement.nodeName !== "INPUT") {
         e.preventDefault();
         this._map.fire('keypress', {originalEvent: e});
       }
