@@ -475,7 +475,7 @@ export class WebMap extends HTMLMapElement {
             });
       // Prevents default spacebar event on all of web-map
       } else if (e.keyCode === 32 &&
-                 this.shadowRoot.activeElement.nodeName !== "INPUT") {
+                 document.activeElement.shadowRoot.activeElement.nodeName !== "INPUT") {
         e.preventDefault();
         this._map.fire('keypress', {originalEvent: e});
       }
