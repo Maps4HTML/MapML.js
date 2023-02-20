@@ -78,7 +78,7 @@
 	position: absolute;
 	visibility: hidden;
 }
-.legendLink:hover, .legendLink:hover span { 
+.legendLink:hover span, .legendLink:focus span { 
 	visibility:visible;
   left: 0;
 	right: auto;
