@@ -239,9 +239,9 @@ export class MapViewer extends HTMLElement {
       });
       this.controlsListObserver.observe(this, {attributes: true, attributeOldValue: true});
 
-      window.addEventListener('load', function () {
-        if (!document.querySelector("mapml-viewer").hasAttribute("controls")) {
-          document.querySelector("mapml-viewer").setControls(true,false,false);
+      window.addEventListener('load', () => {
+        if (!this.hasAttribute("controls")) {
+          this.setControls(true,false,false);
         }
       });
 
