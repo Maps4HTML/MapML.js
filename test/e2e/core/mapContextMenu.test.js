@@ -57,7 +57,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Copy (C)");
+    expect(name).toEqual("View fullscreen (E)");
   });
 
   test("Context menu tab goes to next item", async () => {
@@ -68,7 +68,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Paste (P)");
+    expect(name).toEqual("Copy (C)");
   });
 
   test("Submenu opens on C with focus on first item", async () => {
@@ -173,7 +173,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
       );
 
       await page.click("body > map", { button: "right" });
-      await page.click("div > div.mapml-contextmenu > button:nth-of-type(6)");
+      await page.click("div > div.mapml-contextmenu > button:nth-of-type(7)");
 
       const controlsOff = await page.$eval(
         "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
@@ -191,7 +191,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
       );
 
       await page.click("body > map", { button: "right" });
-      await page.click("div > div.mapml-contextmenu > button:nth-of-type(6)");
+      await page.click("div > div.mapml-contextmenu > button:nth-of-type(7)");
 
       const controlsOff = await page.$eval(
         "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
@@ -219,9 +219,9 @@ test.describe("Playwright Map Context Menu Tests", () => {
       expect(valueBefore).toEqual("0.5");
 
       await page.click("body > map", { button: "right" });
-      await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
+      await page.click("div > div.mapml-contextmenu > button:nth-child(6)");
       await page.click("body > map", { button: "right" });
-      await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
+      await page.click("div > div.mapml-contextmenu > button:nth-child(6)");
 
       const valueAfter = await page.$eval(
         "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div:nth-child(2) > details > input",
@@ -236,6 +236,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     await page.reload();
     await page.click("body > map");
     await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
     await page.keyboard.press("Enter");
 
@@ -271,6 +272,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     );
     await page.click("body > map");
     await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
@@ -295,6 +297,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
 
     await page.click("body > map");
     await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
@@ -331,6 +334,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     );
     await page.click("body > map");
     await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
@@ -446,10 +450,10 @@ test.describe("Playwright Map Context Menu Tests", () => {
     expect(contextMenuSize.x <= mapSize.x && contextMenuSize.y <= mapSize.y).toBeTruthy();
 
     // move the mouse from "copy" to another button in the main contextmenu
-    await page.hover("div > div.mapml-contextmenu > button:nth-of-type(4)");
+    await page.hover("div > div.mapml-contextmenu > button:nth-of-type(5)");
     const submenu = await page.locator('div > div#mapml-copy-submenu').first();
     expect(await submenu.isVisible()).toBeTruthy();
-    await page.hover("div > div.mapml-contextmenu > button:nth-of-type(5)");
+    await page.hover("div > div.mapml-contextmenu > button:nth-of-type(6)");
     expect(await submenu.isHidden()).toBeTruthy();
   });
   

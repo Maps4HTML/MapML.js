@@ -332,7 +332,7 @@ export class MapViewer extends HTMLElement {
         }
       }
     } else if (!this.controls && this._map) {
-      this._map.contextMenu._items[4].el.el.setAttribute("disabled", "");
+      this._map.contextMenu._items[8].el.el.setAttribute("disabled", "");
     }
 
   }
@@ -728,6 +728,10 @@ export class MapViewer extends HTMLElement {
       this._traversalCall = 1;
       this._map.panBy([(initialLocation.x- curr.x), (initialLocation.y - curr.y)]);
     }
+  }
+
+  _toggleFullScreen(){
+    this._map.toggleFullscreen();
   }
 
   viewSource(){

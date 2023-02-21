@@ -373,7 +373,7 @@ export class WebMap extends HTMLMapElement {
         }
       }
     }else if (!this.controls && this._map) {
-      this._map.contextMenu._items[4].el.el.setAttribute("disabled", "");
+      this._map.contextMenu._items[8].el.el.setAttribute("disabled", "");
     }
   }
   attributeChangedCallback(name, oldValue, newValue) {
@@ -771,6 +771,10 @@ export class WebMap extends HTMLMapElement {
     }
   }
 
+  _toggleFullScreen(){
+    this._map.toggleFullscreen();
+  }
+  
   viewSource(){
     let blob = new Blob([this._source],{type:"text/plain"}),
         url = URL.createObjectURL(blob);

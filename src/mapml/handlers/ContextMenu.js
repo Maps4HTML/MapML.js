@@ -29,6 +29,10 @@ export var ContextMenu = L.Handler.extend({
         callback:this._reload
       },
       {
+        text: M.options.locale.btnFullScreen + " (<kbd>E</kbd>)",
+        callback:this._toggleFullScreen
+      },
+      {
         spacer:"-"
       },
       {
@@ -91,7 +95,7 @@ export var ContextMenu = L.Handler.extend({
     this._container = L.DomUtil.create("div", "mapml-contextmenu", map._container);
     this._container.setAttribute('hidden', '');
     
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       this._items[i].el = this._createItem(this._container, this._items[i]);
     }
     
@@ -101,15 +105,15 @@ export var ContextMenu = L.Handler.extend({
     
     this._clickEvent = null;
     
-    for(let i =0;i<this._items[4].submenu.length;i++){
-      this._createItem(this._coordMenu,this._items[4].submenu[i],i);
+    for(let i =0;i<this._items[5].submenu.length;i++){
+      this._createItem(this._coordMenu,this._items[5].submenu[i],i);
     }
     
-    this._items[5].el = this._createItem(this._container, this._items[5]);
     this._items[6].el = this._createItem(this._container, this._items[6]);
     this._items[7].el = this._createItem(this._container, this._items[7]);
     this._items[8].el = this._createItem(this._container, this._items[8]);
     this._items[9].el = this._createItem(this._container, this._items[9]);
+    this._items[10].el = this._createItem(this._container, this._items[10]);
     
     this._layerMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-layer-menu", map._container);
     this._layerMenu.setAttribute('hidden', '');
@@ -220,6 +224,11 @@ export var ContextMenu = L.Handler.extend({
   _reload: function(e){
     let mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
     mapEl.reload();
+  },
+
+  _toggleFullScreen: function(e){
+    let mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
+    mapEl._toggleFullScreen();
   },
 
   _toggleControls: function(e){
@@ -635,6 +644,9 @@ export var ContextMenu = L.Handler.extend({
       case 76: //L KEY
         if(this._layerClicked.className.includes('mapml-layer-item'))
           this._copyLayer(e);
+        break;
+      case 69: //E KEY
+        this._toggleFullScreen(e);
         break;
       case 80: //P KEY
         this._paste(e);
