@@ -227,18 +227,6 @@ export class MapViewer extends HTMLElement {
         this.dispatchEvent(new CustomEvent('createmap'));
       }
 
-      this.controlsListObserver = new MutationObserver((m) => {
-        m.forEach((change)=>{
-          if (change.type === "attributes" && change.attributeName === "controls" && !change.target.hasAttribute("controls") && change.oldValue !== null) {
-            this.setControls(true,false,false);
-          }
-          else if (change.type === "attributes" && change.attributeName === "controls") {
-            this.setControls(true,true,false);
-          }
-        });
-      });
-      this.controlsListObserver.observe(this, {attributes: true, attributeOldValue: true});
-
       window.addEventListener('load', () => {
         if (!this.hasAttribute("controls")) {
           this.setControls(true,false,false);
@@ -305,7 +293,7 @@ export class MapViewer extends HTMLElement {
         }
       }
     } if (!this.controls && this._map) {
-      this._map.contextMenu._items[4].el.el.setAttribute("disabled", ""); // potential issue with this [4] is copy not toggle menu [6]
+      this._map.contextMenu._items[4].el.el.setAttribute("disabled", ""); 
     }
 
   }
@@ -328,6 +316,14 @@ export class MapViewer extends HTMLElement {
     ...
   }     */
     switch(name) {
+      case 'controls':
+        if (oldValue !== null && newValue === null) {
+          this.setControls(true,false,false);
+        }
+        else if (oldValue === null && newValue !== null) {
+          this.setControls(true,true,false);
+        } 
+      break;
       case 'height': 
         if (oldValue !== newValue) {
           this._changeHeight(newValue);

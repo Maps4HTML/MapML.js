@@ -265,20 +265,7 @@ export class WebMap extends HTMLMapElement {
       // if the page doesn't use nav.js or isn't custom then dispatch createmap event	
       if(!custom){	
         this.dispatchEvent(new CustomEvent('createmap'));
-      }
-
-      this.controlsListObserver = new MutationObserver((m) => {
-        m.forEach((change)=>{
-          if (change.type === "attributes" && change.attributeName === "controls" && !change.target.hasAttribute("controls") && change.oldValue !== null) {
-            this.setControls(true,false,false);
-          }
-          else if (change.type === "attributes" && change.attributeName === "controls") {
-            this.setControls(true,true,false);
-          }
-        });
-      });
-      this.controlsListObserver.observe(this, {attributes: true, attributeOldValue: true});
-    
+      }    
 
       window.addEventListener('load', () => {
         if (!this.hasAttribute("controls")) {
@@ -368,6 +355,14 @@ export class WebMap extends HTMLMapElement {
     ...
   }     */
     switch(name) {
+      case 'controls':
+        if (oldValue !== null && newValue === null) {
+          this.setControls(true,false,false);
+        }
+        else if (oldValue === null && newValue !== null) {
+          this.setControls(true,true,false);
+        } 
+      break;
       case 'height': 
         if (oldValue !== newValue) {
           this._changeHeight(newValue);
