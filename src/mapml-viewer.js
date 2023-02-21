@@ -205,8 +205,13 @@ export class MapViewer extends HTMLElement {
           this._addToHistory();
           // the attribution control is not optional
           M.attributionControl(this);
-  
-          this.setControls(false,false,true);
+          
+          if (this.hasAttribute('controls')) {
+            this.setControls(false,false,true);
+          }
+          else {
+            this.setControls(true,false,true);
+          }
           this._crosshair = M.crosshair().addTo(this._map);
           if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
           // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
@@ -227,11 +232,11 @@ export class MapViewer extends HTMLElement {
         this.dispatchEvent(new CustomEvent('createmap'));
       }
 
-      window.addEventListener('load', () => {
-        if (!this.hasAttribute("controls")) {
-          this.setControls(true,false,false);
-        }
-      });
+      // window.addEventListener('load', () => {
+      //   if (!this.hasAttribute("controls")) {
+      //     this.setControls(true,false,true);
+      //   }
+      // });
 
     }
   }
@@ -292,6 +297,7 @@ export class MapViewer extends HTMLElement {
           delete this[controls[i]];
         }
       }
+
     } if (!this.controls && this._map) {
       this._map.contextMenu._items[4].el.el.setAttribute("disabled", ""); 
     }
@@ -321,7 +327,7 @@ export class MapViewer extends HTMLElement {
           this.setControls(true,false,false);
         }
         else if (oldValue === null && newValue !== null) {
-          this.setControls(true,true,false);
+          this.setControls(false,false,false);
         } 
       break;
       case 'height': 
