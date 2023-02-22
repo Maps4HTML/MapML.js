@@ -48,7 +48,6 @@ export var FullscreenButton = L.Control.extend({
             // <mapml-viewer> can contain a shadow root, so return it directly
             var mapEl = this.getContainer().getRootNode().host,
                 container = mapEl.nodeName === "DIV" ? mapEl.parentElement : mapEl;
-            let scrollPosition = window.pageYOffset;
             if (this.isFullscreen()) {
                 if (options && options.pseudoFullscreen) {
                     this._disablePseudoFullscreen(container);
@@ -63,7 +62,6 @@ export var FullscreenButton = L.Control.extend({
                 } else {
                     this._disablePseudoFullscreen(container);
                 }
-                window.scrollTo(0, scrollPosition);
             } else {
                 if (options && options.pseudoFullscreen) {
                     this._enablePseudoFullscreen(container);

@@ -481,7 +481,6 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
   });
 
   test("Checking Context Menu Items Names In Order", async () => {
-    await page.reload();
     let back = await page.$eval("div > div.mapml-contextmenu > button:nth-child(1)",(btn) => btn.textContent);
     expect(back).toEqual('Back (B)');
     let forward = await page.$eval("div > div.mapml-contextmenu > button:nth-child(2)",(btn) => btn.textContent);
@@ -506,19 +505,6 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     expect(copySubMenu2).toEqual('Extent');
     let copySubMenu3 = await page.$eval("div > div.mapml-contextmenu > div.mapml-contextmenu.mapml-submenu >button:nth-child(3)",(btn) => btn.textContent);
     expect(copySubMenu3).toEqual('Location');
-  });
-
-  test.only("Checking Context Menu Fullscreen Button", async () => {
-
-    await page.click("body > mapml-viewer");
-   
-    await page.keyboard.press("Shift+F10");
-
-    await page.keyboard.press("E");
-
-    let fullScreen = await page.$eval("body > mapml-viewer",(viewer) => viewer._map.isFullscreen());
-
-    expect(fullScreen).toEqual(true);
   });
 });
 
