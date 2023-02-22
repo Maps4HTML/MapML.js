@@ -734,11 +734,6 @@ export class MapViewer extends HTMLElement {
   }
 
   _toggleFullScreen(){
-    if (this._map.isFullscreen()) {
-      this.shadowRoot.querySelector('div.mapml-contextmenu>button:nth-child(4)').textContent = M.options.locale.btnFullScreen + " (E)";
-    }else{
-      this.shadowRoot.querySelector('div.mapml-contextmenu>button:nth-child(4)').textContent = M.options.locale.btnExitFullScreen + " (E)";
-    }
     this._map.toggleFullscreen();
   }
 

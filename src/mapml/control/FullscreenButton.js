@@ -62,6 +62,7 @@ export var FullscreenButton = L.Control.extend({
                 } else {
                     this._disablePseudoFullscreen(container);
                 }
+                mapEl._map.contextMenu._items[3].el.el.innerHTML = M.options.locale.btnFullScreen + " (<kbd>E</kbd>)";
             } else {
                 if (options && options.pseudoFullscreen) {
                     this._enablePseudoFullscreen(container);
@@ -76,6 +77,7 @@ export var FullscreenButton = L.Control.extend({
                 } else {
                     this._enablePseudoFullscreen(container);
                 }
+                mapEl._map.contextMenu._items[3].el.el.innerHTML = M.options.locale.btnExitFullScreen + " (<kbd>E</kbd>)";
             }
 
         },
