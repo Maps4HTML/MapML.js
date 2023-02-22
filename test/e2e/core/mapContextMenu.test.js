@@ -558,6 +558,11 @@ test.describe("Playwright Map Context Menu Tests", () => {
     expect(debug).toEqual('Toggle Debug Mode (D)');
     let source = await page.$eval("div > div.mapml-contextmenu > button:nth-child(12)",(btn) => btn.textContent);
     expect(source).toEqual('View Map Source (V)');
+    try {
+      await page.$eval("div > div.mapml-contextmenu > button:nth-child(13)", (btn) => btn.textContent);
+    } catch (error) {
+      expect(error).toHaveProperty('message', 'page.$eval: Error: failed to find element matching selector "div > div.mapml-contextmenu > button:nth-child(13)"');
+    }
     let copySubMenu1 = await page.$eval("div > div.mapml-contextmenu > div.mapml-contextmenu.mapml-submenu >button:nth-child(1)",(btn) => btn.textContent);
     expect(copySubMenu1).toEqual('Map');
     let copySubMenu2 = await page.$eval("div > div.mapml-contextmenu > div.mapml-contextmenu.mapml-submenu >button:nth-child(2)",(btn) => btn.textContent);

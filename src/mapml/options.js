@@ -21,6 +21,7 @@ export var Options = {
     btnZoomIn: "Zoom in",
     btnZoomOut: "Zoom out",
     btnFullScreen: "View fullscreen",
+    btnExitFullScreen: "Exit fullscreen",
     amZoom: "zoom level",
     amColumn: "column",
     amRow: "row",
