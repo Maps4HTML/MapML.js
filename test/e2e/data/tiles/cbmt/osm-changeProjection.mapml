@@ -8,15 +8,9 @@
   <map-body>
   <map-extent units="OSMTILE">
     <map-input name="z" type="zoom" min="9" max="18"></map-input>
-    <map-input name="s" type="hidden" shard="true" list="servers"></map-input>
-    <map-datalist id="servers">
-      <map-option value="a"></map-option>
-      <map-option value="b"></map-option>
-      <map-option value="c"></map-option>
-    </map-datalist>
     <map-input name="x" type="location" units="tilematrix" axis="column"></map-input>
     <map-input name="y" type="location" units="tilematrix" axis="row"></map-input>
-    <map-link rel="tile" tref="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
+    <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
   </map-extent>
   </map-body>
 </mapml->

@@ -268,7 +268,6 @@ export var TemplatedTileLayer = L.TileLayer.extend({
             axis = inputs[i].getAttribute("axis"), 
             name = inputs[i].getAttribute("name"), 
             position = inputs[i].getAttribute("position"),
-            shard = (type === "hidden" && inputs[i].hasAttribute("shard")),
             select = (inputs[i].tagName.toLowerCase() === "map-select"),
             value = inputs[i].getAttribute("value"),
             min = inputs[i].getAttribute("min"),
@@ -374,9 +373,6 @@ export var TemplatedTileLayer = L.TileLayer.extend({
              zoom.max = Number.parseInt(max,10);
            }
            template.zoom = zoom;
-        } else if (shard) {
-          template.tile.server = name;
-          template.tile.subdomains = inputs[i].servers.slice();
         } else if (select) {
             /*jshint -W104 */
           const parsedselect = inputs[i].htmlselect;
