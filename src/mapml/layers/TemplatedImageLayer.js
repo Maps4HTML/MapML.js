@@ -47,6 +47,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
             this._imageOverlay._overlayToRemove = overlayToRemove._url;
             this._imageOverlay.on('load error', function () {map.removeLayer(overlayToRemove);});
         }
+        this.location = loc;
     },
 
     _scaleImage: function (bounds, zoom) {
