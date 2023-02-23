@@ -1,7 +1,6 @@
 export var TemplatedImageLayer =  L.Layer.extend({
     initialize: function(template, options) {
         this._template = template;
-        this._layer = options.pane.parentElement;
         this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
         L.DomUtil.addClass(this._container, 'mapml-image-container');
         let inputData = M._extractInputBounds(template);
