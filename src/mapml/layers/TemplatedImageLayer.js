@@ -14,7 +14,8 @@ export var TemplatedImageLayer =  L.Layer.extend({
     },
     getEvents: function () {
         var events = {
-            moveend: this._onMoveEnd
+            moveend: this._onMoveEnd,
+            zoomstart: this._clearLayer,
         };
         return events;
     },
@@ -22,12 +23,6 @@ export var TemplatedImageLayer =  L.Layer.extend({
         this._map._addZoomLimit(this);  //used to set the zoom limit of the map
         this.setZIndex(this.options.zIndex);
         this._onAdd();
-        // make sure templatedImage Layer is placed at (0,0) of the cs
-        // when it is added to the map (solve issue #759)
-        if (this._layer.isUnChecked) {
-            this.redraw();
-            this._layer.isUnChecked = false;
-        }
     },
     redraw: function() {
         this._onMoveEnd();
@@ -73,9 +68,12 @@ export var TemplatedImageLayer =  L.Layer.extend({
 
         if (zoom % step !== 0) steppedZoom = Math.floor(zoom / step) * step;
         let bounds = this._map.getPixelBounds(this._map.getCenter(), steppedZoom);
-        this._addImage(bounds, steppedZoom, L.point(0,0));
         this._pixelOrigins = {};
         this._pixelOrigins[steppedZoom] = bounds.min;
+        // if the map is panned before the new image layer is added,
+        // the location that the layer should be added to is no longer (0,0) but need to be calculated
+        let loc = this._map.getPixelBounds().min.subtract(this._map.getPixelOrigin());
+        this._addImage(bounds, steppedZoom, loc);
         if(zoom !== steppedZoom) {
             this._scaleImage(bounds, zoom);
         }
@@ -88,7 +86,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
         let previous = history[history.length - 2];
         if(!previous) previous = current;
         let step = this._template.step;
-        let steppedZoom =   Math.floor(mapZoom / step) * step;
+        let steppedZoom = Math.floor(mapZoom / step) * step;
         let bounds = this._map.getPixelBounds(this._map.getCenter(), steppedZoom);
         //Zooming from one step increment into a lower one
         if((step !== "1") && ((mapZoom + 1) % step === 0) &&
@@ -100,18 +98,19 @@ export var TemplatedImageLayer =  L.Layer.extend({
             this._imageOverlay._overlayToRemove = this._imageOverlay._url;
             if (current.zoom !== previous.zoom) {
                 //Zoomed from within one step increment into another
-                if(steppedZoom !== Math.floor(previous.zoom / step) * step){
-                    this._addImage(bounds, steppedZoom, L.point(0,0));
-                    this._pixelOrigins[steppedZoom] = bounds.min;
-                }
+                this._addImage(bounds, steppedZoom, L.point(0,0));
+                this._pixelOrigins[steppedZoom] = bounds.min;
                 this._scaleImage(bounds, mapZoom);
             } else {
+                // Panning within a step increment
                 let pixelOrigin = this._pixelOrigins[steppedZoom];
                 let loc = bounds.min.subtract(pixelOrigin);
                 if(this.getImageUrl(bounds, steppedZoom) === this._imageOverlay._url) return;
                 this._addImage(bounds, steppedZoom, loc);
                 this._scaleImage(bounds, mapZoom);
             }
+        // Zooming from one step decrement into a higher one
+        // OR panning when mapZoom % step === 0
         } else {
             let mapBounds = M.pixelToPCRSBounds(this._map.getPixelBounds(),mapZoom,this._map.options.projection);
             this.isVisible = mapZoom <= this.zoomBounds.maxZoom && mapZoom >= this.zoomBounds.minZoom &&
