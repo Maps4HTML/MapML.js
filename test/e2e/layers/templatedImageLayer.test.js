@@ -52,11 +52,7 @@ test.describe("Playwright templatedImage Layer Tests", () => {
       (map) => {
         let layers = map._map._layers;
         let keys = Object.keys(layers);
-        for (let key of keys) {
-          if (layers[key]._imageOverlay) {
-            return layers[key].location;
-          }
-        }
+        return layers[keys[keys.length - 1]]._location;
       }
     );
     const expectedPos = {
