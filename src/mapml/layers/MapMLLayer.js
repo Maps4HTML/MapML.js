@@ -926,21 +926,7 @@ export var MapMLLayer = L.Layer.extend({
 
                 inputs.push(inp);
                 includesZoom = includesZoom || inp.hasAttribute("type") && inp.getAttribute("type").toLowerCase() === "zoom";
-                if (inp.hasAttribute('shard')) {
-                  var id = inp.getAttribute('list');
-                  inp.servers = [];
-                  var servers = serverExtent.querySelectorAll('map-datalist#'+id + ' > map-option');
-                  if (servers.length === 0 && inp.hasAttribute('value')) {
-                    servers = inp.getAttribute('value').split('');
-                  }
-                  for (var s=0;s < servers.length;s++) {
-                    if (servers[s].getAttribute) {
-                      inp.servers.push(servers[s].getAttribute('value'));
-                    } else {
-                      inp.servers.push(servers[s]);
-                    }
-                  }
-                } else if (inp.tagName.toLowerCase() === 'map-select') {
+                if (inp.tagName.toLowerCase() === 'map-select') {
                   // use a throwaway div to parse the input from MapML into HTML
                   var div =document.createElement("div");
                   div.insertAdjacentHTML("afterbegin",inp.outerHTML);

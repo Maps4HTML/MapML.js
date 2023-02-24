@@ -20,9 +20,6 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       L.setOptions(this, options);
       this._setUpTileTemplateVars(template);
 
-      if (template.tile.subdomains) {
-        L.setOptions(this, L.extend(this.options, {subdomains: template.tile.subdomains}));
-      }
       this._template = template;
       this._initContainer();
       // call the parent constructor with the template tref value, per the 
@@ -166,7 +163,6 @@ export var TemplatedTileLayer = L.TileLayer.extend({
         obj[this._template.pcrs.easting.right] = this._tileMatrixToPCRSPosition(coords, 'top-right').x;
         obj[this._template.pcrs.northing.top] = this._tileMatrixToPCRSPosition(coords, 'top-left').y;
         obj[this._template.pcrs.northing.bottom] = this._tileMatrixToPCRSPosition(coords, 'bottom-left').y;
-        obj[this._template.tile.server] = this._getSubdomain(coords);
         for (var v in this._template.tile) {
             if (["row","col","zoom","left","right","top","bottom"].indexOf(v) < 0) {
                 obj[v] = this._template.tile[v];
@@ -268,7 +264,6 @@ export var TemplatedTileLayer = L.TileLayer.extend({
             axis = inputs[i].getAttribute("axis"), 
             name = inputs[i].getAttribute("name"), 
             position = inputs[i].getAttribute("position"),
-            shard = (type === "hidden" && inputs[i].hasAttribute("shard")),
             select = (inputs[i].tagName.toLowerCase() === "map-select"),
             value = inputs[i].getAttribute("value"),
             min = inputs[i].getAttribute("min"),
@@ -374,9 +369,6 @@ export var TemplatedTileLayer = L.TileLayer.extend({
              zoom.max = Number.parseInt(max,10);
            }
            template.zoom = zoom;
-        } else if (shard) {
-          template.tile.server = name;
-          template.tile.subdomains = inputs[i].servers.slice();
         } else if (select) {
             /*jshint -W104 */
           const parsedselect = inputs[i].htmlselect;
