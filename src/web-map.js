@@ -272,7 +272,14 @@ export class WebMap extends HTMLMapElement {
           this.setControls(true,false,false);
         }
       });
-
+      
+      this.controlsListObserver = new MutationObserver((m) => {
+        m.forEach((change)=>{
+          if(change.type==="attributes" && change.attributeName === "controlslist")
+            this.setControls(false,false,false);
+        });
+      });
+      this.controlsListObserver.observe(this, {attributes:true});
     }
   }
   disconnectedCallback() {
@@ -360,7 +367,7 @@ export class WebMap extends HTMLMapElement {
           this.setControls(true,false,false);
         }
         else if (oldValue === null && newValue !== null) {
-          this.setControls(true,true,false);
+          this.setControls(false,false,false);
         } 
       break;
       case 'height': 

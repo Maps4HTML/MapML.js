@@ -204,14 +204,9 @@ export class MapViewer extends HTMLElement {
           });
           this._addToHistory();
           // the attribution control is not optional
-          M.attributionControl(this);
-          
-          if (this.hasAttribute('controls')) {
-            this.setControls(false,false,true);
-          }
-          else {
-            this.setControls(true,false,true);
-          }
+          M.attributionControl(this); 
+
+          this.setControls(false,false,true);
           this._crosshair = M.crosshair().addTo(this._map);
           if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
           // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
@@ -232,12 +227,19 @@ export class MapViewer extends HTMLElement {
         this.dispatchEvent(new CustomEvent('createmap'));
       }
 
-      // window.addEventListener('load', () => {
-      //   if (!this.hasAttribute("controls")) {
-      //     this.setControls(true,false,true);
-      //   }
-      // });
-
+      window.addEventListener('load', () => {
+        if (!this.hasAttribute("controls")) {
+          this.setControls(true,false,false);
+        }
+      });
+      
+      this.controlsListObserver = new MutationObserver((m) => {
+        m.forEach((change)=>{
+          if(change.type==="attributes" && change.attributeName === "controlslist")
+            this.setControls(false,false,false);
+        });
+      });
+      this.controlsListObserver.observe(this, {attributes:true});
     }
   }
   disconnectedCallback() {
