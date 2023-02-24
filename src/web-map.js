@@ -291,7 +291,6 @@ export class WebMap extends HTMLMapElement {
         });
       });
       this.controlsListObserver.observe(this, {attributes:true});
-      }
       
       if (this._map && this.hasAttribute('static')) {
         this._toggleStatic();
