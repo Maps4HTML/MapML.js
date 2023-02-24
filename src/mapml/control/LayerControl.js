@@ -25,7 +25,8 @@ export var LayerControl = L.Control.Layers.extend({
         this._initLayout();
         this._map.on('validate', this._validateInput, this);
         L.DomEvent.on(this.options.mapEl, "layerchange", this._validateInput, this);
-        L.DomEvent.on(this._container, 'keydown', this._focusFirstLayer, this._container);
+        // Adding event on layer control button
+        L.DomEvent.on(this._container.getElementsByTagName("a")[0], 'keydown', this._focusFirstLayer, this._container);
         L.DomEvent.on(this._container, 'contextmenu', this._preventDefaultContextMenu, this);
         this._update();
         //this._validateExtents();
@@ -38,7 +39,7 @@ export var LayerControl = L.Control.Layers.extend({
     },
     onRemove: function (map) {
         map.off('validate', this._validateInput, this);
-        L.DomEvent.off(this._container, 'keydown', this._focusFirstLayer, this._container);
+        L.DomEvent.off(this._container.getElementsByTagName("a")[0], 'keydown', this._focusFirstLayer, this._container);
         // remove layer-registerd event handlers so that if the control is not
         // on the map it does not generate layer events
         for (var i = 0; i < this._layers.length; i++) {
@@ -104,10 +105,10 @@ export var LayerControl = L.Control.Layers.extend({
 
     // focus the first layer in the layer control when enter is pressed
     _focusFirstLayer: function(e){
-      if(e.key === 'Enter' && this.className != 'leaflet-control-layers leaflet-control leaflet-control-layers-expanded'){
+      if (e.key === 'Enter' && this.className === 'leaflet-control-layers leaflet-control leaflet-control-layers-expanded') {
         var elem = this.children[1].children[2].children[0].children[0].children[0].children[0];
         if(elem) setTimeout(() => elem.focus(), 0);
-        }
+      }
     },
     
     _withinZoomBounds: function(zoom, range) {
@@ -116,7 +117,7 @@ export var LayerControl = L.Control.Layers.extend({
     _addItem: function (obj) {
       var layercontrols  =  obj.layer.getLayerUserControlsHTML();
       // the input is required by Leaflet...
-      obj.input = layercontrols.querySelector('input');
+      obj.input = layercontrols.querySelector('input.leaflet-control-layers-selector');
 
       this._layerControlInputs.push(obj.input);
     		obj.input.layerId = L.stamp(obj.layer);
@@ -152,7 +153,7 @@ export var LayerControl = L.Control.Layers.extend({
         let containerPoint = this._map.mouseEventToContainerPoint(e);
         e.preventDefault();
         this._map.fire('contextmenu', 
-          { originalEvent: {target: e.target}, 
+          { originalEvent: e,
             containerPoint: containerPoint, 
             latlng: latlng });
     }

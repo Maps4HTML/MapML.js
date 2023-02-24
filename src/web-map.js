@@ -2,10 +2,11 @@ import './leaflet.js';  // a lightly modified version of Leaflet for use as brow
 import './mapml.js';       // refactored URI usage, replaced with URL standard
 import { MapLayer } from './layer.js';
 import { MapArea } from './map-area.js';
+import { MapCaption } from './map-caption.js';
 
 export class WebMap extends HTMLMapElement {
   static get observedAttributes() {
-    return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls'];
+    return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls', 'static'];
   }
   // see comments below regarding attributeChangedCallback vs. getter/setter
   // usage.  Effectively, the user of the element must use the property, not
@@ -111,6 +112,16 @@ export class WebMap extends HTMLMapElement {
       };
     }
     return (formattedExtent);
+  }
+  get static() {
+    return this.hasAttribute('static');
+  }
+  set static(value) {
+    const isStatic = Boolean(value);
+    if (isStatic)
+      this.setAttribute('static', '');
+    else
+      this.removeAttribute('static');
   }
 
   constructor() {
@@ -280,6 +291,36 @@ export class WebMap extends HTMLMapElement {
         });
       });
       this.controlsListObserver.observe(this, {attributes:true});
+      }
+      
+      if (this._map && this.hasAttribute('static')) {
+        this._toggleStatic();
+      }
+
+      /*
+        1. only deletes aria-label when the last (only remaining) map caption is removed
+        2. only deletes aria-label if the aria-label was defined by the map caption element itself
+      */
+      
+      let mapcaption = this.querySelector('map-caption');
+      
+      if (mapcaption !== null) {
+        setTimeout(() => {
+          let ariaupdate = this.getAttribute('aria-label');
+        
+          if (ariaupdate === mapcaption.innerHTML) {
+            this.mapCaptionObserver = new MutationObserver((m) => {
+              let mapcaptionupdate = this.querySelector('map-caption');
+              if (mapcaptionupdate !== mapcaption) {
+                this.removeAttribute('aria-label');
+              }     
+            });
+            this.mapCaptionObserver.observe(this, {
+              childList: true
+            });
+          }
+        }, 0);
+      }
     }
   }
   disconnectedCallback() {
@@ -376,10 +417,35 @@ export class WebMap extends HTMLMapElement {
         }
       break;  
       case 'width': 
-      if (oldValue !== newValue) {
-        this._changeWidth(newValue);
-      }
+        if (oldValue !== newValue) {
+          this._changeWidth(newValue);
+        }
       break;  
+      case 'static':
+        this._toggleStatic();
+      break;  
+    }
+  }
+  _toggleStatic(){
+    const isStatic = this.hasAttribute('static');
+    if (this._map) {
+      if (isStatic) {
+        this._map.dragging.disable();
+        this._map.touchZoom.disable();
+        this._map.doubleClickZoom.disable();
+        this._map.scrollWheelZoom.disable();
+        this._map.boxZoom.disable();
+        this._map.keyboard.disable();
+        this._zoomControl.disable();
+      } else {
+        this._map.dragging.enable();
+        this._map.touchZoom.enable();
+        this._map.doubleClickZoom.enable();
+        this._map.scrollWheelZoom.enable();
+        this._map.boxZoom.enable();
+        this._map.keyboard.enable();
+        this._zoomControl.enable();
+      }
     }
   }
   _dropHandler(event) {
@@ -393,8 +459,7 @@ export class WebMap extends HTMLMapElement {
   }
   _removeEvents() {
     if (this._map) {
-      this._map.off('preclick click dblclick mousemove mouseover mouseout mousedown mouseup contextmenu', false, this);
-      this._map.off('load movestart move moveend zoomstart zoom zoomend', false, this);
+      this._map.off();
       this.removeEventListener("drop", this._dropHandler, false);
       this.removeEventListener("dragover", this._dragoverHandler, false);
     }
@@ -424,7 +489,9 @@ export class WebMap extends HTMLMapElement {
             (layer) => {
               M._pasteLayer(this, layer);
             });
-      } else if (e.keyCode === 32) {
+      // Prevents default spacebar event on all of web-map
+      } else if (e.keyCode === 32 &&
+                 document.activeElement.shadowRoot.activeElement.nodeName !== "INPUT") {
         e.preventDefault();
         this._map.fire('keypress', {originalEvent: e});
       }
@@ -870,3 +937,4 @@ export class WebMap extends HTMLMapElement {
 window.customElements.define('web-map', WebMap,  { extends: 'map' });
 window.customElements.define('layer-', MapLayer);
 window.customElements.define('map-area', MapArea, {extends: 'area'});
+window.customElements.define('map-caption',MapCaption);

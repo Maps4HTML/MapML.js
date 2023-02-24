@@ -302,9 +302,7 @@ export class MapLayer extends HTMLElement {
   }
   _removeEvents() {
     if (this._layer) {
-      this._layer.off('loadstart', false, this);
-      this._layer.off('changestyle', false, this);
-      this._layer.off('add remove', this._onLayerChange,  this);
+      this._layer.off();
     }
   }
   _setUpEvents() {
