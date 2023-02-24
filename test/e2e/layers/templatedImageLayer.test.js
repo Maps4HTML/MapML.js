@@ -28,4 +28,37 @@ test.describe("Playwright templatedImage Layer Tests", () => {
   isVisible.test("templatedImageLayer.html", 2, 1);
   zoomLimit.test("templatedImageLayer.html", 1, 0);
   extentProperty.test("templatedImageLayer.html", expectedPCRS, expectedGCRS);
+
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('', {slowMo: 250});
+    page = await context.newPage();
+    await page.goto("templatedImageLayer.html");
+  });
+
+  test("Templated image layer position when turn it off then on", async () => {
+    await page.click("body > map");
+    for (let i = 0; i < 5; ++i) {
+      await page.keyboard.press("ArrowUp");
+      await page.waitForTimeout(200);
+    }
+    await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
+    await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > input");
+    await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > input");
+    await page.waitForTimeout(500);
+    const imagePos = await page.$eval(
+      "body > map",
+      (map) => {
+        let layers = map._map._layers;
+        let keys = Object.keys(layers);
+        return layers[keys[keys.length - 1]]._location;
+      }
+    );
+    const expectedPos = {
+      x: 0,
+      y: -400
+    };
+    expect(imagePos).toEqual(expectedPos);
+  });
 });
