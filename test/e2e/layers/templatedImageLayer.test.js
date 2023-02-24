@@ -58,7 +58,7 @@ test.describe("Playwright templatedImage Layer Tests", () => {
     const expectedPos = {
       x: 0,
       y: -400
-    }
+    };
     expect(imagePos).toEqual(expectedPos);
   });
 });

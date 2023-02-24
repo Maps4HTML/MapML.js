@@ -14,7 +14,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
     getEvents: function () {
         var events = {
             moveend: this._onMoveEnd,
-            zoomstart: this._clearLayer,
+            zoomstart: this._clearLayer
         };
         return events;
     },
@@ -225,7 +225,7 @@ export var TemplatedImageLayer =  L.Layer.extend({
         }
       }
       return extentVarNames;
-    },
+    }
 });
 export var templatedImageLayer = function(template, options) {
     return new TemplatedImageLayer(template, options);
