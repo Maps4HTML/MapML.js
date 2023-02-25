@@ -332,7 +332,7 @@ export class MapViewer extends HTMLElement {
         }
       }
     } else if (!this.controls && this._map) {
-      this._map.contextMenu._items[8].el.el.setAttribute("disabled", "");
+      this._map.contextMenu._disableToggleControls();
     }
 
   }
@@ -550,6 +550,14 @@ export class MapViewer extends HTMLElement {
         this.dispatchEvent(new CustomEvent('zoomend', {detail:
           {target: this}}));
       }, this);
+    this.addEventListener('fullscreenchange', function(event) {
+      if (document.fullscreenElement === null) {
+        // full-screen mode has been exited
+        this._map.contextMenu._setViewFullScreenInnerHTML('view');
+      }else{
+        this._map.contextMenu._setViewFullScreenInnerHTML('exit');
+      }
+    });
   }
   _toggleControls() {
     if (this._map) {

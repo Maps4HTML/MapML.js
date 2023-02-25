@@ -709,5 +709,16 @@ export var ContextMenu = L.Handler.extend({
   _onItemMouseOut: function (e) {
     L.DomUtil.removeClass(e.target || e.srcElement, 'over');
     this._hideCoordMenu(e);
+  },
+  _disableToggleControls: function () {
+    this._items[8].el.el.setAttribute("disabled", "");
+  },
+  _setViewFullScreenInnerHTML: function(options){
+    if (options === 'view'){
+      this._map.contextMenu._items[3].el.el.innerHTML = M.options.locale.btnFullScreen + " (<kbd>E</kbd>)";
+    }
+    else if(options === 'exit'){
+      this._map.contextMenu._items[3].el.el.innerHTML = M.options.locale.btnExitFullScreen + " (<kbd>E</kbd>)";
+    }
   }
 });
