@@ -594,11 +594,11 @@ export class WebMap extends HTMLMapElement {
       if (document.fullscreenElement === null) {
         // full-screen mode has been exited
         this._map.contextMenu.setViewFullScreenInnerHTML('view');
-      }else{
+      } else {
         this._map.contextMenu.setViewFullScreenInnerHTML('exit');
       }
     });
-    this.addEventListener('keydown', function(event) {
+    this.addEventListener('keydown', function (event) {
       // Check if Ctrl+R is pressed and map is focused
       if (event.ctrlKey && event.keyCode === 82 && document.activeElement.className === "mapml-web-map") {
         // Prevent default browser behavior

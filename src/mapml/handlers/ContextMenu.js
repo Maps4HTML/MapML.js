@@ -701,14 +701,16 @@ export var ContextMenu = L.Handler.extend({
     L.DomUtil.removeClass(e.target || e.srcElement, 'over');
     this._hideCoordMenu(e);
   },
+
   disableToggleControls: function () {
     this._items[8].el.el.setAttribute("disabled", "");
   },
-  setViewFullScreenInnerHTML: function(options){
-    if (options === 'view'){
+  
+  setViewFullScreenInnerHTML: function (options) {
+    if (options === 'view') {
       this._map.contextMenu._items[3].el.el.innerHTML = M.options.locale.btnFullScreen + " (<kbd>F</kbd>)";
     }
-    else if(options === 'exit'){
+    else if (options === 'exit') {
       this._map.contextMenu._items[3].el.el.innerHTML = M.options.locale.btnExitFullScreen + " (<kbd>F</kbd>)";
     }
   }
