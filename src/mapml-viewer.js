@@ -554,7 +554,7 @@ export class MapViewer extends HTMLElement {
       if (document.fullscreenElement === null) {
         // full-screen mode has been exited
         this._map.contextMenu.setViewFullScreenInnerHTML('view');
-      }else{
+      } else {
         this._map.contextMenu.setViewFullScreenInnerHTML('exit');
       }
     });
@@ -566,12 +566,12 @@ export class MapViewer extends HTMLElement {
         this.reload();
       }
       if (event.altKey && event.keyCode === 39 && document.activeElement.nodeName === "MAPML-VIEWER") {
-        // Prevent default browser behavior
+        // Prevent default browser behavior for Alt+Right-Arrow, if any
         event.preventDefault();
         this.forward();
       }
       if (event.altKey && event.keyCode === 37 && document.activeElement.nodeName === "MAPML-VIEWER") {
-        // Prevent default browser behavior
+        // Prevent default browser behavior for Alt+Left-Arrow (Back in browser history)
         event.preventDefault();
         this.back();
       }
