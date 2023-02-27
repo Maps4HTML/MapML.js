@@ -17,19 +17,19 @@ export var ContextMenu = L.Handler.extend({
     //setting the items in the context menu and their callback functions
     this._items = [
       {
-        text: M.options.locale.cmBack + " (<kbd>B</kbd>)",
+        text: M.options.locale.cmBack + " (<kbd>Alt+&#8592;</kbd>)",
         callback:this._goBack
       },
       {
-        text: M.options.locale.cmForward + " (<kbd>F</kbd>)",
+        text: M.options.locale.cmForward + " (<kbd>Alt+&#8594;</kbd>)",
         callback:this._goForward
       },
       {
-        text: M.options.locale.cmReload + " (<kbd>R</kbd>)",
+        text: M.options.locale.cmReload + " (<kbd>Ctrl+R</kbd>)",
         callback:this._reload
       },
       {
-        text: M.options.locale.btnFullScreen + " (<kbd>E</kbd>)",
+        text: M.options.locale.btnFullScreen + " (<kbd>F</kbd>)",
         callback:this._toggleFullScreen
       },
       {
@@ -624,9 +624,9 @@ export var ContextMenu = L.Handler.extend({
         if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
           this._map._container.parentNode.activeElement.click();
         break;
-      case 66: //B KEY
-        this._goBack(e);
-        break;
+      // case 66: //B KEY
+      //   this._goBack(e);
+      //   break;
       case 67: //C KEY
         this._copyCoords({
           latlng:this._map.getCenter()
@@ -638,22 +638,22 @@ export var ContextMenu = L.Handler.extend({
       case 77: //M KEY
         this._copyMapML(e);
         break;
-      case 70: //F KEY
-        this._goForward(e);
-        break;
+      // case 70: //F KEY
+      //   this._goForward(e);
+      //   break;
       case 76: //L KEY
         if(this._layerClicked.className.includes('mapml-layer-item'))
           this._copyLayer(e);
         break;
-      case 69: //E KEY
+      case 70: //F KEY
         this._toggleFullScreen(e);
         break;
       case 80: //P KEY
         this._paste(e);
         break;
-      case 82: //R KEY
-        this._reload(e);
-        break;
+      // case 82: //R KEY
+      //   this._reload(e);
+      //   break;
       case 84: //T KEY
         this._toggleControls(e);
         break;
@@ -710,15 +710,15 @@ export var ContextMenu = L.Handler.extend({
     L.DomUtil.removeClass(e.target || e.srcElement, 'over');
     this._hideCoordMenu(e);
   },
-  _disableToggleControls: function () {
+  disableToggleControls: function () {
     this._items[8].el.el.setAttribute("disabled", "");
   },
-  _setViewFullScreenInnerHTML: function(options){
+  setViewFullScreenInnerHTML: function(options){
     if (options === 'view'){
-      this._map.contextMenu._items[3].el.el.innerHTML = M.options.locale.btnFullScreen + " (<kbd>E</kbd>)";
+      this._map.contextMenu._items[3].el.el.innerHTML = M.options.locale.btnFullScreen + " (<kbd>F</kbd>)";
     }
     else if(options === 'exit'){
-      this._map.contextMenu._items[3].el.el.innerHTML = M.options.locale.btnExitFullScreen + " (<kbd>E</kbd>)";
+      this._map.contextMenu._items[3].el.el.innerHTML = M.options.locale.btnExitFullScreen + " (<kbd>F</kbd>)";
     }
   }
 });

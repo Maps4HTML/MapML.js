@@ -373,7 +373,7 @@ export class WebMap extends HTMLMapElement {
         }
       }
     }else if (!this.controls && this._map) {
-      this._map.contextMenu._items[8].el.el.setAttribute("disabled", "");
+      this._map.contextMenu.disableToggleControls();
     }
   }
   attributeChangedCallback(name, oldValue, newValue) {
@@ -590,6 +590,32 @@ export class WebMap extends HTMLMapElement {
         this.dispatchEvent(new CustomEvent('zoomend', {detail:
           {target: this}}));
       }, this);
+    this.addEventListener('fullscreenchange', function(event) {
+      if (document.fullscreenElement === null) {
+        // full-screen mode has been exited
+        this._map.contextMenu.setViewFullScreenInnerHTML('view');
+      }else{
+        this._map.contextMenu.setViewFullScreenInnerHTML('exit');
+      }
+    });
+    this.addEventListener('keydown', function(event) {
+      // Check if Ctrl+R is pressed and map is focused
+      if (event.ctrlKey && event.keyCode === 82 && document.activeElement.nodeName === "DIV") {
+        // Prevent default browser behavior
+        event.preventDefault();
+        this.reload();
+      }
+      if (event.altKey && event.keyCode === 39 && document.activeElement.nodeName === "DIV") {
+        // Prevent default browser behavior
+        event.preventDefault();
+        this.forward();
+      }
+      if (event.altKey && event.keyCode === 37 && document.activeElement.nodeName === "DIV") {
+        // Prevent default browser behavior
+        event.preventDefault();
+        this.back();
+      }
+    });    
   }
   _toggleControls() {
     if (this._map) {

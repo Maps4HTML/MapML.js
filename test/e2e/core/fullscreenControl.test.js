@@ -48,7 +48,7 @@ test.describe("Playwright mapml-viewer fullscreen tests", () => {
   test("Context Menu Fullscreen Button makes the mapml-viewer element fullscreen", async () => {
     await page.click("body > #map1");
     await page.keyboard.press("Shift+F10");
-    await page.keyboard.press("E");
+    await page.keyboard.press("F");
     let fullscreenElement = await page.evaluate(`document.fullscreenElement.id`);
     expect(fullscreenElement).toEqual("map1");
   });
@@ -97,7 +97,7 @@ test.describe("Playwright mapml-viewer fullscreen tests", () => {
   test("Context Menu Fullscreen Button makes the map element fullscreen", async () => {
     await page.click("body > #map1");
     await page.keyboard.press("Shift+F10");
-    await page.keyboard.press("E");
+    await page.keyboard.press("F");
     let fullscreenElement = await page.evaluate(`document.fullscreenElement.id`);
     expect(fullscreenElement).toEqual("map1");
   });

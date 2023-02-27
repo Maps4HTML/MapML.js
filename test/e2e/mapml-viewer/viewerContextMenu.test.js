@@ -50,7 +50,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("View fullscreen (E)");
+    expect(name).toEqual("View fullscreen (F)");
   });
 
   test("Context menu tab goes to next item", async () => {
@@ -73,7 +73,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("View fullscreen (E)");
+    expect(name).toEqual("View fullscreen (F)");
   });
 
   test("Submenu opens on C with focus on first item", async () => {
@@ -482,13 +482,13 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
 
   test("Checking Context Menu Items Names In Order", async () => {
     let back = await page.$eval("div > div.mapml-contextmenu > button:nth-child(1)",(btn) => btn.textContent);
-    expect(back).toEqual('Back (B)');
+    expect(back).toEqual('Back (Alt+\u2190)');
     let forward = await page.$eval("div > div.mapml-contextmenu > button:nth-child(2)",(btn) => btn.textContent);
-    expect(forward).toEqual('Forward (F)');
+    expect(forward).toEqual('Forward (Alt+\u2192)');
     let reload = await page.$eval("div > div.mapml-contextmenu > button:nth-child(3)",(btn) => btn.textContent);
-    expect(reload).toEqual('Reload (R)');
+    expect(reload).toEqual('Reload (Ctrl+R)');
     let fullScreen = await page.$eval("div > div.mapml-contextmenu > button:nth-child(4)",(btn) => btn.textContent);
-    expect(fullScreen).toEqual('View fullscreen (E)');
+    expect(fullScreen).toEqual('View fullscreen (F)');
     let copy = await page.$eval("div > div.mapml-contextmenu > button:nth-child(6)",(btn) => btn.textContent);
     expect(copy).toEqual('Copy (C)');
     let paste = await page.$eval("div > div.mapml-contextmenu > button:nth-child(8)",(btn) => btn.textContent);
