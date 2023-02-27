@@ -624,9 +624,6 @@ export var ContextMenu = L.Handler.extend({
         if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
           this._map._container.parentNode.activeElement.click();
         break;
-      // case 66: //B KEY
-      //   this._goBack(e);
-      //   break;
       case 67: //C KEY
         this._copyCoords({
           latlng:this._map.getCenter()
@@ -638,9 +635,6 @@ export var ContextMenu = L.Handler.extend({
       case 77: //M KEY
         this._copyMapML(e);
         break;
-      // case 70: //F KEY
-      //   this._goForward(e);
-      //   break;
       case 76: //L KEY
         if(this._layerClicked.className.includes('mapml-layer-item'))
           this._copyLayer(e);
@@ -651,9 +645,6 @@ export var ContextMenu = L.Handler.extend({
       case 80: //P KEY
         this._paste(e);
         break;
-      // case 82: //R KEY
-      //   this._reload(e);
-      //   break;
       case 84: //T KEY
         this._toggleControls(e);
         break;

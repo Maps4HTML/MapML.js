@@ -600,17 +600,17 @@ export class WebMap extends HTMLMapElement {
     });
     this.addEventListener('keydown', function(event) {
       // Check if Ctrl+R is pressed and map is focused
-      if (event.ctrlKey && event.keyCode === 82 && document.activeElement.nodeName === "DIV") {
+      if (event.ctrlKey && event.keyCode === 82 && document.activeElement.className === "mapml-web-map") {
         // Prevent default browser behavior
         event.preventDefault();
         this.reload();
       }
-      if (event.altKey && event.keyCode === 39 && document.activeElement.nodeName === "DIV") {
+      if (event.altKey && event.keyCode === 39 && document.activeElement.className === "mapml-web-map") {
         // Prevent default browser behavior
         event.preventDefault();
         this.forward();
       }
-      if (event.altKey && event.keyCode === 37 && document.activeElement.nodeName === "DIV") {
+      if (event.altKey && event.keyCode === 37 && document.activeElement.className === "mapml-web-map") {
         // Prevent default browser behavior
         event.preventDefault();
         this.back();
