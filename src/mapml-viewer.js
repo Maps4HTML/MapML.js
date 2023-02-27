@@ -559,21 +559,21 @@ export class MapViewer extends HTMLElement {
       }
     });
     this.addEventListener('keydown', function(event) {
-      // Check if Ctrl+R is pressed and map is focused
-      if (event.ctrlKey && event.keyCode === 82 && document.activeElement.nodeName === "MAPML-VIEWER") {
-        // Prevent default browser behavior
-        event.preventDefault();
-        this.reload();
-      }
-      if (event.altKey && event.keyCode === 39 && document.activeElement.nodeName === "MAPML-VIEWER") {
-        // Prevent default browser behavior
-        event.preventDefault();
-        this.forward();
-      }
-      if (event.altKey && event.keyCode === 37 && document.activeElement.nodeName === "MAPML-VIEWER") {
-        // Prevent default browser behavior
-        event.preventDefault();
-        this.back();
+      if(document.activeElement.nodeName === "MAPML-VIEWER"){
+        // Check if Ctrl+R is pressed and map is focused
+        if (event.ctrlKey && event.keyCode === 82) {
+          // Prevent default browser behavior
+          event.preventDefault();
+          this.reload();
+        }else if (event.altKey && event.keyCode === 39) {
+          // Prevent default browser behavior
+          event.preventDefault();
+          this.forward();
+        }else if (event.altKey && event.keyCode === 37) {
+          // Prevent default browser behavior
+          event.preventDefault();
+          this.back();
+        }
       }
     });
   }

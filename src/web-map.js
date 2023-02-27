@@ -599,23 +599,23 @@ export class WebMap extends HTMLMapElement {
       }
     });
     this.addEventListener('keydown', function(event) {
-      // Check if Ctrl+R is pressed and map is focused
-      if (event.ctrlKey && event.keyCode === 82 && document.activeElement.className === "mapml-web-map") {
-        // Prevent default browser behavior
-        event.preventDefault();
-        this.reload();
+      if(document.activeElement.className === "mapml-web-map"){
+        // Check if Ctrl+R is pressed and map is focused
+        if (event.ctrlKey && event.keyCode === 82) {
+          // Prevent default browser behavior
+          event.preventDefault();
+          this.reload();
+        }else if (event.altKey && event.keyCode === 39) {
+          // Prevent default browser behavior
+          event.preventDefault();
+          this.forward();
+        }else if (event.altKey && event.keyCode === 37) {
+          // Prevent default browser behavior
+          event.preventDefault();
+          this.back();
+        }
       }
-      if (event.altKey && event.keyCode === 39 && document.activeElement.className === "mapml-web-map") {
-        // Prevent default browser behavior
-        event.preventDefault();
-        this.forward();
-      }
-      if (event.altKey && event.keyCode === 37 && document.activeElement.className === "mapml-web-map") {
-        // Prevent default browser behavior
-        event.preventDefault();
-        this.back();
-      }
-    });    
+    });   
   }
   _toggleControls() {
     if (this._map) {
