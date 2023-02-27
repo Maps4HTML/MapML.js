@@ -2,8 +2,8 @@ export var FullscreenButton = L.Control.extend({
         options: {
             position: 'topleft',
             title: {
-                'false': 'View fullscreen',
-                'true': 'Exit fullscreen'
+                'false': 'View Fullscreen',
+                'true': 'Exit Fullscreen'
             }
         },
 

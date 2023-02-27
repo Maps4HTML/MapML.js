@@ -554,7 +554,7 @@ export class MapViewer extends HTMLElement {
       if (document.fullscreenElement === null) {
         // full-screen mode has been exited
         this._map.contextMenu.setViewFullScreenInnerHTML('view');
-      }else{
+      } else {
         this._map.contextMenu.setViewFullScreenInnerHTML('exit');
       }
     });

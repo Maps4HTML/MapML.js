@@ -594,7 +594,7 @@ export class WebMap extends HTMLMapElement {
       if (document.fullscreenElement === null) {
         // full-screen mode has been exited
         this._map.contextMenu.setViewFullScreenInnerHTML('view');
-      }else{
+      } else {
         this._map.contextMenu.setViewFullScreenInnerHTML('exit');
       }
     });
