@@ -146,16 +146,25 @@ export var LayerControl = L.Control.Layers.extend({
       ) return this;
 
       L.DomUtil.removeClass(this._container, 'leaflet-control-layers-expanded');
+      if (L.Browser.touch) {
+        this._container._isExpanded = false;
+      }
 		  return this;
     },
     _preventDefaultContextMenu: function (e) {
-        let latlng = this._map.mouseEventToLatLng(e);
-        let containerPoint = this._map.mouseEventToContainerPoint(e);
-        e.preventDefault();
-        this._map.fire('contextmenu', 
-          { originalEvent: e,
-            containerPoint: containerPoint, 
-            latlng: latlng });
+      let latlng = this._map.mouseEventToLatLng(e);
+      let containerPoint = this._map.mouseEventToContainerPoint(e);
+      e.preventDefault();
+      // for touch devices, when the layer control is not expanded,
+      // the layer context menu should not show on map
+      if (!this._container._isExpanded && L.Browser.touch) {
+        this._container._isExpanded = true;
+        return;
+      }
+      this._map.fire('contextmenu', 
+        { originalEvent: e,
+          containerPoint: containerPoint, 
+          latlng: latlng });
     }
 });
 export var layerControl = function (layers, options) {

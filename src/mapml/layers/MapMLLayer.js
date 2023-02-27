@@ -499,17 +499,21 @@ export var MapMLLayer = L.Layer.extend({
         extent.setAttribute('aria-labelledby', extentItemNameSpan.id);
         extentItemNameSpan.extent = this._extent._mapExtents[i];
 
-        extent.onmousedown = (downEvent) => {
-          if(downEvent.target.tagName.toLowerCase() === "input" || downEvent.target.tagName.toLowerCase() === "select") return;
-          downEvent.preventDefault();
+        extent.ontouchstart = extent.onmousedown = (downEvent) => {
+          if((downEvent.target.parentElement.tagName.toLowerCase() === 'label' &&
+              downEvent.target.tagName.toLowerCase() !== 'input') ||
+              downEvent.target.tagName.toLowerCase() === 'label') {          
+          // downEvent.preventDefault();
           downEvent.stopPropagation();
+          downEvent = downEvent instanceof TouchEvent? downEvent.touches[0] : downEvent;
 
           let control = extent,
               controls = extent.parentNode,
               moving = false, yPos = downEvent.clientY;
 
-              document.body.onmousemove = (moveEvent) => {
+              document.body.ontouchmove = document.body.onmousemove = (moveEvent) => {
                 moveEvent.preventDefault();
+                moveEvent = moveEvent instanceof TouchEvent? moveEvent.touches[0] : moveEvent;
     
                 // Fixes flickering by only moving element when there is enough space
                 let offset = moveEvent.clientY - yPos;
@@ -543,7 +547,7 @@ export var MapMLLayer = L.Layer.extend({
                 }
               };
 
-              document.body.onmouseup = () => {
+              document.body.ontouchend = document.body.onmouseup = () => {
                 control.setAttribute("aria-grabbed", "false");
                 control.removeAttribute("aria-dropeffect");
                 control.style.pointerEvents = null;
@@ -562,12 +566,12 @@ export var MapMLLayer = L.Layer.extend({
                   zIndex++;
                 }
                 controls.classList.remove("mapml-draggable");
-                document.body.onmousemove = document.body.onmouseup = null;
+                document.body.ontouchmove = document.body.onmousemove = document.body.ontouchend = document.body.onmouseup = null;
               };
 
               
+        }
         };
-
         return extent;
     },
 
@@ -635,6 +639,11 @@ export var MapMLLayer = L.Layer.extend({
         itemSettingControlButton.setAttribute('aria-expanded', false);
         itemSettingControlButton.classList.add('mapml-button');
         L.DomEvent.on(itemSettingControlButton, 'click', (e)=>{
+          let layerControl = this._layerEl._layerControl._container;
+          if(!layerControl._isExpanded && L.Browser.touch) {
+            layerControl._isExpanded = true;
+            return;
+          }
           if(layerItemSettings.hidden === true){
             itemSettingControlButton.setAttribute('aria-expanded', true);
             layerItemSettings.hidden = false;
@@ -675,15 +684,19 @@ export var MapMLLayer = L.Layer.extend({
         fieldset.setAttribute("aria-grabbed", "false");
         fieldset.setAttribute('aria-labelledby', layerItemName.id);
 
-        fieldset.onmousedown = (downEvent) => {
-          if(downEvent.target.tagName.toLowerCase() === "input" || downEvent.target.tagName.toLowerCase() === "select") return;
-          downEvent.preventDefault();
+        fieldset.ontouchstart = fieldset.onmousedown = (downEvent) => {
+          if((downEvent.target.parentElement.tagName.toLowerCase() === 'label' &&
+              downEvent.target.tagName.toLowerCase() !== 'input') ||
+              downEvent.target.tagName.toLowerCase() === 'label') {
+          // downEvent.preventDefault();
+          downEvent = downEvent instanceof TouchEvent? downEvent.touches[0] : downEvent;
           let control = fieldset,
               controls = fieldset.parentNode,
               moving = false, yPos = downEvent.clientY;
 
-          document.body.onmousemove = (moveEvent) => {
+          document.body.ontouchmove = document.body.onmousemove = (moveEvent) => {
             moveEvent.preventDefault();
+            moveEvent = moveEvent instanceof TouchEvent? moveEvent.touches[0] : moveEvent;
 
             // Fixes flickering by only moving element when there is enough space
             let offset = moveEvent.clientY - yPos;
@@ -717,7 +730,7 @@ export var MapMLLayer = L.Layer.extend({
             }
           };
 
-          document.body.onmouseup = () => {
+          document.body.ontouchend = document.body.onmouseup = () => {
             control.setAttribute("aria-grabbed", "false");
             control.removeAttribute("aria-dropeffect");
             control.style.pointerEvents = null;
@@ -736,8 +749,9 @@ export var MapMLLayer = L.Layer.extend({
               zIndex++;
             }
             controls.classList.remove("mapml-draggable");
-            document.body.onmousemove = document.body.onmouseup = null;
+            document.body.ontouchmove = document.body.onmousemove = document.body.onmouseup = null;
           };
+        }
         };
 
         L.DomEvent.on(opacity,'change', this._changeOpacity, this);
