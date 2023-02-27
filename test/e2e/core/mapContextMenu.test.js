@@ -57,7 +57,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("View fullscreen (F)");
+    expect(name).toEqual("View Fullscreen (F)");
   });
 
   test("Context menu tab goes to next item", async () => {
@@ -547,7 +547,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     let reload = await page.$eval("div > div.mapml-contextmenu > button:nth-child(3)",(btn) => btn.textContent);
     expect(reload).toEqual('Reload (Ctrl+R)');
     let fullScreen = await page.$eval("div > div.mapml-contextmenu > button:nth-child(4)",(btn) => btn.textContent);
-    expect(fullScreen).toEqual('View fullscreen (F)');
+    expect(fullScreen).toEqual('View Fullscreen (F)');
     let copy = await page.$eval("div > div.mapml-contextmenu > button:nth-child(6)",(btn) => btn.textContent);
     expect(copy).toEqual('Copy (C)');
     let paste = await page.$eval("div > div.mapml-contextmenu > button:nth-child(8)",(btn) => btn.textContent);
