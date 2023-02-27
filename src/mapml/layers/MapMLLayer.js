@@ -640,7 +640,7 @@ export var MapMLLayer = L.Layer.extend({
         itemSettingControlButton.classList.add('mapml-button');
         L.DomEvent.on(itemSettingControlButton, 'click', (e)=>{
           let layerControl = this._layerEl._layerControl._container;
-          if(!layerControl._isExpanded && L.Browser.touch) {
+          if(!layerControl._isExpanded && e.pointerType === 'touch') {
             layerControl._isExpanded = true;
             return;
           }

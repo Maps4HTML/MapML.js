@@ -146,7 +146,8 @@ export var LayerControl = L.Control.Layers.extend({
       ) return this;
 
       L.DomUtil.removeClass(this._container, 'leaflet-control-layers-expanded');
-      if (L.Browser.touch) {
+      console.log(e);
+      if (e.originalEvent && e.originalEvent.pointerType === 'touch') {
         this._container._isExpanded = false;
       }
 		  return this;
@@ -157,7 +158,7 @@ export var LayerControl = L.Control.Layers.extend({
       e.preventDefault();
       // for touch devices, when the layer control is not expanded,
       // the layer context menu should not show on map
-      if (!this._container._isExpanded && L.Browser.touch) {
+      if (!this._container._isExpanded && e.pointerType === 'touch') {
         this._container._isExpanded = true;
         return;
       }
