@@ -17,11 +17,11 @@ export var ContextMenu = L.Handler.extend({
     //setting the items in the context menu and their callback functions
     this._items = [
       {
-        text: M.options.locale.cmBack + " (<kbd>Alt+&#8592;</kbd>)",
+        text: M.options.locale.cmBack + " (<kbd>Alt+Left Arrow</kbd>)",
         callback:this._goBack
       },
       {
-        text: M.options.locale.cmForward + " (<kbd>Alt+&#8594;</kbd>)",
+        text: M.options.locale.cmForward + " (<kbd>Alt+Right Arrow</kbd>)",
         callback:this._goForward
       },
       {
@@ -702,8 +702,28 @@ export var ContextMenu = L.Handler.extend({
     this._hideCoordMenu(e);
   },
 
-  disableToggleControls: function () {
-    this._items[8].el.el.setAttribute("disabled", "");
+  toggleContextMenuItems: function (options,state) {
+    if (state === "disabled"){
+      if (options === "Toggle Controls"){
+        this._items[8].el.el.disabled = true;
+      }else if (options === "Back"){
+        this._items[0].el.el.disabled = true;
+      }else if (options === "Forward"){
+        this._items[1].el.el.disabled = true;
+      }else if (options === "Reload"){
+        this._items[2].el.el.disabled = true;
+      }
+    }else if(state === "enabled"){
+      if (options === "Toggle Controls"){
+        this._items[8].el.el.disabled = false;
+      }else if (options === "Back"){
+        this._items[0].el.el.disabled = false;
+      }else if (options === "Forward"){
+        this._items[1].el.el.disabled = false;
+      }else if (options === "Reload"){
+        this._items[2].el.el.disabled = false;
+      }
+    }
   },
   
   setViewFullScreenInnerHTML: function (options) {

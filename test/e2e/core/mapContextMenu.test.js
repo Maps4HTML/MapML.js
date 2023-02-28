@@ -541,9 +541,9 @@ test.describe("Playwright Map Context Menu Tests", () => {
 
   test("Checking Context Menu Items Names In Order", async () => {
     let back = await page.$eval("div > div.mapml-contextmenu > button:nth-child(1)",(btn) => btn.textContent);
-    expect(back).toEqual('Back (Alt+\u2190)');
+    expect(back).toEqual('Back (Alt+Left Arrow)');
     let forward = await page.$eval("div > div.mapml-contextmenu > button:nth-child(2)",(btn) => btn.textContent);
-    expect(forward).toEqual('Forward (Alt+\u2192)');
+    expect(forward).toEqual('Forward (Alt+Right Arrow)');
     let reload = await page.$eval("div > div.mapml-contextmenu > button:nth-child(3)",(btn) => btn.textContent);
     expect(reload).toEqual('Reload (Ctrl+R)');
     let fullScreen = await page.$eval("div > div.mapml-contextmenu > button:nth-child(4)",(btn) => btn.textContent);
