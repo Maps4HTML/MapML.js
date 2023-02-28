@@ -712,6 +712,7 @@ export class WebMap extends HTMLMapElement {
       if (this._historyIndex === 0) {
         this._map.contextMenu._items[0].el.el.disabled = true; // back contextmenu item
         this._map.contextMenu._items[2].el.el.disabled = true; // reload contextmenu item
+        this._reloadButton.disable();
       }
 
       if(prev.zoom !== curr.zoom){
