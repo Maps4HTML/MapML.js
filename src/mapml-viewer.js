@@ -661,32 +661,39 @@ export class MapViewer extends HTMLElement {
    * Allow user to move back in history
    */
   back(){
-    let history = this._history;
-    let curr = history[this._historyIndex];
+    if (!this._backButtonDisabled) {
+      let history = this._history;
+      let curr = history[this._historyIndex];
 
-    if(this._historyIndex > 0){
-      this._map.contextMenu._items[1].el.el.disabled = false; // forward contextmenu item
-      this._historyIndex--;
-      let prev = history[this._historyIndex];
-      // Disable back, reload contextmenu item when at the end of history
-      if (this._historyIndex === 0) {
-        this._map.contextMenu._items[0].el.el.disabled = true; // back contextmenu item
-        this._map.contextMenu._items[2].el.el.disabled = true; // reload contextmenu item
-      }
+      if(this._historyIndex > 0){
+        this._map.contextMenu._items[1].el.el.disabled = false; // forward contextmenu item
+        this._historyIndex--;
+        let prev = history[this._historyIndex];
+        // Disable back, reload contextmenu item when at the end of history
+        if (this._historyIndex === 0) {
+          this._map.contextMenu._items[0].el.el.disabled = true; // back contextmenu item
+          this._map.contextMenu._items[2].el.el.disabled = true; // reload contextmenu item
+        }
 
-      if(prev.zoom !== curr.zoom){
-        this._traversalCall = 2;  // allows the next 2 moveends to be ignored from history
+        if(prev.zoom !== curr.zoom){
+          this._traversalCall = 2;  // allows the next 2 moveends to be ignored from history
 
-        let currScale = this._map.options.crs.scale(curr.zoom); // gets the scale of the current zoom level
-        let prevScale = this._map.options.crs.scale(prev.zoom); // gets the scale of the previous zoom level
+          let currScale = this._map.options.crs.scale(curr.zoom); // gets the scale of the current zoom level
+          let prevScale = this._map.options.crs.scale(prev.zoom); // gets the scale of the previous zoom level
 
-        let scale = currScale / prevScale; // used to convert the previous pixel location to be in terms of the current zoom level
+          let scale = currScale / prevScale; // used to convert the previous pixel location to be in terms of the current zoom level
 
-        this._map.panBy([((prev.x * scale) - curr.x), ((prev.y * scale) - curr.y)], {animate: false});
-        this._map.setZoom(prev.zoom);
-      } else {
-        this._traversalCall = 1;
-        this._map.panBy([(prev.x - curr.x), (prev.y - curr.y)]);
+          this._map.panBy([((prev.x * scale) - curr.x), ((prev.y * scale) - curr.y)], {animate: false});
+          this._map.setZoom(prev.zoom);
+        } else {
+          this._traversalCall = 1;
+          this._map.panBy([(prev.x - curr.x), (prev.y - curr.y)]);
+        }
+
+        this._backButtonDisabled = true; // disable back button
+        setTimeout(() => {
+          this._backButtonDisabled = false; // re-enable back button after 500ms
+        }, 500);
       }
     }
   }
