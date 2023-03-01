@@ -569,7 +569,6 @@ export class WebMap extends HTMLMapElement {
       function () {
         this._updateMapCenter();
         this._addToHistory();
-        this._reloadButtonState();
         this.dispatchEvent(new CustomEvent('moveend', {detail:
           {target: this}}));
       }, this);
@@ -691,22 +690,14 @@ export class WebMap extends HTMLMapElement {
       this._map.contextMenu.toggleContextMenuItem("Back", "disabled"); // back contextmenu item
       this._map.contextMenu.toggleContextMenuItem("Forward", "disabled");// forward contextmenu item
       this._map.contextMenu.toggleContextMenuItem("Reload", "disabled"); // reload contextmenu item
+      this._reloadButton?.disable();
     } else {
       this._map.contextMenu.toggleContextMenuItem("Back", "enabled"); // back contextmenu item
       this._map.contextMenu.toggleContextMenuItem("Forward", "disabled");// forward contextmenu item
       this._map.contextMenu.toggleContextMenuItem("Reload", "enabled"); // reload contextmenu item
+      this._reloadButton?.enable();
     }
   }
-  _reloadButtonState(){
-    if(this.hasAttribute("controls")){
-      if (this._historyIndex === 0) {
-        this._reloadButton.disable();
-      } else {
-        this._reloadButton.enable();
-      }
-    }
-  }
-
   /**
    * Allow user to move back in history
    */
@@ -722,7 +713,7 @@ export class WebMap extends HTMLMapElement {
       if (this._historyIndex === 0) {
         this._map.contextMenu.toggleContextMenuItem("Back", "disabled"); // back contextmenu item
         this._map.contextMenu.toggleContextMenuItem("Reload", "disabled"); // reload contextmenu item
-        this._reloadButton.disable();
+        this._reloadButton?.disable();
       }
 
       if(prev.zoom !== curr.zoom){
@@ -751,7 +742,7 @@ export class WebMap extends HTMLMapElement {
     if(this._historyIndex < history.length - 1){
       this._map.contextMenu.toggleContextMenuItem("Back", "enabled"); // back contextmenu item
       this._map.contextMenu.toggleContextMenuItem("Reload", "enabled"); // reload contextmenu item
-      this._reloadButton.enable();
+      this._reloadButton?.enable();
       this._historyIndex++;
       let next = history[this._historyIndex];
       // disable forward contextmenu item, when at the end of forward history
@@ -791,7 +782,7 @@ export class WebMap extends HTMLMapElement {
     this._map.contextMenu.toggleContextMenuItem("Back", "disabled"); // back contextmenu item
     this._map.contextMenu.toggleContextMenuItem("Forward", "disabled");// forward contextmenu item
     this._map.contextMenu.toggleContextMenuItem("Reload", "disabled"); // reload contextmenu item
-    this._reloadButton.disable();
+    this._reloadButton?.disable();
 
     this._history = [initialLocation];
     this._historyIndex = 0;
