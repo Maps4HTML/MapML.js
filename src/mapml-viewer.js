@@ -332,7 +332,7 @@ export class MapViewer extends HTMLElement {
         }
       }
     } else if (!this.controls && this._map) {
-      this._map.contextMenu.toggleContextMenuItems("Toggle Controls", "disabled");
+      this._map.contextMenu.toggleContextMenuItem("Controls", "disabled");
     }
 
   }
@@ -560,17 +560,17 @@ export class MapViewer extends HTMLElement {
       }
     });
     this.addEventListener('keydown', function(event) {
-      if(document.activeElement.nodeName === "MAPML-VIEWER"){
+      if (document.activeElement.nodeName === "MAPML-VIEWER") {
         // Check if Ctrl+R is pressed and map is focused
         if (event.ctrlKey && event.keyCode === 82) {
           // Prevent default browser behavior
           event.preventDefault();
           this.reload();
-        }else if (event.altKey && event.keyCode === 39) {
+        } else if (event.altKey && event.keyCode === 39) {
           // Prevent default browser behavior
           event.preventDefault();
           this.forward();
-        }else if (event.altKey && event.keyCode === 37) {
+        } else if (event.altKey && event.keyCode === 37) {
           // Prevent default browser behavior
           event.preventDefault();
           this.back();
@@ -648,13 +648,13 @@ export class MapViewer extends HTMLElement {
     }
     if (this._historyIndex === 0) {
       // when at initial state of map, disable back, forward, and reload items
-      this._map.contextMenu.toggleContextMenuItems("Back", "disabled"); // back contextmenu item
-      this._map.contextMenu.toggleContextMenuItems("Forward", "disabled");// forward contextmenu item
-      this._map.contextMenu.toggleContextMenuItems("Reload", "disabled"); // reload contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Back", "disabled"); // back contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Forward", "disabled");// forward contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Reload", "disabled"); // reload contextmenu item
     } else {
-      this._map.contextMenu.toggleContextMenuItems("Back", "enabled"); // back contextmenu item
-      this._map.contextMenu.toggleContextMenuItems("Forward", "disabled");// forward contextmenu item
-      this._map.contextMenu.toggleContextMenuItems("Reload", "enabled"); // reload contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Back", "enabled"); // back contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Forward", "disabled");// forward contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Reload", "enabled"); // reload contextmenu item
     }
   }
   _reloadButtonState(){
@@ -664,8 +664,6 @@ export class MapViewer extends HTMLElement {
       } else {
         this._reloadButton.enable();
       }
-    }else{
-      return;
     }
   }
   /**
@@ -676,13 +674,13 @@ export class MapViewer extends HTMLElement {
     let curr = history[this._historyIndex];
 
     if(this._historyIndex > 0){
-      this._map.contextMenu.toggleContextMenuItems("Forward", "enabled");// forward contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Forward", "enabled");// forward contextmenu item
       this._historyIndex--;
       let prev = history[this._historyIndex];
       // Disable back, reload contextmenu item when at the end of history
       if (this._historyIndex === 0) {
-        this._map.contextMenu.toggleContextMenuItems("Back", "disabled"); // back contextmenu item
-        this._map.contextMenu.toggleContextMenuItems("Reload", "disabled"); // reload contextmenu item
+        this._map.contextMenu.toggleContextMenuItem("Back", "disabled"); // back contextmenu item
+        this._map.contextMenu.toggleContextMenuItem("Reload", "disabled"); // reload contextmenu item
         this._reloadButton.disable();
       }
 
@@ -710,14 +708,14 @@ export class MapViewer extends HTMLElement {
     let history = this._history;
     let curr = history[this._historyIndex];
     if(this._historyIndex < history.length - 1){
-      this._map.contextMenu.toggleContextMenuItems("Back", "enabled"); // back contextmenu item
-      this._map.contextMenu.toggleContextMenuItems("Reload", "enabled"); // reload contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Back", "enabled"); // back contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Reload", "enabled"); // reload contextmenu item
       this._reloadButton.enable();
       this._historyIndex++;
       let next = history[this._historyIndex];
       // disable forward contextmenu item, when at the end of forward history
       if (this._historyIndex + 1 === this._history.length) {
-        this._map.contextMenu.toggleContextMenuItems("Forward", "disabled"); // forward contextmenu item
+        this._map.contextMenu.toggleContextMenuItem("Forward", "disabled"); // forward contextmenu item
       }
 
       if(next.zoom !== curr.zoom){
@@ -749,9 +747,10 @@ export class MapViewer extends HTMLElement {
       y:mapLocation.y,
     };
 
-    this._map.contextMenu.toggleContextMenuItems("Back", "disabled"); // back contextmenu item
-    this._map.contextMenu.toggleContextMenuItems("Forward", "disabled");// forward contextmenu item
-    this._map.contextMenu.toggleContextMenuItems("Reload", "disabled"); // reload contextmenu item
+    this._map.contextMenu.toggleContextMenuItem("Back", "disabled"); // back contextmenu item
+    this._map.contextMenu.toggleContextMenuItem("Forward", "disabled");// forward contextmenu item
+    this._map.contextMenu.toggleContextMenuItem("Reload", "disabled"); // reload contextmenu item
+    this._reloadButton.disable();
 
     this._history = [initialLocation];
     this._historyIndex = 0;

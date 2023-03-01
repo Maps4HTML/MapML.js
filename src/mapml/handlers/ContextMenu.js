@@ -702,25 +702,26 @@ export var ContextMenu = L.Handler.extend({
     this._hideCoordMenu(e);
   },
 
-  toggleContextMenuItems: function (options,state) {
-    if (state === "disabled"){
-      if (options === "Toggle Controls"){
+  toggleContextMenuItem: function (options,state) {
+    options = options.toUpperCase(); 
+    if (state === "disabled") {
+      if (options === "CONTROLS") {
         this._items[8].el.el.disabled = true;
-      }else if (options === "Back"){
+      } else if (options === "BACK") {
         this._items[0].el.el.disabled = true;
-      }else if (options === "Forward"){
+      } else if (options === "FORWARD") {
         this._items[1].el.el.disabled = true;
-      }else if (options === "Reload"){
+      } else if (options === "RELOAD") {
         this._items[2].el.el.disabled = true;
       }
-    }else if(state === "enabled"){
-      if (options === "Toggle Controls"){
+    } else if(state === "enabled") {
+      if (options === "CONTROLS") {
         this._items[8].el.el.disabled = false;
-      }else if (options === "Back"){
+      } else if (options === "BACK") {
         this._items[0].el.el.disabled = false;
-      }else if (options === "Forward"){
+      } else if (options === "FORWARD") {
         this._items[1].el.el.disabled = false;
-      }else if (options === "Reload"){
+      } else if (options === "RELOAD") {
         this._items[2].el.el.disabled = false;
       }
     }
