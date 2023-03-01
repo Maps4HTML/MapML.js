@@ -17,16 +17,20 @@ export var ContextMenu = L.Handler.extend({
     //setting the items in the context menu and their callback functions
     this._items = [
       {
-        text: M.options.locale.cmBack + " (<kbd>B</kbd>)",
+        text: M.options.locale.cmBack + " (<kbd>Alt+Left Arrow</kbd>)",
         callback:this._goBack
       },
       {
-        text: M.options.locale.cmForward + " (<kbd>F</kbd>)",
+        text: M.options.locale.cmForward + " (<kbd>Alt+Right Arrow</kbd>)",
         callback:this._goForward
       },
       {
-        text: M.options.locale.cmReload + " (<kbd>R</kbd>)",
+        text: M.options.locale.cmReload + " (<kbd>Ctrl+R</kbd>)",
         callback:this._reload
+      },
+      {
+        text: M.options.locale.btnFullScreen + " (<kbd>F</kbd>)",
+        callback:this._toggleFullScreen
       },
       {
         spacer:"-"
@@ -91,7 +95,7 @@ export var ContextMenu = L.Handler.extend({
     this._container = L.DomUtil.create("div", "mapml-contextmenu", map._container);
     this._container.setAttribute('hidden', '');
     
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       this._items[i].el = this._createItem(this._container, this._items[i]);
     }
     
@@ -101,15 +105,15 @@ export var ContextMenu = L.Handler.extend({
     
     this._clickEvent = null;
     
-    for(let i =0;i<this._items[4].submenu.length;i++){
-      this._createItem(this._coordMenu,this._items[4].submenu[i],i);
+    for(let i =0;i<this._items[5].submenu.length;i++){
+      this._createItem(this._coordMenu,this._items[5].submenu[i],i);
     }
     
-    this._items[5].el = this._createItem(this._container, this._items[5]);
     this._items[6].el = this._createItem(this._container, this._items[6]);
     this._items[7].el = this._createItem(this._container, this._items[7]);
     this._items[8].el = this._createItem(this._container, this._items[8]);
     this._items[9].el = this._createItem(this._container, this._items[9]);
+    this._items[10].el = this._createItem(this._container, this._items[10]);
     
     this._layerMenu = L.DomUtil.create("div", "mapml-contextmenu mapml-layer-menu", map._container);
     this._layerMenu.setAttribute('hidden', '');
@@ -220,6 +224,11 @@ export var ContextMenu = L.Handler.extend({
   _reload: function(e){
     let mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
     mapEl.reload();
+  },
+
+  _toggleFullScreen: function(e){
+    let mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
+    mapEl._toggleFullScreen();
   },
 
   _toggleControls: function(e){
@@ -615,9 +624,6 @@ export var ContextMenu = L.Handler.extend({
         if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
           this._map._container.parentNode.activeElement.click();
         break;
-      case 66: //B KEY
-        this._goBack(e);
-        break;
       case 67: //C KEY
         this._copyCoords({
           latlng:this._map.getCenter()
@@ -629,18 +635,15 @@ export var ContextMenu = L.Handler.extend({
       case 77: //M KEY
         this._copyMapML(e);
         break;
-      case 70: //F KEY
-        this._goForward(e);
-        break;
       case 76: //L KEY
         if(this._layerClicked.className.includes('mapml-layer-item'))
           this._copyLayer(e);
         break;
+      case 70: //F KEY
+        this._toggleFullScreen(e);
+        break;
       case 80: //P KEY
         this._paste(e);
-        break;
-      case 82: //R KEY
-        this._reload(e);
         break;
       case 84: //T KEY
         this._toggleControls(e);
@@ -697,5 +700,39 @@ export var ContextMenu = L.Handler.extend({
   _onItemMouseOut: function (e) {
     L.DomUtil.removeClass(e.target || e.srcElement, 'over');
     this._hideCoordMenu(e);
+  },
+
+  toggleContextMenuItem: function (options,state) {
+    options = options.toUpperCase(); 
+    if (state === "disabled") {
+      if (options === "CONTROLS") {
+        this._items[8].el.el.disabled = true;
+      } else if (options === "BACK") {
+        this._items[0].el.el.disabled = true;
+      } else if (options === "FORWARD") {
+        this._items[1].el.el.disabled = true;
+      } else if (options === "RELOAD") {
+        this._items[2].el.el.disabled = true;
+      }
+    } else if(state === "enabled") {
+      if (options === "CONTROLS") {
+        this._items[8].el.el.disabled = false;
+      } else if (options === "BACK") {
+        this._items[0].el.el.disabled = false;
+      } else if (options === "FORWARD") {
+        this._items[1].el.el.disabled = false;
+      } else if (options === "RELOAD") {
+        this._items[2].el.el.disabled = false;
+      }
+    }
+  },
+  
+  setViewFullScreenInnerHTML: function (options) {
+    if (options === 'view') {
+      this._map.contextMenu._items[3].el.el.innerHTML = M.options.locale.btnFullScreen + " (<kbd>F</kbd>)";
+    }
+    else if (options === 'exit') {
+      this._map.contextMenu._items[3].el.el.innerHTML = M.options.locale.btnExitFullScreen + " (<kbd>F</kbd>)";
+    }
   }
 });

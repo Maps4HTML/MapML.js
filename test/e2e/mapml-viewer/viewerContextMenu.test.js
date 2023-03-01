@@ -50,7 +50,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Copy (C)");
+    expect(name).toEqual("View Fullscreen (F)");
   });
 
   test("Context menu tab goes to next item", async () => {
@@ -61,7 +61,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Paste (P)");
+    expect(name).toEqual("Copy (C)");
   });
 
 
@@ -73,7 +73,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     const nameHandle = await page.evaluateHandle(name => name.outerText, resultHandle);
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual("Copy (C)");
+    expect(name).toEqual("View Fullscreen (F)");
   });
 
   test("Submenu opens on C with focus on first item", async () => {
@@ -178,7 +178,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       );
 
       await page.click("body > mapml-viewer", { button: "right" });
-      await page.click("div > div.mapml-contextmenu > button:nth-of-type(6)");
+      await page.click("div > div.mapml-contextmenu > button:nth-of-type(7)");
 
       const controlsOff = await page.$eval(
         "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
@@ -196,7 +196,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       );
 
       await page.click("body > mapml-viewer", { button: "right" });
-      await page.click("div > div.mapml-contextmenu > button:nth-of-type(6)");
+      await page.click("div > div.mapml-contextmenu > button:nth-of-type(7)");
 
       const controlsOff = await page.$eval(
         "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
@@ -225,9 +225,9 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       expect(valueBefore).toEqual("0.5");
 
       await page.click("body > mapml-viewer", { button: "right" });
-      await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
+      await page.click("div > div.mapml-contextmenu > button:nth-child(6)");
       await page.click("body > mapml-viewer", { button: "right" });
-      await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
+      await page.click("div > div.mapml-contextmenu > button:nth-child(6)");
 
       const valueAfter = await page.$eval(
         "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div:nth-child(2) > details > input",
@@ -242,6 +242,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     await page.reload();
     await page.click("body > mapml-viewer");
     await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
     await page.keyboard.press("Enter");
 
@@ -277,6 +278,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     );
     await page.click("body > mapml-viewer");
     await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
@@ -301,6 +303,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
 
     await page.click("body > mapml-viewer");
     await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
@@ -337,6 +340,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     );
     await page.click("body > mapml-viewer");
     await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
@@ -420,10 +424,10 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     expect(contextMenuSize.x <= mapSize.x && contextMenuSize.y <= mapSize.y).toBeTruthy();
 
     // move the mouse from "copy" to another button in the main contextmenu
-    await page.hover("div > div.mapml-contextmenu > button:nth-of-type(4)");
+    await page.hover("div > div.mapml-contextmenu > button:nth-of-type(5)");
     const submenu = await page.locator('div > div#mapml-copy-submenu').first();
     expect(await submenu.isVisible()).toBeTruthy();
-    await page.hover("div > div.mapml-contextmenu > button:nth-of-type(5)");
+    await page.hover("div > div.mapml-contextmenu > button:nth-of-type(6)");
     expect(await submenu.isHidden()).toBeTruthy();
   });
   
@@ -474,6 +478,38 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       }
     );
     expect(layerCheck).toEqual(false);
+  });
+
+  test("Checking Context Menu Items Names In Order", async () => {
+    let back = await page.$eval("div > div.mapml-contextmenu > button:nth-child(1)",(btn) => btn.textContent);
+    expect(back).toEqual('Back (Alt+Left Arrow)');
+    let forward = await page.$eval("div > div.mapml-contextmenu > button:nth-child(2)",(btn) => btn.textContent);
+    expect(forward).toEqual('Forward (Alt+Right Arrow)');
+    let reload = await page.$eval("div > div.mapml-contextmenu > button:nth-child(3)",(btn) => btn.textContent);
+    expect(reload).toEqual('Reload (Ctrl+R)');
+    let fullScreen = await page.$eval("div > div.mapml-contextmenu > button:nth-child(4)",(btn) => btn.textContent);
+    expect(fullScreen).toEqual('View Fullscreen (F)');
+    let copy = await page.$eval("div > div.mapml-contextmenu > button:nth-child(6)",(btn) => btn.textContent);
+    expect(copy).toEqual('Copy (C)');
+    let paste = await page.$eval("div > div.mapml-contextmenu > button:nth-child(8)",(btn) => btn.textContent);
+    expect(paste).toEqual('Paste (P)');
+    let controls = await page.$eval("div > div.mapml-contextmenu > button:nth-child(10)",(btn) => btn.textContent);
+    expect(controls).toEqual('Toggle Controls (T)');
+    let debug = await page.$eval("div > div.mapml-contextmenu > button:nth-child(11)",(btn) => btn.textContent);
+    expect(debug).toEqual('Toggle Debug Mode (D)');
+    let source = await page.$eval("div > div.mapml-contextmenu > button:nth-child(12)",(btn) => btn.textContent);
+    expect(source).toEqual('View Map Source (V)');
+    try {
+      await page.$eval("div > div.mapml-contextmenu > button:nth-child(13)", (btn) => btn.textContent);
+    } catch (error) {
+      expect(error).toHaveProperty('message', 'page.$eval: Error: failed to find element matching selector "div > div.mapml-contextmenu > button:nth-child(13)"');
+    }
+    let copySubMenu1 = await page.$eval("div > div.mapml-contextmenu > div.mapml-contextmenu.mapml-submenu >button:nth-child(1)",(btn) => btn.textContent);
+    expect(copySubMenu1).toEqual('Map');
+    let copySubMenu2 = await page.$eval("div > div.mapml-contextmenu > div.mapml-contextmenu.mapml-submenu >button:nth-child(2)",(btn) => btn.textContent);
+    expect(copySubMenu2).toEqual('Extent');
+    let copySubMenu3 = await page.$eval("div > div.mapml-contextmenu > div.mapml-contextmenu.mapml-submenu >button:nth-child(3)",(btn) => btn.textContent);
+    expect(copySubMenu3).toEqual('Location');
   });
 });
 

@@ -373,7 +373,7 @@ export class WebMap extends HTMLMapElement {
         }
       }
     }else if (!this.controls && this._map) {
-      this._map.contextMenu._items[4].el.el.setAttribute("disabled", "");
+      this._map.contextMenu.toggleContextMenuItem("Controls", "disabled");
     }
   }
   attributeChangedCallback(name, oldValue, newValue) {
@@ -590,6 +590,32 @@ export class WebMap extends HTMLMapElement {
         this.dispatchEvent(new CustomEvent('zoomend', {detail:
           {target: this}}));
       }, this);
+    this.addEventListener('fullscreenchange', function(event) {
+      if (document.fullscreenElement === null) {
+        // full-screen mode has been exited
+        this._map.contextMenu.setViewFullScreenInnerHTML('view');
+      } else {
+        this._map.contextMenu.setViewFullScreenInnerHTML('exit');
+      }
+    });
+    this.addEventListener('keydown', function(event) {
+      if (document.activeElement.className === "mapml-web-map") {
+        // Check if Ctrl+R is pressed and map is focused
+        if (event.ctrlKey && event.keyCode === 82) {
+          // Prevent default browser behavior
+          event.preventDefault();
+          this.reload();
+        } else if (event.altKey && event.keyCode === 39) {
+          // Prevent default browser behavior
+          event.preventDefault();
+          this.forward();
+        } else if (event.altKey && event.keyCode === 37) {
+          // Prevent default browser behavior
+          event.preventDefault();
+          this.back();
+        }
+      }
+    });   
   }
   _toggleControls() {
     if (this._map) {
@@ -661,16 +687,17 @@ export class WebMap extends HTMLMapElement {
     }
     if (this._historyIndex === 0) {
       // when at initial state of map, disable back, forward, and reload items
-      this._map.contextMenu._items[0].el.el.disabled = true; // back contextmenu item
-      this._map.contextMenu._items[1].el.el.disabled = true; // forward contextmenu item
-      this._map.contextMenu._items[2].el.el.disabled = true; // reload contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Back", "disabled"); // back contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Forward", "disabled");// forward contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Reload", "disabled"); // reload contextmenu item
+      this._reloadButton?.disable();
     } else {
-      this._map.contextMenu._items[0].el.el.disabled = false; // back contextmenu item
-      this._map.contextMenu._items[1].el.el.disabled = true; // forward contextmenu item
-      this._map.contextMenu._items[2].el.el.disabled = false; // reload contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Back", "enabled"); // back contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Forward", "disabled");// forward contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Reload", "enabled"); // reload contextmenu item
+      this._reloadButton?.enable();
     }
   }
-
   /**
    * Allow user to move back in history
    */
@@ -679,13 +706,14 @@ export class WebMap extends HTMLMapElement {
     let curr = history[this._historyIndex];
 
     if(this._historyIndex > 0){
-      this._map.contextMenu._items[1].el.el.disabled = false; // forward contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Forward", "enabled");// forward contextmenu item
       this._historyIndex--;
       let prev = history[this._historyIndex];
       // Disable back, reload contextmenu item when at the end of history
       if (this._historyIndex === 0) {
-        this._map.contextMenu._items[0].el.el.disabled = true; // back contextmenu item
-        this._map.contextMenu._items[2].el.el.disabled = true; // reload contextmenu item
+        this._map.contextMenu.toggleContextMenuItem("Back", "disabled"); // back contextmenu item
+        this._map.contextMenu.toggleContextMenuItem("Reload", "disabled"); // reload contextmenu item
+        this._reloadButton?.disable();
       }
 
       if(prev.zoom !== curr.zoom){
@@ -712,13 +740,14 @@ export class WebMap extends HTMLMapElement {
     let history = this._history;
     let curr = history[this._historyIndex];
     if(this._historyIndex < history.length - 1){
-      this._map.contextMenu._items[0].el.el.disabled = false; // back contextmenu item
-      this._map.contextMenu._items[2].el.el.disabled = false; // reload contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Back", "enabled"); // back contextmenu item
+      this._map.contextMenu.toggleContextMenuItem("Reload", "enabled"); // reload contextmenu item
+      this._reloadButton?.enable();
       this._historyIndex++;
       let next = history[this._historyIndex];
       // disable forward contextmenu item, when at the end of forward history
       if (this._historyIndex + 1 === this._history.length) {
-        this._map.contextMenu._items[1].el.el.disabled = true; // forward contextmenu item
+        this._map.contextMenu.toggleContextMenuItem("Forward", "disabled"); // forward contextmenu item
       }
 
       if(next.zoom !== curr.zoom){
@@ -750,9 +779,10 @@ export class WebMap extends HTMLMapElement {
       y:mapLocation.y,
     };
 
-    this._map.contextMenu._items[0].el.el.disabled = true; // back contextmenu item
-    this._map.contextMenu._items[1].el.el.disabled = true; // forward contextmenu item
-    this._map.contextMenu._items[2].el.el.disabled = true; // reload contextmenu item
+    this._map.contextMenu.toggleContextMenuItem("Back", "disabled"); // back contextmenu item
+    this._map.contextMenu.toggleContextMenuItem("Forward", "disabled");// forward contextmenu item
+    this._map.contextMenu.toggleContextMenuItem("Reload", "disabled"); // reload contextmenu item
+    this._reloadButton?.disable();
 
     this._history = [initialLocation];
     this._historyIndex = 0;
@@ -773,6 +803,10 @@ export class WebMap extends HTMLMapElement {
     }
   }
 
+  _toggleFullScreen(){
+    this._map.toggleFullscreen();
+  }
+  
   viewSource(){
     let blob = new Blob([this._source],{type:"text/plain"}),
         url = URL.createObjectURL(blob);
