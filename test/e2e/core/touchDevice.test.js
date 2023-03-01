@@ -24,14 +24,14 @@ test.describe("Playwright touch device tests", () => {
     let className = await layerControl.evaluate(
         (el) => el.classList.contains('leaflet-control-layers-expanded') && el._isExpanded
     );
-    expect(className).toBeTruthy();
+    expect(className).toEqual(true);
 
     // expect the opacity setting not open after the click
     let opacity = await page.$eval(
       "div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div.mapml-layer-item-properties > div > button:nth-child(2)",
       (btn) => btn.getAttribute('aria-expanded')
     );
-    expect(opacity).toBeTruthy();
+    expect(opacity).toEqual("false");
 
     // long press
     await page.tap('body > mapml-viewer');
@@ -42,7 +42,7 @@ test.describe("Playwright touch device tests", () => {
     className = await layerControl.evaluate(
         (el) => el.classList.contains('leaflet-control-layers-expanded') && el._isExpanded
     );
-    expect(className).toBeTruthy();
+    expect(className).toEqual(true);
 
     // expect the layer context menu not show after the long press
     const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
