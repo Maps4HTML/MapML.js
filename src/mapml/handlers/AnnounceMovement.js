@@ -37,10 +37,10 @@ export var AnnounceMovement = L.Handler.extend({
                  standard = M.options.locale.amMinZoom + " " + standard;
              }
 
-            //  el.setAttribute("aria-roledescription", "region " + standard);
-            //  setTimeout(function () {
-            //      el.removeAttribute("aria-roledescription");
-            //  }, 2000);
+             el.setAttribute("aria-roledescription", "region " + standard);
+             setTimeout(function () {
+                 el.removeAttribute("aria-roledescription");
+             }, 2000);
          }, 0);
      },
 
