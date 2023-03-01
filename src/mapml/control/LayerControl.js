@@ -146,7 +146,6 @@ export var LayerControl = L.Control.Layers.extend({
       ) return this;
 
       L.DomUtil.removeClass(this._container, 'leaflet-control-layers-expanded');
-      console.log(e);
       if (e.originalEvent && e.originalEvent.pointerType === 'touch') {
         this._container._isExpanded = false;
       }
