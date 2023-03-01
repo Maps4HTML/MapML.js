@@ -521,7 +521,7 @@ export var MapMLLayer = L.Layer.extend({
                   controls.getBoundingClientRect().top > control.getBoundingClientRect().bottom || 
                   controls.getBoundingClientRect().bottom < control.getBoundingClientRect().top){
                     return;
-                  }
+              }
               
               controls.classList.add("mapml-draggable");
               control.style.transform = "translateY("+ offset +"px)";
@@ -569,7 +569,7 @@ export var MapMLLayer = L.Layer.extend({
             };
           }
         };
-      return extent;
+        return extent;
     },
 
     getLayerUserControlsHTML: function () {
@@ -701,7 +701,7 @@ export var MapMLLayer = L.Layer.extend({
                   controls.getBoundingClientRect().top > control.getBoundingClientRect().bottom || 
                   controls.getBoundingClientRect().bottom < control.getBoundingClientRect().top){
                     return;
-                  }
+              }
               
               controls.classList.add("mapml-draggable");
               control.style.transform = "translateY("+ offset +"px)";
