@@ -28,8 +28,8 @@ export var AnnounceMovement = L.Handler.extend({
 
              let mapZoom = mapEl._map.getZoom();
              let location = M._gcrsToTileMatrix(mapEl);
-             let standard = M.options.locale.amZoom + " " + mapZoom; //+ " " + M.options.locale.amColumn + " " + location[0] + " " + M.options.locale.amRow + " " + location[1]; (for coordinates)
-
+             let standard = M.options.locale.amZoom + " " + mapZoom; 
+             
              if(mapZoom === mapEl._map._layersMaxZoom){
                  standard = M.options.locale.amMaxZoom + " " + standard;
              }
@@ -62,7 +62,7 @@ export var AnnounceMovement = L.Handler.extend({
 
         //GCRS to TileMatrix
         let location = M._gcrsToTileMatrix(this);
-        let standard = M.options.locale.amZoom + " " + mapZoom;// + " " + M.options.locale.amColumn + " " + location[0] + " " + M.options.locale.amRow + " " + location[1]; (for coordinates)
+        let standard = M.options.locale.amZoom + " " + mapZoom;
 
         if(!visible){
             let outOfBoundsPos = this._history[this._historyIndex];
