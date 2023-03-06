@@ -499,75 +499,76 @@ export var MapMLLayer = L.Layer.extend({
         extent.setAttribute('aria-labelledby', extentItemNameSpan.id);
         extentItemNameSpan.extent = this._extent._mapExtents[i];
 
-        extent.onmousedown = (downEvent) => {
-          if(downEvent.target.tagName.toLowerCase() === "input" || downEvent.target.tagName.toLowerCase() === "select") return;
-          downEvent.preventDefault();
-          downEvent.stopPropagation();
+        extent.ontouchstart = extent.onmousedown = (downEvent) => {
+          if((downEvent.target.parentElement.tagName.toLowerCase() === 'label' &&
+              downEvent.target.tagName.toLowerCase() !== 'input') ||
+              downEvent.target.tagName.toLowerCase() === 'label') {          
+            downEvent.stopPropagation();
+            downEvent = downEvent instanceof TouchEvent ? downEvent.touches[0] : downEvent;
 
-          let control = extent,
-              controls = extent.parentNode,
-              moving = false, yPos = downEvent.clientY;
+            let control = extent,
+                controls = extent.parentNode,
+                moving = false, yPos = downEvent.clientY;
 
-              document.body.onmousemove = (moveEvent) => {
-                moveEvent.preventDefault();
-    
-                // Fixes flickering by only moving element when there is enough space
-                let offset = moveEvent.clientY - yPos;
-                moving = Math.abs(offset) > 5 || moving;
-                if( (controls && !moving) || (controls && controls.childElementCount <= 1) || 
-                    controls.getBoundingClientRect().top > control.getBoundingClientRect().bottom || 
-                    controls.getBoundingClientRect().bottom < control.getBoundingClientRect().top){
-                      return;
-                    }
-                
-                controls.classList.add("mapml-draggable");
-                control.style.transform = "translateY("+ offset +"px)";
-                control.style.pointerEvents = "none";
-    
-                let x = moveEvent.clientX, y = moveEvent.clientY,
-                    root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".mapml-web-map").shadowRoot,
-                    elementAt = root.elementFromPoint(x, y),
-                    swapControl = !elementAt || !elementAt.closest("fieldset") ? control : elementAt.closest("fieldset");
-          
-                swapControl =  Math.abs(offset) <= swapControl.offsetHeight ? control : swapControl;
-                
-                control.setAttribute("aria-grabbed", 'true');
-                control.setAttribute("aria-dropeffect", "move");
-                if(swapControl && controls === swapControl.parentNode){
-                  swapControl = swapControl !== control.nextSibling? swapControl : swapControl.nextSibling;
-                  if(control !== swapControl){ 
-                    yPos = moveEvent.clientY;
-                    control.style.transform = null;
-                  }
-                  controls.insertBefore(control, swapControl);
-                }
-              };
-
-              document.body.onmouseup = () => {
-                control.setAttribute("aria-grabbed", "false");
-                control.removeAttribute("aria-dropeffect");
-                control.style.pointerEvents = null;
-                control.style.transform = null;
-                let controlsElems = controls.children,
-                    zIndex = 0;
-                for(let c of controlsElems){
-                  let extentEl = c.querySelector("span").extent;
-                  
-                  extentEl.setAttribute("data-moving","");
-                  layerEl.insertAdjacentElement("beforeend", extentEl);
-                  extentEl.removeAttribute("data-moving");
-    
-                  extentEl.extentZIndex = zIndex;
-                  extentEl.templatedLayer.setZIndex(zIndex);
-                  zIndex++;
-                }
-                controls.classList.remove("mapml-draggable");
-                document.body.onmousemove = document.body.onmouseup = null;
-              };
-
+            document.body.ontouchmove = document.body.onmousemove = (moveEvent) => {
+              moveEvent.preventDefault();
+              moveEvent = moveEvent instanceof TouchEvent ? moveEvent.touches[0] : moveEvent;
+  
+              // Fixes flickering by only moving element when there is enough space
+              let offset = moveEvent.clientY - yPos;
+              moving = Math.abs(offset) > 5 || moving;
+              if( (controls && !moving) || (controls && controls.childElementCount <= 1) || 
+                  controls.getBoundingClientRect().top > control.getBoundingClientRect().bottom || 
+                  controls.getBoundingClientRect().bottom < control.getBoundingClientRect().top){
+                    return;
+              }
               
-        };
+              controls.classList.add("mapml-draggable");
+              control.style.transform = "translateY("+ offset +"px)";
+              control.style.pointerEvents = "none";
+  
+              let x = moveEvent.clientX, y = moveEvent.clientY,
+                  root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".mapml-web-map").shadowRoot,
+                  elementAt = root.elementFromPoint(x, y),
+                  swapControl = !elementAt || !elementAt.closest("fieldset") ? control : elementAt.closest("fieldset");
+        
+              swapControl =  Math.abs(offset) <= swapControl.offsetHeight ? control : swapControl;
+              
+              control.setAttribute("aria-grabbed", 'true');
+              control.setAttribute("aria-dropeffect", "move");
+              if(swapControl && controls === swapControl.parentNode){
+                swapControl = swapControl !== control.nextSibling? swapControl : swapControl.nextSibling;
+                if(control !== swapControl){ 
+                  yPos = moveEvent.clientY;
+                  control.style.transform = null;
+                }
+                controls.insertBefore(control, swapControl);
+              }
+            };
 
+            document.body.ontouchend = document.body.onmouseup = () => {
+              control.setAttribute("aria-grabbed", "false");
+              control.removeAttribute("aria-dropeffect");
+              control.style.pointerEvents = null;
+              control.style.transform = null;
+              let controlsElems = controls.children,
+                  zIndex = 0;
+              for(let c of controlsElems){
+                let extentEl = c.querySelector("span").extent;
+                
+                extentEl.setAttribute("data-moving","");
+                layerEl.insertAdjacentElement("beforeend", extentEl);
+                extentEl.removeAttribute("data-moving");
+  
+                extentEl.extentZIndex = zIndex;
+                extentEl.templatedLayer.setZIndex(zIndex);
+                zIndex++;
+              }
+              controls.classList.remove("mapml-draggable");
+              document.body.ontouchmove = document.body.onmousemove = document.body.ontouchend = document.body.onmouseup = null;
+            };
+          }
+        };
         return extent;
     },
 
@@ -635,6 +636,11 @@ export var MapMLLayer = L.Layer.extend({
         itemSettingControlButton.setAttribute('aria-expanded', false);
         itemSettingControlButton.classList.add('mapml-button');
         L.DomEvent.on(itemSettingControlButton, 'click', (e)=>{
+          let layerControl = this._layerEl._layerControl._container;
+          if(!layerControl._isExpanded && e.pointerType === 'touch') {
+            layerControl._isExpanded = true;
+            return;
+          }
           if(layerItemSettings.hidden === true){
             itemSettingControlButton.setAttribute('aria-expanded', true);
             layerItemSettings.hidden = false;
@@ -675,69 +681,73 @@ export var MapMLLayer = L.Layer.extend({
         fieldset.setAttribute("aria-grabbed", "false");
         fieldset.setAttribute('aria-labelledby', layerItemName.id);
 
-        fieldset.onmousedown = (downEvent) => {
-          if(downEvent.target.tagName.toLowerCase() === "input" || downEvent.target.tagName.toLowerCase() === "select") return;
-          downEvent.preventDefault();
-          let control = fieldset,
-              controls = fieldset.parentNode,
-              moving = false, yPos = downEvent.clientY;
+        fieldset.ontouchstart = fieldset.onmousedown = (downEvent) => {
+          if((downEvent.target.parentElement.tagName.toLowerCase() === 'label' &&
+              downEvent.target.tagName.toLowerCase() !== 'input') ||
+              downEvent.target.tagName.toLowerCase() === 'label') {
+            downEvent = downEvent instanceof TouchEvent ? downEvent.touches[0] : downEvent;
+            let control = fieldset,
+                controls = fieldset.parentNode,
+                moving = false, yPos = downEvent.clientY;
 
-          document.body.onmousemove = (moveEvent) => {
-            moveEvent.preventDefault();
+            document.body.ontouchmove = document.body.onmousemove = (moveEvent) => {
+              moveEvent.preventDefault();
+              moveEvent = moveEvent instanceof TouchEvent ? moveEvent.touches[0] : moveEvent;
 
-            // Fixes flickering by only moving element when there is enough space
-            let offset = moveEvent.clientY - yPos;
-            moving = Math.abs(offset) > 5 || moving;
-            if( (controls && !moving) || (controls && controls.childElementCount <= 1) || 
-                controls.getBoundingClientRect().top > control.getBoundingClientRect().bottom || 
-                controls.getBoundingClientRect().bottom < control.getBoundingClientRect().top){
-                  return;
-                }
-            
-            controls.classList.add("mapml-draggable");
-            control.style.transform = "translateY("+ offset +"px)";
-            control.style.pointerEvents = "none";
-
-            let x = moveEvent.clientX, y = moveEvent.clientY,
-                root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".mapml-web-map").shadowRoot,
-                elementAt = root.elementFromPoint(x, y),
-                swapControl = !elementAt || !elementAt.closest("fieldset") ? control : elementAt.closest("fieldset");
-      
-            swapControl =  Math.abs(offset) <= swapControl.offsetHeight ? control : swapControl;
-            
-            control.setAttribute("aria-grabbed", 'true');
-            control.setAttribute("aria-dropeffect", "move");
-            if(swapControl && controls === swapControl.parentNode){
-              swapControl = swapControl !== control.nextSibling? swapControl : swapControl.nextSibling;
-              if(control !== swapControl){ 
-                yPos = moveEvent.clientY;
-                control.style.transform = null;
+              // Fixes flickering by only moving element when there is enough space
+              let offset = moveEvent.clientY - yPos;
+              moving = Math.abs(offset) > 5 || moving;
+              if( (controls && !moving) || (controls && controls.childElementCount <= 1) || 
+                  controls.getBoundingClientRect().top > control.getBoundingClientRect().bottom || 
+                  controls.getBoundingClientRect().bottom < control.getBoundingClientRect().top){
+                    return;
               }
-              controls.insertBefore(control, swapControl);
-            }
-          };
-
-          document.body.onmouseup = () => {
-            control.setAttribute("aria-grabbed", "false");
-            control.removeAttribute("aria-dropeffect");
-            control.style.pointerEvents = null;
-            control.style.transform = null;
-            let controlsElems = controls.children,
-                zIndex = 1;
-            for(let c of controlsElems){
-              let layerEl = c.querySelector("span").layer._layerEl;
               
-              layerEl.setAttribute("data-moving","");
-              mapEl.insertAdjacentElement("beforeend", layerEl);
-              layerEl.removeAttribute("data-moving");
+              controls.classList.add("mapml-draggable");
+              control.style.transform = "translateY("+ offset +"px)";
+              control.style.pointerEvents = "none";
 
+              let x = moveEvent.clientX, y = moveEvent.clientY,
+                  root = mapEl.tagName === "MAPML-VIEWER" ? mapEl.shadowRoot : mapEl.querySelector(".mapml-web-map").shadowRoot,
+                  elementAt = root.elementFromPoint(x, y),
+                  swapControl = !elementAt || !elementAt.closest("fieldset") ? control : elementAt.closest("fieldset");
+        
+              swapControl =  Math.abs(offset) <= swapControl.offsetHeight ? control : swapControl;
               
-              layerEl._layer.setZIndex(zIndex);
-              zIndex++;
-            }
-            controls.classList.remove("mapml-draggable");
-            document.body.onmousemove = document.body.onmouseup = null;
-          };
+              control.setAttribute("aria-grabbed", 'true');
+              control.setAttribute("aria-dropeffect", "move");
+              if(swapControl && controls === swapControl.parentNode){
+                swapControl = swapControl !== control.nextSibling? swapControl : swapControl.nextSibling;
+                if(control !== swapControl){ 
+                  yPos = moveEvent.clientY;
+                  control.style.transform = null;
+                }
+                controls.insertBefore(control, swapControl);
+              }
+            };
+
+            document.body.ontouchend = document.body.onmouseup = () => {
+              control.setAttribute("aria-grabbed", "false");
+              control.removeAttribute("aria-dropeffect");
+              control.style.pointerEvents = null;
+              control.style.transform = null;
+              let controlsElems = controls.children,
+                  zIndex = 1;
+              for(let c of controlsElems){
+                let layerEl = c.querySelector("span").layer._layerEl;
+                
+                layerEl.setAttribute("data-moving","");
+                mapEl.insertAdjacentElement("beforeend", layerEl);
+                layerEl.removeAttribute("data-moving");
+
+                
+                layerEl._layer.setZIndex(zIndex);
+                zIndex++;
+              }
+              controls.classList.remove("mapml-draggable");
+              document.body.ontouchmove = document.body.onmousemove = document.body.onmouseup = null;
+            };
+          }
         };
 
         L.DomEvent.on(opacity,'change', this._changeOpacity, this);
@@ -926,21 +936,7 @@ export var MapMLLayer = L.Layer.extend({
 
                 inputs.push(inp);
                 includesZoom = includesZoom || inp.hasAttribute("type") && inp.getAttribute("type").toLowerCase() === "zoom";
-                if (inp.hasAttribute('shard')) {
-                  var id = inp.getAttribute('list');
-                  inp.servers = [];
-                  var servers = serverExtent.querySelectorAll('map-datalist#'+id + ' > map-option');
-                  if (servers.length === 0 && inp.hasAttribute('value')) {
-                    servers = inp.getAttribute('value').split('');
-                  }
-                  for (var s=0;s < servers.length;s++) {
-                    if (servers[s].getAttribute) {
-                      inp.servers.push(servers[s].getAttribute('value'));
-                    } else {
-                      inp.servers.push(servers[s]);
-                    }
-                  }
-                } else if (inp.tagName.toLowerCase() === 'map-select') {
+                if (inp.tagName.toLowerCase() === 'map-select') {
                   // use a throwaway div to parse the input from MapML into HTML
                   var div =document.createElement("div");
                   div.insertAdjacentHTML("afterbegin",inp.outerHTML);

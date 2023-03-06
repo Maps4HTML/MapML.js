@@ -17,7 +17,7 @@ test.describe("Playwright mapml-viewer Element Controls Test", () => {
     test("Toggle controls context menu disabled when map created with no controls", async () => {
         const disabled = await page.$eval(
         "body > #nocontrols", 
-        (map) => map._map.contextMenu._items[4].el.el.hasAttribute("disabled")
+        (map) => map._map.contextMenu._items[8].el.el.hasAttribute("disabled")
         );
         expect(disabled).toEqual(true);
     });

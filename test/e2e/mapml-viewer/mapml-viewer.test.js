@@ -90,9 +90,9 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
         });
         test("Toggle controls, controls aren't re-enabled", async () => {
           await page.click("body > mapml-viewer", { button: "right" });
-          await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
+          await page.click("div > div.mapml-contextmenu > button:nth-child(6)");
           await page.click("body > mapml-viewer", { button: "right" });
-          await page.click("div > div.mapml-contextmenu > button:nth-child(5)");
+          await page.click("div > div.mapml-contextmenu > button:nth-child(6)");
 
           let children = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-left", (div) => div.children),
             found = false;
