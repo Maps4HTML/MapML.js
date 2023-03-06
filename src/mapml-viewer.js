@@ -5,7 +5,7 @@ import { MapCaption } from './map-caption.js';
 
 export class MapViewer extends HTMLElement {
   static get observedAttributes() {
-    return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls', 'static'];
+    return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls', 'static', 'controlslist'];
   }
   // see comments below regarding attributeChangedCallback vs. getter/setter
   // usage.  Effectively, the user of the element must use the property, not
@@ -19,19 +19,16 @@ export class MapViewer extends HTMLElement {
     const hasControls = Boolean(value);
     if (hasControls) {
       this.setAttribute('controls','');
-    }
-    else {
+    } else {
       this.removeAttribute('controls');
     }
   }
   get controlslist() {
-    return this.hasAttribute('controlslist') ? this.getAttribute("controlslist") : "";
+    return this._controlslist;
   }
   set controlslist(val) {
-    let options = ["nofullscreen", "nozoom", "nolayer", "noreload"],
-        lowerVal = val.toLowerCase();
-    if (this.controlslist.includes(lowerVal) || !options.includes(lowerVal))return;
-    this.setAttribute("controlslist", this.controlslist+` ${lowerVal}`);
+    this._controlslist.value = val.toLowerCase();
+    this.setAttribute("controlslist", val);
   }
   get width() {
     return (window.getComputedStyle(this).width).replace('px','');
@@ -128,6 +125,10 @@ export class MapViewer extends HTMLElement {
   connectedCallback() {
     if (this.isConnected) {
 
+      // TODO - add DOMTokenList as a class
+      // Add a DOMTokenList for controlslist
+      this._controlslist = this._controlslistDOMTokenList(this.getAttribute("controlslist"));
+      
       let tmpl = document.createElement('template');
       tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
       
@@ -215,9 +216,9 @@ export class MapViewer extends HTMLElement {
           });
           this._addToHistory();
           // the attribution control is not optional
-          M.attributionControl(this); 
+          M.attributionControl(this);
 
-          this.setControls(false,false,true);
+          this._setupControls();
           this._crosshair = M.crosshair().addTo(this._map);
           if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
           // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
@@ -238,23 +239,14 @@ export class MapViewer extends HTMLElement {
         this.dispatchEvent(new CustomEvent('createmap'));
       }
 
-
-      window.addEventListener('load', () => {
-        if (!this.hasAttribute("controls")) {
-          this.setControls(true,false,false);
-        }
-      });
-      
-      this.controlsListObserver = new MutationObserver((m) => {
-        m.forEach((change)=>{
-          if(change.type==="attributes" && change.attributeName === "controlslist")
-            this.setControls(false,false,false);
-        });
-      });
-      this.controlsListObserver.observe(this, {attributes:true});
+      this._setControls();
 
       if (this._map && this.hasAttribute('static')) {
         this._toggleStatic();
+      }
+      // When map started with no controls disable the toggle controls contextmenu
+      if (!this.controls && this._map) {
+        this._map.contextMenu._items[4].el.el.setAttribute("disabled", "");
       }
 
       /*
@@ -291,61 +283,6 @@ export class MapViewer extends HTMLElement {
 //    console.log('Custom map element moved to new page.');
   }
 
-  setControls(isToggle, toggleShow, setup){
-    if (this._map) {
-      let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl"],
-          options = ["nozoom", "noreload", "nofullscreen", 'nolayer'],
-          mapSize = this._map.getSize().y,
-          totalSize = 0;
-
-      //removes the left hand controls, if not done they will be re-added in the incorrect order
-      //better to just reset them
-      for(let i = 0 ; i<3;i++){
-        if(this[controls[i]]){
-          this._map.removeControl(this[controls[i]]);
-          delete this[controls[i]];
-        }
-      }
-
-      if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl){
-        this._layerControl = M.layerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
-        //if this is the initial setup the layers dont need to be readded, causes issues if they are
-        if(!setup){
-          for (var i=0;i<this.layers.length;i++) {
-            if (!this.layers[i].hidden) {
-              this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
-              this._map.on('moveend', this.layers[i]._validateDisabled,  this.layers[i]);
-              this.layers[i]._layerControl = this._layerControl;
-            }
-          }
-          this._map.fire("validate");
-        }
-      }
-      if (!this.controlslist.toLowerCase().includes("nozoom") && !this._zoomControl && (totalSize + 93) <= mapSize){
-        totalSize += 93;
-        this._zoomControl = L.control.zoom().addTo(this._map);
-      }
-      if (!this.controlslist.toLowerCase().includes("noreload") && !this._reloadButton && (totalSize + 49) <= mapSize){
-        totalSize += 49;
-        this._reloadButton = M.reloadButton().addTo(this._map);
-      }
-      if (!this.controlslist.toLowerCase().includes("nofullscreen") && !this._fullScreenControl && (totalSize + 49) <= mapSize){
-        totalSize += 49;
-        this._fullScreenControl = M.fullscreenButton().addTo(this._map);
-      }
-      //removes any control layers that are not needed, either by the toggling or by the controlslist attribute
-      for(let i in options){
-        if(this[controls[i]] && (this.controlslist.toLowerCase().includes(options[i]) || (isToggle && !toggleShow ))){
-          this._map.removeControl(this[controls[i]]);
-          delete this[controls[i]];
-        }
-      }
-
-    } if (!this.controls && this._map) {
-      this._map.contextMenu._items[4].el.el.setAttribute("disabled", ""); 
-    }
-
-  }
   attributeChangedCallback(name, oldValue, newValue) {
 //    console.log('Attribute: ' + name + ' changed from: '+ oldValue + ' to: '+newValue);
     // "Best practice": handle side-effects in this callback
@@ -365,13 +302,20 @@ export class MapViewer extends HTMLElement {
     ...
   }     */
     switch(name) {
+      case 'controlslist':
+        if (this._controlslist) {
+          this._controlslist.value = newValue;
+          this._setControls();
+        }
+      break;
       case 'controls':
         if (oldValue !== null && newValue === null) {
-          this.setControls(true,false,false);
+          this.removeAttribute("controls");
+          this._hideControls();
+        } else if (oldValue === null && newValue !== null) {
+          this.setAttribute("controls", "");
+          this._setControls();
         }
-        else if (oldValue === null && newValue !== null) {
-          this.setControls(false,false,false);
-        } 
       break;
       case 'height': 
         if (oldValue !== newValue) {
@@ -386,6 +330,104 @@ export class MapViewer extends HTMLElement {
       case 'static':
         this._toggleStatic();
       break;
+    }
+  }
+
+  // Creates All map controls and adds them to the map, when created.
+  _setupControls() {
+    let mapSize = this._map.getSize().y,
+          totalSize = 0;
+
+    this._layerControl = M.layerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
+
+    // Only add controls if there is enough top left vertical space
+    if (!this._zoomControl && (totalSize + 93) <= mapSize){
+      totalSize += 93;
+      this._zoomControl = L.control.zoom().addTo(this._map);
+    }
+    if (!this._reloadButton && (totalSize + 49) <= mapSize){
+      totalSize += 49;
+      this._reloadButton = M.reloadButton().addTo(this._map);
+    }
+    if (!this._fullScreenControl && (totalSize + 49) <= mapSize){
+      totalSize += 49;
+      this._fullScreenControl = M.fullscreenButton().addTo(this._map);
+    }
+  }
+  
+  // Sets controls by hiding/unhiding them based on the map attribute
+  _setControls() {
+    if (this.controls === false) {
+      this._hideControls();
+    } else  {
+      try {
+        this._setControlsVisibility("fullscreen",false);
+        this._setControlsVisibility("layercontrol",false);
+        this._setControlsVisibility("reload",false);
+        this._setControlsVisibility("zoom",false);
+
+        this._controlslist.forEach((value, key, listObj) => {
+          switch(value.toLowerCase()) {
+            case 'nofullscreen':
+              this._setControlsVisibility("fullscreen",true);
+            break;
+            case 'nolayer':
+              this._setControlsVisibility("layercontrol",true);
+            break;
+            case 'noreload':
+              this._setControlsVisibility("reload",true);
+            break;
+            case 'nozoom':
+              this._setControlsVisibility("zoom",true);
+            break;
+          }
+        });
+
+        if (this._layerControl._layers.length === 0) {
+          this._layerControl._container.setAttribute("hidden","");
+        }
+      } catch { }
+    }
+  }
+
+  _hideControls() {
+    this._setControlsVisibility("fullscreen",true);
+    this._setControlsVisibility("layercontrol",true);
+    this._setControlsVisibility("reload",true);
+    this._setControlsVisibility("zoom",true);
+  }
+
+  // Sets the control's visibility AND all its childrens visibility,
+  // for the control element based on the Boolean hide parameter
+  _setControlsVisibility(control, hide) {
+    let container;
+    switch(control) {
+      case "zoom":
+        container = this._zoomControl._container;
+        break;
+      case "reload":
+        container = this._reloadButton._container;
+        break;
+      case "fullscreen":
+        container = this._fullScreenControl._container;
+        break;
+      case "layercontrol":
+        container = this._layerControl._container;
+        break;
+    }
+
+    if (hide) {
+      // setting the visibility for all the children of the element
+      [ ...container.children].forEach((childEl) => {
+        childEl.setAttribute("hidden","");
+      });
+      container.setAttribute("hidden","");
+    } else {
+      // setting the visibility for all the children of the element
+      [ ...container.children].forEach((childEl) => {
+        childEl.removeAttribute("hidden");
+      });
+      container.removeAttribute("hidden");
     }
   }
   _toggleStatic(){
@@ -410,6 +452,20 @@ export class MapViewer extends HTMLElement {
       }
     }
   }
+
+  // creating a DOMTokenList for controlslist, as shown here:
+  // https://marchbox.com/articles/2023-01/using-domtokenlist/
+  // TODO - implement this as a Class
+  _controlslistDOMTokenList(initialValue) {
+    if (initialValue) {
+      initialValue = initialValue.toLowerCase();
+    }
+    const hostingElement = document.createElement('div');
+    const controlslist = hostingElement.classList;
+    controlslist.value = initialValue ?? '';
+    return controlslist;
+  }
+  
   _dropHandler(event) {
     event.preventDefault();
     let text = event.dataTransfer.getData("text");
@@ -571,7 +627,11 @@ export class MapViewer extends HTMLElement {
   }
   _toggleControls() {
     if (this._map) {
-      this.setControls(true, this._toggleState, false);
+      if (this._toggleState) {
+        this._setControls();
+      } else {
+        this._hideControls();
+      }
       this._toggleState = !this._toggleState;
     }
   }

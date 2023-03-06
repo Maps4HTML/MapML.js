@@ -1150,6 +1150,8 @@ export var MapMLLayer = L.Layer.extend({
                 layer.error = true;
             }
             layer.fire('extentload', layer, false);
+            // update controls if needed based on mapml-viewer controls/controlslist attribute
+            layer._layerEl.parentElement._setControls();
             layer._layerEl.dispatchEvent(new CustomEvent('extentload', {detail: layer,}));
         }
     },
@@ -1311,7 +1313,7 @@ export var MapMLLayer = L.Layer.extend({
         map.featureIndex.inBoundFeatures[map.featureIndex.currentIndex].path.setAttribute("tabindex", 0);
         L.DomEvent.stop(e);
         map.closePopup();
-        map._controlContainer.querySelector("A").focus();
+        map._controlContainer.querySelector("A:not([hidden])").focus();
       }, popup);
   
       let divider = L.DomUtil.create("hr");
