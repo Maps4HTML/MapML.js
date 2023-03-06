@@ -1147,7 +1147,10 @@ export var MapMLLayer = L.Layer.extend({
             }
             layer.fire('extentload', layer, false);
             // update controls if needed based on mapml-viewer controls/controlslist attribute
-            layer._layerEl.parentElement._setControls();
+            if (layer._layerEl.parentElement) {
+              // if layer does not have a parent Element, do not need to set Controls
+              layer._layerEl.parentElement._setControls();
+            }
             layer._layerEl.dispatchEvent(new CustomEvent('extentload', {detail: layer,}));
         }
     },
