@@ -444,31 +444,40 @@ export class WebMap extends HTMLMapElement {
     let container;
     switch(control) {
       case "zoom":
-        container = this._zoomControl._container;
+        if (this._zoomControl) {
+          container = this._zoomControl._container;
+        }
         break;
       case "reload":
-        container = this._reloadButton._container;
+        if (this._reloadButton) {
+          container = this._reloadButton._container;
+        }
         break;
       case "fullscreen":
-        container = this._fullScreenControl._container;
+        if (this._fullScreenControl) {
+          container = this._fullScreenControl._container;
+        }
         break;
       case "layercontrol":
-        container = this._layerControl._container;
+        if (this._layerControl) {
+          container = this._layerControl._container;
+        }
         break;
     }
-
-    if (hide) {
-      // setting the visibility for all the children of the element
-      [ ...container.children].forEach((childEl) => {
-        childEl.setAttribute("hidden","");
-      });
-      container.setAttribute("hidden","");
-    } else {
-      // setting the visibility for all the children of the element
-      [ ...container.children].forEach((childEl) => {
-        childEl.removeAttribute("hidden");
-      });
-      container.removeAttribute("hidden");
+    if (container) {
+      if (hide) {
+        // setting the visibility for all the children of the element
+        [ ...container.children].forEach((childEl) => {
+          childEl.setAttribute("hidden","");
+        });
+        container.setAttribute("hidden","");
+      } else {
+        // setting the visibility for all the children of the element
+        [ ...container.children].forEach((childEl) => {
+          childEl.removeAttribute("hidden");
+        });
+        container.removeAttribute("hidden");
+      }
     }
   }
 
