@@ -20,7 +20,7 @@ export var AnnounceMovement = L.Handler.extend({
         this._map.options.mapEl.removeEventListener('mapfocused', this.focusAnnouncement);
     },
 
-     focusAnnouncement: function () {
+    focusAnnouncement: function () {
          let mapEl = this;
          setTimeout(function (){
              let el = mapEl.querySelector(".mapml-web-map") ? mapEl.querySelector(".mapml-web-map").shadowRoot.querySelector(".leaflet-container") :
@@ -28,8 +28,8 @@ export var AnnounceMovement = L.Handler.extend({
 
              let mapZoom = mapEl._map.getZoom();
              let location = M._gcrsToTileMatrix(mapEl);
-             let standard = M.options.locale.amZoom + " " + mapZoom + " " + M.options.locale.amColumn + " " + location[0] + " " + M.options.locale.amRow + " " + location[1];
-
+             let standard = M.options.locale.amZoom + " " + mapZoom; 
+             
              if(mapZoom === mapEl._map._layersMaxZoom){
                  standard = M.options.locale.amMaxZoom + " " + standard;
              }
@@ -62,7 +62,7 @@ export var AnnounceMovement = L.Handler.extend({
 
         //GCRS to TileMatrix
         let location = M._gcrsToTileMatrix(this);
-        let standard = M.options.locale.amZoom + " " + mapZoom + " " + M.options.locale.amColumn + " " + location[0] + " " + M.options.locale.amRow + " " + location[1];
+        let standard = M.options.locale.amZoom + " " + mapZoom;
 
         if(!visible){
             let outOfBoundsPos = this._history[this._historyIndex];
