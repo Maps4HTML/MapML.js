@@ -723,15 +723,19 @@ export class WebMap extends HTMLMapElement {
   }
   
   _changeWidth(width) {
-    this._container.style.width = width+"px";
-    document.querySelector('[is="web-map"]').style.width = width+"px";
+    if (this._container) {
+      this._container.style.width = width+"px";
+      document.querySelector('[is="web-map"]').style.width = width+"px";
+    }
     if (this._map) {
         this._map.invalidateSize(false);
     }
   }
   _changeHeight(height) {
-    this._container.style.height = height+"px";
-    document.querySelector('[is="web-map"]').style.height = height+"px";
+    if (this._container) {
+      this._container.style.height = height+"px";
+      document.querySelector('[is="web-map"]').style.height = height+"px";
+    }
     if (this._map) {
         this._map.invalidateSize(false);
     }

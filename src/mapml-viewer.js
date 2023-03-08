@@ -681,15 +681,19 @@ export class MapViewer extends HTMLElement {
   }
   
   _changeWidth(width) {
-    this._container.style.width = width+"px";
-    this.shadowRoot.styleSheets[0].cssRules[0].style.width = width+"px";
+    if (this._container) {
+      this._container.style.width = width+"px";
+      this.shadowRoot.styleSheets[0].cssRules[0].style.width = width+"px";
+    }
     if (this._map) {
         this._map.invalidateSize(false);
     }
   }
   _changeHeight(height) {
-    this._container.style.height = height+"px";
-    this.shadowRoot.styleSheets[0].cssRules[0].style.height = height+"px";
+    if (this._container) {
+      this._container.style.height = height+"px";
+      this.shadowRoot.styleSheets[0].cssRules[0].style.height = height+"px";
+    }
     if (this._map) {
         this._map.invalidateSize(false);
     }

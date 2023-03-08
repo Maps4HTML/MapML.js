@@ -15,6 +15,11 @@ test.describe("mapml-viewer DOM API Tests", () => {
   });
 
   test("Create a map viewer with document.createElement(mapml-viewer)", async () => {
+    // check for error messages in console
+    let errorLogs = [];
+    page.on("pageerror", (err) => {
+      errorLogs.push(err.message);
+    })
     const viewerHandle = await page.evaluateHandle(()=> document.createElement("mapml-viewer"));
     const nn = await (await page.evaluateHandle(viewer => viewer.nodeName, viewerHandle)).jsonValue();
     expect(nn).toEqual('MAPML-VIEWER');
@@ -28,6 +33,8 @@ test.describe("mapml-viewer DOM API Tests", () => {
     await page.evaluateHandle( (viewer) => document.body.appendChild(viewer), viewerHandle);
     const velName = await page.evaluate(() => document.body.querySelector("mapml-viewer").nodeName);
     expect(velName).toBe('MAPML-VIEWER');
+    // check for error messages in console
+    expect(errorLogs.length).toBe(0);
     // testing to ensure mapml-viewer was successfully implemented
     let verifymap= await page.evaluate( viewer => document.body.querySelector("mapml-viewer").childElementCount);
     expect(verifymap).toBe(1);

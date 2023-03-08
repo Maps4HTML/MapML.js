@@ -15,6 +15,11 @@ test.describe("web-map DOM API Tests", () => {
   });
 
   test("Create a web map with document.createElement(map)", async () => {
+    // check for error messages in console
+    let errorLogs = [];
+    page.on("pageerror", (err) => {
+      errorLogs.push(err.message);
+    })
     const mapHandle = await page.evaluateHandle(()=> document.createElement("map", {is:"web-map"}));
     const nn = await (await page.evaluateHandle(map => map.nodeName, mapHandle)).jsonValue();
     expect(nn).toEqual('MAP');
@@ -29,6 +34,8 @@ test.describe("web-map DOM API Tests", () => {
     await page.evaluateHandle((map) => document.body.appendChild(map), mapHandle);
     const velName = await page.evaluate(() => document.body.querySelector("map").nodeName);
     expect(velName).toBe('MAP');
+    // check for error messages in console
+    expect(errorLogs.length).toBe(0);
     // testing to ensure web-map was successfully implemented
     let verifymap= await page.evaluate( map => document.body.querySelector("map").childElementCount);
     expect(verifymap).toBe(2);
