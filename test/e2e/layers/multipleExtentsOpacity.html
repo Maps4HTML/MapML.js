@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>index-map.html</title>
+    <script type="module" src="./mapml-viewer.js"></script>
+     <style> 
+       html, 
+       body { 
+         height: 100%; 
+       } 
+       * { 
+         margin: 0; 
+         padding: 0; 
+       } 
+        
+       /* Specifying the `:defined` selector is recommended to style the map 
+       element, such that styles don't apply when fallback content is in use 
+       (e.g. when scripting is disabled or when custom/built-in elements isn't 
+       supported in the browser). */ 
+       mapml-viewer:defined { 
+         /* Responsive map. */ 
+          max-width: 100%;  
+          
+         /* Full viewport. */ 
+          width: 100%;  
+          height: 100%;  
+          
+         /* Remove default (native-like) border. */ 
+         border: none;
+         
+         vertical-align: middle;
+       } 
+        
+       /* Pre-style to avoid FOUC of inline layer- and fallback content. */ 
+       mapml-viewer:not(:defined) > * { 
+         display: none; 
+       } 
+       
+       /* Pre-style to avoid Layout Shift. */
+       mapml-viewer:not(:defined) {
+         display: inline-block;
+         contain: size;
+         contain-intrinsic-size: 304px 154px;
+       }
+       
+       /* Ensure inline layer content is hidden if custom/built-in elements isn't 
+       supported, or if javascript is disabled. This needs to be defined separately 
+       from the above, because the `:not(:defined)` selector invalidates the entire 
+       declaration in browsers that do not support it. */ 
+       layer- { 
+         display: none; 
+       } 
+     </style> 
+     <noscript> 
+       <style> 
+         /* Ensure fallback content (children of the map element) is displayed if 
+         custom/built-in elements is supported but javascript is disabled. */ 
+         mapml-viewer:not(:defined) > :not(layer-) { 
+           display: initial; 
+         } 
+         
+         /* "Reset" the properties used to pre-style (to avoid Layout Shift) if
+         custom/built-in elements is supported but javascript is disabled. */
+         mapml-viewer:not(:defined) {
+           display: initial;
+           contain: initial;
+           contain-intrinsic-size: initial;
+         }
+       </style> 
+     </noscript> 
+  </head>
+  <body>
+    <mapml-viewer zoom="15" lon="-75.703611" lat="45.411105" controls="" projection="OSMTILE" role="application">    
+      <layer- opacity = "0.5" label="National Geographic" checked="">
+            <map-extent opacity = "0.9" label="National Geographic" units="OSMTILE">
+              <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
+              <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+              <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+              <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/WMTS/tile/1.0.0/NatGeo_World_Map/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
+            </map-extent>
+            <map-extent opacity = "0.3" label="Labelled Imagery" units="OSMTILE">
+              <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
+              <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+              <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+              <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS/tile/1.0.0/World_Imagery/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
+              <map-link rel="tile" tref="https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places/MapServer/WMTS/tile/1.0.0/Reference_World_Boundaries_and_Places/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.png"></map-link>
+            </map-extent>
+            <map-extent opacity = "0.2" label="Imagery" units="OSMTILE">
+              <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
+              <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+              <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+              <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS/tile/1.0.0/World_Imagery/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
+            </map-extent>
+          </layer->
+        </mapml-viewer>
+  </body>
+</html>
