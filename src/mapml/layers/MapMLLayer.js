@@ -223,6 +223,16 @@ export var MapMLLayer = L.Layer.extend({
               createAndAdd();
             }, this);
         }
+        // set initial opacity for attribute
+        if (this._extent && this._extent._mapExtents) {
+          for (let j = 0; j < this._extent._mapExtents.length; j++) {
+            if (this._extent._mapExtents[j].hasAttribute('opacity')) {
+              let opacity = this._extent._mapExtents[j].getAttribute('opacity');
+              this._extent._mapExtents[j].templatedLayer.changeOpacity(opacity);
+              this._extent._mapExtents[j]._templateVars.opacity = opacity;
+            }
+          }
+        }
         this.setZIndex(this.options.zIndex);
         this.getPane().appendChild(this._container);
         setTimeout(() => {
@@ -485,6 +495,8 @@ export var MapMLLayer = L.Layer.extend({
         opacity.setAttribute('step','0.1');
         opacity.setAttribute('aria-labelledby', 'mapml-layer-item-opacity-' + L.stamp(extentOpacitySummary));
         this._extent._mapExtents[i]._templateVars.opacity = this._extent._mapExtents[i]._templateVars.opacity || '1.0';
+        let opacity_value = this._extent._mapExtents[i].hasAttribute("opacity") ? this._extent._mapExtents[i].getAttribute("opacity"):'1.0';
+        opacity.value = opacity_value;
         L.DomEvent.on(opacity, 'change', this._changeExtentOpacity, this._extent._mapExtents[i]);
 
         var extentItemNameSpan = L.DomUtil.create('span', 'mapml-layer-item-name', extentLabel);
