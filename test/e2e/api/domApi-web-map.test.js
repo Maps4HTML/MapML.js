@@ -289,6 +289,108 @@ test.describe("web-map DOM API Tests", () => {
       expect(reloadHidden).toEqual(true);
       expect(fullscreenHidden).toEqual(false);
       expect(layerControlHidden).toEqual(true);
+      // remove map for next test
+      await page.evaluateHandle(() => document.querySelector('map').remove());
+    });
+
+    test.describe("DomTokenList Methods test", () => {
+      
+      test("using .add(), .replace() and .value() methods of controlsList", async () => {
+        // Adding map
+        const mapHandle = await page.evaluateHandle(()=> document.createElement("map", {is:"web-map"}));
+        await page.evaluateHandle((map) => map.setAttribute("is", "web-map"), mapHandle);
+        await page.evaluateHandle((viewer) => viewer.setAttribute("lat", 45), mapHandle);
+        await page.evaluateHandle((viewer) => viewer.setAttribute("lon", -90), mapHandle);
+        await page.evaluateHandle((viewer) => viewer.setAttribute("zoom", 2), mapHandle);
+        await page.evaluateHandle((viewer) => viewer.setAttribute("width", "600"), mapHandle);
+        await page.evaluateHandle((viewer) => viewer.setAttribute("height", "600"), mapHandle);
+        await page.evaluateHandle((viewer) => viewer.setAttribute("projection", "CBMTILE"), mapHandle);
+        await page.evaluateHandle((viewer) => viewer.setAttribute("controls", ""), mapHandle);
+        await page.evaluateHandle( (viewer) => document.body.appendChild(viewer), mapHandle);
+        
+        let controlsListLength = await page.evaluate( viewer => viewer.controlsList.length, mapHandle);
+        expect(controlsListLength).toEqual(0);
+
+        // Testing .value()
+        await page.evaluateHandle( (viewer) => viewer.controlsList.value = "nozoom nolayer", mapHandle);
+        let controlslistAttribute = await page.evaluate( viewer => viewer.getAttribute("controlslist"), mapHandle);
+        let controlsListValue = await page.evaluate( viewer => viewer.controlsList.value, mapHandle);
+        controlsListLength = await page.evaluate( viewer => viewer.controlsList.length, mapHandle);
+        expect(controlslistAttribute).toEqual("nozoom nolayer");
+        expect(controlsListValue).toEqual("nozoom nolayer");
+        expect(controlsListLength).toEqual(2);
+
+        // Testing .add()
+        await page.evaluateHandle( (viewer) => viewer.controlsList.add("nofullscreen"), mapHandle);
+        controlslistAttribute = await page.evaluate( viewer => viewer.getAttribute("controlslist"), mapHandle);
+        controlsListValue = await page.evaluate( viewer => viewer.controlsList.value, mapHandle);
+        controlsListLength = await page.evaluate( viewer => viewer.controlsList.length, mapHandle);
+        expect(controlslistAttribute).toEqual("nozoom nolayer nofullscreen");
+        expect(controlsListValue).toEqual("nozoom nolayer nofullscreen");
+        expect(controlsListLength).toEqual(3);
+
+        // Testing .replace()
+        await page.evaluateHandle( (viewer) => viewer.controlsList.replace("nolayer", "noreload"), mapHandle);
+        controlslistAttribute = await page.evaluate( viewer => viewer.getAttribute("controlslist"), mapHandle);
+        controlsListValue = await page.evaluate( viewer => viewer.controlsList.value, mapHandle);
+        controlsListLength = await page.evaluate( viewer => viewer.controlsList.length, mapHandle);
+        expect(controlslistAttribute).toEqual("nozoom noreload nofullscreen");
+        expect(controlsListValue).toEqual("nozoom noreload nofullscreen");
+        expect(controlsListLength).toEqual(3);
+
+        // Testing .toggle()
+        await page.evaluateHandle( (viewer) => viewer.controlsList.toggle("nofullscreen"), mapHandle);
+        controlslistAttribute = await page.evaluate( viewer => viewer.getAttribute("controlslist"), mapHandle);
+        controlsListValue = await page.evaluate( viewer => viewer.controlsList.value, mapHandle);
+        controlsListLength = await page.evaluate( viewer => viewer.controlsList.length, mapHandle);
+        expect(controlslistAttribute).toEqual("nozoom noreload");
+        expect(controlsListValue).toEqual("nozoom noreload");
+        expect(controlsListLength).toEqual(2);
+      });
+
+      test("using .contains(), .item(), .remove() and .supports() methods of controlsList", async () => {
+        await page.pause();
+        const mapHandle = await page.evaluateHandle(() => document.querySelector('map'));
+
+        // Testing .contains()
+        let controlslistContains = await page.evaluate( viewer => viewer.controlsList.contains("nozoom"), mapHandle);
+        expect(controlslistContains).toBe(true);
+        controlslistContains = await page.evaluate( viewer => viewer.controlsList.contains("nofullscreen"), mapHandle);
+        expect(controlslistContains).toBe(false);
+        
+        // Testing .item()
+        let controlslistItem = await page.evaluate( viewer => viewer.controlsList.item(1), mapHandle);
+        expect(controlslistItem).toEqual("noreload");
+        controlslistItem = await page.evaluate( viewer => viewer.controlsList.item(2), mapHandle);
+        expect(controlslistItem).toEqual(null);
+
+        // Testing .remove()
+        await page.evaluateHandle( (viewer) => viewer.controlsList.remove("noreload"), mapHandle);
+        let controlslistAttribute = await page.evaluate( viewer => viewer.getAttribute("controlslist"), mapHandle);
+        let controlsListValue = await page.evaluate( viewer => viewer.controlsList.value, mapHandle);
+        let controlsListLength = await page.evaluate( viewer => viewer.controlsList.length, mapHandle);
+        expect(controlslistAttribute).toEqual("nozoom");
+        expect(controlsListValue).toEqual("nozoom");
+        expect(controlsListLength).toEqual(1);
+
+        // Testing .supports()
+        let controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("noreload"), mapHandle);
+        expect(controlslistSupported).toBe(true);
+        controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("nofullscreen"), mapHandle);
+        expect(controlslistSupported).toBe(true);
+        controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("nozoom"), mapHandle);
+        expect(controlslistSupported).toBe(true);
+        controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("nolayer"), mapHandle);
+        expect(controlslistSupported).toBe(true);
+        // controls which are not yet supported / or invalid
+        controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("nogeolocation"), mapHandle);
+        expect(controlslistSupported).toBe(false);
+        controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("noscale"), mapHandle);
+        expect(controlslistSupported).toBe(false);
+        controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("nocode"), mapHandle);
+        expect(controlslistSupported).toBe(false);
+      });
+
     });
 
   });

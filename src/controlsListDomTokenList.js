@@ -27,12 +27,14 @@ export default class DOMTokenList {
 		return this.controlsList.value;
 	}
 	set value (val) {
-		this.controlsList.value = val.toLowerCase();
-        /* jshint ignore:start */
-		this.#valueSet = true;
-		this.#mapEl.setAttribute("controlslist", this.controlsList.value);
-		this.#valueSet = false;
-        /* jshint ignore:end */
+		if (val) {
+			this.controlsList.value = val.toLowerCase();
+        	/* jshint ignore:start */
+			this.#valueSet = true;
+			this.#mapEl.setAttribute("controlslist", this.controlsList.value);
+			this.#valueSet = false;
+        	/* jshint ignore:end */
+		}
 	}
 
 	item (index) {
