@@ -1,5 +1,6 @@
 import './leaflet.js';  // a lightly modified version of Leaflet for use as browser module
 import './mapml.js';       // refactored URI usage, replaced with URL standard
+import DOMTokenList from './controlsListDomTokenList.js';
 import { MapLayer } from './layer.js';
 import { MapArea } from './map-area.js';
 import { MapCaption } from './map-caption.js';
@@ -23,13 +24,6 @@ export class WebMap extends HTMLMapElement {
     } else {
       this.removeAttribute('controls');
     }
-  }
-  get controlslist() {
-    return this._controlslist;
-  }
-  set controlslist(val) {
-    this._controlslist.value = val.toLowerCase();
-    this.setAttribute("controlslist", val);
   }
   get width() {
     return (window.getComputedStyle(this).width).replace('px','');
@@ -130,9 +124,7 @@ export class WebMap extends HTMLMapElement {
   connectedCallback() {
     if (this.isConnected) {
 
-      // TODO - add DOMTokenList as a class
-      // Add a DOMTokenList for controlslist
-      this._controlslist = this._controlslistDOMTokenList(this.getAttribute("controlslist"));
+      this.controlsList = new DOMTokenList(this.getAttribute("controlslist"), this);
 
       let tmpl = document.createElement('template');
       tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
@@ -343,8 +335,10 @@ export class WebMap extends HTMLMapElement {
   }     */
     switch(name) {
       case 'controlslist':
-        if (this._controlslist) {
-          this._controlslist.value = newValue;
+        if (this.controlsList) {
+          if (this.controlsList.valueSet === false) {
+            this.controlsList.value = newValue;
+          }
           this._setControls();
         }
       break;
@@ -406,7 +400,7 @@ export class WebMap extends HTMLMapElement {
         this._setControlsVisibility("reload",false);
         this._setControlsVisibility("zoom",false);
 
-        this._controlslist.forEach((value, key, listObj) => {
+        this.controlsList.forEach((value) => {
           switch(value.toLowerCase()) {
             case 'nofullscreen':
               this._setControlsVisibility("fullscreen",true);
@@ -502,19 +496,6 @@ export class WebMap extends HTMLMapElement {
         this._zoomControl.enable();
       }
     }
-  }
-
-  // creating a DOMTokenList for controlslist, as shown here:
-  // https://marchbox.com/articles/2023-01/using-domtokenlist/
-  // TODO - implement this as a Class
-  _controlslistDOMTokenList(initialValue) {
-    if (initialValue) {
-      initialValue = initialValue.toLowerCase();
-    }
-    const hostingElement = document.createElement('div');
-    const controlslist = hostingElement.classList;
-    controlslist.value = initialValue ?? '';
-    return controlslist;
   }
 
   _dropHandler(event) {
