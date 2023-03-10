@@ -258,6 +258,10 @@ export var MapMLLayer = L.Layer.extend({
                       this._extent._queries = this._extent._queries.concat(this._templatedLayer._queries);
                     }
               }
+              if (this._extent._mapExtents[i].hasAttribute('opacity')) {
+                let opacity = this._extent._mapExtents[i].getAttribute('opacity');
+                this._extent._mapExtents[i].templatedLayer.changeOpacity(opacity);
+              }
              }
             this._setLayerElExtent();
           }
