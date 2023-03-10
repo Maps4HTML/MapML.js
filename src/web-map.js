@@ -401,12 +401,12 @@ export class WebMap extends HTMLMapElement {
     if (this.controls === false) {
       this._hideControls();
     } else  {
-      try {
-        this._setControlsVisibility("fullscreen",false);
-        this._setControlsVisibility("layercontrol",false);
-        this._setControlsVisibility("reload",false);
-        this._setControlsVisibility("zoom",false);
+      this._setControlsVisibility("fullscreen",false);
+      this._setControlsVisibility("layercontrol",false);
+      this._setControlsVisibility("reload",false);
+      this._setControlsVisibility("zoom",false);
 
+      if (this._controlsList) {
         this._controlsList.forEach((value) => {
           switch(value.toLowerCase()) {
             case 'nofullscreen':
@@ -416,7 +416,6 @@ export class WebMap extends HTMLMapElement {
               this._setControlsVisibility("layercontrol",true);
             break;
             case 'noreload':
-
               this._setControlsVisibility("reload",true);
             break;
             case 'nozoom':
@@ -424,11 +423,11 @@ export class WebMap extends HTMLMapElement {
             break;
           }
         });
+      }
 
-        if (this._layerControl._layers.length === 0) {
-          this._layerControl._container.setAttribute("hidden","");
-        }
-      } catch { }
+      if (this._layerControl && this._layerControl._layers.length === 0) {
+        this._layerControl._container.setAttribute("hidden","");
+      }
     }
   }
 
