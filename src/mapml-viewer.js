@@ -25,7 +25,7 @@ export class MapViewer extends HTMLElement {
     }
   }
   get controlsList() {
-    return this._controlsList.value;
+    return this._controlsList;
   }
   set controlsList(value) {
     this._controlsList.value = value;
@@ -302,7 +302,12 @@ export class MapViewer extends HTMLElement {
   }     */
     switch(name) {
       case 'controlslist':
+        if (this._controlsList) {
+          if (this._controlsList.valueSet === false) {
+            this._controlsList.value = newValue;
+          }
           this._setControls();
+        }
       break;
       case 'controls':
         if (oldValue !== null && newValue === null) {

@@ -25,6 +25,13 @@ export class WebMap extends HTMLMapElement {
       this.removeAttribute('controls');
     }
   }
+  get controlsList() {
+    return this._controlsList;
+  }
+  set controlsList(value) {
+    this._controlsList.value = value;
+    this.setAttribute('controlslist', value);
+  }
   get width() {
     return (window.getComputedStyle(this).width).replace('px','');
   }
@@ -124,7 +131,7 @@ export class WebMap extends HTMLMapElement {
   connectedCallback() {
     if (this.isConnected) {
 
-      this.controlsList = new DOMTokenList(this.getAttribute("controlslist"), this);
+      this._controlsList = new DOMTokenList(this.getAttribute("controlslist"),this, "controlslist", ["noreload","nofullscreen","nozoom","nolayer"]);
 
       let tmpl = document.createElement('template');
       tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
@@ -400,7 +407,7 @@ export class WebMap extends HTMLMapElement {
         this._setControlsVisibility("reload",false);
         this._setControlsVisibility("zoom",false);
 
-        this.controlsList.forEach((value) => {
+        this._controlsList.forEach((value) => {
           switch(value.toLowerCase()) {
             case 'nofullscreen':
               this._setControlsVisibility("fullscreen",true);
