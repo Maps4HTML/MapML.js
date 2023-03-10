@@ -24,6 +24,13 @@ export class MapViewer extends HTMLElement {
       this.removeAttribute('controls');
     }
   }
+  get controlsList() {
+    return this._controlsList.value;
+  }
+  set controlsList(value) {
+    this._controlsList.value = value;
+    this.setAttribute('controlslist', value);
+  }
   get width() {
     return (window.getComputedStyle(this).width).replace('px','');
   }
@@ -119,7 +126,7 @@ export class MapViewer extends HTMLElement {
   connectedCallback() {
     if (this.isConnected) {
 
-      this.controlsList = new DOMTokenList(this.getAttribute("controlslist"), this);
+      this._controlsList = new DOMTokenList(this.getAttribute("controlslist"),this, "controlslist", ["noreload","nofullscreen","nozoom","nolayer"]);
       
       let tmpl = document.createElement('template');
       tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
@@ -295,12 +302,7 @@ export class MapViewer extends HTMLElement {
   }     */
     switch(name) {
       case 'controlslist':
-        if (this.controlsList) {
-          if (this.controlsList.valueSet === false) {
-            this.controlsList.value = newValue;
-          }
           this._setControls();
-        }
       break;
       case 'controls':
         if (oldValue !== null && newValue === null) {
@@ -360,7 +362,7 @@ export class MapViewer extends HTMLElement {
         this._setControlsVisibility("reload",false);
         this._setControlsVisibility("zoom",false);
 
-        this.controlsList.forEach((value) => {
+        this._controlsList.forEach((value) => {
           switch(value.toLowerCase()) {
             case 'nofullscreen':
               this._setControlsVisibility("fullscreen",true);

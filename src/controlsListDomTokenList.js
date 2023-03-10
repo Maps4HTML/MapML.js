@@ -1,18 +1,22 @@
 export default class DOMTokenList {
     /* jshint ignore:start */
-	#mapEl; // create mapEl as a private property
+	#element; // create mapEl as a private property
 	#valueSet;
+    #attribute
+    #domain;
     /* jshint ignore:end */
-	constructor (initialValue, mapEl) {
+	constructor (initialValue, element, attribute, domain) {
 		// create donor/host div to extract DomTokenList from
 		const hostingElement = document.createElement('div');
-		this.controlsList = hostingElement.classList;
+		this.domtokenlist = hostingElement.classList;
 		
 		// to check if value is being set, protects from infinite recursion
 		// from attributeChangedCallback of mapml-viewer and web-map
 		this.#valueSet = false;// jshint ignore:line
-		this.controlsList.value = initialValue ?? '';
-		this.#mapEl = mapEl;// jshint ignore:line
+		this.domtokenlist.value = initialValue ?? '';
+		this.#element = element;// jshint ignore:line
+        this.#attribute = attribute;// jshint ignore:line
+        this.#domain = domain;// jshint ignore:line
 	}
 	
 	get valueSet () {
@@ -20,82 +24,83 @@ export default class DOMTokenList {
 	}
 
 	get length () {
-		return this.controlsList.length;
+		return this.domtokenlist.length;
 	}
 
 	get value () {
-		return this.controlsList.value;
+		return this.domtokenlist.value;
 	}
 	set value (val) {
 		if (val) {
-			this.controlsList.value = val.toLowerCase();
+			this.domtokenlist.value = val.toLowerCase();
         	/* jshint ignore:start */
 			this.#valueSet = true;
-			this.#mapEl.setAttribute("controlslist", this.controlsList.value);
+			this.#element.setAttribute(this.#attribute, this.domtokenlist.value);
 			this.#valueSet = false;
         	/* jshint ignore:end */
 		}
 	}
 
 	item (index) {
-		return this.controlsList.item(index);
+		return this.domtokenlist.item(index);
 	}
 
 	contains(token) {
-		return this.controlsList.contains(token);
+		return this.domtokenlist.contains(token);
 	}
 
 	// Modified default behavior
 	add (token) {
-		this.controlsList.add(token);
-		this.#mapEl.setAttribute("controlslist", this.controlsList.value);// jshint ignore:line
+		this.domtokenlist.add(token);
+		this.#element.setAttribute(this.#attribute, this.domtokenlist.value);// jshint ignore:line
 	}
 
 	// Modified default behavior
 	remove (token) {
-		this.controlsList.remove(token);
-		this.#mapEl.setAttribute("controlslist", this.controlsList.value);// jshint ignore:line
+		this.domtokenlist.remove(token);
+		this.#element.setAttribute(this.#attribute, this.domtokenlist.value);// jshint ignore:line
 	}
 
 	// Modified default behavior
 	replace (oldToken, newToken) {
-		this.controlsList.replace(oldToken, newToken);
-		this.#mapEl.setAttribute("controlslist", this.controlsList.value);// jshint ignore:line
+		this.domtokenlist.replace(oldToken, newToken);
+		this.#element.setAttribute(this.#attribute, this.domtokenlist.value);// jshint ignore:line
 	}
 
 	// Modified default behavior
 	supports (token) {
-		let supported = ["nolayer", "nofullscreen", "noreload", "nozoom"];
-		if (supported.includes(token)) {
-			return true;
-		} else {
-			return false;
-		}
+    /* jshint ignore:start */
+      if (this.#domain.includes(token)) { 
+        return true;
+      } else {
+        return false;
+      }
+    /* jshint ignore:end */
 	}
 
 	// Modified default behavior
 	//https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList/toggle
 	toggle (token, force) {
-		this.controlsList.toggle(token, force);
-		this.#mapEl.setAttribute("controlslist", this.controlsList.value);// jshint ignore:line
+		this.domtokenlist.toggle(token, force);
+		this.#element.setAttribute(this.#attribute, this.domtokenlist.value);// jshint ignore:line
 	}
 
 	entries () {
-		return this.controlsList.entries();
+		return this.domtokenlist.entries();
 	}
 
 	//https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList/forEach
 	forEach (callback, thisArg) {
-		this.controlsList.forEach(callback, thisArg);
+		this.domtokenlist.forEach(callback, thisArg);
 	}
 
 	//https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList/keys
 	keys () {
-		return this.controlsList.keys();
+		return this.domtokenlist.keys();
 	}
 
 	//https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList/values
 	values () {
-		return this.controlsList.values();
+		return this.domtokenlist.values();
 	}
 }
