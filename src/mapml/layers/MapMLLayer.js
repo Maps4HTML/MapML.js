@@ -223,16 +223,6 @@ export var MapMLLayer = L.Layer.extend({
               createAndAdd();
             }, this);
         }
-        // set initial opacity for attribute
-        if (this._extent && this._extent._mapExtents) {
-          for (let j = 0; j < this._extent._mapExtents.length; j++) {
-            if (this._extent._mapExtents[j].hasAttribute('opacity')) {
-              let opacity = this._extent._mapExtents[j].getAttribute('opacity');
-              this._extent._mapExtents[j].templatedLayer.changeOpacity(opacity);
-              this._extent._mapExtents[j]._templateVars.opacity = opacity;
-            }
-          }
-        }
         this.setZIndex(this.options.zIndex);
         this.getPane().appendChild(this._container);
         setTimeout(() => {
@@ -257,6 +247,10 @@ export var MapMLLayer = L.Layer.extend({
                       if(!this._extent._queries) this._extent._queries = [];
                       this._extent._queries = this._extent._queries.concat(this._templatedLayer._queries);
                     }
+              }
+              if (this._extent._mapExtents[i].hasAttribute('opacity')) {
+                let opacity = this._extent._mapExtents[i].getAttribute('opacity');
+                this._extent._mapExtents[i].templatedLayer.changeOpacity(opacity);
               }
              }
             this._setLayerElExtent();
