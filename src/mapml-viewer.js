@@ -1,6 +1,6 @@
 import './leaflet.js';  // bundled with proj4, proj4leaflet, modularized
 import './mapml.js';   
-import DOMTokenList from './controlsListDomTokenList.js';
+import DOMTokenList from './DOMTokenList.js';
 import { MapLayer } from './layer.js';
 import { MapCaption } from './map-caption.js';
 

@@ -1,10 +1,10 @@
 export default class DOMTokenList {
-    /* jshint ignore:start */
-	#element; // create mapEl as a private property
-	#valueSet;
-    #attribute
-    #domain;
-    /* jshint ignore:end */
+  /* jshint ignore:start */
+	#element; // create element as a private property
+	#valueSet;  // needed to prevent infinite recursive calls to CE setAttribute
+  #attribute // the name of the attribute that will be a DOMTokenList
+  #domain; // the domain of token values supported by this attribute
+  /* jshint ignore:end */
 	constructor (initialValue, element, attribute, domain) {
 		// create donor/host div to extract DomTokenList from
 		const hostingElement = document.createElement('div');
@@ -15,8 +15,8 @@ export default class DOMTokenList {
 		this.#valueSet = false;// jshint ignore:line
 		this.domtokenlist.value = initialValue ?? '';
 		this.#element = element;// jshint ignore:line
-        this.#attribute = attribute;// jshint ignore:line
-        this.#domain = domain;// jshint ignore:line
+    this.#attribute = attribute;// jshint ignore:line
+    this.#domain = domain;// jshint ignore:line
 	}
 	
 	get valueSet () {

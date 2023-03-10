@@ -1,6 +1,6 @@
 import './leaflet.js';  // a lightly modified version of Leaflet for use as browser module
 import './mapml.js';       // refactored URI usage, replaced with URL standard
-import DOMTokenList from './controlsListDomTokenList.js';
+import DOMTokenList from './DOMTokenList.js';
 import { MapLayer } from './layer.js';
 import { MapArea } from './map-area.js';
 import { MapCaption } from './map-caption.js';
