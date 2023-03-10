@@ -119,7 +119,7 @@ export var MapMLLayer = L.Layer.extend({
     },
 
     onAdd: function (map) {
-        if((this._extent || this._extent_mapExtents) && !this._validProjection(map)){
+        if (this._extent && !this._validProjection(map)) {
           this.validProjection = false;
           return;
         }
@@ -495,11 +495,11 @@ export var MapMLLayer = L.Layer.extend({
         opacity.setAttribute('type','range');
         opacity.setAttribute('min', '0');
         opacity.setAttribute('max','1.0');
-        opacity.setAttribute('value', this._extent._mapExtents[i]._templateVars.opacity || '1.0');
         opacity.setAttribute('step','0.1');
         opacity.setAttribute('aria-labelledby', 'mapml-layer-item-opacity-' + L.stamp(extentOpacitySummary));
-        this._extent._mapExtents[i]._templateVars.opacity = this._extent._mapExtents[i]._templateVars.opacity || '1.0';
         let opacity_value = this._extent._mapExtents[i].hasAttribute("opacity") ? this._extent._mapExtents[i].getAttribute("opacity"):'1.0';
+        this._extent._mapExtents[i]._templateVars.opacity = this._extent._mapExtents[i]._templateVars.opacity || opacity_value;
+        opacity.setAttribute('value', opacity_value);
         opacity.value = opacity_value;
         L.DomEvent.on(opacity, 'change', this._changeExtentOpacity, this._extent._mapExtents[i]);
 
