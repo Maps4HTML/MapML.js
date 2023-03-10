@@ -31,7 +31,7 @@ export default class DOMTokenList {
 		return this.domtokenlist.value;
 	}
 	set value (val) {
-		if (val) {
+		if (val !== null) {
 			this.domtokenlist.value = val.toLowerCase();
         	/* jshint ignore:start */
 			this.#valueSet = true;

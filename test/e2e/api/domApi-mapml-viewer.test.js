@@ -344,7 +344,6 @@ test.describe("mapml-viewer DOM API Tests", () => {
       });
 
       test("using .contains(), .item(), .remove() and .supports() methods of controlsList", async () => {
-        await page.pause();
         const viewerHandle = await page.evaluateHandle(() => document.querySelector('mapml-viewer'));
 
         // Testing .contains()

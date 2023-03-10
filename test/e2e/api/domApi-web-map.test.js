@@ -349,7 +349,6 @@ test.describe("web-map DOM API Tests", () => {
       });
 
       test("using .contains(), .item(), .remove() and .supports() methods of controlsList", async () => {
-        await page.pause();
         const mapHandle = await page.evaluateHandle(() => document.querySelector('map'));
 
         // Testing .contains()
