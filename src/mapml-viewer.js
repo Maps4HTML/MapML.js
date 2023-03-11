@@ -126,7 +126,11 @@ export class MapViewer extends HTMLElement {
   connectedCallback() {
     if (this.isConnected) {
 
-      this._controlsList = new DOMTokenList(this.getAttribute("controlslist"),this, "controlslist", ["noreload","nofullscreen","nozoom","nolayer"]);
+      this._controlsList = new DOMTokenList(
+        this.getAttribute("controlslist"),
+        this, "controlslist", 
+        ["noreload","nofullscreen","nozoom","nolayer"]
+      );
       
       let tmpl = document.createElement('template');
       tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
@@ -171,8 +175,6 @@ export class MapViewer extends HTMLElement {
       shadowRoot.appendChild(this._container);
 
       this.appendChild(hideElementsCSS);
-
-      this._toggleState = false;
 
       // the dimension attributes win, if they're there. A map does not
       // have an intrinsic size, unlike an image or video, and so must
@@ -311,10 +313,8 @@ export class MapViewer extends HTMLElement {
       break;
       case 'controls':
         if (oldValue !== null && newValue === null) {
-          this.removeAttribute("controls");
           this._hideControls();
         } else if (oldValue === null && newValue !== null) {
-          this.setAttribute("controls", "");
           this._setControls();
         }
       break;
@@ -648,17 +648,6 @@ export class MapViewer extends HTMLElement {
       }
     });
   }
-  _toggleControls() {
-    if (this._map) {
-      if (this._toggleState) {
-        this._setControls();
-      } else {
-        this._hideControls();
-      }
-      this._toggleState = !this._toggleState;
-    }
-  }
-
   toggleDebug(){
     if(this._debug){
       this._debug.remove();

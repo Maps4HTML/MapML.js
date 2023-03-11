@@ -188,7 +188,6 @@ export class WebMap extends HTMLMapElement {
       this.appendChild(rootDiv);
       this.appendChild(hideElementsCSS);
       document.head.insertAdjacentElement('afterbegin', mapDefaultCSS);
-      this._toggleState = false;
 
       // the dimension attributes win, if they're there. A map does not
       // have an intrinsic size, unlike an image or video, and so must
@@ -351,10 +350,8 @@ export class WebMap extends HTMLMapElement {
       break;
       case 'controls':
         if (oldValue !== null && newValue === null) {
-          this.removeAttribute("controls");
           this._hideControls();
         } else if (oldValue === null && newValue !== null) {
-          this.setAttribute("controls", "");
           this._setControls();
         } 
       break;
@@ -689,17 +686,6 @@ export class WebMap extends HTMLMapElement {
       }
     });   
   }
-  _toggleControls() {
-    if (this._map) {
-      if (this._toggleState) {
-        this._setControls();
-      } else {
-        this._hideControls();
-      }
-      this._toggleState = !this._toggleState;
-    }
-  }
-
   toggleDebug(){
     if(this._debug){
       this._debug.remove();
