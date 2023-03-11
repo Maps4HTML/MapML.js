@@ -242,9 +242,7 @@ export class MapViewer extends HTMLElement {
 
       this._setControls();
 
-      if (this._map && this.hasAttribute('static')) {
-        this._toggleStatic();
-      }
+      this._toggleStatic();
       // When map started with no controls disable the toggle controls contextmenu
       if (!this.controls && this._map) {
         this._map.contextMenu.toggleContextMenuItem("Controls", "disabled");
