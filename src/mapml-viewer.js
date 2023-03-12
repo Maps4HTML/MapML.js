@@ -122,156 +122,158 @@ export class MapViewer extends HTMLElement {
     // Always call super first in constructor
     super();
     this._source = this.outerHTML;
+    // create an array to track the history of the map and the current index
+    this._history = [];
+    this._historyIndex = -1;
+    this._traversalCall = false;
   }
   connectedCallback() {
-    if (this.isConnected) {
 
-      this._controlsList = new DOMTokenList(
-        this.getAttribute("controlslist"),
-        this, "controlslist", 
-        ["noreload","nofullscreen","nozoom","nolayer"]
-      );
-      
-      let tmpl = document.createElement('template');
-      tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
-      
-      let shadowRoot = this.attachShadow({mode: 'open'});
-      this._container = document.createElement('div');
+    this._createShadowRoot();
 
-      let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
-      this._container.insertAdjacentHTML("beforeend", output);
+    this._controlsList = new DOMTokenList(
+      this.getAttribute("controlslist"),
+      this, "controlslist", 
+      ["noreload","nofullscreen","nozoom","nolayer"]
+    );
 
-      // Set default styles for the map element.
-      let mapDefaultCSS = document.createElement('style');
-      mapDefaultCSS.innerHTML =
-      `:host {` +
-      `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
-      `contain: layout size;` + // Contain layout and size calculations within the map element.
-      `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
-      `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
-      `width: 300px;` +
-      `border-width: 2px;` + // Set a default border for contrast, similar to UA default for iframes.
-      `border-style: inset;` +
-      `}` +
-      `:host([frameborder="0"]) {` +
-      `border-width: 0;` +
-      `}` +
-      `:host([hidden]) {` +
-      `display: none!important;` +
-      `}` +
-      `:host .leaflet-control-container {` +
-      `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154).
-      `}`;
-      
-      // Hide all (light DOM) children of the map element.
-      let hideElementsCSS = document.createElement('style');
-      hideElementsCSS.innerHTML =
-      `mapml-viewer > * {` +
-      `display: none!important;` +
-      `}`;
+    // the dimension attributes win, if they're there. A map does not
+    // have an intrinsic size, unlike an image or video, and so must
+    // have a defined width and height.
+    var s = window.getComputedStyle(this),
+      wpx = s.width, hpx=s.height,
+      w = this.hasAttribute("width") ? this.getAttribute("width") : parseInt(wpx.replace('px','')),
+      h = this.hasAttribute("height") ? this.getAttribute("height") : parseInt(hpx.replace('px',''));
+    this._changeWidth(w);
+    this._changeHeight(h);      
 
-      shadowRoot.appendChild(mapDefaultCSS);
-      shadowRoot.appendChild(tmpl.content.cloneNode(true));
-      shadowRoot.appendChild(this._container);
 
-      this.appendChild(hideElementsCSS);
+    // wait for createmap event before creating leaflet map
+    // this allows a safeguard for the case where loading a custom TCRS takes 
+    // longer than loading mapml-viewer.js/web-map.js
+    // the REASON we need a synchronous event listener (see comment below)
+    // is because the mapml-viewer element has / can have a size of 0 up until after
+    // something that happens between this point and the event handler executing
+    // perhaps a browser rendering cycle??
+    this.addEventListener('createmap', this._createMap);
 
-      // the dimension attributes win, if they're there. A map does not
-      // have an intrinsic size, unlike an image or video, and so must
-      // have a defined width and height.
-      var s = window.getComputedStyle(this),
-        wpx = s.width, hpx=s.height,
-        w = this.hasAttribute("width") ? this.getAttribute("width") : parseInt(wpx.replace('px','')),
-        h = this.hasAttribute("height") ? this.getAttribute("height") : parseInt(hpx.replace('px',''));
-      this._changeWidth(w);
-      this._changeHeight(h);      
+    let custom = !(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(this.projection));
+    // this is worth a read, because dispatchEvent is synchronous
+    // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent
+    // In particular:
+    //   "All applicable event handlers are called and return before dispatchEvent() returns."
+    if (!custom) {	
+      this.dispatchEvent(new CustomEvent('createmap'));
+    }
+    // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
+    this.setAttribute('role', 'application');
+    this._toggleControls();
+    this._toggleStatic();
 
-      // create an array to track the history of the map and the current index
-      if(!this._history){
-        this._history = [];
-        this._historyIndex = -1;
-        this._traversalCall = false;
-      }
+    /*
+    1. only deletes aria-label when the last (only remaining) map caption is removed
+    2. only deletes aria-label if the aria-label was defined by the map caption element itself
+    */
 
-      // wait for createmap event before creating leaflet map
-      // this allows a safeguard for the case where loading a custom TCRS takes longer than loading mapml-viewer.js/web-map.js
-      this.addEventListener('createmap', ()=>{
-        if (!this._map) {
-          this._map = L.map(this._container, {
-            center: new L.LatLng(this.lat, this.lon),
-            projection: this.projection,
-            query: true,
-            contextMenu: true,
-            announceMovement: M.options.announceMovement,
-            featureIndex: true,
-            mapEl: this,
-            crs: M[this.projection],
-            zoom: this.zoom,
-            zoomControl: false,
-            // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
-            // the mapml response is received the screen tends to flash.  I'm sure
-            // there is a better configuration than that, but at this moment
-            // I'm not sure how to approach that issue.
-            // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
-            fadeAnimation: true
+    let mapcaption = this.querySelector('map-caption');
+
+    if (mapcaption !== null) {
+      setTimeout(() => {
+        let ariaupdate = this.getAttribute('aria-label');
+
+        if (ariaupdate === mapcaption.innerHTML) {
+          this.mapCaptionObserver = new MutationObserver((m) => {
+            let mapcaptionupdate = this.querySelector('map-caption');
+            if (mapcaptionupdate !== mapcaption) {
+              this.removeAttribute('aria-label');
+            }     
           });
-          this._addToHistory();
-          // the attribution control is not optional
-          M.attributionControl(this);
-
-          this._setupControls();
-          this._crosshair = M.crosshair().addTo(this._map);
-          if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
-          // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
-          this.setAttribute('role', 'application');
-          // Make the Leaflet container element programmatically identifiable
-          // (https://github.com/Leaflet/Leaflet/issues/7193).
-          this._container.setAttribute('role', 'region');
-          this._container.setAttribute('aria-label', 'Interactive map');
-    
-          this._setUpEvents();
-          // this.fire('load', {target: this});
+          this.mapCaptionObserver.observe(this, {
+            childList: true
+          });
         }
-      }, {once:true});
- 
-      let custom = !(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(this.projection));
-      // if the page doesn't use nav.js or isn't custom then dispatch createmap event	
-      if(!custom){	
-        this.dispatchEvent(new CustomEvent('createmap'));
-      }
+      }, 0);
+    }
+  }
+  _createShadowRoot() {
+    let tmpl = document.createElement('template');
+    tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
 
-      this._setControls();
+    let shadowRoot = this.attachShadow({mode: 'open'});
+    this._container = document.createElement('div');
 
-      this._toggleStatic();
-      // When map started with no controls disable the toggle controls contextmenu
-      if (!this.controls && this._map) {
-        this._map.contextMenu.toggleContextMenuItem("Controls", "disabled");
-      }
+    let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
+    this._container.insertAdjacentHTML("beforeend", output);
 
-      /*
-      1. only deletes aria-label when the last (only remaining) map caption is removed
-      2. only deletes aria-label if the aria-label was defined by the map caption element itself
-      */
+    // Set default styles for the map element.
+    let mapDefaultCSS = document.createElement('style');
+    mapDefaultCSS.innerHTML =
+    `:host {` +
+    `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
+    `contain: layout size;` + // Contain layout and size calculations within the map element.
+    `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
+    `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
+    `width: 300px;` +
+    `border-width: 2px;` + // Set a default border for contrast, similar to UA default for iframes.
+    `border-style: inset;` +
+    `}` +
+    `:host([frameborder="0"]) {` +
+    `border-width: 0;` +
+    `}` +
+    `:host([hidden]) {` +
+    `display: none!important;` +
+    `}` +
+    `:host .leaflet-control-container {` +
+    `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154).
+    `}`;
+
+    // Hide all (light DOM) children of the map element.
+    let hideElementsCSS = document.createElement('style');
+    hideElementsCSS.innerHTML =
+    `mapml-viewer > * {` +
+    `display: none!important;` +
+    `}`;
+    this.appendChild(hideElementsCSS);
     
-      let mapcaption = this.querySelector('map-caption');
-      
-      if (mapcaption !== null) {
-        setTimeout(() => {
-          let ariaupdate = this.getAttribute('aria-label');
-    
-          if (ariaupdate === mapcaption.innerHTML) {
-            this.mapCaptionObserver = new MutationObserver((m) => {
-              let mapcaptionupdate = this.querySelector('map-caption');
-              if (mapcaptionupdate !== mapcaption) {
-                this.removeAttribute('aria-label');
-              }     
-            });
-            this.mapCaptionObserver.observe(this, {
-              childList: true
-            });
-          }
-        }, 0);
-      }
+    // Make the Leaflet container element programmatically identifiable
+    // (https://github.com/Leaflet/Leaflet/issues/7193).
+    this._container.setAttribute('role', 'region');
+    this._container.setAttribute('aria-label', 'Interactive map');
+
+    shadowRoot.appendChild(mapDefaultCSS);
+    shadowRoot.appendChild(tmpl.content.cloneNode(true));
+    shadowRoot.appendChild(this._container);
+
+  }
+  _createMap() {
+    if (!this._map) {
+      this._map = L.map(this._container, {
+        center: new L.LatLng(this.lat, this.lon),
+        projection: this.projection,
+        query: true,
+        contextMenu: true,
+        announceMovement: M.options.announceMovement,
+        featureIndex: true,
+        mapEl: this,
+        crs: M[this.projection],
+        zoom: this.zoom,
+        zoomControl: false,
+        // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
+        // the mapml response is received the screen tends to flash.  I'm sure
+        // there is a better configuration than that, but at this moment
+        // I'm not sure how to approach that issue.
+        // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
+        fadeAnimation: true
+      });
+      this._addToHistory();
+      // the attribution control is not optional
+      M.attributionControl(this);
+
+      this._createControls();
+      this._crosshair = M.crosshair().addTo(this._map);
+      if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
+
+      this._setUpEvents();
     }
   }
   disconnectedCallback() {
@@ -306,14 +308,14 @@ export class MapViewer extends HTMLElement {
           if (this._controlsList.valueSet === false) {
             this._controlsList.value = newValue;
           }
-          this._setControls();
+          this._toggleControls();
         }
       break;
       case 'controls':
         if (oldValue !== null && newValue === null) {
           this._hideControls();
         } else if (oldValue === null && newValue !== null) {
-          this._setControls();
+          this._showControls();
         }
       break;
       case 'height': 
@@ -333,7 +335,7 @@ export class MapViewer extends HTMLElement {
   }
 
   // Creates All map controls and adds them to the map, when created.
-  _setupControls() {
+  _createControls() {
     let mapSize = this._map.getSize().y,
           totalSize = 0;
 
@@ -355,37 +357,13 @@ export class MapViewer extends HTMLElement {
   }
   
   // Sets controls by hiding/unhiding them based on the map attribute
-  _setControls() {
+  _toggleControls() {
     if (this.controls === false) {
       this._hideControls();
+      this._map.contextMenu.toggleContextMenuItem("Controls", "disabled");
     } else  {
-      this._setControlsVisibility("fullscreen",false);
-      this._setControlsVisibility("layercontrol",false);
-      this._setControlsVisibility("reload",false);
-      this._setControlsVisibility("zoom",false);
-
-      if (this._controlsList) {
-        this._controlsList.forEach((value) => {
-          switch(value.toLowerCase()) {
-            case 'nofullscreen':
-              this._setControlsVisibility("fullscreen",true);
-            break;
-            case 'nolayer':
-              this._setControlsVisibility("layercontrol",true);
-            break;
-            case 'noreload':
-              this._setControlsVisibility("reload",true);
-            break;
-            case 'nozoom':
-              this._setControlsVisibility("zoom",true);
-            break;
-          }
-        });
-      }
-
-      if (this._layerControl && this._layerControl._layers.length === 0) {
-        this._layerControl._container.setAttribute("hidden","");
-      }
+      this._showControls();
+      this._map.contextMenu.toggleContextMenuItem("Controls", "enabled");
     }
   }
 
@@ -394,6 +372,38 @@ export class MapViewer extends HTMLElement {
     this._setControlsVisibility("layercontrol",true);
     this._setControlsVisibility("reload",true);
     this._setControlsVisibility("zoom",true);
+  }
+  _showControls() {
+    this._setControlsVisibility("fullscreen",false);
+    this._setControlsVisibility("layercontrol",false);
+    this._setControlsVisibility("reload",false);
+    this._setControlsVisibility("zoom",false);
+      
+    // prune the controls shown if necessary
+    // this logic could be embedded in _showControls
+    // but would require being able to iterate the domain of supported tokens
+    // for the controlslist
+    if (this._controlsList) {
+      this._controlsList.forEach((value) => {
+        switch(value.toLowerCase()) {
+          case 'nofullscreen':
+            this._setControlsVisibility("fullscreen",true);
+          break;
+          case 'nolayer':
+            this._setControlsVisibility("layercontrol",true);
+          break;
+          case 'noreload':
+            this._setControlsVisibility("reload",true);
+          break;
+          case 'nozoom':
+            this._setControlsVisibility("zoom",true);
+          break;
+        }
+      });
+    }
+    if (this._layerControl && this._layerControl._layers.length === 0) {
+      this._layerControl._container.setAttribute("hidden","");
+    }
   }
 
   // Sets the control's visibility AND all its childrens visibility,
