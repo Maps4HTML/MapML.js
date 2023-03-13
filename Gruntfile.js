@@ -163,7 +163,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-rollup');
 
   grunt.registerTask('test', ['jshint']);
-  grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'rollup', 
+  grunt.registerTask('default', ['clean:dist', 'copy:main', 'copy:images', 'jshint', 'rollup', 
                                  'uglify', 'cssmin','clean:tidyup']);
   grunt.registerTask('experiments',['clean:experiments','default','copy:experiments']);
 
