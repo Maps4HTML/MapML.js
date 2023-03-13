@@ -172,39 +172,49 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
 
   test.describe("Context Menu, Toggle Controls ", () => {
     test("Context menu, toggle controls off", async () => {
-      const controlsOn = await page.$eval(
-        "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-        (controls) => controls.childElementCount
-      );
+      let zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
+      let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+      let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
+      let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      expect(zoomHidden).toEqual(false);
+      expect(reloadHidden).toEqual(false);
+      expect(fullscreenHidden).toEqual(false);
+      expect(layerControlHidden).toEqual(false);
 
       await page.click("body > mapml-viewer", { button: "right" });
       await page.click("div > div.mapml-contextmenu > button:nth-of-type(7)");
 
-      const controlsOff = await page.$eval(
-        "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-        (controls) => controls.childElementCount
-      );
-
-      expect(controlsOn).toEqual(3);
-      expect(controlsOff).toEqual(0);
+      zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
+      reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+      fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
+      layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      expect(zoomHidden).toEqual(true);
+      expect(reloadHidden).toEqual(true);
+      expect(fullscreenHidden).toEqual(true);
+      expect(layerControlHidden).toEqual(true);
     });
 
     test("Context menu, toggle controls on", async () => {
-      const controlsOn = await page.$eval(
-        "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-        (controls) => controls.childElementCount
-      );
+      let zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
+      let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+      let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
+      let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      expect(zoomHidden).toEqual(true);
+      expect(reloadHidden).toEqual(true);
+      expect(fullscreenHidden).toEqual(true);
+      expect(layerControlHidden).toEqual(true);
 
       await page.click("body > mapml-viewer", { button: "right" });
       await page.click("div > div.mapml-contextmenu > button:nth-of-type(7)");
 
-      const controlsOff = await page.$eval(
-        "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-        (controls) => controls.childElementCount
-      );
-
-      expect(controlsOn).toEqual(0);
-      expect(controlsOff).toEqual(3);
+      zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
+      reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+      fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
+      layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      expect(zoomHidden).toEqual(false);
+      expect(reloadHidden).toEqual(false);
+      expect(fullscreenHidden).toEqual(false);
+      expect(layerControlHidden).toEqual(false);
     });
 
     test("Context menu, toggle controls after changing opacity", async () => {
