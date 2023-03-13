@@ -324,7 +324,7 @@ export class MapLayer extends HTMLElement {
               {target: this}}));
         },this);
   }
-  focus(){
+  zoomTo() {
     if(!this.extent) return;
     let map = this._layer._map,
       tL = this.extent.topLeft.pcrs,
