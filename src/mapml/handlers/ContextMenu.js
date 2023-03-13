@@ -202,7 +202,7 @@ export var ContextMenu = L.Handler.extend({
 
   _zoomToLayer: function (e) {
     let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu;
-    context._layerClicked.layer._layerEl.focus();
+    context._layerClicked.layer._layerEl.zoomTo();
   },
 
   _copyLayer: function (e) {
