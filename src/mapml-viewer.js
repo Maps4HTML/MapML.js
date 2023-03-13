@@ -51,6 +51,9 @@ export class MapViewer extends HTMLElement {
   set lat(val) {
     if (val) {
       this.setAttribute("lat", val);
+      if (this._mapZoomLocationAPI) {
+        this.zoomTo(val,this.lon,this.zoom);
+      }
     }
   }
   get lon() {
@@ -59,6 +62,9 @@ export class MapViewer extends HTMLElement {
   set lon(val) {
     if (val) {
       this.setAttribute("lon", val);
+      if (this._mapZoomLocationAPI) {
+        this.zoomTo(this.lat,val,this.zoom);
+      }
     }
   }
   get projection() {
@@ -86,6 +92,9 @@ export class MapViewer extends HTMLElement {
       var parsedVal = parseInt(val,10);
       if (!isNaN(parsedVal) && (parsedVal >= 0 && parsedVal <= 25)) {
         this.setAttribute('zoom', parsedVal);
+        if (this._mapZoomLocationAPI) {
+          this.zoomTo(this.lat,this.lon,parsedVal);
+        }
       }
   }
   get layers() {
@@ -126,6 +135,8 @@ export class MapViewer extends HTMLElement {
     this._history = [];
     this._historyIndex = -1;
     this._traversalCall = false;
+    // keeps track of when the zoom, lon, and lat are being set using the API
+    this._mapZoomLocationAPI = true;
   }
   connectedCallback() {
 
@@ -687,16 +698,15 @@ export class MapViewer extends HTMLElement {
     zoom = Number.isInteger(+zoom) ? +zoom : this.zoom;
     let location = new L.LatLng(+lat, +lon);
     this._map.setView(location, zoom);
-    this.zoom = zoom;
-    this.lat = location.lat;
-    this.lon = location.lng;
   }
   _updateMapCenter() {
     // remember to tell Leaflet event handler that 'this' in here refers to
     //  something other than the map in this case the custom polymer element
+    this._mapZoomLocationAPI = false;
     this.lat = this._map.getCenter().lat;
     this.lon = this._map.getCenter().lng;
     this.zoom = this._map.getZoom();
+    this._mapZoomLocationAPI = true;
   }
 
   /**
