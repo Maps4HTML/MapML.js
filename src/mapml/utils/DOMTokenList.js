@@ -2,8 +2,8 @@ export default class DOMTokenList {
   /* jshint ignore:start */
 	#element; // create element as a private property
 	#valueSet;  // needed to prevent infinite recursive calls to CE setAttribute
-  #attribute // the name of the attribute that will be a DOMTokenList
-  #domain; // the domain of token values supported by this attribute
+  	#attribute // the name of the attribute that will be a DOMTokenList
+  	#domain; // the domain of token values supported by this attribute
   /* jshint ignore:end */
 	constructor (initialValue, element, attribute, domain) {
 		// create donor/host div to extract DomTokenList from
@@ -15,8 +15,8 @@ export default class DOMTokenList {
 		this.#valueSet = false;// jshint ignore:line
 		this.domtokenlist.value = initialValue ?? '';
 		this.#element = element;// jshint ignore:line
-    this.#attribute = attribute;// jshint ignore:line
-    this.#domain = domain;// jshint ignore:line
+    	this.#attribute = attribute;// jshint ignore:line
+    	this.#domain = domain;// jshint ignore:line
 	}
 	
 	get valueSet () {
@@ -31,7 +31,10 @@ export default class DOMTokenList {
 		return this.domtokenlist.value;
 	}
 	set value (val) {
-		if (val !== null) {
+		if (val === null) {
+			// when attribute is being removed
+			this.domtokenlist.value = "";
+		} else {
 			this.domtokenlist.value = val.toLowerCase();
         	/* jshint ignore:start */
 			this.#valueSet = true;

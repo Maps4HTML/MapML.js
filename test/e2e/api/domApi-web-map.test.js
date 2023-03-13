@@ -289,6 +289,26 @@ test.describe("web-map DOM API Tests", () => {
       expect(reloadHidden).toEqual(true);
       expect(fullscreenHidden).toEqual(false);
       expect(layerControlHidden).toEqual(true);
+    });
+
+    test("controlslist removeAttribute", async () => {
+      const mapHandle = await page.evaluateHandle(() => document.querySelector('map'));
+      // removeAttribute
+      await page.evaluate( viewer => viewer.removeAttribute("controlslist"), mapHandle);
+    
+      let hasControlslist = await page.evaluate( viewer => viewer.hasAttribute("controlslist"), mapHandle);
+      expect(hasControlslist).toEqual(false);
+    
+      let zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
+      let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+      let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
+      expect(zoomHidden).toEqual(false);
+      expect(reloadHidden).toEqual(false);
+      expect(fullscreenHidden).toEqual(false);
+    
+      let controlslistDomTokenListLength = await page.evaluate( viewer => viewer.controlsList.length, mapHandle);
+      expect(controlslistDomTokenListLength).toBe(0);
+    
       // remove map for next test
       await page.evaluateHandle(() => document.querySelector('map').remove());
     });
