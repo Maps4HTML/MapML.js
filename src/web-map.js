@@ -52,9 +52,6 @@ export class WebMap extends HTMLMapElement {
   set lat(val) {
     if (val) {
       this.setAttribute("lat", val);
-      if (this._mapZoomLocationAPI) {
-        this.zoomTo(val,this.lon,this.zoom);
-      }
     }
   }
   get lon() {
@@ -63,9 +60,6 @@ export class WebMap extends HTMLMapElement {
   set lon(val) {
     if (val) {
       this.setAttribute("lon", val);
-      if (this._mapZoomLocationAPI) {
-        this.zoomTo(this.lat,val,this.zoom);
-      }
     }
   }
   get projection() {
@@ -93,9 +87,6 @@ export class WebMap extends HTMLMapElement {
     var parsedVal = parseInt(val,10);
     if (!isNaN(parsedVal) && (parsedVal >= 0 && parsedVal <= 25)) {
       this.setAttribute('zoom', parsedVal);
-      if (this._mapZoomLocationAPI) {
-        this.zoomTo(this.lat,this.lon,parsedVal);
-      }
     }
   }
   get layers() {
@@ -371,6 +362,21 @@ export class WebMap extends HTMLMapElement {
         } else if (oldValue === null && newValue !== null) {
           this._showControls();
         } 
+      break;
+      case 'lat':
+        if (this._mapZoomLocationAPI && oldValue !== null) {
+          this.zoomTo(newValue, this.lon, this.zoom);
+        }
+      break;
+      case 'lon':
+        if (this._mapZoomLocationAPI && oldValue !== null) {
+          this.zoomTo(this.lat, newValue, this.zoom);
+        }
+      break;
+      case 'zoom':
+        if (this._mapZoomLocationAPI && oldValue !== null) {
+          this.zoomTo(this.lat, this.lon, newValue);
+        }
       break;
       case 'height': 
         if (oldValue !== newValue) {
