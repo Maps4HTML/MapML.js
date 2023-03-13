@@ -38,6 +38,11 @@
 /*
  * Controls.
  */
+
+ /* Scale bar */
+ .leaflet-control-scale {
+  bottom: 40px; 
+}
  
  /* Generic class for seamless buttons */
  .mapml-button {
