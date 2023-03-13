@@ -161,7 +161,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
 
   test("Adding controls to a map which was created without controls", async () => {
     const viewerHandle = await page.evaluateHandle(() => document.querySelector('mapml-viewer'));
-    await page.evaluate( viewer => viewer.setAttribute("controls",""), viewerHandle);
+    await page.evaluate( viewer => viewer.controls = true, viewerHandle);
 
     // All controls should be visible on the map
     let zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
@@ -240,16 +240,30 @@ test.describe("mapml-viewer DOM API Tests", () => {
       await page.evaluate( viewer => viewer.removeAttribute("controlslist"), viewerHandle);
     });
 
-    test("Adding controlslist using setAttribute", async () => {
+    test("Adding controlslist using setAttribute and controlsList setter", async () => {
       const viewerHandle = await page.evaluateHandle(() => document.querySelector('mapml-viewer'));
-      await page.evaluate( viewer => viewer.setAttribute("controlslist","noreload nozoom"), viewerHandle);
+      await page.evaluate( viewer => viewer.setAttribute("controlslist","noreload"), viewerHandle);
       let hascontrolslist = await page.evaluate( viewer => viewer.getAttribute("controlslist"), viewerHandle);
-      expect(hascontrolslist).toEqual('noreload nozoom');
+      expect(hascontrolslist).toEqual('noreload');
   
       let zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
       let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
       let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
       let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      expect(zoomHidden).toEqual(false);
+      expect(reloadHidden).toEqual(true);
+      expect(fullscreenHidden).toEqual(false);
+      expect(layerControlHidden).toEqual(true);
+
+      // controlsList setter
+      await page.evaluate( viewer => viewer.controlsList = "noreload nozoom", viewerHandle);
+      hascontrolslist = await page.evaluate( viewer => viewer.getAttribute("controlslist"), viewerHandle);
+      expect(hascontrolslist).toEqual('noreload nozoom');
+
+      zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
+      reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+      fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
+      layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
       expect(zoomHidden).toEqual(true);
       expect(reloadHidden).toEqual(true);
       expect(fullscreenHidden).toEqual(false);
