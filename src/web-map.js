@@ -138,7 +138,7 @@ export class WebMap extends HTMLMapElement {
     this._controlsList = new DOMTokenList(
       this.getAttribute("controlslist"),
       this, "controlslist", 
-      ["noreload","nofullscreen","nozoom","nolayer","geolocation"]
+      ["noreload","nofullscreen","nozoom","nolayer","noscale","geolocation"]
     );
     
     // the dimension attributes win, if they're there. A map does not
@@ -383,6 +383,8 @@ export class WebMap extends HTMLMapElement {
 
     this._layerControl = M.layerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
 
+    this._scaleBar = M.scaleBar().addTo(this._map);
+
     // Only add controls if there is enough top left vertical space
     if (!this._zoomControl && (totalSize + 93) <= mapSize){
       totalSize += 93;
@@ -418,6 +420,7 @@ export class WebMap extends HTMLMapElement {
     this._setControlsVisibility("reload",true);
     this._setControlsVisibility("zoom",true);
     this._setControlsVisibility("geolocation",true);
+    this._setControlsVisibility("scale",true);
   }
   _showControls() {
     this._setControlsVisibility("fullscreen",false);
@@ -425,6 +428,7 @@ export class WebMap extends HTMLMapElement {
     this._setControlsVisibility("reload",false);
     this._setControlsVisibility("zoom",false);
     this._setControlsVisibility("geolocation",true);
+    this._setControlsVisibility("scale",false);
       
     // prune the controls shown if necessary
     // this logic could be embedded in _showControls
@@ -447,6 +451,8 @@ export class WebMap extends HTMLMapElement {
           break;
           case 'geolocation':
             this._setControlsVisibility("geolocation",false);
+          case 'noscale':
+            this._setControlsVisibility("scale",true);
           break;
         }
       });
@@ -486,6 +492,11 @@ export class WebMap extends HTMLMapElement {
           container = this._geolocationButton._container;
         }
         break;
+      case "scale":
+        if (this._scaleBar) {
+          container = this._scaleBar._container;
+        }
+        break;  
     }
     if (container) {
       if (hide) {

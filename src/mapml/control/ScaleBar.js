@@ -10,7 +10,9 @@ export var ScaleBar = L.Control.extend({
     onAdd: function (map) {
       let container = L.DomUtil.create('div','leaflet-control-scale');
 
-      L.control.scale(this.options).addTo(map);
+      let scaleControl = L.control.scale(this.options);
+      scaleControl.addTo(map);
+      container.appendChild(scaleControl.getContainer());
 
       return container;
     },
