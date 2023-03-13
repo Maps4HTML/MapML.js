@@ -274,6 +274,7 @@ export class MapViewer extends HTMLElement {
       if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
 
       this._setUpEvents();
+      M.scaleBar().addTo(this._map);
     }
   }
   disconnectedCallback() {
