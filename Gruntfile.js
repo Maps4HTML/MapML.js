@@ -150,6 +150,19 @@ module.exports = function(grunt) {
         dest: 'dist/mapml.js',
         src: 'src/mapml/index.js' // Only one source file is permitted
       }
+    },
+    prettier: {
+      options: {
+        // https://prettier.io/docs/en/options.html
+        progress: true
+      },
+      files: {
+        src: [
+          "src/**.js",
+          "src/mapml/**.js",
+          "src/mapml/**/**.js"
+        ]
+      }
     }
   });
 
@@ -160,8 +173,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-rollup');
+  grunt.loadNpmTasks('grunt-prettier');
 
-  grunt.registerTask('test', ['jshint']);
+  grunt.registerTask('format', ['jshint', 'prettier']);
   grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'rollup', 
                                  'uglify', 'cssmin','clean:tidyup']);
   grunt.registerTask('experiments',['clean:experiments','default','copy:experiments']);

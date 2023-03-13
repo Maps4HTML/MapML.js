@@ -1,0 +1,9 @@
+{
+  "singleQuote": true,
+  "overrides": [
+		{
+			"files": ".firebaserc",
+			"options": { "parser": "json" }
+		}
+	]
+}
