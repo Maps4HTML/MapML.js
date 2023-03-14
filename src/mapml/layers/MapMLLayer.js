@@ -148,6 +148,9 @@ export var MapMLLayer = L.Layer.extend({
                 }
               }
             });
+            if (this._content.nodeType === Node.DOCUMENT_NODE) {
+              this.fire('attachmapml');
+            }
           }
           this._setLayerElExtent();
           map.addLayer(this._mapmlvectors);
@@ -159,8 +162,8 @@ export var MapMLLayer = L.Layer.extend({
             }
             if (!this._mapmlvectors) {
               this._mapmlvectors = M.featureLayer(this._content, {
-                  // pass the vector layer a renderer of its own, otherwise leaflet
-                  // puts everything into the overlayPane
+                // pass the vector layer a renderer of its own, otherwise leaflet
+                // puts everything into the overlayPane
                   renderer: M.featureRenderer(),
                   // pass the vector layer the container for the parent into which
                   // it will append its own container for rendering into
@@ -178,11 +181,12 @@ export var MapMLLayer = L.Layer.extend({
                       c.insertAdjacentHTML('afterbegin', properties.innerHTML);
                       geometry.bindPopup(c, {autoClose: false, minWidth: 165});
                     }
-                  }
+                  },
                 }).addTo(map);
-            }
-            this._setLayerElExtent();
-          },this);
+              }
+              this.fire('attachmapml');
+              this._setLayerElExtent();
+            },this);
         }
         
         
@@ -361,6 +365,10 @@ export var MapMLLayer = L.Layer.extend({
         }
     },
     _onZoomAnim: function(e) {
+      // this callback will be invoked AFTER <layer- > has been removed
+      // but due to the characteristic of JavaScript, the context (this pointer) can still be used
+      // the easiest way to solve this:
+      if (!this._map) {return;}
       // get the min and max zooms from all extents
       var toZoom = e.zoom,
           zoom = (this._extent && this._extent._mapExtents) ? this._extent._mapExtents[0].querySelector("map-input[type=zoom]") : null,
@@ -821,6 +829,7 @@ export var MapMLLayer = L.Layer.extend({
             var xhr = new XMLHttpRequest();
 //            xhr.withCredentials = true;
             _get(this._href, _processInitialExtent);
+            this.once('attachmapml', _attachToLayer, this);
         } else if (content) {
             // may not set this._extent if it can't be done from the content
             // (eg a single point) and there's no map to provide a default yet
@@ -1159,7 +1168,31 @@ export var MapMLLayer = L.Layer.extend({
               layer._layerEl.parentElement._toggleControls();
             }
             layer._layerEl.dispatchEvent(new CustomEvent('extentload', {detail: layer,}));
-        }
+          }
+
+          function _attachToLayer() {
+            let mapml = xhr.responseXML;
+            if (mapml) {
+              let shadowRoot = this._layerEl.shadowRoot || this._layerEl.attachShadow({mode: 'open'});
+              let elements = mapml.children[0].children[1].children;
+              if (elements) {
+                let baseURL = mapml.children[0].children[0].querySelector('map-base')?.getAttribute('href');
+                for (let el of elements) {
+                  // resolve relative url
+                  if (el.nodeName === 'map-link') {
+                    let url = el.getAttribute('href') || el.getAttribute('tref');
+                    // if relative
+                    if (url && (url.indexOf('http://') === 0 || url.indexOf('https://') === 0)) {
+                      let resolvedURL = baseURL + url;
+                      el.hasAttribute('href') ? el.setAttribute('href', resolvedURL) : el.setAttribute('tref', resolvedURL);
+                    }   
+                  }
+                  const node = document.adoptNode(el);
+                  shadowRoot.appendChild(node);
+                }
+              }
+            }
+          }
     },
     _validateExtent: function () {
       // TODO: change so that the _extent bounds are set based on inputs
