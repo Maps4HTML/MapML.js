@@ -47,19 +47,19 @@ export class WebMap extends HTMLMapElement {
     this.setAttribute("height", val);
   }
   get lat() {
-    return this.hasAttribute("lat") ? this.getAttribute("lat") : "0";
+    return this._map.getCenter().lat;
   }
   set lat(val) {
     if (val) {
-      this.setAttribute("lat", val);
+      this.zoomTo(val, this.lon, this.zoom);
     }
   }
   get lon() {
-    return this.hasAttribute("lon") ? this.getAttribute("lon") : "0";
+    return this._map.getCenter().lng;
   }
   set lon(val) {
     if (val) {
-      this.setAttribute("lon", val);
+      this.zoomTo(this.lat, val, this.zoom);
     }
   }
   get projection() {
@@ -81,12 +81,12 @@ export class WebMap extends HTMLMapElement {
     } else throw new Error("Undefined Projection");
   }
   get zoom() {
-    return this.hasAttribute("zoom") ? this.getAttribute("zoom") : 0;
+    return this._map.getZoom();
   }
   set zoom(val) {
     var parsedVal = parseInt(val,10);
     if (!isNaN(parsedVal) && (parsedVal >= 0 && parsedVal <= 25)) {
-      this.setAttribute('zoom', parsedVal);
+      this.zoomTo(this.lat, this.lon, parsedVal);
     }
   }
   get layers() {
@@ -130,8 +130,6 @@ export class WebMap extends HTMLMapElement {
     this._history = [];
     this._historyIndex = -1;
     this._traversalCall = false;
-    // keeps track of when the zoom, lon, and lat are being set using the API
-    this._mapZoomLocationAPI = true;
   }
   connectedCallback() {
 
@@ -260,8 +258,10 @@ export class WebMap extends HTMLMapElement {
   }
   _createMap() {
     if (!this._map) {
+      let lat = this.hasAttribute("lat") ? this.getAttribute("lat") : "0";
+      let lon = this.hasAttribute("lon") ? this.getAttribute("lon") : "0";
       this._map = L.map(this._container, {
-        center: new L.LatLng(this.lat, this.lon),
+        center: new L.LatLng(lat, lon),
         projection: this.projection,
         query: true,
         contextMenu: true,
@@ -269,7 +269,7 @@ export class WebMap extends HTMLMapElement {
         featureIndex: true,
         mapEl: this,
         crs: M[this.projection],
-        zoom: this.zoom,
+        zoom: this.hasAttribute("zoom") ? this.getAttribute("zoom") : 0,
         zoomControl: false,
         // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
         // the mapml response is received the screen tends to flash.  I'm sure
@@ -362,21 +362,6 @@ export class WebMap extends HTMLMapElement {
         } else if (oldValue === null && newValue !== null) {
           this._showControls();
         } 
-      break;
-      case 'lat':
-        if (this._mapZoomLocationAPI && oldValue !== null) {
-          this.zoomTo(newValue, this.lon, this.zoom);
-        }
-      break;
-      case 'lon':
-        if (this._mapZoomLocationAPI && oldValue !== null) {
-          this.zoomTo(this.lat, newValue, this.zoom);
-        }
-      break;
-      case 'zoom':
-        if (this._mapZoomLocationAPI && oldValue !== null) {
-          this.zoomTo(this.lat, this.lon, newValue);
-        }
       break;
       case 'height': 
         if (oldValue !== newValue) {
@@ -654,38 +639,32 @@ export class WebMap extends HTMLMapElement {
       }, this);
     this._map.on('movestart',
       function () {
-        this._updateMapCenter();
         this.dispatchEvent(new CustomEvent('movestart', {detail:
           {target: this}}));
       }, this);
     this._map.on('move',
       function () {
-        this._updateMapCenter();
         this.dispatchEvent(new CustomEvent('move', {detail:
           {target: this}}));
       }, this);
     this._map.on('moveend',
       function () {
-        this._updateMapCenter();
         this._addToHistory();
         this.dispatchEvent(new CustomEvent('moveend', {detail:
           {target: this}}));
       }, this);
     this._map.on('zoomstart',
       function () {
-        this._updateMapCenter();
         this.dispatchEvent(new CustomEvent('zoomstart', {detail:
           {target: this}}));
       }, this);
     this._map.on('zoom',
       function () {
-        this._updateMapCenter();
         this.dispatchEvent(new CustomEvent('zoom', {detail:
           {target: this}}));
       }, this);
     this._map.on('zoomend',
       function () {
-        this._updateMapCenter();
         this.dispatchEvent(new CustomEvent('zoomend', {detail:
           {target: this}}));
       }, this);
@@ -748,16 +727,6 @@ export class WebMap extends HTMLMapElement {
     let location = new L.LatLng(+lat, +lon);
     this._map.setView(location, zoom);
   }
-  _updateMapCenter() {
-    // remember to tell Leaflet event handler that 'this' in here refers to
-    //  something other than the map in this case the custom polymer element
-    this._mapZoomLocationAPI = false;
-    this.lat = this._map.getCenter().lat;
-    this.lon = this._map.getCenter().lng;
-    this.zoom = this._map.getZoom();
-    this._mapZoomLocationAPI = true;
-  }
-
   /**
    * Adds to the maps history on moveends
    * @private
