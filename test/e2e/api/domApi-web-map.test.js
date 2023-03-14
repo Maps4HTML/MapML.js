@@ -429,3 +429,63 @@ test.describe("web-map DOM API Tests", () => {
   });
 
 });
+
+test.describe("Properties Getter and Setter", () => {
+  let page;
+  let context;
+  test.beforeAll(async function() {
+    context = await chromium.launchPersistentContext('');
+    page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
+    await page.goto("propertiesApi-map.html");
+  });
+
+  test.afterAll(async function () {
+    await context.close();
+  });
+
+  test("zoom getter and setter test", async () => {
+    const mapHandle = await page.evaluateHandle(() => document.querySelector('map'));
+    let leafletZoom = await page.evaluate( viewer => viewer._map.getZoom(), mapHandle);
+    let mapZoom = await page.evaluate( viewer => viewer.zoom, mapHandle);
+    expect(mapZoom).toEqual(leafletZoom);
+    expect(leafletZoom).toEqual(0);
+
+    await page.evaluate( viewer => viewer.zoom = 5, mapHandle);
+
+    leafletZoom = await page.evaluate( viewer => viewer._map.getZoom(), mapHandle);
+    mapZoom = await page.evaluate( viewer => viewer.zoom, mapHandle);
+    expect(mapZoom).toEqual(leafletZoom);
+    expect(leafletZoom).toEqual(5);
+  });
+
+  test("lon getter and setter test", async () => {
+    const mapHandle = await page.evaluateHandle(() => document.querySelector('map'));
+    let leafletLon = await page.evaluate( viewer => viewer._map.getCenter().lng, mapHandle);
+    let mapLon = await page.evaluate( viewer => viewer.lon, mapHandle);
+    expect(mapLon).toEqual(leafletLon);
+    expect(leafletLon).toEqual(-92);
+
+    await page.evaluate( viewer => viewer.lon = -70, mapHandle);
+
+    leafletLon = await page.evaluate( viewer => viewer._map.getCenter().lng, mapHandle);
+    mapLon = await page.evaluate( viewer => viewer.lon, mapHandle);
+    expect(mapLon).toEqual(leafletLon);
+    expect(leafletLon).toEqual(-70);
+  });
+
+  test("lat getter and setter test", async () => {
+    const mapHandle = await page.evaluateHandle(() => document.querySelector('map'));
+    let leafletLat = await page.evaluate( viewer => viewer._map.getCenter().lat, mapHandle);
+    let mapLat = await page.evaluate( viewer => viewer.lat, mapHandle);
+    expect(mapLat).toEqual(leafletLat);
+    expect(leafletLat).toEqual(47);
+
+    await page.evaluate( viewer => viewer.lat = 30, mapHandle);
+
+    leafletLat = await page.evaluate( viewer => viewer._map.getCenter().lat, mapHandle);
+    mapLat = await page.evaluate( viewer => viewer.lat, mapHandle);
+    expect(mapLat).toEqual(leafletLat);
+    expect(leafletLat).toEqual(30);
+  });
+
+})
