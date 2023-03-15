@@ -354,6 +354,7 @@ export class MapViewer extends HTMLElement {
       totalSize += 49;
       this._fullScreenControl = M.fullscreenButton().addTo(this._map);
     }
+    this._searchBar = M.searchBar().addTo(this._map);
   }
   
   // Sets controls by hiding/unhiding them based on the map attribute

@@ -54,6 +54,7 @@ import { Util } from './utils/Util';
 import { ReloadButton, reloadButton } from './control/ReloadButton';
 import { FullscreenButton, fullscreenButton } from './control/FullscreenButton';
 import {attributionControl} from "./control/AttributionControl";
+import { SearchBar, searchBar } from "./control/SearchControl";
 import { Crosshair, crosshair } from "./layers/Crosshair";
 import { Feature, feature } from "./features/feature";
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
@@ -658,6 +659,9 @@ M.FullscreenButton = FullscreenButton;
 M.fullscreenButton = fullscreenButton;
 
 M.attributionControl = attributionControl;
+
+M.SearchBar = SearchBar;
+M.searchBar = searchBar;
 
 M.StaticTileLayer = StaticTileLayer;
 M.staticTileLayer = staticTileLayer;
