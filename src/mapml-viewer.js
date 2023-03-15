@@ -252,7 +252,7 @@ export class MapViewer extends HTMLElement {
         query: true,
         contextMenu: true,
         announceMovement: M.options.announceMovement,
-        //announceScale: M.options.announceScale,
+        announceScale: M.options.announceScale,
         featureIndex: true,
         mapEl: this,
         crs: M[this.projection],
@@ -272,7 +272,6 @@ export class MapViewer extends HTMLElement {
       this._createControls();
       this._toggleControls();
       this._crosshair = M.crosshair().addTo(this._map);
-      M.announceScale({"metric": false, "imperial": true}).addTo(this._map);
       if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
 
       this._setUpEvents();
