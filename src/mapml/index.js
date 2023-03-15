@@ -53,7 +53,7 @@ import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
 import { ReloadButton, reloadButton } from './control/ReloadButton';
 import { FullscreenButton, fullscreenButton } from './control/FullscreenButton';
-import {attributionControl} from "./control/AttributionControl";
+import {attributionControl} from "./control/AttributionControl"; 
 import {geolocationButton} from "./control/GeolocationButton";
 import { Crosshair, crosshair } from "./layers/Crosshair";
 import { Feature, feature } from "./features/feature";
