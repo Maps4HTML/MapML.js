@@ -224,7 +224,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         feature = features[i];
         var geometriesExist = feature.getElementsByTagName("map-geometry").length && feature.getElementsByTagName("map-coordinates").length;
         if (geometriesExist) {
-         this.addData(feature, nativeCS, nativeZoom);
+         feature._featureLayer = this.addData(feature, nativeCS, nativeZoom);
         }
        }
        return this; //if templated this runs
@@ -260,17 +260,17 @@ export var FeatureLayer = L.FeatureGroup.extend({
         if (options.onEachFeature) {
           layer.bindTooltip(title, { interactive:true, sticky: true, });
         }
-        if(this._staticFeature){
+        if (this._staticFeature){
           let featureZoom = mapml.getAttribute('zoom') || nativeZoom;
           if(featureZoom in this._features){
             this._features[featureZoom].push(layer);
           } else{
             this._features[featureZoom]=[layer];
           }
-          return;
         } else {
-          return this.addLayer(layer);
+          this.addLayer(layer);
         }
+        return layer;
       }
     },
         

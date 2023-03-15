@@ -90,11 +90,18 @@ export class MapLayer extends HTMLElement {
     if (this._layerControl && !this.hidden) {
       this._layerControl.removeLayer(this._layer);
     }
+
+    if (this.shadowRoot) {
+      this.shadowRoot.innerHTML = '';
+    }
   }
   connectedCallback() {
     //creates listener that waits for createmap event, this allows for delayed builds of maps
     //this allows a safeguard for the case where loading a custom TCRS takes longer than loading mapml-viewer.js/web-map.js
     if(this.hasAttribute("data-moving")) return;
+    if(this.getAttribute('src') && !this.shadowRoot) {
+      this.attachShadow({mode: 'open'});
+    }
     this.parentNode.addEventListener('createmap', ()=>{
       this._ready();
       // if the map has been attached, set this layer up wrt Leaflet map
@@ -148,6 +155,27 @@ export class MapLayer extends HTMLElement {
           this.opacity = newValue;
         }
       break;
+      case 'src':
+        if (!oldValue && this._layer) {
+          // attach a shadowroot if there was no src attribute before
+          if (!this.shadowRoot) {
+            this.attachShadow({mode: 'open'});
+          }
+        } else if (oldValue !== newValue && this._layer) {
+          // re-load the layer element when the src attribute is changed
+          let oldOpacity = this.opacity;
+          // go through the same sequence as if the layer had been removed from
+          // the DOM and re-attached with a new URL source.
+          this.disconnectedCallback();
+          var base = this.baseURI ? this.baseURI : document.baseURI;
+          this._layer = M.mapMLLayer(newValue ? (new URL(newValue, base)).href: null, this);
+          this._layer.on('extentload', this._onLayerExtentLoad, this);
+          this._setUpEvents();
+          if (this.parentNode) {
+            this.connectedCallback();
+          }
+          this.opacity = oldOpacity;
+        }
     }
   }
   _onLayerExtentLoad(e) {
