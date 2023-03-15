@@ -1,59 +1,99 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-  <title>Multiple Extents Test</title>
-  <meta charset="UTF-8">
-  <script type="module" src="mapml-viewer.js"></script>
-  <style>
-    html {
-      height: 100%
-    }
-
-    body {
-      height: inherit
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-    }
-  </style>
-</head>
-
-<body>
-  <mapml-viewer style="width: 500px;height: 500px;" projection="CBMTILE" zoom="2" lat="47" lon="-92" controls>
-    <layer- label="Multiple Extents" checked>
-      <map-extent label="cbmt" units="CBMTILE">
-        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3" ></map-input>
-        <map-input name="row" type="location" axis="row" units="tilematrix" min="16" max="20" ></map-input>
-        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19" ></map-input>
-        <map-link rel='tile' tref='/data/cbmt/{zoomLevel}/c{col}_r{row}.png' ></map-link>
-      </map-extent>   
-      <map-extent label="alabama_feature" units="CBMTILE">
-        <map-input name="z" type="zoom" min="2" max="18" value="0"></map-input>
-        <map-input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" ></map-input>
-        <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="6" ></map-input>
-        <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" ></map-input>
-        <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="6" ></map-input>
-        <map-link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
-      </map-extent>
-    </layer->
-    <layer- label="One Extent No label">
-      <map-extent units="CBMTILE">
-        <map-input name="z" type="zoom" value="11" min="4" max="4" ></map-input>
-        <map-input name="w" type="width" ></map-input>
-        <map-input name="h" type="height" ></map-input>
-        <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" ></map-input>
-        <map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" ></map-input>
-        <map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" ></map-input>
-        <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" ></map-input>
-        <map-link rel="image"
-          tref="http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/jpeg&TRANSPARENT=FALSE&STYLES=&VERSION=1.3.0&LAYERS=WMS-Toporama&WIDTH={w}&HEIGHT={h}&CRS=EPSG:3978&BBOX={xmin},{ymin},{xmax},{ymax}&m4h=t" ></map-link>
-      </map-extent>
-    </layer->
-  </mapml-viewer>
-  <textarea name="message" rows="10" cols="100"></textarea>
-</body>
-
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>index-map.html</title>
+    <script type="module" src="./mapml-viewer.js"></script>
+     <style> 
+       html, 
+       body { 
+         height: 100%; 
+       } 
+       * { 
+         margin: 0; 
+         padding: 0; 
+       } 
+        
+       /* Specifying the `:defined` selector is recommended to style the map 
+       element, such that styles don't apply when fallback content is in use 
+       (e.g. when scripting is disabled or when custom/built-in elements isn't 
+       supported in the browser). */ 
+       mapml-viewer:defined { 
+         /* Responsive map. */ 
+          max-width: 100%;  
+          
+         /* Full viewport. */ 
+          width: 100%;  
+          height: 100%;  
+          
+         /* Remove default (native-like) border. */ 
+         border: none;
+         
+         vertical-align: middle;
+       } 
+        
+       /* Pre-style to avoid FOUC of inline layer- and fallback content. */ 
+       mapml-viewer:not(:defined) > * { 
+         display: none; 
+       } 
+       
+       /* Pre-style to avoid Layout Shift. */
+       mapml-viewer:not(:defined) {
+         display: inline-block;
+         contain: size;
+         contain-intrinsic-size: 304px 154px;
+       }
+       
+       /* Ensure inline layer content is hidden if custom/built-in elements isn't 
+       supported, or if javascript is disabled. This needs to be defined separately 
+       from the above, because the `:not(:defined)` selector invalidates the entire 
+       declaration in browsers that do not support it. */ 
+       layer- { 
+         display: none; 
+       } 
+     </style> 
+     <noscript> 
+       <style> 
+         /* Ensure fallback content (children of the map element) is displayed if 
+         custom/built-in elements is supported but javascript is disabled. */ 
+         mapml-viewer:not(:defined) > :not(layer-) { 
+           display: initial; 
+         } 
+         
+         /* "Reset" the properties used to pre-style (to avoid Layout Shift) if
+         custom/built-in elements is supported but javascript is disabled. */
+         mapml-viewer:not(:defined) {
+           display: initial;
+           contain: initial;
+           contain-intrinsic-size: initial;
+         }
+       </style> 
+     </noscript> 
+  </head>
+  <body>
+    <mapml-viewer zoom="15" lon="-75.703611" lat="45.411105" controls="" projection="OSMTILE" role="application">    
+      <layer- opacity = "0.5" label="National Geographic" checked="">
+            <map-extent opacity = "0.9" label="National Geographic" units="OSMTILE">
+              <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
+              <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+              <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+              <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/WMTS/tile/1.0.0/NatGeo_World_Map/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
+            </map-extent>
+            <map-extent opacity = "0.3" label="Labelled Imagery" units="OSMTILE">
+              <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
+              <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+              <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+              <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS/tile/1.0.0/World_Imagery/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
+              <map-link rel="tile" tref="https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places/MapServer/WMTS/tile/1.0.0/Reference_World_Boundaries_and_Places/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.png"></map-link>
+            </map-extent>
+            <map-extent opacity = "0.2" label="Imagery" units="OSMTILE">
+              <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
+              <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+              <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+              <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS/tile/1.0.0/World_Imagery/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
+            </map-extent>
+          </layer->
+        </mapml-viewer>
+  </body>
 </html>

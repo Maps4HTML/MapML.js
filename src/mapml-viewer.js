@@ -27,7 +27,7 @@ export class MapViewer extends HTMLElement {
     return this.hasAttribute('controlslist') ? this.getAttribute("controlslist") : "";
   }
   set controlslist(val) {
-    let options = ["nofullscreen", "nozoom", "nolayer", "noreload"],
+    let options = ["nofullscreen", "nozoom", "nolayer", "noreload", "geolocation"],
         lowerVal = val.toLowerCase();
     if (this.controlslist.includes(lowerVal) || !options.includes(lowerVal))return;
     this.setAttribute("controlslist", this.controlslist+` ${lowerVal}`);
@@ -284,8 +284,8 @@ export class MapViewer extends HTMLElement {
 
   setControls(isToggle, toggleShow, setup){
     if (this.controls && this._map) {
-      let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl"],
-          options = ["nozoom", "noreload", "nofullscreen", 'nolayer'],
+      let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl", "_geolocationButton"],
+          options = ["nozoom", "noreload", "nofullscreen", 'nolayer', 'geolocation'],
           mapSize = this._map.getSize().y,
           totalSize = 0;
 
@@ -323,6 +323,16 @@ export class MapViewer extends HTMLElement {
       if (!this.controlslist.toLowerCase().includes("nofullscreen") && !this._fullScreenControl && (totalSize + 49) <= mapSize){
         totalSize += 49;
         this._fullScreenControl = M.fullscreenButton().addTo(this._map);
+      }
+      if (this.controlslist.toLowerCase().includes("geolocation") && !this._geolocationButton && (totalSize + 49) <= mapSize){
+        totalSize += 49;
+        this._geolocationButton = M.geolocationButton({
+          showPopup: false,
+          position: "bottomright",
+          locateOptions: {
+            maxZoom: 16
+          },
+        },this._map);
       }
       //removes any control layers that are not needed, either by the toggling or by the controlslist attribute
       for(let i in options){
