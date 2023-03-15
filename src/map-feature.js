@@ -32,5 +32,6 @@ export class MapFeature extends HTMLElement {
     disconnectedCallback() {
   
     }
-  };
+  }
   window.customElements.define('map-feature', MapFeature);
+  

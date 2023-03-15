@@ -130,5 +130,4 @@ export class MapLink extends HTMLElement {
     
   }
 }
-;
 window.customElements.define('map-link', MapLink);

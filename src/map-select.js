@@ -39,5 +39,5 @@ export class MapSelect extends HTMLElement {
   disconnectedCallback() {
     
   }
-};
+}
 window.customElements.define('map-select', MapSelect);

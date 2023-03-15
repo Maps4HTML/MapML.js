@@ -76,5 +76,5 @@ export class MapExtent extends HTMLElement {
   disconnectedCallback() {
     
   }
-};
+}
 window.customElements.define('map-extent', MapExtent);

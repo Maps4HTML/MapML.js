@@ -15,5 +15,6 @@ export class MapProperties extends HTMLElement {
     disconnectedCallback() {
   
     }
-  };
+  }
   window.customElements.define('map-properties', MapProperties);
+  

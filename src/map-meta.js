@@ -47,5 +47,5 @@ export class MapMeta extends HTMLElement {
   disconnectedCallback() {
     
   }
-};
+}
 window.customElements.define('map-meta', MapMeta);

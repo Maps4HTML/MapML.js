@@ -15,5 +15,6 @@ export class MapSpan extends HTMLElement {
     disconnectedCallback() {
   
     }
-  };
+  }
   window.customElements.define('map-span', MapSpan);
+  

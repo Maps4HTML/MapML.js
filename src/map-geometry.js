@@ -31,5 +31,5 @@ export class MapGeometry extends HTMLElement {
   disconnectedCallback() {
     
   }
-};
+}
 window.customElements.define('map-geometry', MapGeometry);

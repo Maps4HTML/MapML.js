@@ -150,5 +150,4 @@ export class MapInput extends HTMLElement {
     
   }
 }
-;
 window.customElements.define('map-input', MapInput);

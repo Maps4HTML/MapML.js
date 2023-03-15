@@ -15,5 +15,6 @@ export class MapStyle extends HTMLElement {
     disconnectedCallback() {
   
     }
-  };
+  }
   window.customElements.define('map-style', MapStyle);
+  

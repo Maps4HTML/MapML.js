@@ -70,5 +70,6 @@ export class MapA extends HTMLElement {
     disconnectedCallback() {
   
     }
-  };
+  }
   window.customElements.define('map-a', MapA);
+  
