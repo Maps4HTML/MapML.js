@@ -7,7 +7,7 @@ import { MapCaption } from './map-caption.js';
 
 export class WebMap extends HTMLMapElement {
   static get observedAttributes() {
-    return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls', 'static', 'controlslist'];
+    return ['projection', 'width', 'height', 'controls', 'static', 'controlslist'];
   }
   // see comments below regarding attributeChangedCallback vs. getter/setter
   // usage.  Effectively, the user of the element must use the property, not
