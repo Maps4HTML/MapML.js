@@ -23,7 +23,7 @@ test.﻿describe("Announce movement test", ()=> {
             "body > mapml-viewer div > output",
             (output) => output.innerHTML
         );
-        expect(movedUp).toEqual("zoom level 0 column 3 row 3");
+        expect(movedUp).toEqual("zoom level 0");
 
         for(let i = 0; i < 2; i++){
             await page.keyboard.press("ArrowLeft");
@@ -34,7 +34,7 @@ test.﻿describe("Announce movement test", ()=> {
             "body > mapml-viewer div > output",
             (output) => output.innerHTML
         );
-        expect(movedLeft).toEqual("zoom level 0 column 2 row 3");
+        expect(movedLeft).toEqual("zoom level 0");
 
         await page.keyboard.press("Equal");
         await page.waitForTimeout(1000);
@@ -43,11 +43,33 @@ test.﻿describe("Announce movement test", ()=> {
             "body > mapml-viewer div > output",
             (output) => output.innerHTML
         );
-        expect(zoomedIn).toEqual("zoom level 1 column 4 row 6");
+        expect(zoomedIn).toEqual("zoom level 1");
+
+        await page.keyboard.press("Minus");
+        await page.waitForTimeout(1000);
+
+        const zoomedOut = await page.$eval(
+            "body > mapml-viewer div > output",
+            (output) => output.innerHTML
+        );
+        expect(zoomedOut).toEqual("At minimum zoom level, zoom out disabled zoom level 0");
+        // testing + button
+        await page.keyboard.press("Tab");
+        await page.keyboard.press("Enter");
+        await page.waitForTimeout(1000);
+
+        const zoomedBackIn = await page.$eval(
+            "body > mapml-viewer div > output",
+            (output) => output.innerHTML
+        );
+        expect(zoomedBackIn).toEqual("zoom level 1");
+
+        
     });
 
     test("Output values are correct at bounds and bounces back", async ()=>{
         //Zoom out to min layer bound
+        await page.keyboard.press("Shift+Tab");
         await page.keyboard.press("Minus");
         await page.waitForTimeout(1000);
 
@@ -55,7 +77,7 @@ test.﻿describe("Announce movement test", ()=> {
             "body > mapml-viewer div > output",
             (output) => output.innerHTML
         );
-        expect(minZoom).toEqual("At minimum zoom level, zoom out disabled zoom level 0 column 2 row 3");
+        expect(minZoom).toEqual("At minimum zoom level, zoom out disabled zoom level 0");
 
         //Pan out of west bounds, expect the map to bounce back
         for(let i = 0; i < 4; i++){
@@ -74,7 +96,7 @@ test.﻿describe("Announce movement test", ()=> {
             "body > mapml-viewer div > output",
             (output) => output.innerHTML
         );
-        expect(bouncedBack).toEqual("zoom level 0 column 1 row 3");
+        expect(bouncedBack).toEqual("zoom level 0");
 
         //Zoom in out of bounds, expect the map to zoom back
         await page.keyboard.press("Equal");
@@ -90,7 +112,7 @@ test.﻿describe("Announce movement test", ()=> {
             "body > mapml-viewer div > output",
             (output) => output.innerHTML
         );
-        expect(zoomedBack).toEqual("zoom level 0 column 1 row 3");
+        expect(zoomedBack).toEqual("zoom level 0");
 
     });
 });

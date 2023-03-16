@@ -202,7 +202,7 @@ export var ContextMenu = L.Handler.extend({
 
   _zoomToLayer: function (e) {
     let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu;
-    context._layerClicked.layer._layerEl.focus();
+    context._layerClicked.layer._layerEl.zoomTo();
   },
 
   _copyLayer: function (e) {
@@ -233,7 +233,11 @@ export var ContextMenu = L.Handler.extend({
 
   _toggleControls: function(e){
     let mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
-    mapEl._toggleControls();
+    if (mapEl.controls) {
+      mapEl.controls = false;
+    } else {
+      mapEl.controls = true;
+    }
   },
 
   _copyMapML: function(e){

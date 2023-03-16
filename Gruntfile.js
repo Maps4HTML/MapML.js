@@ -25,6 +25,7 @@ module.exports = function(grunt) {
           'dist/mapml.js':        ['<%= rollup.main.dest %>'],
           'dist/web-map.js':      ['src/web-map.js'],
           'dist/mapml-viewer.js': ['src/mapml-viewer.js'],
+          'dist/DOMTokenList.js': ['src/mapml/utils/DOMTokenList.js'],
           'dist/map-caption.js':  ['src/map-caption.js'],
           'dist/map-area.js':     ['src/map-area.js'],
           'dist/layer.js':        ['src/layer.js'],
@@ -131,11 +132,24 @@ module.exports = function(grunt) {
             dest: 'dist/images/'
           }
         ]
+      },
+      experiments: {
+        files: [
+          {
+            expand: true,
+            src: ['dist/*'],
+            dest: '../experiments'
+      }
+        ]
       }
     },
     clean: {
       dist: ['dist'],
-      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js']
+      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js'],
+      experiments: {
+        options: {force: true},
+        src: ['../experiments/dist']
+      }
     },
     rollup: {
       options: {
@@ -157,7 +171,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-rollup');
 
   grunt.registerTask('test', ['jshint']);
-  grunt.registerTask('default', ['clean:dist', 'copy', 'jshint', 'rollup', 
+  grunt.registerTask('default', ['clean:dist', 'copy:main', 'copy:images', 'jshint', 'rollup', 
                                  'uglify', 'cssmin','clean:tidyup']);
+  grunt.registerTask('experiments',['clean:experiments','default','copy:experiments']);
 
 };

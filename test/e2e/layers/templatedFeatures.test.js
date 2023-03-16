@@ -51,7 +51,7 @@ test.describe("Playwright templatedFeatures Layer Tests", () => {
       expect(startTopLeft.vertical).toBe(-170323.5596054569);
       expect(startBottomRight.horizontal).toBe(1511931.6167132407);
       expect(startBottomRight.vertical).toBe(-172638.668402344);
-      await page.evaluate(`document.querySelector('#map2 > layer-').focus()`);
+      await page.evaluate(`document.querySelector('#map2 > layer-').zoomTo()`);
       const endTopLeft = await page.evaluate(`document.querySelector('#map2').extent.topLeft.pcrs`);
       const endBottomRight = await page.evaluate(`document.querySelector('#map2').extent.bottomRight.pcrs`);
       expect(endTopLeft.horizontal).toBe(1508601.8288036585);

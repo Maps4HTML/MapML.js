@@ -413,7 +413,7 @@ export var Util = {
           layer.parentElement.projection = layer._layer.getProjection();
         if(layer.extent){
           if(zoomTo) layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
-          else layer.focus();
+          else layer.zoomTo();
           L.DomEvent.off(layer, 'extentload', focusOnLoad);
         }
 
