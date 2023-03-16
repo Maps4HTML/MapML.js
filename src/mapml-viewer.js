@@ -328,6 +328,9 @@ export class MapViewer extends HTMLElement {
         totalSize += 49;
         this._geolocationButton = M.geolocationButton({
           showPopup: false,
+          strings: {
+            title: "Locate Button"
+          },
           position: "bottomright",
           locateOptions: {
             maxZoom: 16
