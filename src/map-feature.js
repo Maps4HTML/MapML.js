@@ -187,7 +187,7 @@ export class MapFeature extends HTMLElement {
       return M._convertAndFormatPCRS(pcrsBound, map);
 
       function _updateExtent(shape, coord) {
-        let data = coord.innerHTML.split(' ');
+        let data = coord.innerHTML.trim().split(' ');
         switch (shape.tagName) {
           case "MAP-POINT":
             bboxExtent = M._updateExtent(bboxExtent, +data[0], +data[1]);
@@ -228,19 +228,25 @@ export class MapFeature extends HTMLElement {
             path.mousedown.call(this._featureLayer, event);
             path.mouseup.call(this._featureLayer, event);
           }
-          document.dispatchEvent(new MouseEvent('click', {
-            bubbles: false
-          }));
+          document.dispatchEvent(new MouseEvent('click'));
         }
         // AFTER the mousedown and mouseup events:
         // case 1: the layer el is not re-attached to the map, the <map-feature> el is still CONNECTED
         // case 2: the layer el is re-attached to the map; the disconnectedCallback() is invoked;
         //         the <map-feature> el (THIS) is now DISCONNECTED, this._featureLayer is removed and a new featureLayer is created
         if (properties && this.isConnected) {
-          if (this._featureLayer.isPopupOpen()) {
-            this._featureLayer.closePopup();
+          let featureLayer = this._featureLayer,
+              shapes = featureLayer._layers;
+          // close popup if the popup is currently shown
+          for (let id in shapes) {
+            if (shapes[id].isPopupOpen()) {
+              shapes[id].closePopup();
+            }
+          }
+          if (featureLayer.isPopupOpen()) {
+            featureLayer.closePopup();
           } else {
-            this._featureLayer.openPopup();
+            featureLayer.openPopup();
           }
         }
       }
@@ -268,8 +274,6 @@ export class MapFeature extends HTMLElement {
       }
 
       function _removeFocusState (e) {
-        e.preventDefault();
-        e.stopPropagation();
         if (g.classList.contains('focus')) {
           g.classList.remove('focus');
         }
