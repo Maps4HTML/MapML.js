@@ -586,6 +586,7 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
     });
 
     test("Default click() and focus() methods", async () => {
+        // click test
         const popup = await page.$eval(
             "body > map", 
             (map) => {
@@ -596,29 +597,21 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
             }   
         );
         expect(popup).toEqual(true);
-        let focus = await page.$eval(
-            "body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)",
-            (g) => g.classList.contains("focus")
-        )
-        expect(focus).toEqual(true);
-        await page.click("body > map");
-        focus = await page.$eval(
-            "body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)",
-            (g) => g.classList.contains("focus")
-        );
-        expect(focus).toEqual(false);
 
+        // <map-feature role="link"> should add a new layer / jump to another page after click
         const layerCount = await page.$eval(
             "body > map",
             (map) => {
                 let layer = map.querySelector('layer-'),
-                    nextFeature = layer.querySelectorAll('map-feature')[1];
-                nextFeature.click();
+                    featureLink = layer.querySelectorAll('map-feature')[1];
+                featureLink.click();
                 return map.layers.length;
             }
         )
         expect(layerCount).toEqual(3);
-        focus = await page.$eval(
+
+        // the <path> element should be marked as "visited" after click
+        let status = await page.$eval(
             "body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(2)",
             (g) => {
                 for (let path of g.querySelectorAll('path')) {
@@ -629,7 +622,27 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
                 return true;
             }
         )
+        expect(status).toEqual(true);
+
+        // focus test
+        let focus = await page.$eval(
+            "body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)",
+            (g) => {
+                let layer = document.querySelector('map').querySelector('layer-'),
+                    mapFeature = layer.querySelector('map-feature');
+                mapFeature.focus();
+                return g.classList.contains("focus") && document.activeElement.shadowRoot?.activeElement === g;
+            }
+        )
         expect(focus).toEqual(true);
+
+        // focus state will be removed when users change focus to the other elements
+        await page.click("body > map");
+        focus = await page.$eval(
+            "body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)",
+            (g) => g.classList.contains("focus") || document.activeElement.shadowRoot?.activeElement === g
+        );
+        expect(focus).toEqual(false);
     });
 
     test("Custom click() and focus() methods", async () => {
