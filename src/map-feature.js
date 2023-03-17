@@ -222,13 +222,11 @@ export class MapFeature extends HTMLElement {
         return;
       } else {
         let properties = this.querySelector('map-properties');
-        this.focus(event);
         if (g.getAttribute('role') === 'link') {
           for (let path of g.children) {
             path.mousedown.call(this._featureLayer, event);
             path.mouseup.call(this._featureLayer, event);
           }
-          document.dispatchEvent(new MouseEvent('click'));
         }
         // AFTER the mousedown and mouseup events:
         // case 1: the layer el is not re-attached to the map, the <map-feature> el is still CONNECTED
@@ -254,7 +252,6 @@ export class MapFeature extends HTMLElement {
     
     focus(event) {
       let g = this._groupEl,
-          featureLayer = this._featureLayer,
           rect = g.getBoundingClientRect();
       if (!event) {
         event = new MouseEvent ("mousedown", {
@@ -266,21 +263,23 @@ export class MapFeature extends HTMLElement {
       if (typeof this.onfocus === 'function') {
         this.onfocus(this, event);
         return;
-      } else if (g.getAttribute('role') === 'button' || 
+      } else {
+        // change CSS style, highlight the <g> element on map
+        if (g.getAttribute('role') === 'button' || 
                  g.getAttribute('role') === 'link' ||
                  g.getAttribute('tabindex') === "0") {
-        g.classList.toggle('focus');
-        document.addEventListener('click', _removeFocusState, true);
+          g.classList.toggle('focus');
+        }
+        g.focus();
+        // focus state will be removed when users change focus to the other elements
+        g.addEventListener('blur', _removeFocusState, true);
       }
 
       function _removeFocusState (e) {
         if (g.classList.contains('focus')) {
           g.classList.remove('focus');
         }
-        if (featureLayer?.isPopupOpen()) {
-          featureLayer.closePopup();
-        }
-        document.removeEventListener('click', _removeFocusState);
+        g.removeEventListener('blur', _removeFocusState);
       }
     }
   }
