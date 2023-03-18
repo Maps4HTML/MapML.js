@@ -193,6 +193,29 @@ export class MapViewer extends HTMLElement {
         }
       }, 0);
     }
+
+    let scaleinitial = this.shadowRoot.querySelector(".leaflet-container");
+    let scaleobserve = this.shadowRoot.querySelector(".leaflet-container .leaflet-control-container .leaflet-bottom.leaflet-left .accessible-scalebar");
+    let scaletarget = this.shadowRoot.querySelector(".mapml-screen-reader-output-scale");
+
+    // this.addEventListener("click", () => {
+
+    // scaleinitial.setAttribute("aria-describedby", scaleobserve.getAttribute('aria-label'));
+    // setTimeout(function () {
+    //     scaleinitial.removeAttribute("aria-describedby");
+    // }, 5000);
+    
+    // });
+
+    this.scaleobserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'aria-label') {
+          scaletarget.innerHTML = scaleobserve.getAttribute('aria-label');
+        }
+      });
+    });
+
+    this.scaleobserver.observe(scaleobserve, {attributes: true});
   }
   _createShadowRoot() {
     let tmpl = document.createElement('template');
@@ -203,6 +226,9 @@ export class MapViewer extends HTMLElement {
 
     let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
     this._container.insertAdjacentHTML("beforeend", output);
+
+    let outputScale = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output-scale'></output>";
+    this._container.insertAdjacentHTML("beforeend", outputScale);
 
     // Set default styles for the map element.
     let mapDefaultCSS = document.createElement('style');
@@ -252,7 +278,6 @@ export class MapViewer extends HTMLElement {
         query: true,
         contextMenu: true,
         announceMovement: M.options.announceMovement,
-        announceScale: M.options.announceScale,
         featureIndex: true,
         mapEl: this,
         crs: M[this.projection],
@@ -272,6 +297,14 @@ export class MapViewer extends HTMLElement {
       this._createControls();
       this._toggleControls();
       this._crosshair = M.crosshair().addTo(this._map);
+
+      let scalevalue = M.options.announceScale;
+
+      if (typeof scalevalue === "string") {
+        scalevalue = JSON.parse(scalevalue);
+      }
+      M.announceScale(scalevalue).addTo(this._map);
+
       if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
 
       this._setUpEvents();

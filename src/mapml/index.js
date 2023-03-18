@@ -61,7 +61,7 @@ import { Feature, feature } from "./features/feature";
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
 import { FeatureGroup, featureGroup} from './features/featureGroup';
 import {AnnounceMovement} from "./handlers/AnnounceMovement";
-import {AnnounceScale} from "./handlers/AnnounceScale";
+import {AnnounceScale,announceScale} from "./control/AnnounceScale";
 import { FeatureIndex } from "./handlers/FeatureIndex";
 import { Options } from "./options";
 import "./keyboard";
@@ -622,6 +622,7 @@ M.mapml2geojson = Util.mapml2geojson;
 M.QueryHandler = QueryHandler;
 M.ContextMenu = ContextMenu;
 M.AnnounceMovement = AnnounceMovement;
+M.announceScale = announceScale;
 M.AnnounceScale = AnnounceScale;
 M.FeatureIndex = FeatureIndex;
 
@@ -629,7 +630,6 @@ M.FeatureIndex = FeatureIndex;
 L.Map.addInitHook('addHandler', 'query', M.QueryHandler);
 L.Map.addInitHook('addHandler', 'contextMenu', M.ContextMenu);
 L.Map.addInitHook('addHandler', 'announceMovement', M.AnnounceMovement);
-L.Map.addInitHook('addHandler', 'announceScale', M.AnnounceScale);
 L.Map.addInitHook('addHandler', 'featureIndex', M.FeatureIndex);
 
 M.MapMLLayer = MapMLLayer;

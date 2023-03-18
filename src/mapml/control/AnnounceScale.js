@@ -3,13 +3,11 @@ export var AnnounceScale = L.Control.extend({
       position: 'bottomleft',
       maxWidth: 100,
       updateWhenIdle: true,
-      metric: true
     },
   
     onAdd: function (map) {
-      var container = L.DomUtil.create('div', 'leaflet-control-scale leaflet-control-accessible-scalebar');
+      var container = L.DomUtil.create('div', 'accessible-scalebar');
       container.style.display = 'none'; 
-      var innerDiv = L.DomUtil.create('div', '', container);
       let invisibleScale = 0;
       let text = "";
 
@@ -17,31 +15,34 @@ export var AnnounceScale = L.Control.extend({
         invisibleScale = map._controlCorners.bottomleft.getElementsByClassName('leaflet-control-scale-line')[0];
         let distance = (this._pixelsToDistance(this._scaleLength(invisibleScale),"metric")).toFixed(1);
         text = `${distance} centimeters to ${invisibleScale.textContent.trim()}`;
+        text = text.replace(/(\d+)\s*m\b/g, "$1 meters");
+        text = text.replace(/ km/g, " kilometers");
       }
       else {
         invisibleScale = map._controlCorners.bottomleft.getElementsByClassName('leaflet-control-scale-line')[1];
         let distance = (this._pixelsToDistance(this._scaleLength(invisibleScale),"imperial")).toFixed(1);
         text = `${distance} inches to ${invisibleScale.textContent.trim()}`;
+        text = text.replace(/ft/g, "feet");
+        text = text.replace(/mi/g, "miles");
       }
-
-      innerDiv.innerHTML = text;
       container.setAttribute('aria-label', text);
   
-      // get the physically visible scalebar and extract its distance in meters
       map.on('zoomend moveend', () => {
-    
+        
         if (this.options.metric) {
           invisibleScale = map._controlCorners.bottomleft.getElementsByClassName('leaflet-control-scale-line')[0];
           let distance = (this._pixelsToDistance(this._scaleLength(invisibleScale),"metric")).toFixed(1);
           text = `${distance} centimeters to ${invisibleScale.textContent.trim()}`;
+          text = text.replace(/(\d+)\s*m\b/g, "$1 meters");
+          text = text.replace(/ km/g, " kilometers");
         }
         else {
           invisibleScale = map._controlCorners.bottomleft.getElementsByClassName('leaflet-control-scale-line')[1];
           let distance = (this._pixelsToDistance(this._scaleLength(invisibleScale),"imperial")).toFixed(1);
           text = `${distance} inches to ${invisibleScale.textContent.trim()}`;
+          text = text.replace(/ft/g, "feet");
+          text = text.replace(/mi/g, "miles");
         }
-
-        innerDiv.innerHTML = text;
         container.setAttribute('aria-label', text);
       });
   
@@ -52,9 +53,9 @@ export var AnnounceScale = L.Control.extend({
     },
 
     _pixelsToDistance: function (px, units) {
-      let dpi = window.devicePixelRatio * 96 // default dpi;
+      let dpi = window.devicePixelRatio * 96; // default dpi
       if (units === "metric") {
-        return px / dpi * 2.54 // inches to cmd;
+        return px / dpi * 2.54; // inches to cmd
       }
       return px / dpi;
     },
@@ -68,6 +69,3 @@ export var AnnounceScale = L.Control.extend({
   export var announceScale = function (options) {
     return new AnnounceScale(options);
   };
-
-
-  //M.announceScale({"metric": true, "imperial": false}).addTo(this._map);

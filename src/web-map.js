@@ -262,7 +262,6 @@ export class WebMap extends HTMLMapElement {
         query: true,
         contextMenu: true,
         announceMovement: M.options.announceMovement,
-        announceScale: M.options.announceScale,
         featureIndex: true,
         mapEl: this,
         crs: M[this.projection],
