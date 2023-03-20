@@ -15,13 +15,13 @@ export var AnnounceScale = L.Control.extend({
 
       setTimeout(() => {
         if (this.options.metric) {
-          let distance = (this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"metric")).toFixed(1);
+          let distance = parseFloat((this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"metric")).toFixed(1));
           text = `${distance} centimeters to ${invisibleScaleLine.textContent.trim()}`;
           text = text.replace(/(\d+)\s*m\b/g, "$1 meters");
           text = text.replace(/ km/g, " kilometers");
         }
         else {
-          let distance = (this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"imperial")).toFixed(1);
+          let distance = parseFloat((this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"imperial")).toFixed(1));
           text = `${distance} inches to ${invisibleScaleLine.textContent.trim()}`;
           text = text.replace(/ft/g, "feet");
           text = text.replace(/mi/g, "miles");
@@ -38,13 +38,13 @@ export var AnnounceScale = L.Control.extend({
         let invisibleScaleLine = invisibleScale._container.getElementsByClassName('leaflet-control-scale-line')[0];
         
         if (this.options.metric) {
-          let distance = (this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"metric")).toFixed(1);
+          let distance = parseFloat((this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"metric")).toFixed(1));
           text = `${distance} centimeters to ${invisibleScaleLine.textContent.trim()}`;
           text = text.replace(/(\d+)\s*m\b/g, "$1 meters");
           text = text.replace(/ km/g, " kilometers");
         }
         else {
-          let distance = (this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"imperial")).toFixed(1);
+          let distance = parseFloat((this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"imperial")).toFixed(1));
           text = `${distance} inches to ${invisibleScaleLine.textContent.trim()}`;
           text = text.replace(/ft/g, "feet");
           text = text.replace(/mi/g, "miles");
