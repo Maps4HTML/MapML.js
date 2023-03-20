@@ -194,15 +194,15 @@ export class MapViewer extends HTMLElement {
       }, 0);
     }
 
-    let scaleInitial = this.shadowRoot.querySelector(".leaflet-container");
     let scaleObserve = this.shadowRoot.querySelector(".leaflet-container .leaflet-control-container .leaflet-bottom.leaflet-left .accessible-scalebar");
     let scaleTarget = this.shadowRoot.querySelector(".mapml-screen-reader-output-scale");
 
-    scaleInitial.setAttribute("aria-describedby", scaleObserve.getAttribute('aria-label'));
-    setTimeout(function () {
-        scaleInitial.removeAttribute("aria-describedby");
-    }, 5000);
-    
+    setTimeout(() => {
+      this.setAttribute("aria-roledescription", scaleObserve.getAttribute('aria-label'));
+      setTimeout(() => {
+        this.removeAttribute("aria-roledescription");
+      }, 2000);
+    }, 0);
 
     this.scaleObserver = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
