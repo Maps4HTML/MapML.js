@@ -384,7 +384,7 @@ export class MapViewer extends HTMLElement {
     this._setControlsVisibility("layercontrol",true);
     this._setControlsVisibility("reload",true);
     this._setControlsVisibility("zoom",true);
-    this._setControlsVisibility("geolocation",false);
+    this._setControlsVisibility("geolocation",true);
   }
   _showControls() {
     this._setControlsVisibility("fullscreen",false);

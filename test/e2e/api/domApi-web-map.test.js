@@ -304,7 +304,24 @@ test.describe("web-map DOM API Tests", () => {
       expect(fullscreenHidden).toEqual(false);
       expect(layerControlHidden).toEqual(true);
     });
+    test("controlslist geolocations test", async () => {
+      const viewerHandle = await page.evaluateHandle(() => document.querySelector('map'));
+      await page.evaluate( map => map.setAttribute("controlslist","geolocation"), viewerHandle);
+      let hascontrolslist = await page.evaluate( map => map.getAttribute("controlslist"), viewerHandle);
+      expect(hascontrolslist).toEqual('geolocation');
 
+      let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
+      expect(geolocation).toEqual(false);
+      //remove geolocation
+      await page.evaluate( map => map.controlsList = "noreload", viewerHandle);
+      hascontrolslist = await page.evaluate( viewer => viewer.getAttribute("controlslist"), viewerHandle);
+      expect(hascontrolslist).toEqual('noreload');
+
+      let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+      geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
+      expect(geolocation).toEqual(true);
+      expect(reloadHidden).toEqual(true);
+    });
     test("controlslist removeAttribute", async () => {
       const mapHandle = await page.evaluateHandle(() => document.querySelector('map'));
       // removeAttribute
