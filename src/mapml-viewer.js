@@ -134,7 +134,7 @@ export class MapViewer extends HTMLElement {
     this._controlsList = new DOMTokenList(
       this.getAttribute("controlslist"),
       this, "controlslist", 
-      ["noreload","nofullscreen","nozoom","nolayer"]
+      ["noreload","nofullscreen","nozoom","nolayer","geolocation"]
     );
 
     // the dimension attributes win, if they're there. A map does not
@@ -354,8 +354,7 @@ export class MapViewer extends HTMLElement {
       totalSize += 49;
       this._fullScreenControl = M.fullscreenButton().addTo(this._map);
     }
-    if (this.getAttribute("controlslist") === "geolocation" && !this._geolocationButton && (totalSize + 49) <= mapSize){
-      totalSize += 49;
+    if (!this._geolocationButton){
       this._geolocationButton = M.geolocationButton({
         showPopup: false,
         strings: {
@@ -385,12 +384,14 @@ export class MapViewer extends HTMLElement {
     this._setControlsVisibility("layercontrol",true);
     this._setControlsVisibility("reload",true);
     this._setControlsVisibility("zoom",true);
+    this._setControlsVisibility("geolocation",false);
   }
   _showControls() {
     this._setControlsVisibility("fullscreen",false);
     this._setControlsVisibility("layercontrol",false);
     this._setControlsVisibility("reload",false);
     this._setControlsVisibility("zoom",false);
+    this._setControlsVisibility("geolocation",true);
       
     // prune the controls shown if necessary
     // this logic could be embedded in _showControls
@@ -410,6 +411,9 @@ export class MapViewer extends HTMLElement {
           break;
           case 'nozoom':
             this._setControlsVisibility("zoom",true);
+          break;
+          case 'geolocation':
+            this._setControlsVisibility("geolocation",false);
           break;
         }
       });
@@ -442,6 +446,11 @@ export class MapViewer extends HTMLElement {
       case "layercontrol":
         if (this._layerControl) {
           container = this._layerControl._container;
+        }
+        break;
+      case "geolocation":
+        if (this._geolocationButton) {
+          container = this._geolocationButton._container;
         }
         break;
     }
