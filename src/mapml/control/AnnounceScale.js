@@ -7,48 +7,52 @@ export var AnnounceScale = L.Control.extend({
   
     onAdd: function (map) {
       var container = L.DomUtil.create('div', 'accessible-scalebar');
-      container.style.display = 'none'; 
-      let invisibleScale = 0;
+      let invisibleScale = L.control.scale(this.options);
+      invisibleScale.addTo(map);
+      container.appendChild(invisibleScale.getContainer());
       let text = "";
+      let invisibleScaleLine = invisibleScale._container.getElementsByClassName('leaflet-control-scale-line')[0];
 
-      if (this.options.metric) {
-        invisibleScale = map._controlCorners.bottomleft.getElementsByClassName('leaflet-control-scale-line')[0];
-        let distance = (this._pixelsToDistance(this._scaleLength(invisibleScale),"metric")).toFixed(1);
-        text = `${distance} centimeters to ${invisibleScale.textContent.trim()}`;
-        text = text.replace(/(\d+)\s*m\b/g, "$1 meters");
-        text = text.replace(/ km/g, " kilometers");
-      }
-      else {
-        invisibleScale = map._controlCorners.bottomleft.getElementsByClassName('leaflet-control-scale-line')[1];
-        let distance = (this._pixelsToDistance(this._scaleLength(invisibleScale),"imperial")).toFixed(1);
-        text = `${distance} inches to ${invisibleScale.textContent.trim()}`;
-        text = text.replace(/ft/g, "feet");
-        text = text.replace(/mi/g, "miles");
-      }
-      container.setAttribute('aria-label', text);
-  
-      map.on('zoomend moveend', () => {
-        
+      setTimeout(() => {
         if (this.options.metric) {
-          invisibleScale = map._controlCorners.bottomleft.getElementsByClassName('leaflet-control-scale-line')[0];
-          let distance = (this._pixelsToDistance(this._scaleLength(invisibleScale),"metric")).toFixed(1);
-          text = `${distance} centimeters to ${invisibleScale.textContent.trim()}`;
+          let distance = (this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"metric")).toFixed(1);
+          text = `${distance} centimeters to ${invisibleScaleLine.textContent.trim()}`;
           text = text.replace(/(\d+)\s*m\b/g, "$1 meters");
           text = text.replace(/ km/g, " kilometers");
         }
         else {
-          invisibleScale = map._controlCorners.bottomleft.getElementsByClassName('leaflet-control-scale-line')[1];
-          let distance = (this._pixelsToDistance(this._scaleLength(invisibleScale),"imperial")).toFixed(1);
-          text = `${distance} inches to ${invisibleScale.textContent.trim()}`;
+          let distance = (this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"imperial")).toFixed(1);
+          text = `${distance} inches to ${invisibleScaleLine.textContent.trim()}`;
+          text = text.replace(/ft/g, "feet");
+          text = text.replace(/mi/g, "miles");
+        }
+
+        container.setAttribute('aria-label', text);
+
+        container.style.display = 'none';
+        
+      }, 0);
+  
+      map.on('zoomend moveend', () => {
+        container.style.display = '';
+        let invisibleScaleLine = invisibleScale._container.getElementsByClassName('leaflet-control-scale-line')[0];
+        
+        if (this.options.metric) {
+          let distance = (this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"metric")).toFixed(1);
+          text = `${distance} centimeters to ${invisibleScaleLine.textContent.trim()}`;
+          text = text.replace(/(\d+)\s*m\b/g, "$1 meters");
+          text = text.replace(/ km/g, " kilometers");
+        }
+        else {
+          let distance = (this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"imperial")).toFixed(1);
+          text = `${distance} inches to ${invisibleScaleLine.textContent.trim()}`;
           text = text.replace(/ft/g, "feet");
           text = text.replace(/mi/g, "miles");
         }
         container.setAttribute('aria-label', text);
+        container.style.display = 'none';
       });
-  
-      // visually hide the accessible scalebar
-      container.style.display = 'none';
-  
+
       return container;
     },
 

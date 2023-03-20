@@ -194,28 +194,25 @@ export class MapViewer extends HTMLElement {
       }, 0);
     }
 
-    let scaleinitial = this.shadowRoot.querySelector(".leaflet-container");
-    let scaleobserve = this.shadowRoot.querySelector(".leaflet-container .leaflet-control-container .leaflet-bottom.leaflet-left .accessible-scalebar");
-    let scaletarget = this.shadowRoot.querySelector(".mapml-screen-reader-output-scale");
+    let scaleInitial = this.shadowRoot.querySelector(".leaflet-container");
+    let scaleObserve = this.shadowRoot.querySelector(".leaflet-container .leaflet-control-container .leaflet-bottom.leaflet-left .accessible-scalebar");
+    let scaleTarget = this.shadowRoot.querySelector(".mapml-screen-reader-output-scale");
 
-    // this.addEventListener("click", () => {
-
-    // scaleinitial.setAttribute("aria-describedby", scaleobserve.getAttribute('aria-label'));
-    // setTimeout(function () {
-    //     scaleinitial.removeAttribute("aria-describedby");
-    // }, 5000);
+    scaleInitial.setAttribute("aria-describedby", scaleObserve.getAttribute('aria-label'));
+    setTimeout(function () {
+        scaleInitial.removeAttribute("aria-describedby");
+    }, 5000);
     
-    // });
 
-    this.scaleobserver = new MutationObserver((mutations) => {
+    this.scaleObserver = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'aria-label') {
-          scaletarget.innerHTML = scaleobserve.getAttribute('aria-label');
+          scaleTarget.innerHTML = scaleObserve.getAttribute('aria-label');
         }
       });
     });
 
-    this.scaleobserver.observe(scaleobserve, {attributes: true});
+    this.scaleObserver.observe(scaleObserve, {attributes: true});
   }
   _createShadowRoot() {
     let tmpl = document.createElement('template');
@@ -298,12 +295,12 @@ export class MapViewer extends HTMLElement {
       this._toggleControls();
       this._crosshair = M.crosshair().addTo(this._map);
 
-      let scalevalue = M.options.announceScale;
+      let scaleValue = M.options.announceScale;
 
-      if (typeof scalevalue === "string") {
-        scalevalue = JSON.parse(scalevalue);
+      if (typeof scaleValue === "string") {
+        scaleValue = JSON.parse(scaleValue);
       }
-      M.announceScale(scalevalue).addTo(this._map);
+      M.announceScale(scaleValue).addTo(this._map);
 
       if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
 
