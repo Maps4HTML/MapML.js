@@ -358,11 +358,11 @@ export class MapViewer extends HTMLElement {
       this._geolocationButton = M.geolocationButton({
         showPopup: false,
         strings: {
-          title: "Locate"
+          title: "Show my location"
         },
         position: "bottomright",
         locateOptions: {
-          maxZoom: 16
+          maxZoom: 24
         },
       },this._map);
     }
