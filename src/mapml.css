@@ -759,14 +759,12 @@ label.mapml-layer-item-toggle {
   [role="link"]:focus,
   [role="link"]:hover,
   [role="link"]:focus path,
-  [role="link"].focus path,
   [role="link"]:hover path,
   [role="link"] path:focus,
   [role="link"] path:hover,
   [role="button"]:focus,
   [role="button"]:hover,
   [role="button"]:focus path,
-  [role="button"].focus path,
   [role="button"]:hover path,
   [role="button"] path:focus,
   [role="button"] path:hover,
@@ -785,6 +783,17 @@ label.mapml-layer-item-toggle {
   path[tabindex="0"]:focus:not(:focus-visible)
   ) {
   outline: 0!important;
+}
+.mapml-vector-container svg :is(
+  [role="link"].focus,
+  [role="link"].focus path,
+  [role="link"] path.focus,
+  [role="button"].focus,
+  [role="button"].focus path,
+  [role="button"] path.focus
+  ) {
+  /* show the default focus ring if the .focus() method of element is invoked */
+  outline: auto!important;
 }
 
 /*

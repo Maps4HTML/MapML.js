@@ -13,18 +13,7 @@ export class MapLayer extends HTMLElement {
     if (val) {
       this.setAttribute('src', val);
       if (this._layer) {
-        let oldOpacity = this.opacity;
-        // go through the same sequence as if the layer had been removed from
-        // the DOM and re-attached with a new URL source.
-        this.disconnectedCallback();
-        var base = this.baseURI ? this.baseURI : document.baseURI;
-        this._layer = M.mapMLLayer(val ? (new URL(val, base)).href: null, this);
-        this._layer.on('extentload', this._onLayerExtentLoad, this);
-        this._setUpEvents();
-        if (this.parentNode) {
-          this.connectedCallback();
-        }
-        this.opacity = oldOpacity;
+        this._reload(val);
       }
     }
   }
@@ -156,27 +145,27 @@ export class MapLayer extends HTMLElement {
         }
       break;
       case 'src':
-        if (!oldValue && this._layer) {
-          // attach a shadowroot if there was no src attribute before
-          if (!this.shadowRoot) {
-            this.attachShadow({mode: 'open'});
-          }
-        } else if (oldValue !== newValue && this._layer) {
-          // re-load the layer element when the src attribute is changed
-          let oldOpacity = this.opacity;
-          // go through the same sequence as if the layer had been removed from
-          // the DOM and re-attached with a new URL source.
-          this.disconnectedCallback();
-          var base = this.baseURI ? this.baseURI : document.baseURI;
-          this._layer = M.mapMLLayer(newValue ? (new URL(newValue, base)).href: null, this);
-          this._layer.on('extentload', this._onLayerExtentLoad, this);
-          this._setUpEvents();
-          if (this.parentNode) {
-            this.connectedCallback();
-          }
-          this.opacity = oldOpacity;
+        if (this._layer) {
+          this._reload(newValue);
+          // the original inline content will not be removed
+          // but has NO EFFECT and works as a fallback
         }
     }
+  }
+  // re-load the layer element when the src attribute is changed
+  _reload(val) {
+    let oldOpacity = this.opacity;
+    // go through the same sequence as if the layer had been removed from
+    // the DOM and re-attached with a new URL source.
+    this.disconnectedCallback();
+    var base = this.baseURI ? this.baseURI : document.baseURI;
+    this._layer = M.mapMLLayer(val ? (new URL(val, base)).href: null, this);
+    this._layer.on('extentload', this._onLayerExtentLoad, this);
+    this._setUpEvents();
+    if (this.isConnected) {
+      this.connectedCallback();
+    }
+    this.opacity = oldOpacity;
   }
   _onLayerExtentLoad(e) {
     // the mapml document associated to this layer can in theory contain many

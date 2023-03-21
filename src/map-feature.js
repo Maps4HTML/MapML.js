@@ -94,7 +94,7 @@ export class MapFeature extends HTMLElement {
       // if the <layer- > el is disconnected
       // the <g> el has already got removed at this point
       if (this._groupEl.isConnected) {
-        this._groupEl.parentNode.removeChild(this._groupEl);
+        this._groupEl.remove();
       }
       // if the <layer- > el has already been disconnected,
       // then _map.removeLayer(layerEl._layer) has already been invoked (inside layerEl.disconnectedCallback())
@@ -123,6 +123,7 @@ export class MapFeature extends HTMLElement {
         }
         this._groupEl = this._featureLayer.options.group;
       } else {
+        // if the <layer- > element is removed as a whole
         this._layerParent.once("attachmapml", function () {
           this._featureLayer = this._layerParent._mapmlvectors.addData(this, nativeCS, nativeZoom);
           this._featureLayer.addTo(this._map);
@@ -155,9 +156,10 @@ export class MapFeature extends HTMLElement {
 
         if (propertyFunction) {
           j.properties = propertyFunction(el);
-        } else if (el.querySelector('table') !== null) { 
+        } else if (el.querySelector('table')) { 
           // setting properties when table presented
-          j.properties = M._table2properties(el.querySelector('table'));
+          let table = (el.querySelector('table')).cloneNode(true);
+          j.properties = M._table2properties(table);
         } else {
           // when no table present, strip any possible html tags to only get text
           j.properties = {prop0: (el.innerHTML).replace( /(<([^>]+)>)/ig, '').replace(/\s/g, '')};
@@ -264,12 +266,9 @@ export class MapFeature extends HTMLElement {
         this.onfocus(this, event);
         return;
       } else {
-        // change CSS style, highlight the <g> element on map
-        if (g.getAttribute('role') === 'button' || 
-                 g.getAttribute('role') === 'link' ||
-                 g.getAttribute('tabindex') === "0") {
-          g.classList.toggle('focus');
-        }
+        // highlight the <g> element on map
+        g.classList.toggle('focus');
+        // handle focus
         g.focus();
         // focus state will be removed when users change focus to the other elements
         g.addEventListener('blur', _removeFocusState, true);
