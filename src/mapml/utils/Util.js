@@ -1009,7 +1009,8 @@ export var Util = {
               json.features[num].properties = properties;
           } else if (feature.querySelector("map-properties").querySelector('table') !== null) { 
               // setting properties when table presented
-              let properties = M._table2properties(feature.querySelector("map-properties").querySelector('table'));
+              let table = (feature.querySelector("map-properties").querySelector('table')).cloneNode(true),
+                  properties = M._table2properties(table);
               json.features[num].properties = properties;
           } else {
               // when no table present, strip any possible html tags to only get text
