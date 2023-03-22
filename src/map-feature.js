@@ -147,7 +147,7 @@ export class MapFeature extends HTMLElement {
         let el = this.querySelector('map-properties');
         // transform to gcrs
         let source = null, dest = null, transform = false;
-        if (this._map.options.crs.code !== "EPSG:3857" || this._map.options.crs.code  !== "EPSG:4326") {
+        if (this._map.options.crs.code !== "EPSG:3857" && this._map.options.crs.code  !== "EPSG:4326") {
           source = new proj4.Proj(this._map.options.crs.code);
           dest = new proj4.Proj('EPSG:4326');
           transform = true;
@@ -223,6 +223,7 @@ export class MapFeature extends HTMLElement {
         this.onclick(this, event);
         return;
       } else {
+        document.dispatchEvent(new CustomEvent ('focuschange'));
         let properties = this.querySelector('map-properties');
         if (g.getAttribute('role') === 'link') {
           for (let path of g.children) {
@@ -253,9 +254,9 @@ export class MapFeature extends HTMLElement {
     }
     
     focus(event) {
-      let g = this._groupEl,
-          rect = g.getBoundingClientRect();
+      let g = this._groupEl;
       if (!event) {
+        let rect = g.getBoundingClientRect();
         event = new MouseEvent ("mousedown", {
           clientX: rect.x + rect.width / 2,
           clientY: rect.y + rect.height / 2,
@@ -266,12 +267,15 @@ export class MapFeature extends HTMLElement {
         this.onfocus(this, event);
         return;
       } else {
+        // if any other <map-feature> element is on :focus state, remove
+        document.dispatchEvent(new CustomEvent('focuschange'));
         // highlight the <g> element on map
-        g.classList.toggle('focus');
-        // handle focus
+        g.classList.add('focus');
+        // handle focus (document.activeElement)
         g.focus();
         // focus state will be removed when users change focus to the other elements
         g.addEventListener('blur', _removeFocusState, true);
+        document.addEventListener('focuschange', _removeFocusState, true);
       }
 
       function _removeFocusState (e) {
@@ -279,6 +283,7 @@ export class MapFeature extends HTMLElement {
           g.classList.remove('focus');
         }
         g.removeEventListener('blur', _removeFocusState);
+        document.removeEventListener('focuschange', _removeFocusState);
       }
     }
   }
