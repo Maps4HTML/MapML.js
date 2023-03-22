@@ -300,23 +300,62 @@ export var ContextMenu = L.Handler.extend({
 
   _copyGCRS: function(e){
     let mapEl = this.options.mapEl,
-        click = this.contextMenu._clickEvent;
-    this.contextMenu._copyData(`lon :${click.latlng.lng.toFixed(6)}, lat:${click.latlng.lat.toFixed(6)}`);
+        click = this.contextMenu._clickEvent,
+        projection = mapEl.projection;
+    let data = `<map-feature zoom="${mapEl.zoom}">
+                  <map-featurecaption>Copied ${projection} gcrs location</map-featurecaption>
+                  <map-properties>
+                      <h2>Copied ${projection} gcrs location</h2>
+                      <div style="text-align:center">${click.latlng.lng.toFixed(6)} ${click.latlng.lat.toFixed(6)}</div>
+                  </map-properties>
+                  <map-geometry cs="gcrs">
+                    <map-point>
+                      <map-coordinates>${click.latlng.lng.toFixed(6)} ${click.latlng.lat.toFixed(6)}</map-coordinates>
+                    </map-point>
+                  </map-geometry>
+                </map-feature>`;
+    this.contextMenu._copyData(data);
   },
 
   _copyTCRS: function(e){
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
-        point = mapEl._map.project(click.latlng);
-    this.contextMenu._copyData(`z:${mapEl.zoom}, x:${point.x}, y:${point.y}`);
+        point = mapEl._map.project(click.latlng),
+        projection = mapEl.projection;
+    let data = `<map-feature zoom="${mapEl.zoom}">
+                  <map-featurecaption>Copied ${projection} tcrs location</map-featurecaption>
+                  <map-properties>
+                      <h2>Copied ${projection} tcrs location</h2>
+                      <div style="text-align:center">${point.x} ${point.y}</div>
+                  </map-properties>
+                  <map-geometry cs="tcrs">
+                    <map-point>
+                      <map-coordinates>${point.x} ${point.y}</map-coordinates>
+                    </map-point>
+                  </map-geometry>
+                </map-feature>`;
+    this.contextMenu._copyData(data);
   },
 
   _copyTileMatrix: function(e){
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
         point = mapEl._map.project(click.latlng),
-        tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x;
-    this.contextMenu._copyData(`z:${mapEl.zoom}, column:${Math.trunc(point.x/tileSize)}, row:${Math.trunc(point.y/tileSize)}`);
+        tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x,
+        projection = mapEl.projection;
+    let data = `<map-feature zoom="${mapEl.zoom}">
+                  <map-featurecaption>Copied ${projection} tilematrix location</map-featurecaption>
+                  <map-properties>
+                      <h2>Copied ${projection} tilematrix location</h2>
+                      <div style="text-align:center">${Math.trunc(point.x/tileSize)} ${Math.trunc(point.y/tileSize)}</div>
+                  </map-properties>
+                  <map-geometry cs="tilematrix">
+                    <map-point>
+                      <map-coordinates>${Math.trunc(point.x/tileSize)} ${Math.trunc(point.y/tileSize)}</map-coordinates>
+                    </map-point>
+                  </map-geometry>
+                </map-feature>`;
+    this.contextMenu._copyData(data);
   },
 
   _copyPCRS: function(e){
@@ -324,8 +363,21 @@ export var ContextMenu = L.Handler.extend({
         click = this.contextMenu._clickEvent,
         point = mapEl._map.project(click.latlng),
         scale = mapEl._map.options.crs.scale(+mapEl.zoom),
-        pcrs = mapEl._map.options.crs.transformation.untransform(point,scale);
-    this.contextMenu._copyData(`easting:${Math.round(pcrs.x)}, northing:${Math.round(pcrs.y)}`);
+        pcrs = mapEl._map.options.crs.transformation.untransform(point,scale),
+        projection = mapEl.projection;
+    let data = `<map-feature zoom="${mapEl.zoom}">
+                  <map-featurecaption>Copied ${projection} pcrs location</map-featurecaption>
+                  <map-properties>
+                      <h2>Copied ${projection} pcrs location</h2>
+                      <div style="text-align:center">${Math.round(pcrs.x)} ${Math.round(pcrs.y)}</div>
+                  </map-properties>
+                  <map-geometry cs="pcrs">
+                    <map-point>
+                      <map-coordinates>${Math.round(pcrs.x)} ${Math.round(pcrs.y)}</map-coordinates>
+                    </map-point>
+                  </map-geometry>
+                </map-feature>`;
+    this.contextMenu._copyData(data);
   },
 
   _copyTile: function(e){
@@ -333,17 +385,42 @@ export var ContextMenu = L.Handler.extend({
         click = this.contextMenu._clickEvent,
         point = mapEl._map.options.crs.project(click.latlng),
         tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x,
-        pointX = point.x % tileSize, pointY = point.y % tileSize;
+        pointX = point.x % tileSize, pointY = point.y % tileSize,
+        projection = mapEl.projection;
     if(pointX < 0) pointX+= tileSize;
     if(pointY < 0) pointY+= tileSize;
-
-    this.contextMenu._copyData(`z:${mapEl.zoom}, i:${Math.trunc(pointX)}, j:${Math.trunc(pointY)}`);
+    let data = `<map-feature zoom="${mapEl.zoom}">
+                  <map-featurecaption>Copied ${projection} tile location</map-featurecaption>
+                  <map-properties>
+                      <h2>Copied ${projection} tile location</h2>
+                      <div style="text-align:center">${Math.trunc(pointX)} ${Math.trunc(pointY)}</div>
+                  </map-properties>
+                  <map-geometry cs="tile">
+                    <map-point>
+                      <map-coordinates>${Math.trunc(pointX)} ${Math.trunc(pointY)}</map-coordinates>
+                    </map-point>
+                  </map-geometry>
+                </map-feature>`;
+    this.contextMenu._copyData(data);
   },
 
   _copyMap: function(e){
     let mapEl = this.options.mapEl,
-        click = this.contextMenu._clickEvent;
-    this.contextMenu._copyData(`z:${mapEl.zoom}, i:${Math.trunc(click.containerPoint.x)}, j:${Math.trunc(click.containerPoint.y)}`);
+        click = this.contextMenu._clickEvent,
+        projection = mapEl.projection;
+    let data = `<map-feature zoom="${mapEl.zoom}">
+                  <map-featurecaption>Copied ${projection} map location</map-featurecaption>
+                  <map-properties>
+                      <h2>Copied ${projection} map location</h2>
+                      <div style="text-align:center">${Math.trunc(click.containerPoint.x)} ${Math.trunc(click.containerPoint.y)}</div>
+                  </map-properties>
+                  <map-geometry cs="map">
+                    <map-point>
+                      <map-coordinates>${Math.trunc(click.containerPoint.x)} ${Math.trunc(click.containerPoint.y)}</map-coordinates>
+                    </map-point>
+                  </map-geometry>
+                </map-feature>`;
+    this.contextMenu._copyData(data);
   },
 
   _copyAllCoords: function(e){

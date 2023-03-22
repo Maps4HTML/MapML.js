@@ -336,7 +336,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     currLocCS = await page.$eval(
       "body > map",
       (map) => (map._map.contextMenu.defLocCS)
-    )
+    );
     // set cs to pcrs for copying location test
     await page.$eval(
       "body > map",
@@ -357,7 +357,18 @@ test.describe("Playwright Map Context Menu Tests", () => {
       "body > textarea#coord",
       (text) => text.value
     );
-    const expected = "lon :-92.062002, lat:46.922393";
+    const expected = `<map-feature zoom="1">
+                  <map-featurecaption>Copied CBMTILE gcrs location</map-featurecaption>
+                  <map-properties>
+                      <h2>Copied CBMTILE gcrs location</h2>
+                      <div style="text-align:center">-92.062002 46.922393</div>
+                  </map-properties>
+                  <map-geometry cs="gcrs">
+                    <map-point>
+                      <map-coordinates>-92.062002 46.922393</map-coordinates>
+                    </map-point>
+                  </map-geometry>
+                </map-feature>`;
     expect(copyValue).toEqual(expected);
     await page.locator("body > textarea#coord").fill('');
     await page.$eval(
@@ -368,7 +379,38 @@ test.describe("Playwright Map Context Menu Tests", () => {
       currLocCS
     );
   });
+  test("Paste map-feature to map", async () => {
+    currLocCS = await page.$eval(
+      "body > map",
+      (map) => (map._map.contextMenu.defLocCS)
+    );
+    // set cs to pcrs for copying location test
+    await page.$eval(
+      "body > map",
+      (map) => {map._map.contextMenu.defLocCS = 'gcrs';}
+    );
+    await page.click("body > map");
+    await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+    await page.click("body > map");
+    await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("p");
 
+    const layerLabel = await page.$eval(
+      "body > map",
+      (map) => map.layers[1].label
+    );
+    expect(layerLabel).toEqual("Pasted features");
+    // clean up
+    await page.$eval("body > map", 
+      (map) => map.removeChild(map.querySelector('[label="Pasted features"]')));
+  });
   test("Paste valid Layer to map", async () => {
     await page.click("body > textarea#layer");
     await page.keyboard.press("Control+a");
