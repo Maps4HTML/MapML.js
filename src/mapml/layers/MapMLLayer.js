@@ -149,9 +149,6 @@ export var MapMLLayer = L.Layer.extend({
               }
             });
           }
-          if (this._content.nodeType === Node.DOCUMENT_NODE) {
-            this.fire('attachmapml');
-          }
           this._setLayerElExtent();
           map.addLayer(this._mapmlvectors);
         } else {
@@ -184,7 +181,6 @@ export var MapMLLayer = L.Layer.extend({
                   },
                 }).addTo(map);
               }
-              this.fire('attachmapml');
               this._setLayerElExtent();
             },this);
         }
@@ -413,6 +409,7 @@ export var MapMLLayer = L.Layer.extend({
 
         map.fire("checkdisabled");
         map.off("popupopen", this._attachSkipButtons);
+
     },
     getAttribution: function () {
         return this.options.attribution;
@@ -829,7 +826,6 @@ export var MapMLLayer = L.Layer.extend({
             var xhr = new XMLHttpRequest();
 //            xhr.withCredentials = true;
             _get(this._href, _processInitialExtent);
-            this.once('attachmapml', _attachToLayer, this);
         } else if (content) {
             // may not set this._extent if it can't be done from the content
             // (eg a single point) and there's no map to provide a default yet
@@ -1161,6 +1157,9 @@ export var MapMLLayer = L.Layer.extend({
             } else {
                 layer.error = true;
             }
+            if (this.responseXML) {
+              _attachToLayer.call(layer);
+            }
             layer.fire('extentload', layer, false);
             // update controls if needed based on mapml-viewer controls/controlslist attribute
             if (layer._layerEl.parentElement) {
@@ -1171,27 +1170,28 @@ export var MapMLLayer = L.Layer.extend({
           }
 
           function _attachToLayer() {
-            let mapml = xhr.responseXML;
+            let mapml = xhr.responseXML,
+                shadowRoot = this._layerEl.shadowRoot;
             if (mapml) {
-              let shadowRoot = this._layerEl.shadowRoot;
               let elements = mapml.children[0].children[1].children;
               if (elements) {
                 let baseURL = mapml.children[0].children[0].querySelector('map-base')?.getAttribute('href');
                 for (let el of elements) {
+                  let node = el.cloneNode(true);
+                  el._DOMnode = node;
                   // resolve relative url
-                  if (el.nodeName === 'map-link') {
-                    let url = el.getAttribute('href') || el.getAttribute('tref');
+                  if (node.nodeName === 'map-link') {
+                    let url = node.getAttribute('href') || node.getAttribute('tref');
                     // if relative
                     if (url && (url.indexOf('http://') === 0 || url.indexOf('https://') === 0)) {
                       let resolvedURL = baseURL + url;
-                      if (el.hasAttribute('href')) {
-                        el.setAttribute('href', resolvedURL);
+                      if (node.hasAttribute('href')) {
+                        node.setAttribute('href', resolvedURL);
                       } else {
-                        el.setAttribute('tref', resolvedURL);
+                        node.setAttribute('tref', resolvedURL);
                       }
                     }   
                   }
-                  const node = document.adoptNode(el);
                   shadowRoot.appendChild(node);
                 }
               }

@@ -234,7 +234,11 @@ export var FeatureLayer = L.FeatureGroup.extend({
         feature = features[i];
         var geometriesExist = feature.getElementsByTagName("map-geometry").length && feature.getElementsByTagName("map-coordinates").length;
         if (geometriesExist) {
-         feature._featureLayer = this.addData(feature, nativeCS, nativeZoom);
+         if (mapml.nodeType === Node.DOCUMENT_NODE && this._staticFeature) {
+          feature._DOMnode._featureLayer = this.addData(feature._DOMnode, nativeCS, nativeZoom);
+         } else {
+           feature._featureLayer = this.addData(feature, nativeCS, nativeZoom);
+         }
         }
        }
        return this; //if templated this runs
@@ -279,6 +283,9 @@ export var FeatureLayer = L.FeatureGroup.extend({
           }
         } else {
           this.addLayer(layer);
+        }
+        if (mapml.tagName.toUpperCase() === "MAP-FEATURE") {
+          mapml._groupEl = layer.options.group;
         }
         return layer;
       }
@@ -332,7 +339,6 @@ export var FeatureLayer = L.FeatureGroup.extend({
       let groupOptions = {group:svgGroup, featureID: mapml.id, accessibleTitle: title, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties, _leafletLayer: this.options._leafletLayer,},
         collections = geometry.querySelector('map-multipolygon') || geometry.querySelector('map-geometrycollection');
         if(collections) groupOptions.wrappers = this._getGeometryParents(collections.parentElement);
-
       return M.featureGroup(group, groupOptions);
     }
   },

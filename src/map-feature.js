@@ -72,16 +72,12 @@ export class MapFeature extends HTMLElement {
         attributeOldValue: true,
         characterData: true
       });
-
-      if (!this._featureLayer) {
+      
+      if (!this._layerParent._mapmlvectors) {
+        return;
+      } else if (!this._featureLayer) {
         this._redraw();
-      } else {
-        // link to the leaflet featuresgroup
-        // done in FeatureLayer.js -> MapMLLayer.js
-        // can be accessed by this._featureLayer
-        this._groupEl = this._featureLayer.options.group;
       }
-
     }
       
     disconnectedCallback() {
@@ -93,14 +89,26 @@ export class MapFeature extends HTMLElement {
     _remove() {
       // if the <layer- > el is disconnected
       // the <g> el has already got removed at this point
-      if (this._groupEl.isConnected) {
+      if (this._groupEl?.isConnected) {
         this._groupEl.remove();
       }
       // if the <layer- > el has already been disconnected,
       // then _map.removeLayer(layerEl._layer) has already been invoked (inside layerEl.disconnectedCallback())
       // this._featureLayer has already got removed at this point
-      if (this._featureLayer._map) {
+      if (this._featureLayer?._map) {
         this._featureLayer._map.removeLayer(this._featureLayer);
+        let mapmlvectors = this._layerParent._mapmlvectors;
+        if (mapmlvectors) {
+          delete mapmlvectors._layers[this._featureLayer._leaflet_id];
+          let zoom = mapmlvectors._clampZoom(this._map.getZoom());
+          for (let i = 0; i < mapmlvectors._features[zoom].length; ++i) {
+            let feature = mapmlvectors._features[zoom][i];
+            if (feature._leaflet_id === this._featureLayer._leaflet_id) {
+              mapmlvectors._features[zoom].splice(i, 1);
+              break;
+            }
+          }
+        }
       }
       delete this._featureLayer;
       delete this._groupEl;
@@ -110,29 +118,27 @@ export class MapFeature extends HTMLElement {
     _redraw() {
       let zoomMeta = this._layerParent._layerEl.querySelectorAll('map-meta[name="zoom"]'),
           length = zoomMeta?.length,
-          nativeZoom = length ? +(zoomMeta[length - 1].getAttribute('content')?.split(',').find(str => str.includes("value"))?.split('=')[1]) : undefined,
+          nativeZoom = length ? +(zoomMeta[length - 1].getAttribute('content')?.split(',').find(str => str.includes("value"))?.split('=')[1]) : 0,
           nativeCS = this.closest(".map-meta[name=cs]")?.getAttribute('content') || 'pcrs',
           mapmlvectors = this._layerParent._mapmlvectors;
       if (mapmlvectors) {
-        // the <layer- > is not removed
-        this._featureLayer = this._layerParent._mapmlvectors.addData(this, nativeCS, nativeZoom);
-        this._featureLayer.addTo(this._map);
-        let features = this._featureLayer._layers;
-        for (const key in features) {
-          features[key].addTo(this._map);
+        // if the <layer- > is not removed, then regenerate featureGroup and update the mapmlvectors accordingly
+        let zoom = mapmlvectors._clampZoom(this._map.getZoom());
+        if (this._layerParent._content.nodeType === Node.DOCUMENT_NODE) {
+          // if the map-feature originally migrates from mapml file
+          // the nativezoom should be the <map-meta> in mapml file
+          let native = mapmlvectors._getNativeVariables(this._layerParent._content);
+          nativeCS = native.cs;
+          nativeZoom = native.zoom;
         }
+
+        this._featureLayer = mapmlvectors.addData(this, nativeCS, nativeZoom);
+
+        mapmlvectors._resetFeatures(zoom);
+        this._map._addZoomLimit(mapmlvectors);
+
+        mapmlvectors._layers[this._featureLayer._leaflet_id] = this._featureLayer;
         this._groupEl = this._featureLayer.options.group;
-      } else {
-        // if the <layer- > element is removed as a whole
-        this._layerParent.once("attachmapml", function () {
-          this._featureLayer = this._layerParent._mapmlvectors.addData(this, nativeCS, nativeZoom);
-          this._featureLayer.addTo(this._map);
-          let features = this._featureLayer._layers;
-          for (const key in features) {
-            features[key].addTo(this._map);
-          }
-          this._groupEl = this._featureLayer.options.group;
-        }, this);
       }
     }
 
@@ -144,7 +150,6 @@ export class MapFeature extends HTMLElement {
       let shapes = this._featureLayer._layers;
       for (let id in shapes) {
         let j = json[count] = {};
-        let el = this.querySelector('map-properties');
         // transform to gcrs
         let source = null, dest = null, transform = false;
         if (this._map.options.crs.code !== "EPSG:3857" && this._map.options.crs.code  !== "EPSG:4326") {
@@ -153,16 +158,19 @@ export class MapFeature extends HTMLElement {
           transform = true;
         }
         j.geometry = M._geometry2geojson(shapes[id]._markup, source, dest, transform);
-
-        if (propertyFunction) {
-          j.properties = propertyFunction(el);
-        } else if (el.querySelector('table')) { 
-          // setting properties when table presented
-          let table = (el.querySelector('table')).cloneNode(true);
-          j.properties = M._table2properties(table);
-        } else {
-          // when no table present, strip any possible html tags to only get text
-          j.properties = {prop0: (el.innerHTML).replace( /(<([^>]+)>)/ig, '').replace(/\s/g, '')};
+        
+        let el = this.querySelector('map-properties');
+        if (el) {
+          if (propertyFunction) {
+            j.properties = propertyFunction(el);
+          } else if (el.querySelector('table')) { 
+            // setting properties when table presented
+            let table = (el.querySelector('table')).cloneNode(true);
+            j.properties = M._table2properties(table);
+          } else {
+            // when no table present, strip any possible html tags to only get text
+            j.properties = {prop0: (el.innerHTML).replace( /(<([^>]+)>)/ig, '').replace(/\s/g, '')};
+          }
         }
         count++;
       }
