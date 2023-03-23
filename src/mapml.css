@@ -41,7 +41,7 @@
 
  /* Scale bar */
  .leaflet-control-scale {
-  bottom: 40px; 
+  bottom: 10px; 
 }
  
  /* Generic class for seamless buttons */
