@@ -547,6 +547,24 @@ export class MapViewer extends HTMLElement {
               {target: this}}));
       }
     });
+    this._map.on('locationfound',
+      function (e) {
+        this.dispatchEvent(new CustomEvent('maplocationfound', {detail:
+          {latlng: e.latlng,     radius: e.accuracy}
+         }));
+      },this);
+    this.addEventListener('maplocationfound', function(e) {
+      //'Location found:', e.detail.latlng, 'Radius:', e.detail.radius
+    });
+    this._map.on('locationerror',
+      function (e) {
+        this.dispatchEvent(new CustomEvent('locationerror', {detail:
+          {error:e.message}
+        }));
+      },this);
+    this.addEventListener('locationerror', function(e) {
+      //error:e.detail.error
+    });
     this._map.on('load',
       function () {
         this.dispatchEvent(new CustomEvent('load', {detail: {target: this}}));
@@ -678,6 +696,20 @@ export class MapViewer extends HTMLElement {
       }
     });
   }
+  locate(options){
+    if (this._map) {
+      if (options) {
+        if (options.zoomTo) {
+          options.setView = options.zoomTo;
+          delete options.zoomTo;
+        }
+        this._map.locate(options);
+      } else {
+        this._map.locate({setView: true, maxZoom: 24});
+      }
+    }
+  }
+
   toggleDebug(){
     if(this._debug){
       this._debug.remove();
