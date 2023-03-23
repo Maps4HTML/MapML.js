@@ -13,7 +13,6 @@ export var FeatureGroup = L.FeatureGroup.extend({
 
     if((this.options.onEachFeature && this.options.properties) || this.options.link) {
       L.DomUtil.addClass(this.options.group, "leaflet-interactive");
-      L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
       let firstLayer = layers[Object.keys(layers)[0]];
       if(layers.length === 1 && firstLayer.options.link) this.options.link = firstLayer.options.link;
       if(this.options.link){
@@ -26,7 +25,8 @@ export var FeatureGroup = L.FeatureGroup.extend({
         this.off("click", this._openPopup);
       }
     }
-
+    
+    L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
     this.options.group.setAttribute('aria-label', this.options.accessibleTitle);
     if(this.options.featureID) this.options.group.setAttribute("data-fid", this.options.featureID);
   },
@@ -38,7 +38,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
 
   updateInteraction: function () {
     let map = this._map || this.options._leafletLayer._map;
-    if((this.options.onEachFeature && this.options.properties) || this.options.link)
+    if(this.options.onEachFeature || this.options.link)
       map.featureIndex.addToIndex(this, this.getPCRSCenter(), this.options.group);
 
     for (let layerID in this._layers) {
