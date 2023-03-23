@@ -234,10 +234,11 @@ export var FeatureLayer = L.FeatureGroup.extend({
         feature = features[i];
         var geometriesExist = feature.getElementsByTagName("map-geometry").length && feature.getElementsByTagName("map-coordinates").length;
         if (geometriesExist) {
-         if (mapml.nodeType === Node.DOCUMENT_NODE && this._staticFeature) {
+         // if the <map-feature> element has migrated from mapml file
+         if (mapml.nodeType === Node.DOCUMENT_NODE && feature._DOMnode) {
           feature._DOMnode._featureLayer = this.addData(feature._DOMnode, nativeCS, nativeZoom);
          } else {
-           feature._featureLayer = this.addData(feature, nativeCS, nativeZoom);
+          feature._featureLayer = this.addData(feature, nativeCS, nativeZoom);
          }
         }
        }

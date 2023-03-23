@@ -1177,6 +1177,8 @@ export var MapMLLayer = L.Layer.extend({
               if (elements) {
                 let baseURL = mapml.children[0].children[0].querySelector('map-base')?.getAttribute('href');
                 for (let el of elements) {
+                  // if not clone, the elements are directly removed from mapml file and re-attached to the layer's shadow root
+                  // which make the this._content (mapml file) changed and thus affects the later generation process of this._mapmlvectors
                   let node = el.cloneNode(true);
                   el._DOMnode = node;
                   // resolve relative url
