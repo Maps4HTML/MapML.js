@@ -12,9 +12,6 @@ export class MapLayer extends HTMLElement {
   set src(val) {
     if (val) {
       this.setAttribute('src', val);
-      if (this._layer) {
-        this._reload(val);
-      }
     }
   }
   get label() {
@@ -145,23 +142,19 @@ export class MapLayer extends HTMLElement {
         }
       break;
       case 'src':
-        if (this._layer) {
-          this._reload(newValue);
+        if (oldValue !== newValue && this._layer) {
+          this._reload();
           // the original inline content will not be removed
           // but has NO EFFECT and works as a fallback
         }
     }
   }
   // re-load the layer element when the src attribute is changed
-  _reload(val) {
+  _reload() {
     let oldOpacity = this.opacity;
     // go through the same sequence as if the layer had been removed from
     // the DOM and re-attached with a new URL source.
     this.disconnectedCallback();
-    var base = this.baseURI ? this.baseURI : document.baseURI;
-    this._layer = M.mapMLLayer(val ? (new URL(val, base)).href: null, this);
-    this._layer.on('extentload', this._onLayerExtentLoad, this);
-    this._setUpEvents();
     if (this.isConnected) {
       this.connectedCallback();
     }
