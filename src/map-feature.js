@@ -25,6 +25,13 @@ export class MapFeature extends HTMLElement {
         case 'zoom': {
           if (oldValue !== newValue && this._layerParent) {
             this._remove();
+            let layer = this._layerParent,
+                layerEl = layer._layerEl,
+                mapmlvectors = layer._mapmlvectors;
+            if (mapmlvectors?._staticFeature) {
+              let native = this._getNative(layer._content, mapmlvectors);
+              mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(layerEl.shadowRoot || layerEl, native.zoom);
+            }
             this._redraw();
           }
           break;
@@ -99,15 +106,17 @@ export class MapFeature extends HTMLElement {
         this._featureLayer._map.removeLayer(this._featureLayer);
         let mapmlvectors = this._layerParent._mapmlvectors;
         if (mapmlvectors) {
-          delete mapmlvectors._layers[this._featureLayer._leaflet_id];
-          let zoom = mapmlvectors._clampZoom(this._map.getZoom());
-          for (let i = 0; i < mapmlvectors._features[zoom].length; ++i) {
-            let feature = mapmlvectors._features[zoom][i];
-            if (feature._leaflet_id === this._featureLayer._leaflet_id) {
-              mapmlvectors._features[zoom].splice(i, 1);
-              break;
+          if (mapmlvectors._staticFeature) {
+            let zoom = mapmlvectors._clampZoom(this._map.getZoom());
+            for (let i = 0; i < mapmlvectors._features[zoom].length; ++i) {
+              let feature = mapmlvectors._features[zoom][i];
+              if (feature._leaflet_id === this._featureLayer._leaflet_id) {
+                mapmlvectors._features[zoom].splice(i, 1);
+                break;
+              }
             }
           }
+          delete mapmlvectors._layers[this._featureLayer._leaflet_id];
         }
       }
       delete this._featureLayer;
@@ -116,29 +125,33 @@ export class MapFeature extends HTMLElement {
 
     // re-add / update features
     _redraw() {
-      let zoomMeta = this._layerParent._layerEl.querySelectorAll('map-meta[name="zoom"]'),
-          length = zoomMeta?.length,
-          nativeZoom = length ? +(zoomMeta[length - 1].getAttribute('content')?.split(',').find(str => str.includes("value"))?.split('=')[1]) : 0,
-          nativeCS = this.closest(".map-meta[name=cs]")?.getAttribute('content') || 'pcrs',
-          mapmlvectors = this._layerParent._mapmlvectors;
-      if (mapmlvectors) {
-        // if the <layer- > is not removed, then regenerate featureGroup and update the mapmlvectors accordingly
+      let mapmlvectors = this._layerParent._mapmlvectors;
+      if (!mapmlvectors) return;
+      // if the <layer- > is not removed, then regenerate featureGroup and update the mapmlvectors accordingly
+      let native = this._getNative(this._layerParent._content, mapmlvectors);
+      this._featureLayer = mapmlvectors.addData(this, native.cs, native.zoom);
+      mapmlvectors._layers[this._featureLayer._leaflet_id] = this._featureLayer;
+      this._groupEl = this._featureLayer.options.group;
+      if (mapmlvectors._staticFeature) {
         let zoom = mapmlvectors._clampZoom(this._map.getZoom());
-        if (this._layerParent._content.nodeType === Node.DOCUMENT_NODE) {
-          // if the map-feature originally migrates from mapml file
-          // the nativezoom should be the <map-meta> in mapml file
-          let native = mapmlvectors._getNativeVariables(this._layerParent._content);
-          nativeCS = native.cs;
-          nativeZoom = native.zoom;
-        }
-
-        this._featureLayer = mapmlvectors.addData(this, nativeCS, nativeZoom);
-
         mapmlvectors._resetFeatures(zoom);
         this._map._addZoomLimit(mapmlvectors);
+        L.extend(mapmlvectors.options, mapmlvectors.zoomBounds);
+      }
+    }
 
-        mapmlvectors._layers[this._featureLayer._leaflet_id] = this._featureLayer;
-        this._groupEl = this._featureLayer.options.group;
+    _getNative(content, vectors) {
+      let nativeZoom, nativeCS;
+      if (content.nodeName.toUpperCase() === "LAYER-") {
+        let zoomMeta = this._layerParent._layerEl.querySelectorAll('map-meta[name="zoom"]'),
+        length = zoomMeta?.length;
+        nativeZoom = length ? +(zoomMeta[length - 1].getAttribute('content')?.split(',').find(str => str.includes("value"))?.split('=')[1]) : 0;
+        nativeCS = this.closest(".map-meta[name=cs]")?.getAttribute('content') || 'pcrs';
+        return {zoom: nativeZoom, cs: nativeCS};
+      } else if (content.nodeType === Node.DOCUMENT_NODE) {
+        // if the map-feature originally migrates from mapml file
+        // the nativezoom should be the <map-meta> in mapml file
+        return vectors?._getNativeVariables(content);
       }
     }
 

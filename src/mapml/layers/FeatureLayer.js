@@ -191,7 +191,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
 
     _getZoomBounds: function(container, nativeZoom){
       if (!container) return null;
-      let nMin = 100,nMax=0, features = container.getElementsByTagName('map-feature'),meta,projection;
+      let nMin = 100,nMax=0, features = container.querySelectorAll('map-feature'),meta,projection;
       for(let i =0;i<features.length;i++){
         let lZoom = +features[i].getAttribute('zoom');
         if(!features[i].getAttribute('zoom'))lZoom = nativeZoom;
