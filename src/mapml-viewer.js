@@ -362,7 +362,7 @@ export class MapViewer extends HTMLElement {
         },
         position: "bottomright",
         locateOptions: {
-          maxZoom: 24
+          maxZoom: 16
         },
       },this._map);
     }
@@ -705,7 +705,7 @@ export class MapViewer extends HTMLElement {
         }
         this._map.locate(options);
       } else {
-        this._map.locate({setView: true, maxZoom: 24});
+        this._map.locate({setView: true, maxZoom: 16});
       }
     }
   }
