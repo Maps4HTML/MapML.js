@@ -54,10 +54,10 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
             "body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)",
             g => g.getAttribute('aria-label')
         );
-        // the <map-feature> el is re-rendered and re-attach to the map
-        expect(label).toEqual("Feature");
+        // expect the associated <g> el to re-render and re-attach to the map
+        expect(label).toEqual("Inplace");
 
-        // change characterData of <map-feature>'s children elements
+        // change <map-coordinates>
         await page.reload();
         await page.waitForTimeout(500);
         label = await page.$eval(
@@ -78,8 +78,25 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
             "body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)",
             g => g.getAttribute('aria-label')
         );
-        // the <map-feature> el is re-rendered and re-attach to the map
-        expect(label).toEqual("Feature");
+        // expect the associated <g> el to re-render and re-attach to the map
+        expect(label).toEqual("Inplace");
+
+        // remove <map-properties>
+        await page.$eval(
+            "body > map", 
+            (map) => {
+                let layer = map.querySelector('layer-'),
+                    mapFeature = layer.querySelector('map-feature');
+                mapFeature.querySelector('map-properties').remove();
+            }
+        );
+        await page.click("body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)");
+        const popupCount = await page.$eval(
+            "body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane",
+            popupPane => popupPane.childElementCount
+        );
+        // expect no popup is binded
+        expect(popupCount).toEqual(0);
     });
 
     test("Get feature extent", async () => {
@@ -92,7 +109,7 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
                     mapFeature = layer.querySelector('map-feature');
                 return mapFeature.extent;
             }            
-        )
+        );
         const expectedExtent = {
             "topLeft": {
                 "tcrs": [
@@ -543,62 +560,115 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
         expect(extent).toEqual(expectedExtent);
     });
 
-    test("Get GeoJSON representation of map-geometry", async () => {
-        const geojson = await page.$eval(
+    test("Get GeoJSON representation of <map-geometry>", async () => {
+        // single geometry
+        let geojson = await page.$eval(
             "body > map", 
             (map) => {
                 let layer = map.querySelector('layer-'),
                     mapFeature = layer.querySelector('map-feature');
-                return mapFeature.geometryToGeoJSON();
+                return mapFeature.getGeojson();
             }   
-        )
-        const expectedGeoJSON = {
-            "0": {
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [
+        );
+        let expectedGeoJSON = {
+            "type": "Feature",
+            "properties": {
+                "prop0": "Testtest"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
                         [
-                            [
-                                -94.99984966849256,
-                                49.00009891208923
-                            ],
-                            [
-                                -94.99983600199188,
-                                49.000098912067
-                            ],
-                            [
-                                -94.99983600195664,
-                                49.00010790408876
-                            ],
-                            [
-                                -94.99984966846026,
-                                49.00010790411096
-                            ]
+                            -94.99984966849256,
+                            49.00009891208923
+                        ],
+                        [
+                            -94.99983600199188,
+                            49.000098912067
+                        ],
+                        [
+                            -94.99983600195664,
+                            49.00010790408876
+                        ],
+                        [
+                            -94.99984966846026,
+                            49.00010790411096
                         ]
                     ]
-                },
-                "properties": {
-                    "prop0": "Testtest"
-                }
+                ]
             }
-        }
+        };
+        expect(geojson).toEqual(expectedGeoJSON);
+
+        // multiple geometries (<map-geometrycollection>)
+        geojson = await page.$eval(
+            "body > map", 
+            (map) => {
+                let layer = map.querySelector('layer-'),
+                    mapFeature = layer.querySelectorAll('map-feature')[1];
+                return mapFeature.getGeojson();
+            }   
+        );
+        expectedGeoJSON = {
+            "type": "Feature",
+            "properties": {
+                "prop0": "Test"
+            },
+            "geometry": {
+                "type": "GeometryCollection",
+                "geometries": [
+                    {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [
+                                [
+                                    -94.96210493103726,
+                                    49.02792322828346
+                                ],
+                                [
+                                    -94.95971164220019,
+                                    49.027985211685106
+                                ],
+                                [
+                                    -94.95960139478952,
+                                    49.028857483320465
+                                ],
+                                [
+                                    -94.96150249324594,
+                                    49.028696385054374
+                                ]
+                            ]
+                        ]
+                    },
+                    {
+                        "type": "Point",
+                        "coordinates": [
+                            -94.96245959238846,
+                            49.02893057867041
+                        ]
+                    }
+                ]
+            }
+        };
         expect(geojson).toEqual(expectedGeoJSON);
     });
 
-    test("Default click() and focus() methods", async () => {
-        // click test
+    test("Default click method test", async () => {
+        // click method test
+        // <map-feature> with role="button" should have popup opened after click
         const popup = await page.$eval(
             "body > map", 
             (map) => {
                 let layer = map.querySelector('layer-'),
-                    mapFeature = layer.querySelector('map-feature');
-                mapFeature.click();
-                return mapFeature._featureLayer?.isPopupOpen();
+                    featureButton = layer.querySelector('map-feature');
+                featureButton.click();
+                return featureButton._featureLayer.isPopupOpen();
             }   
         );
         expect(popup).toEqual(true);
 
-        // <map-feature role="link"> should add a new layer / jump to another page after click
+        // <map-feature> with role="link" should add a new layer / jump to another page after click
         const layerCount = await page.$eval(
             "body > map",
             (map) => {
@@ -607,8 +677,8 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
                 featureLink.click();
                 return map.layers.length;
             }
-        )
-        expect(layerCount).toEqual(3);
+        );
+        expect(layerCount).toEqual(4);
 
         // the <path> element should be marked as "visited" after click
         let status = await page.$eval(
@@ -621,10 +691,30 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
                 }
                 return true;
             }
-        )
+        );
         expect(status).toEqual(true);
+    });
 
-        // focus test
+    test("Custom click() and focus() methods", async () => {
+        const isClicked = await page.$eval(
+            "body > map", 
+            (map) => {
+                let layer = map.querySelector('layer-'),
+                mapFeature = layer.querySelector('map-feature');
+                // define custom click method
+                mapFeature.onclick = function (e) {
+                    let target = e.target || this;
+                    target.classList.add("customClick");
+                }
+                mapFeature.click();
+                return mapFeature.classList.contains("customClick");
+            }   
+        );
+        expect(isClicked).toEqual(true);
+    });
+
+    test("Default focus method test", async () => {
+        // focus method test
         let focus = await page.$eval(
             "body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)",
             (g) => {
@@ -633,7 +723,7 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
                 mapFeature.focus();
                 return g.classList.contains("focus") && document.activeElement.shadowRoot?.activeElement === g;
             }
-        )
+        );
         expect(focus).toEqual(true);
 
         // focus state will be removed when users change focus to the other elements
@@ -645,26 +735,21 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
         expect(focus).toEqual(false);
     });
 
-    test("Custom click() and focus() methods", async () => {
-        const isClicked = await page.$eval(
+    test("Custom focus method test", async () => {
+        const isFocused = await page.$eval(
             "body > map", 
             (map) => {
                 let layer = map.querySelector('layer-'),
                 mapFeature = layer.querySelector('map-feature');
-                // define custom click() and focus() methods
-                mapFeature.onclick = function (e) {
-                    let target = e.target || this;
-                    target.classList.add("click");
-                }
+                // define custom focus method
                 mapFeature.onfocus = function (e) {
                     let target = e.target || this;
-                    target.classList.add("focus");
+                    target.classList.add("customFocus");
                 }
-                mapFeature.click();
                 mapFeature.focus();
-                return mapFeature.classList.contains("click") && mapFeature.classList.contains("focus");
+                return mapFeature.classList.contains("customFocus");
             }   
         );
-        expect(isClicked).toEqual(true);
-    })
+        expect(isFocused).toEqual(true);
+    });
 })
