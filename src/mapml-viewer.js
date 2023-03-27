@@ -197,13 +197,16 @@ export class MapViewer extends HTMLElement {
 
     let scaleObserve = this.shadowRoot.querySelector(".leaflet-container .leaflet-control-container .leaflet-bottom.leaflet-left .accessible-scalebar");
     let scaleTarget = this.shadowRoot.querySelector(".mapml-screen-reader-output-scale");
+    let focusScale = this.shadowRoot.querySelector(".leaflet-container");
 
-    setTimeout(() => {
-      this.setAttribute("aria-roledescription", scaleObserve.getAttribute('aria-label'));
+    focusScale.addEventListener('focus', () => {
       setTimeout(() => {
-        this.removeAttribute("aria-roledescription");
-      }, 2000);
-    }, 0);
+        scaleTarget.textContent = "";
+        setTimeout(() => {
+          scaleTarget.textContent = scaleObserve.getAttribute('aria-label');
+        }, 50);
+      }, 0);
+    });
 
     this.scaleObserver = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
