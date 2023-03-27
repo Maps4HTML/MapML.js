@@ -116,6 +116,7 @@ export class MapFeature extends HTMLElement {
               }
             }
           }
+          mapmlvectors.options.properties = null;
           delete mapmlvectors._layers[this._featureLayer._leaflet_id];
         }
       }
@@ -158,34 +159,45 @@ export class MapFeature extends HTMLElement {
     // Util functions:
     // internal support for returning a GeoJSON representation of <map-feature> geometry
     // propertyFunction (optional): the function used to format the innerHTML of <map-properties>
-    geometryToGeoJSON(propertyFunction) {
-      let json = {}, count = 0;
-      let shapes = this._featureLayer._layers;
-      for (let id in shapes) {
-        let j = json[count] = {};
-        // transform to gcrs
-        let source = null, dest = null, transform = false;
-        if (this._map.options.crs.code !== "EPSG:3857" && this._map.options.crs.code  !== "EPSG:4326") {
-          source = new proj4.Proj(this._map.options.crs.code);
-          dest = new proj4.Proj('EPSG:4326');
-          transform = true;
+    getGeojson(propertyFunction) {
+      let json = {
+        type: "Feature",
+        properties: {},
+        geometry: {}
+      };
+      let el = this.querySelector('map-properties');
+      if (!el) {
+        json.properties = null;
+      } else if (propertyFunction) {
+        json.properties = propertyFunction(el);
+      } else if (el.querySelector('table')) { 
+        // setting properties when table presented
+        let table = (el.querySelector('table')).cloneNode(true);
+        json.properties = M._table2properties(table);
+      } else {
+        // when no table present, strip any possible html tags to only get text
+        json.properties = {prop0: (el.innerHTML).replace( /(<([^>]+)>)/ig, '').replace(/\s/g, '')};
+      }
+
+      // transform to gcrs
+      let source = null, dest = null, transform = false;
+      if (this._map.options.crs.code !== "EPSG:3857" && this._map.options.crs.code  !== "EPSG:4326") {
+        source = new proj4.Proj(this._map.options.crs.code);
+        dest = new proj4.Proj('EPSG:4326');
+        transform = true;
+      }
+
+      let collection = this.querySelector("map-geometry").querySelector("map-geometrycollection"),
+          shapes = this.querySelector("map-geometry").querySelectorAll("map-point, map-polygon, map-linestring, map-multipoint, map-multipolygon, map-multilinestring");
+
+      if (collection) {
+        json.geometry.type = "GeometryCollection";
+        json.geometry.geometries = [];
+        for (let shape of shapes) {
+          json.geometry.geometries.push(M._geometry2geojson(shape, source, dest, transform));
         }
-        j.geometry = M._geometry2geojson(shapes[id]._markup, source, dest, transform);
-        
-        let el = this.querySelector('map-properties');
-        if (el) {
-          if (propertyFunction) {
-            j.properties = propertyFunction(el);
-          } else if (el.querySelector('table')) { 
-            // setting properties when table presented
-            let table = (el.querySelector('table')).cloneNode(true);
-            j.properties = M._table2properties(table);
-          } else {
-            // when no table present, strip any possible html tags to only get text
-            j.properties = {prop0: (el.innerHTML).replace( /(<([^>]+)>)/ig, '').replace(/\s/g, '')};
-          }
-        }
-        count++;
+      } else {
+        json.geometry = M._geometry2geojson(shapes[0], source, dest, transform);
       }
       return json;
     }

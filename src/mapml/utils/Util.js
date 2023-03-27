@@ -858,7 +858,7 @@ export var Util = {
         case "MAP-POINT":
             j.type = "Point";
             if (transform) {
-                let pointConv = proj4.transform(source, dest, ((el.querySelector('map-coordinates').innerHTML.split(/ [<>\ ]/g)).map(Number)) );
+                let pointConv = proj4.transform(source, dest, ((el.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g)).map(Number)) );
                 j.coordinates = [pointConv.x, pointConv.y];
             } else {
                 j.coordinates = (el.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g)).map(Number);
