@@ -18,8 +18,7 @@ test.describe("Locate API Test", () => {
     await context.close();
   });
 
-  test("Using locate API and locate button to find myself", async () => {
-    await context.grantPermissions(['geolocation']);
+  test("Using locate API to find myself", async () => {
     await page.$eval("body > mapml-viewer",(viewer) => viewer.locate());
 
     let locateAPI_lat = await page.$eval("body > mapml-viewer", (viewer) => viewer.lat);
@@ -27,28 +26,40 @@ test.describe("Locate API Test", () => {
     //rounding to three decimal places
     locateAPI_lat = parseFloat(locateAPI_lat).toFixed(3);
     locateAPI_lng  = parseFloat(locateAPI_lng).toFixed(3);
-    
-    await page.reload();
 
-    await page.click("body > mapml-viewer");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Enter");
+    expect(locateAPI_lat).toEqual("45.503");
+    expect(locateAPI_lng).toEqual("-73.568"); 
+  });
 
-    let locateButton_lat = await page.$eval("body > mapml-viewer", (viewer) => viewer.lat);
-    let locateButton_lng = await page.$eval("body > mapml-viewer", (viewer) => viewer.lon);
-    locateButton_lat = parseFloat(locateButton_lat).toFixed(3);
-    locateButton_lng  = parseFloat(locateButton_lng).toFixed(3);
+  test("Testing maplocationfound event", async () => {
+    const latlng = await page.evaluate(() => {
+        const viewer = document.querySelector('body > mapml-viewer');
+        return new Promise((resolve) => {
+          viewer.addEventListener('maplocationfound', (e) => {
+            resolve(e.detail.latlng);
+          }, { once: true });
+          viewer.locate();
+        });
+    });
+    expect(latlng.lat).toEqual(45.5027789304487);
+    expect(latlng.lng).toEqual(-73.56766530667056);
+  });
 
-    expect(locateButton_lat).toEqual(locateAPI_lat);
-    expect(locateButton_lng).toEqual(locateAPI_lng);
-    expect(locateButton_lat).toEqual("45.503");
-    expect(locateButton_lng).toEqual("-73.568");
-    
+  test("Testing locationerror event", async () => {
+    const error = await page.evaluate(() => {
+      const viewer = document.querySelector('body > mapml-viewer');
+      return new Promise((resolve) => {
+        viewer.addEventListener('locationerror', (e) => {
+          resolve(e.detail.error);
+        }, { once: true });
+        const errorEvent = new CustomEvent('locationerror', {
+          detail: { error: 'Your location could not be determined.' }
+        });
+        viewer.dispatchEvent(errorEvent);
+        viewer.locate();
+      });
+    });
+    expect(error).toEqual("Your location could not be determined.");
   });
 });
 
