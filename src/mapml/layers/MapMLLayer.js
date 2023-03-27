@@ -875,7 +875,7 @@ export var MapMLLayer = L.Layer.extend({
         function _initTemplateVars(serverExtent, metaExtent, projection, mapml, base, projectionMatch){
           var templateVars = [];
           // set up the URL template and associated inputs (which yield variable values when processed)
-          var tlist = serverExtent.querySelectorAll('map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query]'),
+          var tlist = serverExtent.querySelectorAll('map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query],map-link[rel=search]'),
               varNamesRe = (new RegExp('(?:\{)(.*?)(?:\})','g')),
               zoomInput = serverExtent.querySelector('map-input[type="zoom" i]'),
               includesZoom = false, extentFallback = {};
@@ -1051,7 +1051,7 @@ export var MapMLLayer = L.Layer.extend({
                   layer._extent._mapExtents = []; // stores all the map-extent elements in the layer
                   layer._extent._templateVars = []; // stores all template variables coming from all extents
                   for(let j = 0; j < serverExtent.length; j++){
-                    if (serverExtent[j].querySelector('map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query]') &&
+                    if (serverExtent[j].querySelector('map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query],map-link[rel=search]') &&
                         serverExtent[j].hasAttribute("units")) {
                           layer._extent._mapExtents.push(serverExtent[j]);
                           projectionMatch = projectionMatch || selectedAlternate;

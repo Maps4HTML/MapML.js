@@ -28,6 +28,8 @@ export var TemplatedLayer = L.Layer.extend({
           templates[i].extentBounds = inputData.bounds;
           templates[i].zoomBounds = inputData.zoomBounds;
           this._queries.push(L.extend(templates[i], this._setupQueryVars(templates[i])));
+      } else if (templates[i].rel === 'search') {
+        this.search = true;
       }
     }
   },
@@ -207,7 +209,7 @@ export var TemplatedLayer = L.Layer.extend({
   },
   onAdd: function (map) {
     for (var i=0;i<this._templates.length;i++) {
-      if (this._templates[i].rel !== 'query') {
+      if (this._templates[i].rel !== 'query' && this._templates[i].rel !== 'search') {
         map.addLayer(this._templates[i].layer);
       }
     }
@@ -231,7 +233,7 @@ export var TemplatedLayer = L.Layer.extend({
   onRemove: function (map) {
     L.DomUtil.remove(this._container);
     for (var i=0;i<this._templates.length;i++) {
-      if (this._templates[i].rel !== 'query') {
+      if (this._templates[i].rel !== 'query' && this._templates[i].rel !== 'search') {
         map.removeLayer(this._templates[i].layer);
       }
     }

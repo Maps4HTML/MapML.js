@@ -104,6 +104,8 @@ export class MapLayer extends HTMLElement {
       if (this._layerControl && !this.hidden) {
         this._layerControl.addOrUpdateOverlay(this._layer, this.label);
       }
+      // Update search control to update searchable layers
+      this._layer._map.options.mapEl._searchBar._updateSearchableLayers();
     }, {once:true}); //listener stops listening after event occurs once
     //if map is already created then dispatch createmap event, allowing layer to be built
     if(this.parentNode._map)this.parentNode.dispatchEvent(new CustomEvent('createmap'));
@@ -204,7 +206,8 @@ export class MapLayer extends HTMLElement {
                     total++;
                     layer._extent._mapExtents[i].removeAttribute("disabled");
                     layer._extent._mapExtents[i].disabled = false;
-                    if(!(layer._extent._mapExtents[i].templatedLayer._templates[j].layer.isVisible)){
+                    if(!(layer._extent._mapExtents[i].templatedLayer._templates[j].layer &&
+                         layer._extent._mapExtents[i].templatedLayer._templates[j].layer.isVisible)){
                       count++;
                       layer._extent._mapExtents[i].setAttribute("disabled", "");
                       layer._extent._mapExtents[i].disabled = true;

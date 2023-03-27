@@ -19,7 +19,7 @@ test.describe("Playwright touch device tests", () => {
   });
   
   test("Tap/Long press to show layer control", async () => {
-    const layerControl = await page.locator("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
+    const layerControl = await page.locator("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div").first();
     await layerControl.tap();
     let className = await layerControl.evaluate(
         (el) => el.classList.contains('leaflet-control-layers-expanded') && el._isExpanded

@@ -103,9 +103,15 @@
   cursor: default;
 }
 
-.leaflet-control-layers-toggle {
+.leaflet-control-layers-toggle,
+.leaflet-control-search-toggle {
+  display:block;
   width: 44px !important;
   height: 44px !important;
+}
+
+.leaflet-control-layers-expanded .leaflet-control-search-toggle {
+  display:none;
 }
 
 .leaflet-bar a,
@@ -240,6 +246,13 @@
 .leaflet-control .leaflet-control-layers-toggle {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='m11.99 18.54-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16zm0-11.47L17.74 9 12 13.47 6.26 9 12 4.53z'/%3E%3C/svg%3E");
   background-size: 34px;
+}
+
+.leaflet-control .leaflet-control-search-toggle {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:cc='http://creativecommons.org/ns%23' xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns%23' xmlns:svg='http://www.w3.org/2000/svg' xmlns='http://www.w3.org/2000/svg' xmlns:sodipodi='http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd' xmlns:inkscape='http://www.inkscape.org/namespaces/inkscape' width='40' height='40' viewBox='0 0 500.00001 500.00001' id='svg4162' version='1.1' inkscape:version='0.92.3 (2405546, 2018-03-11)' sodipodi:docname='Search_Icon.svg'%3E%3Cdefs id='defs4164'/%3E%3Csodipodi:namedview id='base' pagecolor='%23ffffff' bordercolor='%23666666' borderopacity='1.0' inkscape:pageopacity='0.0' inkscape:pageshadow='2' inkscape:zoom='0.954' inkscape:cx='250' inkscape:cy='250' inkscape:document-units='px' inkscape:current-layer='layer1' showgrid='false' units='px' inkscape:window-width='1366' inkscape:window-height='706' inkscape:window-x='-8' inkscape:window-y='-8' inkscape:window-maximized='1'/%3E%3Cmetadata id='metadata4167'%3E%3Crdf:RDF%3E%3Ccc:Work rdf:about=''%3E%3Cdc:format%3Eimage/svg+xml%3C/dc:format%3E%3Cdc:type rdf:resource='http://purl.org/dc/dcmitype/StillImage'/%3E%3Cdc:title/%3E%3C/cc:Work%3E%3C/rdf:RDF%3E%3C/metadata%3E%3Cg inkscape:label='Layer 1' inkscape:groupmode='layer' id='layer1' transform='translate(0,-552.36216)'%3E%3Cg id='g1400' transform='translate(-4.3609793,-7.6704785)'%3E%3Cpath inkscape:connector-curvature='0' id='path4714' d='M 232.83952,614.96702 A 154.04816,154.04794 0 0 0 78.79153,769.01382 154.04816,154.04794 0 0 0 232.83952,923.06184 154.04816,154.04794 0 0 0 386.88751,769.01382 154.04816,154.04794 0 0 0 232.83952,614.96702 Z m 0,26.77613 A 129.95832,127.2707 0 0 1 362.79832,769.01382 129.95832,127.2707 0 0 1 232.83952,896.28449 129.95832,127.2707 0 0 1 102.88194,769.01382 129.95832,127.2707 0 0 1 232.83952,641.74315 Z' style='opacity:1;fill:%232b0000;fill-opacity:1;stroke:none;stroke-opacity:1'/%3E%3Crect ry='18.08342' rx='33.249443' transform='matrix(0.65316768,0.7572133,-0.60689051,0.79478545,0,0)' y='319.55432' x='794.8775' height='36.16684' width='173.02675' id='rect4721' style='opacity:1;fill:%232b0000;fill-opacity:1;stroke:none;stroke-opacity:1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-size: 34px;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 /* Revert Leaflet styles that are causing misalignment. */
