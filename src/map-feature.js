@@ -159,7 +159,14 @@ export class MapFeature extends HTMLElement {
     // Util functions:
     // internal support for returning a GeoJSON representation of <map-feature> geometry
     // propertyFunction (optional): the function used to format the innerHTML of <map-properties>
-    getGeojson(propertyFunction) {
+    mapml2geojson(options) {
+      let defaults = {
+        propertyFunction: null,
+        transform: true
+      };
+      // assign default values for undefined options
+      options = Object.assign({}, defaults, options);
+
       let json = {
         type: "Feature",
         properties: {},
@@ -168,8 +175,8 @@ export class MapFeature extends HTMLElement {
       let el = this.querySelector('map-properties');
       if (!el) {
         json.properties = null;
-      } else if (propertyFunction) {
-        json.properties = propertyFunction(el);
+      } else if (typeof options.propertyFunction === "function") {
+        json.properties = options.propertyFunction(el);
       } else if (el.querySelector('table')) { 
         // setting properties when table presented
         let table = (el.querySelector('table')).cloneNode(true);
@@ -179,12 +186,14 @@ export class MapFeature extends HTMLElement {
         json.properties = {prop0: (el.innerHTML).replace( /(<([^>]+)>)/ig, '').replace(/\s/g, '')};
       }
 
-      // transform to gcrs
-      let source = null, dest = null, transform = false;
-      if (this._map.options.crs.code !== "EPSG:3857" && this._map.options.crs.code  !== "EPSG:4326") {
+      // transform to gcrs if options.transform = true (default)
+      let source = null, dest = null;
+      if (options.transform) {
         source = new proj4.Proj(this._map.options.crs.code);
         dest = new proj4.Proj('EPSG:4326');
-        transform = true;
+        if (this._map.options.crs.code === "EPSG:3857" || this._map.options.crs.code  === "EPSG:4326") {
+          options.transform = false;
+        }
       }
 
       let collection = this.querySelector("map-geometry").querySelector("map-geometrycollection"),
@@ -194,10 +203,10 @@ export class MapFeature extends HTMLElement {
         json.geometry.type = "GeometryCollection";
         json.geometry.geometries = [];
         for (let shape of shapes) {
-          json.geometry.geometries.push(M._geometry2geojson(shape, source, dest, transform));
+          json.geometry.geometries.push(M._geometry2geojson(shape, source, dest, options.transform));
         }
       } else {
-        json.geometry = M._geometry2geojson(shapes[0], source, dest, transform);
+        json.geometry = M._geometry2geojson(shapes[0], source, dest, options.transform);
       }
       return json;
     }

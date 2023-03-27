@@ -1004,7 +1004,9 @@ export var Util = {
           json.features[num].properties = {};
 
           // setting properties when function presented
-          if (typeof options.propertyFunction === "function") {
+          if (!feature.querySelector("map-properties")) {
+            json.features[num].properties = null;
+          } else if (typeof options.propertyFunction === "function") {
               let properties = options.propertyFunction(feature.querySelector("map-properties"));
               json.features[num].properties = properties;
           } else if (feature.querySelector("map-properties").querySelector('table') !== null) { 

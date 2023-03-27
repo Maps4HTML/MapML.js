@@ -57,8 +57,33 @@
     <map-feature zoom="2" class="refDiff">
       <map-featurecaption>Inplace</map-featurecaption>
       <map-properties>
-        <h1>Test</h1>
+        <table>
+          <tr>
+            <th>Head_1</th>
+            <th>Head_2</th>
+            <th>Head_3</th>
+          </tr>
+          <tr>
+            <td>row 1, column 1</td>
+            <td>row 1, column 2</td>
+            <td>row 1, column 3</td>
+          </tr>
+          <tr>
+            <td>row 2, column 1</td>
+            <td>row 2, column 2</td>
+            <td>row 2, column 3</td>
+          </tr>
+        </table>
       </map-properties>
+      <map-geometry cs="tilematrix">
+        <map-polygon>
+          <map-coordinates>10.5 11 10.75 11 10.75 11.25 10.5 11.25 10.5 11</map-coordinates>
+        </map-polygon>
+      </map-geometry>
+    </map-feature>
+
+    <map-feature zoom="2" class="refDiff">
+      <map-featurecaption>Inplace</map-featurecaption>
       <map-geometry cs="tcrs">
         <map-a href="cbmtgeom.mapml" target="_blank">
           <map-geometrycollection>
@@ -75,7 +100,7 @@
       </map-geometry>
     </map-feature>
   </layer->
-  <layer- label="vector states" src="data/us_pop_density.mapml" checked></layer->
+  <layer- label="vector states" src="data/us_pop_density.mapml"></layer->
 </map>
 
 </body>
