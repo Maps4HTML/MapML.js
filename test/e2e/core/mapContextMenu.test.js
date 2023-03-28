@@ -332,7 +332,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
     );
   });
 
-  test("Submenu, copy location", async () => {
+  test("Submenu, copy map location in gcrs (default) coordinates", async () => {
     currLocCS = await page.$eval(
       "body > map",
       (map) => (map._map.contextMenu.defLocCS)
@@ -358,17 +358,17 @@ test.describe("Playwright Map Context Menu Tests", () => {
       (text) => text.value
     );
     const expected = `<map-feature zoom="1">
-                  <map-featurecaption>Copied CBMTILE gcrs location</map-featurecaption>
-                  <map-properties>
-                      <h2>Copied CBMTILE gcrs location</h2>
-                      <div style="text-align:center">-92.062002 46.922393</div>
-                  </map-properties>
-                  <map-geometry cs="gcrs">
-                    <map-point>
-                      <map-coordinates>-92.062002 46.922393</map-coordinates>
-                    </map-point>
-                  </map-geometry>
-                </map-feature>`;
+        <map-featurecaption>Copied CBMTILE gcrs location</map-featurecaption>
+        <map-properties>
+            <h2>Copied CBMTILE gcrs location</h2>
+            <div style="text-align:center">-92.062002 46.922393</div>
+        </map-properties>
+        <map-geometry cs="gcrs">
+          <map-point>
+            <map-coordinates>-92.062002 46.922393</map-coordinates>
+          </map-point>
+        </map-geometry>
+      </map-feature>`;
     expect(copyValue).toEqual(expected);
     await page.locator("body > textarea#coord").fill('');
     await page.$eval(
@@ -410,6 +410,56 @@ test.describe("Playwright Map Context Menu Tests", () => {
     // clean up
     await page.$eval("body > map", 
       (map) => map.removeChild(map.querySelector('[label="Pasted features"]')));
+  });
+  test("Submenu, copy location in tilematrix coordinates, which is not implemented, so faked with gcrs", async () => {
+    // set the copy location coordinate system to the not-implemented tilematrix
+    await page.$eval(
+      "body > map",
+      (map) => {
+        map._map.contextMenu.defLocCS = 'tilematrix';
+        // ContextMenu.js double-checks the value of defLocCS against the 
+        // M.options.defaultLocCoor when the context menu is shown,
+        // so have to ensure it has the value we want to test against.
+        M.options.defaultLocCoor = 'tilematrix';
+      }
+    );
+
+    await page.click("body > map");
+    await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+    await page.click("body > textarea#coord");
+    await page.keyboard.press("Control+v");
+    const copyValue = await page.$eval(
+      "body > textarea#coord",
+      (text) => text.value
+    );
+    const expected = `<map-feature zoom="1">
+        <map-featurecaption>Copied CBMTILE tilematrix location (not implemented yet)</map-featurecaption>
+        <map-properties>
+            <h2>Copied CBMTILE tilematrix location (not implemented yet)</h2>
+            <div style="text-align:center">6 6</div>
+        </map-properties>
+        <map-geometry cs="gcrs">
+          <map-point>
+            <map-coordinates>-92.062002 46.922393</map-coordinates>
+          </map-point>
+        </map-geometry>
+      </map-feature>`;
+    expect(copyValue).toEqual(expected);
+    await page.locator("body > textarea#coord").fill('');
+    await page.$eval(
+      "body > map",
+      (map, currLocCS) => {
+        map._map.contextMenu.defLocCS = currLocCS;
+      }, 
+      currLocCS
+    );
   });
   test("Paste valid Layer to map", async () => {
     await page.click("body > textarea#layer");
