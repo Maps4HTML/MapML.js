@@ -625,4 +625,40 @@ let point = {
       }
   }]
  };
+ let mapAGeometryCollection = {
+   "type": "FeatureCollection",
+   "title": "map-a geometry",
+   "features": [
+       {
+           "type": "Feature",
+           "geometry": {
+               "type": "GeometryCollection",
+               "geometries": [
+                   {
+                       "type": "Polygon",
+                       "coordinates": [
+                           [
+                              [9,10],
+                              [10,10],
+                              [10,11],
+                              [9,11],
+                              [9,10]
+                           ]
+                       ]
+                   },
+                   {
+                       "type": "Point",
+                       "coordinates": [
+                           10.5,
+                           11
+                       ]
+                   }
+               ]
+           },
+           "properties": {
+               "prop0": "Test"
+           }
+       }
+   ]
+};
  

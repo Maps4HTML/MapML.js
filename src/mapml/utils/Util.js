@@ -845,6 +845,11 @@ export var Util = {
   //    for mapml2geojson
   // _geometry2geojson: (child of <map-geometry>), Proj4, Proj4, Bool -> geojson
   _geometry2geojson: function (el, source, dest, transform) {
+    // remove map-a, map-span elements if the geometry is wrapped in them
+    while (el.nodeName.toUpperCase() === "MAP-SPAN" || 
+           el.nodeName.toUpperCase() === "MAP-A") {
+            el = el.firstElementChild;
+    }
     let elem = el.nodeName;
     let j = {};
     let coord;
