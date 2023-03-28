@@ -1011,17 +1011,22 @@ export var Util = {
               json.features[num].properties = {prop0: (feature.querySelector("map-properties").innerHTML).replace( /(<([^>]+)>)/ig, '')};
           }
 
-          let geom = feature.querySelector("map-geometry");
-          let elem = geom.children[0].nodeName;
+          let geom = feature.querySelector("map-geometry").firstElementChild;
+
+          // remove map-a, map-span elements if the geometry is wrapped in them
+          while (geom.nodeName.toUpperCase() === "MAP-SPAN" || 
+                 geom.nodeName.toUpperCase() === "MAP-A") {
+                  geom = geom.firstElementChild;
+          }
 
           // Adding Geometry
-          if (elem.toUpperCase() !== "MAP-GEOMETRYCOLLECTION"){
-              json.features[num].geometry = M._geometry2geojson(geom.children[0], source, dest, options.transform);
+          if (geom.nodeName.toUpperCase() !== "MAP-GEOMETRYCOLLECTION"){
+              json.features[num].geometry = M._geometry2geojson(geom, source, dest, options.transform);
           } else {
               json.features[num].geometry.type = "GeometryCollection";
               json.features[num].geometry.geometries = [];
 
-              let geoms = geom.querySelector('map-geometrycollection').children;
+              let geoms = geom.children;
               Array.from(geoms).forEach((g) => {
                   g = M._geometry2geojson(g, source, dest, options.transform);
                   json.features[num].geometry.geometries.push(g);
