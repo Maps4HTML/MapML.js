@@ -784,17 +784,6 @@ label.mapml-layer-item-toggle {
   ) {
   outline: 0!important;
 }
-.mapml-vector-container svg :is(
-  [role="link"].focus,
-  [role="link"].focus path,
-  [role="link"] path.focus,
-  [role="button"].focus,
-  [role="button"].focus path,
-  [role="button"] path.focus
-  ) {
-  /* show the default focus ring if the .focus() method of element is invoked */
-  outline: auto!important;
-}
 
 /*
 * Extent Elements in the Layer Control

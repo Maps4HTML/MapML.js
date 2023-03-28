@@ -265,7 +265,6 @@ export class MapFeature extends HTMLElement {
         this.onclick(this, event);
         return;
       } else {
-        document.dispatchEvent(new CustomEvent ('focuschange'));
         let properties = this.querySelector('map-properties');
         if (g.getAttribute('role') === 'link') {
           for (let path of g.children) {
@@ -309,23 +308,7 @@ export class MapFeature extends HTMLElement {
         this.onfocus(this, event);
         return;
       } else {
-        // if any other <map-feature> element is on :focus state, remove
-        document.dispatchEvent(new CustomEvent('focuschange'));
-        // highlight the <g> element on map
-        g.classList.add('focus');
-        // handle focus (document.activeElement)
         g.focus();
-        // focus state will be removed when users change focus to the other elements
-        g.addEventListener('blur', _removeFocusState, true);
-        document.addEventListener('focuschange', _removeFocusState, true);
-      }
-
-      function _removeFocusState (e) {
-        if (g.classList.contains('focus')) {
-          g.classList.remove('focus');
-        }
-        g.removeEventListener('blur', _removeFocusState);
-        document.removeEventListener('focuschange', _removeFocusState);
       }
     }
   }

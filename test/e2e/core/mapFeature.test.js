@@ -840,7 +840,7 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
                 let layer = document.querySelector('map').querySelector('layer-'),
                     mapFeature = layer.querySelector('map-feature');
                 mapFeature.focus();
-                return g.classList.contains("focus") && document.activeElement.shadowRoot?.activeElement === g;
+                return document.activeElement.shadowRoot?.activeElement === g;
             }
         );
         expect(focus).toEqual(true);
@@ -856,7 +856,7 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
         );
         focus = await page.$eval(
             "body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)",
-            (g) => g.classList.contains("focus") || document.activeElement.shadowRoot?.activeElement === g
+            (g) => document.activeElement.shadowRoot?.activeElement === g
         );
         expect(focus).toEqual(false);
     });
