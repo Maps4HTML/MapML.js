@@ -406,10 +406,10 @@ test.describe("Playwright Map Context Menu Tests", () => {
       "body > map",
       (map) => map.layers[1].label
     );
-    expect(layerLabel).toEqual("Pasted features");
+    expect(layerLabel).toEqual("Pasted layer");
     // clean up
     await page.$eval("body > map", 
-      (map) => map.removeChild(map.querySelector('[label="Pasted features"]')));
+      (map) => map.removeChild(map.querySelector('[label="Pasted layer"]')));
   });
   test("Submenu, copy location in tilematrix coordinates, which is not implemented, so faked with gcrs", async () => {
     // set the copy location coordinate system to the not-implemented tilematrix

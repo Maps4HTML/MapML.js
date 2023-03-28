@@ -408,10 +408,10 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       "body > mapml-viewer",
             (map) => map.layers[1].label
     );
-    expect(layerLabel).toEqual("Pasted features");
+    expect(layerLabel).toEqual("Pasted layer");
     // clean up
     await page.$eval("body > mapml-viewer",
-      (map) => map.removeChild(map.querySelector('[label="Pasted features"]')));
+      (map) => map.removeChild(map.querySelector('[label="Pasted layer"]')));
   });
   // other cs not implemented yet: tile,map,
   test("Submenu, copy location in tilematrix coordinates, which is not implemented, so faked with gcrs", async () => {
