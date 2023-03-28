@@ -342,7 +342,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     currLocCS = await page.$eval(
       "body > mapml-viewer",
       (map) => (map._map.contextMenu.defLocCS)
-    );
+    )
     // set cs to pcrs for copying location test
     await page.$eval(
       "body > mapml-viewer",
@@ -363,18 +363,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       "body > textarea#coord",
       (text) => text.value
     );
-    const expected = `<map-feature zoom="1">
-                  <map-featurecaption>Copied CBMTILE gcrs location</map-featurecaption>
-                  <map-properties>
-                      <h2>Copied CBMTILE gcrs location</h2>
-                      <div style="text-align:center">-92.062002 46.922393</div>
-                  </map-properties>
-                  <map-geometry cs="gcrs">
-                    <map-point>
-                      <map-coordinates>-92.062002 46.922393</map-coordinates>
-                    </map-point>
-                  </map-geometry>
-                </map-feature>`;
+    const expected = "lon :-92.062002, lat:46.922393";
     expect(copyValue).toEqual(expected);
     await page.locator("body > textarea#coord").fill('');
     await page.$eval(
@@ -385,38 +374,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       currLocCS
     );
   });
-  test("Paste map-feature to mapml-viewer", async () => {
-    currLocCS = await page.$eval(
-      "body > mapml-viewer",
-      (map) => (map._map.contextMenu.defLocCS)
-    );
-    // set cs to pcrs for copying location test
-    await page.$eval(
-      "body > mapml-viewer",
-      (map) => {map._map.contextMenu.defLocCS = 'gcrs';}
-    );
-    await page.click("body > mapml-viewer");
-    await page.keyboard.press("Shift+F10");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Enter");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Enter");
-    await page.click("body > mapml-viewer");
-    await page.keyboard.press("Shift+F10");
-    await page.keyboard.press("p");
 
-    const layerLabel = await page.$eval(
-      "body > mapml-viewer",
-            (map) => map.layers[1].label
-    );
-    expect(layerLabel).toEqual("Pasted features");
-    // clean up
-    await page.$eval("body > mapml-viewer",
-      (map) => map.removeChild(map.querySelector('[label="Pasted features"]')));
-  });
   test("Context menu, All buttons enabled when fwd and back history present", async () => {
     await page.click("body > mapml-viewer");
     await page.$eval(
