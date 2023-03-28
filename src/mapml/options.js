@@ -45,5 +45,6 @@ export var Options = {
     kbdPrevFeature: "Previous feature",
     kbdNextFeature: "Next feature",
     dfLayer: "Layer",
+    dfPastedLayer: "Pasted layer"
   }
 };
