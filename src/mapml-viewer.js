@@ -358,7 +358,7 @@ export class MapViewer extends HTMLElement {
       this._geolocationButton = M.geolocationButton({
         showPopup: false,
         strings: {
-          title: "Show my location"
+          title: 'Show my location - location off', 
         },
         position: "bottomright",
         locateOptions: {
@@ -547,6 +547,21 @@ export class MapViewer extends HTMLElement {
               {target: this}}));
       }
     });
+    var locateControl = this._geolocationButton._container;
+    var observer = new MutationObserver(function(mutations) {
+      // Check the current state of the control
+      if (locateControl.classList.contains('active') && locateControl.classList.contains('following')) {
+        locateControl.firstChild.title = "Show my location control - location tracking mode";
+      } else if (locateControl.classList.contains('active')) {
+        locateControl.firstChild.title = "Show my location - last known location mode";
+      } else {
+        locateControl.firstChild.title = "Show my location - location off";
+      }
+    });
+    // Configure the observer to watch for changes to the class name
+    var observerConfig = { attributes: true, attributeFilter: ['class'] };
+    observer.observe(locateControl, observerConfig);
+
     this._map.on('locationfound',
       function (e) {
         this.dispatchEvent(new CustomEvent('maplocationfound', {detail:
