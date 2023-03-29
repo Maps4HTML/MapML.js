@@ -278,20 +278,20 @@ export class MapFeature extends HTMLElement {
         // AFTER the mousedown and mouseup events:
         // case 1: the layer el is not re-attached to the map, the <map-feature> el is still CONNECTED
         // case 2: the layer el is re-attached to the map; the disconnectedCallback() is invoked;
-        //         the <map-feature> el (THIS) is now DISCONNECTED, this._featureGroup is removed and a new featureLayer is created
+        //         the <map-feature> el (THIS) is now DISCONNECTED, this._featureGroup is removed and a new one is created
         if (properties && this.isConnected) {
-          let featureLayer = this._featureGroup,
-              shapes = featureLayer._layers;
+          let featureGroup = this._featureGroup,
+              shapes = featureGroup._layers;
           // close popup if the popup is currently shown
           for (let id in shapes) {
             if (shapes[id].isPopupOpen()) {
               shapes[id].closePopup();
             }
           }
-          if (featureLayer.isPopupOpen()) {
-            featureLayer.closePopup();
+          if (featureGroup.isPopupOpen()) {
+            featureGroup.closePopup();
           } else {
-            featureLayer.openPopup();
+            featureGroup.openPopup();
           }
         }
       }
