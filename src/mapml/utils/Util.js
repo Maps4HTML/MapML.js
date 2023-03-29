@@ -458,11 +458,6 @@ export var Util = {
       text = text.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
       if ((text.slice(0,7) === "<layer-") && (text.slice(-9) === "</layer->")) {
         mapEl.insertAdjacentHTML("beforeend", text);
-      } else if (text.slice(0,12) === "<map-feature" && text.slice(-14) === "</map-feature>") {
-        let layer = `<layer- label="Pasted features" checked>
-                       <map-meta name='projection' content='${mapEl.projection}'></map-meta>`+text+
-                    "</layer->";
-        mapEl.insertAdjacentHTML("beforeend", layer);
       } else {
         try {
           mapEl.geojson2mapml(JSON.parse(text));
