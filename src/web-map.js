@@ -401,11 +401,11 @@ export class WebMap extends HTMLMapElement {
       this._geolocationButton = M.geolocationButton({
         showPopup: false,
         strings: {
-          title: "Show my location"
+          title: "Show my location - location off"
         },
         position: "bottomright",
         locateOptions: {
-          maxZoom: 24
+          maxZoom: 16
         },
       },this._map);
     }
@@ -590,6 +590,39 @@ export class WebMap extends HTMLMapElement {
               {target: this}}));
       }
     });
+    var locateControl = this._geolocationButton._container;
+    var observer = new MutationObserver(function(mutations) {
+      // Check the current state of the control
+      if (locateControl.classList.contains('active') && locateControl.classList.contains('following')) {
+        locateControl.firstChild.title = "Show my location control - location tracking mode";
+      } else if (locateControl.classList.contains('active')) {
+        locateControl.firstChild.title = "Show my location - last known location mode";
+      } else {
+        locateControl.firstChild.title = "Show my location - location off";
+      }
+    });
+    // Configure the observer to watch for changes to the class name
+    var observerConfig = { attributes: true, attributeFilter: ['class'] };
+    observer.observe(locateControl, observerConfig);
+
+    this._map.on('locationfound',
+      function (e) {
+        this.dispatchEvent(new CustomEvent('maplocationfound', {detail:
+          {latlng: e.latlng,     radius: e.accuracy}
+         }));
+      },this);
+    this.addEventListener('maplocationfound', function(e) {
+      //'Location found:', e.detail.latlng, 'Radius:', e.detail.radius
+    });
+    this._map.on('locationerror',
+      function (e) {
+        this.dispatchEvent(new CustomEvent('locationerror', {detail:
+          {error:e.message}
+        }));
+      },this);
+    this.addEventListener('locationerror', function(e) {
+      //error:e.detail.error
+    });
     this._map.on('load',
       function () {
         this.dispatchEvent(new CustomEvent('load', {detail: {target: this}}));
@@ -720,6 +753,19 @@ export class WebMap extends HTMLMapElement {
         }
       }
     });   
+  }
+  locate(options){
+    if (this._map) {
+      if (options) {
+        if (options.zoomTo) {
+          options.setView = options.zoomTo;
+          delete options.zoomTo;
+        }
+        this._map.locate(options);
+      } else {
+        this._map.locate({setView: true, maxZoom: 16});
+      }
+    }
   }
   toggleDebug(){
     if(this._debug){
