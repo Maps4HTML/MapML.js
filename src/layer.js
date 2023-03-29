@@ -68,6 +68,10 @@ export class MapLayer extends HTMLElement {
     // to the layer being removed with the _onLayerChange execution
     // that is set up in _attached:
     if(this.hasAttribute("data-moving")) return;
+    this._onRemove();
+  }
+
+  _onRemove() {
     this._removeEvents();
     if (this._layer._map) {
       this._layer._map.removeLayer(this._layer);
@@ -81,10 +85,15 @@ export class MapLayer extends HTMLElement {
       this.shadowRoot.innerHTML = '';
     }
   }
+
   connectedCallback() {
     //creates listener that waits for createmap event, this allows for delayed builds of maps
     //this allows a safeguard for the case where loading a custom TCRS takes longer than loading mapml-viewer.js/web-map.js
     if(this.hasAttribute("data-moving")) return;
+    this._onAdd();
+  }
+
+  _onAdd() {
     if(this.getAttribute('src') && !this.shadowRoot) {
       this.attachShadow({mode: 'open'});
     }
@@ -101,6 +110,7 @@ export class MapLayer extends HTMLElement {
     //if map is already created then dispatch createmap event, allowing layer to be built
     if(this.parentNode._map)this.parentNode.dispatchEvent(new CustomEvent('createmap'));
   }
+
   adoptedCallback() {
   //    console.log('Custom map element moved to new page.');
   }
@@ -154,9 +164,9 @@ export class MapLayer extends HTMLElement {
     let oldOpacity = this.opacity;
     // go through the same sequence as if the layer had been removed from
     // the DOM and re-attached with a new URL source.
-    this.disconnectedCallback();
+    this._onRemove();
     if (this.isConnected) {
-      this.connectedCallback();
+      this._onAdd();
     }
     this.opacity = oldOpacity;
   }
