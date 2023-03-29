@@ -551,7 +551,7 @@ export class MapViewer extends HTMLElement {
     var observer = new MutationObserver(function(mutations) {
       // Check the current state of the control
       if (locateControl.classList.contains('active') && locateControl.classList.contains('following')) {
-        locateControl.firstChild.title = "Show my location control - location tracking mode";
+        locateControl.firstChild.title = "Show my location - location tracking mode";
       } else if (locateControl.classList.contains('active')) {
         locateControl.firstChild.title = "Show my location - last known location mode";
       } else {
