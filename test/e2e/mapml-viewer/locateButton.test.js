@@ -12,7 +12,7 @@ test.describe("Locate Button Test", () => {
     context = await chromium.launchPersistentContext('');
     page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
     await context.grantPermissions(['geolocation']);
-    await page.goto("locateApi.html");
+    await page.goto("locateButton.html");
   });
   test.afterAll(async function () {
     await context.close();
@@ -36,6 +36,36 @@ test.describe("Locate Button Test", () => {
     expect(locateButton_lat).toEqual("45.503");
     expect(locateButton_lng).toEqual("-73.568");
     
+  });
+
+  test("Locate button state changes", async () => {
+    await page.click("body > mapml-viewer");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+
+    let locateButton_title1 = await page.$eval("div > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div > a", (button) => button.title);
+
+    expect(locateButton_title1).toEqual("Show my location - location off");
+    await page.keyboard.press("Enter");
+
+    let locateButton_title2 = await page.$eval("div > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div > a", (button) => button.title);
+    expect(locateButton_title2).toEqual("Show my location control - location tracking mode");
+
+    await page.click("body > mapml-viewer");
+    
+    await page.mouse.move(600, 300);
+    await page.mouse.down();
+    await page.mouse.move(1200, 450, {steps: 5}); 
+    await page.mouse.up();
+    await page.click("body > mapml-viewer");
+    await page.pause();
+    let locateButton_title3 = await page.$eval("div > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div > a", (button) => button.title);
+    expect(locateButton_title3).toEqual("Show my location - last known location mode");
   });
 });
 
