@@ -355,7 +355,18 @@ export class MapViewer extends HTMLElement {
       this._fullScreenControl = M.fullscreenButton().addTo(this._map);
     }
     if (!this._geolocationButton){
+      var CustomMarker = L.Marker.extend({
+        options: {
+            icon: new L.Icon({
+                iconUrl: '../src/marker.png',
+                iconSize: [20, 20],
+            }),
+            alt: '',
+            title: 'My Location',
+        }
+      });
       this._geolocationButton = M.geolocationButton({
+        markerClass: CustomMarker,
         showPopup: false,
         strings: {
           title: M.options.locale.btnLocTrackOff 
