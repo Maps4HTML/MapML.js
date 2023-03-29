@@ -54,7 +54,7 @@ test.describe("Locate Button Test", () => {
     await page.keyboard.press("Enter");
 
     let locateButton_title2 = await page.$eval("div > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div > a", (button) => button.title);
-    expect(locateButton_title2).toEqual("Show my location control - location tracking mode");
+    expect(locateButton_title2).toEqual("Show my location - location tracking mode");
 
     await page.click("body > mapml-viewer");
     
