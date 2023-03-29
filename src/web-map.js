@@ -401,7 +401,7 @@ export class WebMap extends HTMLMapElement {
       this._geolocationButton = M.geolocationButton({
         showPopup: false,
         strings: {
-          title: "Show my location - location tracking off"
+          title: M.options.locale.btnLocTrackOff 
         },
         position: "bottomright",
         locateOptions: {
@@ -594,11 +594,11 @@ export class WebMap extends HTMLMapElement {
     var observer = new MutationObserver(function(mutations) {
       // Check the current state of the control
       if (locateControl.classList.contains('active') && locateControl.classList.contains('following')) {
-        locateControl.firstChild.title = "Show my location - location tracking on";
+        locateControl.firstChild.title = M.options.locale.btnLocTrackOn;
       } else if (locateControl.classList.contains('active')) {
-        locateControl.firstChild.title = "Show my location - last known location shown";
+        locateControl.firstChild.title = M.options.locale.btnLocTrackLastKnown;
       } else {
-        locateControl.firstChild.title = "Show my location - location tracking off";
+        locateControl.firstChild.title = M.options.locale.btnLocTrackOff;
       }
     });
     // Configure the observer to watch for changes to the class name
