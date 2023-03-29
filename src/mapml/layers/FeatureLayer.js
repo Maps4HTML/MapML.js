@@ -236,9 +236,9 @@ export var FeatureLayer = L.FeatureGroup.extend({
         if (geometriesExist) {
          // if the <map-feature> element has migrated from mapml file
          if (mapml.nodeType === Node.DOCUMENT_NODE && feature._DOMnode) {
-          feature._DOMnode._featureLayer = this.addData(feature._DOMnode, nativeCS, nativeZoom);
+          feature._DOMnode._featureGroup = this.addData(feature._DOMnode, nativeCS, nativeZoom);
          } else {
-          feature._featureLayer = this.addData(feature, nativeCS, nativeZoom);
+          feature._featureGroup = this.addData(feature, nativeCS, nativeZoom);
          }
         }
        }

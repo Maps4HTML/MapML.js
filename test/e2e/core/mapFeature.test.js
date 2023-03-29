@@ -780,7 +780,7 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
                 let layer = map.querySelector('layer-'),
                     featureButton = layer.querySelector('map-feature');
                 featureButton.click();
-                return featureButton._featureLayer.isPopupOpen();
+                return featureButton._featureGroup.isPopupOpen();
             }   
         );
         expect(popup).toEqual(true);

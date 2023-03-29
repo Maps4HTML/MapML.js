@@ -29,7 +29,7 @@ export class MapFeature extends HTMLElement {
                 layerEl = layer._layerEl,
                 mapmlvectors = layer._mapmlvectors;
             if (mapmlvectors?._staticFeature) {
-              let native = this._getNative(layer._content, mapmlvectors);
+              let native = this._getNative(layer._content);
               mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(layerEl.shadowRoot || layerEl, native.zoom);
             }
             this._redraw();
@@ -82,7 +82,7 @@ export class MapFeature extends HTMLElement {
       
       if (!this._layerParent._mapmlvectors) {
         return;
-      } else if (!this._featureLayer) {
+      } else if (!this._featureGroup) {
         this._redraw();
       }
     }
@@ -101,26 +101,26 @@ export class MapFeature extends HTMLElement {
       }
       // if the <layer- > el has already been disconnected,
       // then _map.removeLayer(layerEl._layer) has already been invoked (inside layerEl.disconnectedCallback())
-      // this._featureLayer has already got removed at this point
-      if (this._featureLayer?._map) {
-        this._featureLayer._map.removeLayer(this._featureLayer);
+      // this._featureGroup has already got removed at this point
+      if (this._featureGroup?._map) {
+        this._featureGroup._map.removeLayer(this._featureGroup);
         let mapmlvectors = this._layerParent._mapmlvectors;
         if (mapmlvectors) {
           if (mapmlvectors._staticFeature) {
             let zoom = mapmlvectors._clampZoom(this._map.getZoom());
             for (let i = 0; i < mapmlvectors._features[zoom].length; ++i) {
               let feature = mapmlvectors._features[zoom][i];
-              if (feature._leaflet_id === this._featureLayer._leaflet_id) {
+              if (feature._leaflet_id === this._featureGroup._leaflet_id) {
                 mapmlvectors._features[zoom].splice(i, 1);
                 break;
               }
             }
           }
           mapmlvectors.options.properties = null;
-          delete mapmlvectors._layers[this._featureLayer._leaflet_id];
+          delete mapmlvectors._layers[this._featureGroup._leaflet_id];
         }
       }
-      delete this._featureLayer;
+      delete this._featureGroup;
       delete this._groupEl;
     }
 
@@ -129,10 +129,10 @@ export class MapFeature extends HTMLElement {
       let mapmlvectors = this._layerParent._mapmlvectors;
       if (!mapmlvectors) return;
       // if the <layer- > is not removed, then regenerate featureGroup and update the mapmlvectors accordingly
-      let native = this._getNative(this._layerParent._content, mapmlvectors);
-      this._featureLayer = mapmlvectors.addData(this, native.cs, native.zoom);
-      mapmlvectors._layers[this._featureLayer._leaflet_id] = this._featureLayer;
-      this._groupEl = this._featureLayer.options.group;
+      let native = this._getNative(this._layerParent._content);
+      this._featureGroup = mapmlvectors.addData(this, native.cs, native.zoom);
+      mapmlvectors._layers[this._featureGroup._leaflet_id] = this._featureGroup;
+      this._groupEl = this._featureGroup.options.group;
       if (mapmlvectors._staticFeature) {
         let zoom = mapmlvectors._clampZoom(this._map.getZoom());
         mapmlvectors._resetFeatures(zoom);
@@ -141,18 +141,22 @@ export class MapFeature extends HTMLElement {
       }
     }
 
-    _getNative(content, vectors) {
+    _getNative(content) {
       let nativeZoom, nativeCS;
       if (content.nodeName.toUpperCase() === "LAYER-") {
-        let zoomMeta = this._layerParent._layerEl.querySelectorAll('map-meta[name="zoom"]'),
-        length = zoomMeta?.length;
-        nativeZoom = length ? +(zoomMeta[length - 1].getAttribute('content')?.split(',').find(str => str.includes("value"))?.split('=')[1]) : 0;
-        nativeCS = this.closest(".map-meta[name=cs]")?.getAttribute('content') || 'pcrs';
+        let layerEl = this._layerParent._layerEl;
+        let zoomMeta = layerEl.querySelectorAll('map-meta[name=zoom]'),
+            zoomLength = zoomMeta?.length;
+        nativeZoom = zoomLength ? +(zoomMeta[zoomLength - 1].getAttribute('content')?.split(',').find(str => str.includes("value"))?.split('=')[1]) : 0;
+
+        let csMeta = layerEl.querySelectorAll("map-meta[name=cs]"),
+            csLength = csMeta?.length;
+        nativeCS = csLength ? csMeta[csLength - 1].getAttribute('content') : 'pcrs';
         return {zoom: nativeZoom, cs: nativeCS};
       } else if (content.nodeType === Node.DOCUMENT_NODE) {
         // if the map-feature originally migrates from mapml file
         // the nativezoom should be the <map-meta> in mapml file
-        return vectors?._getNativeVariables(content);
+        return this._layerParent._mapmlvectors._getNativeVariables(content);
       }
     }
 
@@ -215,8 +219,7 @@ export class MapFeature extends HTMLElement {
     _getFeatureExtent() {
       let map = this._map,
           geometry = this.querySelector('map-geometry'),
-          nativeCS = this.closest(".map-meta[name=cs]")?.getAttribute('content') || 'pcrs',
-          cs = geometry.getAttribute('cs') || nativeCS,
+          cs = geometry.getAttribute('cs') || this._getNative(this._layerParent._content).cs,
           shapes = geometry.querySelectorAll("map-point, map-linestring, map-polygon, map-multipoint, map-multilinestring"),
           bboxExtent = [Infinity, Infinity, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY];
       for (let shape of shapes) {
@@ -231,7 +234,7 @@ export class MapFeature extends HTMLElement {
       return M._convertAndFormatPCRS(pcrsBound, map);
 
       function _updateExtent(shape, coord) {
-        let data = coord.innerHTML.trim().split(' ');
+        let data = coord.innerHTML.trim().split(/[<>\ ]/g);
         switch (shape.tagName) {
           case "MAP-POINT":
             bboxExtent = M._updateExtent(bboxExtent, +data[0], +data[1]);
@@ -262,22 +265,22 @@ export class MapFeature extends HTMLElement {
         });
       }
       if (typeof this.onclick === 'function') {
-        this.onclick(this, event);
+        this.onclick.call(this, event);
         return;
       } else {
         let properties = this.querySelector('map-properties');
         if (g.getAttribute('role') === 'link') {
           for (let path of g.children) {
-            path.mousedown.call(this._featureLayer, event);
-            path.mouseup.call(this._featureLayer, event);
+            path.mousedown.call(this._featureGroup, event);
+            path.mouseup.call(this._featureGroup, event);
           }
         }
         // AFTER the mousedown and mouseup events:
         // case 1: the layer el is not re-attached to the map, the <map-feature> el is still CONNECTED
         // case 2: the layer el is re-attached to the map; the disconnectedCallback() is invoked;
-        //         the <map-feature> el (THIS) is now DISCONNECTED, this._featureLayer is removed and a new featureLayer is created
+        //         the <map-feature> el (THIS) is now DISCONNECTED, this._featureGroup is removed and a new featureLayer is created
         if (properties && this.isConnected) {
-          let featureLayer = this._featureLayer,
+          let featureLayer = this._featureGroup,
               shapes = featureLayer._layers;
           // close popup if the popup is currently shown
           for (let id in shapes) {
@@ -305,7 +308,7 @@ export class MapFeature extends HTMLElement {
         });
       }
       if (typeof this.onfocus === 'function') {
-        this.onfocus(this, event);
+        this.onfocus.call(this, event);
         return;
       } else {
         g.focus();
