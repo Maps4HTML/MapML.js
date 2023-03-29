@@ -50,11 +50,11 @@ test.describe("Locate Button Test", () => {
 
     let locateButton_title1 = await page.$eval("div > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div > a", (button) => button.title);
 
-    expect(locateButton_title1).toEqual("Show my location - location off");
+    expect(locateButton_title1).toEqual("Show my location - location tracking off");
     await page.keyboard.press("Enter");
 
     let locateButton_title2 = await page.$eval("div > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div > a", (button) => button.title);
-    expect(locateButton_title2).toEqual("Show my location - location tracking mode");
+    expect(locateButton_title2).toEqual("Show my location - location tracking on");
 
     await page.click("body > mapml-viewer");
     
@@ -65,7 +65,7 @@ test.describe("Locate Button Test", () => {
     await page.click("body > mapml-viewer");
     await page.pause();
     let locateButton_title3 = await page.$eval("div > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div > a", (button) => button.title);
-    expect(locateButton_title3).toEqual("Show my location - last known location mode");
+    expect(locateButton_title3).toEqual("Show my location - last known location shown");
   });
 });
 

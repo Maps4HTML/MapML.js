@@ -358,7 +358,7 @@ export class MapViewer extends HTMLElement {
       this._geolocationButton = M.geolocationButton({
         showPopup: false,
         strings: {
-          title: 'Show my location - location off', 
+          title: 'Show my location - location tracking off', 
         },
         position: "bottomright",
         locateOptions: {
@@ -551,11 +551,11 @@ export class MapViewer extends HTMLElement {
     var observer = new MutationObserver(function(mutations) {
       // Check the current state of the control
       if (locateControl.classList.contains('active') && locateControl.classList.contains('following')) {
-        locateControl.firstChild.title = "Show my location - location tracking mode";
+        locateControl.firstChild.title = "Show my location - location tracking on";
       } else if (locateControl.classList.contains('active')) {
-        locateControl.firstChild.title = "Show my location - last known location mode";
+        locateControl.firstChild.title = "Show my location - last known location shown";
       } else {
-        locateControl.firstChild.title = "Show my location - location off";
+        locateControl.firstChild.title = "Show my location - location tracking off";
       }
     });
     // Configure the observer to watch for changes to the class name
