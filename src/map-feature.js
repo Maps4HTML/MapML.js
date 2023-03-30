@@ -57,6 +57,11 @@ export class MapFeature extends HTMLElement {
       //         and attaches to the shadowRoot of the <layer- > element
       this._layerParent = this.parentNode._layer ? this.parentNode._layer : this.parentNode.host._layer;
       this._map = this._layerParent._map;
+      if (!this._map) {
+        this._layerParent.once('add', function () {
+          this._map = this._layerParent._map;
+        }, this);
+      }
       if(this._layerParent._layerEl.hasAttribute("data-moving")) return;
       
       this._observer = new MutationObserver((mutationList) => {
@@ -231,6 +236,11 @@ export class MapFeature extends HTMLElement {
       let topLeft = L.point(bboxExtent[0], bboxExtent[1]);
       let bottomRight = L.point(bboxExtent[2], bboxExtent[3]);
       let pcrsBound = M.boundsToPCRSBounds(L.bounds(topLeft, bottomRight), map.getZoom(), map.options.projection, cs);
+      if (shapes.length === 1 && shapes[0].tagName.toUpperCase() === "MAP-POINT") {
+        let tileCenter = M[map.options.projection].options.crs.tile.bounds.getCenter();
+        pcrsBound.min = pcrsBound.min.subtract(tileCenter);
+        pcrsBound.max = pcrsBound.max.add(tileCenter);
+      }
       return M._convertAndFormatPCRS(pcrsBound, map);
 
       function _updateExtent(shape, coord) {
@@ -313,5 +323,49 @@ export class MapFeature extends HTMLElement {
       } else {
         g.focus();
       }
+    }
+
+    _getMaxZoom(extent) {
+      if(!extent) return;
+      let layer = this._layerParent;
+      let map = this._map,
+          tL = extent.topLeft.pcrs,
+          bR = extent.bottomRight.pcrs,
+          bound = L.bounds(L.point(tL.horizontal, tL.vertical), L.point(bR.horizontal, bR.vertical)),
+          center = map.options.crs.unproject(bound.getCenter(true)),
+          newZoom = map.getZoom();
+
+      let maxZoom = layer._layerEl.extent.zoom.maxZoom, 
+          minZoom = layer._layerEl.extent.zoom.minZoom;                                                                                                                                                                   
+
+      let scale = map.options.crs.scale(newZoom),
+          mapCenterTCRS = map.options.crs.transformation.transform(bound.getCenter(true), scale);
+
+      let mapHalf = map.getSize().divideBy(2),
+          mapTlNew = mapCenterTCRS.subtract(mapHalf).round(),
+          mapBrNew = mapCenterTCRS.add(mapHalf).round();
+
+      let mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection),
+          mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
+
+      let mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew),
+          zOffset = mapPCRS.contains(bound) ? 1 : -1;
+
+      while((zOffset === -1 && !(mapPCRS.contains(bound)) && (newZoom - 1) >= minZoom)  ||
+            (zOffset === 1 && mapPCRS.contains(bound) && (newZoom + 1) <= maxZoom)) {
+        newZoom += zOffset;
+        scale = map.options.crs.scale(newZoom);
+        mapCenterTCRS = map.options.crs.transformation.transform(bound.getCenter(true), scale);
+
+        mapTlNew = mapCenterTCRS.subtract(mapHalf).round();
+        mapBrNew = mapCenterTCRS.add(mapHalf).round();
+        mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection);
+        mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
+
+        mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
+      }
+
+      if(zOffset === 1 && newZoom - 1 >= 0) newZoom--;
+      map.setView(center, newZoom, {animate: false});
     }
   }

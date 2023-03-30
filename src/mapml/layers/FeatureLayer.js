@@ -148,11 +148,13 @@ export var FeatureLayer = L.FeatureGroup.extend({
       this.clearLayers();
       // since features are removed and re-added by zoom level, need to clean the feature index before re-adding
       if(this._map) this._map.featureIndex.cleanIndex();
-      if(this._features && this._features[zoom]){
+      if(this._features){
         // only add feature[zoom]
         // so if we want all features render, just add a for loop and render all features in this._features
-        for(let k =0;k < this._features[zoom].length;k++){
-          this.addLayer(this._features[zoom][k]);
+        for (let zoom in this._features) {
+          for(let k =0;k < this._features[zoom].length;k++){
+            this.addLayer(this._features[zoom][k]);
+          }
         }
       }
     },
