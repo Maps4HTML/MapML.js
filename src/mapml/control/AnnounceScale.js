@@ -4,35 +4,41 @@ export var AnnounceScale = L.Control.extend({
       maxWidth: 100,
       updateWhenIdle: true,
     },
+
+    _container: null,
   
     onAdd: function (map) {
-      var container = L.DomUtil.create('div', 'accessible-scalebar');
+      this._container = L.DomUtil.create('div', 'mapml-accessible-scalebar');
       let invisibleScale = L.control.scale(this.options);
       invisibleScale.addTo(map);
-      container.appendChild(invisibleScale.getContainer());
-      let invisibleScaleLine = invisibleScale._container.getElementsByClassName('leaflet-control-scale-line')[0];
+      this._container.appendChild(invisibleScale.getContainer());
+      let invisibleScaleLine = invisibleScale.getContainer().getElementsByClassName('leaflet-control-scale-line')[0];
 
       setTimeout(() => { 
-        container.setAttribute('aria-label', this._setText(invisibleScaleLine));
-        container.style.display = 'none';
+        this._container.setAttribute('aria-label', this._setText(invisibleScaleLine));
+        this._container.style.display = 'none';
         
       }, 0);
   
       map.on('zoomend moveend', () => {
-        container.style.display = '';
-        let invisibleScaleLine = invisibleScale._container.getElementsByClassName('leaflet-control-scale-line')[0];
+        this._container.style.display = '';
+        let invisibleScaleLine = invisibleScale.getContainer().getElementsByClassName('leaflet-control-scale-line')[0];
 
-        container.setAttribute('aria-label',  this._setText(invisibleScaleLine));
-        container.style.display = 'none';
+        this._container.setAttribute('aria-label',  this._setText(invisibleScaleLine));
+        this._container.style.display = 'none';
       });
 
-      return container;
+      return this._container;
+    },
+
+    getContainer: function () {
+      return this._container;
     },
 
     _pixelsToDistance: function (px, units) {
       let dpi = window.devicePixelRatio * 96; // default dpi
       if (units === "metric") {
-        return px / dpi * 2.54; // inches to cmd
+        return px / dpi * 2.54; // inches to cm
       }
       return px / dpi;
     },
@@ -61,7 +67,6 @@ export var AnnounceScale = L.Control.extend({
       return text;
     }
   });
-  
-  export var announceScale = function (options) {
-    return new AnnounceScale(options);
-  };
+export var announceScale = function (options) {
+  return new AnnounceScale(options);
+};

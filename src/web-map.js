@@ -196,7 +196,7 @@ export class WebMap extends HTMLMapElement {
       }, 0);
     }
 
-    let scaleObserve = this.querySelector(".mapml-web-map").shadowRoot.querySelector(".leaflet-container .leaflet-control-container .leaflet-bottom.leaflet-left .accessible-scalebar");
+    let scaleObserve = this.querySelector(".mapml-web-map").shadowRoot.querySelector(".mapml-accessible-scalebar");
     let scaleTarget = this.querySelector(".mapml-web-map").shadowRoot.querySelector(".mapml-screen-reader-output-scale");
     let focusScale = this.querySelector(".mapml-web-map").shadowRoot.querySelector(".leaflet-container");
 
@@ -417,7 +417,13 @@ export class WebMap extends HTMLMapElement {
 
     this._layerControl = M.layerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
 
-    this._scaleBar = M.scaleBar().addTo(this._map);
+    let scaleValue = M.options.announceScale;
+
+    if (typeof scaleValue === "string") {
+      scaleValue = JSON.parse(scaleValue);
+    }
+
+    this._scaleBar = M.scaleBar(scaleValue).addTo(this._map);
 
     // Only add controls if there is enough top left vertical space
     if (!this._zoomControl && (totalSize + 93) <= mapSize){
