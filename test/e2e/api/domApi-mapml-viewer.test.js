@@ -96,7 +96,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
     let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
     let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
     let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
-    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
+    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
     expect(zoomHidden).toEqual(true);
     expect(reloadHidden).toEqual(true);
     expect(fullscreenHidden).toEqual(true);
@@ -137,7 +137,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
     let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
     let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
     let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
-    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
+    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
     expect(zoomHidden).toEqual(true);
     expect(reloadHidden).toEqual(true);
     expect(fullscreenHidden).toEqual(true);
@@ -157,7 +157,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
     let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
     let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
     let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
-    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
+    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
     expect(zoomHidden).toEqual(true);
     expect(reloadHidden).toEqual(true);
     expect(fullscreenHidden).toEqual(true);
@@ -174,7 +174,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
     let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
     let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
     let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
-    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
+    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
     expect(zoomHidden).toEqual(false);
     expect(reloadHidden).toEqual(false);
     expect(fullscreenHidden).toEqual(false);
@@ -239,7 +239,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
       let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
       let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
       let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
-      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
+      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
       expect(zoomHidden).toEqual(true);
       expect(reloadHidden).toEqual(false);
       expect(fullscreenHidden).toEqual(true);
@@ -260,7 +260,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
       let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
       let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
       let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
-      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
+      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
       expect(zoomHidden).toEqual(false);
       expect(reloadHidden).toEqual(true);
       expect(fullscreenHidden).toEqual(false);
@@ -276,7 +276,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
       reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
       fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
       layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
-      scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
+      scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
       expect(zoomHidden).toEqual(true);
       expect(reloadHidden).toEqual(true);
       expect(fullscreenHidden).toEqual(false);
@@ -295,7 +295,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
       let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
       let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
       let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
-      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
+      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
       expect(zoomHidden).toEqual(true);
       expect(reloadHidden).toEqual(true);
       expect(fullscreenHidden).toEqual(true);
@@ -311,7 +311,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
       reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
       fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
       layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
-      scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
+      scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
       expect(zoomHidden).toEqual(true);
       expect(reloadHidden).toEqual(true);
       expect(fullscreenHidden).toEqual(false);
@@ -330,7 +330,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
       let zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
       let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
       let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
-      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
+      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
       expect(zoomHidden).toEqual(false);
       expect(reloadHidden).toEqual(false);
       expect(fullscreenHidden).toEqual(false);
