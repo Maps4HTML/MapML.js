@@ -133,6 +133,24 @@ module.exports = function(grunt) {
             dest: '../experiments'
       }
         ]
+      },
+      extension: {
+        files: [
+          {
+            expand: true,
+            src: ['dist/*'],
+            dest: '../mapml-extension/src'
+          }
+        ]
+      },
+      docs: {
+        files: [
+          {
+            expand: true,
+            src: ['dist/*'],
+            dest: '../web-map-doc'
+          }
+        ]
       }
     },
     clean: {
@@ -141,6 +159,14 @@ module.exports = function(grunt) {
       experiments: {
         options: {force: true},
         src: ['../experiments/dist']
+      },
+      extension: {
+        options: {force: true},
+        src: ['../mapml-extension/src/dist']
+      },
+      docs: {
+        options: {force: true},
+        src: ['../web-map-doc/dist']
       }
     },
     rollup: {
@@ -166,5 +192,8 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['clean:dist', 'copy:main', 'copy:images', 'jshint', 'rollup', 
                                  'uglify', 'cssmin','clean:tidyup']);
   grunt.registerTask('experiments',['clean:experiments','default','copy:experiments']);
+  grunt.registerTask('extension',['clean:extension','default','copy:extension']);
+  grunt.registerTask('docs', ['clean:docs','default','copy:docs']);
+  grunt.registerTask('sync', ['default','experiments','extension','docs']);
 
 };
