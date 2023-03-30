@@ -10,25 +10,10 @@ export var AnnounceScale = L.Control.extend({
       let invisibleScale = L.control.scale(this.options);
       invisibleScale.addTo(map);
       container.appendChild(invisibleScale.getContainer());
-      let text = "";
       let invisibleScaleLine = invisibleScale._container.getElementsByClassName('leaflet-control-scale-line')[0];
 
-      setTimeout(() => {
-        if (this.options.metric) {
-          let distance = parseFloat((this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"metric")).toFixed(1));
-          text = `${distance} centimeters to ${invisibleScaleLine.textContent.trim()}`;
-          text = text.replace(/(\d+)\s*m\b/g, "$1 meters");
-          text = text.replace(/ km/g, " kilometers");
-        }
-        else {
-          let distance = parseFloat((this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"imperial")).toFixed(1));
-          text = `${distance} inches to ${invisibleScaleLine.textContent.trim()}`;
-          text = text.replace(/ft/g, "feet");
-          text = text.replace(/mi/g, "miles");
-        }
-
-        container.setAttribute('aria-label', text);
-
+      setTimeout(() => { 
+        container.setAttribute('aria-label', this._setText(invisibleScaleLine));
         container.style.display = 'none';
         
       }, 0);
@@ -36,20 +21,8 @@ export var AnnounceScale = L.Control.extend({
       map.on('zoomend moveend', () => {
         container.style.display = '';
         let invisibleScaleLine = invisibleScale._container.getElementsByClassName('leaflet-control-scale-line')[0];
-        
-        if (this.options.metric) {
-          let distance = parseFloat((this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"metric")).toFixed(1));
-          text = `${distance} centimeters to ${invisibleScaleLine.textContent.trim()}`;
-          text = text.replace(/(\d+)\s*m\b/g, "$1 meters");
-          text = text.replace(/ km/g, " kilometers");
-        }
-        else {
-          let distance = parseFloat((this._pixelsToDistance(this._scaleLength(invisibleScaleLine),"imperial")).toFixed(1));
-          text = `${distance} inches to ${invisibleScaleLine.textContent.trim()}`;
-          text = text.replace(/ft/g, "feet");
-          text = text.replace(/mi/g, "miles");
-        }
-        container.setAttribute('aria-label', text);
+
+        container.setAttribute('aria-label',  this._setText(invisibleScaleLine));
         container.style.display = 'none';
       });
 
@@ -68,6 +41,25 @@ export var AnnounceScale = L.Control.extend({
       let bbox = scale.getBoundingClientRect();
       return bbox.right - bbox.left;
     },
+
+    _setText: function (invScale) {
+      let text = "";
+
+      if (this.options.metric) {
+        let distance = parseFloat((this._pixelsToDistance(this._scaleLength(invScale),"metric")).toFixed(1));
+        text = `${distance} centimeters to ${invScale.textContent.trim()}`;
+        text = text.replace(/(\d+)\s*m\b/g, "$1 meters");
+        text = text.replace(/ km/g, " kilometers");
+      }
+      else {
+        let distance = parseFloat((this._pixelsToDistance(this._scaleLength(invScale),"imperial")).toFixed(1));
+        text = `${distance} inches to ${invScale.textContent.trim()}`;
+        text = text.replace(/ft/g, "feet");
+        text = text.replace(/mi/g, "miles");
+      }
+
+      return text;
+    }
   });
   
   export var announceScale = function (options) {
