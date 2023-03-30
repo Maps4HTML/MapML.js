@@ -747,6 +747,9 @@ export class WebMap extends HTMLMapElement {
   }
   locate(options){
     if (this._map) {
+      if (this._geolocationButton) {
+        this._geolocationButton.stop();
+      }
       if (options) {
         if (options.zoomTo) {
           options.setView = options.zoomTo;
