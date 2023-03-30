@@ -1033,8 +1033,19 @@ export var Util = {
 
               let geoms = geom.children;
               Array.from(geoms).forEach((g) => {
+                // remove all map-span, map-a that may be present in geometry-collection 
+                let n = g.nodeName.toUpperCase();
+                if (n === "MAP-SPAN" || n === "MAP-A") {
+                  g = g.cloneNode(true);
+                  [...g.querySelectorAll("map-a, map-span")].forEach(e => e.replaceWith(...e.children));
+                  Array.from(g.children).forEach((i) => {
+                    i = M._geometry2geojson(i, source, dest, options.transform);
+                    json.features[num].geometry.geometries.push(i);
+                  });
+                } else {
                   g = M._geometry2geojson(g, source, dest, options.transform);
                   json.features[num].geometry.geometries.push(g);
+                }
               });
           }
           //going to next feature
