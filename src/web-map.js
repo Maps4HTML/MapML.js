@@ -397,7 +397,7 @@ export class WebMap extends HTMLMapElement {
       totalSize += 49;
       this._fullScreenControl = M.fullscreenButton().addTo(this._map);
     }
-    if (!this._geolocationButton){
+    if (!this._geolocationButton) {
       this._geolocationButton = M.geolocationButton(this._map);
     }
   }
@@ -745,22 +745,22 @@ export class WebMap extends HTMLMapElement {
       }
     });   
   }
-  locate(options){
-    if (this._map) {
-      if (this._geolocationButton) {
-        this._geolocationButton.stop();
+
+  locate(options) {
+    if (this._geolocationButton) {
+      this._geolocationButton.stop();
+    }
+    if (options) {
+      if (options.zoomTo) {
+        options.setView = options.zoomTo;
+        delete options.zoomTo;
       }
-      if (options) {
-        if (options.zoomTo) {
-          options.setView = options.zoomTo;
-          delete options.zoomTo;
-        }
-        this._map.locate(options);
-      } else {
-        this._map.locate({setView: true, maxZoom: 16});
-      }
+      this._map.locate(options);
+    } else {
+      this._map.locate({setView: true, maxZoom: 16});
     }
   }
+
   toggleDebug(){
     if(this._debug){
       this._debug.remove();

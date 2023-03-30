@@ -68,7 +68,3 @@ test.describe("Locate Button Test", () => {
     expect(locateButton_title3).toEqual("Show my location - last known location shown");
   });
 });
-
-
-
-      

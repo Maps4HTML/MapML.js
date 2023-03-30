@@ -91,7 +91,3 @@ test.describe("Locate API Test", () => {
     expect(locateAPI_lng).toEqual("-73.6"); 
   });
 });
-
-
-
-      
