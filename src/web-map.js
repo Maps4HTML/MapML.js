@@ -398,16 +398,7 @@ export class WebMap extends HTMLMapElement {
       this._fullScreenControl = M.fullscreenButton().addTo(this._map);
     }
     if (!this._geolocationButton){
-      this._geolocationButton = M.geolocationButton({
-        showPopup: false,
-        strings: {
-          title: M.options.locale.btnLocTrackOff 
-        },
-        position: "bottomright",
-        locateOptions: {
-          maxZoom: 16
-        },
-      },this._map);
+      this._geolocationButton = M.geolocationButton(this._map);
     }
   }
 

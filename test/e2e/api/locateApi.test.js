@@ -61,6 +61,35 @@ test.describe("Locate API Test", () => {
     });
     expect(error).toEqual("Your location could not be determined.");
   });
+
+  test("Testing API when the button is used", async () => {
+    await page.reload();
+    await page.click("body > mapml-viewer");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+
+    await page.keyboard.press("Enter");
+    
+    await page.mouse.move(600, 300);
+    await page.mouse.down();
+    await page.mouse.move(1200, 450, {steps: 5}); 
+    await page.mouse.up();
+    await page.$eval("body > mapml-viewer",(viewer) => viewer.locate());
+
+    let locateAPI_lat = await page.$eval("body > mapml-viewer", (viewer) => viewer.lat);
+    let locateAPI_lng = await page.$eval("body > mapml-viewer", (viewer) => viewer.lon);
+
+    locateAPI_lat = parseFloat(locateAPI_lat).toFixed(1);
+    locateAPI_lng  = parseFloat(locateAPI_lng).toFixed(1);
+
+    expect(locateAPI_lat).toEqual("45.5");
+    expect(locateAPI_lng).toEqual("-73.6"); 
+  });
 });
 
 

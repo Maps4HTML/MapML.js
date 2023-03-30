@@ -63,7 +63,7 @@ test.describe("Locate Button Test", () => {
     await page.mouse.move(1200, 450, {steps: 5}); 
     await page.mouse.up();
     await page.click("body > mapml-viewer");
-    await page.pause();
+    
     let locateButton_title3 = await page.$eval("div > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div > a", (button) => button.title);
     expect(locateButton_title3).toEqual("Show my location - last known location shown");
   });
