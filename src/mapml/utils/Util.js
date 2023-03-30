@@ -841,8 +841,8 @@ export var Util = {
     return json;
   },
 
-  // Converts a geometry element to geojson, helper function
-  //    for mapml2geojson
+  // Converts a geometry element (el) to geojson, helper function
+  //    for mapml2geojson, NOTE - el can not be a map-geometrycollection
   // _geometry2geojson: (child of <map-geometry>), Proj4, Proj4, Bool -> geojson
   _geometry2geojson: function (el, source, dest, transform) {
     // remove map-a, map-span elements if the geometry is wrapped in them
@@ -1033,7 +1033,7 @@ export var Util = {
 
               let geoms = geom.children;
               Array.from(geoms).forEach((g) => {
-                // remove all map-span, map-a that may be present in geometry-collection 
+                // omit all map-span, map-a that may be present in geometry-collection 
                 let n = g.nodeName.toUpperCase();
                 if (n === "MAP-SPAN" || n === "MAP-A") {
                   g = g.cloneNode(true);
