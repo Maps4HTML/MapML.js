@@ -134,5 +134,17 @@ test("transform is false", async () => {
   expect(out9).toEqual(exp9);
 });
 
+test("map-geometrycollection wrapped in map-a", async () => {
+  const out10 = await page.$eval(
+    "body > p#json10",
+    (p) => JSON.parse(p.innerHTML)
+  );
+  const exp10 = await page.$eval(
+     "body > p#exp10",
+     (p) => JSON.parse(p.innerHTML)
+   );
+  expect(out10).toEqual(exp10);
+});
+
 });
 
