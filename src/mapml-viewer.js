@@ -277,7 +277,7 @@ export class MapViewer extends HTMLElement {
         projection: this.projection,
         query: true,
         contextMenu: true,
-        meaningfulPanZoom: true,
+        announceMovement: M.options.announceMovement,
         featureIndex: true,
         mapEl: this,
         crs: M[this.projection],

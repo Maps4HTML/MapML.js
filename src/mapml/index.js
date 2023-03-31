@@ -55,14 +55,13 @@ import { ReloadButton, reloadButton } from './control/ReloadButton';
 import { ScaleBar, scaleBar } from './control/ScaleBar';
 import { FullscreenButton, fullscreenButton } from './control/FullscreenButton';
 import { attributionControl } from "./control/AttributionControl";
-import {attributionControl} from "./control/AttributionControl"; 
 import {geolocationButton} from "./control/GeolocationButton";
 import { Crosshair, crosshair } from "./layers/Crosshair";
 import { Feature, feature } from "./features/feature";
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
 import { FeatureGroup, featureGroup} from './features/featureGroup';
-import { PanZoomHandler } from "./handlers/PanZoom";
-import { AnnounceScale,announceScale } from "./control/AnnounceScale";
+import {AnnounceMovement} from "./handlers/AnnounceMovement";
+import {AnnounceScale,announceScale} from "./control/AnnounceScale";
 import { FeatureIndex } from "./handlers/FeatureIndex";
 import { Options } from "./options";
 import "./keyboard";
@@ -622,7 +621,7 @@ M.mapml2geojson = Util.mapml2geojson;
 
 M.QueryHandler = QueryHandler;
 M.ContextMenu = ContextMenu;
-M.PanZoomHandler = PanZoomHandler;
+M.AnnounceMovement = AnnounceMovement;
 M.announceScale = announceScale;
 M.AnnounceScale = AnnounceScale;
 M.FeatureIndex = FeatureIndex;
@@ -630,7 +629,7 @@ M.FeatureIndex = FeatureIndex;
 // see https://leafletjs.com/examples/extending/extending-3-controls.html#handlers
 L.Map.addInitHook('addHandler', 'query', M.QueryHandler);
 L.Map.addInitHook('addHandler', 'contextMenu', M.ContextMenu);
-L.Map.addInitHook('addHandler', 'meaningfulPanZoom', M.PanZoomHandler);
+L.Map.addInitHook('addHandler', 'announceMovement', M.AnnounceMovement);
 L.Map.addInitHook('addHandler', 'featureIndex', M.FeatureIndex);
 
 M.MapMLLayer = MapMLLayer;

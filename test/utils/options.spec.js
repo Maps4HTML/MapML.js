@@ -1,5 +1,5 @@
 describe("M.Options Tests", () => {
-  test("M.options.announceZoom default set", async () => {
-    await expect(M.options.announceZoom).toEqual(false);
+  test("M.options.announceMovement default set", async () => {
+    await expect(M.options.announceMovement).toEqual(false);
   });
 });
