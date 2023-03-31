@@ -1,16 +1,14 @@
 export var SearchBar = L.Control.extend({
 
 	options: {
-		// @option collapsed: Boolean = true
-		// If `true`, the control will be collapsed into an icon and expanded on mouse hover, touch, or keyboard activation.
-		collapsed: true,
-		position: 'topright'
+		position: 'topleft'
 	},
 
     onAdd: function(map) {
 		this._initLayout();
 		this._map = map;
-		L.DomEvent.on(this._container.getElementsByTagName("a")[0], 'keydown', this._focusSearchBar, this._container);
+
+		L.DomEvent.on(this._button, 'click', this.search, this);
 
 		// get a list of layers that are searchable
 		this.searchableLayers = [];
@@ -19,74 +17,18 @@ export var SearchBar = L.Control.extend({
     },
 
     onRemove: function(map) {
-        // Nothing to do here
+		L.DomEvent.off(this._button);
     },
 
-	// Expand the control container if collapsed.
-	expand() {
-		this._container.classList.add('leaflet-control-layers-expanded');
-		this._section.style.height = null;
-		return this;
-	},
-
-	// @method collapse(): this
-	// Collapse the control container if expanded.
-	collapse() {
-		if (this._suggestion.childElementCount === 0) {
-			this._container.classList.remove('leaflet-control-layers-expanded');
-		}
-		return this;
-	},
-
 	_initLayout() {
-		const className = 'leaflet-control-layers',
+		const className = 'mapml-search-control',
 		    container = this._container = L.DomUtil.create('div', className),
-		    collapsed = this.options.collapsed;
-
-		// makes this work on IE touch devices by stopping it from firing a mouseout event when the touch is released
-		container.setAttribute('aria-haspopup', true);
-
-		L.DomEvent.disableClickPropagation(container);
-		L.DomEvent.disableScrollPropagation(container);
-
-		const section = this._section = L.DomUtil.create('div', `${className}-list`);
-
-		if (collapsed) {
-			this._map.on('click', this.collapse, this);
-
-			L.DomEvent.on(container, {
-				mouseenter: this._expandSafely,
-				mouseleave: this.collapse
-			}, this);
-		}
-
-		const link = this._layersLink = L.DomUtil.create('a', `leaflet-control-search-toggle`, container);
-		link.href = '#';
-		link.title = 'Layers';
-		link.setAttribute('role', 'button');
-
-		L.DomEvent.on(link, {
-			keydown(e) {
-				if (e.code === 'Enter') {
-					this._expandSafely();
-				}
-			},
-			// Certain screen readers intercept the key event and instead send a click event
-			click(e) {
-				L.DomEvent.preventDefault(e);
-				this._expandSafely();
-			}
-		}, this);
-
-		if (!collapsed) {
-			this.expand();
-		}
+			section = this._section = L.DomUtil.create('div', `${className}-section`);
 
 		this._input = L.DomUtil.create('input', `${className}-input`, section);
 		this._input.setAttribute("list", "suggestions"); // connect to datalist
-        this._input.type = 'text';
+        this._input.type = 'search';
         this._input.size = '15';
-		this._input.style.margin='10px';
 		this._input.onkeyup = (e)=> {
 			if (e.code === 'Enter') {
 				this.search();
@@ -97,11 +39,15 @@ export var SearchBar = L.Control.extend({
 
 		this._createSuggestions();
 
+		this._button = L.DomUtil.create('input', `${className}-button`, section);
+		this._button.type = 'button';
+		this._button.value = 'Search';
+		
 		container.appendChild(section);
 	},
 
 	search() {
-		let input = this._container.querySelector('.leaflet-control-layers-input');
+		let input = this._input;
 		this._updateSearchableLayers(input.value);
 
 		// TODO - search through all layers when multiple searchable layers present, 
@@ -184,12 +130,6 @@ export var SearchBar = L.Control.extend({
 		}
 	},
 
-	_focusSearchBar(e) {
-		if (e.key === 'Enter') {
-			this.querySelector("input").focus();
-		}
-	},
-
 	parseLink(template, val) {
 		let link = template.template;
 		let inpName = template.values[0].getAttribute("name");
@@ -218,15 +158,6 @@ export var SearchBar = L.Control.extend({
 	clearItems() {
 		this._suggestion.innerHTML = '';
 		this._items = [];
-	},
-
-	_expandSafely() {
-		const section = this._section;
-		L.DomEvent.on(section, 'click', L.DomEvent.preventDefault);
-		this.expand();
-		setTimeout(() => {
-			L.DomEvent.off(section, 'click', L.DomEvent.preventDefault);
-		});
 	}
 });
 
