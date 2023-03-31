@@ -1,8 +1,8 @@
-export var PanZoomHandler = L.Handler.extend({
+export var AnnounceMovement = L.Handler.extend({
     addHooks: function () {
         this._map.on({
             layeradd: this.totalBounds,
-            layerremove: this.totalBounds
+            layerremove: this.totalBounds,
         });
 
         this._map.options.mapEl.addEventListener('moveend', this.announceBounds);
@@ -12,7 +12,7 @@ export var PanZoomHandler = L.Handler.extend({
     removeHooks: function () {
         this._map.off({
             layeradd: this.totalBounds,
-            layerremove: this.totalBounds
+            layerremove: this.totalBounds,
         });
 
         this._map.options.mapEl.removeEventListener('moveend', this.announceBounds);
