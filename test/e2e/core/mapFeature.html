@@ -41,8 +41,8 @@
         }
     </map-style>
     <map-link id="forth" rel="stylesheet" type="text/css" href="forth.css"></map-link>
-    <map-feature zoom="2" class="refDiff">
-      <map-featurecaption>Accessible Square</map-featurecaption>
+    <map-feature zoom="2" class="button">
+      <map-featurecaption>feature, role='button'</map-featurecaption>
       <map-properties>
         <h1>Test</h1>
         <a href="www.example.com">test</a>
@@ -54,8 +54,8 @@
       </map-geometry>
     </map-feature>
 
-    <map-feature zoom="2" class="refDiff">
-      <map-featurecaption>Inplace</map-featurecaption>
+    <map-feature zoom="2" class="table">
+      <map-featurecaption>feature with table properties</map-featurecaption>
       <map-properties>
         <table>
           <tr>
@@ -82,8 +82,8 @@
       </map-geometry>
     </map-feature>
 
-    <map-feature zoom="2" class="refDiff">
-      <map-featurecaption>Inplace</map-featurecaption>
+    <map-feature zoom="2" class="link">
+      <map-featurecaption>feature, role='link'</map-featurecaption>
       <map-geometry cs="tcrs">
         <map-a href="cbmtgeom.mapml" target="_blank">
           <map-geometrycollection>
@@ -99,10 +99,78 @@
         </map-a>
       </map-geometry>
     </map-feature>
+
+    <map-feature zoom="2" class="point_1">
+      <map-featurecaption>Point, zoom = 2</map-featurecaption>
+      <map-geometry cs="tcrs">
+        <map-a href="cbmtgeom.mapml" target="_blank">
+          <map-geometrycollection>
+            <map-a href="fdi.mapml" target="_blank" inplace>
+              <map-point>
+                <map-coordinates>2745 3218</map-coordinates>
+              </map-point>
+            </map-a>
+          </map-geometrycollection>
+        </map-a>
+      </map-geometry>
+    </map-feature>
+
+    <map-feature class="point_2">
+      <map-featurecaption>Point, with no zoom attribute</map-featurecaption>
+      <map-geometry cs="pcrs">
+        <map-a href="cbmtgeom.mapml" target="_blank">
+          <map-geometrycollection>
+            <map-a href="fdi.mapml" target="_blank" inplace>
+              <map-point>
+                <map-coordinates>1658335.1282702535 -3261543.4764202833</map-coordinates>
+              </map-point>
+            </map-a>
+          </map-geometrycollection>
+        </map-a>
+      </map-geometry>
+    </map-feature>
+
+    <map-feature zoom="2" class="refDiff">
+      <map-featurecaption>topLeft point, zoom = 2</map-featurecaption>
+      <map-geometry cs="pcrs">
+        <map-a href="cbmtgeom.mapml" target="_blank">
+            <map-a href="fdi.mapml" target="_blank" inplace>
+              <map-point>
+                <map-coordinates>-35001.59173651785 -1568206.756413512</map-coordinates>
+              </map-point>
+            </map-a>
+        </map-a>
+      </map-geometry>
+    </map-feature>
+
+    <map-feature zoom="25" class="refDiff">
+      <map-featurecaption>bottomRight, zoom = maxZoom</map-featurecaption>
+      <map-geometry cs="pcrs">
+        <map-a href="cbmtgeom.mapml" target="_blank">
+            <map-a href="fdi.mapml" target="_blank" inplace>
+              <map-point>
+                <map-coordinates>1658343.59495385 -3261551.9431038797</map-coordinates>
+              </map-point>
+            </map-a>
+        </map-a>
+      </map-geometry>
+    </map-feature>
+
+    <map-feature zoom="25" class="refDiff">
+      <map-featurecaption>topLeft, zoom = maxZoom</map-featurecaption>
+      <map-geometry cs="pcrs">
+        <map-a href="cbmtgeom.mapml" target="_blank">
+            <map-a href="fdi.mapml" target="_blank" inplace>
+              <map-point>
+                <map-coordinates>1658326.6615866497 -3261535.0097366795</map-coordinates>
+              </map-point>
+            </map-a>
+        </map-a>
+      </map-geometry>
+    </map-feature>
   </layer->
   <layer- label="vector states" src="data/us_pop_density.mapml"></layer->
 </map>
-
 </body>
 
 </html>

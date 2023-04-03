@@ -1035,5 +1035,40 @@ export var Util = {
       });
 
       return json;
+  },
+
+  getMaxZoom: function (bound, map, minZoom, maxZoom) {
+    if(!bound) return;
+
+    let newZoom = map.getZoom(),                                                                                                                                                                 
+        scale = map.options.crs.scale(newZoom),
+        mapCenterTCRS = map.options.crs.transformation.transform(bound.getCenter(true), scale);
+
+    let mapHalf = map.getSize().divideBy(2),
+        mapTlNew = mapCenterTCRS.subtract(mapHalf).round(),
+        mapBrNew = mapCenterTCRS.add(mapHalf).round();
+
+    let mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection),
+        mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
+
+    let mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew),
+        zOffset = mapPCRS.contains(bound) ? 1 : -1;
+
+    while((zOffset === -1 && !(mapPCRS.contains(bound)) && (newZoom - 1) >= minZoom)  ||
+          (zOffset === 1 && mapPCRS.contains(bound) && (newZoom + 1) <= maxZoom)) {
+      newZoom += zOffset;
+      scale = map.options.crs.scale(newZoom);
+      mapCenterTCRS = map.options.crs.transformation.transform(bound.getCenter(true), scale);
+
+      mapTlNew = mapCenterTCRS.subtract(mapHalf).round();
+      mapBrNew = mapCenterTCRS.add(mapHalf).round();
+      mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection);
+      mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
+
+      mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
+    }
+
+    if(zOffset === 1 && newZoom - 1 >= 0 && !(newZoom === maxZoom && mapPCRS.contains(bound))) newZoom--;
+    return newZoom;
   }
 };

@@ -1,6 +1,6 @@
 export class MapFeature extends HTMLElement {
     static get observedAttributes() {
-      return ['zoom'];
+      return ['zoom', 'onfocus', 'onclick', 'onblur'];
     }
 
     get zoom() {
@@ -36,6 +36,11 @@ export class MapFeature extends HTMLElement {
           }
           break;
         }
+        case 'onfocus': 
+        case 'onclick':
+        case 'onblur':
+          this._groupEl[name] = this[name];
+          break;
       }
     }
 
@@ -90,12 +95,18 @@ export class MapFeature extends HTMLElement {
       } else if (!this._featureGroup) {
         this._redraw();
       }
+
+      this._groupEl.addEventListener('keydown', (e) => {
+        // backspace / delete
+        if (e.keyCode === 8 || e.keyCode === 46) {
+          this._remove();
+        }
+      });
     }
       
     disconnectedCallback() {
       if(this._layerParent._layerEl.hasAttribute("data-moving")) return;
       this._remove();
-      this._observer.disconnect();
     }
 
     _remove() {
@@ -127,6 +138,7 @@ export class MapFeature extends HTMLElement {
       }
       delete this._featureGroup;
       delete this._groupEl;
+      this._observer.disconnect();
     }
 
     // re-add / update features
@@ -148,7 +160,7 @@ export class MapFeature extends HTMLElement {
 
     _getNative(content) {
       let nativeZoom, nativeCS;
-      if (content.nodeName.toUpperCase() === "LAYER-") {
+      if (!content || content.nodeName.toUpperCase() === "LAYER-") {
         let layerEl = this._layerParent._layerEl;
         let zoomMeta = layerEl.querySelectorAll('map-meta[name=zoom]'),
             zoomLength = zoomMeta?.length;
@@ -225,6 +237,8 @@ export class MapFeature extends HTMLElement {
       let map = this._map,
           geometry = this.querySelector('map-geometry'),
           cs = geometry.getAttribute('cs') || this._getNative(this._layerParent._content).cs,
+          // zoom level that the feature rendered at
+          zoom = this.zoom || this._getNative(this._layerParent._content).zoom,
           shapes = geometry.querySelectorAll("map-point, map-linestring, map-polygon, map-multipoint, map-multilinestring"),
           bboxExtent = [Infinity, Infinity, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY];
       for (let shape of shapes) {
@@ -235,16 +249,18 @@ export class MapFeature extends HTMLElement {
       }
       let topLeft = L.point(bboxExtent[0], bboxExtent[1]);
       let bottomRight = L.point(bboxExtent[2], bboxExtent[3]);
-      let pcrsBound = M.boundsToPCRSBounds(L.bounds(topLeft, bottomRight), map.getZoom(), map.options.projection, cs);
+      let pcrsBound = M.boundsToPCRSBounds(L.bounds(topLeft, bottomRight), zoom, map.options.projection, cs);
       if (shapes.length === 1 && shapes[0].tagName.toUpperCase() === "MAP-POINT") {
-        let tileCenter = M[map.options.projection].options.crs.tile.bounds.getCenter();
-        pcrsBound.min = pcrsBound.min.subtract(tileCenter);
-        pcrsBound.max = pcrsBound.max.add(tileCenter);
+        let projection = map.options.projection,
+            maxZoom = M[projection].options.resolutions.length - 1,
+            tileCenter = M[projection].options.crs.tile.bounds.getCenter(),
+            pixel = M[projection].transformation.transform(pcrsBound.min, M[projection].scale(+this.zoom || maxZoom));
+        pcrsBound = M.pixelToPCRSBounds(L.bounds(pixel.subtract(tileCenter), pixel.add(tileCenter)), this.zoom || maxZoom, projection);
       }
       return M._convertAndFormatPCRS(pcrsBound, map);
 
       function _updateExtent(shape, coord) {
-        let data = coord.innerHTML.trim().split(/[<>\ ]/g);
+        let data = coord.innerHTML.trim().replace(/<[^>]+>/g, '').split(/[<>\ ]/g);
         switch (shape.tagName) {
           case "MAP-POINT":
             bboxExtent = M._updateExtent(bboxExtent, +data[0], +data[1]);
@@ -260,6 +276,13 @@ export class MapFeature extends HTMLElement {
           default:
             break;
         }
+      }
+    }
+
+    _pasteFeature(text, layerToAdd) {
+      text.trim();
+      if (layerToAdd && text.slice(0,12) === "<map-feature" && text.slice(-14) === "</map-feature>") {
+        layerToAdd.insertAdjacentHTML("beforeend", text);
       }
     }
 
@@ -292,7 +315,7 @@ export class MapFeature extends HTMLElement {
         if (properties && this.isConnected) {
           let featureGroup = this._featureGroup,
               shapes = featureGroup._layers;
-          // close popup if the popup is currently shown
+          // close popup if the popup is currently open
           for (let id in shapes) {
             if (shapes[id].isPopupOpen()) {
               shapes[id].closePopup();
@@ -309,14 +332,6 @@ export class MapFeature extends HTMLElement {
     
     focus(event) {
       let g = this._groupEl;
-      if (!event) {
-        let rect = g.getBoundingClientRect();
-        event = new MouseEvent ("mousedown", {
-          clientX: rect.x + rect.width / 2,
-          clientY: rect.y + rect.height / 2,
-          button: 0,
-        });
-      }
       if (typeof this.onfocus === 'function') {
         this.onfocus.call(this, event);
         return;
@@ -325,47 +340,27 @@ export class MapFeature extends HTMLElement {
       }
     }
 
-    _getMaxZoom(extent) {
-      if(!extent) return;
-      let layer = this._layerParent;
-      let map = this._map,
-          tL = extent.topLeft.pcrs,
+    blur(event) {
+      if (typeof this.onblur === 'function') {
+        this.onblur.call(this, event);
+      } else if (document.activeElement.shadowRoot?.activeElement === this._groupEl || 
+                 document.activeElement.shadowRoot?.activeElement.parentNode === this._groupEl) {
+        this._groupEl.blur();
+        // set focus to the map container
+        this._map._container.focus();
+      }
+    }
+
+    zoomTo() {
+      let extent = this.extent,
+          map = this._map;
+      let tL = extent.topLeft.pcrs,
           bR = extent.bottomRight.pcrs,
           bound = L.bounds(L.point(tL.horizontal, tL.vertical), L.point(bR.horizontal, bR.vertical)),
-          center = map.options.crs.unproject(bound.getCenter(true)),
-          newZoom = map.getZoom();
-
-      let maxZoom = layer._layerEl.extent.zoom.maxZoom, 
-          minZoom = layer._layerEl.extent.zoom.minZoom;                                                                                                                                                                   
-
-      let scale = map.options.crs.scale(newZoom),
-          mapCenterTCRS = map.options.crs.transformation.transform(bound.getCenter(true), scale);
-
-      let mapHalf = map.getSize().divideBy(2),
-          mapTlNew = mapCenterTCRS.subtract(mapHalf).round(),
-          mapBrNew = mapCenterTCRS.add(mapHalf).round();
-
-      let mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection),
-          mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
-
-      let mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew),
-          zOffset = mapPCRS.contains(bound) ? 1 : -1;
-
-      while((zOffset === -1 && !(mapPCRS.contains(bound)) && (newZoom - 1) >= minZoom)  ||
-            (zOffset === 1 && mapPCRS.contains(bound) && (newZoom + 1) <= maxZoom)) {
-        newZoom += zOffset;
-        scale = map.options.crs.scale(newZoom);
-        mapCenterTCRS = map.options.crs.transformation.transform(bound.getCenter(true), scale);
-
-        mapTlNew = mapCenterTCRS.subtract(mapHalf).round();
-        mapBrNew = mapCenterTCRS.add(mapHalf).round();
-        mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection);
-        mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
-
-        mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
-      }
-
-      if(zOffset === 1 && newZoom - 1 >= 0) newZoom--;
-      map.setView(center, newZoom, {animate: false});
+          center = map.options.crs.unproject(bound.getCenter(true));
+      let layerEl = this._layerParent._layerEl,
+          minZoom = layerEl.extent.zoom.minZoom,
+          maxZoom = layerEl.extent.zoom.maxZoom;
+      map.setView(center, M.getMaxZoom(bound, map, minZoom, maxZoom), {animate: false});
     }
   }
