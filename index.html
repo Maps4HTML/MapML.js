@@ -75,6 +75,19 @@
     <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls>
       <map-caption>A pleasing map of Canada</map-caption>
       <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
+      <!--Removing this layer should hide the search control-->
+      <layer- label="Search Layer" checked>
+        <map-extent units="CBMTILE">
+          <map-input name="s" type="search"></map-input>
+          <map-link rel="search" tref="https://geogratis.gc.ca/mapml/en/cbmtile/{s}/"></map-link><!--https://geogratis.gc.ca/mapml/en/cbmtile/{s}/-->
+          <map-link rel="searchSuggestion" query="place_id" desc="display_name" tref="https://nominatim.openstreetmap.org/search.php?q={s}&format=jsonv2"></map-link>
+        </map-extent>
+      </layer->
+
+      <!--https://nominatim.openstreetmap.org/search.php?q=waterloo&polygon_geojson=1&format=jsonv2
+          https://nominatim.openstreetmap.org/search.php?q=waterloo&format=jsonv2
+          https://nominatim.openstreetmap.org/ui/search.html?q=waterloo
+        -->
     </mapml-viewer>
   </body>
 </html>

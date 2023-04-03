@@ -187,25 +187,28 @@ test.describe("mapml-viewer DOM API Tests", () => {
     await page.evaluateHandle((viewer) => viewer.setAttribute("controls", ""), viewerHandle);
     await page.evaluateHandle( (viewer) => document.body.appendChild(viewer), viewerHandle);
 
-    let leftControlCount = await page.$eval(".leaflet-top.leaflet-left", (div) => div.childElementCount);
-    expect(leftControlCount).toBe(2);
-
     let zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
     let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+    let searchHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-search-control", (div) => div.hidden);
     expect(zoomHidden).toEqual(false);
     expect(reloadHidden).toEqual(false);
+    expect(searchHidden).toEqual(true);
     
     await page.evaluate( viewer => viewer.removeAttribute("controls"), viewerHandle);
     zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
     reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+    searchHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-search-control", (div) => div.hidden);
     expect(zoomHidden).toEqual(true);
     expect(reloadHidden).toEqual(true);
+    expect(searchHidden).toEqual(true);
     
     await page.evaluate( viewer => viewer.setAttribute("controls",""), viewerHandle);
     zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
     reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+    searchHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-search-control", (div) => div.hidden);
     expect(zoomHidden).toEqual(false);
     expect(reloadHidden).toEqual(false);
+    expect(searchHidden).toEqual(true);
     
     // remove map for next test
     await page.evaluateHandle(() => document.querySelector('mapml-viewer').remove());

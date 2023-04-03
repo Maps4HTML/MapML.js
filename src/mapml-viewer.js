@@ -134,7 +134,7 @@ export class MapViewer extends HTMLElement {
     this._controlsList = new DOMTokenList(
       this.getAttribute("controlslist"),
       this, "controlslist", 
-      ["noreload","nofullscreen","nozoom","nolayer"]
+      ["noreload","nofullscreen","nozoom","nolayer","nosearch"]
     );
 
     // the dimension attributes win, if they're there. A map does not
@@ -354,6 +354,9 @@ export class MapViewer extends HTMLElement {
       totalSize += 49;
       this._fullScreenControl = M.fullscreenButton().addTo(this._map);
     }
+    if (!this._searchBar) {
+      this._searchBar = M.searchBar().addTo(this._map);
+    }
   }
   
   // Sets controls by hiding/unhiding them based on the map attribute
@@ -372,12 +375,17 @@ export class MapViewer extends HTMLElement {
     this._setControlsVisibility("layercontrol",true);
     this._setControlsVisibility("reload",true);
     this._setControlsVisibility("zoom",true);
+    this._setControlsVisibility("search",true);
   }
   _showControls() {
     this._setControlsVisibility("fullscreen",false);
     this._setControlsVisibility("layercontrol",false);
     this._setControlsVisibility("reload",false);
     this._setControlsVisibility("zoom",false);
+    // show search control, if any layer is searchable
+    if (this._searchBar?.searchableLayers.length > 0) {
+      this._setControlsVisibility("search",false); 
+    }
       
     // prune the controls shown if necessary
     // this logic could be embedded in _showControls
@@ -398,11 +406,17 @@ export class MapViewer extends HTMLElement {
           case 'nozoom':
             this._setControlsVisibility("zoom",true);
           break;
+          case 'nosearch':
+            this._setControlsVisibility("search",true);
+          break;
         }
       });
     }
-    if (this._layerControl && this._layerControl._layers.length === 0) {
+    if (this._layerControl?._layers.length === 0) {
       this._layerControl._container.setAttribute("hidden","");
+      if (this._searchBar) {
+        this._setControlsVisibility("search",true);
+      }
     }
   }
 
@@ -429,6 +443,11 @@ export class MapViewer extends HTMLElement {
       case "layercontrol":
         if (this._layerControl) {
           container = this._layerControl._container;
+        }
+        break;
+      case "search":
+        if (this._searchBar) {
+          container = this._searchBar._container;
         }
         break;
     }
