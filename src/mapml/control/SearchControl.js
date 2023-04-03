@@ -25,6 +25,7 @@ export var SearchBar = L.Control.extend({
 		    container = this._container = L.DomUtil.create('div', className),
 			section = this._section = L.DomUtil.create('div', `${className}-section`);
 
+		// TODO - Create a label for the search input
 		this._input = L.DomUtil.create('input', `${className}-input`, section);
 		this._input.setAttribute("list", "suggestions"); // connect to datalist
         this._input.type = 'search';
@@ -41,7 +42,7 @@ export var SearchBar = L.Control.extend({
 
 		this._button = L.DomUtil.create('input', `${className}-button`, section);
 		this._button.type = 'button';
-		this._button.value = 'Search';
+		this._button.title = 'Search';
 		
 		container.appendChild(section);
 	},
