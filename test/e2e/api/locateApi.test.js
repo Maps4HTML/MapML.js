@@ -72,8 +72,6 @@ test.describe("Locate API Test", () => {
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
-
-    await page.keyboard.press("Enter");
     
     await page.mouse.move(600, 300);
     await page.mouse.down();
