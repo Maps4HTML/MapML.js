@@ -193,29 +193,6 @@ export class MapViewer extends HTMLElement {
         }
       }, 0);
     }
-
-    let scaleObserve = this.shadowRoot.querySelector(".mapml-accessible-scalebar");
-    let scaleTarget = this.shadowRoot.querySelector(".mapml-screen-reader-output-scale");
-    let focusScale = this.shadowRoot.querySelector(".leaflet-container");
-
-    focusScale.addEventListener('focus', () => {
-      setTimeout(() => {
-        scaleTarget.textContent = "";
-        setTimeout(() => {
-          scaleTarget.textContent = scaleObserve.getAttribute('aria-label');
-        }, 50);
-      }, 0);
-    });
-
-    this.scaleObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'aria-label') {
-          scaleTarget.innerHTML = scaleObserve.getAttribute('aria-label');
-        }
-      });
-    });
-
-    this.scaleObserver.observe(scaleObserve, {attributes: true});
   }
   _createShadowRoot() {
     let tmpl = document.createElement('template');
@@ -226,9 +203,6 @@ export class MapViewer extends HTMLElement {
 
     let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
     this._container.insertAdjacentHTML("beforeend", output);
-
-    let outputScale = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output-scale'></output>";
-    this._container.insertAdjacentHTML("beforeend", outputScale);
 
     // Set default styles for the map element.
     let mapDefaultCSS = document.createElement('style');
@@ -297,13 +271,6 @@ export class MapViewer extends HTMLElement {
       this._createControls();
       this._toggleControls();
       this._crosshair = M.crosshair().addTo(this._map);
-
-      let scaleValue = M.options.announceScale;
-
-      if (typeof scaleValue === "string") {
-        scaleValue = JSON.parse(scaleValue);
-      }
-      M.announceScale(scaleValue).addTo(this._map);
 
       if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
 

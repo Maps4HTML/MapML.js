@@ -195,29 +195,6 @@ export class WebMap extends HTMLMapElement {
         }
       }, 0);
     }
-
-    let scaleObserve = this.querySelector(".mapml-web-map").shadowRoot.querySelector(".mapml-accessible-scalebar");
-    let scaleTarget = this.querySelector(".mapml-web-map").shadowRoot.querySelector(".mapml-screen-reader-output-scale");
-    let focusScale = this.querySelector(".mapml-web-map").shadowRoot.querySelector(".leaflet-container");
-
-    focusScale.addEventListener('focus', () => {
-      setTimeout(() => {
-        scaleTarget.textContent = "";
-        setTimeout(() => {
-          scaleTarget.textContent = scaleObserve.getAttribute('aria-label');
-        }, 50);
-      }, 0);
-    });
-
-    this.scaleObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'aria-label') {
-          scaleTarget.innerHTML = scaleObserve.getAttribute('aria-label');
-        }
-      });
-    });
-
-    this.scaleObserver.observe(scaleObserve, {attributes: true});
   }
   _createShadowRoot() {
     let tmpl = document.createElement('template');
@@ -231,9 +208,6 @@ export class WebMap extends HTMLMapElement {
 
     let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
     this._container.insertAdjacentHTML("beforeend", output);
-
-    let outputScale = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output-scale'></output>";
-    this._container.insertAdjacentHTML("beforeend", outputScale);
 
     // Set default styles for the map element.
     let mapDefaultCSS = document.createElement('style');
@@ -307,13 +281,6 @@ export class WebMap extends HTMLMapElement {
       this._createControls();
       this._toggleControls();
       this._crosshair = M.crosshair().addTo(this._map);
-
-      let scaleValue = M.options.announceScale;
-
-      if (typeof scaleValue === "string") {
-        scaleValue = JSON.parse(scaleValue);
-      }
-      M.announceScale(scaleValue).addTo(this._map);
 
       if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
 
