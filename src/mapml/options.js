@@ -23,8 +23,10 @@ export var Options = {
     btnFullScreen: "View Fullscreen",
     btnExitFullScreen: "Exit Fullscreen",
     btnLocTrackOn: "Show my location - location tracking on",
+    btnMyLocTrackOn: "My current location, shown on map",
     btnLocTrackOff: "Show my location - location tracking off",
     btnLocTrackLastKnown: "Show my location - last known location shown",
+    btnMyLastKnownLocTrackOn: "My last known location, shown on map",
     amZoom: "zoom level",
     amColumn: "column",
     amRow: "row",
@@ -47,6 +49,6 @@ export var Options = {
     kbdZoom: "Zoom in/out 3 levels",
     kbdPrevFeature: "Previous feature",
     kbdNextFeature: "Next feature",
-    dfLayer: "Layer",
+    dfLayer: "Layer"
   }
 };

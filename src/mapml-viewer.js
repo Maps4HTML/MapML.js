@@ -544,10 +544,10 @@ export class MapViewer extends HTMLElement {
       // Check the current state of the control
       if (locateControl.classList.contains('active') && locateControl.classList.contains('following')) {
         locateControl.firstChild.title = M.options.locale.btnLocTrackOn;
-        button._marker.bindTooltip("My location shown on map");
+        button._marker.bindTooltip(M.options.locale.btnMyLocTrackOn);
       } else if (locateControl.classList.contains('active')) {
         locateControl.firstChild.title = M.options.locale.btnLocTrackLastKnown;
-        button._marker.bindTooltip("My most recent location on map");
+        button._marker.bindTooltip(M.options.locale.btnMyLastKnownLocTrackOn);
       } else {
         locateControl.firstChild.title = M.options.locale.btnLocTrackOff;
       }

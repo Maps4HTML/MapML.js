@@ -4,7 +4,7 @@ export var geolocationButton = function (map) {
           L.Util.setOptions(this, options);
           this._latlng = latlng;
           this.createIcon();
-          this.bindTooltip("My location");
+          this.bindTooltip(M.options.locale.btnMyLocTrackOn);
         },
         /**
          * Create a styled circle location marker
