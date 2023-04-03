@@ -60,7 +60,6 @@ import { Feature, feature } from "./features/feature";
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
 import { FeatureGroup, featureGroup} from './features/featureGroup';
 import {AnnounceMovement} from "./handlers/AnnounceMovement";
-import {AnnounceScale,announceScale} from "./control/AnnounceScale";
 import { FeatureIndex } from "./handlers/FeatureIndex";
 import { Options } from "./options";
 import "./keyboard";
@@ -621,8 +620,6 @@ M.mapml2geojson = Util.mapml2geojson;
 M.QueryHandler = QueryHandler;
 M.ContextMenu = ContextMenu;
 M.AnnounceMovement = AnnounceMovement;
-M.announceScale = announceScale;
-M.AnnounceScale = AnnounceScale;
 M.FeatureIndex = FeatureIndex;
 
 // see https://leafletjs.com/examples/extending/extending-3-controls.html#handlers

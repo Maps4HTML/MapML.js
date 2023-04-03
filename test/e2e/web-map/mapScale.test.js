@@ -21,7 +21,7 @@ test.﻿describe("Announce movement test", ()=> {
         await page.waitForTimeout(1000);
 
         const movedUp = await page.$eval(
-            "body > map div > output:nth-child(2)",
+            "body > map div > output:nth-child(7)",
             (output) => output.innerHTML
         );
         expect(movedUp).toEqual("1.7 centimeters to 500 kilometers");
@@ -30,7 +30,7 @@ test.﻿describe("Announce movement test", ()=> {
         await page.waitForTimeout(1000);
 
         const movedUpAgain = await page.$eval(
-            "body > map div > output:nth-child(2)",
+            "body > map div > output:nth-child(7)",
             (output) => output.innerHTML
         );
         expect(movedUpAgain).toEqual("1.7 centimeters to 300 kilometers");
@@ -43,7 +43,7 @@ test.﻿describe("Announce movement test", ()=> {
         await page.waitForTimeout(1000);
 
         const movedUp = await page.$eval(
-            "body > map div > output:nth-child(2)",
+            "body > map div > output:nth-child(7)",
             (output) => output.innerHTML
         );
         expect(movedUp).toEqual("1.7 centimeters to 500 kilometers");
@@ -52,7 +52,7 @@ test.﻿describe("Announce movement test", ()=> {
         await page.waitForTimeout(1000);
 
         const movedUpAgain = await page.$eval(
-            "body > map div > output:nth-child(2)",
+            "body > map div > output:nth-child(7)",
             (output) => output.innerHTML
         );
         expect(movedUpAgain).toEqual("2 centimeters to 1000 kilometers");
