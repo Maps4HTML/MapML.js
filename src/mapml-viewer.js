@@ -412,8 +412,11 @@ export class MapViewer extends HTMLElement {
         }
       });
     }
-    if (this._layerControl && this._layerControl._layers.length === 0) {
+    if (this._layerControl?._layers.length === 0) {
       this._layerControl._container.setAttribute("hidden","");
+      if (this._searchBar) {
+        this._setControlsVisibility("search",true);
+      }
     }
   }
 
