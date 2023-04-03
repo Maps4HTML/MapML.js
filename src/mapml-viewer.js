@@ -556,21 +556,15 @@ export class MapViewer extends HTMLElement {
     this._map.on('locationfound',
       function (e) {
         this.dispatchEvent(new CustomEvent('maplocationfound', {detail:
-          {latlng: e.latlng,     radius: e.accuracy}
+          {latlng: e.latlng,     accuracy: e.accuracy}
          }));
       },this);
-    this.addEventListener('maplocationfound', function(e) {
-      //'Location found:', e.detail.latlng, 'Radius:', e.detail.radius
-    });
     this._map.on('locationerror',
       function (e) {
         this.dispatchEvent(new CustomEvent('locationerror', {detail:
           {error:e.message}
         }));
       },this);
-    this.addEventListener('locationerror', function(e) {
-      //error:e.detail.error
-    });
     this._map.on('load',
       function () {
         this.dispatchEvent(new CustomEvent('load', {detail: {target: this}}));
@@ -703,7 +697,7 @@ export class MapViewer extends HTMLElement {
     });
   }
 
-  locate(options) {
+  locate(options) { //options: https://leafletjs.com/reference.html#locate-options
     if (this._geolocationButton) {
       this._geolocationButton.stop();
     }
