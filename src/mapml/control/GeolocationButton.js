@@ -1,12 +1,10 @@
 export var geolocationButton = function (map) {
     var CustomMarker = L.Marker.extend({
-        options: {
-            title: 'My Location',
-        },
         initialize(latlng, options) {
           L.Util.setOptions(this, options);
           this._latlng = latlng;
           this.createIcon();
+          this.bindTooltip("My location");
         },
         /**
          * Create a styled circle location marker

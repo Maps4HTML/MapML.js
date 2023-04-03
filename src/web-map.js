@@ -582,12 +582,15 @@ export class WebMap extends HTMLMapElement {
       }
     });
     var locateControl = this._geolocationButton._container;
+    var button = this._geolocationButton;
     var observer = new MutationObserver(function(mutations) {
       // Check the current state of the control
       if (locateControl.classList.contains('active') && locateControl.classList.contains('following')) {
         locateControl.firstChild.title = M.options.locale.btnLocTrackOn;
+        button._marker.bindTooltip("My location shown on map");
       } else if (locateControl.classList.contains('active')) {
         locateControl.firstChild.title = M.options.locale.btnLocTrackLastKnown;
+        button._marker.bindTooltip("My most recent location on map");
       } else {
         locateControl.firstChild.title = M.options.locale.btnLocTrackOff;
       }
