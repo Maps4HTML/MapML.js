@@ -284,13 +284,6 @@ export class MapFeature extends HTMLElement {
       }
     }
 
-    _pasteFeature(text, layerToAdd) {
-      text.trim();
-      if (layerToAdd && text.slice(0,12) === "<map-feature" && text.slice(-14) === "</map-feature>") {
-        layerToAdd.insertAdjacentHTML("beforeend", text);
-      }
-    }
-
     // a .click() method that highlights the feature and show popup on map as if doing a click
     click(event) {
       let g = this._groupEl,

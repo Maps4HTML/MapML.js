@@ -359,4 +359,10 @@ export class MapLayer extends HTMLElement {
   mapml2geojson(options = {}){
     return M.mapml2geojson(this, options);
   }
+  _pasteFeature(text) {
+    text.trim();
+    if (text.slice(0,12) === "<map-feature" && text.slice(-14) === "</map-feature>") {
+      this.insertAdjacentHTML("beforeend", text);
+    }
+  }
 }
