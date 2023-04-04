@@ -403,10 +403,10 @@ export class WebMap extends HTMLMapElement {
   _toggleControls() {
     if (this.controls === false) {
       this._hideControls();
-      this._map.contextMenu.toggleContextMenuItem("Controls", "disabled");
+      this._map?.contextMenu.toggleContextMenuItem("Controls", "disabled");
     } else  {
       this._showControls();
-      this._map.contextMenu.toggleContextMenuItem("Controls", "enabled");
+      this._map?.contextMenu.toggleContextMenuItem("Controls", "enabled");
     }
   }
 
