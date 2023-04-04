@@ -8,7 +8,7 @@ export class MapFeature extends HTMLElement {
     }
 
     set zoom(val) {
-      var parsedVal = String.toString(parseInt(val,10));
+      var parsedVal = parseInt(val,10);
       if (!isNaN(parsedVal) && (parsedVal >= 0 && parsedVal <= 25)) {
         this.setAttribute('zoom', parsedVal);
       }
