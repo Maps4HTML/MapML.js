@@ -102,6 +102,10 @@ export class MapFeature extends HTMLElement {
           this._remove();
         }
       });
+
+      ['onclick','onfocus','onblur'].forEach(name => {
+        if (this[name] && typeof this[name] === "function") this._groupEl[name] = this[name];
+      })
     }
       
     disconnectedCallback() {
@@ -138,6 +142,7 @@ export class MapFeature extends HTMLElement {
       }
       delete this._featureGroup;
       delete this._groupEl;
+      if (this.isConnected) this.remove();
       this._observer.disconnect();
     }
 

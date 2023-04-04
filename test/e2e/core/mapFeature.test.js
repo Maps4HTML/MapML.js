@@ -1341,4 +1341,29 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
         );
         expect(isFocused).toEqual(true);
     });
+
+    test("Add event handler via HTML", async () => {
+        const test = await page.$eval(
+            "body > map", 
+            (map) => {
+                let mapFeature = map.querySelector('.event');
+                mapFeature.setAttribute('onfocus', 'test_1()');
+                mapFeature._groupEl.focus();
+                return mapFeature.classList.contains("test_1");
+            }   
+        );
+        expect(test).toEqual(true);
+    });
+
+    test("Add event handler via Script", async () => {
+        const test = await page.$eval(
+            "body > map",
+            (map) => {
+                let mapFeature = map.querySelector('.event');
+                mapFeature._groupEl.blur();
+                return mapFeature.classList.contains('test_2');
+            }
+        );
+        expect(test).toEqual(true);
+    })
 })

@@ -168,9 +168,32 @@
         </map-a>
       </map-geometry>
     </map-feature>
+
+    <map-feature zoom="2" class="event">
+      <map-properties>
+        <h1>Event handler test</h1>
+      </map-properties>
+      <map-geometry cs="tilematrix">
+        <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/" target="_parent" type="text/html">
+          <map-polygon>
+            <map-coordinates>9 10 10 10 10 11 9 11 9 10</map-coordinates>
+          </map-polygon>
+        </map-a>
+      </map-geometry>
+    </map-feature>
   </layer->
   <layer- label="vector states" src="data/us_pop_density.mapml"></layer->
 </map>
+<script>
+  function test_1 () {
+    document.querySelector('.event').classList.add('test_1');
+  }
+
+  document.querySelector('.event').onblur = function () {
+    // this: mapFeature._groupEl
+    document.querySelector(".event").classList.add('test_2');
+  }
+</script>
 </body>
 
 </html>
