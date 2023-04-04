@@ -105,7 +105,7 @@ export class MapFeature extends HTMLElement {
 
       ['onclick','onfocus','onblur'].forEach(name => {
         if (this[name] && typeof this[name] === "function") this._groupEl[name] = this[name];
-      })
+      });
     }
       
     disconnectedCallback() {
