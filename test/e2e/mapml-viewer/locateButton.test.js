@@ -32,9 +32,11 @@ test.describe("Geolocation control tests", () => {
     let locateButton_lng = await page.$eval("body > mapml-viewer", (viewer) => viewer.lon);
     locateButton_lat = parseFloat(locateButton_lat).toFixed(3);
     locateButton_lng  = parseFloat(locateButton_lng).toFixed(3);
+    let tooltip = await page.$eval("body > mapml-viewer", (viewer) => viewer._geolocationButton._marker._tooltip._content);
 
     expect(locateButton_lat).toEqual("45.503");
     expect(locateButton_lng).toEqual("-73.568");
+    expect(tooltip).toEqual("My current location, shown on map");
     
   });
 
@@ -66,6 +68,8 @@ test.describe("Geolocation control tests", () => {
     await page.mouse.down();
     await page.mouse.move(1200, 450, {steps: 5}); 
     await page.mouse.up();
+    let tooltip = await page.$eval("body > mapml-viewer", (viewer) => viewer._geolocationButton._marker._tooltip._content);
+    expect(tooltip).toEqual("My last known location, shown on map");
     await page.click("body > mapml-viewer");
     
     let locateButton_title3 = await page.$eval("div > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div > a", (button) => button.title);
