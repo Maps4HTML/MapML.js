@@ -168,9 +168,7 @@ export class WebMap extends HTMLMapElement {
       // In particular:
       //   "All applicable event handlers are called and return before dispatchEvent() returns."
       this.dispatchEvent(new CustomEvent('createmap'));
-    }    
-
-    this._toggleControls();
+    }
     this._toggleStatic();
     
     /*
@@ -317,6 +315,7 @@ export class WebMap extends HTMLMapElement {
       this._container.setAttribute('aria-label', 'Interactive map');
 
       this._setUpEvents();
+      this._toggleControls();
     }
   }
   disconnectedCallback() {
@@ -403,10 +402,10 @@ export class WebMap extends HTMLMapElement {
   _toggleControls() {
     if (this.controls === false) {
       this._hideControls();
-      this._map?.contextMenu.toggleContextMenuItem("Controls", "disabled");
+      this._map.contextMenu.toggleContextMenuItem("Controls", "disabled");
     } else  {
       this._showControls();
-      this._map?.contextMenu.toggleContextMenuItem("Controls", "enabled");
+      this._map.contextMenu.toggleContextMenuItem("Controls", "enabled");
     }
   }
 

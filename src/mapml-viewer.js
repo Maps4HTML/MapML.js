@@ -167,7 +167,6 @@ export class MapViewer extends HTMLElement {
     }
     // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
     this.setAttribute('role', 'application');
-    this._toggleControls();
     this._toggleStatic();
 
     /*
@@ -274,6 +273,7 @@ export class MapViewer extends HTMLElement {
       if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
 
       this._setUpEvents();
+      this._toggleControls();
     }
   }
   disconnectedCallback() {
@@ -360,10 +360,10 @@ export class MapViewer extends HTMLElement {
   _toggleControls() {
     if (this.controls === false) {
       this._hideControls();
-      this._map?.contextMenu.toggleContextMenuItem("Controls", "disabled");
+      this._map.contextMenu.toggleContextMenuItem("Controls", "disabled");
     } else  {
       this._showControls();
-      this._map?.contextMenu.toggleContextMenuItem("Controls", "enabled");
+      this._map.contextMenu.toggleContextMenuItem("Controls", "enabled");
     }
   }
 
