@@ -587,7 +587,7 @@ export class WebMap extends HTMLMapElement {
       // Check the current state of the control
       if (locateControl.classList.contains('active') && locateControl.classList.contains('following')) {
         locateControl.firstChild.title = M.options.locale.btnLocTrackOn;
-        button._marker.bindTooltip(M.options.locale.btnMyLocTrackOn);
+        button._marker.bindTooltip(M.options.locale.btnMyLocTrackOn,{permanent:true});
       } else if (locateControl.classList.contains('active')) {
         locateControl.firstChild.title = M.options.locale.btnLocTrackLastKnown;
         button._marker.bindTooltip(M.options.locale.btnMyLastKnownLocTrackOn);
