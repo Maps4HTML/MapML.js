@@ -2,10 +2,10 @@ import { test, expect, chromium } from '@playwright/test';
 
 test.use({ 
   geolocation: { longitude: -73.56766530667056, latitude: 45.5027789304487 },
-  permissions: ['geolocation'],
+  permissions: ['geolocation']
 });
 
-test.describe("Locate Button Test", () => {
+test.describe("Geolocation control tests", () => {
   let page;
   let context;
   test.beforeAll(async function() {
@@ -18,7 +18,7 @@ test.describe("Locate Button Test", () => {
     await context.close();
   });
 
-  test("Using locate button to find myself", async () => {
+  test("Using geolocation control to control map", async () => {
     await page.click("body > mapml-viewer");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
@@ -38,7 +38,7 @@ test.describe("Locate Button Test", () => {
     
   });
 
-  test("Locate button state changes", async () => {
+  test("Geolocation control state changes when pressed", async () => {
     await page.click("body > mapml-viewer");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
@@ -47,14 +47,18 @@ test.describe("Locate Button Test", () => {
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
+    
+    let locationOnText = await page.evaluate(()=>M.options.locale.btnLocTrackOn);
+    let locationOffText = await page.evaluate(()=>M.options.locale.btnLocTrackOff);
+    let lastKnownLocationText = await page.evaluate(()=>M.options.locale.btnLocTrackLastKnown);
 
     let locateButton_title1 = await page.$eval("div > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div > a", (button) => button.title);
 
-    expect(locateButton_title1).toEqual("Show my location - location tracking off");
+    expect(locateButton_title1).toEqual(locationOffText);
     await page.keyboard.press("Enter");
 
     let locateButton_title2 = await page.$eval("div > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div > a", (button) => button.title);
-    expect(locateButton_title2).toEqual("Show my location - location tracking on");
+    expect(locateButton_title2).toEqual(locationOnText);
 
     await page.click("body > mapml-viewer");
     
@@ -65,6 +69,6 @@ test.describe("Locate Button Test", () => {
     await page.click("body > mapml-viewer");
     
     let locateButton_title3 = await page.$eval("div > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div > a", (button) => button.title);
-    expect(locateButton_title3).toEqual("Show my location - last known location shown");
+    expect(locateButton_title3).toEqual(lastKnownLocationText);
   });
 });
