@@ -4,7 +4,7 @@ export var GeolocationButton = L.Control.extend({
   },
 
   onAdd: function (map) {
-    let locateControl = L.control.locate({
+    this.locateControl = L.control.locate({
       showPopup: false,
       strings: {
         title: M.options.locale.btnLocTrackOff 
@@ -15,8 +15,8 @@ export var GeolocationButton = L.Control.extend({
       },
     }).addTo(map);
 
-    var container = locateControl._container;
-    var button = locateControl;
+    var container = this.locateControl._container;
+    var button = this.locateControl;
     var observer = new MutationObserver(function(mutations) {
       if (container.classList.contains('active') && container.classList.contains('following')) {
         container.firstChild.title = M.options.locale.btnLocTrackOn;
@@ -36,6 +36,10 @@ export var GeolocationButton = L.Control.extend({
 
   onRemove: function (map) {
       //
+  },
+
+  stop: function () {
+    return this.locateControl.stop();
   },
 });
 
