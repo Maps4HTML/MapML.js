@@ -5,8 +5,6 @@ export var ScaleBar = L.Control.Scale.extend({
       position: 'bottomleft'
     },
 
-    _container: null,
-
     onAdd: function (map) {
 
       // create output tag for screenreader to read from 
@@ -78,8 +76,7 @@ export var ScaleBar = L.Control.Scale.extend({
         output = `${distance} centimeters to ${scaleLine.textContent.trim()}`;
         output = output.replace(/(\d+)\s*m\b/g, "$1 meters");
         output = output.replace(/ km/g, " kilometers");
-      }
-      else {
+      } else {
         let distance = parseFloat((this._pixelsToDistance(this._scaleLength(scaleLine),"imperial")).toFixed(1));
         output = `${distance} inches to ${scaleLine.textContent.trim()}`;
         output = output.replace(/ft/g, "feet");
@@ -88,7 +85,7 @@ export var ScaleBar = L.Control.Scale.extend({
 
       this._container.setAttribute('aria-label', output);
       this._map._container.querySelector(".mapml-screen-reader-output-scale").textContent = output;
-    },
+    }
   });
 export var scaleBar = function (options) {
 	return new ScaleBar(options);
