@@ -1,6 +1,6 @@
 export var GeolocationButton = L.Control.extend({
   options: {
-      position: 'bottomright',
+      position: 'bottomright'
   },
 
   onAdd: function (map) {
@@ -12,7 +12,7 @@ export var GeolocationButton = L.Control.extend({
       position: this.options.position,
       locateOptions: {
         maxZoom: 16
-      },
+      }
     }).addTo(map);
 
     var container = this.locateControl._container;
@@ -34,13 +34,9 @@ export var GeolocationButton = L.Control.extend({
     return container;
   },
 
-  onRemove: function (map) {
-      //
-  },
-
   stop: function () {
     return this.locateControl.stop();
-  },
+  }
 });
 
 export var geolocationButton = function (options) {
