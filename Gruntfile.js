@@ -9,7 +9,7 @@ module.exports = function(grunt) {
       },
       combine: {
         files: {
-        'dist/mapml.css': ['node_modules/leaflet/dist/leaflet.css', 'src/mapml.css']
+        'dist/mapml.css': ['node_modules/leaflet/dist/leaflet.css', 'node_modules/leaflet.locatecontrol/dist/L.Control.Locate.css', 'node_modules/leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css', 'src/mapml.css']
         }
       }
     },
@@ -31,7 +31,8 @@ module.exports = function(grunt) {
           'dist/layer.js':        ['src/layer.js'],
           'dist/leaflet.js':      ['dist/leaflet-src.js',
                                    'dist/proj4-src.js',
-                                   'dist/proj4leaflet.js']
+                                   'dist/proj4leaflet.js',
+                                   'dist/L.Control.Locate.js']
         } 
       }
     },
@@ -86,6 +87,14 @@ module.exports = function(grunt) {
             flatten: true,
             filter: 'isFile',
             src: ['index.html'],
+            dest: 'dist/'
+          },
+          {
+            expand: true,
+            cwd: 'node_modules/leaflet.locatecontrol/src/',
+            flatten: true,
+            filter: 'isFile',
+            src: ['L.Control.Locate.js'],
             dest: 'dist/'
           }
         ],
@@ -155,7 +164,7 @@ module.exports = function(grunt) {
     },
     clean: {
       dist: ['dist'],
-      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js'],
+      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js','dist/L.Control.Locate.js'],
       experiments: {
         options: {force: true},
         src: ['../experiments/dist']
