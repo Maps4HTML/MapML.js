@@ -41,8 +41,14 @@
 
  /* Scale bar */
  .mapml-control-scale {
-  bottom: 20px;
+  bottom: 10px;
   left: 45px; 
+}
+
+@media (max-width: 768px) {
+  .mapml-control-scale {
+    bottom: 20px;
+  }
 }
  
  /* Generic class for seamless buttons */
