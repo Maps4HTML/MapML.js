@@ -390,7 +390,7 @@ export class WebMap extends HTMLMapElement {
       scaleValue = JSON.parse(scaleValue);
     }
 
-    this._scaleBar = M.scaleBar(scaleValue).addTo(this._map);
+    if (!this._scaleBar) this._scaleBar = M.scaleBar(scaleValue).addTo(this._map);
 
     // Only add controls if there is enough top left vertical space
     if (!this._zoomControl && (totalSize + 93) <= mapSize){
