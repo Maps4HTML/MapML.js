@@ -24,7 +24,7 @@ export class MapFeature extends HTMLElement {
       switch (name) {
         case 'zoom': {
           if (oldValue !== newValue && this._layerParent) {
-            this._remove();
+            this._removeFeature();
             let layer = this._layerParent,
                 layerEl = layer._layerEl,
                 mapmlvectors = layer._mapmlvectors;
@@ -32,15 +32,17 @@ export class MapFeature extends HTMLElement {
               let native = this._getNative(layer._content);
               mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(layerEl.shadowRoot || layerEl, native.zoom);
             }
-            this._redraw();
+            this._updateFeature();
           }
           break;
         }
         case 'onfocus': 
         case 'onclick':
         case 'onblur':
-          this._groupEl[name] = this[name];
-          break;
+          if (this._groupEl) {
+            this._groupEl[name] = this[name];
+            break;
+          }
       }
     }
 
@@ -50,16 +52,6 @@ export class MapFeature extends HTMLElement {
     }
 
     connectedCallback() {
-      if (this.parentNode.nodeType !== document.DOCUMENT_FRAGMENT_NODE && 
-          this.parentNode.tagName.toLowerCase() !== 'layer-') {
-        return;
-      }
-
-      // this._layerParent: the leaflet layer object associated with the <layer- > element
-      //                    that the <map-feature> attaches
-      // case 1: the <map-feature> el directly attaches to the <layer- > el
-      // case 2: the <map-feature> el is originally in a <mapml- > document (<layer- src="...mapml">)
-      //         and attaches to the shadowRoot of the <layer- > element
       this._layerParent = this.parentNode._layer ? this.parentNode._layer : this.parentNode.host._layer;
       this._map = this._layerParent._map;
       if (!this._map) {
@@ -67,53 +59,25 @@ export class MapFeature extends HTMLElement {
           this._map = this._layerParent._map;
         }, this);
       }
+      // this._layerParent: the leaflet layer object associated with the <layer- > element
+      //                    that the <map-feature> attaches
+      // case 1: the <map-feature> el directly attaches to the <layer- > el
+      // case 2: the <map-feature> el is originally in a <mapml- > document (<layer- src="...mapml">)
+      //         and attaches to the shadowRoot of the <layer- > element
       if(this._layerParent._layerEl.hasAttribute("data-moving")) return;
-      
-      this._observer = new MutationObserver((mutationList) => {
-        // muatationList: a list records changes made on <map-feature> and its children elements
-        for (let mutation of mutationList) {
-          // the attributes changes of <map-feature> element should be handled by attributeChangedCallback()
-          if (mutation.type === 'attributes' && mutation.target === this) {
-            return;
-          }
-          // re-render <map-feature>
-          this._remove();
-          this._redraw();
-        }
-      });
-      // Start observing the target node for configured mutations
-      this._observer.observe(this, { 
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeOldValue: true,
-        characterData: true
-      });
-      
-      if (!this._layerParent._mapmlvectors) {
+      if (this.parentNode.nodeType !== document.DOCUMENT_FRAGMENT_NODE && 
+          this.parentNode.tagName.toLowerCase() !== 'layer-') {
         return;
-      } else if (!this._featureGroup) {
-        this._redraw();
       }
-
-      this._groupEl.addEventListener('keydown', (e) => {
-        // backspace / delete
-        if (e.keyCode === 8 || e.keyCode === 46) {
-          this._remove();
-        }
-      });
-
-      ['onclick','onfocus','onblur'].forEach(name => {
-        if (this[name] && typeof this[name] === "function") this._groupEl[name] = this[name];
-      });
+      this._addFeature();
     }
       
     disconnectedCallback() {
       if(this._layerParent._layerEl.hasAttribute("data-moving")) return;
-      this._remove();
+      this._removeFeature();
     }
 
-    _remove() {
+    _removeFeature() {
       // if the <layer- > el is disconnected
       // the <g> el has already got removed at this point
       if (this._groupEl?.isConnected) {
@@ -135,6 +99,9 @@ export class MapFeature extends HTMLElement {
                 break;
               }
             }
+            let container = this._layerParent.shadowRoot || this._layerParent._layerEl;
+            // update zoom bounds of vector layer
+            mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(container, this._getNative().zoom);
           }
           mapmlvectors.options.properties = null;
           delete mapmlvectors._layers[this._featureGroup._leaflet_id];
@@ -142,12 +109,42 @@ export class MapFeature extends HTMLElement {
       }
       delete this._featureGroup;
       delete this._groupEl;
-      if (this.isConnected) this.remove();
       this._observer.disconnect();
     }
 
-    // re-add / update features
-    _redraw() {
+    _addFeature() {
+      this._observer = new MutationObserver((mutationList) => {
+        // muatationList: a list records changes made on <map-feature> and its children elements
+        for (let mutation of mutationList) {
+          // the attributes changes of <map-feature> element should be handled by attributeChangedCallback()
+          if (mutation.type === 'attributes' && mutation.target === this) {
+            return;
+          }
+          // re-render <map-feature>
+          this._removeFeature();
+          this._updateFeature();
+        }
+      });
+      // Start observing the target node for configured mutations
+      this._observer.observe(this, { 
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeOldValue: true,
+        characterData: true
+      });
+      
+      if (!this._layerParent._mapmlvectors) {
+        this._layerParent.once('add', this._setUpEvents, this);
+        return;
+      } else if (!this._featureGroup) {
+        this._updateFeature();
+      } else {
+        this._setUpEvents();
+      }
+    }
+
+    _updateFeature() {
       let mapmlvectors = this._layerParent._mapmlvectors;
       if (!mapmlvectors) return;
       // if the <layer- > is not removed, then regenerate featureGroup and update the mapmlvectors accordingly
@@ -156,11 +153,43 @@ export class MapFeature extends HTMLElement {
       mapmlvectors._layers[this._featureGroup._leaflet_id] = this._featureGroup;
       this._groupEl = this._featureGroup.options.group;
       if (mapmlvectors._staticFeature) {
+        //update zoom bounds of vector layer
+        let container = this._layerParent.shadowRoot || this._layerParent._layerEl;
+        mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(container, this._getNative().zoom);
         let zoom = mapmlvectors._clampZoom(this._map.getZoom());
         mapmlvectors._resetFeatures(zoom);
         this._map._addZoomLimit(mapmlvectors);
         L.extend(mapmlvectors.options, mapmlvectors.zoomBounds);
       }
+      this._setUpEvents();
+    }
+
+    _setUpEvents() {
+      this._groupEl.addEventListener('keydown', (e) => {
+        // backspace / delete
+        if (e.keyCode === 8 || e.keyCode === 46) {
+          this._removeFeature();
+          if (this.isConnected) this.remove();
+        }
+      });
+
+      ['click','focus','blur'].forEach(name => {
+        if (this[`on${name}`] && typeof this[`on${name}`] === "function") this._groupEl[`on${name}`] = this[`on${name}`];
+        // support mapFeature.addEventListener(event, callback)
+        this._groupEl.addEventListener(name, (e) => {
+          // this === mapFeature
+          // store onEvent handler of mapFeature if there is any to ensure
+          // it will not be invoked when the mouseevent is dispatched
+          const handler = this[`on${name}`];
+          this[`on${name}`] = null;
+          if (name === 'click') {
+            this.dispatchEvent(new MouseEvent (name, {...e.options}));
+          } else {
+            this.dispatchEvent(new FocusEvent (name, {...e.options}));
+          }
+          if (handler) this[`on${name}`] = handler;
+        });
+      });
     }
 
     _getNative(content) {

@@ -359,10 +359,18 @@ export class MapLayer extends HTMLElement {
   mapml2geojson(options = {}){
     return M.mapml2geojson(this, options);
   }
-  _pasteFeature(text) {
-    text.trim();
-    if (text.slice(0,12) === "<map-feature" && text.slice(-14) === "</map-feature>") {
-      this.insertAdjacentHTML("beforeend", text);
+  pasteFeature(feature) {
+    switch(typeof feature) {
+      case "string":
+        feature.trim();
+        if (feature.slice(0,12) === "<map-feature" && feature.slice(-14) === "</map-feature>") {
+          this.insertAdjacentHTML("beforeend", feature);
+        }
+        break;
+      case "object": 
+        if (feature.nodeName.toUpperCase() === 'MAP-FEATURE') {
+          this.appendChild(feature);
+        }
     }
   }
 }
