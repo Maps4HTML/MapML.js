@@ -398,7 +398,7 @@ export class WebMap extends HTMLMapElement {
       this._fullScreenControl = M.fullscreenButton().addTo(this._map);
     }
     if (!this._geolocationButton) {
-      this._geolocationButton = M.geolocationButton(this._map);
+      this._geolocationButton = M.geolocationButton().addTo(this._map);
     }
   }
 
@@ -581,23 +581,6 @@ export class WebMap extends HTMLMapElement {
               {target: this}}));
       }
     });
-    var locateControl = this._geolocationButton._container;
-    var button = this._geolocationButton;
-    var observer = new MutationObserver(function(mutations) {
-      // Check the current state of the control
-      if (locateControl.classList.contains('active') && locateControl.classList.contains('following')) {
-        locateControl.firstChild.title = M.options.locale.btnLocTrackOn;
-        button._marker.bindTooltip(M.options.locale.btnMyLocTrackOn,{permanent:true});
-      } else if (locateControl.classList.contains('active')) {
-        locateControl.firstChild.title = M.options.locale.btnLocTrackLastKnown;
-        button._marker.bindTooltip(M.options.locale.btnMyLastKnownLocTrackOn);
-      } else {
-        locateControl.firstChild.title = M.options.locale.btnLocTrackOff;
-      }
-    });
-    // Configure the observer to watch for changes to the class name
-    var observerConfig = { attributes: true, attributeFilter: ['class'] };
-    observer.observe(locateControl, observerConfig);
 
     this._map.on('locationfound',
       function (e) {
