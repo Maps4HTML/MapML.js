@@ -52,29 +52,37 @@ export class MapFeature extends HTMLElement {
     }
 
     connectedCallback() {
-      this._layerParent = this.parentNode._layer ? this.parentNode._layer : this.parentNode.host._layer;
-      this._map = this._layerParent._map;
-      if (!this._map) {
-        this._layerParent.once('add', function () {
-          this._map = this._layerParent._map;
-        }, this);
-      }
-      // this._layerParent: the leaflet layer object associated with the <layer- > element
-      //                    that the <map-feature> attaches
-      // case 1: the <map-feature> el directly attaches to the <layer- > el
-      // case 2: the <map-feature> el is originally in a <mapml- > document (<layer- src="...mapml">)
-      //         and attaches to the shadowRoot of the <layer- > element
-      if(this._layerParent._layerEl.hasAttribute("data-moving")) return;
-      if (this.parentNode.nodeType !== document.DOCUMENT_FRAGMENT_NODE && 
-          this.parentNode.tagName.toLowerCase() !== 'layer-') {
-        return;
+      if ((this.parentNode.nodeType !== document.DOCUMENT_FRAGMENT_NODE && this.parentNode.nodeName.toLowerCase() !== 'layer-') || 
+          (this.parentNode.nodeType === document.DOCUMENT_FRAGMENT_NODE && this.parentNode.host.hasAttribute('data-moving')) ||
+          (this.parentNode.nodeName.toLowerCase() === 'layer-' && this.parentNode.hasAttribute('data-moving'))) {
+          return;
       }
       this._addFeature();
+      this._observer = new MutationObserver((mutationList) => {
+        // muatationList: a list records changes made on <map-feature> and its children elements
+        for (let mutation of mutationList) {
+          // the attributes changes of <map-feature> element should be handled by attributeChangedCallback()
+          if (mutation.type === 'attributes' && mutation.target === this) {
+            return;
+          }
+          // re-render <map-feature>
+          this._removeFeature();
+          this._updateFeature();
+        }
+      });
+      this._observer.observe(this, { 
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeOldValue: true,
+        characterData: true
+      });
     }
       
     disconnectedCallback() {
       if(this._layerParent._layerEl.hasAttribute("data-moving")) return;
       this._removeFeature();
+      this._observer.disconnect();
     }
 
     _removeFeature() {
@@ -109,31 +117,21 @@ export class MapFeature extends HTMLElement {
       }
       delete this._featureGroup;
       delete this._groupEl;
-      this._observer.disconnect();
     }
 
     _addFeature() {
-      this._observer = new MutationObserver((mutationList) => {
-        // muatationList: a list records changes made on <map-feature> and its children elements
-        for (let mutation of mutationList) {
-          // the attributes changes of <map-feature> element should be handled by attributeChangedCallback()
-          if (mutation.type === 'attributes' && mutation.target === this) {
-            return;
-          }
-          // re-render <map-feature>
-          this._removeFeature();
-          this._updateFeature();
-        }
-      });
-      // Start observing the target node for configured mutations
-      this._observer.observe(this, { 
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeOldValue: true,
-        characterData: true
-      });
-      
+      // this._layerParent: the leaflet layer object associated with the <layer- > element
+      //                    that the <map-feature> attaches
+      // case 1: the <map-feature> el directly attaches to the <layer- > el
+      // case 2: the <map-feature> el is originally in a <mapml- > document (<layer- src="...mapml">)
+      //         and attaches to the shadowRoot of the <layer- > element
+      this._layerParent = this.parentNode._layer ? this.parentNode._layer : this.parentNode.host._layer;
+      this._map = this._layerParent._map;
+      if (!this._map) {
+        this._layerParent.once('add', function () {
+          this._map = this._layerParent._map;
+        }, this);
+      }
       if (!this._layerParent._mapmlvectors) {
         this._layerParent.once('add', this._setUpEvents, this);
         return;
