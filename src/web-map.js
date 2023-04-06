@@ -279,6 +279,7 @@ export class WebMap extends HTMLMapElement {
       M.attributionControl(this);
 
       this._createControls();
+      this._toggleControls();
       this._crosshair = M.crosshair().addTo(this._map);
       if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
 
@@ -315,7 +316,6 @@ export class WebMap extends HTMLMapElement {
       this._container.setAttribute('aria-label', 'Interactive map');
 
       this._setUpEvents();
-      this._toggleControls();
     }
   }
   disconnectedCallback() {
