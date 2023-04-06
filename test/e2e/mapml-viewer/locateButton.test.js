@@ -26,6 +26,7 @@ test.describe("Geolocation control tests", () => {
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
 
     let locateButton_lat = await page.$eval("body > mapml-viewer", (viewer) => viewer.lat);
@@ -42,6 +43,7 @@ test.describe("Geolocation control tests", () => {
 
   test("Geolocation control state changes when pressed", async () => {
     await page.click("body > mapml-viewer");
+    await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
