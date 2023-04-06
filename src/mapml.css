@@ -41,8 +41,8 @@
 
  /* Scale bar */
  .mapml-control-scale {
-  bottom: 20px;
-  left: 45px; 
+  bottom: 8px; /* Make room for map-a links */
+  left: 10px; 
 }
  
  /* Generic class for seamless buttons */

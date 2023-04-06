@@ -343,12 +343,9 @@ export class MapViewer extends HTMLElement {
     this._layerControl = M.layerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
 
     let scaleValue = M.options.announceScale;
-
     if (typeof scaleValue === "string") {
       scaleValue = JSON.parse(scaleValue);
     }
-
-    if (!this._scaleBar) this._scaleBar = M.scaleBar(scaleValue).addTo(this._map);
 
     // Only add controls if there is enough top left vertical space
     if (!this._zoomControl && (totalSize + 93) <= mapSize){
@@ -362,6 +359,14 @@ export class MapViewer extends HTMLElement {
     if (!this._fullScreenControl && (totalSize + 49) <= mapSize){
       totalSize += 49;
       this._fullScreenControl = M.fullscreenButton().addTo(this._map);
+    }
+
+    // modify scale location if there is enough space left vertical space
+    if (!this._scaleBar) {
+      this._scaleBar = M.scaleBar(scaleValue).addTo(this._map);
+      if ((totalSize += 49) >= mapSize) {
+        this._scaleBar._container.style.left = "45px";
+      }
     }
   }
   
