@@ -98,7 +98,6 @@ test.describe("mapml-viewer DOM API Tests", () => {
     let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
     let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
     let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
-    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
     expect(geolocation).toEqual(true);
     expect(zoomHidden).toEqual(true);
     expect(reloadHidden).toEqual(true);
@@ -142,7 +141,6 @@ test.describe("mapml-viewer DOM API Tests", () => {
     let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
     let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
     let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
-    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
     expect(geolocation).toEqual(true);
     expect(zoomHidden).toEqual(true);
     expect(reloadHidden).toEqual(true);
@@ -165,7 +163,6 @@ test.describe("mapml-viewer DOM API Tests", () => {
     let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
     let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
     let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
-    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
     expect(geolocation).toEqual(true);
     expect(zoomHidden).toEqual(true);
     expect(reloadHidden).toEqual(true);
@@ -185,7 +182,6 @@ test.describe("mapml-viewer DOM API Tests", () => {
     let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
     let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
     let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
-    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
     expect(geolocation).toEqual(true);
     expect(zoomHidden).toEqual(false);
     expect(reloadHidden).toEqual(false);
@@ -253,7 +249,6 @@ test.describe("mapml-viewer DOM API Tests", () => {
       let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
       let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
       let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
-      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
       expect(geolocation).toEqual(true);
       expect(zoomHidden).toEqual(true);
       expect(reloadHidden).toEqual(false);
@@ -277,7 +272,6 @@ test.describe("mapml-viewer DOM API Tests", () => {
       let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
       let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
       let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
-      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
       expect(geolocation).toEqual(true);
       expect(zoomHidden).toEqual(false);
       expect(reloadHidden).toEqual(true);
@@ -296,7 +290,6 @@ test.describe("mapml-viewer DOM API Tests", () => {
       layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
       scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
       geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
-      scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
       expect(geolocation).toEqual(true);
       expect(zoomHidden).toEqual(true);
       expect(reloadHidden).toEqual(true);
@@ -318,7 +311,6 @@ test.describe("mapml-viewer DOM API Tests", () => {
       let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
       let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
       let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
-      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
       expect(geolocation).toEqual(true);
       expect(zoomHidden).toEqual(true);
       expect(reloadHidden).toEqual(true);
@@ -337,7 +329,6 @@ test.describe("mapml-viewer DOM API Tests", () => {
       layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
       scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
       geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
-      scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .leaflet-control-scale", (div) => div.hidden);
       expect(geolocation).toEqual(true);
       expect(zoomHidden).toEqual(true);
       expect(reloadHidden).toEqual(true);

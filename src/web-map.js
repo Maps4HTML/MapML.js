@@ -458,6 +458,7 @@ export class WebMap extends HTMLMapElement {
           break;
           case 'geolocation':
             this._setControlsVisibility("geolocation",false);
+          break;
           case 'noscale':
             this._setControlsVisibility("scale",true);
           break;

@@ -416,6 +416,7 @@ export class MapViewer extends HTMLElement {
           break;
           case 'geolocation':
             this._setControlsVisibility("geolocation",false);
+          break;
           case 'noscale':
             this._setControlsVisibility("scale",true);
           break;
