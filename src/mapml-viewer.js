@@ -364,13 +364,6 @@ export class MapViewer extends HTMLElement {
       this._fullScreenControl = M.fullscreenButton().addTo(this._map);
     }
 
-    // modify scale location if there is enough space left vertical space
-    if (!this._scaleBar) {
-      this._scaleBar = M.scaleBar(scaleValue).addTo(this._map);
-      if ((totalSize += 49) >= mapSize) {
-        this._scaleBar._container.style.left = "45px";
-      }
-    }
     if (!this._geolocationButton) {
       this._geolocationButton = M.geolocationButton().addTo(this._map);
     }
