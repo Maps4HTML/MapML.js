@@ -41,7 +41,7 @@
 
  /* Scale bar */
  .mapml-control-scale {
-  bottom: 20px;
+  bottom: 8px; /* Make room for map-a links */
   left: 45px; 
 }
  
