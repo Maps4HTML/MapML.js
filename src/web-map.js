@@ -386,8 +386,11 @@ export class WebMap extends HTMLMapElement {
 
     let scaleValue = M.options.announceScale;
 
-    if (typeof scaleValue === "string") {
-      scaleValue = JSON.parse(scaleValue);
+    if (scaleValue === "metric") {
+      scaleValue = {"metric": true, "imperial": false};
+    }
+    if (scaleValue === "imperial") {
+      scaleValue = {"metric": false, "imperial": true};
     }
 
     if (!this._scaleBar) this._scaleBar = M.scaleBar(scaleValue).addTo(this._map);
