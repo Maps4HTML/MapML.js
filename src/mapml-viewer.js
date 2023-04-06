@@ -167,7 +167,6 @@ export class MapViewer extends HTMLElement {
     }
     // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
     this.setAttribute('role', 'application');
-    this._toggleControls();
     this._toggleStatic();
 
     /*
@@ -270,6 +269,7 @@ export class MapViewer extends HTMLElement {
       M.attributionControl(this);
 
       this._createControls();
+      this._toggleControls();
       this._crosshair = M.crosshair().addTo(this._map);
       if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
 

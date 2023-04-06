@@ -168,9 +168,7 @@ export class WebMap extends HTMLMapElement {
       // In particular:
       //   "All applicable event handlers are called and return before dispatchEvent() returns."
       this.dispatchEvent(new CustomEvent('createmap'));
-    }    
-
-    this._toggleControls();
+    }
     this._toggleStatic();
     
     /*
@@ -281,6 +279,7 @@ export class WebMap extends HTMLMapElement {
       M.attributionControl(this);
 
       this._createControls();
+      this._toggleControls();
       this._crosshair = M.crosshair().addTo(this._map);
       if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
 

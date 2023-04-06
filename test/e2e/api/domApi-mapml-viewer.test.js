@@ -452,8 +452,34 @@ test.describe("mapml-viewer DOM API Tests", () => {
         expect(controlslistSupported).toBe(false);
         controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("nocode"), viewerHandle);
         expect(controlslistSupported).toBe(false);
+
+        // remove map for next test
+        await page.evaluateHandle(() => document.querySelector('mapml-viewer').remove());
       });
 
+    });
+
+    test("controls disabled for empty custom projection map", async () => {
+      // Adding custom projection map
+      const viewerHandle = await page.evaluateHandle(()=> document.createElement("mapml-viewer"));
+      await page.evaluateHandle((viewer) => viewer.setAttribute("lat", 45), viewerHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("lon", -90), viewerHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("zoom", 2), viewerHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("width", "600"), viewerHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("height", "600"), viewerHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("projection", "other"), viewerHandle);
+      await page.evaluateHandle( (viewer) => document.body.appendChild(viewer), viewerHandle);
+
+      // Adding custom projection
+      const custProj = await page.evaluate( viewer => {
+        return viewer.defineCustomProjection(template);
+      }, viewerHandle);
+      expect(custProj).toEqual("basic");
+      await page.evaluate( (viewer) => {viewer.projection = "basic"}, viewerHandle);
+
+      // Toggle Controls (T) contextmenu is disabled
+      let toggleControlsBtn = await page.$eval("div > div.mapml-contextmenu > button:nth-child(10)",(btn) => btn.disabled);
+      expect(toggleControlsBtn).toBe(true);
     });
 
   });

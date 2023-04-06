@@ -457,8 +457,35 @@ test.describe("web-map DOM API Tests", () => {
         expect(controlslistSupported).toBe(false);
         controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("nocode"), mapHandle);
         expect(controlslistSupported).toBe(false);
+
+        // remove map for next test
+        await page.evaluateHandle(() => document.querySelector('map').remove());
       });
 
+    });
+
+    test("controls disabled for empty custom projection map", async () => {
+      // Adding custom projection map
+      const mapHandle = await page.evaluateHandle(()=> document.createElement("map", {is:"web-map"}));
+      await page.evaluateHandle((map) => map.setAttribute("is", "web-map"), mapHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("lat", 45), mapHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("lon", -90), mapHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("zoom", 2), mapHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("width", "600"), mapHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("height", "600"), mapHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("projection", "other"), mapHandle);
+      await page.evaluateHandle( (viewer) => document.body.appendChild(viewer), mapHandle);
+
+      // Adding custom projection
+      const custProj = await page.evaluate( viewer => {
+        return viewer.defineCustomProjection(template);
+      }, mapHandle);
+      expect(custProj).toEqual("basic");
+      await page.evaluate( (viewer) => {viewer.projection = "basic"}, mapHandle);
+
+      // Toggle Controls (T) contextmenu is disabled
+      let toggleControlsBtn = await page.$eval("div > div.mapml-contextmenu > button:nth-child(10)",(btn) => btn.disabled);
+      expect(toggleControlsBtn).toBe(true);
     });
 
   });
