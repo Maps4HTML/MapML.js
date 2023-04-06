@@ -412,6 +412,7 @@ export class WebMap extends HTMLMapElement {
       if ((totalSize += 49) >= mapSize) {
         this._scaleBar._container.style.left = "45px";
       }
+    }
     if (!this._geolocationButton) {
       this._geolocationButton = M.geolocationButton().addTo(this._map);
     }
