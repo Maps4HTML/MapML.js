@@ -90,6 +90,10 @@ export class MapLayer extends HTMLElement {
     if (this._layerControl && !this.hidden) {
       this._layerControl.removeLayer(this._layer);
     }
+
+    if (this.shadowRoot) {
+      this.shadowRoot.innerHTML = '';
+    }
   }
   connectedCallback() {
     //creates listener that waits for createmap event, this allows for delayed builds of maps
