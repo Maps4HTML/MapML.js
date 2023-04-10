@@ -9,7 +9,7 @@ module.exports = function(grunt) {
       },
       combine: {
         files: {
-        'dist/mapml.css': ['node_modules/leaflet/dist/leaflet.css', 'node_modules/leaflet.locatecontrol/dist/L.Control.Locate.css', 'node_modules/leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css', 'src/mapml.css']
+        'dist/mapml.css': ['node_modules/leaflet/dist/leaflet.css', 'node_modules/leaflet.locatecontrol/dist/L.Control.Locate.css', 'src/mapml.css']
         }
       }
     },

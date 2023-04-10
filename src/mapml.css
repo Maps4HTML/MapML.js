@@ -38,11 +38,18 @@
 /*
  * Controls.
  */
-
- /* Scale bar */
+.leaflet-container {
+    container: leafletmap / size;
+} 
+/* Scale bar */
  .mapml-control-scale {
   bottom: 8px; /* Make room for map-a links */
-  left: 45px; 
+  left: 0px; 
+}
+@container leafletmap (max-height: 250px) {
+    .mapml-control-scale {
+        left: 45px; 
+    }
 }
  
  /* Generic class for seamless buttons */
