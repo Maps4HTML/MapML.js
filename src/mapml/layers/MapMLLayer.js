@@ -147,9 +147,9 @@ export var MapMLLayer = L.Layer.extend({
                   c.insertAdjacentHTML('afterbegin', properties.innerHTML);
                   c.insertAdjacentHTML('beforeend', `<a href="" class="zoomLink">Zoom to here</a>`);
                   DomEvent.on(c.querySelector('a.zoomLink'), 'click keydown', function (e) {
-                    e.preventDefault();
                     if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
-                    else if (geometry._featureEl) {
+                    e.preventDefault();
+                    if (geometry._featureEl) {
                       // if the popup is opened on the featureGroup layer
                       geometry._featureEl.zoomTo();
                     } else {
