@@ -1,3 +1,4 @@
+import { DomEvent } from 'leaflet';
 import { FALLBACK_PROJECTION, BLANK_TT_TREF } from '../utils/Constants';
 
 export var MapMLLayer = L.Layer.extend({
@@ -144,6 +145,18 @@ export var MapMLLayer = L.Layer.extend({
                   var c = document.createElement('div');
                   c.classList.add("mapml-popup-content");
                   c.insertAdjacentHTML('afterbegin', properties.innerHTML);
+                  c.insertAdjacentHTML('beforeend', `<a href="" class="zoomLink">Zoom to here</a>`);
+                  DomEvent.on(c.querySelector('a.zoomLink'), 'click keydown', function (e) {
+                    e.preventDefault();
+                    if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
+                    else if (geometry._featureEl) {
+                      // if the popup is opened on the featureGroup layer
+                      geometry._featureEl.zoomTo();
+                    } else {
+                      // if the popup is opened on the feature layer
+                      geometry._groupLayer._featureEl.zoomTo();
+                    }
+                  });
                   geometry.bindPopup(c, {autoClose: false, minWidth: 165});
                 }
               }
@@ -176,6 +189,7 @@ export var MapMLLayer = L.Layer.extend({
                       var c = document.createElement('div');
                       c.classList.add("mapml-popup-content");
                       c.insertAdjacentHTML('afterbegin', properties.innerHTML);
+                      c.insertAdjacentHTML('beforeend', `<a href="">Zoom to here</a>`);
                       geometry.bindPopup(c, {autoClose: false, minWidth: 165});
                     }
                   },
@@ -230,7 +244,7 @@ export var MapMLLayer = L.Layer.extend({
           map.fire('checkdisabled');
         }, 0);
         map.on("popupopen", this._attachSkipButtons, this);
-        
+
         function createAndAddTemplatedLayers() {
           if(this._extent && this._extent._mapExtents){
             for(let i = 0; i < this._extent._mapExtents.length; i++){

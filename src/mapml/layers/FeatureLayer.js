@@ -339,7 +339,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
             _leafletLayer: this.options._leafletLayer,
           })));
       }
-      let groupOptions = {group:svgGroup, featureID: mapml.id, accessibleTitle: title, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties, _leafletLayer: this.options._leafletLayer,},
+      let groupOptions = {group:svgGroup, mapmlFeature: mapml, featureID: mapml.id, accessibleTitle: title, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties, _leafletLayer: this.options._leafletLayer,},
         collections = geometry.querySelector('map-multipolygon') || geometry.querySelector('map-geometrycollection');
         if(collections) groupOptions.wrappers = this._getGeometryParents(collections.parentElement);
       return M.featureGroup(group, groupOptions);

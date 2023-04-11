@@ -10,6 +10,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
       options = Object.assign(M.Feature.prototype._convertWrappers(options.wrappers), options);
 
     L.LayerGroup.prototype.initialize.call(this, layers, options);
+    this._featureEl = this.options.mapmlFeature;
 
     if((this.options.onEachFeature && this.options.properties) || this.options.link) {
       L.DomUtil.addClass(this.options.group, "leaflet-interactive");
@@ -29,6 +30,9 @@ export var FeatureGroup = L.FeatureGroup.extend({
     L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
     this.options.group.setAttribute('aria-label', this.options.accessibleTitle);
     if(this.options.featureID) this.options.group.setAttribute("data-fid", this.options.featureID);
+    for (let feature of layers) {
+      feature._groupLayer = this;
+    }
   },
 
   onAdd: function (map) {
