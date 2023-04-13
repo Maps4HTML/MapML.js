@@ -191,6 +191,16 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
     });
 
     test("Focus Controls focuses the first <button> child in control div", async () => {
+      await page.pause();
+      await page.click("body > mapml-viewer");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Enter");
       await page.click("body > mapml-viewer");
       await page.keyboard.press("Shift+F10");
       await page.keyboard.press("t");

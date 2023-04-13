@@ -266,7 +266,6 @@ export class MapViewer extends HTMLElement {
       });
       this._addToHistory();
       // the attribution control is not optional
-      M.attributionControl(this);
 
       this._createControls();
       this._toggleControls();

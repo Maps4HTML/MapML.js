@@ -19,6 +19,8 @@ test.describe("Keyboard shortcut attribution test", ()=> {
         }
 
         await page.keyboard.press("Enter");
+        await page.keyboard.press("Tab");
+        await page.keyboard.press("Enter");
         const dialog = await page.$eval("body > mapml-viewer div > dialog",
             (dialog) => dialog.hasAttribute("open")
         );
