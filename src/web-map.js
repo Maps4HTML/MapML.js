@@ -275,7 +275,6 @@ export class WebMap extends HTMLMapElement {
         fadeAnimation: true
       });
       this._addToHistory();
-      // the attribution control is not optional
 
       this._createControls();
       this._toggleControls();

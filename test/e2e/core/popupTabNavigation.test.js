@@ -200,6 +200,7 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.keyboard.press("Tab");
       await page.keyboard.press("Tab");
       await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
       await page.keyboard.press("Enter");
       await page.click("body > mapml-viewer");
       await page.keyboard.press("Shift+F10");

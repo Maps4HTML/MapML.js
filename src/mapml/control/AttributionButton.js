@@ -1,12 +1,6 @@
 export var AttributionButton = L.Control.Attribution.extend({
 	options: {
-		position: 'bottomright',
 		prefix: '<a href="https://www.w3.org/community/maps4html/">Maps for HTML Community Group</a> | <img src="data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTIiIGhlaWdodD0iOCI+PHBhdGggZmlsbD0iIzRDN0JFMSIgZD0iTTAgMGgxMnY0SDB6Ii8+PHBhdGggZmlsbD0iI0ZGRDUwMCIgZD0iTTAgNGgxMnYzSDB6Ii8+PHBhdGggZmlsbD0iI0UwQkMwMCIgZD0iTTAgN2gxMnYxSDB6Ii8+PC9zdmc+" style="padding-right: 0.3em;" alt="Slava Ukraini"> <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> '
-	},
-
-	initialize: function (options) {
-		L.Util.setOptions(this, options);
-		this._attributions = {};
 	},
 
 	onAdd: function (map) {
@@ -36,49 +30,6 @@ export var AttributionButton = L.Control.Attribution.extend({
 		map._container.appendChild(dialog);
 
 		return this._container;
-	},
-
-	onRemove: function (map) {
-		map.off('layeradd', this._addAttribution, this);
-	},
-
-	_addAttribution: function (ev) {
-		if (ev.layer.getAttribution) {
-			this.addAttribution(ev.layer.getAttribution());
-			ev.layer.once('remove', function () {
-				this.removeAttribution(ev.layer.getAttribution());
-			}, this);
-		}
-	},
-
-	setPrefix: function (prefix) {
-		this.options.prefix = prefix;
-		this._update();
-		return this;
-	},
-
-	addAttribution: function (text) {
-		if (!text) { return this; }
-
-		if (!this._attributions[text]) {
-			this._attributions[text] = 0;
-		}
-		this._attributions[text]++;
-
-		this._update();
-
-		return this;
-	},
-
-	removeAttribution: function (text) {
-		if (!text) { return this; }
-
-		if (this._attributions[text]) {
-			this._attributions[text]--;
-			this._update();
-		}
-
-		return this;
 	},
 
 	_update: function () {
