@@ -53,6 +53,7 @@ import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
 import { AttributionButton, attributionButton } from './control/AttributionButton';
 import { ReloadButton, reloadButton } from './control/ReloadButton';
+import { ScaleBar, scaleBar } from './control/ScaleBar';
 import { FullscreenButton, fullscreenButton } from './control/FullscreenButton';
 import {geolocationButton} from "./control/GeolocationButton";
 import { Crosshair, crosshair } from "./layers/Crosshair";
@@ -657,6 +658,9 @@ M.attributionButton = attributionButton;
 
 M.ReloadButton = ReloadButton;
 M.reloadButton = reloadButton;
+
+M.ScaleBar = ScaleBar;
+M.scaleBar = scaleBar;
 
 M.FullscreenButton = FullscreenButton;
 M.fullscreenButton = fullscreenButton;

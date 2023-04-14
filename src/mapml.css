@@ -38,6 +38,19 @@
 /*
  * Controls.
  */
+.leaflet-container {
+    container: leafletmap / size;
+} 
+/* Scale bar */
+ .mapml-control-scale {
+  bottom: 8px; /* Make room for map-a links */
+  left: 0px; 
+}
+@container leafletmap (max-height: 250px) {
+    .mapml-control-scale {
+        left: 45px; 
+    }
+}
  
  /* Generic class for seamless buttons */
  .mapml-button {
@@ -784,6 +797,15 @@ label.mapml-layer-item-toggle {
   width: 1px;
 }
 
+.mapml-screen-reader-output-scale {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px
+}
 /*
  * Feature styles.
  */
