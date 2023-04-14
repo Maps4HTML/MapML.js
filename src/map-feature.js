@@ -16,6 +16,7 @@ export class MapFeature extends HTMLElement {
 
     get extent() {
       if (this.isConnected) {
+        if (!this._getFeatureExtent) {this._getFeatureExtent = this._memoizeExtent();}
         return this._getFeatureExtent();
       }
     }
@@ -117,7 +118,7 @@ export class MapFeature extends HTMLElement {
       }
       delete this._featureGroup;
       delete this._groupEl;
-      delete this._getFeatureExtent.extent;
+      if (this._getFeatureExtent) delete this._getFeatureExtent;
     }
 
     _addFeature() {
@@ -203,6 +204,66 @@ export class MapFeature extends HTMLElement {
     }
 
     // Util functions:
+    // method to calculate the extent of the feature and store it in cache for the first time
+    // and simply return cache when feature's extent is repeatedly requested
+    _memoizeExtent () {
+      // memoize, use cache and function closure
+      let extentCache;
+      return function () {
+        if (extentCache && this._getFeatureExtent) {
+          return extentCache;
+        } else {
+          let map = this._map,
+              geometry = this.querySelector('map-geometry'),
+              native = this._getNativeZoomAndCS(this._layer._content),
+              cs = geometry.getAttribute('cs') || native.cs,
+              // zoom level that the feature rendered at
+              zoom = this.zoom || native.zoom,
+              shapes = geometry.querySelectorAll("map-point, map-linestring, map-polygon, map-multipoint, map-multilinestring"),
+              bboxExtent = [Infinity, Infinity, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY];
+          for (let shape of shapes) {
+            let coord = shape.querySelectorAll('map-coordinates');
+            for (let i = 0; i < coord.length; ++i) {
+              bboxExtent = _updateExtent(shape, coord[i], bboxExtent);
+            }
+          }
+          let topLeft = L.point(bboxExtent[0], bboxExtent[1]);
+          let bottomRight = L.point(bboxExtent[2], bboxExtent[3]);
+          let pcrsBound = M.boundsToPCRSBounds(L.bounds(topLeft, bottomRight), zoom, map.options.projection, cs);
+          if (shapes.length === 1 && shapes[0].tagName.toUpperCase() === "MAP-POINT") {
+            let projection = map.options.projection,
+                maxZoom = M[projection].options.resolutions.length - 1,
+                tileCenter = M[projection].options.crs.tile.bounds.getCenter(),
+                pixel = M[projection].transformation.transform(pcrsBound.min, M[projection].scale(+this.zoom || maxZoom));
+            pcrsBound = M.pixelToPCRSBounds(L.bounds(pixel.subtract(tileCenter), pixel.add(tileCenter)), this.zoom || maxZoom, projection);
+          }
+          let result = M._convertAndFormatPCRS(pcrsBound, map);
+          extentCache = result;
+          return result;
+        }
+      };
+
+      // helper function
+      function _updateExtent(shape, coord, bboxExtent) {
+        let data = coord.innerHTML.trim().replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').split(/[<>\ ]/g);
+        switch (shape.tagName) {
+          case "MAP-POINT":
+            bboxExtent = M._updateExtent(bboxExtent, +data[0], +data[1]);
+            break;
+          case "MAP-LINESTRING":
+          case "MAP-POLYGON":
+          case "MAP-MULTIPOINT":
+          case "MAP-MULTILINESTRING":
+            for (let i = 0; i < data.length; i += 2) {
+              bboxExtent = M._updateExtent(bboxExtent, +data[i], +data[i + 1]);
+            }
+            break;
+          default:
+            break;
+        }
+        return bboxExtent;
+      }
+    }
     // internal support for returning a GeoJSON representation of <map-feature> geometry
     // propertyFunction (optional): the function used to format the innerHTML of <map-properties>
     mapml2geojson(options) {
@@ -255,56 +316,6 @@ export class MapFeature extends HTMLElement {
         json.geometry = M._geometry2geojson(shapes[0], source, dest, options.transform);
       }
       return json;
-    }
-
-    // method to calculate and return the extent of the feature as a JavaScript object
-    _getFeatureExtent() {
-      if (this._getFeatureExtent.extent) return this._getFeatureExtent.extent;
-      let map = this._map,
-          geometry = this.querySelector('map-geometry'),
-          native = this._getNativeZoomAndCS(this._layer._content),
-          cs = geometry.getAttribute('cs') || native.cs,
-          // zoom level that the feature rendered at
-          zoom = this.zoom || native.zoom,
-          shapes = geometry.querySelectorAll("map-point, map-linestring, map-polygon, map-multipoint, map-multilinestring"),
-          bboxExtent = [Infinity, Infinity, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY];
-      for (let shape of shapes) {
-        let coord = shape.querySelectorAll('map-coordinates');
-        for (let i = 0; i < coord.length; ++i) {
-          _updateExtent(shape, coord[i]);
-        }
-      }
-      let topLeft = L.point(bboxExtent[0], bboxExtent[1]);
-      let bottomRight = L.point(bboxExtent[2], bboxExtent[3]);
-      let pcrsBound = M.boundsToPCRSBounds(L.bounds(topLeft, bottomRight), zoom, map.options.projection, cs);
-      if (shapes.length === 1 && shapes[0].tagName.toUpperCase() === "MAP-POINT") {
-        let projection = map.options.projection,
-            maxZoom = M[projection].options.resolutions.length - 1,
-            tileCenter = M[projection].options.crs.tile.bounds.getCenter(),
-            pixel = M[projection].transformation.transform(pcrsBound.min, M[projection].scale(+this.zoom || maxZoom));
-        pcrsBound = M.pixelToPCRSBounds(L.bounds(pixel.subtract(tileCenter), pixel.add(tileCenter)), this.zoom || maxZoom, projection);
-      }
-      this._getFeatureExtent.extent = M._convertAndFormatPCRS(pcrsBound, map);
-      return this._getFeatureExtent.extent;
-
-      function _updateExtent(shape, coord) {
-        let data = coord.innerHTML.trim().replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').split(/[<>\ ]/g);
-        switch (shape.tagName) {
-          case "MAP-POINT":
-            bboxExtent = M._updateExtent(bboxExtent, +data[0], +data[1]);
-            break;
-          case "MAP-LINESTRING":
-          case "MAP-POLYGON":
-          case "MAP-MULTIPOINT":
-          case "MAP-MULTILINESTRING":
-            for (let i = 0; i < data.length; i += 2) {
-              bboxExtent = M._updateExtent(bboxExtent, +data[i], +data[i + 1]);
-            }
-            break;
-          default:
-            break;
-        }
-      }
     }
 
     // a .click() method that highlights the feature and show popup on map as if doing a click

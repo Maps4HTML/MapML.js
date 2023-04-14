@@ -1,4 +1,3 @@
-import { DomEvent } from 'leaflet';
 import { FALLBACK_PROJECTION, BLANK_TT_TREF } from '../utils/Constants';
 
 export var MapMLLayer = L.Layer.extend({
@@ -146,17 +145,13 @@ export var MapMLLayer = L.Layer.extend({
                   c.classList.add("mapml-popup-content");
                   c.insertAdjacentHTML('afterbegin', properties.innerHTML);
                   c.insertAdjacentHTML('beforeend', `<a href="" class="zoomLink">Zoom to here</a>`);
-                  DomEvent.on(c.querySelector('a.zoomLink'), 'click keydown', function (e) {
+                  let zoomLink = c.querySelector('a.zoomLink');
+                  zoomLink.onclick = zoomLink.onkeydown = function (e) {
                     if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
                     e.preventDefault();
-                    if (geometry._featureEl) {
-                      // if the popup is opened on the featureGroup layer
-                      geometry._featureEl.zoomTo();
-                    } else {
-                      // if the popup is opened on the feature layer
-                      geometry._groupLayer._featureEl.zoomTo();
-                    }
-                  });
+                    let mapmlFeature = geometry._featureEl ? geometry._featureEl : geometry._groupLayer._featureEl;
+                    mapmlFeature.zoomTo();
+                  };
                   geometry.bindPopup(c, {autoClose: false, minWidth: 165});
                 }
               }
@@ -189,7 +184,14 @@ export var MapMLLayer = L.Layer.extend({
                       var c = document.createElement('div');
                       c.classList.add("mapml-popup-content");
                       c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                      c.insertAdjacentHTML('beforeend', `<a href="">Zoom to here</a>`);
+                      c.insertAdjacentHTML('beforeend', `<a href="" class="zoomLink">Zoom to here</a>`);
+                      let zoomLink = c.querySelector('a.zoomLink');
+                      zoomLink.onclick = zoomLink.onkeydown = function (e) {
+                        if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
+                        e.preventDefault();
+                        let mapmlFeature = geometry._featureEl ? geometry._featureEl : geometry._groupLayer._featureEl;
+                        mapmlFeature.zoomTo();
+                      };
                       geometry.bindPopup(c, {autoClose: false, minWidth: 165});
                     }
                   },
@@ -1404,8 +1406,14 @@ export var MapMLLayer = L.Layer.extend({
             group.focus();
             L.DomEvent.stop(focusEvent);
           }, 0);
-        } else if ((path[0].title==="Focus Map" || path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
+        } else if (path[0].classList.contains("mapml-popup-content") && isTab && shiftPressed){
           setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
+            map.closePopup(popup);
+            group.focus();
+            L.DomEvent.stop(focusEvent);
+          }, 0);
+        } else if (path[0] === popup._content.querySelector('a') && isTab && shiftPressed) {
+          setTimeout(() => {
             map.closePopup(popup);
             group.focus();
             L.DomEvent.stop(focusEvent);
@@ -1425,9 +1433,15 @@ export var MapMLLayer = L.Layer.extend({
           if(focusEvent.originalEvent.keyCode !== 27)map._popupClosed = true;
         } else if (isTab && path[0].classList.contains("leaflet-popup-close-button")){
           map.closePopup(popup);
-        } else if ((path[0].title==="Focus Map" || path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
+        } else if (path[0].classList.contains("mapml-popup-content") && isTab && shiftPressed){
           map.closePopup(popup);
           setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
+            L.DomEvent.stop(focusEvent);
+            map._container.focus();
+          }, 0);
+        } else if (path[0] === popup._content.querySelector('a') && isTab && shiftPressed) {
+          map.closePopup(popup);
+          setTimeout(() => {
             L.DomEvent.stop(focusEvent);
             map._container.focus();
           }, 0);

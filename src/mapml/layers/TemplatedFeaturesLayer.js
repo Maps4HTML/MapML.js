@@ -39,6 +39,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
             var c = document.createElement('div');
             c.classList.add("mapml-popup-content");
             c.insertAdjacentHTML('afterbegin', properties.innerHTML);
+            c.insertAdjacentHTML('beforeend', `<a href="" class="zoomLink">Zoom to here</a>`);
             geometry.bindPopup(c, {autoClose: false, minWidth: 108});
           }
         });
