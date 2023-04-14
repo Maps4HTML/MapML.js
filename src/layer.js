@@ -235,11 +235,13 @@ export class MapLayer extends HTMLElement {
     }, 0);
   }
   getOuterHTML() {
-    let fullLayer = this;
-    if (fullLayer.hasAttribute('src')) {
-      fullLayer.setAttribute('src', this._layer.getHref());
+    let fullLayer = this.outerHTML;
+    if (this.hasAttribute('src')) {
+      let findSrc = /src="([^"]*)"/;
+      let newSrc = this._layer.getHref();
+      fullLayer = fullLayer.replace(findSrc, `src="${newSrc}"`);
     }
-    return fullLayer.outerHTML;
+    return fullLayer;
   }
   _onLayerChange() {
     if (this._layer._map) {
