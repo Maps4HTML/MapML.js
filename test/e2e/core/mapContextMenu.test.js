@@ -244,6 +244,7 @@ test.describe("Playwright Map Context Menu Tests", () => {
 
   test("Submenu, copy map (MapML)", async () => {
     await page.reload();
+    await page.waitForTimeout(3000);
     await page.click("body > map");
     await page.keyboard.press("Shift+F10");
     await page.keyboard.press("Tab");

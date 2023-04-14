@@ -14,7 +14,7 @@ test.describe("Keyboard shortcut attribution test", ()=> {
     });
 
     test("Keyboard shortcuts attribution opens up dialog", async () => {
-        for(let i = 0; i < 7; i++) {
+        for(let i = 0; i < 8; i++) {
             await page.keyboard.press("Tab");
         }
 
