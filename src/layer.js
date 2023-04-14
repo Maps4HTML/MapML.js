@@ -234,6 +234,13 @@ export class MapLayer extends HTMLElement {
       }
     }, 0);
   }
+  getOuterHTML() {
+    let fullLayer = this;
+    if (fullLayer.hasAttribute('src')) {
+      fullLayer.setAttribute('src', this._layer.getHref());
+    }
+    return fullLayer.outerHTML;
+  }
   _onLayerChange() {
     if (this._layer._map) {
      // can't disable observers, have to set a flag telling it where

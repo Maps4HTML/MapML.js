@@ -223,7 +223,7 @@ export var ContextMenu = L.Handler.extend({
   _copyLayer: function (e) {
     let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
       layerElem = context._layerClicked.layer._layerEl;
-    context._copyData(layerElem.outerHTML);
+    context._copyData(layerElem.getOuterHTML());
   },
 
   _goForward: function(e){
