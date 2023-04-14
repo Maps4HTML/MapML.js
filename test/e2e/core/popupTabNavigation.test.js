@@ -215,7 +215,7 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
       const rh = await page.evaluateHandle(root => root.activeElement, nh);
       const f = await (await page.evaluateHandle(elem => elem.innerText, rh)).jsonValue();
-      expect(f).toEqual("Leaflet");
+      expect(f).toEqual("Maps for HTML Community Group");
     });
   });
 });
