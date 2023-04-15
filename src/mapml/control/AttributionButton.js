@@ -59,7 +59,7 @@ export var AttributionButton = L.Control.Attribution.extend({
 
 L.Map.mergeOptions({
 	attributionControl: false,
-	toggleableAttributionControl: true,
+	toggleableAttributionControl: true
 });
 
 L.Map.addInitHook(function () {

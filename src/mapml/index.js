@@ -55,16 +55,16 @@ import { AttributionButton, attributionButton } from './control/AttributionButto
 import { ReloadButton, reloadButton } from './control/ReloadButton';
 import { ScaleBar, scaleBar } from './control/ScaleBar';
 import { FullscreenButton, fullscreenButton } from './control/FullscreenButton';
-import {geolocationButton} from "./control/GeolocationButton";
+import { geolocationButton } from "./control/GeolocationButton";
 import { Crosshair, crosshair } from "./layers/Crosshair";
 import { Feature, feature } from "./features/feature";
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
 import { FeatureGroup, featureGroup} from './features/featureGroup';
-import {AnnounceMovement} from "./handlers/AnnounceMovement";
+import { AnnounceMovement } from "./handlers/AnnounceMovement";
 import { FeatureIndex } from "./handlers/FeatureIndex";
 import { Options } from "./options";
 import "./keyboard";
-import {featureIndexOverlay, FeatureIndexOverlay} from "./layers/FeatureIndexOverlay";
+import { featureIndexOverlay, FeatureIndexOverlay } from "./layers/FeatureIndexOverlay";
 
 /* global L, Node */
 (function (window, document, undefined) {
