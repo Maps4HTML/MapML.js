@@ -387,13 +387,13 @@ export class MapFeature extends HTMLElement {
       }
     }
     
-    focus(event) {
+    focus(event, options) {
       let g = this._groupEl;
       if (typeof this.onfocus === 'function') {
         this.onfocus.call(this, event);
         return;
       } else {
-        g.focus();
+        g.focus(options);
       }
     }
 
