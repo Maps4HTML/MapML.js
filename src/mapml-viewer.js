@@ -129,7 +129,7 @@ export class MapViewer extends HTMLElement {
   }
   connectedCallback() {
 
-    this._createShadowRoot();
+    this._initShadowRoot();
 
     this._controlsList = new DOMTokenList(
       this.getAttribute("controlslist"),
@@ -137,9 +137,6 @@ export class MapViewer extends HTMLElement {
       ["noreload","nofullscreen","nozoom","nolayer","noscale","geolocation"]
     );
 
-    // the dimension attributes win, if they're there. A map does not
-    // have an intrinsic size, unlike an image or video, and so must
-    // have a defined width and height.
     var s = window.getComputedStyle(this),
       wpx = s.width, hpx=s.height,
       w = this.hasAttribute("width") ? this.getAttribute("width") : parseInt(wpx.replace('px','')),
@@ -194,11 +191,14 @@ export class MapViewer extends HTMLElement {
       }, 0);
     }
   }
-  _createShadowRoot() {
+  _initShadowRoot() {
+    if (!this.shadowRoot) {
+      this.attachShadow({mode: 'open'});
+    }
     let tmpl = document.createElement('template');
     tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
 
-    let shadowRoot = this.attachShadow({mode: 'open'});
+    let shadowRoot = this.shadowRoot;
     this._container = document.createElement('div');
 
     let output = "<output role='status' aria-live='polite' aria-atomic='true' class='mapml-screen-reader-output'></output>";
@@ -278,8 +278,11 @@ export class MapViewer extends HTMLElement {
     }
   }
   disconnectedCallback() {
-    //this._removeEvents();
+    while (this.shadowRoot.firstChild) {
+      this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+    }      
     delete this._map;
+    this._deleteControls();
   }
   adoptedCallback() {
 //    console.log('Custom map element moved to new page.');
@@ -432,6 +435,15 @@ export class MapViewer extends HTMLElement {
     }
   }
 
+  // delete the map controls that are private properties of this custom element
+  _deleteControls() {
+    delete this._layerControl;
+    delete this._zoomControl;
+    delete this._reloadButton;
+    delete this._fullScreenControl;
+    delete this._geolocationButton;
+    delete this._scaleBar;
+  }
   // Sets the control's visibility AND all its childrens visibility,
   // for the control element based on the Boolean hide parameter
   _setControlsVisibility(control, hide) {

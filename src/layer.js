@@ -90,6 +90,7 @@ export class MapLayer extends HTMLElement {
     if (this._layerControl && !this.hidden) {
       this._layerControl.removeLayer(this._layer);
     }
+    delete this._layer;
   }
   connectedCallback() {
     //creates listener that waits for createmap event, this allows for delayed builds of maps
@@ -190,7 +191,7 @@ export class MapLayer extends HTMLElement {
   }
   _validateDisabled() {
     setTimeout(() => {
-      let layer = this._layer, map = layer._map;
+      let layer = this._layer, map = layer?._map;
       if (map) {
         let count = 0, total=0, layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
         if(layer.validProjection){
