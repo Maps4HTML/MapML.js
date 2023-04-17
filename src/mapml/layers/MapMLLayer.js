@@ -144,7 +144,7 @@ export var MapMLLayer = L.Layer.extend({
                   var c = document.createElement('div');
                   c.classList.add("mapml-popup-content");
                   c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                  c.insertAdjacentHTML('beforeend', `<a href="" class="zoomLink">Zoom to here</a>`);
+                  c.insertAdjacentHTML('beforeend', `<a href="" class="zoomLink">${M.options.locale.popupZoom}</a>`);
                   let zoomLink = c.querySelector('a.zoomLink');
                   zoomLink.onclick = zoomLink.onkeydown = function (e) {
                     if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
@@ -184,7 +184,7 @@ export var MapMLLayer = L.Layer.extend({
                       var c = document.createElement('div');
                       c.classList.add("mapml-popup-content");
                       c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                      c.insertAdjacentHTML('beforeend', `<a href="" class="zoomLink">Zoom to here</a>`);
+                      c.insertAdjacentHTML('beforeend', `<a href="" class="zoomLink">${M.options.locale.popupZoom}</a>`);
                       let zoomLink = c.querySelector('a.zoomLink');
                       zoomLink.onclick = zoomLink.onkeydown = function (e) {
                         if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
