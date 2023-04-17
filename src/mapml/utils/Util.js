@@ -458,6 +458,11 @@ export var Util = {
       text = text.replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '').trim();
       if ((text.slice(0,7) === "<layer-") && (text.slice(-9) === "</layer->")) {
         mapEl.insertAdjacentHTML("beforeend", text);
+      } else if (text.slice(0,12) === "<map-feature" && text.slice(-14) === "</map-feature>") {
+        let layer = `<layer- label="${M.options.locale.dfPastedLayer}" checked>
+                       <map-meta name='projection' content='${mapEl.projection}'></map-meta>`+text+
+                    "</layer->";
+        mapEl.insertAdjacentHTML("beforeend", layer);
       } else {
         try {
           mapEl.geojson2mapml(JSON.parse(text));
@@ -841,10 +846,15 @@ export var Util = {
     return json;
   },
 
-  // Converts a geometry element to geojson, helper function
-  //    for mapml2geojson
+  // Converts a geometry element (el) to geojson, helper function
+  //    for mapml2geojson, NOTE - el can not be a map-geometrycollection
   // _geometry2geojson: (child of <map-geometry>), Proj4, Proj4, Bool -> geojson
   _geometry2geojson: function (el, source, dest, transform) {
+    // remove map-a, map-span elements if the geometry is wrapped in them
+    while (el.nodeName.toUpperCase() === "MAP-SPAN" || 
+           el.nodeName.toUpperCase() === "MAP-A") {
+            el = el.firstElementChild;
+    }
     let elem = el.nodeName;
     let j = {};
     let coord;
@@ -1014,20 +1024,36 @@ export var Util = {
               json.features[num].properties = {prop0: (feature.querySelector("map-properties").innerHTML).replace( /(<([^>]+)>)/ig, '')};
           }
 
-          let geom = feature.querySelector("map-geometry");
-          let elem = geom.children[0].nodeName;
+          let geom = feature.querySelector("map-geometry").firstElementChild;
+
+          // remove map-a, map-span elements if the geometry is wrapped in them
+          while (geom.nodeName.toUpperCase() === "MAP-SPAN" || 
+                 geom.nodeName.toUpperCase() === "MAP-A") {
+                  geom = geom.firstElementChild;
+          }
 
           // Adding Geometry
-          if (elem.toUpperCase() !== "MAP-GEOMETRYCOLLECTION"){
-              json.features[num].geometry = M._geometry2geojson(geom.children[0], source, dest, options.transform);
+          if (geom.nodeName.toUpperCase() !== "MAP-GEOMETRYCOLLECTION"){
+              json.features[num].geometry = M._geometry2geojson(geom, source, dest, options.transform);
           } else {
               json.features[num].geometry.type = "GeometryCollection";
               json.features[num].geometry.geometries = [];
 
-              let geoms = geom.querySelector('map-geometrycollection').children;
+              let geoms = geom.children;
               Array.from(geoms).forEach((g) => {
+                // omit all map-span, map-a that may be present in geometry-collection 
+                let n = g.nodeName.toUpperCase();
+                if (n === "MAP-SPAN" || n === "MAP-A") {
+                  g = g.cloneNode(true);
+                  [...g.querySelectorAll("map-a, map-span")].forEach(e => e.replaceWith(...e.children));
+                  Array.from(g.children).forEach((i) => {
+                    i = M._geometry2geojson(i, source, dest, options.transform);
+                    json.features[num].geometry.geometries.push(i);
+                  });
+                } else {
                   g = M._geometry2geojson(g, source, dest, options.transform);
                   json.features[num].geometry.geometries.push(g);
+                }
               });
           }
           //going to next feature

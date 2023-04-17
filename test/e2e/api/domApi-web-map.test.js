@@ -97,10 +97,14 @@ test.describe("web-map DOM API Tests", () => {
     let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
     let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
     let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
+    let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
+    expect(geolocation).toEqual(true);
     expect(zoomHidden).toEqual(true);
     expect(reloadHidden).toEqual(true);
     expect(fullscreenHidden).toEqual(true);
     expect(layerControlHidden).toEqual(true);
+    expect(scaleHidden).toEqual(true);
   });  
 
   test("Removing layer removes layer control", async () => {
@@ -137,10 +141,14 @@ test.describe("web-map DOM API Tests", () => {
     let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
     let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
     let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
+    let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
+    expect(geolocation).toEqual(true);
     expect(zoomHidden).toEqual(true);
     expect(reloadHidden).toEqual(true);
     expect(fullscreenHidden).toEqual(true);
     expect(layerControlHidden).toEqual(true);
+    expect(scaleHidden).toEqual(true);
   });
 
   test("Adding a layer to a map without controls does not add controls", async () => {
@@ -155,10 +163,14 @@ test.describe("web-map DOM API Tests", () => {
     let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
     let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
     let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
+    let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
+    expect(geolocation).toEqual(true);
     expect(zoomHidden).toEqual(true);
     expect(reloadHidden).toEqual(true);
     expect(fullscreenHidden).toEqual(true);
     expect(layerControlHidden).toEqual(true);
+    expect(scaleHidden).toEqual(true);
   });
 
   test("Adding controls to a map which was created without controls", async () => {
@@ -170,10 +182,14 @@ test.describe("web-map DOM API Tests", () => {
     let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
     let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
     let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+    let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
+    let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
+    expect(geolocation).toEqual(true);
     expect(zoomHidden).toEqual(false);
     expect(reloadHidden).toEqual(false);
     expect(fullscreenHidden).toEqual(false);
     expect(layerControlHidden).toEqual(false);
+    expect(scaleHidden).toEqual(false);
 
     // remove map for next test
     await page.evaluateHandle(() => document.querySelector('map').remove());
@@ -227,7 +243,7 @@ test.describe("web-map DOM API Tests", () => {
       await page.evaluateHandle((map) => map.setAttribute("height", "600"), mapHandle);
       await page.evaluateHandle((map) => map.setAttribute("projection", "CBMTILE"), mapHandle);
       await page.evaluateHandle((map) => map.setAttribute("controls", ""), mapHandle);
-      await page.evaluateHandle((map) => map.setAttribute("controlslist", "nozoom nofullscreen"), mapHandle);
+      await page.evaluateHandle((map) => map.setAttribute("controlslist", "nozoom nofullscreen noscale"), mapHandle);
       await page.evaluateHandle((map) => document.body.appendChild(map), mapHandle);
 
       // layer, zoom and fullscreen controls should be hidden
@@ -235,10 +251,14 @@ test.describe("web-map DOM API Tests", () => {
       let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
       let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
       let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
+      let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
+      expect(geolocation).toEqual(true);
       expect(zoomHidden).toEqual(true);
       expect(reloadHidden).toEqual(false);
       expect(fullscreenHidden).toEqual(true);
       expect(layerControlHidden).toEqual(true);
+      expect(scaleHidden).toEqual(true);
 
       // Remove controlslist for next test
       await page.evaluate( map => map.removeAttribute("controlslist"), mapHandle);
@@ -254,10 +274,14 @@ test.describe("web-map DOM API Tests", () => {
       let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
       let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
       let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
+      let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
+      expect(geolocation).toEqual(true);
       expect(zoomHidden).toEqual(false);
       expect(reloadHidden).toEqual(true);
       expect(fullscreenHidden).toEqual(false);
       expect(layerControlHidden).toEqual(true);
+      expect(scaleHidden).toEqual(false);
 
       // controlsList setter
       await page.evaluate( map => map.controlsList = "noreload nozoom", mapHandle);
@@ -268,10 +292,14 @@ test.describe("web-map DOM API Tests", () => {
       reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
       fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
       layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
+      geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
+      expect(geolocation).toEqual(true);
       expect(zoomHidden).toEqual(true);
       expect(reloadHidden).toEqual(true);
       expect(fullscreenHidden).toEqual(false);
       expect(layerControlHidden).toEqual(true);
+      expect(scaleHidden).toEqual(false);
     });
 
     test("Turning controls off and on to see if controlslist is preserved", async () => {
@@ -285,10 +313,14 @@ test.describe("web-map DOM API Tests", () => {
       let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
       let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
       let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
+      let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
+      expect(geolocation).toEqual(true);
       expect(zoomHidden).toEqual(true);
       expect(reloadHidden).toEqual(true);
       expect(fullscreenHidden).toEqual(true);
       expect(layerControlHidden).toEqual(true);
+      expect(scaleHidden).toEqual(true);
 
       // Turning controls on
       await page.evaluate( map => map.setAttribute("controls",""), mapHandle);
@@ -299,12 +331,33 @@ test.describe("web-map DOM API Tests", () => {
       reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
       fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
       layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
+      geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
+      expect(geolocation).toEqual(true);
       expect(zoomHidden).toEqual(true);
       expect(reloadHidden).toEqual(true);
       expect(fullscreenHidden).toEqual(false);
       expect(layerControlHidden).toEqual(true);
+      expect(scaleHidden).toEqual(false);
     });
+    test("controlslist geolocations test", async () => {
+      const viewerHandle = await page.evaluateHandle(() => document.querySelector('map'));
+      await page.evaluate( map => map.setAttribute("controlslist","geolocation"), viewerHandle);
+      let hascontrolslist = await page.evaluate( map => map.getAttribute("controlslist"), viewerHandle);
+      expect(hascontrolslist).toEqual('geolocation');
 
+      let geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
+      expect(geolocation).toEqual(false);
+      //remove geolocation
+      await page.evaluate( map => map.controlsList = "noreload", viewerHandle);
+      hascontrolslist = await page.evaluate( viewer => viewer.getAttribute("controlslist"), viewerHandle);
+      expect(hascontrolslist).toEqual('noreload');
+
+      let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+      geolocation = await page.$eval(".leaflet-bottom.leaflet-right > .leaflet-control-locate", (div) => div.hidden);
+      expect(geolocation).toEqual(true);
+      expect(reloadHidden).toEqual(true);
+    });
     test("controlslist removeAttribute", async () => {
       const mapHandle = await page.evaluateHandle(() => document.querySelector('map'));
       // removeAttribute
@@ -316,9 +369,11 @@ test.describe("web-map DOM API Tests", () => {
       let zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
       let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
       let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
+      let scaleHidden = await page.$eval(".leaflet-bottom.leaflet-left > .mapml-control-scale", (div) => div.hidden);
       expect(zoomHidden).toEqual(false);
       expect(reloadHidden).toEqual(false);
       expect(fullscreenHidden).toEqual(false);
+      expect(scaleHidden).toEqual(false);
     
       let controlslistDomTokenListLength = await page.evaluate( viewer => viewer.controlsList.length, mapHandle);
       expect(controlslistDomTokenListLength).toBe(0);
@@ -415,15 +470,42 @@ test.describe("web-map DOM API Tests", () => {
         expect(controlslistSupported).toBe(true);
         controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("nolayer"), mapHandle);
         expect(controlslistSupported).toBe(true);
+        controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("noscale"), mapHandle);
+        expect(controlslistSupported).toBe(true);
         // controls which are not yet supported / or invalid
         controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("nogeolocation"), mapHandle);
         expect(controlslistSupported).toBe(false);
-        controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("noscale"), mapHandle);
-        expect(controlslistSupported).toBe(false);
         controlslistSupported = await page.evaluate( viewer => viewer.controlsList.supports("nocode"), mapHandle);
         expect(controlslistSupported).toBe(false);
+
+        // remove map for next test
+        await page.evaluateHandle(() => document.querySelector('map').remove());
       });
 
+    });
+
+    test("controls disabled for empty custom projection map", async () => {
+      // Adding custom projection map
+      const mapHandle = await page.evaluateHandle(()=> document.createElement("map", {is:"web-map"}));
+      await page.evaluateHandle((map) => map.setAttribute("is", "web-map"), mapHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("lat", 45), mapHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("lon", -90), mapHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("zoom", 2), mapHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("width", "600"), mapHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("height", "600"), mapHandle);
+      await page.evaluateHandle((viewer) => viewer.setAttribute("projection", "other"), mapHandle);
+      await page.evaluateHandle( (viewer) => document.body.appendChild(viewer), mapHandle);
+
+      // Adding custom projection
+      const custProj = await page.evaluate( viewer => {
+        return viewer.defineCustomProjection(template);
+      }, mapHandle);
+      expect(custProj).toEqual("basic");
+      await page.evaluate( (viewer) => {viewer.projection = "basic"}, mapHandle);
+
+      // Toggle Controls (T) contextmenu is disabled
+      let toggleControlsBtn = await page.$eval("div > div.mapml-contextmenu > button:nth-child(10)",(btn) => btn.disabled);
+      expect(toggleControlsBtn).toBe(true);
     });
 
   });

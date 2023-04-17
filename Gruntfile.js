@@ -9,7 +9,7 @@ module.exports = function(grunt) {
       },
       combine: {
         files: {
-        'dist/mapml.css': ['node_modules/leaflet/dist/leaflet.css', 'src/mapml.css']
+        'dist/mapml.css': ['node_modules/leaflet/dist/leaflet.css', 'node_modules/leaflet.locatecontrol/dist/L.Control.Locate.css', 'src/mapml.css']
         }
       }
     },
@@ -32,7 +32,8 @@ module.exports = function(grunt) {
           'dist/layer.js':        ['src/layer.js'],
           'dist/leaflet.js':      ['dist/leaflet-src.js',
                                    'dist/proj4-src.js',
-                                   'dist/proj4leaflet.js']
+                                   'dist/proj4leaflet.js',
+                                   'dist/L.Control.Locate.js']
         } 
       }
     },
@@ -88,6 +89,14 @@ module.exports = function(grunt) {
             filter: 'isFile',
             src: ['index.html'],
             dest: 'dist/'
+          },
+          {
+            expand: true,
+            cwd: 'node_modules/leaflet.locatecontrol/src/',
+            flatten: true,
+            filter: 'isFile',
+            src: ['L.Control.Locate.js'],
+            dest: 'dist/'
           }
         ],
         options: {
@@ -134,14 +143,40 @@ module.exports = function(grunt) {
             dest: '../experiments'
       }
         ]
+      },
+      extension: {
+        files: [
+          {
+            expand: true,
+            src: ['dist/*'],
+            dest: '../mapml-extension/src'
+          }
+        ]
+      },
+      docs: {
+        files: [
+          {
+            expand: true,
+            src: ['dist/*'],
+            dest: '../web-map-doc'
+          }
+        ]
       }
     },
     clean: {
       dist: ['dist'],
-      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js'],
+      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js','dist/L.Control.Locate.js'],
       experiments: {
         options: {force: true},
         src: ['../experiments/dist']
+      },
+      extension: {
+        options: {force: true},
+        src: ['../mapml-extension/src/dist']
+      },
+      docs: {
+        options: {force: true},
+        src: ['../web-map-doc/dist']
       }
     },
     rollup: {
@@ -167,5 +202,8 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['clean:dist', 'copy:main', 'copy:images', 'jshint', 'rollup', 
                                  'uglify', 'cssmin','clean:tidyup']);
   grunt.registerTask('experiments',['clean:experiments','default','copy:experiments']);
+  grunt.registerTask('extension',['clean:extension','default','copy:extension']);
+  grunt.registerTask('docs', ['clean:docs','default','copy:docs']);
+  grunt.registerTask('sync', ['default','experiments','extension','docs']);
 
 };

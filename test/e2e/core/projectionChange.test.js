@@ -34,7 +34,7 @@ test.describe("Playwright Projection Change Tests", () => {
     });
 
     test("_parent Linked Feature Change To OSMTILE", async () => {
-      for(let i = 0; i < 10; i++) {
+      for(let i = 0; i < 11; i++) {
         await page.keyboard.press("Tab");
         await page.waitForTimeout(200);
       }

@@ -139,7 +139,7 @@ export class WebMap extends HTMLMapElement {
     this._controlsList = new DOMTokenList(
       this.getAttribute("controlslist"),
       this, "controlslist", 
-      ["noreload","nofullscreen","nozoom","nolayer"]
+      ["noreload","nofullscreen","nozoom","nolayer","noscale","geolocation"]
     );
     
     // the dimension attributes win, if they're there. A map does not
@@ -169,9 +169,7 @@ export class WebMap extends HTMLMapElement {
       // In particular:
       //   "All applicable event handlers are called and return before dispatchEvent() returns."
       this.dispatchEvent(new CustomEvent('createmap'));
-    }    
-
-    this._toggleControls();
+    }
     this._toggleStatic();
     
     /*
@@ -282,7 +280,9 @@ export class WebMap extends HTMLMapElement {
       M.attributionControl(this);
 
       this._createControls();
+      this._toggleControls();
       this._crosshair = M.crosshair().addTo(this._map);
+
       if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
 
       if (this.hasAttribute('name')) {
@@ -385,6 +385,17 @@ export class WebMap extends HTMLMapElement {
 
     this._layerControl = M.layerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
 
+    let scaleValue = M.options.announceScale;
+
+    if (scaleValue === "metric") {
+      scaleValue = {"metric": true, "imperial": false};
+    }
+    if (scaleValue === "imperial") {
+      scaleValue = {"metric": false, "imperial": true};
+    }
+
+    if (!this._scaleBar) this._scaleBar = M.scaleBar(scaleValue).addTo(this._map);
+
     // Only add controls if there is enough top left vertical space
     if (!this._zoomControl && (totalSize + 93) <= mapSize){
       totalSize += 93;
@@ -397,6 +408,10 @@ export class WebMap extends HTMLMapElement {
     if (!this._fullScreenControl && (totalSize + 49) <= mapSize){
       totalSize += 49;
       this._fullScreenControl = M.fullscreenButton().addTo(this._map);
+    }
+
+    if (!this._geolocationButton) {
+      this._geolocationButton = M.geolocationButton().addTo(this._map);
     }
   }
 
@@ -416,12 +431,16 @@ export class WebMap extends HTMLMapElement {
     this._setControlsVisibility("layercontrol",true);
     this._setControlsVisibility("reload",true);
     this._setControlsVisibility("zoom",true);
+    this._setControlsVisibility("geolocation",true);
+    this._setControlsVisibility("scale",true);
   }
   _showControls() {
     this._setControlsVisibility("fullscreen",false);
     this._setControlsVisibility("layercontrol",false);
     this._setControlsVisibility("reload",false);
     this._setControlsVisibility("zoom",false);
+    this._setControlsVisibility("geolocation",true);
+    this._setControlsVisibility("scale",false);
       
     // prune the controls shown if necessary
     // this logic could be embedded in _showControls
@@ -441,6 +460,12 @@ export class WebMap extends HTMLMapElement {
           break;
           case 'nozoom':
             this._setControlsVisibility("zoom",true);
+          break;
+          case 'geolocation':
+            this._setControlsVisibility("geolocation",false);
+          break;
+          case 'noscale':
+            this._setControlsVisibility("scale",true);
           break;
         }
       });
@@ -475,6 +500,16 @@ export class WebMap extends HTMLMapElement {
           container = this._layerControl._container;
         }
         break;
+      case "geolocation":
+        if (this._geolocationButton) {
+          container = this._geolocationButton._container;
+        }
+        break;
+      case "scale":
+        if (this._scaleBar) {
+          container = this._scaleBar._container;
+        }
+        break;  
     }
     if (container) {
       if (hide) {
@@ -569,6 +604,19 @@ export class WebMap extends HTMLMapElement {
               {target: this}}));
       }
     });
+
+    this._map.on('locationfound',
+      function (e) {
+        this.dispatchEvent(new CustomEvent('maplocationfound', {detail:
+          {latlng: e.latlng,     accuracy: e.accuracy}
+         }));
+      },this);
+    this._map.on('locationerror',
+      function (e) {
+        this.dispatchEvent(new CustomEvent('locationerror', {detail:
+          {error:e.message}
+        }));
+      },this);
     this._map.on('load',
       function () {
         this.dispatchEvent(new CustomEvent('load', {detail: {target: this}}));
@@ -700,6 +748,22 @@ export class WebMap extends HTMLMapElement {
       }
     });   
   }
+
+  locate(options) { //options: https://leafletjs.com/reference.html#locate-options
+    if (this._geolocationButton) {
+      this._geolocationButton.stop();
+    }
+    if (options) {
+      if (options.zoomTo) {
+        options.setView = options.zoomTo;
+        delete options.zoomTo;
+      }
+      this._map.locate(options);
+    } else {
+      this._map.locate({setView: true, maxZoom: 16});
+    }
+  }
+
   toggleDebug(){
     if(this._debug){
       this._debug.remove();
