@@ -8,9 +8,35 @@ export class MapFeature extends HTMLElement {
     }
 
     set zoom(val) {
-      var parsedVal = parseInt(val,10);
-      if (!isNaN(parsedVal) && (parsedVal >= 0 && parsedVal <= 25)) {
+      var parsedVal = parseInt(val,10),
+          projection = this._map.options.projection;
+      if (!isNaN(parsedVal) && (parsedVal >= 0 && parsedVal <= M[projection].options.resolutions.length - 1)) {
         this.setAttribute('zoom', parsedVal);
+      }
+    }
+
+    get min() {
+      return +(this.hasAttribute("min") ? this.getAttribute("min") : 0);
+    }
+
+    set min(val) {
+      var parsedVal = parseInt(val,10),
+          projection = this._map.options.projection;
+      if (!isNaN(parsedVal) && (parsedVal >= 0 && parsedVal <= M[projection].options.resolutions.length - 1)) {
+        this.setAttribute('min', parsedVal);
+      }
+    }
+
+    get max() {
+      var projection = this._map.options.projection;
+      return +(this.hasAttribute("max") ? this.getAttribute("max") : M[projection].options.resolutions.length - 1);
+    }
+
+    set max(val) {
+      var parsedVal = parseInt(val,10),
+          projection = this._map.options.projection;
+      if (!isNaN(parsedVal) && (parsedVal >= 0 && parsedVal <= M[projection].options.resolutions.length - 1)) {
+        this.setAttribute('max', parsedVal);
       }
     }
 
@@ -156,8 +182,7 @@ export class MapFeature extends HTMLElement {
         //update zoom bounds of vector layer
         let container = this._layer.shadowRoot || this._layer._layerEl;
         mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(container, this._getNativeZoomAndCS().zoom);
-        let zoom = mapmlvectors._clampZoom(this._map.getZoom());
-        mapmlvectors._resetFeatures(zoom);
+        mapmlvectors._resetFeatures();
         this._map._addZoomLimit(mapmlvectors);
         L.extend(mapmlvectors.options, mapmlvectors.zoomBounds);
       }
@@ -232,7 +257,7 @@ export class MapFeature extends HTMLElement {
           let pcrsBound = M.boundsToPCRSBounds(L.bounds(topLeft, bottomRight), zoom, map.options.projection, cs);
           if (shapes.length === 1 && shapes[0].tagName.toUpperCase() === "MAP-POINT") {
             let projection = map.options.projection,
-                maxZoom = M[projection].options.resolutions.length - 1,
+                maxZoom = this.hasAttribute('max') ? +this.getAttribute('max') : M[projection].options.resolutions.length - 1,
                 tileCenter = M[projection].options.crs.tile.bounds.getCenter(),
                 pixel = M[projection].transformation.transform(pcrsBound.min, M[projection].scale(+this.zoom || maxZoom));
             pcrsBound = M.pixelToPCRSBounds(L.bounds(pixel.subtract(tileCenter), pixel.add(tileCenter)), this.zoom || maxZoom, projection);
@@ -390,9 +415,31 @@ export class MapFeature extends HTMLElement {
           bR = extent.bottomRight.pcrs,
           bound = L.bounds(L.point(tL.horizontal, tL.vertical), L.point(bR.horizontal, bR.vertical)),
           center = map.options.crs.unproject(bound.getCenter(true));
-      let layerEl = this._layer._layerEl,
-          minZoom = layerEl.extent.zoom.minZoom,
-          maxZoom = layerEl.extent.zoom.maxZoom;
-      map.setView(center, M.getMaxZoom(bound, map, minZoom, maxZoom), {animate: false});
+      let projection = map.options.projection,
+          layerZoomBounds = this._layer._layerEl.extent.zoom,
+          minZoom = layerZoomBounds.minZoom ? layerZoomBounds.minZoom : 0,
+          maxZoom = layerZoomBounds.maxZoom ? layerZoomBounds.maxZoom : M[projection].options.resolutions.length - 1;
+      let newZoom;
+      if (this.hasAttribute('zoom')) {
+        // if there is a zoom attribute set to the map-feature, zoom to the zoom attribute value
+        newZoom = this.zoom;
+      } else {
+        // if not, calculate the maximum zoom level that can show the feature completely
+        newZoom = M.getMaxZoom(bound, map, minZoom, maxZoom);
+        if (this.max < newZoom) {
+          // if the calculated zoom is greater than the value of max zoom attribute, go with max zoom attribute
+          newZoom = this.max;
+        } else if (this.min > newZoom) {
+          // if the calculated zoom is less than the value of min zoom attribute, go with min zoom attribute
+          newZoom = this.min;
+        }
+      }
+      // prevent overzooming / underzooming
+      if (newZoom < minZoom) {
+        newZoom = minZoom;
+      } else if (newZoom > maxZoom) {
+        newZoom = maxZoom;
+      }
+      map.setView(center, newZoom, {animate: false});
     }
   }

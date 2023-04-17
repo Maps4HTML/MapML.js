@@ -220,7 +220,7 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       expect(f).toEqual("Maps4HTML");
     });
 
-    test("Zoom link zooms to the maximum zoom level that can show the feature completely", async () => {
+    test("Zoom link zooms to the zoom level = zoom attribute", async () => {
       await page.click("body");
       await page.keyboard.press("Tab"); // focus map
       await page.keyboard.press("Tab"); // focus feature
@@ -233,7 +233,30 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
         "body > mapml-viewer",
         (map) => +map.getAttribute('zoom')
       );
-      expect(zoom).toEqual(3);
+      expect(zoom).toEqual(2);
+    });
+    
+    test("Zoom link zooms to the maximum zoom level that can show the feature completely when zoom attribute does not present", async () => {
+      await page.click("body");
+      await page.keyboard.press("Tab"); // focus map
+      await page.keyboard.press("Tab"); // focus feature
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Enter");  // zoom out
+      await page.waitForTimeout(200);
+      await page.click("body");
+      await page.keyboard.press("Tab"); // focus map
+      await page.keyboard.press("Tab");    
+      await page.keyboard.press("ArrowLeft"); // focus targeted feature 
+      await page.keyboard.press("Enter");  // display popup with link in it
+      await page.keyboard.press("Tab"); // focus zoomto link
+      await page.keyboard.press("Enter");
+      await page.waitForTimeout(500);
+      const zoom = await page.$eval(
+        "body > mapml-viewer",
+        (map) => +map.getAttribute('zoom')
+      );
+      expect(zoom).toEqual(2);
     });
   });
 });

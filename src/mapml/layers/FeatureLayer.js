@@ -36,7 +36,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         }
         this.addData(mapml, native.cs, native.zoom);
         if(this._staticFeature){
-          this._resetFeatures(this._clampZoom(this.options._leafletLayer._map.getZoom()));
+          this._resetFeatures();
 
           this.options._leafletLayer._map._addZoomLimit(this);
         }
@@ -106,8 +106,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         this.clearLayers();
         return;
       }
-      let clampZoom = this._clampZoom(mapZoom);
-      this._resetFeatures(clampZoom);
+      this._resetFeatures();
     },
 
     //sets default if any are missing, better to only replace ones that are missing
@@ -144,21 +143,25 @@ export var FeatureLayer = L.FeatureGroup.extend({
       }
     },
 
-    _resetFeatures : function (zoom){
+    _resetFeatures : function () {
       this.clearLayers();
       // since features are removed and re-added by zoom level, need to clean the feature index before re-adding
       if(this._map) this._map.featureIndex.cleanIndex();
-      if(this._features){
-        // only add feature[zoom]
-        // so if we want all features render, just add a for loop and render all features in this._features
+      let map = this._map || this.options._leafletLayer._map;
+      if(this._features) {
         for (let zoom in this._features) {
           for(let k =0;k < this._features[zoom].length;k++){
-            this.addLayer(this._features[zoom][k]);
+            let feature = this._features[zoom][k],
+                checkRender = feature._checkRender(map.getZoom(), this.zoomBounds.minZoom, this.zoomBounds.maxZoom);
+            if (checkRender) {
+              this.addLayer(feature);
+            }
           }
         }
       }
     },
 
+    // substituted with the _checkRender function in FeatureGroup.js
     _clampZoom : function(zoom){
       // if the current zoom does not fall into the map zoom bound, return zoom;
       if(zoom > this.zoomBounds.maxZoom || zoom < this.zoomBounds.minZoom) return zoom;
@@ -173,10 +176,6 @@ export var FeatureLayer = L.FeatureGroup.extend({
       // if the current map zoom falls between the min and max native zoom, and falls into the valid map zoom bound range,
       // then ONLY render those feature that have a native zoom value equal to the current map zoom value
       return zoom;
-      // conclusion:
-      // change the zoom attribute of map-feature <=> change the native zoom value
-      // SHOULD change the look/rendering behaviors of the map in this way
-      // a map should only render the features which has a native zoom value = the current map zoom value IN THIS WAY
     },
 
     _setZoomTransform: function(center, clampZoom){

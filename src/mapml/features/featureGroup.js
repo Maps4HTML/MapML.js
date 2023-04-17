@@ -58,6 +58,28 @@ export var FeatureGroup = L.FeatureGroup.extend({
   },
 
   /**
+   * Check whether the feature group should be rendered at current map zoom level
+   * @param {Number} zoom - current map zoom
+   * @param {Object} vectorMinZoom - the minimum zoom bound of vector layer
+   * @param {Object} vectorMinZoom - the maximum zoom bound of vector layer
+   * @returns {Boolean}
+   * @private
+   */
+  _checkRender: function(zoom, vectorMinZoom, vectorMaxZoom) {
+    let minZoom = this._featureEl.getAttribute('min'),
+        maxZoom = this._featureEl.getAttribute('max');
+    // if the current map zoom falls below/above the zoom bounds of the vector layer
+    if (zoom > vectorMaxZoom || zoom < vectorMinZoom) return false;
+    // if no min and max attribute present
+    if (minZoom === null && maxZoom === null) return true;
+    // if the current map zoom falls below/above the [min, max] range
+    if ((minZoom !== null && zoom < +minZoom) || (maxZoom !== null && zoom > +maxZoom)) {
+      return false;
+    }
+    return true;
+  },
+
+  /**
    * Handler for focus events
    * @param {L.DOMEvent} e - Event that occurred
    * @private

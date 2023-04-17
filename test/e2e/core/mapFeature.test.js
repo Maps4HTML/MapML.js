@@ -125,7 +125,7 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
                 return +map.zoom;
             }
         );
-        expect(mapZoom).toEqual(3);
+        expect(mapZoom).toEqual(2);
     });
 
     test("Get extent of <map-point> with no zoom attribute", async () => {
