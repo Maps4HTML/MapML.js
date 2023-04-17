@@ -51,20 +51,20 @@ import { DebugOverlay, debugOverlay} from './layers/DebugOverlay';
 import { QueryHandler } from './handlers/QueryHandler';
 import { ContextMenu } from './handlers/ContextMenu';
 import { Util } from './utils/Util';
+import { AttributionButton, attributionButton } from './control/AttributionButton';
 import { ReloadButton, reloadButton } from './control/ReloadButton';
 import { ScaleBar, scaleBar } from './control/ScaleBar';
 import { FullscreenButton, fullscreenButton } from './control/FullscreenButton';
-import { attributionControl } from "./control/AttributionControl";
-import {geolocationButton} from "./control/GeolocationButton";
+import { geolocationButton } from "./control/GeolocationButton";
 import { Crosshair, crosshair } from "./layers/Crosshair";
 import { Feature, feature } from "./features/feature";
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
 import { FeatureGroup, featureGroup} from './features/featureGroup';
-import {AnnounceMovement} from "./handlers/AnnounceMovement";
+import { AnnounceMovement } from "./handlers/AnnounceMovement";
 import { FeatureIndex } from "./handlers/FeatureIndex";
 import { Options } from "./options";
 import "./keyboard";
-import {featureIndexOverlay, FeatureIndexOverlay} from "./layers/FeatureIndexOverlay";
+import { featureIndexOverlay, FeatureIndexOverlay } from "./layers/FeatureIndexOverlay";
 
 /* global L, Node */
 (function (window, document, undefined) {
@@ -653,6 +653,9 @@ M.featureLayer = featureLayer;
 M.LayerControl = LayerControl;
 M.layerControl = layerControl;
 
+M.AttributionButton = AttributionButton;
+M.attributionButton = attributionButton;
+
 M.ReloadButton = ReloadButton;
 M.reloadButton = reloadButton;
 
@@ -661,8 +664,6 @@ M.scaleBar = scaleBar;
 
 M.FullscreenButton = FullscreenButton;
 M.fullscreenButton = fullscreenButton;
-
-M.attributionControl = attributionControl;
 
 M.geolocationButton = geolocationButton;
 
