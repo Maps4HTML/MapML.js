@@ -290,7 +290,10 @@ export class MapFeature extends HTMLElement {
       }
     }
     // internal support for returning a GeoJSON representation of <map-feature> geometry
-    // propertyFunction (optional): the function used to format the innerHTML of <map-properties>
+    // The options object can contain the following:
+    //      propertyFunction   - function(<map-properties>), A function that maps the features' <map-properties> element to   a GeoJSON "properties" member.
+    //      transform          - Bool, Transform coordinates to gcrs values, defaults to True
+    // mapml2geojson: <map-feature> Object -> GeoJSON
     mapml2geojson(options) {
       let defaults = {
         propertyFunction: null,
