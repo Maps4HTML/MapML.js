@@ -1063,6 +1063,9 @@ export var Util = {
       return json;
   },
 
+  // Takes leaflet bound, leaflet map and min and max zoom limit,
+  // return the maximum zoom level that can show the bound completely
+  // getMaxZoom: L.Bound, L.Map, Number, Number -> Number
   getMaxZoom: function (bound, map, minZoom, maxZoom) {
     if(!bound) return;
 

@@ -37,7 +37,6 @@ export var FeatureLayer = L.FeatureGroup.extend({
         this.addData(mapml, native.cs, native.zoom);
         if(this._staticFeature){
           this._resetFeatures();
-
           this.options._leafletLayer._map._addZoomLimit(this);
         }
       }
@@ -235,8 +234,9 @@ export var FeatureLayer = L.FeatureGroup.extend({
         feature = features[i];
         var geometriesExist = feature.getElementsByTagName("map-geometry").length && feature.getElementsByTagName("map-coordinates").length;
         if (geometriesExist) {
-         // if the <map-feature> element has migrated from mapml file
-         if (mapml.nodeType === Node.DOCUMENT_NODE && feature._DOMnode) {
+          if (mapml.nodeType === Node.DOCUMENT_NODE && feature._DOMnode) {
+           // if the <map-feature> element has migrated from mapml file, 
+           // the featureGroup object should bind with the **CLONED** map-feature element in DOM instead of the feature in mapml
           feature._DOMnode._featureGroup = this.addData(feature._DOMnode, nativeCS, nativeZoom);
          } else {
           feature._featureGroup = this.addData(feature, nativeCS, nativeZoom);

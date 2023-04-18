@@ -85,6 +85,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @private
    */
   _handleFocus: function(e) {
+    if (!(e instanceof KeyboardEvent)) return;
     // tab, shift, cr, esc, up, left, down, right, 
     if(([9, 16, 27, 37, 38, 39, 40].includes(e.keyCode)) && e.type === "keydown"){
       let index = this._map.featureIndex.currentIndex;
