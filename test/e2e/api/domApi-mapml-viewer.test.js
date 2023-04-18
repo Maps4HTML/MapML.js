@@ -19,7 +19,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
     let errorLogs = [];
     page.on("pageerror", (err) => {
       errorLogs.push(err.message);
-    })
+    });
     const viewerHandle = await page.evaluateHandle(()=> document.createElement("mapml-viewer"));
     const nn = await (await page.evaluateHandle(viewer => viewer.nodeName, viewerHandle)).jsonValue();
     expect(nn).toEqual('MAPML-VIEWER');
@@ -77,6 +77,34 @@ test.describe("mapml-viewer DOM API Tests", () => {
             "body > mapml-viewer .leaflet-tile-loaded:nth-child(1)", 
             (tileDiv) => tileDiv.firstChild.nodeName === "IMG");
     expect(layerVisible).toBe(true);
+  });
+  
+  test("Remove mapml-viewer from DOM, add it back in", async () => {
+    // check for error messages in console
+    let errorLogs = [];
+    page.on("pageerror", (err) => {
+      errorLogs.push(err.message);
+    });
+    // locators avoid flaky tests, allegedly
+    const viewer = await page.locator('mapml-viewer');
+    await viewer.evaluate(()=>{
+    });
+    expect(await viewer.evaluate(() => {
+      let m = document.querySelector('mapml-viewer');
+      document.body.removeChild(m);
+      document.body.appendChild(m);
+      let l = m.querySelector('layer-');
+      return l.label;
+      // the label attribute is ignored if the mapml document has a map-title
+      // element, which is the case here.  Since the layer loads over the
+      // network, it means that the map is back to normal after being re-added
+      /// to the DOM, if the label reads as follows:
+    })).toEqual("Canada Base Map - Transportation (CBMT)");
+    // takes a couple of seconds for the tiles to load
+
+    await page.waitForLoadState('networkidle');
+    const layerTile = await page.locator("body > mapml-viewer .leaflet-tile-loaded:nth-child(1)");
+    expect(await layerTile.evaluate(tile=>tile.firstChild.nodeName === "IMG")).toBe(true);
   });
 
   test("Toggle all mapml-viewer controls by adding or removing controls attribute", async () => {
@@ -226,7 +254,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
     // remove map for next test
     await page.evaluateHandle(() => document.querySelector('mapml-viewer').remove());
   });
-
+  
   test.describe("controlslist test", () => {
 
     test("map created with controlslist", async () => {
@@ -495,7 +523,7 @@ test.describe("mapml-viewer DOM API Tests", () => {
         return viewer.defineCustomProjection(template);
       }, viewerHandle);
       expect(custProj).toEqual("basic");
-      await page.evaluate( (viewer) => {viewer.projection = "basic"}, viewerHandle);
+      await page.evaluate( (viewer) => {viewer.projection = "basic";}, viewerHandle);
 
       // Toggle Controls (T) contextmenu is disabled
       let toggleControlsBtn = await page.$eval("div > div.mapml-contextmenu > button:nth-child(10)",(btn) => btn.disabled);
