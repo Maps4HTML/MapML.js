@@ -191,6 +191,17 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
     });
 
     test("Focus Controls focuses the first <button> child in control div", async () => {
+      await page.waitForTimeout(1000);
+      await page.click("body > mapml-viewer");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Enter");
       await page.click("body > mapml-viewer");
       await page.keyboard.press("Shift+F10");
       await page.keyboard.press("t");
@@ -201,11 +212,8 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       for (let i = 0; i < 5; i++)
         await page.keyboard.press("Tab");
       await page.keyboard.press("Enter");
-      const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
-      const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
-      const rh = await page.evaluateHandle(root => root.activeElement, nh);
-      const f = await (await page.evaluateHandle(elem => elem.innerText, rh)).jsonValue();
-      expect(f).toEqual("Maps4HTML");
+      let f = await page.$eval("body > mapml-viewer", (viewer) => viewer.shadowRoot.activeElement.innerHTML);
+      expect(f).toEqual("Maps for HTML Community Group");
     });
   });
 });

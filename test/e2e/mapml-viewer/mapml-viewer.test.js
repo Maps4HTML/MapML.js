@@ -36,9 +36,9 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
   });
   
   test("Ensure attribution control has role='group' aria-label='Map data attribution'", async () => {
-    let role = await page.evaluate(`document.querySelector('mapml-viewer')._attributionControl.getContainer().getAttribute('role')`);
+    let role = await page.evaluate(`document.querySelector('mapml-viewer')._map.attributionControl._container.getAttribute('role')`);
     expect(role).toEqual("group");
-    let arialabel = await page.evaluate(`document.querySelector('mapml-viewer')._attributionControl.getContainer().getAttribute('aria-label')`);
+    let arialabel = await page.evaluate(`document.querySelector('mapml-viewer')._map.attributionControl._container.getAttribute('aria-label')`);
     expect(arialabel).toEqual("Map data attribution");
   });
 

@@ -19,6 +19,7 @@ export var Options = {
     lmZoomToLayer: "Zoom To Layer",
     lmCopyLayer: "Copy Layer",
     lcOpacity: "Opacity",
+    btnAttribution: "Map data attribution",
     btnZoomIn: "Zoom in",
     btnZoomOut: "Zoom out",
     btnFullScreen: "View Fullscreen",
