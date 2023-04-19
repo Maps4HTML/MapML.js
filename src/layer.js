@@ -250,11 +250,9 @@ export class MapLayer extends HTMLElement {
        
         if (mapLink.hasAttribute('href')) {
           mapLink.setAttribute('href', decodeURI(this.transformURL(mapLink.attributes.href.value, this.baseURI ? this.baseURI : document.baseURI)));
-          console.log(mapLink);
         }
         else if (mapLink.hasAttribute('tref')) {
           mapLink.setAttribute('tref', decodeURI(this.transformURL(mapLink.attributes.tref.value, this.baseURI ? this.baseURI : document.baseURI)));
-          console.log(mapLink);
         }
       });
     }
