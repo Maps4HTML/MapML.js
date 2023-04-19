@@ -236,12 +236,33 @@ export class MapLayer extends HTMLElement {
   }
   getOuterHTML() {
     let fullLayer = this.outerHTML;
+    let tempElement = document.createElement('div');
+    tempElement.innerHTML = fullLayer;
+
     if (this.hasAttribute('src')) {
-      let findSrc = /src="([^"]*)"/;
       let newSrc = this._layer.getHref();
-      fullLayer = fullLayer.replace(findSrc, `src="${newSrc}"`);
+      tempElement.querySelector('layer-').setAttribute('src',newSrc);
     }
-    return fullLayer;
+    if (this.querySelector('map-link')) {
+      let mapLinks = tempElement.querySelectorAll('map-link');
+
+      mapLinks.forEach((mapLink) => {
+       
+        if (mapLink.hasAttribute('href')) {
+          mapLink.setAttribute('href', decodeURI(this.transformURL(mapLink.attributes.href.value, this.baseURI ? this.baseURI : document.baseURI)));
+          console.log(mapLink);
+        }
+        else if (mapLink.hasAttribute('tref')) {
+          mapLink.setAttribute('tref', decodeURI(this.transformURL(mapLink.attributes.tref.value, this.baseURI ? this.baseURI : document.baseURI)));
+          console.log(mapLink);
+        }
+      });
+    }
+
+    return tempElement.innerHTML;
+  }
+  transformURL(url, baseUrl) {
+    return (new URL(url, baseUrl)).href;
   }
   _onLayerChange() {
     if (this._layer._map) {
