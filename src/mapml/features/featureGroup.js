@@ -27,7 +27,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
       }
     }
     
-    L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
+    L.DomEvent.on(this.options.group, "keyup keydown", this._handleFocus, this);
     this.options.group.setAttribute('aria-label', this.options.accessibleTitle);
     if(this.options.featureID) this.options.group.setAttribute("data-fid", this.options.featureID);
     for (let feature of layers) {
@@ -85,7 +85,6 @@ export var FeatureGroup = L.FeatureGroup.extend({
    * @private
    */
   _handleFocus: function(e) {
-    if (!(e instanceof KeyboardEvent)) return;
     // tab, shift, cr, esc, up, left, down, right, 
     if(([9, 16, 27, 37, 38, 39, 40].includes(e.keyCode)) && e.type === "keydown"){
       let index = this._map.featureIndex.currentIndex;
