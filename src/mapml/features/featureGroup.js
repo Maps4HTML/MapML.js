@@ -27,7 +27,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
       }
     }
     
-    L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
+    L.DomEvent.on(this.options.group, "keyup keydown", this._handleFocus, this);
     this.options.group.setAttribute('aria-label', this.options.accessibleTitle);
     if(this.options.featureID) this.options.group.setAttribute("data-fid", this.options.featureID);
     for (let feature of layers) {
