@@ -504,7 +504,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     await page.waitForTimeout(200);
     await page.click("body > mapml-viewer", {
       button: 'right',
-      position: {x: 485, y: 570}
+      position: {x: 495, y: 550}
     });
     const contextMenu = await page.locator('div > div.mapml-contextmenu').first();
     expect(await contextMenu.isVisible()).toBeTruthy();
