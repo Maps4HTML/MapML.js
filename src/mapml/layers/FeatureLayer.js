@@ -160,23 +160,6 @@ export var FeatureLayer = L.FeatureGroup.extend({
       }
     },
 
-    // substituted with the _checkRender function in FeatureGroup.js
-    _clampZoom : function(zoom){
-      // if the current zoom does not fall into the map zoom bound, return zoom;
-      if(zoom > this.zoomBounds.maxZoom || zoom < this.zoomBounds.minZoom) return zoom;
-      // if the current map zoom is less than the minimum native zoom, then only render those features with minimum native zoom value
-      if (undefined !== this.zoomBounds.minNativeZoom && zoom < this.zoomBounds.minNativeZoom) {
-        return this.zoomBounds.minNativeZoom;
-      }
-      // if the current map zoom is greater than the maximum native zoom, then only render those features with maximum native zoom value
-      if (undefined !== this.zoomBounds.maxNativeZoom && this.zoomBounds.maxNativeZoom < zoom) {
-        return this.zoomBounds.maxNativeZoom;
-      }
-      // if the current map zoom falls between the min and max native zoom, and falls into the valid map zoom bound range,
-      // then ONLY render those feature that have a native zoom value equal to the current map zoom value
-      return zoom;
-    },
-
     _setZoomTransform: function(center, clampZoom){
       var scale = this._map.getZoomScale(this._map.getZoom(),clampZoom),
 		    translate = center.multiplyBy(scale)
