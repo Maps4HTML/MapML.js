@@ -40,7 +40,7 @@ test.describe("Playwright Layer Context Menu Tests", () => {
       (text) => text.value
     );
     
-    expect(copyLayer).toEqual("<layer- label=\"CBMT - INLINE\" checked=\"\">\n      <map-extent units=\"CBMTILE\" hidden=\"\">\n        <map-input name=\"zoomLevel\" type=\"zoom\" value=\"3\" min=\"0\" max=\"3\"></map-input>\n        <map-input name=\"row\" type=\"location\" axis=\"row\" units=\"tilematrix\" min=\"14\" max=\"21\"></map-input>\n        <map-input name=\"col\" type=\"location\" axis=\"column\" units=\"tilematrix\" min=\"14\" max=\"19\"></map-input>\n        <map-link rel=\"tile\" tref=\"http://localhost:30001/data/cbmt/{zoomLevel}/c{col}_r{row}.png\"></map-link>\n      </map-extent>\n    </layer->");
+    expect(copyLayer).toEqual("<layer- label=\"CBMT - INLINE\" checked=\"\">\n      <map-link rel=\"license\" title=\"Copyright FooBar Inc.\"></map-link>\n      <map-extent units=\"CBMTILE\" hidden=\"\">\n        <map-input name=\"zoomLevel\" type=\"zoom\" value=\"3\" min=\"0\" max=\"3\"></map-input>\n        <map-input name=\"row\" type=\"location\" axis=\"row\" units=\"tilematrix\" min=\"14\" max=\"21\"></map-input>\n        <map-input name=\"col\" type=\"location\" axis=\"column\" units=\"tilematrix\" min=\"14\" max=\"19\"></map-input>\n        <map-link rel=\"tile\" tref=\"http://localhost:30001/data/cbmt/{zoomLevel}/c{col}_r{row}.png\"></map-link>\n      </map-extent>\n    </layer->");
   });
 
   test("Map zooms in to layer 2", async () => {
