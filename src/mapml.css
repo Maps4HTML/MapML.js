@@ -117,8 +117,9 @@
 }
 
 button.mapml-button:disabled,
-.mapml-button[aria-disabled="true"] {
-  color: #bbb;
+.mapml-button[aria-disabled="true"],
+.mapml-layer-item:disabled button.mapml-button {
+  opacity: .3;
 }
 
 .leaflet-control-layers-toggle {
