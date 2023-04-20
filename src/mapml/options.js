@@ -52,6 +52,7 @@ export var Options = {
     kbdPrevFeature: "Previous feature",
     kbdNextFeature: "Next feature",
     dfLayer: "Layer",
+    popupZoom: "Zoom to here",
     dfPastedLayer: "Pasted layer"
   }
 };
