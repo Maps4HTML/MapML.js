@@ -62,8 +62,9 @@ export var Feature = L.Path.extend({
     container.appendChild(p);
     elem.classList.add('map-a');
     if (link.visited) elem.classList.add("map-a-visited");
-    L.DomEvent.on(elem, 'mousedown', e => dragStart = {x:e.clientX, y:e.clientY}, this);
-    L.DomEvent.on(elem, "mouseup", (e) => {
+    elem.mousedown = e => dragStart = {x:e.clientX, y:e.clientY};
+    L.DomEvent.on(elem, 'mousedown', elem.mousedown, this);
+    elem.mouseup = (e) => {
       if (e.button !== 0) return; // don't trigger when button isn't left click
       let onTop = true, nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
       while(nextLayer && onTop){
@@ -83,7 +84,8 @@ export var Feature = L.Path.extend({
           M._handleLink(link, leafletLayer);
         }
       }
-    }, this);
+    };
+    L.DomEvent.on(elem, "mouseup", elem.mouseup, this);
     L.DomEvent.on(elem, "keypress", (e) => {
       L.DomEvent.stop(e);
       if(e.keyCode === 13 || e.keyCode === 32) {

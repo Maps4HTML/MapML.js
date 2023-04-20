@@ -4,6 +4,7 @@ import DOMTokenList from './DOMTokenList.js';
 import { MapLayer } from './layer.js';
 import { MapArea } from './map-area.js';
 import { MapCaption } from './map-caption.js';
+import { MapFeature } from './map-feature.js';
 
 export class WebMap extends HTMLMapElement {
   static get observedAttributes() {
@@ -1097,3 +1098,4 @@ window.customElements.define('web-map', WebMap,  { extends: 'map' });
 window.customElements.define('layer-', MapLayer);
 window.customElements.define('map-area', MapArea, {extends: 'area'});
 window.customElements.define('map-caption',MapCaption);
+window.customElements.define('map-feature', MapFeature);

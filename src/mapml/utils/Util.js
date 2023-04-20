@@ -863,7 +863,7 @@ export var Util = {
         case "MAP-POINT":
             j.type = "Point";
             if (transform) {
-                let pointConv = proj4.transform(source, dest, ((el.querySelector('map-coordinates').innerHTML.split(/ [<>\ ]/g)).map(Number)) );
+                let pointConv = proj4.transform(source, dest, ((el.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g)).map(Number)) );
                 j.coordinates = [pointConv.x, pointConv.y];
             } else {
                 j.coordinates = (el.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g)).map(Number);
@@ -1009,12 +1009,15 @@ export var Util = {
           json.features[num].properties = {};
 
           // setting properties when function presented
-          if (typeof options.propertyFunction === "function") {
+          if (!feature.querySelector("map-properties")) {
+            json.features[num].properties = null;
+          } else if (typeof options.propertyFunction === "function") {
               let properties = options.propertyFunction(feature.querySelector("map-properties"));
               json.features[num].properties = properties;
           } else if (feature.querySelector("map-properties").querySelector('table') !== null) { 
               // setting properties when table presented
-              let properties = M._table2properties(feature.querySelector("map-properties").querySelector('table'));
+              let table = (feature.querySelector("map-properties").querySelector('table')).cloneNode(true),
+                  properties = M._table2properties(table);
               json.features[num].properties = properties;
           } else {
               // when no table present, strip any possible html tags to only get text
@@ -1058,5 +1061,43 @@ export var Util = {
       });
 
       return json;
+  },
+
+  // Takes leaflet bound, leaflet map and min and max zoom limit,
+  // return the maximum zoom level that can show the bound completely
+  // getMaxZoom: L.Bound, L.Map, Number, Number -> Number
+  getMaxZoom: function (bound, map, minZoom, maxZoom) {
+    if(!bound) return;
+
+    let newZoom = map.getZoom(),                                                                                                                                                                 
+        scale = map.options.crs.scale(newZoom),
+        mapCenterTCRS = map.options.crs.transformation.transform(bound.getCenter(true), scale);
+
+    let mapHalf = map.getSize().divideBy(2),
+        mapTlNew = mapCenterTCRS.subtract(mapHalf).round(),
+        mapBrNew = mapCenterTCRS.add(mapHalf).round();
+
+    let mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection),
+        mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
+
+    let mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew),
+        zOffset = mapPCRS.contains(bound) ? 1 : -1;
+
+    while((zOffset === -1 && !(mapPCRS.contains(bound)) && (newZoom - 1) >= minZoom)  ||
+          (zOffset === 1 && mapPCRS.contains(bound) && (newZoom + 1) <= maxZoom)) {
+      newZoom += zOffset;
+      scale = map.options.crs.scale(newZoom);
+      mapCenterTCRS = map.options.crs.transformation.transform(bound.getCenter(true), scale);
+
+      mapTlNew = mapCenterTCRS.subtract(mapHalf).round();
+      mapBrNew = mapCenterTCRS.add(mapHalf).round();
+      mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection);
+      mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
+
+      mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
+    }
+
+    if(zOffset === 1 && newZoom - 1 >= 0 && !(newZoom === maxZoom && mapPCRS.contains(bound))) newZoom--;
+    return newZoom;
   }
 };

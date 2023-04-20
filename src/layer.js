@@ -12,20 +12,6 @@ export class MapLayer extends HTMLElement {
   set src(val) {
     if (val) {
       this.setAttribute('src', val);
-      if (this._layer) {
-        let oldOpacity = this.opacity;
-        // go through the same sequence as if the layer had been removed from
-        // the DOM and re-attached with a new URL source.
-        this.disconnectedCallback();
-        var base = this.baseURI ? this.baseURI : document.baseURI;
-        this._layer = M.mapMLLayer(val ? (new URL(val, base)).href: null, this);
-        this._layer.on('extentload', this._onLayerExtentLoad, this);
-        this._setUpEvents();
-        if (this.parentNode) {
-          this.connectedCallback();
-        }
-        this.opacity = oldOpacity;
-      }
     }
   }
   get label() {
@@ -82,6 +68,10 @@ export class MapLayer extends HTMLElement {
     // to the layer being removed with the _onLayerChange execution
     // that is set up in _attached:
     if(this.hasAttribute("data-moving")) return;
+    this._onRemove();
+  }
+
+  _onRemove() {
     this._removeEvents();
     if (this._layer._map) {
       this._layer._map.removeLayer(this._layer);
@@ -90,11 +80,23 @@ export class MapLayer extends HTMLElement {
     if (this._layerControl && !this.hidden) {
       this._layerControl.removeLayer(this._layer);
     }
+
+    if (this.shadowRoot) {
+      this.shadowRoot.innerHTML = '';
+    }
   }
+
   connectedCallback() {
     //creates listener that waits for createmap event, this allows for delayed builds of maps
     //this allows a safeguard for the case where loading a custom TCRS takes longer than loading mapml-viewer.js/web-map.js
     if(this.hasAttribute("data-moving")) return;
+    this._onAdd();
+  }
+
+  _onAdd() {
+    if(this.getAttribute('src') && !this.shadowRoot) {
+      this.attachShadow({mode: 'open'});
+    }
     this.parentNode.addEventListener('createmap', ()=>{
       this._ready();
       // if the map has been attached, set this layer up wrt Leaflet map
@@ -108,6 +110,7 @@ export class MapLayer extends HTMLElement {
     //if map is already created then dispatch createmap event, allowing layer to be built
     if(this.parentNode._map)this.parentNode.dispatchEvent(new CustomEvent('createmap'));
   }
+
   adoptedCallback() {
   //    console.log('Custom map element moved to new page.');
   }
@@ -148,7 +151,24 @@ export class MapLayer extends HTMLElement {
           this.opacity = newValue;
         }
       break;
+      case 'src':
+        if (oldValue !== newValue && this._layer) {
+          this._reload();
+          // the original inline content will not be removed
+          // but has NO EFFECT and works as a fallback
+        }
     }
+  }
+  // re-load the layer element when the src attribute is changed
+  _reload() {
+    let oldOpacity = this.opacity;
+    // go through the same sequence as if the layer had been removed from
+    // the DOM and re-attached with a new URL source.
+    this._onRemove();
+    if (this.isConnected) {
+      this._onAdd();
+    }
+    this.opacity = oldOpacity;
   }
   _onLayerExtentLoad(e) {
     // the mapml document associated to this layer can in theory contain many
@@ -327,46 +347,30 @@ export class MapLayer extends HTMLElement {
   zoomTo() {
     if(!this.extent) return;
     let map = this._layer._map,
-      tL = this.extent.topLeft.pcrs,
-      bR = this.extent.bottomRight.pcrs,
-      layerBounds = L.bounds(L.point(tL.horizontal, tL.vertical), L.point(bR.horizontal, bR.vertical)),
-      center = map.options.crs.unproject(layerBounds.getCenter(true)),
-      newZoom = map.getZoom();
+        tL = this.extent.topLeft.pcrs,
+        bR = this.extent.bottomRight.pcrs,
+        layerBounds = L.bounds(L.point(tL.horizontal, tL.vertical), L.point(bR.horizontal, bR.vertical)),
+        center = map.options.crs.unproject(layerBounds.getCenter(true));
 
-    let maxZoom = this.extent.zoom.maxZoom, minZoom = this.extent.zoom.minZoom;
-
-    let scale = map.options.crs.scale(newZoom),
-      mapCenterTCRS = map.options.crs.transformation.transform(layerBounds.getCenter(true), scale);
-
-    let mapHalf = map.getSize().divideBy(2),
-      mapTlNew = mapCenterTCRS.subtract(mapHalf).round(),
-      mapBrNew = mapCenterTCRS.add(mapHalf).round();
-
-    let mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection),
-      mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
-
-    let mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
-
-    let zOffset = mapPCRS.contains(layerBounds) ? 1 : -1;
-
-    while((zOffset === -1 && !(mapPCRS.contains(layerBounds)) && (newZoom - 1) >= minZoom)  ||
-          (zOffset === 1 && mapPCRS.contains(layerBounds) && (newZoom + 1) <= maxZoom)) {
-      newZoom += zOffset;
-
-      scale = map.options.crs.scale(newZoom);
-      mapCenterTCRS = map.options.crs.transformation.transform(layerBounds.getCenter(true), scale);
-
-      mapTlNew = mapCenterTCRS.subtract(mapHalf).round();
-      mapBrNew = mapCenterTCRS.add(mapHalf).round();
-      mapTlPCRSNew = M.pixelToPCRSPoint(mapTlNew, newZoom, map.options.projection);
-      mapBrPCRSNew = M.pixelToPCRSPoint(mapBrNew, newZoom, map.options.projection);
-
-      mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
-    }
-    if(zOffset === 1 && newZoom - 1 >= 0) newZoom--;
-    map.setView(center, newZoom, {animate: false});
+    let maxZoom = this.extent.zoom.maxZoom, 
+        minZoom = this.extent.zoom.minZoom;
+    map.setView(center, M.getMaxZoom(layerBounds, map, minZoom, maxZoom), {animate: false});
   }
   mapml2geojson(options = {}){
     return M.mapml2geojson(this, options);
+  }
+  pasteFeature(feature) {
+    switch(typeof feature) {
+      case "string":
+        feature.trim();
+        if (feature.slice(0,12) === "<map-feature" && feature.slice(-14) === "</map-feature>") {
+          this.insertAdjacentHTML("beforeend", feature);
+        }
+        break;
+      case "object": 
+        if (feature.nodeName.toUpperCase() === 'MAP-FEATURE') {
+          this.appendChild(feature);
+        }
+    }
   }
 }

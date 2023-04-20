@@ -617,6 +617,7 @@ M._table2properties = Util._table2properties;
 M._geometry2geojson = Util._geometry2geojson;
 M._pcrsToGcrs = Util._pcrsToGcrs;
 M.mapml2geojson = Util.mapml2geojson;
+M.getMaxZoom = Util.getMaxZoom;
 
 M.QueryHandler = QueryHandler;
 M.ContextMenu = ContextMenu;
