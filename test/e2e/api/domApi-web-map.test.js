@@ -79,6 +79,36 @@ test.describe("web-map DOM API Tests", () => {
             (tileDiv) => tileDiv.firstChild.nodeName === "IMG");
     expect(layerVisible).toBe(true);
   });
+  test("Remove map from DOM, add it back in", async () => {
+    // check for error messages in console
+    let errorLogs = [];
+    page.on("pageerror", (err) => {
+      errorLogs.push(err.message);
+    });
+    // locators avoid flaky tests, allegedly
+    const viewer = await page.locator('map');
+    await viewer.evaluate(()=>{
+    });
+    expect(await viewer.evaluate(() => {
+      let m = document.querySelector('map');
+      document.body.removeChild(m);
+      document.body.appendChild(m);
+      let l = m.querySelector('layer-');
+      return l.label;
+      // the label attribute is ignored if the mapml document has a map-title
+      // element, which is the case here.  Since the layer loads over the
+      // network, it means that the map is back to normal after being re-added
+      /// to the DOM, if the label reads as follows:
+    })).toEqual("Canada Base Map - Transportation (CBMT)");
+    // takes a couple of seconds for the tiles to load
+
+    // check for error messages in console
+    expect(errorLogs.length).toBe(0);
+    
+    await page.waitForLoadState('networkidle');
+    const layerTile = await page.locator("body > map .leaflet-tile-loaded:nth-child(1)");
+    expect(await layerTile.evaluate(tile=>tile.firstChild.nodeName === "IMG")).toBe(true);
+  });
 
   test("Toggle all web map controls by adding or removing controls attribute", async () => {
     await page.evaluateHandle(() => document.querySelector('layer-').setAttribute("hidden",""));

@@ -210,7 +210,7 @@ export class MapLayer extends HTMLElement {
   }
   _validateDisabled() {
     setTimeout(() => {
-      let layer = this._layer, map = layer._map;
+      let layer = this._layer, map = layer?._map;
       if (map) {
         let count = 0, total=0, layerTypes = ["_staticTileLayer","_imageLayer","_mapmlvectors","_templatedLayer"];
         if(layer.validProjection){

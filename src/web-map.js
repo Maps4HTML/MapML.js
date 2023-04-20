@@ -134,7 +134,7 @@ export class WebMap extends HTMLMapElement {
   }
   connectedCallback() {
 
-    this._createShadowRoot();
+    this._initShadowRoot();
 
     this._controlsList = new DOMTokenList(
       this.getAttribute("controlslist"),
@@ -142,9 +142,6 @@ export class WebMap extends HTMLMapElement {
       ["noreload","nofullscreen","nozoom","nolayer","noscale","geolocation"]
     );
     
-    // the dimension attributes win, if they're there. A map does not
-    // have an intrinsic size, unlike an image or video, and so must
-    // have a defined width and height.
     var s = window.getComputedStyle(this),
       wpx = s.width, hpx=s.height,
       w = this.hasAttribute("width") ? this.getAttribute("width") : parseInt(wpx.replace('px','')),
@@ -197,7 +194,7 @@ export class WebMap extends HTMLMapElement {
       }, 0);
     }
   }
-  _createShadowRoot() {
+  _initShadowRoot() {
     let tmpl = document.createElement('template');
     tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
 
@@ -319,8 +316,13 @@ export class WebMap extends HTMLMapElement {
     }
   }
   disconnectedCallback() {
-    //this._removeEvents();
+    let rootDiv = this.querySelector('.mapml-web-map');
+    while (rootDiv.shadowRoot.firstChild) {
+      rootDiv.shadowRoot.removeChild(rootDiv.shadowRoot.firstChild);
+    }
+    rootDiv.remove();
     delete this._map;
+    this._deleteControls();
   }
   adoptedCallback() {
 //    console.log('Custom map element moved to new page.');
@@ -473,6 +475,15 @@ export class WebMap extends HTMLMapElement {
     }
   }
 
+  // delete the map controls that are private properties of this custom element
+  _deleteControls() {
+    delete this._layerControl;
+    delete this._zoomControl;
+    delete this._reloadButton;
+    delete this._fullScreenControl;
+    delete this._geolocationButton;
+    delete this._scaleBar;
+  }
   // Sets the control's visibility AND all its childrens visibility,
   // for the control element based on the Boolean hide parameter
   _setControlsVisibility(control, hide) {
