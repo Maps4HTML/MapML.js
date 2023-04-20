@@ -102,6 +102,9 @@ test.describe("mapml-viewer DOM API Tests", () => {
     })).toEqual("Canada Base Map - Transportation (CBMT)");
     // takes a couple of seconds for the tiles to load
 
+    // check for error messages in console
+    expect(errorLogs.length).toBe(0);
+    
     await page.waitForLoadState('networkidle');
     const layerTile = await page.locator("body > mapml-viewer .leaflet-tile-loaded:nth-child(1)");
     expect(await layerTile.evaluate(tile=>tile.firstChild.nodeName === "IMG")).toBe(true);
