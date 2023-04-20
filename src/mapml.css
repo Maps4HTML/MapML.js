@@ -121,6 +121,10 @@ button.mapml-button:disabled,
   color: #bbb;
 }
 
+button.mapml-contextmenu-item:disabled {
+  opacity: .3;
+}
+
 .leaflet-control-layers-toggle {
   width: 44px !important;
   height: 44px !important;
