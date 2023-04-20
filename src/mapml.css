@@ -117,8 +117,11 @@
 }
 
 button.mapml-button:disabled,
-.mapml-button[aria-disabled="true"],
-.mapml-layer-item:disabled button.mapml-button {
+.mapml-button[aria-disabled="true"] {
+  color: #bbb;
+}
+
+button.mapml-contextmenu-item:disabled {
   opacity: .3;
 }
 
