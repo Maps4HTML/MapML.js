@@ -13,7 +13,8 @@ export var ContextMenu = L.Handler.extend({
 
   initialize: function (map) {
     L.Handler.prototype.initialize.call(this, map);
-
+    this.activeIndex = 0;
+    this.excludedIndices = [4, 7];
     //setting the items in the context menu and their callback functions
     this._items = [
       {
@@ -704,6 +705,36 @@ export var ContextMenu = L.Handler.extend({
     delete this._elementInFocus;
   },
 
+  setActiveItem: function(index) {
+    if (this.excludedIndices.includes(index)) {
+      // find the next or previous non-excluded item
+      let nextIndex = index + 1;
+      let prevIndex = index - 1;
+      while (this.excludedIndices.includes(nextIndex)) {
+        nextIndex++;
+        if (nextIndex >= this._items.length) {
+          nextIndex = 0;
+        }
+      }
+      while (this.excludedIndices.includes(prevIndex)) {
+        prevIndex--;
+        if (prevIndex < 0) {
+          prevIndex = this._items.length.length - 1;
+        }
+      }
+      // set the active item to the next or previous non-excluded item
+      if (this.activeIndex < index) {
+        this.setActiveItem(nextIndex);
+      } else {
+        this.setActiveItem(prevIndex);
+      }
+    } else {
+      // set the focus item
+      this._items[index].el.el.focus();
+      this.activeIndex = index;
+    }
+  },
+
   _onKeyDown: function (e) {
     if(!this._mapMenuVisible) return;
 
@@ -722,6 +753,75 @@ export var ContextMenu = L.Handler.extend({
       if(this._layerMenuTabs === 0 || this._layerMenuTabs === 3 || key === 27){
         L.DomEvent.stop(e);
         this._focusOnLayerControl();
+      }
+    } else if (key === 38) { //up arrow
+      if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Map') {
+        this._coordMenu.children[2].focus();
+      } else if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Extent') {
+        this._coordMenu.children[0].focus();
+      } else if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Location') {
+        this._coordMenu.children[1].focus();
+      } else if (!this._layerMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Zoom To Layer (<kbd>Z</kbd>)'){
+        this._layerMenu.children[1].focus();
+      } else if (!this._layerMenu.hasAttribute('hidden')){
+        this._layerMenu.children[0].focus();
+      } else {
+        if (this.activeIndex > 0) {
+          let prevIndex = this.activeIndex - 1;
+          while (this._items[prevIndex].el.el.disabled) {
+            prevIndex--;
+            if (prevIndex < 0) {
+              prevIndex = this._items.length - 1;
+            }
+          }
+          this.setActiveItem(prevIndex);
+        } else {
+          this.setActiveItem(this._items.length - 1);
+        }
+      }
+    } else if (key === 40) { //down arrow
+      if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Map') {
+        this._coordMenu.children[1].focus();
+      } else if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Extent') {
+        this._coordMenu.children[2].focus();
+      } else if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Location') {
+        this._coordMenu.children[0].focus();
+      } else if (!this._layerMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Zoom To Layer (<kbd>Z</kbd>)'){
+        this._layerMenu.children[1].focus();
+      } else if (!this._layerMenu.hasAttribute('hidden')){
+        this._layerMenu.children[0].focus();  
+      } else {
+        if (this.activeIndex < this._items.length - 1) {
+          let nextIndex = this.activeIndex + 1;
+          while (this._items[nextIndex].el.el.disabled) {
+            nextIndex++;
+            if (nextIndex >= this._items.length) {
+              nextIndex = 0;
+            }
+          }
+          this.setActiveItem(nextIndex);
+        } else {
+          let nextIndex = 0;
+          while (this._items[nextIndex].el.el.disabled) {
+            nextIndex++;
+            if (nextIndex >= this._items.length) {
+              nextIndex = 0;
+            }
+          }
+          this.setActiveItem(nextIndex);
+        }
+      }
+    } else if (key === 39) { //right arrow
+      if (!this._coordMenu.hasAttribute('hidden')) {
+        this._coordMenu.children[0].focus();
+      }
+    } else if (key === 37) { //left arrow
+      if (!this._coordMenu.hasAttribute('hidden')) {
+        if (document.activeElement.shadowRoot.activeElement.innerHTML === 'Extent' ||
+        document.activeElement.shadowRoot.activeElement.innerHTML === 'Map' || 
+        document.activeElement.shadowRoot.activeElement.innerHTML === 'Location'){
+          this.setActiveItem(6);
+        }
       }
     } else if(key !== 16 && key!== 9 && 
               !(!(this._layerClicked.className.includes('mapml-layer-item')) && key === 67) && 
