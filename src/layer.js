@@ -249,19 +249,17 @@ export class MapLayer extends HTMLElement {
       mapLinks.forEach((mapLink) => {
        
         if (mapLink.hasAttribute('href')) {
-          mapLink.setAttribute('href', decodeURI(this.transformURL(mapLink.attributes.href.value, this.baseURI ? this.baseURI : document.baseURI)));
+          mapLink.setAttribute('href', decodeURI((new URL(mapLink.attributes.href.value, this.baseURI ? this.baseURI : document.baseURI)).href));
         }
         else if (mapLink.hasAttribute('tref')) {
-          mapLink.setAttribute('tref', decodeURI(this.transformURL(mapLink.attributes.tref.value, this.baseURI ? this.baseURI : document.baseURI)));
+          mapLink.setAttribute('tref', decodeURI((new URL(mapLink.attributes.tref.value, this.baseURI ? this.baseURI : document.baseURI)).href));
         }
       });
     }
 
     return tempElement.innerHTML;
   }
-  transformURL(url, baseUrl) {
-    return (new URL(url, baseUrl)).href;
-  }
+
   _onLayerChange() {
     if (this._layer._map) {
      // can't disable observers, have to set a flag telling it where
