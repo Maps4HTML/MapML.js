@@ -771,13 +771,13 @@ export var ContextMenu = L.Handler.extend({
         this._focusOnLayerControl();
       }
     } else if (key === 38) { //up arrow
-      if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Map') {
+      if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML) {
         this._coordMenu.children[2].focus();
-      } else if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Extent') {
+      } else if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[1].innerHTML) {
         this._coordMenu.children[0].focus();
-      } else if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Location') {
+      } else if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[2].innerHTML) {
         this._coordMenu.children[1].focus();
-      } else if (!this._layerMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Zoom To Layer (<kbd>Z</kbd>)'){
+      } else if (!this._layerMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === this._layerMenu.children[0].innerHTML){
         this._layerMenu.children[1].focus();
       } else if (!this._layerMenu.hasAttribute('hidden')){
         this._layerMenu.children[0].focus();
@@ -796,13 +796,13 @@ export var ContextMenu = L.Handler.extend({
         }
       }
     } else if (key === 40) { //down arrow
-      if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Map') {
+      if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML) {
         this._coordMenu.children[1].focus();
-      } else if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Extent') {
+      } else if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[1].innerHTML) {
         this._coordMenu.children[2].focus();
-      } else if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Location') {
+      } else if (!this._coordMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[2].innerHTML) {
         this._coordMenu.children[0].focus();
-      } else if (!this._layerMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === 'Zoom To Layer (<kbd>Z</kbd>)'){
+      } else if (!this._layerMenu.hasAttribute('hidden')&&document.activeElement.shadowRoot.activeElement.innerHTML === this._layerMenu.children[0].innerHTML){
         this._layerMenu.children[1].focus();
       } else if (!this._layerMenu.hasAttribute('hidden')){
         this._layerMenu.children[0].focus();  
@@ -834,17 +834,17 @@ export var ContextMenu = L.Handler.extend({
         }
       }
     } else if (key === 39) { //right arrow
-      if (document.activeElement.shadowRoot.activeElement.innerHTML === 'Copy (<kbd>C</kbd>)<span></span>' && this._coordMenu.hasAttribute('hidden')){
+      if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[5].el.el.innerHTML && this._coordMenu.hasAttribute('hidden')){
         this._showCoordMenu();
         this._coordMenu.children[0].focus();
-      } else if (document.activeElement.shadowRoot.activeElement.innerHTML === 'Copy (<kbd>C</kbd>)<span></span>' && !this._coordMenu.hasAttribute('hidden')) {
+      } else if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[5].el.el.innerHTML && !this._coordMenu.hasAttribute('hidden')) {
         this._coordMenu.children[0].focus();
       }
     } else if (key === 37) { //left arrow
       if (!this._coordMenu.hasAttribute('hidden')) {
-        if (document.activeElement.shadowRoot.activeElement.innerHTML === 'Extent' ||
-        document.activeElement.shadowRoot.activeElement.innerHTML === 'Map' || 
-        document.activeElement.shadowRoot.activeElement.innerHTML === 'Location'){
+        if (document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML ||
+        document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[1].innerHTML || 
+        document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[2].innerHTML){
           this._coordMenu.setAttribute('hidden','');
           this.setActiveItem(5);
         }
