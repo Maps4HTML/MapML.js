@@ -709,7 +709,7 @@ export var ContextMenu = L.Handler.extend({
   },
 
   setActiveItem: function(index) {
-    if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[index].el.el.innerHTML){
+    if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[index].el.el.innerHTML && index === 0){
       //edge case where pressing shift f10 focuses the first element on contextmenu
       console.log("yikes");
       let next = index + 1;
@@ -725,13 +725,13 @@ export var ContextMenu = L.Handler.extend({
         // find the next or previous non-excluded item
         let nextIndex = index + 1;
         let prevIndex = index - 1;
-        while (this.excludedIndices.includes(nextIndex)) {
+        while (this.excludedIndices.includes(nextIndex) || this._items[nextIndex].el.el.disabled) {
           nextIndex++;
           if (nextIndex >= this._items.length) {
             nextIndex = 0;
           }
         }
-        while (this.excludedIndices.includes(prevIndex)) {
+        while (this.excludedIndices.includes(prevIndex) || this._items[prevIndex].el.el.disabled) {
           prevIndex--;
           if (prevIndex < 0) {
             prevIndex = this._items.length - 1;
