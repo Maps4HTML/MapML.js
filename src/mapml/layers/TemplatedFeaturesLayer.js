@@ -6,6 +6,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       this.extentBounds=inputData.bounds;
       this.isVisible = true;
       this._template = template;
+      this._extentEl = options.extentEl;
       this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
       L.extend(options, this.zoomBounds);
       L.DomUtil.addClass(this._container, 'mapml-features-container');
@@ -39,7 +40,6 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
             var c = document.createElement('div');
             c.classList.add("mapml-popup-content");
             c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-            c.insertAdjacentHTML('beforeend', `<a href="" class="zoomLink">${M.options.locale.popupZoom}</a>`);
             geometry.bindPopup(c, {autoClose: false, minWidth: 108});
           }
         });
@@ -85,6 +85,10 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
                         this.extentBounds.overlaps(mapBounds);
       
       this._features.clearLayers();
+      // shadow may has not yet attached to <map-extent> for the first-time rendering
+      if (this._extentEl.shadowRoot) {
+        this._extentEl.shadowRoot.innerHTML = "";
+      }
       this._removeCSS();
       //Leave the layers cleared if the layer is not visible
       if(!(this.isVisible) && steppedZoom === mapZoom){
@@ -96,6 +100,7 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
       var mapml, headers = new Headers({'Accept': 'text/mapml;q=0.9,application/geo+json;q=0.8'}),
           parser = new DOMParser(),
           features = this._features,
+          extentEl = this._extentEl,
           map = this._map,
           context = this,
           MAX_PAGES = 10,
@@ -114,12 +119,18 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
             let nativeCS = mapml.querySelector("map-meta[name=cs]") &&
                               M._metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content || "GCRS";
             features.addData(mapml, nativeCS, nativeZoom);
+            // "migrate" to extent's shadow
+            // make a clone, prevent the elements from being removed from mapml file
+            // same as _attachToLayer() in MapMLLayer.js
+            for (let el of mapml.querySelector('map-body').children) {
+              extentEl.shadowRoot.append(el._DOMnode);
+              el._DOMnode._extentEl = extentEl;
+            }
             if (url && --limit) {
               return _pullFeatureFeed(url, limit);
             }
           }));
         };
-
       this._url = url;
       _pullFeatureFeed(url, MAX_PAGES)
         .then(function() { 

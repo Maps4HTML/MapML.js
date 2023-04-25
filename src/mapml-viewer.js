@@ -4,6 +4,7 @@ import DOMTokenList from './DOMTokenList.js';
 import { MapLayer } from './layer.js';
 import { MapCaption } from './map-caption.js';
 import { MapFeature } from './map-feature.js';
+import { MapExtent } from './map-extent.js';
 
 export class MapViewer extends HTMLElement {
   static get observedAttributes() {
@@ -1037,3 +1038,4 @@ window.customElements.define('mapml-viewer', MapViewer);
 window.customElements.define('layer-', MapLayer);
 window.customElements.define('map-caption',MapCaption);
 window.customElements.define('map-feature', MapFeature);
+window.customElements.define('map-extent', MapExtent);

@@ -1,6 +1,3 @@
-import { MapInput } from './map-input.js';
-import { MapLink } from './map-link.js';
-
 export class MapExtent extends HTMLElement {
   static get observedAttributes() {
     return ['units','checked','label','opacity'];
@@ -71,10 +68,12 @@ export class MapExtent extends HTMLElement {
     super();    
   }
   connectedCallback() {
-    
+    if(this.querySelector('map-link[rel=query], map-link[rel=features]') && !this.shadowRoot) {
+      this.attachShadow({mode: 'open'});
+    }
+    this._layer = this.parentNode._layer ? this.parentNode._layer : this.parentNode.host._layer;
   }
   disconnectedCallback() {
     
   }
 }
-window.customElements.define('map-extent', MapExtent);
