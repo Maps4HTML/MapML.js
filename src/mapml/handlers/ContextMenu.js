@@ -709,9 +709,8 @@ export var ContextMenu = L.Handler.extend({
   },
 
   setActiveItem: function(index) {
-    if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[index].el.el.innerHTML && index === 0){
-      //edge case where pressing shift f10 focuses the first element on contextmenu
-      console.log("yikes");
+    if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[index].el.el.innerHTML){
+      //edge case where pressing shift f10 focuses the first element on contextmenu (if already focused, have to press arrow twice to go down)
       let next = index + 1;
       while (this._items[next].el.el.disabled) {
         next++;
