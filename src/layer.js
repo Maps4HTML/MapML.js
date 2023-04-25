@@ -235,13 +235,12 @@ export class MapLayer extends HTMLElement {
     }, 0);
   }
   getOuterHTML() {
-    let fullLayer = this.outerHTML;
-    let tempElement = document.createElement('div');
-    tempElement.innerHTML = fullLayer;
+
+    let tempElement = this.cloneNode(true);
 
     if (this.hasAttribute('src')) {
       let newSrc = this._layer.getHref();
-      tempElement.querySelector('layer-').setAttribute('src',newSrc);
+      tempElement.setAttribute('src',newSrc);
     }
     if (this.querySelector('map-link')) {
       let mapLinks = tempElement.querySelectorAll('map-link');
@@ -257,7 +256,11 @@ export class MapLayer extends HTMLElement {
       });
     }
 
-    return tempElement.innerHTML;
+    let outerLayer = tempElement.outerHTML;
+
+    tempElement.remove();
+
+    return outerLayer;
   }
 
   _onLayerChange() {

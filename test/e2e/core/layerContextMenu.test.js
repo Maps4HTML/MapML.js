@@ -60,7 +60,7 @@ test.describe("Playwright Layer Context Menu Tests", () => {
     );
 
     expect(mapZoom).toEqual(11);
-    expect(mapLocation).toEqual({ max: { x: 43130, y: 43130 }, min: { x: 42630, y: 42630 } });
+    expect(mapLocation).toEqual({ max: { x: 43380, y: 43130 }, min: { x: 42380, y: 42630 } });
   });
 
   test("Map zooms out to layer 3", async () => {
@@ -84,7 +84,7 @@ test.describe("Playwright Layer Context Menu Tests", () => {
     );
 
     expect(mapZoom).toEqual(11);
-    expect(mapLocation).toEqual({ max: { x: 43130, y: 43557 }, min: { x: 42630, y: 43057 } });
+    expect(mapLocation).toEqual({ max: { x: 43380, y: 43557 }, min: { x: 42380, y: 43057 } });
   });
 
   test("Map zooms out to layer 4", async () => {
@@ -108,6 +108,26 @@ test.describe("Playwright Layer Context Menu Tests", () => {
     );
 
     expect(mapZoom).toEqual(5);
-    expect(mapLocation).toEqual({ max: { x: 8084, y: 8084 }, min: { x: 7584, y: 7584 } });
+    expect(mapLocation).toEqual({ max: { x: 8334, y: 8084 }, min: { x: 7334, y: 7584 } });
   });
+
+  test("Layer context menu copy layer 2", async () => {
+    await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
+    await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(5) > div:nth-child(1) > label > span",
+      { button: "right" });
+    
+    await page.keyboard.press("l");
+    await page.click("body > textarea#messageLayer");
+    await page.keyboard.press("Control+a");
+    await page.keyboard.press("Backspace");
+    await page.keyboard.press("Control+v");
+    const copyLayer = await page.$eval(
+      "body > textarea#messageLayer",
+      (text) => text.value
+    );
+    
+    expect(copyLayer).toEqual("<layer- src=\"http://localhost:30001/data/query/DouglasFir\" label=\"Natural Resources Canada - Douglas Fir (Genus Pseudotsuga) 250m resolution\"></layer->");
+  });
+
+  
 });
