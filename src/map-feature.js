@@ -178,8 +178,7 @@ export class MapFeature extends HTMLElement {
       // "synchronize" the event handlers between map-feature and <g>
       if (!this.querySelector('map-geometry')) return;
       if (!this._layer._mapmlvectors) {
-        // if vector layer has not yet created (i.e. the layer- is not yet rendered on the map)
-        this._layer._mapmlvectors.on('add', this._setUpEvents, this);
+        this._layer.on('add', this._setUpEvents, this);
         return;
       } else if (!this._featureGroup) {
         // if the map-feature el or its subtree is updated
@@ -202,7 +201,7 @@ export class MapFeature extends HTMLElement {
       if (mapmlvectors._staticFeature) {
         let container = this._layer.shadowRoot || this._layer._layerEl;
         // update zoom bounds of vector layer
-        mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(container, this._getNativeZoomAndCS().zoom);
+        mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(container, this._getNativeZoomAndCS(this._layer._content).zoom);
         // add feature layers to map
         mapmlvectors._resetFeatures();
         // update map's zoom limit
@@ -215,7 +214,9 @@ export class MapFeature extends HTMLElement {
     _setUpEvents() {
       ['click','focus','blur'].forEach(name => {
         // onevent properties & onevent attributes
-        if (this[`on${name}`] && typeof this[`on${name}`] === "function") this._groupEl[`on${name}`] = this[`on${name}`];
+        if (this[`on${name}`] && typeof this[`on${name}`] === "function")  {
+          this._groupEl[`on${name}`] = this[`on${name}`];
+        }
         // handle event handlers set via addEventlistener
         // for HTMLElement
         // when <g> is clicked / focused / blurred
