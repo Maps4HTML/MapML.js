@@ -79,7 +79,7 @@ export class MapFeature extends HTMLElement {
           if (this._groupEl) {
             // "synchronize" the onevent properties (i.e. onfocus, onclick, onblur)
             // between the mapFeature and its associated <g> element
-            this._groupEl[name] = this[name];
+            this._groupEl[name] = this[name].bind(this._groupEl);
             break;
           }
       }
@@ -178,7 +178,15 @@ export class MapFeature extends HTMLElement {
       // "synchronize" the event handlers between map-feature and <g>
       if (!this.querySelector('map-geometry')) return;
       if (!this._layer._mapmlvectors) {
-        this._layer.on('add', this._setUpEvents, this);
+        // if vector layer has not yet created (i.e. the layer- is not yet rendered on the map / layer is empty)
+        let layerEl = this._layer._layerEl;
+        this._layer.once('extentload', this._setUpEvents, this);
+        if (!layerEl.querySelector('map-extent, map-tile') && !layerEl.hasAttribute('src') && layerEl.querySelectorAll('map-feature').length === 1) {
+          // if the map-feature is added to an empty layer, fire extentload to create vector layer
+          // must re-run _initialize of MapMLLayer.js to re-set layer._extent (layer._extent is null for an empty layer)
+          this._layer._initialize(layerEl);
+          this._layer.fire('extentload');
+        }
         return;
       } else if (!this._featureGroup) {
         // if the map-feature el or its subtree is updated
@@ -229,11 +237,11 @@ export class MapFeature extends HTMLElement {
           this[`on${name}`] = null;
           if (name === 'click') {
             // dispatch a cloned mouseevent to trigger the click event handlers set on HTMLFeatureElement
-            this.dispatchEvent(new MouseEvent (name, {...e.options}));
+            this.dispatchEvent(new PointerEvent (name, {...e}));
           } else {
-            this.dispatchEvent(new FocusEvent (name, {...e.options}));
+            this.dispatchEvent(new FocusEvent (name, {...e}));
           }
-          if (handler) this[`on${name}`] = handler;
+          this[`on${name}`] = handler;
         });
       });
     }
