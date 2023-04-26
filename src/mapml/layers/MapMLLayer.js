@@ -63,6 +63,9 @@ export var MapMLLayer = L.Layer.extend({
 
         return this;
     },
+    getHref: function () {
+      return this._href ?? "";
+    },
     _updateZIndex: function () {
         if (this._container && this.options.zIndex !== undefined && this.options.zIndex !== null) {
             this._container.style.zIndex = this.options.zIndex;

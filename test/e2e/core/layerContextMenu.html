@@ -22,8 +22,9 @@
 </head>
 
 <body>
-  <mapml-viewer style="width: 500px;height: 500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls>
+  <mapml-viewer style="width: 1000px;height: 500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls>
     <layer- label="CBMT - INLINE" checked>
+      <map-link rel="license" title="Testing Inc."></map-link>
       <map-extent units="CBMTILE">
         <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
         <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>
@@ -57,6 +58,7 @@
       <map-tile zoom="6" row="51" col="50" src="/data/cbmt/3/c14_r16.png"></map-tile>
       <map-tile zoom="6" row="51" col="51" src="/data/cbmt/2/c9_r10.png"></map-tile>
     </layer->
+    <layer- src="data/query/DouglasFir" label="Natural Resources Canada - Douglas Fir (Genus Pseudotsuga) 250m resolution"></layer->
   </mapml-viewer>
   <textarea id="messageExtent" name="messageExtent" rows="10" cols="100"></textarea>
   <textarea id="messageLayer" name="messageLayer" rows="10" cols="100"></textarea>

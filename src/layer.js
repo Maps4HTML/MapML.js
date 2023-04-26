@@ -254,6 +254,35 @@ export class MapLayer extends HTMLElement {
       }
     }, 0);
   }
+  getOuterHTML() {
+
+    let tempElement = this.cloneNode(true);
+
+    if (this.hasAttribute('src')) {
+      let newSrc = this._layer.getHref();
+      tempElement.setAttribute('src',newSrc);
+    }
+    if (this.querySelector('map-link')) {
+      let mapLinks = tempElement.querySelectorAll('map-link');
+
+      mapLinks.forEach((mapLink) => {
+       
+        if (mapLink.hasAttribute('href')) {
+          mapLink.setAttribute('href', decodeURI((new URL(mapLink.attributes.href.value, this.baseURI ? this.baseURI : document.baseURI)).href));
+        }
+        else if (mapLink.hasAttribute('tref')) {
+          mapLink.setAttribute('tref', decodeURI((new URL(mapLink.attributes.tref.value, this.baseURI ? this.baseURI : document.baseURI)).href));
+        }
+      });
+    }
+
+    let outerLayer = tempElement.outerHTML;
+
+    tempElement.remove();
+
+    return outerLayer;
+  }
+
   _onLayerChange() {
     if (this._layer._map) {
      // can't disable observers, have to set a flag telling it where
