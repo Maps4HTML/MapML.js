@@ -111,7 +111,7 @@ test.describe("Playwright Layer Context Menu Tests", () => {
     expect(mapLocation).toEqual({ max: { x: 8334, y: 8084 }, min: { x: 7334, y: 7584 } });
   });
 
-  test("Layer context menu copy layer 2", async () => {
+  test("Copy layer with relative src attribute", async () => {
     await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
     await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(5) > div:nth-child(1) > label > span",
       { button: "right" });
