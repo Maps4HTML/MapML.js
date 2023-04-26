@@ -64,7 +64,7 @@ test.describe("Playwright Query Link Tests", () => {
     });
   });
   test.describe("Queried Feature Tests", () => {
-    test("First feature added + popup content updated ", async () => {
+    test("First feature added + popup content updated", async () => {
       await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.mapml-reload-button.leaflet-bar.leaflet-control > button");
       await page.click("div");
       await page.waitForSelector("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div");
@@ -76,9 +76,19 @@ test.describe("Playwright Query Link Tests", () => {
         "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe",
         (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
       );
+      const href = await page.$eval(
+        "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > a.mapml-zoom-link",
+        (link) => link.getAttribute("href")
+      );
 
       expect(feature).toEqual("M259 279L263 279L264 281L265 285L266 286L266 287L266 287L267 287L266 288L266 288L266 288L266 289L266 290L267 291L266 291L260 292L260 293L260 293L260 294L261 294L260 294L260 294L259 294L259 293L259 293L259 294L259 294L258 294L257 289L257 283L257 280L257 280L259 279z");
       expect(popup).toEqual("Alabama");
+      expect(href).toEqual('#6,32.62418749999957,-86.6801555');
+
+      const featureCount = await page.evaluate(`document.querySelector('mapml-viewer > layer- > map-extent').shadowRoot.children.length`);
+      expect(featureCount).toEqual(1);
+      const property = await page.evaluate(`document.querySelector('mapml-viewer > layer- > map-extent').shadowRoot.querySelector('map-properties').innerText.trim()`);
+      expect(property).toEqual('Alabama');
     });
 
     test("Next feature added + popup content updated ", async () => {
@@ -91,9 +101,19 @@ test.describe("Playwright Query Link Tests", () => {
         "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe",
         (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
       );
+      const href = await page.$eval(
+        "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > a.mapml-zoom-link",
+        (link) => link.getAttribute("href")
+      );
 
       expect(feature).toEqual("M205 271L201 288L196 287L193 285L187 280L187 280L188 280L188 279L188 279L188 279L188 278L189 277L189 277L189 276L189 276L190 276L190 275L190 275L190 274L190 273L190 273L190 273L190 272L190 271L191 270L191 270L192 270L192 270L192 270L193 267L201 270L205 271z");
       expect(popup).toEqual("Arizona");
+      expect(href).toEqual('#0,34.168684499999635,-111.9288505');
+
+      const featureCount = await page.evaluate(`document.querySelector('mapml-viewer > layer- > map-extent').shadowRoot.children.length`);
+      expect(featureCount).toEqual(1);
+      const property = await page.evaluate(`document.querySelector('mapml-viewer > layer- > map-extent').shadowRoot.querySelector('map-properties').innerText.trim()`);
+      expect(property).toEqual('Arizona');
     });
 
     test("Previous feature added + popup content updated ", async () => {
@@ -106,9 +126,19 @@ test.describe("Playwright Query Link Tests", () => {
         "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe",
         (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
       );
+      const href = await page.$eval(
+        "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > a.mapml-zoom-link",
+        (link) => link.getAttribute("href")
+      );
 
       expect(feature).toEqual("M259 279L263 279L264 281L265 285L266 286L266 287L266 287L267 287L266 288L266 288L266 288L266 289L266 290L267 291L266 291L260 292L260 293L260 293L260 294L261 294L260 294L260 294L259 294L259 293L259 293L259 294L259 294L258 294L257 289L257 283L257 280L257 280L259 279z");
       expect(popup).toEqual("Alabama");
+      expect(href).toEqual('#6,32.62418749999957,-86.6801555');
+
+      const featureCount = await page.evaluate(`document.querySelector('mapml-viewer > layer- > map-extent').shadowRoot.children.length`);
+      expect(featureCount).toEqual(1);
+      const property = await page.evaluate(`document.querySelector('mapml-viewer > layer- > map-extent').shadowRoot.querySelector('map-properties').innerText.trim()`);
+      expect(property).toEqual('Alabama');
     });
 
     test("PCRS feature added + popup content updated ", async () => {
@@ -166,9 +196,44 @@ test.describe("Playwright Query Link Tests", () => {
         "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe",
         (iframe) => iframe.contentWindow.document.querySelector("h1").innerText
       );
+      const link = await page.$eval(
+        "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div",
+        (popup) => popup.querySelector('a.mapml-zoom-link')
+      );
 
       expect(feature).toBeFalsy();
       expect(popup).toEqual("No Geometry");
+      expect(link).toBeFalsy();
     });
+
+    test("'Zoom to here' link test", async () => {
+      await page.reload();
+      await page.waitForTimeout(200);
+
+      const startTopLeft = await page.evaluate(`document.querySelector('mapml-viewer').extent.topLeft.pcrs`);
+      const startBottomRight = await page.evaluate(`document.querySelector('mapml-viewer').extent.bottomRight.pcrs`);
+      const startZoomLevel = await page.evaluate(`document.querySelector('mapml-viewer').zoom`);
+      expect(startTopLeft.horizontal).toBe(-9181665.718398102);
+      expect(startTopLeft.vertical).toBe(9155377.19075438);
+      expect(startBottomRight.horizontal).toBe(10000664.312928632);
+      expect(startBottomRight.vertical).toBe(-10026952.84057235);
+      expect(startZoomLevel).toBe('0');
+
+      await page.click("div");
+      await page.waitForSelector("div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab"); // tab into the "zoom to here" link
+      await page.keyboard.press("Enter");
+      await page.waitForTimeout(200);
+
+      const endTopLeft = await page.evaluate(`document.querySelector('mapml-viewer').extent.topLeft.pcrs`);
+      const endBottomRight = await page.evaluate(`document.querySelector('mapml-viewer').extent.bottomRight.pcrs`);
+      const endZoomLevel = await page.evaluate(`document.querySelector('mapml-viewer').zoom`);
+      expect(endTopLeft.horizontal).toBe(448657.7089154199);
+      expect(endTopLeft.vertical).toBe(-1444381.5087630227);
+      expect(endBottomRight.horizontal).toBe(1242409.2964185923);
+      expect(endBottomRight.vertical).toBe(-2238133.096266195);
+      expect(endZoomLevel).toBe('6');
+    })
   });
 });
