@@ -20,6 +20,16 @@ app.get('/data/query/us_map_query', (req, res, next) => {
     }
   });
 });
+// unable to figure out how to map any .mapml file to the text/mapml content type
+// had to hard-code this file
+app.get('/layers/queryableMapExtent.mapml', (req, res, next) => {
+  res.sendFile(__dirname + "/e2e/layers/queryableMapExtent.mapml", 
+  { headers: { "Content-Type": "text/mapml" } }, (err) => {
+    if (err) {
+      res.status(403).send("Error.");
+    }
+  });
+});
 app.get('/data/query/html_query_response', (req, res, next) => {
   res.sendFile(__dirname + "/e2e/data/tiles/cbmt/html_query_response.html", { headers: { "Content-Type": "text/html" } }, (err) => {
     if (err) {
