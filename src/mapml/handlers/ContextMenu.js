@@ -861,17 +861,35 @@ export var ContextMenu = L.Handler.extend({
         }
       }
     } else if (key === 37) { //left arrow
-      if (!this._coordMenu.hasAttribute('hidden')) {
-        if (document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML ||
-        document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[1].innerHTML || 
-        document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[2].innerHTML){
-          this._coordMenu.setAttribute('hidden','');
-          this._setActiveItem(5);
+      if (document.activeElement.shadowRoot == null) { //do nothing when null
+      } else {
+        if (!this._coordMenu.hasAttribute('hidden')) {
+          if (document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML ||
+          document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[1].innerHTML || 
+          document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[2].innerHTML){
+            this._coordMenu.setAttribute('hidden','');
+            this._setActiveItem(5);
+          }
+        }
+      }
+    } else if (key === 27) { //esc key
+      if (document.activeElement.shadowRoot == null) {
+        this._hide();
+      } else {
+        if (!this._coordMenu.hasAttribute('hidden')) {
+          if (document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML ||
+          document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[1].innerHTML || 
+          document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[2].innerHTML){
+            this._coordMenu.setAttribute('hidden','');
+            this._setActiveItem(5);
+          }
+        } else {
+          this._hide();
         }
       }
     } else if(key !== 16 && key!== 9 && 
               !(!(this._layerClicked.className.includes('mapml-layer-item')) && key === 67) && 
-              (path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)") || key === 27)){
+              (path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)"))){
       this._hide();
     }
     switch(key){
