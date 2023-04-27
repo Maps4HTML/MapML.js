@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Custom Projection map-extent image</title>
+  <title>Custom Projection map-extent and feature Layers</title>
   <script type="module" src="mapml-viewer.js"></script>
 </head>
 
@@ -24,7 +24,7 @@
 		map.projection = cProjection;
 	</script>
 	
-	<mapml-viewer width="500" height="500" zoom="0" lat="54.41338" lon="-3.19995" controls="" role="application" projection="BNG">
+	<mapml-viewer width="500" height="500" zoom="0" lat="51.437097" lon="0" controls="" role="application" projection="BNG">
 		<layer- label="OS Roads tile map in BNG custom projection" checked="">
 		  <map-meta name="projection" content="BNG"></map-meta>
 		  <map-extent units="BNG" hidden="" checked="">
@@ -34,6 +34,19 @@
 			<map-link rel="tile" tref="https://api.os.uk/maps/raster/v1/wmts?key=TtPU7xWvj7AmV6uePZRYWFXuKVHzRTq7&amp;tileMatrixSet=EPSG:27700&amp;version=1.0.0&amp;style=default&amp;layer=Road_27700&amp;service=WMTS&amp;request=GetTile&amp;tileCol={x}&amp;tileRow={y}&amp;tileMatrix={z}">
 			</map-link>
 		  </map-extent>
+		</layer->
+		<layer- label="London" checked="">
+		   <map-meta name="projection" content="BNG"></map-meta>
+		   <map-meta name="cs" content="gcrs"></map-meta>
+		   <map-feature zoom="2" id="LondonPoint">
+		      <map-featurecaption>London</map-featurecaption>
+		      <map-geometry>
+		         <map-point>
+		            <map-coordinates>-0.12268543059443004 51.4987988508663</map-coordinates>
+		         </map-point>
+		      </map-geometry>
+		      <map-properties>London Point!</map-properties>
+		   </map-feature>
 		</layer->
 	</mapml-viewer>
 </body>
