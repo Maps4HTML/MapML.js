@@ -35,7 +35,7 @@ test.describe("Custom Projection Feature & Extent Tests", () => {
     test("feature method - ZoomTo()", async () => {
       await page.$eval("#LondonPoint", (f) => (f.zoomTo()));
       const zoom = await page.evaluate(`document.querySelector('mapml-viewer').zoom`);
-      expect(zoom).toEqual(2);
+      expect(zoom).toEqual("2");
       //const endTopLeft = await page.evaluate(`document.querySelector('mapml-viewer').extent.topLeft.pcrs`);
       //const endBottomRight = await page.evaluate(`document.querySelector('mapml-viewer').extent.bottomRight.pcrs`);
       //expect(endTopLeft.horizontal).toBe(1508601.8288036585);

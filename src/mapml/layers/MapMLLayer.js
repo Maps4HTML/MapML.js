@@ -106,7 +106,7 @@ export var MapMLLayer = L.Layer.extend({
                   _leafletLayer: this,
                   crs: extentEl.crs,
                   extentZIndex: extentEl.extentZIndex,
-                  extentEl: extentEl
+                  extentEl: extentEl._DOMnode || extentEl
                 }).addTo(this._map);
                 extentEl.templatedLayer.setZIndex();
                 this._setLayerElExtent();  
@@ -243,7 +243,9 @@ export var MapMLLayer = L.Layer.extend({
                     _leafletLayer: this,
                     crs: this._extent.crs,
                     extentZIndex: this._extent._mapExtents[i].extentZIndex,
-                    extentEl: this._extent._mapExtents[i],
+                    // when a <map-extent> migrates from a remote mapml file and attaches to the shadow of <layer- >
+                    // this._extent._mapExtents[i] refers to the <map-extent> in remote mapml
+                    extentEl: this._extent._mapExtents[i]._DOMnode || this._extent._mapExtents[i],
                     }).addTo(map);   
                     this._extent._mapExtents[i].templatedLayer = this._templatedLayer;
                     if(this._templatedLayer._queries){

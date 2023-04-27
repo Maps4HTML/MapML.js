@@ -160,40 +160,55 @@ export class MapFeature extends HTMLElement {
     }
 
     _addFeature() {
-      // this._layer: the leaflet layer object associated with the <layer- > element
-      //              that the <map-feature> attaches
-      // case 1: the <map-feature> el directly attaches to the <layer- > el
-      // case 2: the <map-feature> el is originally in a <mapml- > document (<layer- src="...mapml">)
-      //         and attaches to the shadowRoot of the <layer- > element
-      this._layer = this.parentNode._layer ? this.parentNode._layer : this.parentNode.host._layer;
-      // if the parent layer- el has not yet added to the map, wait until it is added
-      if (!this._layer._map) {
-        this._layer.once('add', function () {
-          this._map = this._layer._map;
-        }, this);
-      } else {
-        this._map = this._layer._map;
-      }
+      let parentEl = (this.parentNode.nodeName.toUpperCase() === "LAYER-" || 
+                      this.parentNode.nodeName.toUpperCase() === "MAP-EXTENT" ? 
+                      this.parentNode : this.parentNode.host);
 
-      // "synchronize" the event handlers between map-feature and <g>
-      if (!this.querySelector('map-geometry')) return;
-      if (!this._layer._mapmlvectors) {
-        // if vector layer has not yet created (i.e. the layer- is not yet rendered on the map / layer is empty)
-        let layerEl = this._layer._layerEl;
-        this._layer.once('extentload', this._setUpEvents, this);
-        if (!layerEl.querySelector('map-extent, map-tile') && !layerEl.hasAttribute('src') && layerEl.querySelectorAll('map-feature').length === 1) {
-          // if the map-feature is added to an empty layer, fire extentload to create vector layer
-          // must re-run _initialize of MapMLLayer.js to re-set layer._extent (layer._extent is null for an empty layer)
-          this._layer._initialize(layerEl);
-          this._layer.fire('extentload');
+      // arrow function is not hoisted, define before use
+      var _attachedToMap = (e) => {
+        if (!parentEl._layer._map) {
+          // if the parent layer- el has not yet added to the map (i.e. not yet rendered), wait until it is added
+          this._layer.once('attached', function () {
+            this._map = this._layer._map;
+          }, this);
+        } else {
+          this._map = this._layer._map;
         }
-        return;
-      } else if (!this._featureGroup) {
-        // if the map-feature el or its subtree is updated
-        // this._featureGroup has been free in this._removeFeature()
-        this._updateFeature();
+        // "synchronize" the event handlers between map-feature and <g>
+        if (!this.querySelector('map-geometry')) return;
+        if (!this._layer._mapmlvectors) {
+          // if vector layer has not yet created (i.e. the layer- is not yet rendered on the map / layer is empty)
+          let layerEl = this._layer._layerEl;
+          this._layer.once('add', this._setUpEvents, this);
+          if (!layerEl.querySelector('map-extent, map-tile') && !layerEl.hasAttribute('src') && layerEl.querySelectorAll('map-feature').length === 1) {
+            // if the map-feature is added to an empty layer, fire extentload to create vector layer
+            // must re-run _initialize of MapMLLayer.js to re-set layer._extent (layer._extent is null for an empty layer)
+            this._layer._initialize(layerEl);
+            this._layer.fire('extentload');
+          }
+          return;
+        } else if (!this._featureGroup) {
+          // if the map-feature el or its subtree is updated
+          // this._featureGroup has been free in this._removeFeature()
+          this._updateFeature();
+        } else {
+          this._setUpEvents();
+        }
+      };
+
+      if (!parentEl._layer) {
+        // for custom projection cases, the MapMLLayer has not yet created and binded with the layer- at this point,
+        // because the "createMap" event of mapml-viewer has not yet been dispatched, the map has not yet been created 
+        // the event will be dispatched after defineCustomProjection > projection setter
+        // should wait until MapMLLayer is built
+        let parentLayer = parentEl.nodeName.toUpperCase() === "LAYER-" ? parentEl : (parentEl.parentElement || parentEl.parentNode.host);
+        parentLayer.parentNode.addEventListener('createmap', (e) => {
+          this._layer = parentLayer._layer;
+          _attachedToMap();
+        });
       } else {
-        this._setUpEvents();
+        this._layer = parentEl._layer;
+        _attachedToMap();
       }
     }
 
@@ -247,11 +262,13 @@ export class MapFeature extends HTMLElement {
     }
 
     _getNativeZoomAndCS(content) {
-      // content: layer- || mapml file in src
+      // content: referred to <layer- > if the <layer- > has inline <map-extent>, <map-feature> or <map-tile>
+      //          referred to remote mapml if the <layer- > has a src attribute, and the fetched mapml contains <map-feature>
+      //          referred to null otherwise (i.e. <layer- > has inline / fetched <map-extent>, the <map-feature> attaches to <map-extent>'s shadow)
       let nativeZoom, nativeCS;
-      if (content.nodeName.toUpperCase() === "LAYER-") {
-        // templated features || inline features
-        let parentEl = this._extentEl && this.parentNode.nodeType === document.DOCUMENT_FRAGMENT_NODE ? this.parentNode : this._layer._layerEl;
+      if (!content || content.nodeName.toUpperCase() === "LAYER-") {
+        // read from inline content if <map-feature> is inline
+        let parentEl = this._extentEl ? this._extentEl : this._layer._layerEl;
         let zoomMeta = parentEl.querySelectorAll('map-meta[name=zoom]'),
             zoomLength = zoomMeta?.length;
         nativeZoom = zoomLength ? +(zoomMeta[zoomLength - 1].getAttribute('content')?.split(',').find(str => str.includes("value"))?.split('=')[1]) : 0;
@@ -260,7 +277,7 @@ export class MapFeature extends HTMLElement {
             csLength = csMeta?.length;
         if (csLength) {
           nativeCS = csMeta[csLength - 1].getAttribute('content');
-        } else if (parentEl.nodeType === document.DOCUMENT_FRAGMENT_NODE) {
+        } else if (parentEl.nodeName.toUpperCase() === "MAP-EXTENT") {
           // templated
           nativeCS = 'gcrs';
         } else {
@@ -268,6 +285,7 @@ export class MapFeature extends HTMLElement {
         }
         return {zoom: nativeZoom, cs: nativeCS};
       } else if (content.nodeType === Node.DOCUMENT_NODE) {
+        // read native zoom and cs from the remote mapml
         // features migrated from mapml
         // set the native according to the map-meta[name=zoom / cs] in mapml file
         return this._layer._mapmlvectors._getNativeVariables(content);
