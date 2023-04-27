@@ -13,17 +13,25 @@ test.describe("Using arrow keys to navigate context menu", () => {
   });
 
   test("Testing layer contextmenu", async () => {
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(500);
     await page.click('body > mapml-viewer');
+    await page.waitForTimeout(500);
     await page.keyboard.press("Tab");
+
     await page.keyboard.press("Tab");
+  
     await page.keyboard.press("Tab");
+
     await page.keyboard.press("Tab");
+
     await page.keyboard.press("Tab");
+
     await page.keyboard.press("Enter");
+    await page.waitForTimeout(500);
     await page.keyboard.press("Shift+F10");
 
     await page.keyboard.press("ArrowDown");
+
     await page.keyboard.press("ArrowDown");
 
     let activeElement = await page.evaluate(() => document.activeElement.shadowRoot.activeElement.innerHTML);
