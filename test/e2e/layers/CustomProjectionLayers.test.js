@@ -36,15 +36,24 @@ test.describe("Custom Projection Feature & Extent Tests", () => {
       await page.$eval("#LondonPoint", (f) => (f.zoomTo()));
       const zoom = await page.evaluate(`document.querySelector('mapml-viewer').zoom`);
       expect(zoom).toEqual("2");
-      //const endTopLeft = await page.evaluate(`document.querySelector('mapml-viewer').extent.topLeft.pcrs`);
-      //const endBottomRight = await page.evaluate(`document.querySelector('mapml-viewer').extent.bottomRight.pcrs`);
-      //expect(endTopLeft.horizontal).toBe(1508601.8288036585);
-      //expect(endTopLeft.vertical).toBe(-169068.77063754946);
-      //expect(endBottomRight.horizontal).toBe(1512570.5867411792);
-      //expect(endBottomRight.vertical).toBe(-173037.52857506275);
+      let endTopLeft = await page.evaluate(`document.querySelector('mapml-viewer').extent.topLeft.gcrs`);
+      let endBottomRight = await page.evaluate(`document.querySelector('mapml-viewer').extent.bottomRight.gcrs`);
+      expect(endTopLeft.horizontal).toBe(-0.9410810217335936);
+      expect(endTopLeft.vertical).toBe(51.98599427568946);
+      expect(endBottomRight.horizontal).toBe(0.713006572604242);
+      expect(endBottomRight.vertical).toBe(51.005402746850955);
     });
 
-    // TODO: Add test to ensure popup pagination are visible
+    test("Popup displays Zoom link", async () => {
+      await page.focus("body > mapml-viewer");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Enter");
+      const zoomLink = await page.$eval(".mapml-zoom-link", (link) => 
+        (link.innerHTML)
+      );
+      expect(zoomLink).toEqual("Zoom to here");
+    });
 
   });
 
