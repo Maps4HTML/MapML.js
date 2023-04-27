@@ -13,9 +13,9 @@ export var ContextMenu = L.Handler.extend({
 
   initialize: function (map) {
     L.Handler.prototype.initialize.call(this, map);
-    this.activeIndex = 0;
-    this.excludedIndices = [4, 7];
-    this.isRunned = false;
+    this.activeIndex = 0; //current fous index on menu
+    this.excludedIndices = [4, 7]; //menu indexes that are --------
+    this.isRunned = false; //variable for tracking edge case
     //setting the items in the context menu and their callback functions
     this._items = [
       {
@@ -708,7 +708,13 @@ export var ContextMenu = L.Handler.extend({
     delete this._elementInFocus;
   },
 
-  setActiveItem: function(index) {
+  _setActiveItem: function(index) {
+    if (document.activeElement.shadowRoot == null && this.noActiveEl == true){
+      //bug fix when theres no active element
+      this.noActiveEl = false;
+      //setting this._items[9] is just for preventing some diabled index, it will be override by later code.
+      this._items[9].el.el.focus();
+    }
     if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[index].el.el.innerHTML){
       //edge case where pressing shift f10 focuses the first element on contextmenu (if already focused, have to press arrow twice to go down)
       let next = index + 1;
@@ -718,7 +724,7 @@ export var ContextMenu = L.Handler.extend({
           next = 0;
         }
       }
-      this.setActiveItem(next);
+      this._setActiveItem(next);
     } else {
       if (this.excludedIndices.includes(index)) {
         // find the next or previous non-excluded item
@@ -738,9 +744,9 @@ export var ContextMenu = L.Handler.extend({
         }
         // set the active item to the next or previous non-excluded item
         if (this.activeIndex < index) {
-          this.setActiveItem(nextIndex);
+          this._setActiveItem(nextIndex);
         } else {
-          this.setActiveItem(prevIndex);
+          this._setActiveItem(prevIndex);
         }
       } else {
         // set the focus item
@@ -771,7 +777,8 @@ export var ContextMenu = L.Handler.extend({
       }
     } else if (key === 38) { //up arrow
       if (!this._coordMenu.hasAttribute('hidden') && 
-        document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML) { //"map" on submenu
+        (document.activeElement.shadowRoot == null ||
+        document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML)) { //"map" on submenu
         this._coordMenu.children[2].focus();
       } else if (!this._coordMenu.hasAttribute('hidden') && 
         document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[1].innerHTML) { //"extent" on submenu
@@ -793,21 +800,22 @@ export var ContextMenu = L.Handler.extend({
               prevIndex = this._items.length - 1;
             }
           }
-          this.setActiveItem(prevIndex);
+          this._setActiveItem(prevIndex);
         } else {
-          this.setActiveItem(this._items.length - 1);
+          this._setActiveItem(this._items.length - 1);
         }
       }
     } else if (key === 40) { //down arrow
       if (!this._coordMenu.hasAttribute('hidden') && 
-        document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML) { //"map" on submenu
-        this._coordMenu.children[1].focus();
+        (document.activeElement.shadowRoot == null ||
+        document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[2].innerHTML)) { //"map" on submenu
+        this._coordMenu.children[0].focus();
       } else if (!this._coordMenu.hasAttribute('hidden') && 
         document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[1].innerHTML) { //"extent" on submenu
         this._coordMenu.children[2].focus();
       } else if (!this._coordMenu.hasAttribute('hidden') && 
-        document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[2].innerHTML) { //"Location" on submenu
-        this._coordMenu.children[0].focus();
+        document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML) { //"Location" on submenu
+        this._coordMenu.children[1].focus();
       } else if (!this._layerMenu.hasAttribute('hidden') && 
         document.activeElement.shadowRoot.activeElement.innerHTML === this._layerMenu.children[0].innerHTML){ //"zoom to layer" on layermenu
         this._layerMenu.children[1].focus();
@@ -817,7 +825,7 @@ export var ContextMenu = L.Handler.extend({
         if (this.activeIndex < this._items.length - 1) {
           //edge case at index 0
           if (!this.isRunned && this.activeIndex == 0 && !this._items[this.activeIndex].el.el.disabled){
-            this.setActiveItem(0);
+            this._setActiveItem(0);
             this.isRunned = true;
           } else { //edge case over
             let nextIndex = this.activeIndex + 1;
@@ -827,7 +835,7 @@ export var ContextMenu = L.Handler.extend({
                 nextIndex = 0;
               }
             }
-            this.setActiveItem(nextIndex);
+            this._setActiveItem(nextIndex);
           }
         } else {
           let nextIndex = 0;
@@ -837,17 +845,20 @@ export var ContextMenu = L.Handler.extend({
               nextIndex = 0;
             }
           }
-          this.setActiveItem(nextIndex);
+          this._setActiveItem(nextIndex);
         }
       }
     } else if (key === 39) { //right arrow
-      if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[5].el.el.innerHTML && //'copy'
-        this._coordMenu.hasAttribute('hidden')){
-        this._showCoordMenu();
-        this._coordMenu.children[0].focus();
-      } else if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[5].el.el.innerHTML && 
-        !this._coordMenu.hasAttribute('hidden')) {
-        this._coordMenu.children[0].focus();
+      if (document.activeElement.shadowRoot == null) {
+      } else {
+        if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[5].el.el.innerHTML && //'copy'
+          this._coordMenu.hasAttribute('hidden')){
+          this._showCoordMenu();
+          this._coordMenu.children[0].focus();
+        } else if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[5].el.el.innerHTML && 
+          !this._coordMenu.hasAttribute('hidden')) {
+          this._coordMenu.children[0].focus();
+        }
       }
     } else if (key === 37) { //left arrow
       if (!this._coordMenu.hasAttribute('hidden')) {
@@ -855,7 +866,7 @@ export var ContextMenu = L.Handler.extend({
         document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[1].innerHTML || 
         document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[2].innerHTML){
           this._coordMenu.setAttribute('hidden','');
-          this.setActiveItem(5);
+          this._setActiveItem(5);
         }
       }
     } else if(key !== 16 && key!== 9 && 
@@ -865,6 +876,16 @@ export var ContextMenu = L.Handler.extend({
     }
     switch(key){
       case 13:  //ENTER KEY
+        if(document.activeElement.shadowRoot.activeElement.innerHTML === this._items[5].el.el.innerHTML){
+          this._copyCoords({
+            latlng:this._map.getCenter()
+          });
+          this._coordMenu.firstChild.focus();
+        } else{
+          if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
+            this._map._container.parentNode.activeElement.click();
+        }
+        break;
       case 32:  //SPACE KEY
         if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
           this._map._container.parentNode.activeElement.click();
@@ -873,6 +894,7 @@ export var ContextMenu = L.Handler.extend({
         this._copyCoords({
           latlng:this._map.getCenter()
         });
+        this._coordMenu.firstChild.focus();
         break;
       case 68: //D KEY
         this._toggleDebug(e);
@@ -925,7 +947,6 @@ export var ContextMenu = L.Handler.extend({
 
     menu.style.top = 100 - 22 + 'px';
     menu.style.bottom = 'auto';
-    if(this._keyboardEvent)menu.firstChild.focus();
   },
 
   _hideCoordMenu: function(e){
@@ -935,6 +956,7 @@ export var ContextMenu = L.Handler.extend({
     let menu = this._coordMenu, copyEl = this._items[4].el.el;
     copyEl.setAttribute("aria-expanded","false");
     menu.setAttribute('hidden', '');
+    this.noActiveEl = true; //variable to keep track of no focus element on contextmenu, bug fix for arrow key navigation
   },
 
   _onItemMouseOver: function (e) {
