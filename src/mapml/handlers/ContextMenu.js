@@ -777,7 +777,7 @@ export var ContextMenu = L.Handler.extend({
       }
     } else if (key === 38) { //up arrow
       if (!this._coordMenu.hasAttribute('hidden') && 
-        (document.activeElement.shadowRoot == null ||
+        (document.activeElement.shadowRoot == null || //null happens when the focus is on submenu and when mouse hovers on main menu, submenu disappears
         document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML)) { //"map" on submenu
         this._coordMenu.children[2].focus();
       } else if (!this._coordMenu.hasAttribute('hidden') && 
@@ -849,7 +849,7 @@ export var ContextMenu = L.Handler.extend({
         }
       }
     } else if (key === 39) { //right arrow
-      if (document.activeElement.shadowRoot == null) {
+      if (document.activeElement.shadowRoot == null) { //do nothing when null
       } else {
         if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[5].el.el.innerHTML && //'copy'
           this._coordMenu.hasAttribute('hidden')){
