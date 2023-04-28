@@ -264,31 +264,36 @@ export class MapFeature extends HTMLElement {
     _getNativeZoomAndCS(content) {
       // content: referred to <layer- > if the <layer- > has inline <map-extent>, <map-feature> or <map-tile>
       //          referred to remote mapml if the <layer- > has a src attribute, and the fetched mapml contains <map-feature>
-      //          referred to null otherwise (i.e. <layer- > has inline / fetched <map-extent>, the <map-feature> attaches to <map-extent>'s shadow)
+      //          referred to null otherwise (i.e. <layer- > has fetched <map-extent> in shadow, the <map-feature> attaches to <map-extent>'s shadow)
       let nativeZoom, nativeCS;
-      if (!content || content.nodeName.toUpperCase() === "LAYER-") {
-        // read from inline content if <map-feature> is inline
-        let parentEl = this._extentEl ? this._extentEl : this._layer._layerEl;
-        let zoomMeta = parentEl.querySelectorAll('map-meta[name=zoom]'),
-            zoomLength = zoomMeta?.length;
-        nativeZoom = zoomLength ? +(zoomMeta[zoomLength - 1].getAttribute('content')?.split(',').find(str => str.includes("value"))?.split('=')[1]) : 0;
-
-        let csMeta = parentEl.querySelectorAll("map-meta[name=cs]"),
-            csLength = csMeta?.length;
-        if (csLength) {
-          nativeCS = csMeta[csLength - 1].getAttribute('content');
-        } else if (parentEl.nodeName.toUpperCase() === "MAP-EXTENT") {
-          // templated
-          nativeCS = 'gcrs';
-        } else {
+      if (this._extentEl) {
+        // feature attaches to extent's shadow
+        if (this._extentEl.querySelector('map-link[rel=query]')) {
+          // for query, fallback zoom is the current map zoom level that the query is returned
+          nativeZoom = this._map.getZoom();
           nativeCS = 'pcrs';
+        } else if (this._extentEl.querySelector('map-link[rel=features]')) {
+          // for templated feature, read fallback from the fetched mapml's map-meta[name=zoom / cs]
+          nativeZoom = this._extentEl._nativeZoom;
+          nativeCS = this._extentEl._nativeCS;
         }
         return {zoom: nativeZoom, cs: nativeCS};
-      } else if (content.nodeType === Node.DOCUMENT_NODE) {
-        // read native zoom and cs from the remote mapml
-        // features migrated from mapml
-        // set the native according to the map-meta[name=zoom / cs] in mapml file
-        return this._layer._mapmlvectors._getNativeVariables(content);
+      } else {
+        // feature attaches to layer- or layer-'s shadow
+        if (content.nodeType === Node.DOCUMENT_NODE) {
+          // for features migrated from mapml, read native zoom and cs from the remote mapml
+          return this._layer._mapmlvectors._getNativeVariables(content);
+        } else if (content.nodeName.toUpperCase() === "LAYER-") {
+          // for inline features, read native zoom and cs from inline map-meta
+          let zoomMeta = this.parentElement.querySelectorAll('map-meta[name=zoom]'),
+              zoomLength = zoomMeta?.length;
+          nativeZoom = zoomLength ? +(zoomMeta[zoomLength - 1].getAttribute('content')?.split(',').find(str => str.includes("value"))?.split('=')[1]) : 0;
+
+          let csMeta = this.parentElement.querySelectorAll("map-meta[name=cs]"),
+              csLength = csMeta?.length;
+          nativeCS = csLength ? csMeta[csLength - 1].getAttribute('content') : 'pcrs';
+          return {zoom: nativeZoom, cs: nativeCS};
+        }
       }
     }
 

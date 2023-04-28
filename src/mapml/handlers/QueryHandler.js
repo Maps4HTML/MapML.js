@@ -100,6 +100,8 @@ export var QueryHandler = L.Handler.extend({
           }
           displayFeaturesPopup(layer._mapmlFeatures, e.latlng);
         }
+      }).catch((err) => {
+        console.log('Looks like there was a problem. Status: ' + err.message);
       });
     };
 

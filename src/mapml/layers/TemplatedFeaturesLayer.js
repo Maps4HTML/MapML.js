@@ -114,10 +114,10 @@ export var TemplatedFeaturesLayer =  L.Layer.extend({
               url = mapml.querySelector('map-link[rel=next]')? mapml.querySelector('map-link[rel=next]').getAttribute('href') : null;
               url =  url ? (new URL(url, base)).href: null;
               // TODO if the xml parser barfed but the response is application/geo+json, use the parent addData method
-            let nativeZoom = mapml.querySelector("map-meta[name=zoom]") &&
+            let nativeZoom = extentEl._nativeZoom = mapml.querySelector("map-meta[name=zoom]") &&
                               +M._metaContentToObject(mapml.querySelector("map-meta[name=zoom]").getAttribute("content")).value || 0;
-            let nativeCS = mapml.querySelector("map-meta[name=cs]") &&
-                              M._metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content || "GCRS";
+            let nativeCS = extentEl._nativeCS = mapml.querySelector("map-meta[name=cs]") &&
+                              M._metaContentToObject(mapml.querySelector("map-meta[name=cs]").getAttribute("content")).content || "PCRS";
             features.addData(mapml, nativeCS, nativeZoom);
             // "migrate" to extent's shadow
             // make a clone, prevent the elements from being removed from mapml file
