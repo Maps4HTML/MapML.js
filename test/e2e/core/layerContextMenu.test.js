@@ -40,7 +40,7 @@ test.describe("Playwright Layer Context Menu Tests", () => {
       (text) => text.value
     );
     
-    expect(copyLayer).toEqual("<layer- label=\"CBMT - INLINE\" checked=\"\">\n      <map-extent units=\"CBMTILE\" hidden=\"\">\n        <map-input name=\"zoomLevel\" type=\"zoom\" value=\"3\" min=\"0\" max=\"3\"></map-input>\n        <map-input name=\"row\" type=\"location\" axis=\"row\" units=\"tilematrix\" min=\"14\" max=\"21\"></map-input>\n        <map-input name=\"col\" type=\"location\" axis=\"column\" units=\"tilematrix\" min=\"14\" max=\"19\"></map-input>\n        <map-link rel=\"tile\" tref=\"/data/cbmt/{zoomLevel}/c{col}_r{row}.png\"></map-link>\n      </map-extent>\n    </layer->");
+    expect(copyLayer).toEqual("<layer- label=\"CBMT - INLINE\" checked=\"\">\n      <map-link rel=\"license\" title=\"Testing Inc.\"></map-link>\n      <map-extent units=\"CBMTILE\" hidden=\"\">\n        <map-input name=\"zoomLevel\" type=\"zoom\" value=\"3\" min=\"0\" max=\"3\"></map-input>\n        <map-input name=\"row\" type=\"location\" axis=\"row\" units=\"tilematrix\" min=\"14\" max=\"21\"></map-input>\n        <map-input name=\"col\" type=\"location\" axis=\"column\" units=\"tilematrix\" min=\"14\" max=\"19\"></map-input>\n        <map-link rel=\"tile\" tref=\"http://localhost:30001/data/cbmt/{zoomLevel}/c{col}_r{row}.png\"></map-link>\n      </map-extent>\n    </layer->");
   });
 
   test("Map zooms in to layer 2", async () => {
@@ -60,7 +60,7 @@ test.describe("Playwright Layer Context Menu Tests", () => {
     );
 
     expect(mapZoom).toEqual(11);
-    expect(mapLocation).toEqual({ max: { x: 43130, y: 43130 }, min: { x: 42630, y: 42630 } });
+    expect(mapLocation).toEqual({ max: { x: 43380, y: 43130 }, min: { x: 42380, y: 42630 } });
   });
 
   test("Map zooms out to layer 3", async () => {
@@ -84,7 +84,7 @@ test.describe("Playwright Layer Context Menu Tests", () => {
     );
 
     expect(mapZoom).toEqual(11);
-    expect(mapLocation).toEqual({ max: { x: 43130, y: 43557 }, min: { x: 42630, y: 43057 } });
+    expect(mapLocation).toEqual({ max: { x: 43380, y: 43557 }, min: { x: 42380, y: 43057 } });
   });
 
   test("Map zooms out to layer 4", async () => {
@@ -108,6 +108,26 @@ test.describe("Playwright Layer Context Menu Tests", () => {
     );
 
     expect(mapZoom).toEqual(5);
-    expect(mapLocation).toEqual({ max: { x: 8084, y: 8084 }, min: { x: 7584, y: 7584 } });
+    expect(mapLocation).toEqual({ max: { x: 8334, y: 8084 }, min: { x: 7334, y: 7584 } });
   });
+
+  test("Copy layer with relative src attribute", async () => {
+    await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
+    await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(5) > div:nth-child(1) > label > span",
+      { button: "right" });
+    
+    await page.keyboard.press("l");
+    await page.click("body > textarea#messageLayer");
+    await page.keyboard.press("Control+a");
+    await page.keyboard.press("Backspace");
+    await page.keyboard.press("Control+v");
+    const copyLayer = await page.$eval(
+      "body > textarea#messageLayer",
+      (text) => text.value
+    );
+    
+    expect(copyLayer).toEqual("<layer- src=\"http://localhost:30001/data/query/DouglasFir\" label=\"Natural Resources Canada - Douglas Fir (Genus Pseudotsuga) 250m resolution\"></layer->");
+  });
+
+  
 });

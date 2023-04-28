@@ -1,0 +1,23 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+    <map-head xmlns:html="http://www.w3.org/1999/xhtml">
+        <map-title>GetFeatureInfo Results</map-title>
+        <map-meta charset="UTF-8" />
+        <map-meta content="text/mapml" http-equiv="Content-Type" />
+        <map-meta name="projection" content="OSMTILE" />
+        <map-meta name="cs" content="pcrs" />
+        <map-meta name="zoom" content="min=0,max=5"></map-meta>
+    </map-head>
+    <map-body>
+      <map-extent units="OSMTILE">
+        <map-input name="i" type="location" units="map" axis="i" ></map-input>
+        <map-input name="j" type="location" units="map" axis="j" ></map-input>
+        <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" ></map-input>
+        <map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing"  ></map-input>
+        <map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting"  ></map-input>
+        <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing"  ></map-input>
+        <map-input name="w" type="width" ></map-input>
+        <map-input name="h" type="height" ></map-input>
+        <map-link rel="query" tref="/data/query/us_map_query?{i}{j}{xmin}{ymin}{xmax}{ymax}{w}{h}" ></map-link>
+      </map-extent>
+    </map-body>
+</mapml->

@@ -35,40 +35,47 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
     const f2 = await (await page.evaluateHandle(elem => elem.tagName, rh2)).jsonValue();
     expect(f2.toUpperCase()).toEqual("A");
 
-    await page.keyboard.press("Tab"); // focus on |< affordance
+    await page.keyboard.press("Tab"); // focus on "zoom to here" link
     const h3 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
     const nh3 = await page.evaluateHandle(doc => doc.shadowRoot, h3);
     const rh3 = await page.evaluateHandle(root => root.activeElement, nh3);
-    const f3 = await (await page.evaluateHandle(elem => elem.title, rh3)).jsonValue();
-    expect(f3).toEqual("Focus Map");
+    const f3 = await (await page.evaluateHandle(elem => elem.tagName, rh3)).jsonValue();
+    expect(f3.toUpperCase()).toEqual("A");
 
-    await page.keyboard.press("Tab"); // focus on < affordance
+    await page.keyboard.press("Tab"); // focus on |< affordance
     const h4 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
     const nh4 = await page.evaluateHandle(doc => doc.shadowRoot, h4);
     const rh4 = await page.evaluateHandle(root => root.activeElement, nh4);
     const f4 = await (await page.evaluateHandle(elem => elem.title, rh4)).jsonValue();
-    expect(f4).toEqual("Previous Feature");
+    expect(f4).toEqual("Focus Map");
 
-    await page.keyboard.press("Tab"); // focus on > affordance
+    await page.keyboard.press("Tab"); // focus on < affordance
     const h5 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
     const nh5 = await page.evaluateHandle(doc => doc.shadowRoot, h5);
     const rh5 = await page.evaluateHandle(root => root.activeElement, nh5);
     const f5 = await (await page.evaluateHandle(elem => elem.title, rh5)).jsonValue();
-    expect(f5).toEqual("Next Feature");
+    expect(f5).toEqual("Previous Feature");
 
-    await page.keyboard.press("Tab"); // focus on >| affordance
+    await page.keyboard.press("Tab"); // focus on > affordance
     const h6 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
     const nh6 = await page.evaluateHandle(doc => doc.shadowRoot, h6);
     const rh6 = await page.evaluateHandle(root => root.activeElement, nh6);
     const f6 = await (await page.evaluateHandle(elem => elem.title, rh6)).jsonValue();
-    expect(f6).toEqual("Focus Controls");
+    expect(f6).toEqual("Next Feature");
 
-    await page.keyboard.press("Tab"); // focus on X dismiss popup affordance
+    await page.keyboard.press("Tab"); // focus on >| affordance
     const h7 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
     const nh7 = await page.evaluateHandle(doc => doc.shadowRoot, h7);
     const rh7 = await page.evaluateHandle(root => root.activeElement, nh7);
-    const f7 = await (await page.evaluateHandle(elem => elem.className, rh7)).jsonValue();
-    expect(f7).toEqual("leaflet-popup-close-button");
+    const f7 = await (await page.evaluateHandle(elem => elem.title, rh7)).jsonValue();
+    expect(f7).toEqual("Focus Controls");
+
+    await page.keyboard.press("Tab"); // focus on X dismiss popup affordance
+    const h8 = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
+    const nh8 = await page.evaluateHandle(doc => doc.shadowRoot, h8);
+    const rh8 = await page.evaluateHandle(root => root.activeElement, nh8);
+    const f8 = await (await page.evaluateHandle(elem => elem.className, rh8)).jsonValue();
+    expect(f8).toEqual("leaflet-popup-close-button");
   });
 
   test("Tab to next feature after tabbing out of popup", async () => {
@@ -110,6 +117,8 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.waitForTimeout(500);
       await page.keyboard.press("Enter"); // popup 
       await page.waitForTimeout(500);
+      await page.keyboard.press("Tab"); // focus zoomto link
+      await page.waitForTimeout(500);      
       await page.keyboard.press("Tab"); // focus |< affordance
       await page.waitForTimeout(500);
       await page.keyboard.press("Tab"); // focus < affordance (previous feature)
@@ -151,6 +160,7 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.keyboard.press("Tab");
       await page.keyboard.press("Tab");
       await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
       await page.keyboard.press("Tab"); // focus on x button
       await page.keyboard.down("Enter"); // press x button
       await page.keyboard.up("Enter");
@@ -172,6 +182,8 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.waitForTimeout(500);
       await page.keyboard.press("Tab"); // focus link
       await page.waitForTimeout(500);
+      await page.keyboard.press("Tab"); // focus zoomto link
+      await page.waitForTimeout(500);
       await page.keyboard.press("Tab"); // focus |< affordance
       await page.waitForTimeout(500);
       await page.keyboard.press("Tab"); // focus < affordance
@@ -191,6 +203,17 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
     });
 
     test("Focus Controls focuses the first <button> child in control div", async () => {
+      await page.waitForTimeout(1000);
+      await page.click("body > mapml-viewer");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Enter");
       await page.click("body > mapml-viewer");
       await page.keyboard.press("Shift+F10");
       await page.keyboard.press("t");
@@ -198,14 +221,50 @@ test.describe("Playwright Keyboard Navigation + Query Layer Tests" , () => {
       await page.keyboard.press("Tab");
       await page.keyboard.press("Tab");
       await page.keyboard.press("Enter");
-      for (let i = 0; i < 5; i++)
+      for (let i = 0; i < 6; i++)
         await page.keyboard.press("Tab");
       await page.keyboard.press("Enter");
-      const h = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
-      const nh = await page.evaluateHandle(doc => doc.shadowRoot, h);
-      const rh = await page.evaluateHandle(root => root.activeElement, nh);
-      const f = await (await page.evaluateHandle(elem => elem.innerText, rh)).jsonValue();
-      expect(f).toEqual("Maps4HTML");
+      let f = await page.$eval("body > mapml-viewer", (viewer) => viewer.shadowRoot.activeElement.innerHTML);
+      expect(f).toEqual("Maps for HTML Community Group");
+    });
+
+    test("Zoom link zooms to the zoom level = zoom attribute", async () => {
+      await page.click("body");
+      await page.keyboard.press("Tab"); // focus map
+      await page.keyboard.press("Tab"); // focus feature
+      await page.keyboard.press("Enter");  // display popup with link in it
+      await page.keyboard.press("Tab"); // focus link
+      await page.keyboard.press("Tab"); // focus zoomto link
+      await page.keyboard.press("Enter");
+      await page.waitForTimeout(500);
+      const zoom = await page.$eval(
+        "body > mapml-viewer",
+        (map) => +map.getAttribute('zoom')
+      );
+      expect(zoom).toEqual(2);
+    });
+    
+    test("Zoom link zooms to the maximum zoom level that can show the feature completely when zoom attribute does not present", async () => {
+      await page.click("body");
+      await page.keyboard.press("Tab"); // focus map
+      await page.keyboard.press("Tab"); // focus feature
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Enter");  // zoom out
+      await page.waitForTimeout(200);
+      await page.click("body");
+      await page.keyboard.press("Tab"); // focus map
+      await page.keyboard.press("Tab");    
+      await page.keyboard.press("ArrowLeft"); // focus targeted feature 
+      await page.keyboard.press("Enter");  // display popup with link in it
+      await page.keyboard.press("Tab"); // focus zoomto link
+      await page.keyboard.press("Enter");
+      await page.waitForTimeout(500);
+      const zoom = await page.$eval(
+        "body > mapml-viewer",
+        (map) => +map.getAttribute('zoom')
+      );
+      expect(zoom).toEqual(2);
     });
   });
 });

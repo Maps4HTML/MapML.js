@@ -6,6 +6,7 @@ const port = 30001;
 //then loads in the index file
 app.use(express.static(path.join(__dirname, "../dist")));
 app.use(express.static(path.join(__dirname, "e2e/core")));
+app.use(express.static(path.join(__dirname, "e2e/api")));
 app.use(express.static(path.join(__dirname, "e2e/data")));
 app.use(express.static(path.join(__dirname, "e2e/geojson")));
 app.use(express.static(path.join(__dirname, "e2e/layers")));
@@ -14,6 +15,16 @@ app.use(express.static(path.join(__dirname, "e2e/web-map")));
 
 app.get('/data/query/us_map_query', (req, res, next) => {
   res.sendFile(__dirname + "/e2e/data/tiles/cbmt/us_map_query.mapml", { headers: { "Content-Type": "text/mapml" } }, (err) => {
+    if (err) {
+      res.status(403).send("Error.");
+    }
+  });
+});
+// unable to figure out how to map any .mapml file to the text/mapml content type
+// had to hard-code this file
+app.get('/layers/queryableMapExtent.mapml', (req, res, next) => {
+  res.sendFile(__dirname + "/e2e/layers/queryableMapExtent.mapml", 
+  { headers: { "Content-Type": "text/mapml" } }, (err) => {
     if (err) {
       res.status(403).send("Error.");
     }

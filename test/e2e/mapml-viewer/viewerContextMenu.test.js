@@ -172,39 +172,49 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
 
   test.describe("Context Menu, Toggle Controls ", () => {
     test("Context menu, toggle controls off", async () => {
-      const controlsOn = await page.$eval(
-        "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-        (controls) => controls.childElementCount
-      );
+      let zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
+      let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+      let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
+      let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      expect(zoomHidden).toEqual(false);
+      expect(reloadHidden).toEqual(false);
+      expect(fullscreenHidden).toEqual(false);
+      expect(layerControlHidden).toEqual(false);
 
       await page.click("body > mapml-viewer", { button: "right" });
       await page.click("div > div.mapml-contextmenu > button:nth-of-type(7)");
 
-      const controlsOff = await page.$eval(
-        "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-        (controls) => controls.childElementCount
-      );
-
-      expect(controlsOn).toEqual(3);
-      expect(controlsOff).toEqual(0);
+      zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
+      reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+      fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
+      layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      expect(zoomHidden).toEqual(true);
+      expect(reloadHidden).toEqual(true);
+      expect(fullscreenHidden).toEqual(true);
+      expect(layerControlHidden).toEqual(true);
     });
 
     test("Context menu, toggle controls on", async () => {
-      const controlsOn = await page.$eval(
-        "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-        (controls) => controls.childElementCount
-      );
+      let zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
+      let reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+      let fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
+      let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      expect(zoomHidden).toEqual(true);
+      expect(reloadHidden).toEqual(true);
+      expect(fullscreenHidden).toEqual(true);
+      expect(layerControlHidden).toEqual(true);
 
       await page.click("body > mapml-viewer", { button: "right" });
       await page.click("div > div.mapml-contextmenu > button:nth-of-type(7)");
 
-      const controlsOff = await page.$eval(
-        "div > div.leaflet-control-container > div.leaflet-top.leaflet-left",
-        (controls) => controls.childElementCount
-      );
-
-      expect(controlsOn).toEqual(0);
-      expect(controlsOff).toEqual(3);
+      zoomHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-zoom", (div) => div.hidden);
+      reloadHidden = await page.$eval(".leaflet-top.leaflet-left > .mapml-reload-button", (div) => div.hidden);
+      fullscreenHidden = await page.$eval(".leaflet-top.leaflet-left > .leaflet-control-fullscreen", (div) => div.hidden);
+      layerControlHidden = await page.$eval(".leaflet-top.leaflet-right > .leaflet-control-layers", (div) => div.hidden);
+      expect(zoomHidden).toEqual(false);
+      expect(reloadHidden).toEqual(false);
+      expect(fullscreenHidden).toEqual(false);
+      expect(layerControlHidden).toEqual(false);
     });
 
     test("Context menu, toggle controls after changing opacity", async () => {
@@ -240,6 +250,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
 
   test("Submenu, copy map (MapML)", async () => {
     await page.reload();
+    await page.waitForTimeout(3000);
     await page.click("body > mapml-viewer");
     await page.keyboard.press("Shift+F10");
     await page.keyboard.press("Tab");
@@ -328,11 +339,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     );
   });
 
-  test("Submenu, copy location", async () => {
-    currLocCS = await page.$eval(
-      "body > mapml-viewer",
-      (map) => (map._map.contextMenu.defLocCS)
-    )
+  test("Submenu, copy mapml-viewer location in gcrs (default) coordinates", async () => {
     // set cs to pcrs for copying location test
     await page.$eval(
       "body > mapml-viewer",
@@ -353,7 +360,18 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       "body > textarea#coord",
       (text) => text.value
     );
-    const expected = "lon :-92.062002, lat:46.922393";
+    const expected = `<map-feature zoom="1">
+        <map-featurecaption>Copied CBMTILE gcrs location</map-featurecaption>
+        <map-properties>
+            <h2>Copied CBMTILE gcrs location</h2>
+            <div style="text-align:center">-92.062002 46.922393</div>
+        </map-properties>
+        <map-geometry cs="gcrs">
+          <map-point>
+            <map-coordinates>-92.062002 46.922393</map-coordinates>
+          </map-point>
+        </map-geometry>
+      </map-feature>`;
     expect(copyValue).toEqual(expected);
     await page.locator("body > textarea#coord").fill('');
     await page.$eval(
@@ -364,7 +382,89 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
       currLocCS
     );
   });
+  test("Paste map-feature to mapml-viewer", async () => {
+    currLocCS = await page.$eval(
+      "body > mapml-viewer",
+      (map) => (map._map.contextMenu.defLocCS)
+    );
+    // set cs to pcrs for copying location test
+    await page.$eval(
+      "body > mapml-viewer",
+      (map) => {map._map.contextMenu.defLocCS = 'gcrs';}
+    );
+    await page.click("body > mapml-viewer");
+    await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+    await page.click("body > mapml-viewer");
+    await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("p");
 
+    const layerLabel = await page.$eval(
+      "body > mapml-viewer",
+            (map) => map.layers[1].label
+    );
+    expect(layerLabel).toEqual("Pasted layer");
+    // clean up
+    await page.$eval("body > mapml-viewer",
+      (map) => map.removeChild(map.querySelector('[label="Pasted layer"]')));
+  });
+  // other cs not implemented yet: tile,map,
+  test("Submenu, copy location in tilematrix coordinates, which is not implemented, so faked with gcrs", async () => {
+    // set the copy location coordinate system to the not-implemented tilematrix
+    await page.$eval(
+      "body > mapml-viewer",
+      (map) => {
+        map._map.contextMenu.defLocCS = 'tilematrix';
+        // ContextMenu.js double-checks the value of defLocCS against the 
+        // M.options.defaultLocCoor when the context menu is shown,
+        // so have to ensure it has the value we want to test against.
+        M.options.defaultLocCoor = 'tilematrix';
+      }
+    );
+
+    await page.click("body > mapml-viewer");
+    await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+    await page.click("body > textarea#coord");
+    await page.keyboard.press("Control+v");
+    const copyValue = await page.$eval(
+      "body > textarea#coord",
+      (text) => text.value
+    );
+    const expected = `<map-feature zoom="1">
+        <map-featurecaption>Copied CBMTILE tilematrix location (not implemented yet)</map-featurecaption>
+        <map-properties>
+            <h2>Copied CBMTILE tilematrix location (not implemented yet)</h2>
+            <div style="text-align:center">6 6</div>
+        </map-properties>
+        <map-geometry cs="gcrs">
+          <map-point>
+            <map-coordinates>-92.062002 46.922393</map-coordinates>
+          </map-point>
+        </map-geometry>
+      </map-feature>`;
+    expect(copyValue).toEqual(expected);
+    await page.locator("body > textarea#coord").fill('');
+    await page.$eval(
+      "body > mapml-viewer",
+      (map, currLocCS) => {
+        map._map.contextMenu.defLocCS = currLocCS;
+      }, 
+      currLocCS
+    );
+  });
   test("Context menu, All buttons enabled when fwd and back history present", async () => {
     await page.click("body > mapml-viewer");
     await page.$eval(
@@ -404,7 +504,7 @@ test.describe("Playwright mapml-viewer Context Menu (and api) Tests", () => {
     await page.waitForTimeout(200);
     await page.click("body > mapml-viewer", {
       button: 'right',
-      position: {x: 495, y: 580}
+      position: {x: 495, y: 550}
     });
     const contextMenu = await page.locator('div > div.mapml-contextmenu').first();
     expect(await contextMenu.isVisible()).toBeTruthy();

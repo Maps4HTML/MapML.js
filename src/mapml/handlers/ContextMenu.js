@@ -130,6 +130,21 @@ export var ContextMenu = L.Handler.extend({
       .on(this._layerMenu, 'mousedown', L.DomEvent.stop)
       .on(this._layerMenu, 'dblclick', L.DomEvent.stop)
       .on(this._layerMenu, 'contextmenu', L.DomEvent.stop);
+      
+    this.t = document.createElement('template');
+    this.t.innerHTML = 
+     `<map-feature zoom="">
+        <map-featurecaption></map-featurecaption>
+        <map-properties>
+            <h2></h2>
+            <div style="text-align:center"></div>
+        </map-properties>
+        <map-geometry cs="">
+          <map-point>
+            <map-coordinates></map-coordinates>
+          </map-point>
+        </map-geometry>
+      </map-feature>`;
   },
 
   addHooks: function () {
@@ -202,13 +217,13 @@ export var ContextMenu = L.Handler.extend({
 
   _zoomToLayer: function (e) {
     let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu;
-    context._layerClicked.layer._layerEl.focus();
+    context._layerClicked.layer._layerEl.zoomTo();
   },
 
   _copyLayer: function (e) {
     let context = e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
       layerElem = context._layerClicked.layer._layerEl;
-    context._copyData(layerElem.outerHTML);
+    context._copyData(layerElem.getOuterHTML());
   },
 
   _goForward: function(e){
@@ -233,7 +248,11 @@ export var ContextMenu = L.Handler.extend({
 
   _toggleControls: function(e){
     let mapEl = e instanceof KeyboardEvent?this._map.options.mapEl:this.options.mapEl;
-    mapEl._toggleControls();
+    if (mapEl.controls) {
+      mapEl.controls = false;
+    } else {
+      mapEl.controls = true;
+    }
   },
 
   _copyMapML: function(e){
@@ -294,52 +313,143 @@ export var ContextMenu = L.Handler.extend({
     }
   },
 
-  _copyGCRS: function(e){
-    let mapEl = this.options.mapEl,
-        click = this.contextMenu._clickEvent;
-    this.contextMenu._copyData(`lon :${click.latlng.lng.toFixed(6)}, lat:${click.latlng.lat.toFixed(6)}`);
-  },
-
-  _copyTCRS: function(e){
+  _copyGCRS: function(e) {
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
-        point = mapEl._map.project(click.latlng);
-    this.contextMenu._copyData(`z:${mapEl.zoom}, x:${point.x}, y:${point.y}`);
+        projection = mapEl.projection,
+        feature = this.contextMenu.t.content.firstElementChild.cloneNode(true),
+        caption =  feature.querySelector('map-featurecaption'),
+        h2 = feature.querySelector('h2'),
+        div = feature.querySelector('div'),
+        geom = feature.querySelector('map-geometry'),
+        coords = feature.querySelector('map-coordinates');
+   
+    feature.setAttribute('zoom', mapEl.zoom);
+    geom.setAttribute('cs','gcrs');
+    caption.textContent = `Copied ${projection} gcrs location`;
+    h2.textContent = `Copied ${projection} gcrs location`;
+    div.textContent = `${click.latlng.lng.toFixed(6)} ${click.latlng.lat.toFixed(6)}`;
+    coords.textContent = `${click.latlng.lng.toFixed(6)} ${click.latlng.lat.toFixed(6)}`;
+    this.contextMenu._copyData(feature.outerHTML);
   },
 
-  _copyTileMatrix: function(e){
+  _copyTCRS: function(e) {
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
         point = mapEl._map.project(click.latlng),
-        tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x;
-    this.contextMenu._copyData(`z:${mapEl.zoom}, column:${Math.trunc(point.x/tileSize)}, row:${Math.trunc(point.y/tileSize)}`);
+        pt = {x:point.x.toFixed(),y:point.y.toFixed()},
+        projection = mapEl.projection,
+        feature = this.contextMenu.t.content.firstElementChild.cloneNode(true),
+        caption =  feature.querySelector('map-featurecaption'),
+        h2 = feature.querySelector('h2'),
+        div = feature.querySelector('div'),
+        geom = feature.querySelector('map-geometry'),
+        coords = feature.querySelector('map-coordinates');
+
+    feature.setAttribute('zoom', mapEl.zoom);
+    geom.setAttribute('cs','tcrs');
+    caption.textContent = `Copied ${projection} tcrs location`;
+    h2.textContent = `Copied ${projection} tcrs location`;
+    div.textContent = `${pt.x} ${pt.y}`;
+    coords.textContent = `${pt.x} ${pt.y}`;
+    this.contextMenu._copyData(feature.outerHTML);
   },
 
-  _copyPCRS: function(e){
+  _copyTileMatrix: function(e) {
+    let mapEl = this.options.mapEl,
+        click = this.contextMenu._clickEvent,
+        point = mapEl._map.project(click.latlng),
+        tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x,
+        projection = mapEl.projection,        
+        feature = this.contextMenu.t.content.firstElementChild.cloneNode(true),
+        caption =  feature.querySelector('map-featurecaption'),
+        h2 = feature.querySelector('h2'),
+        div = feature.querySelector('div'),
+        geom = feature.querySelector('map-geometry'),
+        coords = feature.querySelector('map-coordinates');
+
+    feature.setAttribute('zoom', mapEl.zoom);
+    geom.setAttribute('cs','gcrs');
+    caption.textContent = `Copied ${projection} tilematrix location (not implemented yet)`;
+    h2.textContent = `Copied ${projection} tilematrix location (not implemented yet)`;
+    div.textContent = `${Math.trunc(point.x/tileSize)} ${Math.trunc(point.y/tileSize)}`;
+    coords.textContent = `${click.latlng.lng.toFixed(6)} ${click.latlng.lat.toFixed(6)}`;
+    this.contextMenu._copyData(feature.outerHTML);
+  },
+
+  _copyPCRS: function(e) {
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
         point = mapEl._map.project(click.latlng),
         scale = mapEl._map.options.crs.scale(+mapEl.zoom),
-        pcrs = mapEl._map.options.crs.transformation.untransform(point,scale);
-    this.contextMenu._copyData(`easting:${Math.round(pcrs.x)}, northing:${Math.round(pcrs.y)}`);
+        pcrs = mapEl._map.options.crs.transformation.untransform(point,scale).round(),
+        projection = mapEl.projection,
+        feature = this.contextMenu.t.content.firstElementChild.cloneNode(true),
+        caption =  feature.querySelector('map-featurecaption'),
+        h2 = feature.querySelector('h2'),
+        div = feature.querySelector('div'),
+        geom = feature.querySelector('map-geometry'),
+        coords = feature.querySelector('map-coordinates');
+
+    feature.setAttribute('zoom', mapEl.zoom);
+    geom.setAttribute('cs','pcrs');
+    caption.textContent = `Copied ${projection} pcrs location`;
+    h2.textContent = `Copied ${projection} pcrs location`;
+    div.textContent = `${pcrs.x} ${pcrs.y}`;
+    coords.textContent = `${pcrs.x} ${pcrs.y}`;
+    this.contextMenu._copyData(feature.outerHTML);
   },
 
-  _copyTile: function(e){
+  _copyTile: function(e) {
     let mapEl = this.options.mapEl,
         click = this.contextMenu._clickEvent,
-        point = mapEl._map.options.crs.project(click.latlng),
+        // the _map.project method returns pixels, while the _map.crs.project 
+        // method returns meters, confusingly:
+        // https://leafletjs.com/reference.html#map-project
+        // https://leafletjs.com/reference.html#crs-project
+        point = mapEl._map.project(click.latlng),
         tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x,
-        pointX = point.x % tileSize, pointY = point.y % tileSize;
-    if(pointX < 0) pointX+= tileSize;
-    if(pointY < 0) pointY+= tileSize;
+        pointX = point.x % tileSize, pointY = point.y % tileSize,
+        pt = L.point(pointX,pointY).trunc(),
+        projection = mapEl.projection,
+        feature = this.contextMenu.t.content.firstElementChild.cloneNode(true),
+        caption =  feature.querySelector('map-featurecaption'),
+        h2 = feature.querySelector('h2'),
+        div = feature.querySelector('div'),
+        geom = feature.querySelector('map-geometry'),
+        coords = feature.querySelector('map-coordinates');
 
-    this.contextMenu._copyData(`z:${mapEl.zoom}, i:${Math.trunc(pointX)}, j:${Math.trunc(pointY)}`);
+    if(pt.x < 0) pt.x += tileSize;
+    if(pt.y < 0) pt.y += tileSize; 
+
+    feature.setAttribute('zoom', mapEl.zoom);
+    geom.setAttribute('cs','gcrs');
+    caption.textContent = `Copied ${projection} tile location (not implemented yet)`;
+    h2.textContent = `Copied ${projection} tile location (not implemented yet)`;
+    div.textContent = `${pt.x} ${pt.y}`;
+    coords.textContent = `${click.latlng.lng.toFixed(6)} ${click.latlng.lat.toFixed(6)}`;
+    this.contextMenu._copyData(feature.outerHTML);
   },
 
   _copyMap: function(e){
     let mapEl = this.options.mapEl,
-        click = this.contextMenu._clickEvent;
-    this.contextMenu._copyData(`z:${mapEl.zoom}, i:${Math.trunc(click.containerPoint.x)}, j:${Math.trunc(click.containerPoint.y)}`);
+        click = this.contextMenu._clickEvent,
+        mapPt = click.containerPoint.trunc(),
+        projection = mapEl.projection,
+        feature = this.contextMenu.t.content.firstElementChild.cloneNode(true),
+        caption =  feature.querySelector('map-featurecaption'),
+        h2 = feature.querySelector('h2'),
+        div = feature.querySelector('div'),
+        geom = feature.querySelector('map-geometry'),
+        coords = feature.querySelector('map-coordinates');
+
+    feature.setAttribute('zoom', mapEl.zoom);
+    geom.setAttribute('cs','gcrs');
+    caption.textContent = `Copied ${projection} map location (not implemented yet)`;
+    h2.textContent = `Copied ${projection} map location (not implemented yet)`;
+    div.textContent = `${mapPt.x} ${mapPt.y}`;
+    coords.textContent = `${click.latlng.lng.toFixed(6)} ${click.latlng.lat.toFixed(6)}`;
+    this.contextMenu._copyData(feature.outerHTML);
   },
 
   _copyAllCoords: function(e){

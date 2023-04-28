@@ -63,6 +63,9 @@ export var MapMLLayer = L.Layer.extend({
 
         return this;
     },
+    getHref: function () {
+      return this._href ?? "";
+    },
     _updateZIndex: function () {
         if (this._container && this.options.zIndex !== undefined && this.options.zIndex !== null) {
             this._container.style.zIndex = this.options.zIndex;
@@ -105,7 +108,8 @@ export var MapMLLayer = L.Layer.extend({
                   opacity: extentEl._templateVars.opacity,
                   _leafletLayer: this,
                   crs: extentEl.crs,
-                  extentZIndex: extentEl.extentZIndex
+                  extentZIndex: extentEl.extentZIndex,
+                  extentEl: extentEl._DOMnode || extentEl
                 }).addTo(this._map);
                 extentEl.templatedLayer.setZIndex();
                 this._setLayerElExtent();  
@@ -159,8 +163,8 @@ export var MapMLLayer = L.Layer.extend({
             }
             if (!this._mapmlvectors) {
               this._mapmlvectors = M.featureLayer(this._content, {
-                  // pass the vector layer a renderer of its own, otherwise leaflet
-                  // puts everything into the overlayPane
+                // pass the vector layer a renderer of its own, otherwise leaflet
+                // puts everything into the overlayPane
                   renderer: M.featureRenderer(),
                   // pass the vector layer the container for the parent into which
                   // it will append its own container for rendering into
@@ -178,11 +182,11 @@ export var MapMLLayer = L.Layer.extend({
                       c.insertAdjacentHTML('afterbegin', properties.innerHTML);
                       geometry.bindPopup(c, {autoClose: false, minWidth: 165});
                     }
-                  }
+                  },
                 }).addTo(map);
-            }
-            this._setLayerElExtent();
-          },this);
+              }
+              this._setLayerElExtent();
+            },this);
         }
         
         
@@ -230,7 +234,7 @@ export var MapMLLayer = L.Layer.extend({
           map.fire('checkdisabled');
         }, 0);
         map.on("popupopen", this._attachSkipButtons, this);
-        
+
         function createAndAddTemplatedLayers() {
           if(this._extent && this._extent._mapExtents){
             for(let i = 0; i < this._extent._mapExtents.length; i++){
@@ -242,6 +246,9 @@ export var MapMLLayer = L.Layer.extend({
                     _leafletLayer: this,
                     crs: this._extent.crs,
                     extentZIndex: this._extent._mapExtents[i].extentZIndex,
+                    // when a <map-extent> migrates from a remote mapml file and attaches to the shadow of <layer- >
+                    // this._extent._mapExtents[i] refers to the <map-extent> in remote mapml
+                    extentEl: this._extent._mapExtents[i]._DOMnode || this._extent._mapExtents[i],
                     }).addTo(map);   
                     this._extent._mapExtents[i].templatedLayer = this._templatedLayer;
                     if(this._templatedLayer._queries){
@@ -258,7 +265,6 @@ export var MapMLLayer = L.Layer.extend({
           }
         }
     },
-
 
     _validProjection : function(map){
       let noLayer = false;
@@ -361,6 +367,10 @@ export var MapMLLayer = L.Layer.extend({
         }
     },
     _onZoomAnim: function(e) {
+      // this callback will be invoked AFTER <layer- > has been removed
+      // but due to the characteristic of JavaScript, the context (this pointer) can still be used
+      // the easiest way to solve this:
+      if (!this._map) {return;}
       // get the min and max zooms from all extents
       var toZoom = e.zoom,
           zoom = (this._extent && this._extent._mapExtents) ? this._extent._mapExtents[0].querySelector("map-input[type=zoom]") : null,
@@ -405,6 +415,7 @@ export var MapMLLayer = L.Layer.extend({
 
         map.fire("checkdisabled");
         map.off("popupopen", this._attachSkipButtons);
+
     },
     getAttribution: function () {
         return this.options.attribution;
@@ -603,6 +614,7 @@ export var MapMLLayer = L.Layer.extend({
         svgSettingsControlIcon.setAttribute('viewBox', '0 0 24 24');
         svgSettingsControlIcon.setAttribute('height', '22');
         svgSettingsControlIcon.setAttribute('width', '22');
+        svgSettingsControlIcon.setAttribute('fill', 'currentColor');
         settingsControlPath1.setAttribute('d', 'M0 0h24v24H0z');
         settingsControlPath1.setAttribute('fill', 'none');
         settingsControlPath2.setAttribute('d', 'M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z');
@@ -1152,9 +1164,48 @@ export var MapMLLayer = L.Layer.extend({
             } else {
                 layer.error = true;
             }
+            if (this.responseXML) {
+              _attachToLayer.call(layer);
+            }
             layer.fire('extentload', layer, false);
+            // update controls if needed based on mapml-viewer controls/controlslist attribute
+            if (layer._layerEl.parentElement) {
+              // if layer does not have a parent Element, do not need to set Controls
+              layer._layerEl.parentElement._toggleControls();
+            }
             layer._layerEl.dispatchEvent(new CustomEvent('extentload', {detail: layer,}));
-        }
+          }
+
+          function _attachToLayer() {
+            let mapml = xhr.responseXML,
+                shadowRoot = this._layerEl.shadowRoot;
+            if (mapml) {
+              let elements = mapml.children[0].children[1].children;
+              if (elements) {
+                let baseURL = mapml.children[0].children[0].querySelector('map-base')?.getAttribute('href');
+                for (let el of elements) {
+                  // if not clone, the elements will be **REMOVED** from mapml file and re-attached to the layer's shadow root
+                  // which makes the this._content (mapml file) changed and thus affects the later generation process of this._mapmlvectors
+                  let node = el.cloneNode(true);
+                  el._DOMnode = node;
+                  // resolve relative url
+                  if (node.nodeName === 'map-link') {
+                    let url = node.getAttribute('href') || node.getAttribute('tref');
+                    // if relative
+                    if (url && (url.indexOf('http://') === 0 || url.indexOf('https://') === 0)) {
+                      let resolvedURL = baseURL + url;
+                      if (node.hasAttribute('href')) {
+                        node.setAttribute('href', resolvedURL);
+                      } else {
+                        node.setAttribute('tref', resolvedURL);
+                      }
+                    }   
+                  }
+                  shadowRoot.appendChild(node);
+                }
+              }
+            }
+          }
     },
     _validateExtent: function () {
       // TODO: change so that the _extent bounds are set based on inputs
@@ -1260,8 +1311,12 @@ export var MapMLLayer = L.Layer.extend({
       if(popup._source._eventParents){ // check if the popup is for a feature or query
         layer = popup._source._eventParents[Object.keys(popup._source._eventParents)[0]]; // get first parent of feature, there should only be one
         group = popup._source.group;
+        // if the popup is for a static / templated feature, the "zoom to here" link can be attached once the popup opens
+        attachZoomLink.call(popup);
       } else {
         layer = popup._source._templatedLayer;
+        // if the popup is for a query, the "zoom to here" link should be re-attached every time new pagination features are displayed
+        map.on("attachZoomLink", attachZoomLink, popup);
       }
 
       if(popup._container.querySelector('nav[class="mapml-focus-buttons"]')){
@@ -1314,10 +1369,10 @@ export var MapMLLayer = L.Layer.extend({
         map.featureIndex.inBoundFeatures[map.featureIndex.currentIndex].path.setAttribute("tabindex", 0);
         L.DomEvent.stop(e);
         map.closePopup();
-        map._controlContainer.querySelector("A").focus();
+        map._controlContainer.querySelector("A:not([hidden])").focus();
       }, popup);
   
-      let divider = L.DomUtil.create("hr");
+      let divider = L.DomUtil.create("hr", "mapml-popup-divider");
 
       popup._navigationBar = div;
       popup._content.appendChild(divider);
@@ -1346,8 +1401,14 @@ export var MapMLLayer = L.Layer.extend({
             group.focus();
             L.DomEvent.stop(focusEvent);
           }, 0);
-        } else if ((path[0].title==="Focus Map" || path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
+        } else if (path[0].classList.contains("mapml-popup-content") && isTab && shiftPressed){
           setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
+            map.closePopup(popup);
+            group.focus();
+            L.DomEvent.stop(focusEvent);
+          }, 0);
+        } else if (path[0] === popup._content.querySelector('a') && isTab && shiftPressed) {
+          setTimeout(() => {
             map.closePopup(popup);
             group.focus();
             L.DomEvent.stop(focusEvent);
@@ -1367,13 +1428,42 @@ export var MapMLLayer = L.Layer.extend({
           if(focusEvent.originalEvent.keyCode !== 27)map._popupClosed = true;
         } else if (isTab && path[0].classList.contains("leaflet-popup-close-button")){
           map.closePopup(popup);
-        } else if ((path[0].title==="Focus Map" || path[0].classList.contains("mapml-popup-content")) && isTab && shiftPressed){
+        } else if (path[0].classList.contains("mapml-popup-content") && isTab && shiftPressed){
           map.closePopup(popup);
           setTimeout(() => { //timeout needed so focus of the feature is done even after the keypressup event occurs
             L.DomEvent.stop(focusEvent);
             map._container.focus();
           }, 0);
+        } else if (path[0] === popup._content.querySelector('a') && isTab && shiftPressed) {
+          map.closePopup(popup);
+          setTimeout(() => {
+            L.DomEvent.stop(focusEvent);
+            map._container.focus();
+          }, 0);
         }
+      }
+
+      function attachZoomLink (e) {
+        // this === popup
+        let content = this._content,
+            featureEl = e ? e.currFeature : this._source._groupLayer._featureEl;
+        if (content.querySelector('a.mapml-zoom-link')) {
+          content.querySelector('a.mapml-zoom-link').remove();
+        }
+        if (!featureEl.querySelector('map-geometry')) return;
+        let tL = featureEl.extent.topLeft.gcrs,
+            bR = featureEl.extent.bottomRight.gcrs,
+            center = L.latLngBounds(L.latLng(tL.horizontal, tL.vertical), L.latLng(bR.horizontal, bR.vertical)).getCenter(true);
+        let zoomLink = document.createElement('a');
+        zoomLink.href = `#${featureEl.getMaxZoom()},${center.lng},${center.lat}`;
+        zoomLink.innerHTML = `${M.options.locale.popupZoom}`;
+        zoomLink.className = "mapml-zoom-link";
+        zoomLink.onclick = zoomLink.onkeydown = function (e) {
+          if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
+          e.preventDefault();
+          featureEl.zoomTo();
+        };
+        content.insertBefore(zoomLink, content.querySelector('hr.mapml-popup-divider'));
       }
 
       // if popup closes then the focusFeature handler can be removed
@@ -1382,6 +1472,7 @@ export var MapMLLayer = L.Layer.extend({
         if (removeEvent.popup === popup){
           map.off("keydown", focusFeature);
           map.off("keydown", focusMap);
+          map.off("popupopen", attachZoomLink);
           map.off('popupclose', removeHandlers);
           if(group) group.setAttribute("aria-expanded", "false");
         }

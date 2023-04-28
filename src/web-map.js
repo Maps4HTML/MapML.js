@@ -1,12 +1,15 @@
 import './leaflet.js';  // a lightly modified version of Leaflet for use as browser module
 import './mapml.js';       // refactored URI usage, replaced with URL standard
+import DOMTokenList from './DOMTokenList.js';
 import { MapLayer } from './layer.js';
 import { MapArea } from './map-area.js';
 import { MapCaption } from './map-caption.js';
+import { MapFeature } from './map-feature.js';
+import { MapExtent } from './map-extent.js';
 
 export class WebMap extends HTMLMapElement {
   static get observedAttributes() {
-    return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls', 'static'];
+    return ['lat', 'lon', 'zoom', 'projection', 'width', 'height', 'controls', 'static', 'controlslist'];
   }
   // see comments below regarding attributeChangedCallback vs. getter/setter
   // usage.  Effectively, the user of the element must use the property, not
@@ -18,20 +21,18 @@ export class WebMap extends HTMLMapElement {
   }
   set controls(value) {
     const hasControls = Boolean(value);
-    if (hasControls)
-      this.setAttribute('controls', '');
-    else
+    if (hasControls) {
+      this.setAttribute('controls','');
+    } else {
       this.removeAttribute('controls');
-    this._toggleControls(hasControls);
+    }
   }
-  get controlslist() {
-    return this.hasAttribute('controlslist') ? this.getAttribute("controlslist") : "";
+  get controlsList() {
+    return this._controlsList;
   }
-  set controlslist(val) {
-    let options = ["nofullscreen", "nozoom", "nolayer", "noreload"],
-        lowerVal = val.toLowerCase();
-    if (this.controlslist.includes(lowerVal) || !options.includes(lowerVal))return;
-    this.setAttribute("controlslist", this.controlslist+` ${lowerVal}`);
+  set controlsList(value) {
+    this._controlsList.value = value;
+    this.setAttribute('controlslist', value);
   }
   get width() {
     return (window.getComputedStyle(this).width).replace('px','');
@@ -126,8 +127,75 @@ export class WebMap extends HTMLMapElement {
   constructor() {
     // Always call super first in constructor
     super();
-
     this._source = this.outerHTML;
+    // create an array to track the history of the map and the current index
+    this._history = [];
+    this._historyIndex = -1;
+    this._traversalCall = false;
+  }
+  connectedCallback() {
+
+    this._initShadowRoot();
+
+    this._controlsList = new DOMTokenList(
+      this.getAttribute("controlslist"),
+      this, "controlslist", 
+      ["noreload","nofullscreen","nozoom","nolayer","noscale","geolocation"]
+    );
+    
+    var s = window.getComputedStyle(this),
+      wpx = s.width, hpx=s.height,
+      w = this.hasAttribute("width") ? this.getAttribute("width") : parseInt(wpx.replace('px','')),
+      h = this.hasAttribute("height") ? this.getAttribute("height") : parseInt(hpx.replace('px',''));
+    this._changeWidth(w);
+    this._changeHeight(h);
+
+
+    // wait for createmap event before creating leaflet map
+    // this allows a safeguard for the case where loading a custom TCRS takes 
+    // longer than loading mapml-viewer.js/web-map.js
+    // the REASON we need a synchronous event listener (see comment below)
+    // is because the mapml-viewer element has / can have a size of 0 up until after
+    // something that happens between this point and the event handler executing
+    // perhaps a browser rendering cycle??
+    this.addEventListener('createmap', this._createMap);
+
+    let custom = !(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(this.projection));
+    if (!custom) {	
+      // this is worth a read, because dispatchEvent is synchronous
+      // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent
+      // In particular:
+      //   "All applicable event handlers are called and return before dispatchEvent() returns."
+      this.dispatchEvent(new CustomEvent('createmap'));
+    }
+    this._toggleStatic();
+    
+    /*
+      1. only deletes aria-label when the last (only remaining) map caption is removed
+      2. only deletes aria-label if the aria-label was defined by the map caption element itself
+    */
+
+    let mapcaption = this.querySelector('map-caption');
+
+    if (mapcaption !== null) {
+      setTimeout(() => {
+        let ariaupdate = this.getAttribute('aria-label');
+
+        if (ariaupdate === mapcaption.innerHTML) {
+          this.mapCaptionObserver = new MutationObserver((m) => {
+            let mapcaptionupdate = this.querySelector('map-caption');
+            if (mapcaptionupdate !== mapcaption) {
+              this.removeAttribute('aria-label');
+            }     
+          });
+          this.mapCaptionObserver.observe(this, {
+            childList: true
+          });
+        }
+      }, 0);
+    }
+  }
+  _initShadowRoot() {
     let tmpl = document.createElement('template');
     tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
 
@@ -154,21 +222,21 @@ export class WebMap extends HTMLMapElement {
     `box-sizing: inherit;` + // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/350#issuecomment-888361985
     `}` +
     `[is="web-map"][frameborder="0"] {` +
-  	`border-width: 0;` +
-  	`}` +
+    `border-width: 0;` +
+    `}` +
     `[is="web-map"][hidden] {` +
     `display: none!important;` +
     `}` +
     `[is="web-map"] .mapml-web-map {` +
     `display: contents;` + // This div doesn't have to participate in layout by generating its own box.
     `}`;
-    
+
     let shadowRootCSS = document.createElement('style');
     shadowRootCSS.innerHTML =
     `:host .leaflet-control-container {` +
     `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154).
     `}`;
-    
+
     // Hide all (light DOM) children of the map element except for the
     // `<area>` and `<div class="mapml-web-map">` (shadow root host) elements.
     let hideElementsCSS = document.createElement('style');
@@ -176,206 +244,91 @@ export class WebMap extends HTMLMapElement {
     `[is="web-map"] > :not(area):not(.mapml-web-map) {` +
     `display: none!important;` +
     `}`;
-    
+    this.appendChild(hideElementsCSS);
+
     shadowRoot.appendChild(shadowRootCSS);
     shadowRoot.appendChild(tmpl.content.cloneNode(true));
     shadowRoot.appendChild(this._container);
     this.appendChild(rootDiv);
-    this.appendChild(hideElementsCSS);
     document.head.insertAdjacentElement('afterbegin', mapDefaultCSS);
-    this._toggleState = false;
-    this.controlsListObserver = new MutationObserver((m) => {
-      m.forEach((change)=>{
-        if(change.type==="attributes" && change.attributeName === "controlslist")
-          this.setControls(false,false,false);
-      });
-    });
-    this.controlsListObserver.observe(this, {attributes:true});
+
   }
+  _createMap() {
+    if (!this._map) {
+      this._map = L.map(this._container, {
+        center: new L.LatLng(this.lat, this.lon),
+        projection: this.projection,
+        query: true,
+        contextMenu: true,
+        announceMovement: M.options.announceMovement,
+        featureIndex: true,
+        mapEl: this,
+        crs: M[this.projection],
+        zoom: this.zoom,
+        zoomControl: false,
+        // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
+        // the mapml response is received the screen tends to flash.  I'm sure
+        // there is a better configuration than that, but at this moment
+        // I'm not sure how to approach that issue.
+        // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
+        fadeAnimation: true
+      });
+      this._addToHistory();
 
-  connectedCallback() {
-    if (this.isConnected) {
+      this._createControls();
+      this._toggleControls();
+      this._crosshair = M.crosshair().addTo(this._map);
 
-      // the dimension attributes win, if they're there. A map does not
-      // have an intrinsic size, unlike an image or video, and so must
-      // have a defined width and height.
-      var s = window.getComputedStyle(this),
-        wpx = s.width, hpx=s.height,
-        w = this.hasAttribute("width") ? this.getAttribute("width") : parseInt(wpx.replace('px','')),
-        h = this.hasAttribute("height") ? this.getAttribute("height") : parseInt(hpx.replace('px',''));
-      this._changeWidth(w);
-      this._changeHeight(h);
+      if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
 
-
-      // create an array to track the history of the map and the current index
-      if(!this._history){
-        this._history = [];
-        this._historyIndex = -1;
-        this._traversalCall = false;
-      }
-
-      this.addEventListener('createmap', ()=>{
-        if (!this._map) {
-          this._map = L.map(this._container, {
-            center: new L.LatLng(this.lat, this.lon),
-            projection: this.projection,
-            query: true,
-            contextMenu: true,
-            announceMovement: M.options.announceMovement,
-            featureIndex: true,
-            mapEl: this,
-            crs: M[this.projection],
-            zoom: this.zoom,
-            zoomControl: false,
-            // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
-            // the mapml response is received the screen tends to flash.  I'm sure
-            // there is a better configuration than that, but at this moment
-            // I'm not sure how to approach that issue.
-            // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
-            fadeAnimation: true
-          });
-          this._addToHistory();
-          // the attribution control is not optional
-          M.attributionControl(this);
-
-          this.setControls(false,false,true);
-          this._crosshair = M.crosshair().addTo(this._map);
-          if(M.options.featureIndexOverlayOption) this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
-
-          if (this.hasAttribute('name')) {
-            var name = this.getAttribute('name');
-            if (name) {
-              this.poster = document.querySelector('img[usemap='+'"#'+name+'"]');
-              // firefox has an issue where the attribution control's use of
-              // _container.innerHTML does not work properly if the engine is throwing
-              // exceptions because there are no area element children of the image map
-              // for firefox only, a workaround is to actually remove the image...
-              if (this.poster) {
-                if (L.Browser.gecko) {
-                    this.poster.removeAttribute('usemap');
-                }
-                //this.appendChild(this.poster);
-              }
-            }
-          }
-
-          // undisplay the img in the image map, because it's not needed now.
-          // gives a slight FOUC, unless:
-          // 1) the img is pre-styled (https://github.com/Maps4HTML/Web-Map-Custom-Element/blob/80a4a4e372d2ef61bb7cad6a111e17e396b8e908/index-map-area.html#L35)
-          // 2) placed after the map element
+      if (this.hasAttribute('name')) {
+        var name = this.getAttribute('name');
+        if (name) {
+          this.poster = document.querySelector('img[usemap='+'"#'+name+'"]');
+          // firefox has an issue where the attribution control's use of
+          // _container.innerHTML does not work properly if the engine is throwing
+          // exceptions because there are no area element children of the image map
+          // for firefox only, a workaround is to actually remove the image...
           if (this.poster) {
-            this.poster.setAttribute('hidden', '');
+            if (L.Browser.gecko) {
+                this.poster.removeAttribute('usemap');
+            }
+            //this.appendChild(this.poster);
           }
-          
-          // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
-          this.setAttribute('role', 'application');
-          // Make the Leaflet container element programmatically identifiable
-          // (https://github.com/Leaflet/Leaflet/issues/7193).
-          this._container.setAttribute('role', 'region');
-          this._container.setAttribute('aria-label', 'Interactive map');
-          
-          this._setUpEvents();
-          // this.fire('load', {target: this});
         }
-      }, {once:true});
-
-      let custom = !(["CBMTILE","APSTILE","OSMTILE","WGS84"].includes(this.projection));
-      // if the page doesn't use nav.js or isn't custom then dispatch createmap event	
-      if(!custom){	
-        this.dispatchEvent(new CustomEvent('createmap'));
-      }
-      
-      if (this._map && this.hasAttribute('static')) {
-        this._toggleStatic();
       }
 
-      /*
-        1. only deletes aria-label when the last (only remaining) map caption is removed
-        2. only deletes aria-label if the aria-label was defined by the map caption element itself
-      */
-      
-      let mapcaption = this.querySelector('map-caption');
-      
-      if (mapcaption !== null) {
-        setTimeout(() => {
-          let ariaupdate = this.getAttribute('aria-label');
-        
-          if (ariaupdate === mapcaption.innerHTML) {
-            this.mapCaptionObserver = new MutationObserver((m) => {
-              let mapcaptionupdate = this.querySelector('map-caption');
-              if (mapcaptionupdate !== mapcaption) {
-                this.removeAttribute('aria-label');
-              }     
-            });
-            this.mapCaptionObserver.observe(this, {
-              childList: true
-            });
-          }
-        }, 0);
+      // undisplay the img in the image map, because it's not needed now.
+      // gives a slight FOUC, unless:
+      // 1) the img is pre-styled (https://github.com/Maps4HTML/Web-Map-Custom-Element/blob/80a4a4e372d2ef61bb7cad6a111e17e396b8e908/index-map-area.html#L35)
+      // 2) placed after the map element
+      if (this.poster) {
+        this.poster.setAttribute('hidden', '');
       }
+
+      // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
+      this.setAttribute('role', 'application');
+      // Make the Leaflet container element programmatically identifiable
+      // (https://github.com/Leaflet/Leaflet/issues/7193).
+      this._container.setAttribute('role', 'region');
+      this._container.setAttribute('aria-label', 'Interactive map');
+
+      this._setUpEvents();
     }
   }
   disconnectedCallback() {
-    //this._removeEvents();
+    let rootDiv = this.querySelector('.mapml-web-map');
+    while (rootDiv.shadowRoot.firstChild) {
+      rootDiv.shadowRoot.removeChild(rootDiv.shadowRoot.firstChild);
+    }
+    rootDiv.remove();
     delete this._map;
+    this._deleteControls();
   }
   adoptedCallback() {
 //    console.log('Custom map element moved to new page.');
   }
 
-  setControls(isToggle, toggleShow, setup){
-    if (this.controls && this._map) {
-      let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl"],
-          options = ["nozoom", "noreload", "nofullscreen", 'nolayer'],
-          mapSize = this._map.getSize().y,
-          totalSize = 0;
-
-      //removes the left hand controls, if not done they will be re-added in the incorrect order
-      //better to just reset them
-      for(let i = 0 ; i<3;i++){
-        if(this[controls[i]]){
-          this._map.removeControl(this[controls[i]]);
-          delete this[controls[i]];
-        }
-      }
-
-      if (!this.controlslist.toLowerCase().includes("nolayer") && !this._layerControl && this.layers.length > 0){
-        this._layerControl = M.layerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
-        //if this is the initial setup the layers dont need to be readded, causes issues if they are
-        if(!setup){
-          for (var i=0;i<this.layers.length;i++) {
-            if (!this.layers[i].hidden) {
-              this._layerControl.addOverlay(this.layers[i]._layer, this.layers[i].label);
-              this._map.on('moveend', this.layers[i]._validateDisabled,  this.layers[i]);
-              this.layers[i]._layerControl = this._layerControl;
-            }
-          }
-          this._map.fire("validate");
-        }
-      }
-      if (!this.controlslist.toLowerCase().includes("nozoom") && !this._zoomControl && (totalSize + 93) <= mapSize){
-        totalSize += 93;
-        this._zoomControl = L.control.zoom().addTo(this._map);
-      }
-      if (!this.controlslist.toLowerCase().includes("noreload") && !this._reloadButton && (totalSize + 49) <= mapSize){
-        totalSize += 49;
-        this._reloadButton = M.reloadButton().addTo(this._map);
-      }
-      if (!this.controlslist.toLowerCase().includes("nofullscreen") && !this._fullScreenControl && (totalSize + 49) <= mapSize){
-        totalSize += 49;
-        this._fullScreenControl = M.fullscreenButton().addTo(this._map);
-      }
-      //removes any control layers that are not needed, either by the toggling or by the controlslist attribute
-      for(let i in options){
-        if(this[controls[i]] && (this.controlslist.toLowerCase().includes(options[i]) || (isToggle && !toggleShow ))){
-          this._map.removeControl(this[controls[i]]);
-          delete this[controls[i]];
-        }
-      }
-    }else if (!this.controls && this._map) {
-      this._map.contextMenu.toggleContextMenuItem("Controls", "disabled");
-    }
-  }
   attributeChangedCallback(name, oldValue, newValue) {
 //    console.log('Attribute: ' + name + ' changed from: '+ oldValue + ' to: '+newValue);
     // "Best practice": handle side-effects in this callback
@@ -395,6 +348,21 @@ export class WebMap extends HTMLMapElement {
     ...
   }     */
     switch(name) {
+      case 'controlslist':
+        if (this._controlsList) {
+          if (this._controlsList.valueSet === false) {
+            this._controlsList.value = newValue;
+          }
+          this._toggleControls();
+        }
+      break;
+      case 'controls':
+        if (oldValue !== null && newValue === null) {
+          this._hideControls();
+        } else if (oldValue === null && newValue !== null) {
+          this._showControls();
+        } 
+      break;
       case 'height': 
         if (oldValue !== newValue) {
           this._changeHeight(newValue);
@@ -408,6 +376,165 @@ export class WebMap extends HTMLMapElement {
       case 'static':
         this._toggleStatic();
       break;  
+    }
+  }
+
+  // Creates All map controls and adds them to the map, when created.
+  _createControls() {
+    let mapSize = this._map.getSize().y,
+          totalSize = 0;
+
+    this._layerControl = M.layerControl(null,{"collapsed": true, mapEl: this}).addTo(this._map);
+
+    let scaleValue = M.options.announceScale;
+
+    if (scaleValue === "metric") {
+      scaleValue = {"metric": true, "imperial": false};
+    }
+    if (scaleValue === "imperial") {
+      scaleValue = {"metric": false, "imperial": true};
+    }
+
+    if (!this._scaleBar) this._scaleBar = M.scaleBar(scaleValue).addTo(this._map);
+
+    // Only add controls if there is enough top left vertical space
+    if (!this._zoomControl && (totalSize + 93) <= mapSize){
+      totalSize += 93;
+      this._zoomControl = L.control.zoom().addTo(this._map);
+    }
+    if (!this._reloadButton && (totalSize + 49) <= mapSize){
+      totalSize += 49;
+      this._reloadButton = M.reloadButton().addTo(this._map);
+    }
+    if (!this._fullScreenControl && (totalSize + 49) <= mapSize){
+      totalSize += 49;
+      this._fullScreenControl = M.fullscreenButton().addTo(this._map);
+    }
+
+    if (!this._geolocationButton) {
+      this._geolocationButton = M.geolocationButton().addTo(this._map);
+    }
+  }
+
+  // Sets controls by hiding/unhiding them based on the map attribute
+  _toggleControls() {
+    if (this.controls === false) {
+      this._hideControls();
+      this._map.contextMenu.toggleContextMenuItem("Controls", "disabled");
+    } else  {
+      this._showControls();
+      this._map.contextMenu.toggleContextMenuItem("Controls", "enabled");
+    }
+  }
+
+  _hideControls() {
+    this._setControlsVisibility("fullscreen",true);
+    this._setControlsVisibility("layercontrol",true);
+    this._setControlsVisibility("reload",true);
+    this._setControlsVisibility("zoom",true);
+    this._setControlsVisibility("geolocation",true);
+    this._setControlsVisibility("scale",true);
+  }
+  _showControls() {
+    this._setControlsVisibility("fullscreen",false);
+    this._setControlsVisibility("layercontrol",false);
+    this._setControlsVisibility("reload",false);
+    this._setControlsVisibility("zoom",false);
+    this._setControlsVisibility("geolocation",true);
+    this._setControlsVisibility("scale",false);
+      
+    // prune the controls shown if necessary
+    // this logic could be embedded in _showControls
+    // but would require being able to iterate the domain of supported tokens
+    // for the controlslist
+    if (this._controlsList) {
+      this._controlsList.forEach((value) => {
+        switch(value.toLowerCase()) {
+          case 'nofullscreen':
+            this._setControlsVisibility("fullscreen",true);
+          break;
+          case 'nolayer':
+            this._setControlsVisibility("layercontrol",true);
+          break;
+          case 'noreload':
+            this._setControlsVisibility("reload",true);
+          break;
+          case 'nozoom':
+            this._setControlsVisibility("zoom",true);
+          break;
+          case 'geolocation':
+            this._setControlsVisibility("geolocation",false);
+          break;
+          case 'noscale':
+            this._setControlsVisibility("scale",true);
+          break;
+        }
+      });
+    }
+    if (this._layerControl && this._layerControl._layers.length === 0) {
+      this._layerControl._container.setAttribute("hidden","");
+    }
+  }
+
+  // delete the map controls that are private properties of this custom element
+  _deleteControls() {
+    delete this._layerControl;
+    delete this._zoomControl;
+    delete this._reloadButton;
+    delete this._fullScreenControl;
+    delete this._geolocationButton;
+    delete this._scaleBar;
+  }
+  // Sets the control's visibility AND all its childrens visibility,
+  // for the control element based on the Boolean hide parameter
+  _setControlsVisibility(control, hide) {
+    let container;
+    switch(control) {
+      case "zoom":
+        if (this._zoomControl) {
+          container = this._zoomControl._container;
+        }
+        break;
+      case "reload":
+        if (this._reloadButton) {
+          container = this._reloadButton._container;
+        }
+        break;
+      case "fullscreen":
+        if (this._fullScreenControl) {
+          container = this._fullScreenControl._container;
+        }
+        break;
+      case "layercontrol":
+        if (this._layerControl) {
+          container = this._layerControl._container;
+        }
+        break;
+      case "geolocation":
+        if (this._geolocationButton) {
+          container = this._geolocationButton._container;
+        }
+        break;
+      case "scale":
+        if (this._scaleBar) {
+          container = this._scaleBar._container;
+        }
+        break;  
+    }
+    if (container) {
+      if (hide) {
+        // setting the visibility for all the children of the element
+        [ ...container.children].forEach((childEl) => {
+          childEl.setAttribute("hidden","");
+        });
+        container.setAttribute("hidden","");
+      } else {
+        // setting the visibility for all the children of the element
+        [ ...container.children].forEach((childEl) => {
+          childEl.removeAttribute("hidden");
+        });
+        container.removeAttribute("hidden");
+      }
     }
   }
   _toggleStatic(){
@@ -432,6 +559,7 @@ export class WebMap extends HTMLMapElement {
       }
     }
   }
+
   _dropHandler(event) {
     event.preventDefault();
     let text = event.dataTransfer.getData("text");
@@ -486,6 +614,19 @@ export class WebMap extends HTMLMapElement {
               {target: this}}));
       }
     });
+
+    this._map.on('locationfound',
+      function (e) {
+        this.dispatchEvent(new CustomEvent('maplocationfound', {detail:
+          {latlng: e.latlng,     accuracy: e.accuracy}
+         }));
+      },this);
+    this._map.on('locationerror',
+      function (e) {
+        this.dispatchEvent(new CustomEvent('locationerror', {detail:
+          {error:e.message}
+        }));
+      },this);
     this._map.on('load',
       function () {
         this.dispatchEvent(new CustomEvent('load', {detail: {target: this}}));
@@ -617,10 +758,19 @@ export class WebMap extends HTMLMapElement {
       }
     });   
   }
-  _toggleControls() {
-    if (this._map) {
-        this.setControls(true, this._toggleState, false);
-        this._toggleState = !this._toggleState;
+
+  locate(options) { //options: https://leafletjs.com/reference.html#locate-options
+    if (this._geolocationButton) {
+      this._geolocationButton.stop();
+    }
+    if (options) {
+      if (options.zoomTo) {
+        options.setView = options.zoomTo;
+        delete options.zoomTo;
+      }
+      this._map.locate(options);
+    } else {
+      this._map.locate({setView: true, maxZoom: 16});
     }
   }
 
@@ -634,15 +784,19 @@ export class WebMap extends HTMLMapElement {
   }
   
   _changeWidth(width) {
-    this._container.style.width = width+"px";
-    document.querySelector('[is="web-map"]').style.width = width+"px";
+    if (this._container) {
+      this._container.style.width = width+"px";
+      document.querySelector('[is="web-map"]').style.width = width+"px";
+    }
     if (this._map) {
         this._map.invalidateSize(false);
     }
   }
   _changeHeight(height) {
-    this._container.style.height = height+"px";
-    document.querySelector('[is="web-map"]').style.height = height+"px";
+    if (this._container) {
+      this._container.style.height = height+"px";
+      document.querySelector('[is="web-map"]').style.height = height+"px";
+    }
     if (this._map) {
         this._map.invalidateSize(false);
     }
@@ -956,3 +1110,5 @@ window.customElements.define('web-map', WebMap,  { extends: 'map' });
 window.customElements.define('layer-', MapLayer);
 window.customElements.define('map-area', MapArea, {extends: 'area'});
 window.customElements.define('map-caption',MapCaption);
+window.customElements.define('map-feature', MapFeature);
+window.customElements.define('map-extent', MapExtent);

@@ -1,6 +1,7 @@
 export var Options = {
   featureIndexOverlayOption: false,
   announceMovement: false,
+  announceScale: {"metric": true, "imperial": false},
   defaultExtCoor: 'pcrs',
   defaultLocCoor: 'gcrs',
   locale: {
@@ -18,10 +19,16 @@ export var Options = {
     lmZoomToLayer: "Zoom To Layer",
     lmCopyLayer: "Copy Layer",
     lcOpacity: "Opacity",
+    btnAttribution: "Map data attribution",
     btnZoomIn: "Zoom in",
     btnZoomOut: "Zoom out",
     btnFullScreen: "View Fullscreen",
     btnExitFullScreen: "Exit Fullscreen",
+    btnLocTrackOn: "Show my location - location tracking on",
+    btnMyLocTrackOn: "My current location, shown on map",
+    btnLocTrackOff: "Show my location - location tracking off",
+    btnLocTrackLastKnown: "Show my location - last known location shown",
+    btnMyLastKnownLocTrackOn: "My last known location, shown on map",
     amZoom: "zoom level",
     amColumn: "column",
     amRow: "row",
@@ -45,5 +52,7 @@ export var Options = {
     kbdPrevFeature: "Previous feature",
     kbdNextFeature: "Next feature",
     dfLayer: "Layer",
+    popupZoom: "Zoom to here",
+    dfPastedLayer: "Pasted layer"
   }
 };

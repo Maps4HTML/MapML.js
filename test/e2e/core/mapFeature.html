@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>HTMLFeatureElement Test</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module" src="web-map.js"></script>
+  <style>
+      [is=web-map] {
+          width: 100%;
+          height: 400px;
+          max-width: 100%;
+      }
+
+      .transparency {
+          opacity: 0.2;
+      }
+  </style>
+</head>
+
+<body>
+<map style="height: 500px;width:500px;" is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344"
+     controls>
+
+  <layer- label="Arizona" checked>
+    <map-meta name="projection" content="CBMTILE"></map-meta>
+    <map-meta name="zoom" content="min=1,max=5,value=0"></map-meta>
+    <map-meta name="cs" content="gcrs"></map-meta>
+    <map-meta name="extent" content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5"></map-meta>
+
+    <map-link id="first" rel="stylesheet" type="text/css" href="first.css"></map-link>
+    <map-style>
+        .second {
+            stroke: aqua;
+        }
+    </map-style>
+    <map-style>
+        .third {
+            stroke: blue
+        }
+    </map-style>
+    <map-link id="forth" rel="stylesheet" type="text/css" href="forth.css"></map-link>
+    <map-feature zoom="2" class="button">
+      <map-featurecaption>feature, role='button'</map-featurecaption>
+      <map-properties>
+        <h1>Test</h1>
+        <a href="www.example.com">test</a>
+      </map-properties>
+      <map-geometry cs="tilematrix">
+        <map-polygon>
+          <map-coordinates>11 11 12 11 12 12 11 12 </map-coordinates>
+        </map-polygon>
+      </map-geometry>
+    </map-feature>
+
+    <map-feature zoom="2" class="table">
+      <map-featurecaption>feature with table properties</map-featurecaption>
+      <map-properties>
+        <table>
+          <tr>
+            <th>Head_1</th>
+            <th>Head_2</th>
+            <th>Head_3</th>
+          </tr>
+          <tr>
+            <td>row 1, column 1</td>
+            <td>row 1, column 2</td>
+            <td>row 1, column 3</td>
+          </tr>
+          <tr>
+            <td>row 2, column 1</td>
+            <td>row 2, column 2</td>
+            <td>row 2, column 3</td>
+          </tr>
+        </table>
+      </map-properties>
+      <map-geometry cs="tilematrix">
+        <map-polygon>
+          <map-coordinates>10.5 11 10.75 11 10.75 11.25 10.5 11.25 10.5 11</map-coordinates>
+        </map-polygon>
+      </map-geometry>
+    </map-feature>
+
+    <map-feature zoom="2" class="link">
+      <map-featurecaption>feature, role='link'</map-featurecaption>
+      <map-geometry cs="tcrs">
+        <map-a href="cbmtgeom.mapml" target="_blank">
+          <map-geometrycollection>
+            <map-polygon>
+              <map-coordinates>2771 3106 2946 3113 2954 3210 2815 3192</map-coordinates>
+            </map-polygon>
+            <map-a href="fdi.mapml" target="_blank" inplace>
+              <map-point>
+                <map-coordinates>2745 3218</map-coordinates>
+              </map-point>
+            </map-a>
+          </map-geometrycollection>
+        </map-a>
+      </map-geometry>
+    </map-feature>
+
+    <map-feature zoom="2" class="point_1">
+      <map-featurecaption>Point, zoom = 2</map-featurecaption>
+      <map-geometry cs="tcrs">
+        <map-a href="cbmtgeom.mapml" target="_blank">
+          <map-geometrycollection>
+            <map-a href="fdi.mapml" target="_blank" inplace>
+              <map-point>
+                <map-coordinates>2745 3218</map-coordinates>
+              </map-point>
+            </map-a>
+          </map-geometrycollection>
+        </map-a>
+      </map-geometry>
+    </map-feature>
+
+    <map-feature class="point_2">
+      <map-featurecaption>Point, with no zoom attribute</map-featurecaption>
+      <map-geometry cs="pcrs">
+        <map-a href="cbmtgeom.mapml" target="_blank">
+          <map-geometrycollection>
+            <map-a href="fdi.mapml" target="_blank" inplace>
+              <map-point>
+                <map-coordinates>1658335.1282702535 -3261543.4764202833</map-coordinates>
+              </map-point>
+            </map-a>
+          </map-geometrycollection>
+        </map-a>
+      </map-geometry>
+    </map-feature>
+
+    <map-feature zoom="2" class="refDiff">
+      <map-featurecaption>topLeft point, zoom = 2</map-featurecaption>
+      <map-geometry cs="pcrs">
+        <map-a href="cbmtgeom.mapml" target="_blank">
+            <map-a href="fdi.mapml" target="_blank" inplace>
+              <map-point>
+                <map-coordinates>-35001.59173651785 -1568206.756413512</map-coordinates>
+              </map-point>
+            </map-a>
+        </map-a>
+      </map-geometry>
+    </map-feature>
+
+    <map-feature zoom="25" class="refDiff">
+      <map-featurecaption>bottomRight, zoom = maxZoom</map-featurecaption>
+      <map-geometry cs="pcrs">
+        <map-a href="cbmtgeom.mapml" target="_blank">
+            <map-a href="fdi.mapml" target="_blank" inplace>
+              <map-point>
+                <map-coordinates>1658343.59495385 -3261551.9431038797</map-coordinates>
+              </map-point>
+            </map-a>
+        </map-a>
+      </map-geometry>
+    </map-feature>
+
+    <map-feature zoom="25" class="refDiff">
+      <map-featurecaption>topLeft, zoom = maxZoom</map-featurecaption>
+      <map-geometry cs="pcrs">
+        <map-a href="cbmtgeom.mapml" target="_blank">
+            <map-a href="fdi.mapml" target="_blank" inplace>
+              <map-point>
+                <map-coordinates>1658326.6615866497 -3261535.0097366795</map-coordinates>
+              </map-point>
+            </map-a>
+        </map-a>
+      </map-geometry>
+    </map-feature>
+
+    <map-feature zoom="2" class="event">
+      <map-properties>
+        <h1>Event handler test</h1>
+      </map-properties>
+      <map-geometry cs="tilematrix">
+        <map-a href="http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/" target="_parent" type="text/html">
+          <map-polygon>
+            <map-coordinates>9 10 10 10 10 11 9 11 9 10</map-coordinates>
+          </map-polygon>
+        </map-a>
+      </map-geometry>
+    </map-feature>
+  </layer->
+  <layer- label="vector states" src="data/us_pop_density.mapml"></layer->
+</map>
+<script>
+  function test_1 () {
+    document.querySelector('.event').classList.add('test_1');
+  }
+
+  document.querySelector('.event').onblur = function () {
+    document.querySelector(".event").classList.add('blur_property_test');
+  }
+
+  document.querySelector('.event').addEventListener('blur', function () {
+    document.querySelector(".event").classList.add('blur_addEvtLsn_test');
+  })
+</script>
+</body>
+
+</html>

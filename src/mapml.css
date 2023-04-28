@@ -38,6 +38,19 @@
 /*
  * Controls.
  */
+.leaflet-container {
+    container: leafletmap / size;
+} 
+/* Scale bar */
+ .mapml-control-scale {
+  bottom: 8px; /* Make room for map-a links */
+  left: 0px; 
+}
+@container leafletmap (max-height: 250px) {
+    .mapml-control-scale {
+        left: 45px; 
+    }
+}
  
  /* Generic class for seamless buttons */
  .mapml-button {
@@ -94,13 +107,22 @@
   text-align: center;
 }
 
-.mapml-reload-button:not([aria-disabled="true"]):hover {
+.mapml-reload-button:hover,
+.mapml-reload-button[aria-disabled="true"] {
   background-color: #f4f4f4;
 }
 
 .mapml-reload-button[aria-disabled="true"] {
-  color: #bbb;
   cursor: default;
+}
+
+button.mapml-button:disabled,
+.mapml-button[aria-disabled="true"] {
+  color: #bbb;
+}
+
+button.mapml-contextmenu-item:disabled {
+  opacity: .3;
 }
 
 .leaflet-control-layers-toggle {
@@ -140,19 +162,52 @@
 .leaflet-tooltip-pane .leaflet-tooltip,
 .leaflet-touch .leaflet-control-layers,
 .leaflet-touch .leaflet-bar,
-.leaflet-popup-tip {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgb(0, 0, 0, 0.3);
-}
-
-/* Increase contrast between the attribution container and the underlying content. */
+.leaflet-popup-tip,
 .leaflet-container .leaflet-control-attribution {
-  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: rgb(0 0 0 / 30%) 0px 1px 4px -1px;
 }
 
 /* Remove opinionated styles of attribution links. */
 .leaflet-control-attribution a {
   color: revert;
   text-decoration: revert;
+}
+
+
+/*
+ * Attribution.
+ */
+
+.leaflet-container .leaflet-control-attribution {
+  background-color: #fff;
+  border-radius: 1.5em;
+  color: currentColor;
+  margin: 5px;
+  min-height: 30px;
+  min-width: 30px;
+  padding: 0;
+}
+
+.leaflet-control-attribution summary {
+  display: block;
+  list-style: none;
+  border-radius: 100%;
+  position: absolute;
+  bottom: 0;
+  left: calc(100% - 30px);
+  line-height: 0;
+  width: 30px;
+  height: 30px;
+}
+
+.leaflet-control-attribution summary svg {
+  border-radius: 100%;
+  width: inherit;
+  height: inherit;
+}
+
+.mapml-attribution-container {
+  padding: 5px 35px 5px 10px;
 }
 
 /*
@@ -633,12 +688,6 @@ svg.leaflet-image-layer.leaflet-interactive g {
 * layer item controls
 */
 
-button.mapml-button:disabled,
-.mapml-button[aria-disabled="true"],
-.mapml-layer-item:disabled button.mapml-button {
-  opacity: .3;
-}
-
 .mapml-button-icon {
   pointer-events: none;
 }
@@ -751,6 +800,15 @@ label.mapml-layer-item-toggle {
   width: 1px;
 }
 
+.mapml-screen-reader-output-scale {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px
+}
 /*
  * Feature styles.
  */

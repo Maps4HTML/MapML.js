@@ -10,10 +10,10 @@ export var FeatureGroup = L.FeatureGroup.extend({
       options = Object.assign(M.Feature.prototype._convertWrappers(options.wrappers), options);
 
     L.LayerGroup.prototype.initialize.call(this, layers, options);
+    this._featureEl = this.options.mapmlFeature;
 
     if((this.options.onEachFeature && this.options.properties) || this.options.link) {
       L.DomUtil.addClass(this.options.group, "leaflet-interactive");
-      L.DomEvent.on(this.options.group, "keyup keydown mousedown", this._handleFocus, this);
       let firstLayer = layers[Object.keys(layers)[0]];
       if(layers.length === 1 && firstLayer.options.link) this.options.link = firstLayer.options.link;
       if(this.options.link){
@@ -26,9 +26,13 @@ export var FeatureGroup = L.FeatureGroup.extend({
         this.off("click", this._openPopup);
       }
     }
-
+    
+    L.DomEvent.on(this.options.group, "keyup keydown", this._handleFocus, this);
     this.options.group.setAttribute('aria-label', this.options.accessibleTitle);
     if(this.options.featureID) this.options.group.setAttribute("data-fid", this.options.featureID);
+    for (let feature of layers) {
+      feature._groupLayer = this;
+    }
   },
 
   onAdd: function (map) {
@@ -38,7 +42,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
 
   updateInteraction: function () {
     let map = this._map || this.options._leafletLayer._map;
-    if((this.options.onEachFeature && this.options.properties) || this.options.link)
+    if(this.options.onEachFeature || this.options.link)
       map.featureIndex.addToIndex(this, this.getPCRSCenter(), this.options.group);
 
     for (let layerID in this._layers) {
@@ -51,6 +55,28 @@ export var FeatureGroup = L.FeatureGroup.extend({
         }
       }
     }
+  },
+
+  /**
+   * Check whether the feature group should be rendered at current map zoom level
+   * @param {Number} zoom - current map zoom
+   * @param {Object} vectorMinZoom - the minimum zoom bound of vector layer
+   * @param {Object} vectorMinZoom - the maximum zoom bound of vector layer
+   * @returns {Boolean}
+   * @private
+   */
+  _checkRender: function(zoom, vectorMinZoom, vectorMaxZoom) {
+    let minZoom = this._featureEl.getAttribute('min'),
+        maxZoom = this._featureEl.getAttribute('max');
+    // if the current map zoom falls below/above the zoom bounds of the vector layer
+    if (zoom > vectorMaxZoom || zoom < vectorMinZoom) return false;
+    // if no min and max attribute present
+    if (minZoom === null && maxZoom === null) return true;
+    // if the current map zoom falls below/above the [min, max] range
+    if ((minZoom !== null && zoom < +minZoom) || (maxZoom !== null && zoom > +maxZoom)) {
+      return false;
+    }
+    return true;
   },
 
   /**

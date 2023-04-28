@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Remote queryable map extent in mapml document</title>
+  <script type="module" src="mapml-viewer.js"></script>
+</head>
+
+<body>
+  <mapml-viewer style="width: 500px;height: 500px;" projection="OSMTILE" zoom="2" lat="45" lon="-90" controls>
+    <!-- the point of this map is that there is a mapml document pointed to by src
+         and the document has a map-link rel=query in it -->
+    <layer- label="remote queryable mapml document" src="layers/queryableMapExtent.mapml" checked></layer->
+  </mapml-viewer>
+</body>
+
+</html>

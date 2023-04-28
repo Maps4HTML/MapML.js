@@ -36,9 +36,9 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
   });
   
   test("Ensure attribution control has role='group' aria-label='Map data attribution'", async () => {
-    let role = await page.evaluate(`document.querySelector('mapml-viewer')._attributionControl.getContainer().getAttribute('role')`);
+    let role = await page.evaluate(`document.querySelector('mapml-viewer')._map.attributionControl._container.getAttribute('role')`);
     expect(role).toEqual("group");
-    let arialabel = await page.evaluate(`document.querySelector('mapml-viewer')._attributionControl.getContainer().getAttribute('aria-label')`);
+    let arialabel = await page.evaluate(`document.querySelector('mapml-viewer')._map.attributionControl._container.getAttribute('aria-label')`);
     expect(arialabel).toEqual("Map data attribution");
   });
 
@@ -109,8 +109,8 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
         await page.$eval("body > mapml-viewer",
           (layer) => layer.setAttribute("controlslist", "nolayer"));
 
-        let children = await page.$eval(".leaflet-top.leaflet-right", (div) => div.childElementCount);
-        expect(children).toEqual(0);
+        let layerControlHidden = await page.$eval(".leaflet-top.leaflet-right", (div) => div.firstChild.hidden);
+        expect(layerControlHidden).toEqual(true);
         await page.click("body > mapml-viewer", { button: "right" });
         // toggle controls
         await page.click(".mapml-contextmenu > button:nth-of-type(6)");
@@ -118,8 +118,8 @@ test.describe("Playwright mapml-viewer Element Tests", () => {
         // toggle controls
         await page.click(".mapml-contextmenu > button:nth-of-type(6)");
 
-        children = await page.$eval(".leaflet-top.leaflet-right", (div) => div.childElementCount);
-        expect(children).toEqual(0);
+        layerControlHidden = await page.$eval(".leaflet-top.leaflet-right", (div) => div.firstChild.hidden);
+        expect(layerControlHidden).toEqual(true);
       });
     });
   });

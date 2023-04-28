@@ -42,6 +42,15 @@ test.describe("Playwright templatedFeatures Layer Tests", () => {
   test.afterAll(async function () {
     await context.close();
   });
+
+  test.describe("Templated Features in shadowRoot", () => {
+    test("Templated features attaches to MapExtent's shadow root", async () => {
+      const shadow = await page.evaluate(`document.querySelector('#map2 > layer- > map-extent').shadowRoot`);
+      const features = await page.evaluate(`document.querySelector('#map2 > layer- > map-extent').shadowRoot.querySelectorAll('map-feature').length`);
+      expect(shadow).toBeTruthy();
+      expect(features).toBe(8);
+    })
+  })
   
   test.describe("Templated Features Zoom To Extent Tests", () => {
     test("Zoom to layer applies meta extent", async () => {
@@ -51,7 +60,7 @@ test.describe("Playwright templatedFeatures Layer Tests", () => {
       expect(startTopLeft.vertical).toBe(-170323.5596054569);
       expect(startBottomRight.horizontal).toBe(1511931.6167132407);
       expect(startBottomRight.vertical).toBe(-172638.668402344);
-      await page.evaluate(`document.querySelector('#map2 > layer-').focus()`);
+      await page.evaluate(`document.querySelector('#map2 > layer-').zoomTo()`);
       const endTopLeft = await page.evaluate(`document.querySelector('#map2').extent.topLeft.pcrs`);
       const endBottomRight = await page.evaluate(`document.querySelector('#map2').extent.bottomRight.pcrs`);
       expect(endTopLeft.horizontal).toBe(1508601.8288036585);
@@ -59,6 +68,26 @@ test.describe("Playwright templatedFeatures Layer Tests", () => {
       expect(endBottomRight.horizontal).toBe(1512570.5867411792);
       expect(endBottomRight.vertical).toBe(-173037.52857506275);
     });
+
+    test("Templated features zoomTo method test", async () => {
+      const startTopLeft = await page.evaluate(`document.querySelector('#map2').extent.topLeft.pcrs`);
+      const startBottomRight = await page.evaluate(`document.querySelector('#map2').extent.bottomRight.pcrs`);
+      const startZoomLevel = await page.evaluate(`document.querySelector('#map2').zoom`);
+      expect(startTopLeft.horizontal).toBe(1508601.8288036585);
+      expect(startTopLeft.vertical).toBe(-169068.77063754946);
+      expect(startBottomRight.horizontal).toBe(1512570.5867411792);
+      expect(startBottomRight.vertical).toBe(-173037.52857506275);
+      expect(startZoomLevel).toBe('16');
+      await page.evaluate(`document.querySelector('#map2 > layer- > map-extent').shadowRoot.querySelector('map-feature').zoomTo()`);
+      const endTopLeft = await page.evaluate(`document.querySelector('#map2').extent.topLeft.pcrs`);
+      const endBottomRight = await page.evaluate(`document.querySelector('#map2').extent.bottomRight.pcrs`);
+      const endZoomLevel = await page.evaluate(`document.querySelector('#map2').zoom`);
+      expect(endTopLeft.horizontal).toBe(1509663.4715519473);
+      expect(endTopLeft.vertical).toBe(-171660.43571670353);
+      expect(endBottomRight.horizontal).toBe(1509696.5445347577);
+      expect(endBottomRight.vertical).toBe(-171693.50869952142);
+      expect(endZoomLevel).toBe('25');
+    })
   });
   
   test.describe("Retreived Features Loading Tests", () => {

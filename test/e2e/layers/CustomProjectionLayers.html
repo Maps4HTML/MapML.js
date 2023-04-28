@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Custom Projection map-extent and feature Layers</title>
+  <script type="module" src="mapml-viewer.js"></script>
+</head>
+
+<body>
+	<script type="module">
+		let customProjectionDefinition = `
+		  {
+			  "projection": "BNG",
+			  "proj4string" : "+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.999601 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.060,0.1502,0.2470,0.8421,-20.4894 +datum=OSGB36 +units=m +no_defs",
+			  "origin" : [-238375,1376256],
+			  "resolutions" : [896,448,224,112,56,28,14,7,3.5,1.75,0.875,0.4375,0.21875,0.109375],
+			  "bounds" : [[-238375,0],[900000,1376256]],
+			  "tilesize" : 256
+		  }`;
+		let map = document.querySelector("mapml-viewer");
+		let cProjection = map.defineCustomProjection(customProjectionDefinition);    
+		map.projection = cProjection;
+	</script>
+	
+	<mapml-viewer width="500" height="500" zoom="0" lat="51.437097" lon="0" controls="" role="application" projection="BNG">
+		<layer- label="OS Roads tile map in BNG custom projection" checked="">
+		  <map-meta name="projection" content="BNG"></map-meta>
+		  <map-extent units="BNG" hidden="" checked="">
+			<map-input name="z" type="zoom" min="0" max="9" value="0"></map-input>
+			<map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="6"></map-input>
+			<map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="4.962921142578125"></map-input>
+			<map-link rel="tile" tref="https://api.os.uk/maps/raster/v1/wmts?key=TtPU7xWvj7AmV6uePZRYWFXuKVHzRTq7&amp;tileMatrixSet=EPSG:27700&amp;version=1.0.0&amp;style=default&amp;layer=Road_27700&amp;service=WMTS&amp;request=GetTile&amp;tileCol={x}&amp;tileRow={y}&amp;tileMatrix={z}">
+			</map-link>
+		  </map-extent>
+		</layer->
+		<layer- label="London" checked="">
+		   <map-meta name="projection" content="BNG"></map-meta>
+		   <map-meta name="cs" content="gcrs"></map-meta>
+		   <map-feature zoom="2" id="LondonPoint">
+		      <map-featurecaption>London</map-featurecaption>
+		      <map-geometry>
+		         <map-point>
+		            <map-coordinates>-0.12268543059443004 51.4987988508663</map-coordinates>
+		         </map-point>
+		      </map-geometry>
+		      <map-properties>London Point!</map-properties>
+		   </map-feature>
+		</layer->
+	</mapml-viewer>
+</body>
+
+</html>

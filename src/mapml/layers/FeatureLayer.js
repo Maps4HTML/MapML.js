@@ -5,7 +5,12 @@ export var FeatureLayer = L.FeatureGroup.extend({
    * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.
    */
     initialize: function (mapml, options) {
-
+      /*
+        mapml:
+        1. for query: an array of map-feature elements that it fetches
+        2. for static templated feature: null
+        3. for non-templated feature: layer- (with no src) or mapml file (with src)
+      */
       L.setOptions(this, options);
       if(this.options.static) {
         this._container = L.DomUtil.create('div', 'leaflet-layer', this.options.pane);
@@ -36,8 +41,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         }
         this.addData(mapml, native.cs, native.zoom);
         if(this._staticFeature){
-          this._resetFeatures(this._clampZoom(this.options._leafletLayer._map.getZoom()));
-
+          this._resetFeatures();
           this.options._leafletLayer._map._addZoomLimit(this);
         }
       }
@@ -69,15 +73,23 @@ export var FeatureLayer = L.FeatureGroup.extend({
       };
     },
 
-
+    // for query
     showPaginationFeature: function(e){
       if(this.options.query && this._mapmlFeatures[e.i]){
         let feature = this._mapmlFeatures[e.i];
+        // remove the prev / next one <map-feature> from shadow if there is any
+        feature._extentEl.shadowRoot.firstChild?.remove();
         this.clearLayers();
-        this.addData(feature, this.options.nativeCS, this.options.nativeZoom);
+        feature._featureGroup = this.addData(feature, this.options.nativeCS, this.options.nativeZoom);
+        feature._extentEl.shadowRoot.appendChild(feature);
         e.popup._navigationBar.querySelector("p").innerText = (e.i + 1) + "/" + this.options._leafletLayer._totalFeatureCount;
         e.popup._content.querySelector("iframe").setAttribute("sandbox", "allow-same-origin allow-forms");
         e.popup._content.querySelector("iframe").srcdoc = feature.querySelector("map-properties").innerHTML;
+        // "zoom to here" link need to be re-set for every pagination
+        this._map.fire("attachZoomLink", {i:e.i, currFeature: feature});
+        this._map.once("popupclose", function (e) {
+          this.shadowRoot.innerHTML = '';
+        }, feature._extentEl);
       }
     },
 
@@ -106,8 +118,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         this.clearLayers();
         return;
       }
-      let clampZoom = this._clampZoom(mapZoom);
-      this._resetFeatures(clampZoom);
+      this._resetFeatures();
     },
 
     //sets default if any are missing, better to only replace ones that are missing
@@ -144,27 +155,22 @@ export var FeatureLayer = L.FeatureGroup.extend({
       }
     },
 
-    _resetFeatures : function (zoom){
+    _resetFeatures : function () {
       this.clearLayers();
       // since features are removed and re-added by zoom level, need to clean the feature index before re-adding
       if(this._map) this._map.featureIndex.cleanIndex();
-      if(this._features && this._features[zoom]){
-        for(let k =0;k < this._features[zoom].length;k++){
-          this.addLayer(this._features[zoom][k]);
+      let map = this._map || this.options._leafletLayer._map;
+      if(this._features) {
+        for (let zoom in this._features) {
+          for(let k =0;k < this._features[zoom].length;k++){
+            let feature = this._features[zoom][k],
+                checkRender = feature._checkRender(map.getZoom(), this.zoomBounds.minZoom, this.zoomBounds.maxZoom);
+            if (checkRender) {
+              this.addLayer(feature);
+            }
+          }
         }
       }
-    },
-
-    _clampZoom : function(zoom){
-      if(zoom > this.zoomBounds.maxZoom || zoom < this.zoomBounds.minZoom) return zoom;
-      if (undefined !== this.zoomBounds.minNativeZoom && zoom < this.zoomBounds.minNativeZoom) {
-        return this.zoomBounds.minNativeZoom;
-      }
-      if (undefined !== this.zoomBounds.maxNativeZoom && this.zoomBounds.maxNativeZoom < zoom) {
-        return this.zoomBounds.maxNativeZoom;
-      }
-
-      return zoom;
     },
 
     _setZoomTransform: function(center, clampZoom){
@@ -181,7 +187,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
 
     _getZoomBounds: function(container, nativeZoom){
       if (!container) return null;
-      let nMin = 100,nMax=0, features = container.getElementsByTagName('map-feature'),meta,projection;
+      let nMin = 100,nMax=0, features = container.querySelectorAll('map-feature'),meta,projection;
       for(let i =0;i<features.length;i++){
         let lZoom = +features[i].getAttribute('zoom');
         if(!features[i].getAttribute('zoom'))lZoom = nativeZoom;
@@ -224,7 +230,14 @@ export var FeatureLayer = L.FeatureGroup.extend({
         feature = features[i];
         var geometriesExist = feature.getElementsByTagName("map-geometry").length && feature.getElementsByTagName("map-coordinates").length;
         if (geometriesExist) {
-         this.addData(feature, nativeCS, nativeZoom);
+          if (mapml.nodeType === Node.DOCUMENT_NODE) {
+           // if the <map-feature> element has migrated from mapml file, 
+           // the featureGroup object should bind with the **CLONED** map-feature element in DOM instead of the feature in mapml
+          if (!feature._DOMnode) feature._DOMnode = feature.cloneNode(true);
+          feature._DOMnode._featureGroup = this.addData(feature._DOMnode, nativeCS, nativeZoom);
+         } else {
+          feature._featureGroup = this.addData(feature, nativeCS, nativeZoom);
+         }
         }
        }
        return this; //if templated this runs
@@ -260,17 +273,20 @@ export var FeatureLayer = L.FeatureGroup.extend({
         if (options.onEachFeature) {
           layer.bindTooltip(title, { interactive:true, sticky: true, });
         }
-        if(this._staticFeature){
+        if (this._staticFeature){
           let featureZoom = mapml.getAttribute('zoom') || nativeZoom;
           if(featureZoom in this._features){
             this._features[featureZoom].push(layer);
           } else{
             this._features[featureZoom]=[layer];
           }
-          return;
         } else {
-          return this.addLayer(layer);
+          this.addLayer(layer);
         }
+        if (mapml.tagName.toUpperCase() === "MAP-FEATURE") {
+          mapml._groupEl = layer.options.group;
+        }
+        return layer;
       }
     },
         
@@ -319,10 +335,9 @@ export var FeatureLayer = L.FeatureGroup.extend({
             _leafletLayer: this.options._leafletLayer,
           })));
       }
-      let groupOptions = {group:svgGroup, featureID: mapml.id, accessibleTitle: title, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties, _leafletLayer: this.options._leafletLayer,},
+      let groupOptions = {group:svgGroup, mapmlFeature: mapml, featureID: mapml.id, accessibleTitle: title, onEachFeature: vectorOptions.onEachFeature, properties: vectorOptions.properties, _leafletLayer: this.options._leafletLayer,},
         collections = geometry.querySelector('map-multipolygon') || geometry.querySelector('map-geometrycollection');
         if(collections) groupOptions.wrappers = this._getGeometryParents(collections.parentElement);
-
       return M.featureGroup(group, groupOptions);
     }
   },

@@ -27,6 +27,7 @@ export var TemplatedLayer = L.Layer.extend({
           let inputData = M._extractInputBounds(templates[i]);
           templates[i].extentBounds = inputData.bounds;
           templates[i].zoomBounds = inputData.zoomBounds;
+          templates[i]._extentEl = this.options.extentEl;
           this._queries.push(L.extend(templates[i], this._setupQueryVars(templates[i])));
       }
     }

@@ -88,12 +88,18 @@ export var QueryHandler = L.Handler.extend({
           if(features.length) layer._mapmlFeatures = layer._mapmlFeatures.concat(features);
         } else {
           // synthesize a single feature from text or html content
-          let geom = "<map-geometry cs='gcrs'>"+e.latlng.lng+" "+e.latlng.lat+"</map-geometry>",
+          let geom = "<map-geometry cs='gcrs'><map-point><map-coordinates>"+e.latlng.lng+" "+e.latlng.lat+"</map-coordinates></map-point></map-geometry>",
               feature = parser.parseFromString("<map-feature><map-properties>"+
                 response.text+"</map-properties>"+geom+"</map-feature>", "text/html").querySelector("map-feature");
           layer._mapmlFeatures.push(feature);
         }
-        if(lastOne) return displayFeaturesPopup(layer._mapmlFeatures, e.latlng);
+        if(lastOne) {
+          // create connection between queried <map-feature> and its parent <map-extent>
+          for (let feature of layer._mapmlFeatures) {
+            feature._extentEl = template._extentEl;
+          }
+          displayFeaturesPopup(layer._mapmlFeatures, e.latlng);
+        }
       }).catch((err) => {
         console.log('Looks like there was a problem. Status: ' + err.message);
       });
