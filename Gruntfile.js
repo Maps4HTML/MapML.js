@@ -49,8 +49,8 @@ module.exports = function(grunt) {
         },
         // ensure that jshint keeps processing after an error
         force: true,
-        esversion: 11
-
+        esversion: 11,
+        laxbreak: true // used to fix differences with prettier 
       }
     },
     watch: {
@@ -213,7 +213,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-rollup');
   grunt.loadNpmTasks('grunt-prettier');
 
-  grunt.registerTask('format', ['jshint', 'prettier']);
+  grunt.registerTask('format', ['prettier', 'jshint']);
   grunt.registerTask('default', ['clean:dist', 'copy:main', 'copy:images', 'jshint', 'rollup', 
                                  'uglify', 'cssmin','clean:tidyup']);
   grunt.registerTask('experiments',['clean:experiments','default','copy:experiments']);
