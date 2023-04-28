@@ -243,7 +243,7 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
                 let mapFeature = map.querySelector('map-feature');
                 // define custom click method
                 mapFeature.onclick = function (e) {
-                    this.classList.add("customClick");
+                    document.querySelector('map-feature').classList.add("customClick");
                 }
                 mapFeature.click();
                 return mapFeature.classList.contains("customClick");
@@ -299,7 +299,7 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
                 let mapFeature = map.querySelector('map-feature');
                 // define custom focus method
                 mapFeature.onfocus = function (e) {
-                    this.classList.add("customFocus");
+                    map.querySelector('map-feature').classList.add("customFocus");
                 }
                 mapFeature.focus();
                 return mapFeature.classList.contains("customFocus");
@@ -327,7 +327,7 @@ test.describe("Playwright MapFeature Custom Element Tests", () => {
             (map) => {
                 let mapFeature = map.querySelector('.event');
                 mapFeature._groupEl.blur();
-                return mapFeature.classList.contains('test_2');
+                return mapFeature.classList.contains('blur_property_test') && mapFeature.classList.contains('blur_addEvtLsn_test');
             }
         );
         expect(test).toEqual(true);

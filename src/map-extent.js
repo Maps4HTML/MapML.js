@@ -1,6 +1,3 @@
-import { MapInput } from './map-input.js';
-import { MapLink } from './map-link.js';
-
 export class MapExtent extends HTMLElement {
   static get observedAttributes() {
     return ['units','checked','label','opacity'];
@@ -71,10 +68,23 @@ export class MapExtent extends HTMLElement {
     super();    
   }
   connectedCallback() {
-    
+    if(this.querySelector('map-link[rel=query], map-link[rel=features]') && !this.shadowRoot) {
+      this.attachShadow({mode: 'open'});
+    }
+    let parentLayer = this.parentNode.nodeName.toUpperCase() === "LAYER-" ? this.parentNode : this.parentNode.host;
+    if (!parentLayer._layer) {
+      // for custom projection cases, the MapMLLayer has not yet created and binded with the layer- at this point,
+      // because the "createMap" event of mapml-viewer has not yet been dispatched, the map has not yet been created 
+      // the event will be dispatched after defineCustomProjection > projection setter
+      // should wait until MapMLLayer is built
+      parentLayer.parentNode.addEventListener('createmap', (e) => {
+        this._layer = parentLayer._layer;
+      });
+    } else {
+      this._layer = parentLayer._layer;
+    }
   }
   disconnectedCallback() {
     
   }
 }
-window.customElements.define('map-extent', MapExtent);

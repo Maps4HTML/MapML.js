@@ -5,7 +5,12 @@ export var FeatureLayer = L.FeatureGroup.extend({
    * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.
    */
     initialize: function (mapml, options) {
-
+      /*
+        mapml:
+        1. for query: an array of map-feature elements that it fetches
+        2. for static templated feature: null
+        3. for non-templated feature: layer- (with no src) or mapml file (with src)
+      */
       L.setOptions(this, options);
       if(this.options.static) {
         this._container = L.DomUtil.create('div', 'leaflet-layer', this.options.pane);
@@ -68,15 +73,23 @@ export var FeatureLayer = L.FeatureGroup.extend({
       };
     },
 
-
+    // for query
     showPaginationFeature: function(e){
       if(this.options.query && this._mapmlFeatures[e.i]){
         let feature = this._mapmlFeatures[e.i];
+        // remove the prev / next one <map-feature> from shadow if there is any
+        feature._extentEl.shadowRoot.firstChild?.remove();
         this.clearLayers();
-        this.addData(feature, this.options.nativeCS, this.options.nativeZoom);
+        feature._featureGroup = this.addData(feature, this.options.nativeCS, this.options.nativeZoom);
+        feature._extentEl.shadowRoot.appendChild(feature);
         e.popup._navigationBar.querySelector("p").innerText = (e.i + 1) + "/" + this.options._leafletLayer._totalFeatureCount;
         e.popup._content.querySelector("iframe").setAttribute("sandbox", "allow-same-origin allow-forms");
         e.popup._content.querySelector("iframe").srcdoc = feature.querySelector("map-properties").innerHTML;
+        // "zoom to here" link need to be re-set for every pagination
+        this._map.fire("attachZoomLink", {i:e.i, currFeature: feature});
+        this._map.once("popupclose", function (e) {
+          this.shadowRoot.innerHTML = '';
+        }, feature._extentEl);
       }
     },
 
@@ -217,9 +230,10 @@ export var FeatureLayer = L.FeatureGroup.extend({
         feature = features[i];
         var geometriesExist = feature.getElementsByTagName("map-geometry").length && feature.getElementsByTagName("map-coordinates").length;
         if (geometriesExist) {
-          if (mapml.nodeType === Node.DOCUMENT_NODE && feature._DOMnode) {
+          if (mapml.nodeType === Node.DOCUMENT_NODE) {
            // if the <map-feature> element has migrated from mapml file, 
            // the featureGroup object should bind with the **CLONED** map-feature element in DOM instead of the feature in mapml
+          if (!feature._DOMnode) feature._DOMnode = feature.cloneNode(true);
           feature._DOMnode._featureGroup = this.addData(feature._DOMnode, nativeCS, nativeZoom);
          } else {
           feature._featureGroup = this.addData(feature, nativeCS, nativeZoom);

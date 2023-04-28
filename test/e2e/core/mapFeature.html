@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>Feature Link Test</title>
+  <title>HTMLFeatureElement Test</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script type="module" src="web-map.js"></script>
@@ -190,9 +190,12 @@
   }
 
   document.querySelector('.event').onblur = function () {
-    // this: mapFeature._groupEl
-    document.querySelector(".event").classList.add('test_2');
+    document.querySelector(".event").classList.add('blur_property_test');
   }
+
+  document.querySelector('.event').addEventListener('blur', function () {
+    document.querySelector(".event").classList.add('blur_addEvtLsn_test');
+  })
 </script>
 </body>
 

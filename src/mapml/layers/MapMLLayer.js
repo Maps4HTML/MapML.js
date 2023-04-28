@@ -108,7 +108,8 @@ export var MapMLLayer = L.Layer.extend({
                   opacity: extentEl._templateVars.opacity,
                   _leafletLayer: this,
                   crs: extentEl.crs,
-                  extentZIndex: extentEl.extentZIndex
+                  extentZIndex: extentEl.extentZIndex,
+                  extentEl: extentEl._DOMnode || extentEl
                 }).addTo(this._map);
                 extentEl.templatedLayer.setZIndex();
                 this._setLayerElExtent();  
@@ -147,14 +148,6 @@ export var MapMLLayer = L.Layer.extend({
                   var c = document.createElement('div');
                   c.classList.add("mapml-popup-content");
                   c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                  c.insertAdjacentHTML('beforeend', `<a href="" class="zoomLink">${M.options.locale.popupZoom}</a>`);
-                  let zoomLink = c.querySelector('a.zoomLink');
-                  zoomLink.onclick = zoomLink.onkeydown = function (e) {
-                    if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
-                    e.preventDefault();
-                    let mapmlFeature = geometry._featureEl ? geometry._featureEl : geometry._groupLayer._featureEl;
-                    mapmlFeature.zoomTo();
-                  };
                   geometry.bindPopup(c, {autoClose: false, minWidth: 165});
                 }
               }
@@ -187,14 +180,6 @@ export var MapMLLayer = L.Layer.extend({
                       var c = document.createElement('div');
                       c.classList.add("mapml-popup-content");
                       c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                      c.insertAdjacentHTML('beforeend', `<a href="" class="zoomLink">${M.options.locale.popupZoom}</a>`);
-                      let zoomLink = c.querySelector('a.zoomLink');
-                      zoomLink.onclick = zoomLink.onkeydown = function (e) {
-                        if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
-                        e.preventDefault();
-                        let mapmlFeature = geometry._featureEl ? geometry._featureEl : geometry._groupLayer._featureEl;
-                        mapmlFeature.zoomTo();
-                      };
                       geometry.bindPopup(c, {autoClose: false, minWidth: 165});
                     }
                   },
@@ -261,6 +246,9 @@ export var MapMLLayer = L.Layer.extend({
                     _leafletLayer: this,
                     crs: this._extent.crs,
                     extentZIndex: this._extent._mapExtents[i].extentZIndex,
+                    // when a <map-extent> migrates from a remote mapml file and attaches to the shadow of <layer- >
+                    // this._extent._mapExtents[i] refers to the <map-extent> in remote mapml
+                    extentEl: this._extent._mapExtents[i]._DOMnode || this._extent._mapExtents[i],
                     }).addTo(map);   
                     this._extent._mapExtents[i].templatedLayer = this._templatedLayer;
                     if(this._templatedLayer._queries){
@@ -277,7 +265,6 @@ export var MapMLLayer = L.Layer.extend({
           }
         }
     },
-
 
     _validProjection : function(map){
       let noLayer = false;
@@ -1324,8 +1311,12 @@ export var MapMLLayer = L.Layer.extend({
       if(popup._source._eventParents){ // check if the popup is for a feature or query
         layer = popup._source._eventParents[Object.keys(popup._source._eventParents)[0]]; // get first parent of feature, there should only be one
         group = popup._source.group;
+        // if the popup is for a static / templated feature, the "zoom to here" link can be attached once the popup opens
+        attachZoomLink.call(popup);
       } else {
         layer = popup._source._templatedLayer;
+        // if the popup is for a query, the "zoom to here" link should be re-attached every time new pagination features are displayed
+        map.on("attachZoomLink", attachZoomLink, popup);
       }
 
       if(popup._container.querySelector('nav[class="mapml-focus-buttons"]')){
@@ -1381,7 +1372,7 @@ export var MapMLLayer = L.Layer.extend({
         map._controlContainer.querySelector("A:not([hidden])").focus();
       }, popup);
   
-      let divider = L.DomUtil.create("hr");
+      let divider = L.DomUtil.create("hr", "mapml-popup-divider");
 
       popup._navigationBar = div;
       popup._content.appendChild(divider);
@@ -1452,12 +1443,36 @@ export var MapMLLayer = L.Layer.extend({
         }
       }
 
+      function attachZoomLink (e) {
+        // this === popup
+        let content = this._content,
+            featureEl = e ? e.currFeature : this._source._groupLayer._featureEl;
+        if (content.querySelector('a.mapml-zoom-link')) {
+          content.querySelector('a.mapml-zoom-link').remove();
+        }
+        if (!featureEl.querySelector('map-geometry')) return;
+        let tL = featureEl.extent.topLeft.gcrs,
+            bR = featureEl.extent.bottomRight.gcrs,
+            center = L.latLngBounds(L.latLng(tL.horizontal, tL.vertical), L.latLng(bR.horizontal, bR.vertical)).getCenter(true);
+        let zoomLink = document.createElement('a');
+        zoomLink.href = `#${featureEl.getMaxZoom()},${center.lng},${center.lat}`;
+        zoomLink.innerHTML = `${M.options.locale.popupZoom}`;
+        zoomLink.className = "mapml-zoom-link";
+        zoomLink.onclick = zoomLink.onkeydown = function (e) {
+          if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
+          e.preventDefault();
+          featureEl.zoomTo();
+        };
+        content.insertBefore(zoomLink, content.querySelector('hr.mapml-popup-divider'));
+      }
+
       // if popup closes then the focusFeature handler can be removed
       map.on("popupclose", removeHandlers);
       function removeHandlers(removeEvent){
         if (removeEvent.popup === popup){
           map.off("keydown", focusFeature);
           map.off("keydown", focusMap);
+          map.off("popupopen", attachZoomLink);
           map.off('popupclose', removeHandlers);
           if(group) group.setAttribute("aria-expanded", "false");
         }

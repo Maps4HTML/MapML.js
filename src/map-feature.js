@@ -38,7 +38,7 @@ export class MapFeature extends HTMLElement {
     set max(val) {
       var parsedVal = parseInt(val,10);
       if (!isNaN(parsedVal)) {
-        if (parsedVal >= this._layer._layerEl.extent.minZoom && parsedVal <= this._layer._layerEl.extent.zoom.maxZoom) {          
+        if (parsedVal >= this._layer._layerEl.extent.zoom.minZoom && parsedVal <= this._layer._layerEl.extent.zoom.maxZoom) {          
           this.setAttribute('max', parsedVal);
         } else {
           this.setAttribute('max', this._layer._layerEl.extent.zoom.maxZoom);
@@ -79,7 +79,7 @@ export class MapFeature extends HTMLElement {
           if (this._groupEl) {
             // "synchronize" the onevent properties (i.e. onfocus, onclick, onblur)
             // between the mapFeature and its associated <g> element
-            this._groupEl[name] = this[name];
+            this._groupEl[name] = this[name].bind(this._groupEl);
             break;
           }
       }
@@ -147,7 +147,7 @@ export class MapFeature extends HTMLElement {
             }
             let container = this._layer.shadowRoot || this._layer._layerEl;
             // update zoom bounds of vector layer
-            mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(container, this._getNativeZoomAndCS().zoom);
+            mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(container, this._getNativeZoomAndCS(this._layer._content).zoom);
           }
           mapmlvectors.options.properties = null;
           delete mapmlvectors._layers[this._featureGroup._leaflet_id];
@@ -160,31 +160,55 @@ export class MapFeature extends HTMLElement {
     }
 
     _addFeature() {
-      // this._layer: the leaflet layer object associated with the <layer- > element
-      //              that the <map-feature> attaches
-      // case 1: the <map-feature> el directly attaches to the <layer- > el
-      // case 2: the <map-feature> el is originally in a <mapml- > document (<layer- src="...mapml">)
-      //         and attaches to the shadowRoot of the <layer- > element
-      this._layer = this.parentNode._layer ? this.parentNode._layer : this.parentNode.host._layer;
-      // if the parent layer- el has not yet added to the map, wait until it is added
-      if (!this._layer._map) {
-        this._layer.once('add', function () {
+      let parentEl = (this.parentNode.nodeName.toUpperCase() === "LAYER-" || 
+                      this.parentNode.nodeName.toUpperCase() === "MAP-EXTENT" ? 
+                      this.parentNode : this.parentNode.host);
+
+      // arrow function is not hoisted, define before use
+      var _attachedToMap = (e) => {
+        if (!parentEl._layer._map) {
+          // if the parent layer- el has not yet added to the map (i.e. not yet rendered), wait until it is added
+          this._layer.once('attached', function () {
+            this._map = this._layer._map;
+          }, this);
+        } else {
           this._map = this._layer._map;
-        }, this);
+        }
+        // "synchronize" the event handlers between map-feature and <g>
+        if (!this.querySelector('map-geometry')) return;
+        if (!this._layer._mapmlvectors) {
+          // if vector layer has not yet created (i.e. the layer- is not yet rendered on the map / layer is empty)
+          let layerEl = this._layer._layerEl;
+          this._layer.once('add', this._setUpEvents, this);
+          if (!layerEl.querySelector('map-extent, map-tile') && !layerEl.hasAttribute('src') && layerEl.querySelectorAll('map-feature').length === 1) {
+            // if the map-feature is added to an empty layer, fire extentload to create vector layer
+            // must re-run _initialize of MapMLLayer.js to re-set layer._extent (layer._extent is null for an empty layer)
+            this._layer._initialize(layerEl);
+            this._layer.fire('extentload');
+          }
+          return;
+        } else if (!this._featureGroup) {
+          // if the map-feature el or its subtree is updated
+          // this._featureGroup has been free in this._removeFeature()
+          this._updateFeature();
+        } else {
+          this._setUpEvents();
+        }
+      };
+
+      if (!parentEl._layer) {
+        // for custom projection cases, the MapMLLayer has not yet created and binded with the layer- at this point,
+        // because the "createMap" event of mapml-viewer has not yet been dispatched, the map has not yet been created 
+        // the event will be dispatched after defineCustomProjection > projection setter
+        // should wait until MapMLLayer is built
+        let parentLayer = parentEl.nodeName.toUpperCase() === "LAYER-" ? parentEl : (parentEl.parentElement || parentEl.parentNode.host);
+        parentLayer.parentNode.addEventListener('createmap', (e) => {
+          this._layer = parentLayer._layer;
+          _attachedToMap();
+        });
       } else {
-        this._map = this._layer._map;
-      }
-      // "synchronize" the event handlers between map-feature and <g>
-      if (!this._layer._mapmlvectors) {
-        // if vector layer has not yet created (i.e. the layer- is not yet rendered on the map)
-        this._layer.once('add', this._setUpEvents, this);
-        return;
-      } else if (!this._featureGroup) {
-        // if the map-feature el or its subtree is updated
-        // this._featureGroup has been free in this._removeFeature()
-        this._updateFeature();
-      } else {
-        this._setUpEvents();
+        this._layer = parentEl._layer;
+        _attachedToMap();
       }
     }
 
@@ -200,7 +224,7 @@ export class MapFeature extends HTMLElement {
       if (mapmlvectors._staticFeature) {
         let container = this._layer.shadowRoot || this._layer._layerEl;
         // update zoom bounds of vector layer
-        mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(container, this._getNativeZoomAndCS().zoom);
+        mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(container, this._getNativeZoomAndCS(this._layer._content).zoom);
         // add feature layers to map
         mapmlvectors._resetFeatures();
         // update map's zoom limit
@@ -213,41 +237,63 @@ export class MapFeature extends HTMLElement {
     _setUpEvents() {
       ['click','focus','blur'].forEach(name => {
         // onevent properties & onevent attributes
-        if (this[`on${name}`] && typeof this[`on${name}`] === "function") this._groupEl[`on${name}`] = this[`on${name}`];
-        // event listeners
+        if (this[`on${name}`] && typeof this[`on${name}`] === "function")  {
+          this._groupEl[`on${name}`] = this[`on${name}`];
+        }
+        // handle event handlers set via addEventlistener
+        // for HTMLElement
+        // when <g> is clicked / focused / blurred
+        // should dispatch the click / focus / blur event listener on **linked HTMLFeatureElements**
         this._groupEl.addEventListener(name, (e) => {
-          // this === mapFeature
-          // store onEvent handler of mapFeature if there is any to ensure
-          // it will not be invoked when the mouseevent is dispatched
-          const handler = this[`on${name}`];
+          // this === mapFeature as arrow function does not have their own "this" pointer
+          // store onEvent handler of mapFeature if there is any to ensure that it will not be re-triggered when the cloned mouseevent is dispatched
+          // so that only the event handlers set on HTMLFeatureElement via addEventListener method will be triggered
+          const handler = this[`on${name}`]; // a deep copy, var handler will not change when this.onevent is set to null (i.e. store the onevent property)
           this[`on${name}`] = null;
           if (name === 'click') {
-            this.dispatchEvent(new MouseEvent (name, {...e.options}));
+            // dispatch a cloned mouseevent to trigger the click event handlers set on HTMLFeatureElement
+            this.dispatchEvent(new PointerEvent (name, {...e}));
           } else {
-            this.dispatchEvent(new FocusEvent (name, {...e.options}));
+            this.dispatchEvent(new FocusEvent (name, {...e}));
           }
-          if (handler) this[`on${name}`] = handler;
+          this[`on${name}`] = handler;
         });
       });
     }
 
     _getNativeZoomAndCS(content) {
-      // content: layer- || mapml file in src
+      // content: referred to <layer- > if the <layer- > has inline <map-extent>, <map-feature> or <map-tile>
+      //          referred to remote mapml if the <layer- > has a src attribute, and the fetched mapml contains <map-feature>
+      //          referred to null otherwise (i.e. <layer- > has fetched <map-extent> in shadow, the <map-feature> attaches to <map-extent>'s shadow)
       let nativeZoom, nativeCS;
-      if (!content || content.nodeName.toUpperCase() === "LAYER-") {
-        let layerEl = this._layer._layerEl;
-        let zoomMeta = layerEl.querySelectorAll('map-meta[name=zoom]'),
-            zoomLength = zoomMeta?.length;
-        nativeZoom = zoomLength ? +(zoomMeta[zoomLength - 1].getAttribute('content')?.split(',').find(str => str.includes("value"))?.split('=')[1]) : 0;
-
-        let csMeta = layerEl.querySelectorAll("map-meta[name=cs]"),
-            csLength = csMeta?.length;
-        nativeCS = csLength ? csMeta[csLength - 1].getAttribute('content') : 'pcrs';
+      if (this._extentEl) {
+        // feature attaches to extent's shadow
+        if (this._extentEl.querySelector('map-link[rel=query]')) {
+          // for query, fallback zoom is the current map zoom level that the query is returned
+          nativeZoom = this._map.getZoom();
+          nativeCS = 'pcrs';
+        } else if (this._extentEl.querySelector('map-link[rel=features]')) {
+          // for templated feature, read fallback from the fetched mapml's map-meta[name=zoom / cs]
+          nativeZoom = this._extentEl._nativeZoom;
+          nativeCS = this._extentEl._nativeCS;
+        }
         return {zoom: nativeZoom, cs: nativeCS};
-      } else if (content.nodeType === Node.DOCUMENT_NODE) {
-        // if the map-feature originally migrates from mapml file
-        // set the native according to the map-meta[name=zoom / cs] in mapml file
-        return this._layer._mapmlvectors._getNativeVariables(content);
+      } else {
+        // feature attaches to layer- or layer-'s shadow
+        if (content.nodeType === Node.DOCUMENT_NODE) {
+          // for features migrated from mapml, read native zoom and cs from the remote mapml
+          return this._layer._mapmlvectors._getNativeVariables(content);
+        } else if (content.nodeName.toUpperCase() === "LAYER-") {
+          // for inline features, read native zoom and cs from inline map-meta
+          let zoomMeta = this.parentElement.querySelectorAll('map-meta[name=zoom]'),
+              zoomLength = zoomMeta?.length;
+          nativeZoom = zoomLength ? +(zoomMeta[zoomLength - 1].getAttribute('content')?.split(',').find(str => str.includes("value"))?.split('=')[1]) : 0;
+
+          let csMeta = this.parentElement.querySelectorAll("map-meta[name=cs]"),
+              csLength = csMeta?.length;
+          nativeCS = csLength ? csMeta[csLength - 1].getAttribute('content') : 'pcrs';
+          return {zoom: nativeZoom, cs: nativeCS};
+        }
       }
     }
 
@@ -330,6 +376,40 @@ export class MapFeature extends HTMLElement {
       }
     }
 
+    getMaxZoom() {
+      let tL = this.extent.topLeft.pcrs,
+          bR = this.extent.bottomRight.pcrs,
+          bound = L.bounds(L.point(tL.horizontal, tL.vertical), L.point(bR.horizontal, bR.vertical));
+      let projection = this._map.options.projection,
+          layerZoomBounds = this._layer._layerEl.extent.zoom,
+          minZoom = layerZoomBounds.minZoom ? layerZoomBounds.minZoom : 0,
+          maxZoom = layerZoomBounds.maxZoom ? layerZoomBounds.maxZoom : M[projection].options.resolutions.length - 1;
+      let newZoom;
+      if (this.hasAttribute('zoom')) {
+        // if there is a zoom attribute set to the map-feature, zoom to the zoom attribute value
+        newZoom = this.zoom;
+      } else {
+        // if not, calculate the maximum zoom level that can show the feature completely
+        newZoom = M.getMaxZoom(bound, this._map, minZoom, maxZoom);
+        if (this.max < newZoom) {
+          // if the calculated zoom is greater than the value of max zoom attribute, go with max zoom attribute
+          newZoom = this.max;
+        } else if (this.min > newZoom) {
+          // if the calculated zoom is less than the value of min zoom attribute, go with min zoom attribute
+          newZoom = this.min;
+        }
+      }
+      // prevent overzooming / underzooming
+      if (newZoom < minZoom) {
+        newZoom = minZoom;
+      } else if (newZoom > maxZoom) {
+        newZoom = maxZoom;
+      }
+
+      // should check whether the extent after zooming falls into the templated extent bound
+      return newZoom;
+    }
+
     // internal support for returning a GeoJSON representation of <map-feature> geometry
     // The options object can contain the following:
     //      propertyFunction   - function(<map-properties>), A function that maps the features' <map-properties> element to a GeoJSON "properties" member.
@@ -400,7 +480,7 @@ export class MapFeature extends HTMLElement {
         });
       }
       if (typeof this.onclick === 'function') {
-        this.onclick.call(this, event);
+        this.onclick.call(this._groupEl, event);
         return;
       } else {
         let properties = this.querySelector('map-properties');
@@ -437,7 +517,7 @@ export class MapFeature extends HTMLElement {
     focus(event, options) {
       let g = this._groupEl;
       if (typeof this.onfocus === 'function') {
-        this.onfocus.call(this, event);
+        this.onfocus.call(this._groupEl, event);
         return;
       } else {
         g.focus(options);
@@ -448,7 +528,7 @@ export class MapFeature extends HTMLElement {
     //      event (optional): a FocusEvent object, can be passed as an argument of the user-defined blur event handlers
     blur(event) {
       if (typeof this.onblur === 'function') {
-        this.onblur.call(this, event);
+        this.onblur.call(this._groupEl, event);
       } else if (document.activeElement.shadowRoot?.activeElement === this._groupEl || 
                  document.activeElement.shadowRoot?.activeElement.parentNode === this._groupEl) {
         this._groupEl.blur();
@@ -465,31 +545,6 @@ export class MapFeature extends HTMLElement {
           bR = extent.bottomRight.pcrs,
           bound = L.bounds(L.point(tL.horizontal, tL.vertical), L.point(bR.horizontal, bR.vertical)),
           center = map.options.crs.unproject(bound.getCenter(true));
-      let projection = map.options.projection,
-          layerZoomBounds = this._layer._layerEl.extent.zoom,
-          minZoom = layerZoomBounds.minZoom ? layerZoomBounds.minZoom : 0,
-          maxZoom = layerZoomBounds.maxZoom ? layerZoomBounds.maxZoom : M[projection].options.resolutions.length - 1;
-      let newZoom;
-      if (this.hasAttribute('zoom')) {
-        // if there is a zoom attribute set to the map-feature, zoom to the zoom attribute value
-        newZoom = this.zoom;
-      } else {
-        // if not, calculate the maximum zoom level that can show the feature completely
-        newZoom = M.getMaxZoom(bound, map, minZoom, maxZoom);
-        if (this.max < newZoom) {
-          // if the calculated zoom is greater than the value of max zoom attribute, go with max zoom attribute
-          newZoom = this.max;
-        } else if (this.min > newZoom) {
-          // if the calculated zoom is less than the value of min zoom attribute, go with min zoom attribute
-          newZoom = this.min;
-        }
-      }
-      // prevent overzooming / underzooming
-      if (newZoom < minZoom) {
-        newZoom = minZoom;
-      } else if (newZoom > maxZoom) {
-        newZoom = maxZoom;
-      }
-      map.setView(center, newZoom, {animate: false});
+      map.setView(center, this.getMaxZoom(), {animate: false});
     }
   }
