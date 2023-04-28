@@ -885,6 +885,7 @@ export var ContextMenu = L.Handler.extend({
         }
       }
     } else if (e.shiftKey && key === 9){
+      //need to have localized strings below
       let arr = ['Back (<kbd>Alt+Left Arrow</kbd>)', 'Forward (<kbd>Alt+Right Arrow</kbd>)', 'Reload (<kbd>Ctrl+R</kbd>)',
       'View Fullscreen (<kbd>F</kbd>)', '', 'Copy (<kbd>C</kbd>)<span></span>', 'Paste (<kbd>P</kbd>)', '', 'Toggle Controls (<kbd>T</kbd>)',
       'Toggle Debug Mode (<kbd>D</kbd>)', 'View Map Source (<kbd>V</kbd>)'];
@@ -897,6 +898,7 @@ export var ContextMenu = L.Handler.extend({
       }
       this.activeIndex = ind;
     } else if (key === 9) {
+      //need to have localized strings below
       let arr = ['Back (<kbd>Alt+Left Arrow</kbd>)', 'Forward (<kbd>Alt+Right Arrow</kbd>)', 'Reload (<kbd>Ctrl+R</kbd>)',
       'View Fullscreen (<kbd>F</kbd>)', '', 'Copy (<kbd>C</kbd>)<span></span>', 'Paste (<kbd>P</kbd>)', '', 'Toggle Controls (<kbd>T</kbd>)',
       'Toggle Debug Mode (<kbd>D</kbd>)', 'View Map Source (<kbd>V</kbd>)'];
