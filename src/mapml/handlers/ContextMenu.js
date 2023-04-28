@@ -709,7 +709,7 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _setActiveItem: function(index) {
-    if (document.activeElement.shadowRoot == null && this.noActiveEl == true){
+    if (document.activeElement.shadowRoot === null && this.noActiveEl === true){
       //bug fix when theres no active element
       this.noActiveEl = false;
       //setting this._items[9] is just for preventing some diabled index, it will be override by later code.
@@ -777,7 +777,7 @@ export var ContextMenu = L.Handler.extend({
       }
     } else if (key === 38) { //up arrow
       if (!this._coordMenu.hasAttribute('hidden') && 
-        (document.activeElement.shadowRoot == null || //null happens when the focus is on submenu and when mouse hovers on main menu, submenu disappears
+        (document.activeElement.shadowRoot === null || //null happens when the focus is on submenu and when mouse hovers on main menu, submenu disappears
         document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML)) { //"map" on submenu
         this._coordMenu.children[2].focus();
       } else if (!this._coordMenu.hasAttribute('hidden') && 
@@ -807,7 +807,7 @@ export var ContextMenu = L.Handler.extend({
       }
     } else if (key === 40) { //down arrow
       if (!this._coordMenu.hasAttribute('hidden') && 
-        (document.activeElement.shadowRoot == null ||
+        (document.activeElement.shadowRoot === null ||
         document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[2].innerHTML)) { //"map" on submenu
         this._coordMenu.children[0].focus();
       } else if (!this._coordMenu.hasAttribute('hidden') && 
@@ -824,7 +824,7 @@ export var ContextMenu = L.Handler.extend({
       } else {
         if (this.activeIndex < this._items.length - 1) {
           //edge case at index 0
-          if (!this.isRunned && this.activeIndex == 0 && !this._items[this.activeIndex].el.el.disabled){
+          if (!this.isRunned && this.activeIndex === 0 && !this._items[this.activeIndex].el.el.disabled){
             this._setActiveItem(0);
             this.isRunned = true;
           } else { //edge case over
@@ -849,31 +849,28 @@ export var ContextMenu = L.Handler.extend({
         }
       }
     } else if (key === 39) { //right arrow
-      if (document.activeElement.shadowRoot == null) { //do nothing when null
-      } else {
-        if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[5].el.el.innerHTML && //'copy'
-          this._coordMenu.hasAttribute('hidden')){
-          this._showCoordMenu();
-          this._coordMenu.children[0].focus();
-        } else if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[5].el.el.innerHTML && 
-          !this._coordMenu.hasAttribute('hidden')) {
-          this._coordMenu.children[0].focus();
-        }
+      if (document.activeElement.shadowRoot !== null && 
+          document.activeElement.shadowRoot.activeElement.innerHTML === 
+          this._items[5].el.el.innerHTML && //'copy'
+        this._coordMenu.hasAttribute('hidden')){
+        this._showCoordMenu();
+        this._coordMenu.children[0].focus();
+      } else if (document.activeElement.shadowRoot.activeElement.innerHTML === this._items[5].el.el.innerHTML && 
+        !this._coordMenu.hasAttribute('hidden')) {
+        this._coordMenu.children[0].focus();
       }
     } else if (key === 37) { //left arrow
-      if (document.activeElement.shadowRoot == null) { //do nothing when null
-      } else {
-        if (!this._coordMenu.hasAttribute('hidden')) {
-          if (document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML ||
-          document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[1].innerHTML || 
-          document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[2].innerHTML){
-            this._coordMenu.setAttribute('hidden','');
-            this._setActiveItem(5);
-          }
+      if (!this._coordMenu.hasAttribute('hidden') && 
+          document.activeElement.shadowRoot !== null) {
+        if (document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[0].innerHTML ||
+        document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[1].innerHTML || 
+        document.activeElement.shadowRoot.activeElement.innerHTML === this._coordMenu.children[2].innerHTML){
+          this._coordMenu.setAttribute('hidden','');
+          this._setActiveItem(5);
         }
       }
     } else if (key === 27) { //esc key
-      if (document.activeElement.shadowRoot == null) {
+      if (document.activeElement.shadowRoot === null) {
         this._hide();
       } else {
         if (!this._coordMenu.hasAttribute('hidden')) {

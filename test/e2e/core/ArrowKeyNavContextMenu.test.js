@@ -118,7 +118,20 @@ test.describe("Using arrow keys to navigate context menu", () => {
     activeElement = await page.evaluate(() => document.activeElement.shadowRoot.activeElement.innerHTML);
     expect(activeElement).toEqual('Map');
 
-    await page.keyboard.press("ArrowUp");
+    await page.keyboard.press("ArrowLeft");
+    activeElement = await page.evaluate(() => document.activeElement.shadowRoot.activeElement.innerHTML);
+    expect(activeElement).toEqual('Copy (<kbd>C</kbd>)<span></span>');
+
+    await page.keyboard.press("ArrowRight");
+
+    activeElement = await page.evaluate(() => document.activeElement.shadowRoot.activeElement.innerHTML);
+    expect(activeElement).toEqual('Map');
+
+    await page.keyboard.press("ArrowDown");
+    activeElement = await page.evaluate(() => document.activeElement.shadowRoot.activeElement.innerHTML);
+    expect(activeElement).toEqual('Extent');
+
+    await page.keyboard.press("ArrowDown");
 
     activeElement = await page.evaluate(() => document.activeElement.shadowRoot.activeElement.innerHTML);
     expect(activeElement).toEqual('Location');
