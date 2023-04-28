@@ -884,6 +884,30 @@ export var ContextMenu = L.Handler.extend({
           this._hide();
         }
       }
+    } else if (e.shiftKey && key === 9){
+      let arr = ['Back (<kbd>Alt+Left Arrow</kbd>)', 'Forward (<kbd>Alt+Right Arrow</kbd>)', 'Reload (<kbd>Ctrl+R</kbd>)',
+      'View Fullscreen (<kbd>F</kbd>)', '', 'Copy (<kbd>C</kbd>)<span></span>', 'Paste (<kbd>P</kbd>)', '', 'Toggle Controls (<kbd>T</kbd>)',
+      'Toggle Debug Mode (<kbd>D</kbd>)', 'View Map Source (<kbd>V</kbd>)'];
+      let ind = (arr.indexOf(document.activeElement.shadowRoot.activeElement.innerHTML)) - 1;
+      while (this._items[ind].el.el.disabled || ind === 4 || ind ===7) {
+        ind--;
+        if (ind < 0) {
+          ind = this._items.length - 1;
+        }
+      }
+      this.activeIndex = ind;
+    } else if (key === 9) {
+      let arr = ['Back (<kbd>Alt+Left Arrow</kbd>)', 'Forward (<kbd>Alt+Right Arrow</kbd>)', 'Reload (<kbd>Ctrl+R</kbd>)',
+      'View Fullscreen (<kbd>F</kbd>)', '', 'Copy (<kbd>C</kbd>)<span></span>', 'Paste (<kbd>P</kbd>)', '', 'Toggle Controls (<kbd>T</kbd>)',
+      'Toggle Debug Mode (<kbd>D</kbd>)', 'View Map Source (<kbd>V</kbd>)'];
+      let ind = (arr.indexOf(document.activeElement.shadowRoot.activeElement.innerHTML)) + 1;
+      while (this._items[ind].el.el.disabled || ind === 4 || ind ===7) {
+        ind++;
+        if (ind >= this._items.length) {
+          ind = 0;
+        }
+      }
+      this.activeIndex = ind;
     } else if(key !== 16 && key!== 9 && 
               !(!(this._layerClicked.className.includes('mapml-layer-item')) && key === 67) && 
               (path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)"))){
