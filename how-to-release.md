@@ -1,4 +1,10 @@
 # Release Guide
+** Licenses
+
+Copy the LICENSE.md file to dist
+Replace the URLs to dependency license text files with the text in those files
+(There should be a grunt task to do this automatically, but it's not there yet)
+
 **Publishing packages to NPM**
 
 In `package.json` verify the name and update the version. Add additional files
