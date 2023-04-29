@@ -87,6 +87,21 @@
   color: revert;
 }
 
+/* Style Legend */
+.legendLink span { 
+	position: absolute;
+	visibility: hidden;
+}
+.legendLink:hover span, .legendLink:focus span { 
+	visibility:visible;
+  left: 0;
+	right: auto;
+	z-index: 1;
+}
+.legendLink img { 
+	max-width: 200px;
+}
+
  .leaflet-top .leaflet-control {
    margin-top: 5px;
  }

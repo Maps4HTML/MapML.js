@@ -676,10 +676,17 @@ export var MapMLLayer = L.Layer.extend({
 
         if (this._legendUrl) {
           var legendLink = document.createElement('a');
+          var viewerSpan = document.createElement('span');
+          var legendImg = document.createElement('img');
           legendLink.text = ' ' + this._title;
           legendLink.href = this._legendUrl;
           legendLink.target = '_blank';
           legendLink.draggable = false;
+          legendLink.setAttribute('class', 'legendLink');
+          legendImg.src = this._legendUrl;
+          legendImg.alt = "Legend for " + this._title;
+          viewerSpan.appendChild(legendImg);
+          legendLink.appendChild(viewerSpan);
           layerItemName.appendChild(legendLink);
         } else {
           layerItemName.innerHTML = this._title;
