@@ -38,6 +38,23 @@ module.exports = function(grunt) {
         } 
       }
     },
+    fetchpages: {
+      dist: {
+        options: {
+          destinationFolder: 'dist',
+          urls: [
+            {url: 'https://raw.githubusercontent.com/Leaflet/Leaflet/main/LICENSE', localFile: 'leaflet-license.txt'},
+            {url: 'https://raw.githubusercontent.com/Leaflet/Leaflet.fullscreen/gh-pages/LICENSE', localFile: 'leaflet-fullscreen-license.txt'},
+            {url: 'https://raw.githubusercontent.com/domoritz/leaflet-locatecontrol/gh-pages/LICENSE', localFile: 'leaflet-locate-license.txt'},
+            {url: 'https://raw.githubusercontent.com/kartena/Proj4Leaflet/master/LICENSE', localFile: 'proj4Leaflet-license.txt'},
+            {url: 'https://raw.githubusercontent.com/proj4js/proj4js/master/LICENSE.md', localFile: 'proj4js-license.txt'},
+            {url: 'https://raw.githubusercontent.com/aratcliffe/Leaflet.contextmenu/master/LICENSE.md', localFile: 'contextmenu-license.txt'},
+            {url: 'https://raw.githubusercontent.com/xguaita/Leaflet.MapCenterCoord/master/LICENCE', localFile: 'crosshair-license.txt'}
+          ],
+          followLinks: false
+        }
+      }
+    },
     jshint: {
       files: ['Gruntfile.js', 'src/**/*.js','test/**/*.spec.js'],
       options: {
@@ -198,7 +215,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-rollup');
+  grunt.loadNpmTasks('grunt-fetch-pages');
 
+  grunt.registerTask('licenses', ['fetchpages:dist']);
   grunt.registerTask('test', ['jshint']);
   grunt.registerTask('default', ['clean:dist', 'copy:main', 'copy:images', 'jshint', 'rollup', 
                                  'uglify', 'cssmin','clean:tidyup']);
