@@ -160,13 +160,13 @@ export class MapFeature extends HTMLElement {
     }
 
     _addFeature() {
-      let parentEl = (this.parentNode.nodeName.toUpperCase() === "LAYER-" || 
-                      this.parentNode.nodeName.toUpperCase() === "MAP-EXTENT" ? 
-                      this.parentNode : this.parentNode.host);
+      this._parentEl = (this.parentNode.nodeName.toUpperCase() === "LAYER-" || 
+                       this.parentNode.nodeName.toUpperCase() === "MAP-EXTENT" ? 
+                       this.parentNode : this.parentNode.host);
 
       // arrow function is not hoisted, define before use
       var _attachedToMap = (e) => {
-        if (!parentEl._layer._map) {
+        if (!this._parentEl._layer._map) {
           // if the parent layer- el has not yet added to the map (i.e. not yet rendered), wait until it is added
           this._layer.once('attached', function () {
             this._map = this._layer._map;
@@ -196,18 +196,18 @@ export class MapFeature extends HTMLElement {
         }
       };
 
-      if (!parentEl._layer) {
+      if (!this._parentEl._layer) {
         // for custom projection cases, the MapMLLayer has not yet created and binded with the layer- at this point,
         // because the "createMap" event of mapml-viewer has not yet been dispatched, the map has not yet been created 
         // the event will be dispatched after defineCustomProjection > projection setter
         // should wait until MapMLLayer is built
-        let parentLayer = parentEl.nodeName.toUpperCase() === "LAYER-" ? parentEl : (parentEl.parentElement || parentEl.parentNode.host);
+        let parentLayer = this._parentEl.nodeName.toUpperCase() === "LAYER-" ? this._parentEl : (this._parentEl.parentElement || this._parentEl.parentNode.host);
         parentLayer.parentNode.addEventListener('createmap', (e) => {
           this._layer = parentLayer._layer;
           _attachedToMap();
         });
       } else {
-        this._layer = parentEl._layer;
+        this._layer = this._parentEl._layer;
         _attachedToMap();
       }
     }
@@ -285,11 +285,11 @@ export class MapFeature extends HTMLElement {
           return this._layer._mapmlvectors._getNativeVariables(content);
         } else if (content.nodeName.toUpperCase() === "LAYER-") {
           // for inline features, read native zoom and cs from inline map-meta
-          let zoomMeta = this.parentElement.querySelectorAll('map-meta[name=zoom]'),
+          let zoomMeta = this._parentEl.querySelectorAll('map-meta[name=zoom]'),
               zoomLength = zoomMeta?.length;
           nativeZoom = zoomLength ? +(zoomMeta[zoomLength - 1].getAttribute('content')?.split(',').find(str => str.includes("value"))?.split('=')[1]) : 0;
 
-          let csMeta = this.parentElement.querySelectorAll("map-meta[name=cs]"),
+          let csMeta = this._parentEl.querySelectorAll("map-meta[name=cs]"),
               csLength = csMeta?.length;
           nativeCS = csLength ? csMeta[csLength - 1].getAttribute('content') : 'pcrs';
           return {zoom: nativeZoom, cs: nativeCS};
