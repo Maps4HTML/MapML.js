@@ -196,9 +196,8 @@ module.exports = function(grunt) {
       },
       files: {
         src: [
-          "src/**.js",
-          "src/mapml/**.js",
-          "src/mapml/**/**.js"
+          "src/**/*.js",
+          "test/**/*.js"
         ]
       }
     }
@@ -214,7 +213,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-prettier');
 
   grunt.registerTask('format', ['prettier', 'jshint']);
-  grunt.registerTask('default', ['clean:dist', 'copy:main', 'copy:images', 'jshint', 'rollup', 
+  grunt.registerTask('default', ['clean:dist', 'copy:main', 'copy:images', 'format', 'rollup', 
                                  'uglify', 'cssmin','clean:tidyup']);
   grunt.registerTask('experiments',['clean:experiments','default','copy:experiments']);
   grunt.registerTask('extension',['clean:extension','default','copy:extension']);

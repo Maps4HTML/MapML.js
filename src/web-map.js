@@ -197,7 +197,11 @@ export class WebMap extends HTMLMapElement {
   }
   _initShadowRoot() {
     let tmpl = document.createElement('template');
-    tmpl.innerHTML = `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`; // jshint ignore:line
+    /* jshint ignore:start */
+    tmpl.innerHTML = `<link rel="stylesheet" href="${
+      new URL('mapml.css', import.meta.url).href
+    }">`;
+    /* jshint ignore:end */
 
     const rootDiv = document.createElement('div');
     rootDiv.classList.add('mapml-web-map');
