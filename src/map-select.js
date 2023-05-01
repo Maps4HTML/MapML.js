@@ -1,6 +1,6 @@
 export class MapSelect extends HTMLElement {
   static get observedAttributes() {
-    return ['name','id'];
+    return ['name', 'id'];
   }
   get name() {
     return this.getAttribute('name');
@@ -14,7 +14,7 @@ export class MapSelect extends HTMLElement {
   set id(val) {
     this.setAttribute('id', val);
   }
-  
+
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'name':
@@ -31,13 +31,9 @@ export class MapSelect extends HTMLElement {
   }
   constructor() {
     // Always call super first in constructor
-    super();    
+    super();
   }
-  connectedCallback() {
-    
-  }
-  disconnectedCallback() {
-    
-  }
+  connectedCallback() {}
+  disconnectedCallback() {}
 }
 window.customElements.define('map-select', MapSelect);

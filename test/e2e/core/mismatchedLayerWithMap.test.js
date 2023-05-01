@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-test.describe("Playwright Mismatched Layers Test", () => {
+test.describe('Playwright Mismatched Layers Test', () => {
   let page;
   let context;
   test.beforeAll(async () => {
@@ -8,14 +8,14 @@ test.describe("Playwright Mismatched Layers Test", () => {
   });
   test.beforeEach(async () => {
     page = await context.newPage();
-    await page.goto("empty.html");
+    await page.goto('empty.html');
   });
 
   test.afterAll(async function () {
     await context.close();
   });
 
-  test("CBMTILE Map with OSMTILE layer", async () => {
+  test('CBMTILE Map with OSMTILE layer', async () => {
     await page.setContent(`
         <!doctype html>
             <html>
@@ -36,17 +36,22 @@ test.describe("Playwright Mismatched Layers Test", () => {
             </html>
         `);
     await page.waitForLoadState('networkidle');
-    await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right');
-    const cbmtileLayer = await page.$eval("body > map > layer-:nth-child(1)",
-      (controller) => controller.hasAttribute('disabled'));
-    const osmtileLayer = await page.$eval("#checkMe",
-      (controller) => controller.hasAttribute('disabled'));
+    await page.hover(
+      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right'
+    );
+    const cbmtileLayer = await page.$eval(
+      'body > map > layer-:nth-child(1)',
+      (controller) => controller.hasAttribute('disabled')
+    );
+    const osmtileLayer = await page.$eval('#checkMe', (controller) =>
+      controller.hasAttribute('disabled')
+    );
 
     expect(cbmtileLayer).toEqual(false);
     expect(osmtileLayer).toEqual(true);
   });
 
-  test("OSMTILE Map with CBMTILE layer", async () => {
+  test('OSMTILE Map with CBMTILE layer', async () => {
     await page.setContent(`
         <!doctype html>
             <html>
@@ -67,23 +72,42 @@ test.describe("Playwright Mismatched Layers Test", () => {
             </html>
         `);
     await page.waitForLoadState('networkidle');
-    await page.hover('div > div.leaflet-control-container > div.leaflet-top.leaflet-right');
-    const cbmtileLayer = await page.$eval("#checkMe",
-      (controller) => controller.hasAttribute('disabled'));
-    const osmtileLayer = await page.$eval("body > mapml-viewer > layer-:nth-child(2)",
-      (controller) => controller.hasAttribute('disabled'));
+    await page.hover(
+      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right'
+    );
+    const cbmtileLayer = await page.$eval('#checkMe', (controller) =>
+      controller.hasAttribute('disabled')
+    );
+    const osmtileLayer = await page.$eval(
+      'body > mapml-viewer > layer-:nth-child(2)',
+      (controller) => controller.hasAttribute('disabled')
+    );
 
-    await page.hover("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div");
-    await page.click("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span",
-      { button: "right", force: true });
+    await page.hover(
+      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
+    );
+    await page.click(
+      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span',
+      { button: 'right', force: true }
+    );
 
-    const aHandle = await page.evaluateHandle(() => document.querySelector("mapml-viewer"));
-    const nextHandle = await page.evaluateHandle(doc => doc.shadowRoot, aHandle);
-    const resultHandle = await page.evaluateHandle(root => root.querySelector(".mapml-contextmenu.mapml-layer-menu"), nextHandle);
+    const aHandle = await page.evaluateHandle(() =>
+      document.querySelector('mapml-viewer')
+    );
+    const nextHandle = await page.evaluateHandle(
+      (doc) => doc.shadowRoot,
+      aHandle
+    );
+    const resultHandle = await page.evaluateHandle(
+      (root) => root.querySelector('.mapml-contextmenu.mapml-layer-menu'),
+      nextHandle
+    );
 
-    const menuDisplay = await (await page.evaluateHandle(elem => elem.style.display, resultHandle)).jsonValue();
+    const menuDisplay = await (
+      await page.evaluateHandle((elem) => elem.style.display, resultHandle)
+    ).jsonValue();
 
-    expect(menuDisplay).toEqual("");
+    expect(menuDisplay).toEqual('');
 
     expect(cbmtileLayer).toEqual(true);
     expect(osmtileLayer).toEqual(false);

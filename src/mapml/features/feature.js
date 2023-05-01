@@ -19,7 +19,6 @@
  *  ];
  */
 export var Feature = L.Path.extend({
-
   /**
    * Initializes the M.Feature
    * @param {HTMLElement} markup - The markup representation of the feature
@@ -28,14 +27,17 @@ export var Feature = L.Path.extend({
   initialize: function (markup, options) {
     this.type = markup.tagName.toUpperCase();
 
-    if(this.type === "MAP-POINT" || this.type === "MAP-MULTIPOINT") options.fillOpacity = 1;
+    if (this.type === 'MAP-POINT' || this.type === 'MAP-MULTIPOINT')
+      options.fillOpacity = 1;
 
-    if(options.wrappers.length > 0)
+    if (options.wrappers.length > 0)
       options = Object.assign(this._convertWrappers(options.wrappers), options);
     L.setOptions(this, options);
 
     this.group = this.options.group;
-    this.options.interactive = this.options.link || (this.options.properties && this.options.onEachFeature);
+    this.options.interactive =
+      this.options.link ||
+      (this.options.properties && this.options.onEachFeature);
 
     this._parts = [];
     this._markup = markup;
@@ -43,7 +45,7 @@ export var Feature = L.Path.extend({
 
     this._convertMarkup();
 
-    if(markup.querySelector('map-span') || markup.querySelector('map-a')){
+    if (markup.querySelector('map-span') || markup.querySelector('map-a')) {
       this._generateOutlinePoints();
     }
 
@@ -57,70 +59,100 @@ export var Feature = L.Path.extend({
    * @param leafletLayer
    */
   attachLinkHandler: function (elem, link, leafletLayer) {
-    let dragStart, container = document.createElement('div'), p = document.createElement('p'), hovered = false;
+    let dragStart,
+      container = document.createElement('div'),
+      p = document.createElement('p'),
+      hovered = false;
     container.classList.add('mapml-link-preview');
     container.appendChild(p);
     elem.classList.add('map-a');
-    if (link.visited) elem.classList.add("map-a-visited");
-    elem.mousedown = e => dragStart = {x:e.clientX, y:e.clientY};
+    if (link.visited) elem.classList.add('map-a-visited');
+    elem.mousedown = (e) => (dragStart = { x: e.clientX, y: e.clientY });
     L.DomEvent.on(elem, 'mousedown', elem.mousedown, this);
     elem.mouseup = (e) => {
       if (e.button !== 0) return; // don't trigger when button isn't left click
-      let onTop = true, nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
-      while(nextLayer && onTop){
-        if(nextLayer.tagName && nextLayer.tagName.toUpperCase() === "LAYER-")
+      let onTop = true,
+        nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
+      while (nextLayer && onTop) {
+        if (nextLayer.tagName && nextLayer.tagName.toUpperCase() === 'LAYER-')
           onTop = !(nextLayer.checked && nextLayer._layer.queryable);
         nextLayer = nextLayer.nextElementSibling;
       }
-      if(onTop && dragStart) {
+      if (onTop && dragStart) {
         //M._handleLink gets called twice, once in the target phase on the path element, then in the bubble phase on the g element
         //Using stopPropagation leaves the mouse in the mousedown state
-        if(e.eventPhase === Event.BUBBLING_PHASE) return;
-        let dist = Math.sqrt(Math.pow(dragStart.x - e.clientX, 2) + Math.pow(dragStart.y - e.clientY, 2));
-        if (dist <= 5){
+        if (e.eventPhase === Event.BUBBLING_PHASE) return;
+        let dist = Math.sqrt(
+          Math.pow(dragStart.x - e.clientX, 2) +
+            Math.pow(dragStart.y - e.clientY, 2)
+        );
+        if (dist <= 5) {
           link.visited = true;
-          elem.setAttribute("stroke", "#6c00a2");
-          elem.classList.add("map-a-visited");
+          elem.setAttribute('stroke', '#6c00a2');
+          elem.classList.add('map-a-visited');
           M._handleLink(link, leafletLayer);
         }
       }
     };
-    L.DomEvent.on(elem, "mouseup", elem.mouseup, this);
-    L.DomEvent.on(elem, "keypress", (e) => {
-      L.DomEvent.stop(e);
-      if(e.keyCode === 13 || e.keyCode === 32) {
-        link.visited = true;
-        elem.setAttribute("stroke", "#6c00a2");
-        elem.classList.add("map-a-visited");
-        M._handleLink(link, leafletLayer);
-      }
-    }, this);
-    L.DomEvent.on(elem, 'mouseenter keyup', (e) => {
-      if(e.target !== e.currentTarget) return;
-      hovered = true;
-      let resolver = document.createElement('a'), mapWidth = this._map.getContainer().clientWidth;
-      resolver.href = link.url;
-      p.innerHTML = resolver.href;
+    L.DomEvent.on(elem, 'mouseup', elem.mouseup, this);
+    L.DomEvent.on(
+      elem,
+      'keypress',
+      (e) => {
+        L.DomEvent.stop(e);
+        if (e.keyCode === 13 || e.keyCode === 32) {
+          link.visited = true;
+          elem.setAttribute('stroke', '#6c00a2');
+          elem.classList.add('map-a-visited');
+          M._handleLink(link, leafletLayer);
+        }
+      },
+      this
+    );
+    L.DomEvent.on(
+      elem,
+      'mouseenter keyup',
+      (e) => {
+        if (e.target !== e.currentTarget) return;
+        hovered = true;
+        let resolver = document.createElement('a'),
+          mapWidth = this._map.getContainer().clientWidth;
+        resolver.href = link.url;
+        p.innerHTML = resolver.href;
 
-      this._map.getContainer().appendChild(container);
+        this._map.getContainer().appendChild(container);
 
-      while(p.clientWidth > mapWidth/2){
-        p.innerHTML = p.innerHTML.substring(0, p.innerHTML.length - 5) + "...";
-      }
-      setTimeout(()=>{
-        if(hovered) p.innerHTML = resolver.href;
-      }, 1000);
-    }, this);
-    L.DomEvent.on(elem, 'mouseout keydown mousedown', (e) => {
-      if(e.target !== e.currentTarget || !container.parentElement) return;
-      hovered = false;
-      this._map.getContainer().removeChild(container);
-    }, this);
-    L.DomEvent.on(leafletLayer._map.getContainer(),'mouseout mouseenter click', (e) => { //adds a lot of event handlers
-      if(!container.parentElement) return;
-      hovered = false;
-      this._map.getContainer().removeChild(container);
-    }, this);
+        while (p.clientWidth > mapWidth / 2) {
+          p.innerHTML =
+            p.innerHTML.substring(0, p.innerHTML.length - 5) + '...';
+        }
+        setTimeout(() => {
+          if (hovered) p.innerHTML = resolver.href;
+        }, 1000);
+      },
+      this
+    );
+    L.DomEvent.on(
+      elem,
+      'mouseout keydown mousedown',
+      (e) => {
+        if (e.target !== e.currentTarget || !container.parentElement) return;
+        hovered = false;
+        this._map.getContainer().removeChild(container);
+      },
+      this
+    );
+    L.DomEvent.on(
+      leafletLayer._map.getContainer(),
+      'mouseout mouseenter click',
+      (e) => {
+        //adds a lot of event handlers
+        if (!container.parentElement) return;
+        hovered = false;
+        this._map.getContainer().removeChild(container);
+      },
+      this
+    );
   },
 
   /**
@@ -131,7 +163,9 @@ export var Feature = L.Path.extend({
    * @private
    */
   _project: function (addedMap, tileOrigin = undefined, zoomingTo = undefined) {
-    let map = addedMap || this._map, origin = tileOrigin || map.getPixelOrigin(), zoom = zoomingTo === undefined ? map.getZoom() : zoomingTo;
+    let map = addedMap || this._map,
+      origin = tileOrigin || map.getPixelOrigin(),
+      zoom = zoomingTo === undefined ? map.getZoom() : zoomingTo;
     for (let p of this._parts) {
       p.pixelRings = this._convertRing(p.rings, map, origin, zoom);
       for (let subP of p.subrings) {
@@ -141,7 +175,9 @@ export var Feature = L.Path.extend({
     if (!this._outline) return;
     this.pixelOutline = [];
     for (let o of this._outline) {
-      this.pixelOutline = this.pixelOutline.concat(this._convertRing(o, map, origin, zoom));
+      this.pixelOutline = this.pixelOutline.concat(
+        this._convertRing(o, map, origin, zoom)
+      );
     }
   },
 
@@ -156,7 +192,8 @@ export var Feature = L.Path.extend({
    */
   _convertRing: function (r, map, origin, zoom) {
     // TODO: Implement Ramer-Douglas-Peucer Algo for simplifying points
-    let scale = map.options.crs.scale(zoom), parts = [];
+    let scale = map.options.crs.scale(zoom),
+      parts = [];
     for (let sub of r) {
       let interm = [];
       for (let p of sub.points) {
@@ -183,17 +220,19 @@ export var Feature = L.Path.extend({
    * @private
    */
   _convertWrappers: function (elems) {
-    if(!elems || elems.length === 0) return;
-    let classList = '', output = {};
-    for(let elem of elems){
-      if(elem.tagName.toUpperCase() !== "MAP-A" && elem.className){
-        classList +=`${elem.className} `;
-      } else if(!output.link && elem.getAttribute("href")) {
+    if (!elems || elems.length === 0) return;
+    let classList = '',
+      output = {};
+    for (let elem of elems) {
+      if (elem.tagName.toUpperCase() !== 'MAP-A' && elem.className) {
+        classList += `${elem.className} `;
+      } else if (!output.link && elem.getAttribute('href')) {
         let link = {};
-        link.url = elem.getAttribute("href");
-        if(elem.hasAttribute("target")) link.target = elem.getAttribute("target");
-        if(elem.hasAttribute("type")) link.type = elem.getAttribute("type");
-        if(elem.hasAttribute("inplace")) link.inPlace = true;
+        link.url = elem.getAttribute('href');
+        if (elem.hasAttribute('target'))
+          link.target = elem.getAttribute('target');
+        if (elem.hasAttribute('type')) link.type = elem.getAttribute('type');
+        if (elem.hasAttribute('inplace')) link.inPlace = true;
         output.link = link;
       }
     }
@@ -210,26 +249,43 @@ export var Feature = L.Path.extend({
 
     let attr = this._markup.attributes;
     this.featureAttributes = {};
-    if(this.options.link && this._markup.parentElement.tagName.toUpperCase() === "MAP-A" && this._markup.parentElement.parentElement.tagName.toUpperCase() !== "MAP-GEOMETRY")
-      this.featureAttributes.tabindex = "0";
-    for(let i = 0; i < attr.length; i++){
+    if (
+      this.options.link &&
+      this._markup.parentElement.tagName.toUpperCase() === 'MAP-A' &&
+      this._markup.parentElement.parentElement.tagName.toUpperCase() !==
+        'MAP-GEOMETRY'
+    )
+      this.featureAttributes.tabindex = '0';
+    for (let i = 0; i < attr.length; i++) {
       this.featureAttributes[attr[i].name] = attr[i].value;
     }
 
     let first = true;
-    for (let c of this._markup.querySelectorAll('map-coordinates')) {              //loops through the coordinates of the child
-      let ring = [], subRings = [];
-      this._coordinateToArrays(c, ring, subRings, this.options.className);              //creates an array of pcrs points for the main ring and the subparts
-      if (!first && this.type === "MAP-POLYGON") {
+    for (let c of this._markup.querySelectorAll('map-coordinates')) {
+      //loops through the coordinates of the child
+      let ring = [],
+        subRings = [];
+      this._coordinateToArrays(c, ring, subRings, this.options.className); //creates an array of pcrs points for the main ring and the subparts
+      if (!first && this.type === 'MAP-POLYGON') {
         this._parts[0].rings.push(ring[0]);
         if (subRings.length > 0)
           this._parts[0].subrings = this._parts[0].subrings.concat(subRings);
-      } else if (this.type === "MAP-MULTIPOINT") {
+      } else if (this.type === 'MAP-MULTIPOINT') {
         for (let point of ring[0].points.concat(subRings)) {
-          this._parts.push({ rings: [{ points: [point] }], subrings: [], cls:`${point.cls || ""} ${this.options.className || ""}`.trim() });
+          this._parts.push({
+            rings: [{ points: [point] }],
+            subrings: [],
+            cls: `${point.cls || ''} ${this.options.className || ''}`.trim()
+          });
         }
       } else {
-        this._parts.push({ rings: ring, subrings: subRings, cls: `${this.featureAttributes.class || ""} ${this.options.className || ""}`.trim() });
+        this._parts.push({
+          rings: ring,
+          subrings: subRings,
+          cls: `${this.featureAttributes.class || ''} ${
+            this.options.className || ''
+          }`.trim()
+        });
       }
       first = false;
     }
@@ -240,32 +296,49 @@ export var Feature = L.Path.extend({
    * @private
    */
   _generateOutlinePoints: function () {
-    if (this.type === "MAP-MULTIPOINT" || this.type === "MAP-POINT" || this.type === "MAP-LINESTRING" || this.type === "MAP-MULTILINESTRING") return;
+    if (
+      this.type === 'MAP-MULTIPOINT' ||
+      this.type === 'MAP-POINT' ||
+      this.type === 'MAP-LINESTRING' ||
+      this.type === 'MAP-MULTILINESTRING'
+    )
+      return;
 
     this._outline = [];
     for (let coords of this._markup.querySelectorAll('map-coordinates')) {
-      let nodes = coords.childNodes, cur = 0, tempDiv = document.createElement('div'), nodeLength = nodes.length;
-      for(let i = 0; i < nodes.length; i++){
-        if(nodes[i].textContent.trim().length === 0){
+      let nodes = coords.childNodes,
+        cur = 0,
+        tempDiv = document.createElement('div'),
+        nodeLength = nodes.length;
+      for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].textContent.trim().length === 0) {
           nodes[i].remove();
         }
       }
       for (let n of nodes) {
         let line = [];
-        if (!n.tagName) {  //no tagName means it's text content
-          let c = '', ind = (((cur - 1)%nodes.length) + nodes.length) % nodes.length; // this equation turns Javascript's % to how it behaves in C for example
+        if (!n.tagName) {
+          //no tagName means it's text content
+          let c = '',
+            ind = (((cur - 1) % nodes.length) + nodes.length) % nodes.length; // this equation turns Javascript's % to how it behaves in C for example
           if (nodes[ind].tagName) {
             let prev = nodes[ind].textContent.trim().split(/\s+/);
             c += `${prev[prev.length - 2]} ${prev[prev.length - 1]} `;
           }
           c += n.textContent;
-          ind = (((cur + 1)%nodes.length) + nodes.length) % nodes.length; // this is equivalent to C/C++'s (cur + 1) % nodes.length
+          ind = (((cur + 1) % nodes.length) + nodes.length) % nodes.length; // this is equivalent to C/C++'s (cur + 1) % nodes.length
           if (nodes[ind].tagName) {
             let next = nodes[ind].textContent.trim().split(/\s+/);
             c += `${next[0]} ${next[1]} `;
           }
           tempDiv.innerHTML = c;
-          this._coordinateToArrays(tempDiv, line, [], true, this.featureAttributes.class || this.options.className);
+          this._coordinateToArrays(
+            tempDiv,
+            line,
+            [],
+            true,
+            this.featureAttributes.class || this.options.className
+          );
           this._outline.push(line);
         }
         cur++;
@@ -283,16 +356,37 @@ export var Feature = L.Path.extend({
    * @param parents
    * @private
    */
-  _coordinateToArrays: function (coords, main, subParts, isFirst = true, cls = undefined, parents = []) {
+  _coordinateToArrays: function (
+    coords,
+    main,
+    subParts,
+    isFirst = true,
+    cls = undefined,
+    parents = []
+  ) {
     for (let span of coords.children) {
-      this._coordinateToArrays(span, main, subParts, false, span.getAttribute("class"), parents.concat([span]));
+      this._coordinateToArrays(
+        span,
+        main,
+        subParts,
+        false,
+        span.getAttribute('class'),
+        parents.concat([span])
+      );
     }
-    let noSpan = coords.textContent.replace(/(<([^>]+)>)/ig, ''),
-        pairs = noSpan.match(/(\S+\s+\S+)/gim), local = [], bounds;
+    let noSpan = coords.textContent.replace(/(<([^>]+)>)/gi, ''),
+      pairs = noSpan.match(/(\S+\s+\S+)/gim),
+      local = [],
+      bounds;
     for (let p of pairs) {
       let numPair = [];
       p.split(/\s+/gim).forEach(M._parseNumber, numPair);
-      let point = M.pointToPCRSPoint(L.point(numPair), this.options.zoom, this.options.projection, this.options.nativeCS);
+      let point = M.pointToPCRSPoint(
+        L.point(numPair),
+        this.options.zoom,
+        this.options.projection,
+        this.options.nativeCS
+      );
       local.push(point);
       bounds = bounds ? bounds.extend(point) : L.bounds(point, point);
     }
@@ -305,20 +399,23 @@ export var Feature = L.Path.extend({
     if (isFirst) {
       main.push({ points: local });
     } else {
-      let attrMap = {}, attr = coords.attributes, wrapperAttr = this._convertWrappers(parents);
-      if(wrapperAttr.link) attrMap.tabindex = "0";
-      for(let i = 0; i < attr.length; i++){
-        if(attr[i].name === "class") continue;
+      let attrMap = {},
+        attr = coords.attributes,
+        wrapperAttr = this._convertWrappers(parents);
+      if (wrapperAttr.link) attrMap.tabindex = '0';
+      for (let i = 0; i < attr.length; i++) {
+        if (attr[i].name === 'class') continue;
         attrMap[attr[i].name] = attr[i].value;
       }
       subParts.unshift({
         points: local,
         center: bounds.getCenter(),
-        cls: `${cls || ""} ${wrapperAttr.className || ""}`.trim(),
+        cls: `${cls || ''} ${wrapperAttr.className || ''}`.trim(),
         attr: attrMap,
         link: wrapperAttr.link,
         linkTarget: wrapperAttr.linkTarget,
-        linkType: wrapperAttr.linkType});
+        linkType: wrapperAttr.linkType
+      });
     }
   },
 
@@ -353,7 +450,7 @@ export var Feature = L.Path.extend({
 
   getPCRSCenter: function () {
     return this._bounds.getCenter();
-  },
+  }
 });
 
 /**

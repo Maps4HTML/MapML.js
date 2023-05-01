@@ -1,36 +1,36 @@
-import './leaflet.js';  // a lightly modified version of Leaflet for use as browser module
-import './mapml.js';       // refactored URI usage, replaced with URL standard
+import './leaflet.js'; // a lightly modified version of Leaflet for use as browser module
+import './mapml.js'; // refactored URI usage, replaced with URL standard
 
 export class MapArea extends HTMLAreaElement {
   static get observedAttributes() {
-    return ['coords','alt','href','shape','rel','type','target'];
+    return ['coords', 'alt', 'href', 'shape', 'rel', 'type', 'target'];
   }
-  // see comments below regarding attributeChangedCallback vs. getter/setter 
+  // see comments below regarding attributeChangedCallback vs. getter/setter
   // usage.  Effectively, the user of the element must use the property, not
   // the getAttribute/setAttribute/removeAttribute DOM API, because the latter
   // calls don't result in the getter/setter being called (so you have to use
   // the getter/setter directly)
   get alt() {
-    return this.hasAttribute('alt') ?  this.getAttribute('alt') : "";
+    return this.hasAttribute('alt') ? this.getAttribute('alt') : '';
   }
   set alt(value) {
     this.setAttribute('controls', value);
   }
   get coords() {
-    return this.hasAttribute('coords') ? this.getAttribute('coords') : "";
+    return this.hasAttribute('coords') ? this.getAttribute('coords') : '';
   }
   set coords(coordinates) {
-    // what to do.  Probably replace the feature with a new one, without changing 
+    // what to do.  Probably replace the feature with a new one, without changing
     // anything else...
   }
   get href() {
-    return this.hasAttribute('href') ?  this.getAttribute('href') : "";
+    return this.hasAttribute('href') ? this.getAttribute('href') : '';
   }
   set href(url) {
     this.href = url;
   }
   get shape() {
-    return this.hasAttribute('shape') ?  this.getAttribute('shape') : "default";
+    return this.hasAttribute('shape') ? this.getAttribute('shape') : 'default';
   }
   set shape(shape) {
     shape = shape.toLowerCase();
@@ -40,31 +40,29 @@ export class MapArea extends HTMLAreaElement {
     }
   }
   get rel() {
-    return this.hasAttribute('rel') ?  this.getAttribute('rel') : "";
+    return this.hasAttribute('rel') ? this.getAttribute('rel') : '';
   }
   set rel(rel) {
     this.rel = rel;
   }
   get type() {
-    return this.hasAttribute('type') ?  this.getAttribute('type') : "";
+    return this.hasAttribute('type') ? this.getAttribute('type') : '';
   }
   set type(type) {
     this.type = type;
   }
   get target() {
-    return this.hasAttribute('target') ?  this.getAttribute('target') : "";
+    return this.hasAttribute('target') ? this.getAttribute('target') : '';
   }
   constructor() {
     // Always call super first in constructor
     super();
   }
-  attributeChangedCallback(name, oldValue, newValue) {
-    
-  }
+  attributeChangedCallback(name, oldValue, newValue) {}
   connectedCallback() {
     // if the map has been attached, set this layer up wrt Leaflet map
     if (this.parentElement._map) {
-        this._attachedToMap();
+      this._attachedToMap();
     }
   }
   _attachedToMap() {
@@ -78,44 +76,51 @@ export class MapArea extends HTMLAreaElement {
       // the img might have been scaled by CSS.
       // compute the style properties to be applied to the feature
       var options = this._styleToPathOptions(window.getComputedStyle(this)),
-          points = this.coords ? this._coordsToArray(this.coords): null;
+        points = this.coords ? this._coordsToArray(this.coords) : null;
       // scale points if the poster exists because responsive areas
       if (points && this.parentElement.poster) {
-        var worig = this.parentElement.poster.width, 
-            wresp = this.parentElement.width, 
-            wadjstmnt = (worig - wresp)/2,
-            horig = this.parentElement.poster.height, 
-            hresp = this.parentElement.height, 
-            hadjstmnt = (horig - hresp)/2;
-        for (var i = 0; i< points.length;i++) {
+        var worig = this.parentElement.poster.width,
+          wresp = this.parentElement.width,
+          wadjstmnt = (worig - wresp) / 2,
+          horig = this.parentElement.poster.height,
+          hresp = this.parentElement.height,
+          hadjstmnt = (horig - hresp) / 2;
+        for (var i = 0; i < points.length; i++) {
           points[i][0] = points[i][0] - wadjstmnt;
           points[i][1] = points[i][1] - hadjstmnt;
         }
       }
 
       if (this.shape === 'circle') {
-        var pixelRadius = parseInt(this.coords.split(",")[2]), 
-            pointOnCirc = L.point(points[0]).add(L.point(0,pixelRadius)),
-            latLngOnCirc = map.containerPointToLatLng(pointOnCirc),
-            latLngCenter = map.containerPointToLatLng(points[0]),
-            radiusInMeters = map.distance(latLngCenter, latLngOnCirc);
-        this._feature = L.circle(latLngCenter, radiusInMeters, options).addTo(map);
+        var pixelRadius = parseInt(this.coords.split(',')[2]),
+          pointOnCirc = L.point(points[0]).add(L.point(0, pixelRadius)),
+          latLngOnCirc = map.containerPointToLatLng(pointOnCirc),
+          latLngCenter = map.containerPointToLatLng(points[0]),
+          radiusInMeters = map.distance(latLngCenter, latLngOnCirc);
+        this._feature = L.circle(latLngCenter, radiusInMeters, options).addTo(
+          map
+        );
       } else if (!this.shape || this.shape === 'rect') {
-        var bounds = L.latLngBounds(map.containerPointToLatLng(points[0]), map.containerPointToLatLng(points[1]));
+        var bounds = L.latLngBounds(
+          map.containerPointToLatLng(points[0]),
+          map.containerPointToLatLng(points[1])
+        );
         this._feature = L.rectangle(bounds, options).addTo(map);
       } else if (this.shape === 'poly') {
-        this._feature = L.polygon(this._pointsToLatLngs(points),options).addTo(map);
+        this._feature = L.polygon(this._pointsToLatLngs(points), options).addTo(
+          map
+        );
       } else {
         // whole initial area of map is a hyperlink
-        this._feature = L.rectangle(map.getBounds(),options).addTo(map);
+        this._feature = L.rectangle(map.getBounds(), options).addTo(map);
       }
       if (this.alt) {
         // other Leaflet features are implemented via SVG.  SVG displays tooltips
         // based on the <svg:title> graphics child element.
         var title = L.SVG.create('title'),
-            titleText = document.createTextNode(this.alt);
-            title.appendChild(titleText);
-            this._feature._path.appendChild(title);
+          titleText = document.createTextNode(this.alt);
+        title.appendChild(titleText);
+        this._feature._path.appendChild(title);
       }
       if (this.href) {
         // conditionally act on click on an area link.  If no link it should be an
@@ -123,18 +128,30 @@ export class MapArea extends HTMLAreaElement {
         // implementation, we could actually use an image map replete with area
         // children which would provide the linking / cursor change behaviours
         // that are familiar to HTML authors versed in image maps.
-        this._feature.on('click', function() {if (this.href) {window.open(this.href);}}, this);
+        this._feature.on(
+          'click',
+          function () {
+            if (this.href) {
+              window.open(this.href);
+            }
+          },
+          this
+        );
       }
     }
-  }  
+  }
   disconnectedCallback() {
     this._map.removeLayer(this._feature);
     delete this._feature;
   }
   _coordsToArray(containerPoints) {
     // returns an array of arrays of coordinate pairs _coordsToArray("1,2,3,4") -> [[1,2],[3,4]]
-    for (var i=1, points = [], coords = containerPoints.split(",");i<coords.length;i+=2) {
-      points.push([parseInt(coords[i-1]),parseInt(coords[i])]);
+    for (
+      var i = 1, points = [], coords = containerPoints.split(',');
+      i < coords.length;
+      i += 2
+    ) {
+      points.push([parseInt(coords[i - 1]), parseInt(coords[i])]);
     }
     return points;
   }
@@ -142,7 +159,7 @@ export class MapArea extends HTMLAreaElement {
     // points should be an array of nested container coordinates [[x1,y1],[x2,y2](,[xN,yN])]
     var latLngArray = [];
     if (this._map) {
-      for (var i=0,map = this._map;i<points.length;i++) {
+      for (var i = 0, map = this._map; i < points.length; i++) {
         latLngArray.push(map.containerPointToLatLng(points[i]));
       }
     }
@@ -150,7 +167,7 @@ export class MapArea extends HTMLAreaElement {
   }
   _styleToPathOptions(style) {
     var options = {};
-    if(style.stroke !== 'none') {
+    if (style.stroke !== 'none') {
       options.stroke = true;
       options.color = style.stroke;
       options.opacity = style.strokeOpacity;
