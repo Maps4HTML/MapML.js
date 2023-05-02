@@ -1,13 +1,22 @@
 export class MapLink extends HTMLElement {
   static get observedAttributes() {
-    return ['type','rel','title','href','hreflang','tref','tms','projection'];
+    return [
+      'type',
+      'rel',
+      'title',
+      'href',
+      'hreflang',
+      'tref',
+      'tms',
+      'projection'
+    ];
   }
   get type() {
     return this.getAttribute('type');
   }
   set type(val) {
     // improve this
-    if (val === "text/mapml" || val.startsWith('image/')) {
+    if (val === 'text/mapml' || val.startsWith('image/')) {
       this.setAttribute('type', val);
     }
   }
@@ -16,7 +25,22 @@ export class MapLink extends HTMLElement {
   }
   set rel(val) {
     // improve this
-    if (['license','alternate','self','style','tile','image','features','zoomin','zoomout','legend','query','stylesheet'].includes(val)) {
+    if (
+      [
+        'license',
+        'alternate',
+        'self',
+        'style',
+        'tile',
+        'image',
+        'features',
+        'zoomin',
+        'zoomout',
+        'legend',
+        'query',
+        'stylesheet'
+      ].includes(val)
+    ) {
       this.setAttribute('type', val);
     }
   }
@@ -69,11 +93,11 @@ export class MapLink extends HTMLElement {
   }
   set projection(val) {
     // improve this
-    if (['OSMTILE','CBMTILE','WGS84','APSTILE'].includes(val)) {
+    if (['OSMTILE', 'CBMTILE', 'WGS84', 'APSTILE'].includes(val)) {
       this.setAttribute('projection', val);
     }
   }
-  
+
   attributeChangedCallback(name, oldValue, newValue) {
     //['type','rel','title','href','hreflang','tref','tms','projection'];
     switch (name) {
@@ -121,13 +145,9 @@ export class MapLink extends HTMLElement {
   }
   constructor() {
     // Always call super first in constructor
-    super();    
+    super();
   }
-  connectedCallback() {
-    
-  }
-  disconnectedCallback() {
-    
-  }
+  connectedCallback() {}
+  disconnectedCallback() {}
 }
 window.customElements.define('map-link', MapLink);

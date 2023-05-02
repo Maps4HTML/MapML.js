@@ -2,7 +2,18 @@ import { MapLink } from './map-link.js';
 
 export class MapInput extends HTMLElement {
   static get observedAttributes() {
-    return ['name','type','value','axis','units','position','rel','min','max','step'];
+    return [
+      'name',
+      'type',
+      'value',
+      'axis',
+      'units',
+      'position',
+      'rel',
+      'min',
+      'max',
+      'step'
+    ];
   }
 
   get name() {
@@ -141,13 +152,9 @@ export class MapInput extends HTMLElement {
   }
   constructor() {
     // Always call super first in constructor
-    super();    
+    super();
   }
-  connectedCallback() {
-    
-  }
-  disconnectedCallback() {
-    
-  }
+  connectedCallback() {}
+  disconnectedCallback() {}
 }
 window.customElements.define('map-input', MapInput);
