@@ -47,6 +47,7 @@
     "grunt-contrib-uglify": "~5.0.0",
     "grunt-contrib-watch": "~1.1.0",
     "grunt-html": "^15.2.2",
+    "grunt-prettier": "^2.2.0",
     "grunt-rollup": "^11.3.0",
     "jest": "^26.6.3",
     "jest-circus": "^26.6.3",
