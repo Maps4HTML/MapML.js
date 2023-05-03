@@ -141,7 +141,7 @@ test.describe("Using arrow keys to navigate context menu", () => {
     activeElement = await page.evaluate(() => document.activeElement.shadowRoot.activeElement.innerHTML);
     expect(activeElement).toEqual('Copy (<kbd>C</kbd>)<span></span>');
 
-    let hide = await page.$eval("body > mapml-viewer", (viewer) => viewer._map.contextMenu._coordMenu.hidden);
+    let hide = await page.$eval("body > mapml-viewer", (viewer) => viewer._map.contextMenu._copySubMenu.hidden);
     expect(hide).toEqual(true);
   });
 
