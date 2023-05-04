@@ -786,20 +786,20 @@ export var ContextMenu = L.Handler.extend({
   _onKeyDown: function (e) {
     if(!this._mapMenuVisible) return;
 
-    if(e.key === "Enter" || e.key === "Tab" || (e.shiftKey && e.key === "Tab"))
+    if(e.code === "Enter" || e.code === "Tab" || (e.shiftKey && e.code === "Tab"))
       e.preventDefault();
     // keep track of where the focus is on the layer menu and when the layer menu is tabbed out of, focus on layer control
-    if(this._layerMenuTabs && (e.key === "Tab" || e.key === "Escape")){ // tab or esc
+    if(this._layerMenuTabs && (e.code === "Tab" || e.code === "Escape")){ // tab or esc
       if(e.shiftKey){
         this._layerMenuTabs -= 1;
       } else {
         this._layerMenuTabs += 1;
       }
-      if(this._layerMenuTabs === 0 || this._layerMenuTabs === 3 || e.key === "Escape"){ // esc
+      if(this._layerMenuTabs === 0 || this._layerMenuTabs === 3 || e.code === "Escape"){ // esc
         L.DomEvent.stop(e);
         this._focusOnLayerControl();
       }
-    } else if (e.key === "ArrowUp" || (e.shiftKey && e.key === "Tab")) { //up arrow
+    } else if (e.code === "ArrowUp" || (e.shiftKey && e.code === "Tab")) { //up arrow
       if (!this._copySubMenu.hasAttribute('hidden') && 
         (document.activeElement.shadowRoot === null || //null happens when the focus is on submenu and when mouse hovers on main menu, submenu disappears
         document.activeElement.shadowRoot.activeElement.innerHTML === this._copySubMenu.children[this._menuItems.CPYMENUMAP].innerHTML)) { //"map" on submenu
@@ -829,7 +829,7 @@ export var ContextMenu = L.Handler.extend({
           this._setActiveItem(this._items.length - 1);
         }
       }
-    } else if (e.key === "ArrowDown" || e.key === "Tab") { //down arrow
+    } else if (e.code === "ArrowDown" || e.code === "Tab") { //down arrow
       if (!this._copySubMenu.hasAttribute('hidden') && 
         (document.activeElement.shadowRoot === null ||
         document.activeElement.shadowRoot.activeElement.innerHTML === this._copySubMenu.children[this._menuItems.CPYMENULOC].innerHTML)) { //"map" on submenu
@@ -872,7 +872,7 @@ export var ContextMenu = L.Handler.extend({
           this._setActiveItem(nextIndex);
         }
       }
-    } else if (e.key === "ArrowRight") { //right arrow
+    } else if (e.code === "ArrowRight") { //right arrow
       if (document.activeElement.shadowRoot !== null && 
           document.activeElement.shadowRoot.activeElement.innerHTML === 
           this._items[this._menuItems.CTXCOPY].el.el.innerHTML && //'copy'
@@ -883,7 +883,7 @@ export var ContextMenu = L.Handler.extend({
         !this._copySubMenu.hasAttribute('hidden')) {
         this._copySubMenu.children[0].focus();
       }
-    } else if (e.key === "ArrowLeft") { //left arrow
+    } else if (e.code === "ArrowLeft") { //left arrow
       if (!this._copySubMenu.hasAttribute('hidden') && 
           document.activeElement.shadowRoot !== null) {
         if (document.activeElement.shadowRoot.activeElement.innerHTML === this._copySubMenu.children[this._menuItems.CPYMENUMAP].innerHTML ||
@@ -893,7 +893,7 @@ export var ContextMenu = L.Handler.extend({
           this._setActiveItem(this._menuItems.CTXCOPY);
         }
       }
-    } else if (e.key === "Escape") { //esc key
+    } else if (e.code === "Escape") { //esc key
       if (document.activeElement.shadowRoot === null) {
         this._hide();
       } else {
@@ -908,15 +908,16 @@ export var ContextMenu = L.Handler.extend({
           this._hide();
         }
       }
+    // I don't understand the logic here, but tests break without it...
+    } else if(e.code !== "Shift" && e.code!== "Tab" && 
+        !(!(this._layerClicked.className.includes('mapml-layer-item')) && e.code === "KeyC") && 
+        (document.activeElement.shadowRoot.activeElement.innerHTML !== this._items[this._menuItems.CTXCOPY].el.el.innerHTML)){
+      this._hide();
     }
-//    else if(key !== 16 && key!== 9 && 
-//              !(!(this._layerClicked.className.includes('mapml-layer-item')) && key === 67) && 
-//              (path[0].innerText !== (M.options.locale.cmCopyCoords + " (C)"))){
-//      this._hide();
-//    }
-    switch(e.key){
+    // using KeyboardEvent.code for its mnemonics
+    switch(e.code){
       case "Enter":  //ENTER KEY
-        if(document.activeElement.shadowRoot.activeElement.innerHTML === this._items[5].el.el.innerHTML){
+        if(document.activeElement.shadowRoot.activeElement.innerHTML === this._items[this._menuItems.CTXCOPY].el.el.innerHTML){
           this._copyCoords({
             latlng:this._map.getCenter()
           });
@@ -926,48 +927,39 @@ export var ContextMenu = L.Handler.extend({
             this._map._container.parentNode.activeElement.click();
         }
         break;
-      case " ":  //SPACE KEY
+      case "Space":  //SPACE KEY
         if(this._map._container.parentNode.activeElement.parentNode.classList.contains("mapml-contextmenu"))
           this._map._container.parentNode.activeElement.click();
         break;
-      case "c":
-      case "C": //C KEY
+      case "KeyC": //C KEY
         this._copyCoords({
           latlng:this._map.getCenter()
         });
         this._copySubMenu.firstChild.focus();
         break;
-      case "d":
-      case "D": //D KEY
+      case "KeyD": //D KEY
         this._toggleDebug(e);
         break;
-      case "m":
-      case "M": //M KEY
+      case "KeyM": //M KEY
         this._copyMapML(e);
         break;
-      case "l":
-      case "L": //L KEY
+      case "KeyL": //L KEY
         if(this._layerClicked.className.includes('mapml-layer-item'))
           this._copyLayer(e);
         break;
-      case "f":
-      case "F": //F KEY
+      case "KeyF": //F KEY
         this._toggleFullScreen(e);
         break;
-      case "p":
-      case "P": //P KEY
+      case "KeyP": //P KEY
         this._paste(e);
         break;
-      case "t":
-      case "T": //T KEY
+      case "KeyT": //T KEY
         this._toggleControls(e);
         break;
-      case "v":
-      case "V": //V KEY
+      case "KeyV": //V KEY
         this._viewSource(e);
         break;
-      case "z":
-      case "Z": //Z KEY
+      case "KeyZ": //Z KEY
         if(this._layerClicked.className.includes('mapml-layer-item'))
           this._zoomToLayer(e);
         break;

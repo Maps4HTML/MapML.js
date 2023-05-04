@@ -5,6 +5,7 @@ test.describe("Playwright Layer Context Menu Tests", () => {
   let context;
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext('');
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     page = context.pages().find((page) => page.url() === 'about:blank') || await context.newPage();
     await page.goto("layerContextMenu.html");
   });
