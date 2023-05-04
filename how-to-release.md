@@ -16,6 +16,10 @@ if needed.
     ]
 }
 ```
+
+Note that when releasing on npm, you are distributing leaflet, proj4 etc., so 
+you need to distribute the text of their licenses with the dist folder.
+
 Open the command prompt and cd into the Web-Map-Custom-Element project directory.
 
 Type in –

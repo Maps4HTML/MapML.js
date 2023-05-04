@@ -49,8 +49,8 @@ module.exports = function(grunt) {
         },
         // ensure that jshint keeps processing after an error
         force: true,
-        esversion: 11
-
+        esversion: 11,
+        laxbreak: true // used to fix differences with prettier 
       }
     },
     watch: {
@@ -188,6 +188,18 @@ module.exports = function(grunt) {
         dest: 'dist/mapml.js',
         src: 'src/mapml/index.js' // Only one source file is permitted
       }
+    },
+    prettier: {
+      options: {
+        // https://prettier.io/docs/en/options.html
+        progress: true
+      },
+      files: {
+        src: [
+          "src/**/*.js",
+          "test/**/*.js"
+        ]
+      }
     }
   });
 
@@ -198,9 +210,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-rollup');
+  grunt.loadNpmTasks('grunt-prettier');
 
-  grunt.registerTask('test', ['jshint']);
-  grunt.registerTask('default', ['clean:dist', 'copy:main', 'copy:images', 'jshint', 'rollup', 
+  grunt.registerTask('format', ['prettier', 'jshint']);
+  grunt.registerTask('default', ['clean:dist', 'copy:main', 'copy:images', 'format', 'rollup', 
                                  'uglify', 'cssmin','clean:tidyup']);
   grunt.registerTask('experiments',['clean:experiments','default','copy:experiments']);
   grunt.registerTask('extension',['clean:extension','default','copy:extension']);

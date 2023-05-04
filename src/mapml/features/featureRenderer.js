@@ -7,7 +7,7 @@ export var FeatureRenderer = L.SVG.extend({
   /**
    * Override method of same name from L.SVG, use the this._container property
    * to set up the role="none presentation" on featureGroupu container,
-   * per this recommendation: 
+   * per this recommendation:
    * https://github.com/Maps4HTML/Web-Map-Custom-Element/pull/471#issuecomment-845192246
    * @private overrides ancestor method so that we have a _container to work with
    */
@@ -16,11 +16,11 @@ export var FeatureRenderer = L.SVG.extend({
     // note you have to pass 'this' as the first arg
     L.SVG.prototype._initContainer.call(this);
     // knowing that the previous method call creates the this._container, we
-    // access it and set the role="none presetation" which suppresses the 
+    // access it and set the role="none presetation" which suppresses the
     // announcement of "Graphic" on each feature focus.
     this._container.setAttribute('role', 'none presentation');
   },
-  
+
   /**
    * Creates all the appropriate path elements for a M.Feature
    * @param {M.Feature} layer - The M.Feature that needs paths generated
@@ -28,29 +28,44 @@ export var FeatureRenderer = L.SVG.extend({
    * @private
    */
   _initPath: function (layer, stampLayer = true) {
-
-    if(layer._outline) {
+    if (layer._outline) {
       let outlinePath = L.SVG.create('path');
-      if (layer.options.className) L.DomUtil.addClass(outlinePath, layer.featureAttributes.class || layer.options.className);
+      if (layer.options.className)
+        L.DomUtil.addClass(
+          outlinePath,
+          layer.featureAttributes.class || layer.options.className
+        );
       L.DomUtil.addClass(outlinePath, 'mapml-feature-outline');
-      outlinePath.style.fill = "none";
+      outlinePath.style.fill = 'none';
       layer.outlinePath = outlinePath;
     }
 
     //creates the main parts and sub parts paths
     for (let p of layer._parts) {
-      if (p.rings){
-        this._createPath(p, layer.options.className, layer.featureAttributes['aria-label'], layer.options.interactive, layer.featureAttributes);
-        if(layer.outlinePath) p.path.style.stroke = "none";
+      if (p.rings) {
+        this._createPath(
+          p,
+          layer.options.className,
+          layer.featureAttributes['aria-label'],
+          layer.options.interactive,
+          layer.featureAttributes
+        );
+        if (layer.outlinePath) p.path.style.stroke = 'none';
       }
       if (p.subrings) {
         for (let r of p.subrings) {
-          this._createPath(r, layer.options.className, r.attr['aria-label'], (r.link !== undefined), r.attr);
+          this._createPath(
+            r,
+            layer.options.className,
+            r.attr['aria-label'],
+            r.link !== undefined,
+            r.attr
+          );
         }
       }
       this._updateStyle(layer);
     }
-    if(stampLayer){
+    if (stampLayer) {
       let stamp = L.stamp(layer);
       this._layers[stamp] = layer;
     }
@@ -65,14 +80,20 @@ export var FeatureRenderer = L.SVG.extend({
    * @param {Object} attr - Attributes map
    * @private
    */
-  _createPath: function (ring, cls, title, interactive = false, attr = undefined) {
+  _createPath: function (
+    ring,
+    cls,
+    title,
+    interactive = false,
+    attr = undefined
+  ) {
     let p = L.SVG.create('path');
     ring.path = p;
-    if(!attr) {
+    if (!attr) {
       if (title) p.setAttribute('aria-label', title);
     } else {
-      for(let [name, value] of Object.entries(attr)){
-        if(name === "id" || name === "tabindex") continue;
+      for (let [name, value] of Object.entries(attr)) {
+        if (name === 'id' || name === 'tabindex') continue;
         p.setAttribute(name, value);
       }
     }
@@ -92,28 +113,39 @@ export var FeatureRenderer = L.SVG.extend({
    * @private
    */
   _addPath: function (layer, container = undefined, interactive = true) {
-    if (!this._rootGroup && !container) { this._initContainer(); }
-    let c = container || this._rootGroup, outlineAdded = false;
-    if(interactive) {
+    if (!this._rootGroup && !container) {
+      this._initContainer();
+    }
+    let c = container || this._rootGroup,
+      outlineAdded = false;
+    if (interactive) {
       layer.addInteractiveTarget(layer.group);
     }
     for (let p of layer._parts) {
-      if (p.path)
-        layer.group.appendChild(p.path);
-      if (interactive){
-        if(layer.options.link) layer.attachLinkHandler(p.path, layer.options.link, layer.options._leafletLayer);
+      if (p.path) layer.group.appendChild(p.path);
+      if (interactive) {
+        if (layer.options.link)
+          layer.attachLinkHandler(
+            p.path,
+            layer.options.link,
+            layer.options._leafletLayer
+          );
         layer.addInteractiveTarget(p.path);
       }
 
-      if(!outlineAdded && layer.pixelOutline) {
+      if (!outlineAdded && layer.pixelOutline) {
         layer.group.appendChild(layer.outlinePath);
         outlineAdded = true;
       }
 
       for (let subP of p.subrings) {
         if (subP.path) {
-          if (subP.link){
-            layer.attachLinkHandler(subP.path, subP.link, layer.options._leafletLayer);
+          if (subP.link) {
+            layer.attachLinkHandler(
+              subP.path,
+              subP.link,
+              layer.options._leafletLayer
+            );
             layer.addInteractiveTarget(subP.path);
           }
           layer.group.appendChild(subP.path);
@@ -135,11 +167,10 @@ export var FeatureRenderer = L.SVG.extend({
         L.DomUtil.remove(p.path);
       }
       for (let subP of p.subrings) {
-        if (subP.path)
-          L.DomUtil.remove(subP.path);
+        if (subP.path) L.DomUtil.remove(subP.path);
       }
     }
-    if(layer.outlinePath) L.DomUtil.remove(layer.outlinePath);
+    if (layer.outlinePath) L.DomUtil.remove(layer.outlinePath);
     layer.removeInteractiveTarget(layer.group);
     L.DomUtil.remove(layer.group);
     delete this._layers[L.stamp(layer)];
@@ -151,11 +182,18 @@ export var FeatureRenderer = L.SVG.extend({
    * @private
    */
   _updateFeature: function (layer) {
-    if (layer.pixelOutline) this._setPath(layer.outlinePath, this.geometryToPath(layer.pixelOutline, false));
+    if (layer.pixelOutline)
+      this._setPath(
+        layer.outlinePath,
+        this.geometryToPath(layer.pixelOutline, false)
+      );
     for (let p of layer._parts) {
       this._setPath(p.path, this.geometryToPath(p.pixelRings, layer.isClosed));
       for (let subP of p.subrings) {
-        this._setPath(subP.path, this.geometryToPath(subP.pixelSubrings, false));
+        this._setPath(
+          subP.path,
+          this.geometryToPath(subP.pixelSubrings, false)
+        );
       }
     }
   },
@@ -167,7 +205,9 @@ export var FeatureRenderer = L.SVG.extend({
    * @private
    */
   _pointToMarker: function (p) {
-    return `M${p.x} ${p.y} L${p.x - 12.5} ${p.y - 30} C${p.x - 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 30} L${p.x} ${p.y}z`;
+    return `M${p.x} ${p.y} L${p.x - 12.5} ${p.y - 30} C${p.x - 12.5} ${
+      p.y - 50
+    }, ${p.x + 12.5} ${p.y - 50}, ${p.x + 12.5} ${p.y - 30} L${p.x} ${p.y}z`;
   },
 
   /**
@@ -182,8 +222,7 @@ export var FeatureRenderer = L.SVG.extend({
         this._updatePathStyle(p.path, layer, true);
       }
       for (let subP of p.subrings) {
-        if (subP.path)
-          this._updatePathStyle(subP.path, layer);
+        if (subP.path) this._updatePathStyle(subP.path, layer);
       }
     }
   },
@@ -197,9 +236,15 @@ export var FeatureRenderer = L.SVG.extend({
    * @private
    */
   _updatePathStyle: function (path, layer, isMain = false, isOutline = false) {
-    if (!path || !layer) { return; }
-    let options = layer.options, isClosed = layer.isClosed;
-    if ((options.stroke && (!isClosed || isOutline)) || (isMain && !layer.outlinePath)) {
+    if (!path || !layer) {
+      return;
+    }
+    let options = layer.options,
+      isClosed = layer.isClosed;
+    if (
+      (options.stroke && (!isClosed || isOutline)) ||
+      (isMain && !layer.outlinePath)
+    ) {
       path.setAttribute('stroke', options.color);
       path.setAttribute('stroke-opacity', options.opacity);
       path.setAttribute('stroke-width', options.weight);
@@ -218,17 +263,20 @@ export var FeatureRenderer = L.SVG.extend({
         path.removeAttribute('stroke-dashoffset');
       }
 
-      if (options.link){
-        path.setAttribute("stroke", options.link.visited?"#6c00a2":"#0000EE");
-        path.setAttribute("stroke-opacity", "1");
-        path.setAttribute("stroke-width", "1px");
-        path.setAttribute("stroke-dasharray", "none");
+      if (options.link) {
+        path.setAttribute(
+          'stroke',
+          options.link.visited ? '#6c00a2' : '#0000EE'
+        );
+        path.setAttribute('stroke-opacity', '1');
+        path.setAttribute('stroke-width', '1px');
+        path.setAttribute('stroke-dasharray', 'none');
       }
     } else {
       path.setAttribute('stroke', 'none');
     }
 
-    if(isClosed && !isOutline) {
+    if (isClosed && !isOutline) {
       if (!options.fill) {
         path.setAttribute('fill', options.fillColor || options.color);
         path.setAttribute('fill-opacity', options.fillOpacity);
@@ -258,7 +306,13 @@ export var FeatureRenderer = L.SVG.extend({
    * @returns {string}
    */
   geometryToPath: function (rings, closed) {
-    let str = '', i, j, len, len2, points, p;
+    let str = '',
+      i,
+      j,
+      len,
+      len2,
+      points,
+      p;
 
     for (i = 0, len = rings.length; i < len; i++) {
       points = rings[i];
@@ -272,7 +326,7 @@ export var FeatureRenderer = L.SVG.extend({
       str += closed ? 'z' : '';
     }
     return str || 'M0 0';
-  },
+  }
 });
 
 /**

@@ -1,12 +1,12 @@
 export class MapMeta extends HTMLElement {
   static get observedAttributes() {
-    return ['name','content'];
+    return ['name', 'content'];
   }
   get name() {
     return this.getAttribute('name');
   }
   set name(val) {
-    if (['projection','extent','cs','zoom'].includes(val)) {
+    if (['projection', 'extent', 'cs', 'zoom'].includes(val)) {
       this.setAttribute('name', val);
     }
   }
@@ -15,12 +15,15 @@ export class MapMeta extends HTMLElement {
   }
   set content(val) {
     // improve this
-    if (this.name === 'cs' && !['tcrs','tilematrix','pcrs','gcrs','map','tile'].includes(val)) {
+    if (
+      this.name === 'cs' &&
+      !['tcrs', 'tilematrix', 'pcrs', 'gcrs', 'map', 'tile'].includes(val)
+    ) {
       return;
     }
     this.setAttribute('content', val);
   }
-  
+
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'name': {
@@ -39,13 +42,9 @@ export class MapMeta extends HTMLElement {
   }
   constructor() {
     // Always call super first in constructor
-    super();    
+    super();
   }
-  connectedCallback() {
-    
-  }
-  disconnectedCallback() {
-    
-  }
+  connectedCallback() {}
+  disconnectedCallback() {}
 }
 window.customElements.define('map-meta', MapMeta);
