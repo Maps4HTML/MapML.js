@@ -276,7 +276,9 @@ export class MapFeature extends HTMLElement {
         // so that only the event handlers set on HTMLFeatureElement via addEventListener method will be triggered
         if (name === 'click') {
           // dispatch a cloned mouseevent to trigger the click event handlers set on HTMLFeatureElement
-          this.dispatchEvent(new PointerEvent(name, { ...e }));
+          let clickEv = new PointerEvent(name, { cancelable: true });
+          clickEv.originalEvent = e;
+          this.dispatchEvent(clickEv);
         } else {
           this.dispatchEvent(new FocusEvent(name, { ...e }));
         }
