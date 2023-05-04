@@ -808,8 +808,24 @@ export var ContextMenu = L.Handler.extend({
       let layerList = this._map.options.mapEl.layers;
       this._layerClicked = Array.from(layerList).find((el) => el.checked);
       // the 'hidden' attribute must be removed before any attempt to get the size of container
+      let pt = e.containerPoint;
+      // this is for firefox, which reports the e.containerPoint as x=0 when you
+      // use a keyboard Shift+F10 to display the context menu; this appears
+      // to be because blink returns a PointerEvent of type==='contextmenu',
+      // while gecko returns an object (for e.originalEvent).
+      if (
+        this._clickEvent.originalEvent.clientX === 0 ||
+        this._clickEvent.originalEvent.clientY === 0
+      ) {
+        const getCenter = function (el) {
+          let w = el.getBoundingClientRect().width;
+          let h = el.getBoundingClientRect().height;
+          return { x: Number.parseInt(w / 2), y: Number.parseInt(h / 2) };
+        };
+        pt = getCenter(this._map.getContainer());
+      }
       this._container.removeAttribute('hidden');
-      this._showAtPoint(e.containerPoint, e, this._container);
+      this._showAtPoint(pt, e, this._container);
       this._updateCS();
     }
     if (e.originalEvent.button === 0 || e.originalEvent.button === -1) {
