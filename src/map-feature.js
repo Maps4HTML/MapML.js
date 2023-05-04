@@ -88,15 +88,6 @@ export class MapFeature extends HTMLElement {
         }
         break;
       }
-      case 'onfocus':
-      case 'onclick':
-      case 'onblur':
-        if (this._groupEl) {
-          // "synchronize" the onevent properties (i.e. onfocus, onclick, onblur)
-          // between the mapFeature and its associated <g> element
-          this._groupEl[name] = this[name].bind(this._groupEl);
-          break;
-        }
     }
   }
 
@@ -275,10 +266,6 @@ export class MapFeature extends HTMLElement {
 
   _setUpEvents() {
     ['click', 'focus', 'blur'].forEach((name) => {
-      // onevent properties & onevent attributes
-      if (this[`on${name}`] && typeof this[`on${name}`] === 'function') {
-        this._groupEl[`on${name}`] = this[`on${name}`];
-      }
       // handle event handlers set via addEventlistener
       // for HTMLElement
       // when <g> is clicked / focused / blurred
@@ -287,15 +274,12 @@ export class MapFeature extends HTMLElement {
         // this === mapFeature as arrow function does not have their own "this" pointer
         // store onEvent handler of mapFeature if there is any to ensure that it will not be re-triggered when the cloned mouseevent is dispatched
         // so that only the event handlers set on HTMLFeatureElement via addEventListener method will be triggered
-        const handler = this[`on${name}`]; // a deep copy, var handler will not change when this.onevent is set to null (i.e. store the onevent property)
-        this[`on${name}`] = null;
         if (name === 'click') {
           // dispatch a cloned mouseevent to trigger the click event handlers set on HTMLFeatureElement
           this.dispatchEvent(new PointerEvent(name, { ...e }));
         } else {
           this.dispatchEvent(new FocusEvent(name, { ...e }));
         }
-        this[`on${name}`] = handler;
       });
     });
   }
@@ -324,9 +308,7 @@ export class MapFeature extends HTMLElement {
         return this._layer._mapmlvectors._getNativeVariables(content);
       } else if (content.nodeName.toUpperCase() === 'LAYER-') {
         // for inline features, read native zoom and cs from inline map-meta
-        let zoomMeta = this._parentEl.querySelectorAll(
-            'map-meta[name=zoom]'
-          ),
+        let zoomMeta = this._parentEl.querySelectorAll('map-meta[name=zoom]'),
           zoomLength = zoomMeta?.length;
         nativeZoom = zoomLength
           ? +zoomMeta[zoomLength - 1]
@@ -578,33 +560,30 @@ export class MapFeature extends HTMLElement {
         button: 0
       });
     }
-    if (typeof this.onclick === 'function') {
-      this.onclick.call(this._groupEl, event);
-      return;
-    } else {
-      let properties = this.querySelector('map-properties');
-      if (g.getAttribute('role') === 'link') {
-        for (let path of g.children) {
-          path.mousedown.call(this._featureGroup, event);
-          path.mouseup.call(this._featureGroup, event);
+    let properties = this.querySelector('map-properties');
+    if (g.getAttribute('role') === 'link') {
+      for (let path of g.children) {
+        path.mousedown.call(this._featureGroup, event);
+        path.mouseup.call(this._featureGroup, event);
+      }
+    }
+    // dispatch click event for map-feature to allow events entered by 'addEventListener'
+    this.dispatchEvent(new PointerEvent('click'));
+    // for custom projection, layer- element may disconnect and re-attach to the map after the click
+    // so check whether map-feature element is still connected before any further operations
+    if (properties && this.isConnected) {
+      let featureGroup = this._featureGroup,
+        shapes = featureGroup._layers;
+      // close popup if the popup is currently open
+      for (let id in shapes) {
+        if (shapes[id].isPopupOpen()) {
+          shapes[id].closePopup();
         }
       }
-      // for custom projection, layer- element may disconnect and re-attach to the map after the click
-      // so check whether map-feature element is still connected before any further operations
-      if (properties && this.isConnected) {
-        let featureGroup = this._featureGroup,
-          shapes = featureGroup._layers;
-        // close popup if the popup is currently open
-        for (let id in shapes) {
-          if (shapes[id].isPopupOpen()) {
-            shapes[id].closePopup();
-          }
-        }
-        if (featureGroup.isPopupOpen()) {
-          featureGroup.closePopup();
-        } else {
-          featureGroup.openPopup();
-        }
+      if (featureGroup.isPopupOpen()) {
+        featureGroup.closePopup();
+      } else {
+        featureGroup.openPopup();
       }
     }
   }
