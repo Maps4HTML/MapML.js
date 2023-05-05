@@ -785,6 +785,8 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _show: function (e) {
+    // don't show a context menu for features
+    if (e.originalEvent.target.closest('.mapml-vector-container')) return;
     if (this._mapMenuVisible) this._hide();
     this._clickEvent = e;
     let elem = e.originalEvent.target;
