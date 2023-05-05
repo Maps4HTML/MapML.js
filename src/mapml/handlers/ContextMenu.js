@@ -1008,7 +1008,7 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _onKeyDown: function (e) {
-    if (!this._mapMenuVisible) return;
+    if (!this._mapMenuVisible || e.key === 'Shift') return;
 
     if (
       e.code === 'Enter' ||
@@ -1217,7 +1217,7 @@ export var ContextMenu = L.Handler.extend({
     ) {
       this._hide();
     }
-    // using KeyboardEvent.code for its mnemonics
+    // using KeyboardEvent.code for its mnemonics and case-independence
     switch (e.code) {
       case 'Enter': //ENTER KEY
         if (
@@ -1276,6 +1276,8 @@ export var ContextMenu = L.Handler.extend({
       case 'KeyZ': //Z KEY
         if (this._layerClicked.className.includes('mapml-layer-item'))
           this._zoomToLayer(e);
+        break;
+      default:
         break;
     }
   },
