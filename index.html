@@ -72,32 +72,12 @@
      </noscript> 
   </head>
   <body>
-    <script>
-      // Add this function to map-feature eventlistener
-      // $0.addEventListener("click", preventDefaultFunc);
-      function preventDefaultFunc(event) {
-        console.log("preventDefault() won't let you check this!");
-        console.log(event);
-        // This is stopping the propagation of the leaflet popup event
-        event.originalEvent.stopPropagation();
-        // This does not work, but it should stop events associated to the map-feature
-        event.preventDefault();
-      }
-
-
-      let func1 = () => {alert("tttttttteeeeeeessst")}
-
-
-      function myFunction() {
-        alert("alert from inital onclick attribute set");
-      }
-    </script>
     <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls controlslist="nofullscreen geolocation">
       <map-caption>A pleasing map of Canada</map-caption>
       <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
       <layer- label="Hat Guy" checked>
         <map-meta name="projection" content="CBMTILE"></map-meta>
-        <map-feature id="twohats" zoom="15" class="twohats" onclick="myFunction()">
+        <map-feature id="twohats" zoom="15" class="twohats">
         <map-properties>
           <table>
             <tr>
