@@ -266,21 +266,19 @@ export class MapFeature extends HTMLElement {
 
   _setUpEvents() {
     ['click', 'focus', 'blur'].forEach((name) => {
-      // handle event handlers set via addEventlistener
-      // for HTMLElement
       // when <g> is clicked / focused / blurred
       // should dispatch the click / focus / blur event listener on **linked HTMLFeatureElements**
       this._groupEl.addEventListener(name, (e) => {
-        // this === mapFeature as arrow function does not have their own "this" pointer
-        // store onEvent handler of mapFeature if there is any to ensure that it will not be re-triggered when the cloned mouseevent is dispatched
-        // so that only the event handlers set on HTMLFeatureElement via addEventListener method will be triggered
         if (name === 'click') {
           // dispatch a cloned mouseevent to trigger the click event handlers set on HTMLFeatureElement
           let clickEv = new PointerEvent(name, { cancelable: true });
           clickEv.originalEvent = e;
           this.dispatchEvent(clickEv);
         } else {
-          this.dispatchEvent(new FocusEvent(name, { ...e }));
+          // dispatch a cloned focusevent to trigger the focus/blue event handlers set on HTMLFeatureElement
+          let focusEv = new FocusEvent(name, { cancelable: true });
+          focusEv.originalEvent = e;
+          this.dispatchEvent(focusEv);
         }
       });
     });
@@ -570,7 +568,9 @@ export class MapFeature extends HTMLElement {
       }
     }
     // dispatch click event for map-feature to allow events entered by 'addEventListener'
-    this.dispatchEvent(new PointerEvent('click'));
+    let clickEv = new PointerEvent('click', { cancelable: true });
+    clickEv.originalEvent = event;
+    this.dispatchEvent(clickEv);
     // for custom projection, layer- element may disconnect and re-attach to the map after the click
     // so check whether map-feature element is still connected before any further operations
     if (properties && this.isConnected) {
@@ -584,7 +584,8 @@ export class MapFeature extends HTMLElement {
       }
       if (featureGroup.isPopupOpen()) {
         featureGroup.closePopup();
-      } else {
+      } else if (!clickEv.originalEvent.cancelBubble) {
+        // If stopPropagation is not set on originalEvent by user
         featureGroup.openPopup();
       }
     }
