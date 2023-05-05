@@ -717,9 +717,9 @@ test.describe('Playwright Map Context Menu Tests', () => {
     expect(name).toEqual('Zoom To Layer (Z)');
   });
 
-  test('Layer Context menu, Tabbing through the contextmenu takes you back to the checkbox element', async () => {
+  test('Layer Context menu, escaping from the contextmenu takes you back to the checkbox element', async () => {
     await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
+    await page.keyboard.press('Escape');
     const aHandle = await page.evaluateHandle(() =>
       document.querySelector('.mapml-web-map')
     );

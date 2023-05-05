@@ -1010,30 +1010,9 @@ export var ContextMenu = L.Handler.extend({
   _onKeyDown: function (e) {
     if (!this._mapMenuVisible || e.key === 'Shift') return;
 
-    if (
-      e.code === 'Enter' ||
-      e.code === 'Tab' ||
-      (e.shiftKey && e.code === 'Tab')
-    )
-      e.preventDefault();
-    // keep track of where the focus is on the layer menu and when the layer menu is tabbed out of, focus on layer control
-    if (this._layerMenuTabs && (e.code === 'Tab' || e.code === 'Escape')) {
-      // tab or esc
-      if (e.shiftKey) {
-        this._layerMenuTabs -= 1;
-      } else {
-        this._layerMenuTabs += 1;
-      }
-      if (
-        this._layerMenuTabs === 0 ||
-        this._layerMenuTabs === 3 ||
-        e.code === 'Escape'
-      ) {
-        // esc
-        L.DomEvent.stop(e);
-        this._focusOnLayerControl();
-      }
-    } else if (e.code === 'ArrowUp' || (e.shiftKey && e.code === 'Tab')) {
+    if (e.code === 'Enter' || e.code === 'Tab') e.preventDefault();
+
+    if (e.code === 'ArrowUp' || (e.shiftKey && e.code === 'Tab')) {
       //up arrow
       if (
         !this._copySubMenu.hasAttribute('hidden') &&
@@ -1182,7 +1161,11 @@ export var ContextMenu = L.Handler.extend({
         }
       }
     } else if (e.code === 'Escape') {
-      //esc key
+      if (this._layerMenuTabs) {
+        L.DomEvent.stop(e);
+        this._focusOnLayerControl();
+        return;
+      }
       if (document.activeElement.shadowRoot === null) {
         this._hide();
       } else {
@@ -1274,10 +1257,9 @@ export var ContextMenu = L.Handler.extend({
         this._viewSource(e);
         break;
       case 'KeyZ': //Z KEY
-        if (this._layerClicked.className.includes('mapml-layer-item'))
+        if (this._layerClicked.className.includes('mapml-layer-item')) {
           this._zoomToLayer(e);
-        break;
-      default:
+        }
         break;
     }
   },
