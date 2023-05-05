@@ -1010,10 +1010,10 @@ export var ContextMenu = L.Handler.extend({
   _onKeyDown: function (e) {
     if (!this._mapMenuVisible || e.key === 'Shift') return;
 
-    if (e.code === 'Enter' || e.code === 'Tab') e.preventDefault();
+    if (e.code === 'Enter' || e.code === 'Tab' || e.code.startsWith('Arrow'))
+      e.preventDefault();
 
     if (e.code === 'ArrowUp' || (e.shiftKey && e.code === 'Tab')) {
-      //up arrow
       if (
         !this._copySubMenu.hasAttribute('hidden') &&
         (document.activeElement.shadowRoot === null || //null happens when the focus is on submenu and when mouse hovers on main menu, submenu disappears
@@ -1060,35 +1060,30 @@ export var ContextMenu = L.Handler.extend({
         }
       }
     } else if (e.code === 'ArrowDown' || e.code === 'Tab') {
-      //down arrow
       if (
         !this._copySubMenu.hasAttribute('hidden') &&
         (document.activeElement.shadowRoot === null ||
           document.activeElement.shadowRoot.activeElement.innerHTML ===
             this._copySubMenu.children[this._menuItems.CPYMENULOC].innerHTML)
       ) {
-        //"map" on submenu
         this._copySubMenu.children[this._menuItems.CPYMENUMAP].focus();
       } else if (
         !this._copySubMenu.hasAttribute('hidden') &&
         document.activeElement.shadowRoot.activeElement.innerHTML ===
           this._copySubMenu.children[this._menuItems.CPYMENUEXTENT].innerHTML
       ) {
-        //"extent" on submenu
         this._copySubMenu.children[this._menuItems.CPYMENULOC].focus();
       } else if (
         !this._copySubMenu.hasAttribute('hidden') &&
         document.activeElement.shadowRoot.activeElement.innerHTML ===
           this._copySubMenu.children[this._menuItems.CPYMENUMAP].innerHTML
       ) {
-        //"Location" on submenu
         this._copySubMenu.children[this._menuItems.CPYMENUEXTENT].focus();
       } else if (
         !this._layerMenu.hasAttribute('hidden') &&
         document.activeElement.shadowRoot.activeElement.innerHTML ===
           this._layerMenu.children[this._menuItems.LYRZOOMTO].innerHTML
       ) {
-        //"zoom to layer" on layermenu
         this._layerMenu.children[this._menuItems.LYRCOPY].focus();
       } else if (!this._layerMenu.hasAttribute('hidden')) {
         this._layerMenu.children[this._menuItems.LYRZOOMTO].focus();
@@ -1125,7 +1120,6 @@ export var ContextMenu = L.Handler.extend({
         }
       }
     } else if (e.code === 'ArrowRight') {
-      //right arrow
       if (
         document.activeElement.shadowRoot !== null &&
         document.activeElement.shadowRoot.activeElement.innerHTML ===
@@ -1142,7 +1136,6 @@ export var ContextMenu = L.Handler.extend({
         this._copySubMenu.children[0].focus();
       }
     } else if (e.code === 'ArrowLeft') {
-      //left arrow
       if (
         !this._copySubMenu.hasAttribute('hidden') &&
         document.activeElement.shadowRoot !== null
@@ -1202,7 +1195,7 @@ export var ContextMenu = L.Handler.extend({
     }
     // using KeyboardEvent.code for its mnemonics and case-independence
     switch (e.code) {
-      case 'Enter': //ENTER KEY
+      case 'Enter':
         if (
           document.activeElement.shadowRoot.activeElement.innerHTML ===
           this._items[this._menuItems.CTXCOPY].el.el.innerHTML
@@ -1220,7 +1213,7 @@ export var ContextMenu = L.Handler.extend({
             this._map._container.parentNode.activeElement.click();
         }
         break;
-      case 'Space': //SPACE KEY
+      case 'Space':
         if (
           this._map._container.parentNode.activeElement.parentNode.classList.contains(
             'mapml-contextmenu'
@@ -1228,35 +1221,35 @@ export var ContextMenu = L.Handler.extend({
         )
           this._map._container.parentNode.activeElement.click();
         break;
-      case 'KeyC': //C KEY
+      case 'KeyC':
         this._copyCoords({
           latlng: this._map.getCenter()
         });
         this._copySubMenu.firstChild.focus();
         break;
-      case 'KeyD': //D KEY
+      case 'KeyD':
         this._toggleDebug(e);
         break;
-      case 'KeyM': //M KEY
+      case 'KeyM':
         this._copyMapML(e);
         break;
-      case 'KeyL': //L KEY
+      case 'KeyL':
         if (this._layerClicked.className.includes('mapml-layer-item'))
           this._copyLayer(e);
         break;
-      case 'KeyF': //F KEY
+      case 'KeyF':
         this._toggleFullScreen(e);
         break;
-      case 'KeyP': //P KEY
+      case 'KeyP':
         this._paste(e);
         break;
-      case 'KeyT': //T KEY
+      case 'KeyT':
         this._toggleControls(e);
         break;
-      case 'KeyV': //V KEY
+      case 'KeyV':
         this._viewSource(e);
         break;
-      case 'KeyZ': //Z KEY
+      case 'KeyZ':
         if (this._layerClicked.className.includes('mapml-layer-item')) {
           this._zoomToLayer(e);
         }
