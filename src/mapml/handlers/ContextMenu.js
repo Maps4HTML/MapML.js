@@ -1179,14 +1179,8 @@ export var ContextMenu = L.Handler.extend({
           this._hide();
         }
       }
-      // I don't understand the logic here, but tests break without it...
     } else if (
-      e.code !== 'Shift' &&
-      e.code !== 'Tab' &&
-      !(
-        !this._layerClicked.className.includes('mapml-layer-item') &&
-        e.code === 'KeyC'
-      ) &&
+      e.code !== 'KeyC' &&
       document.activeElement.shadowRoot.activeElement.innerHTML !==
         this._items[this._menuItems.CTXCOPY].el.el.innerHTML
     ) {
