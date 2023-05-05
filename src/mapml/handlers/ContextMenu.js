@@ -815,10 +815,7 @@ export var ContextMenu = L.Handler.extend({
       // use a keyboard Shift+F10 to display the context menu; this appears
       // to be because blink returns a PointerEvent of type==='contextmenu',
       // while gecko returns an object (for e.originalEvent).
-      if (
-        this._clickEvent.originalEvent.clientX === 0 ||
-        this._clickEvent.originalEvent.clientY === 0
-      ) {
+      if (L.Browser.gecko) {
         const getCenter = function (el) {
           let w = el.getBoundingClientRect().width;
           let h = el.getBoundingClientRect().height;
