@@ -77,4 +77,20 @@ test.describe('Playwright Map Context Menu Keyboard Tests', () => {
     // check for error messages in console
     expect(errorLogs.length).toBe(0);
   });
+  test('Arrow key navigation of context menu does not scroll document', async () => {
+    await page.goto('mapContextMenu.html');
+    const mapPosition1 = await page.evaluate(() => {
+      return document.querySelector('mapml-viewer').getBoundingClientRect().y;
+    });
+    await page.locator('mapml-viewer').click();
+    await page.locator('mapml-viewer').press('Shift+F10');
+    await page.locator('text=View Fullscreen (F)').press('ArrowDown');
+    await page.locator('text=Copy (C)').press('ArrowDown');
+    await page.locator('text=Paste (P)').press('ArrowDown');
+    await page.locator('text=Toggle Controls (T)').press('ArrowDown');
+    const mapPosition2 = await page.evaluate(() => {
+      return document.querySelector('mapml-viewer').getBoundingClientRect().y;
+    });
+    expect(mapPosition2).toEqual(mapPosition1);
+  });
 });
