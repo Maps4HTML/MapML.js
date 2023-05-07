@@ -64,13 +64,12 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     await expect(zoom).toBe(0);
   });
   test('Space bar activates layer context menu item', async () => {
-    // Press Tab
     await page.locator('mapml-viewer').press('Tab');
-    // Press Tab
+
     await page.locator('[aria-label="Zoom in"]').press('Tab');
-    // Press Tab
+
     await page.locator('[aria-label="Zoom out"]').press('Tab');
-    // Press Tab
+
     await page.locator('[aria-label="Reload"]').press('Tab');
     // tab past features, focus on layer control
     await page.locator('a[role="button"]').nth(2).press('Tab');
@@ -102,13 +101,9 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     expect(result).toBe('CBMT - INLINE');
   });
   test('Tab can be used to move between layer context menu items', async () => {
-    // Press Tab
     await page.locator('mapml-viewer').press('Tab');
-    // Press Tab
     await page.locator('[aria-label="Zoom in"]').press('Tab');
-    // Press Tab
     await page.locator('[aria-label="Zoom out"]').press('Tab');
-    // Press Tab
     await page.locator('[aria-label="Reload"]').press('Tab');
     // tab past features, focus on layer control
     await page.locator('a[role="button"]').nth(2).press('Tab');
@@ -145,13 +140,9 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     expect(result).toBe('CBMT - INLINE');
   });
   test('Shift+Tab can be used to move between layer context menu items', async () => {
-    // Press Tab
     await page.locator('mapml-viewer').press('Tab');
-    // Press Tab
     await page.locator('[aria-label="Zoom in"]').press('Tab');
-    // Press Tab
     await page.locator('[aria-label="Zoom out"]').press('Tab');
-    // Press Tab
     await page.locator('[aria-label="Reload"]').press('Tab');
     // tab past features, focus on layer control
     await page.locator('a[role="button"]').nth(2).press('Tab');

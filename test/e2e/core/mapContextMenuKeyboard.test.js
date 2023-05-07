@@ -19,25 +19,15 @@ test.describe('Playwright Map Context Menu Keyboard Tests', () => {
     await page.locator('mapml-viewer').click();
     // display map context menu
     await page.locator('mapml-viewer').press('Shift+F10');
-    // Press Tab
     await page.locator('text=View Fullscreen (F)').press('Tab');
-    // Press Tab
     await page.locator('text=Copy (C)').press('Tab');
-    // Press Tab
     await page.locator('text=Paste (P)').press('Tab');
-    // Press Tab
     await page.locator('text=Toggle Controls (T)').press('Tab');
-    // Press Tab
     await page.locator('text=Toggle Debug Mode (D)').press('Tab');
-    // Press Tab
     await page.locator('text=View Map Source (V)').press('Tab');
-    // Press Tab
     await page.locator('text=View Fullscreen (F)').press('Tab');
-    // Press Tab
     await page.locator('text=Copy (C)').press('Tab');
-    // Press Tab
     await page.locator('text=Paste (P)').press('Tab');
-    // Press Enter
     await page.locator('text=Toggle Controls (T)').press('Enter');
 
     let controls = await page.evaluate(() => {
@@ -50,7 +40,7 @@ test.describe('Playwright Map Context Menu Keyboard Tests', () => {
     await page.locator('mapml-viewer').click();
     // display map context menu
     await page.locator('mapml-viewer').press('Shift+F10');
-    // Press Tab
+    // View Fullscreen should be selected item
     await page.locator('text=View Fullscreen (F)').press('Tab');
     await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
@@ -72,5 +62,19 @@ test.describe('Playwright Map Context Menu Keyboard Tests', () => {
       return document.querySelector('mapml-viewer').controls ? true : false;
     });
     expect(controls).toBe(false);
+  });
+  test('Shift+F10 on feature does not throw', async () => {
+    // check for error messages in console
+    let errorLogs = [];
+    page.on('pageerror', (err) => {
+      errorLogs.push(err.message);
+    });
+    await page.goto('mapContextMenu.html');
+    await page.locator('mapml-viewer').press('Tab');
+    await page
+      .locator('[aria-label="The Man With Two Hats"]')
+      .press('Shift+F10');
+    // check for error messages in console
+    expect(errorLogs.length).toBe(0);
   });
 });
