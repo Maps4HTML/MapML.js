@@ -186,7 +186,7 @@ test.describe('Using arrow keys to navigate context menu', () => {
 
     let hide = await page.$eval(
       'body > mapml-viewer',
-      (viewer) => viewer._map.contextMenu._coordMenu.hidden
+      (viewer) => viewer._map.contextMenu._copySubMenu.hidden
     );
     expect(hide).toEqual(true);
   });

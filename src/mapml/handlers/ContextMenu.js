@@ -6,7 +6,7 @@ to deal in the Software without restriction, including without limitation the ri
 and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
-/* global M */
+/* global M, KeyboardEvent */
 
 export var ContextMenu = L.Handler.extend({
   _touchstart: L.Browser.msPointer
@@ -21,62 +21,101 @@ export var ContextMenu = L.Handler.extend({
     this.excludedIndices = [4, 7]; //menu indexes that are --------
     this.isRunned = false; //variable for tracking edge case
     //setting the items in the context menu and their callback functions
+    this._menuItems = {};
+
+    const CTXBACK = 0,
+      CTXFWD = 1,
+      CTXRELOAD = 2,
+      CTXFULLSCR = 3,
+      CTXSPACER1 = 4,
+      CTXCOPY = 5,
+      CTXPASTE = 6,
+      CTXSPACER2 = 7,
+      CTXCNTRLS = 8,
+      CTXDEBUG = 9,
+      CTXVWSRC = 10;
+    this._menuItems.CTXBACK = CTXBACK;
+    this._menuItems.CTXFWD = CTXFWD;
+    this._menuItems.CTXRELOAD = CTXRELOAD;
+    this._menuItems.CTXFULLSCR = CTXFULLSCR;
+    this._menuItems.CTXSPACER1 = CTXSPACER1;
+    this._menuItems.CTXCOPY = CTXCOPY;
+    this._menuItems.CTXPASTE = CTXPASTE;
+    this._menuItems.CTXSPACER2 = CTXSPACER2;
+    this._menuItems.CTXCNTRLS = CTXCNTRLS;
+    this._menuItems.CTXDEBUG = CTXDEBUG;
+    this._menuItems.CTXVWSRC = CTXVWSRC;
+
     this._items = [
       {
+        // 0
         text: M.options.locale.cmBack + ' (<kbd>Alt+Left Arrow</kbd>)',
         callback: this._goBack
       },
       {
+        // 1
         text: M.options.locale.cmForward + ' (<kbd>Alt+Right Arrow</kbd>)',
         callback: this._goForward
       },
       {
+        // 2
         text: M.options.locale.cmReload + ' (<kbd>Ctrl+R</kbd>)',
         callback: this._reload
       },
       {
+        // 3
         text: M.options.locale.btnFullScreen + ' (<kbd>F</kbd>)',
         callback: this._toggleFullScreen
       },
       {
+        // 4
         spacer: '-'
       },
       {
+        // 5
         text: M.options.locale.cmCopyCoords + ' (<kbd>C</kbd>)<span></span>',
         callback: this._copyCoords,
         hideOnSelect: false,
         popup: true,
         submenu: [
           {
+            // 5.0
             text: M.options.locale.cmCopyMapML,
             callback: this._copyMapML
           },
           {
+            // 5.1
             text: M.options.locale.cmCopyExtent,
             callback: this._copyExtent
           },
           {
+            // 5.2
             text: M.options.locale.cmCopyLocation,
             callback: this._copyLocation
           }
         ]
       },
       {
+        // 6
         text: M.options.locale.cmPasteLayer + ' (<kbd>P</kbd>)',
         callback: this._paste
       },
       {
+        // 7
         spacer: '-'
       },
       {
+        // 8
         text: M.options.locale.cmToggleControls + ' (<kbd>T</kbd>)',
         callback: this._toggleControls
       },
       {
+        // 9
         text: M.options.locale.cmToggleDebug + ' (<kbd>D</kbd>)',
         callback: this._toggleDebug
       },
       {
+        // 10
         text: M.options.locale.cmViewSource + ' (<kbd>V</kbd>)',
         callback: this._viewSource
       }
@@ -86,12 +125,18 @@ export var ContextMenu = L.Handler.extend({
     // should be public as they are used in tests
     this.defExtCS = M.options.defaultExtCoor;
     this.defLocCS = M.options.defaultLocCoor;
+    const LYRZOOMTO = 0,
+      LYRCOPY = 1;
+    this._menuItems.LYRZOOMTO = LYRZOOMTO;
+    this._menuItems.LYRCOPY = LYRCOPY;
     this._layerItems = [
       {
+        // 0
         text: M.options.locale.lmZoomToLayer + ' (<kbd>Z</kbd>)',
         callback: this._zoomToLayer
       },
       {
+        // 1
         text: M.options.locale.lmCopyLayer + ' (<kbd>L</kbd>)',
         callback: this._copyLayer
       }
@@ -102,43 +147,96 @@ export var ContextMenu = L.Handler.extend({
     this._container = L.DomUtil.create(
       'div',
       'mapml-contextmenu',
-      map._container
+      map.getContainer()
     );
     this._container.setAttribute('hidden', '');
 
-    for (let i = 0; i < 6; i++) {
-      this._items[i].el = this._createItem(this._container, this._items[i]);
-    }
+    this._items[CTXBACK].el = this._createItem(
+      this._container,
+      this._items[CTXBACK]
+    );
+    this._items[CTXFWD].el = this._createItem(
+      this._container,
+      this._items[CTXFWD]
+    );
+    this._items[CTXRELOAD].el = this._createItem(
+      this._container,
+      this._items[CTXRELOAD]
+    );
+    this._items[CTXFULLSCR].el = this._createItem(
+      this._container,
+      this._items[CTXFULLSCR]
+    );
+    this._items[CTXSPACER1].el = this._createItem(
+      this._container,
+      this._items[CTXSPACER1]
+    );
+    this._items[CTXCOPY].el = this._createItem(
+      this._container,
+      this._items[CTXCOPY]
+    );
 
-    this._coordMenu = L.DomUtil.create(
+    this._copySubMenu = L.DomUtil.create(
       'div',
       'mapml-contextmenu mapml-submenu',
       this._container
     );
-    this._coordMenu.id = 'mapml-copy-submenu';
-    this._coordMenu.setAttribute('hidden', '');
+    this._copySubMenu.id = 'mapml-copy-submenu';
+    this._copySubMenu.setAttribute('hidden', '');
 
     this._clickEvent = null;
 
-    for (let i = 0; i < this._items[5].submenu.length; i++) {
-      this._createItem(this._coordMenu, this._items[5].submenu[i], i);
-    }
+    const CPYMENUMAP = 0,
+      CPYMENUEXTENT = 1,
+      CPYMENULOC = 2;
+    this._menuItems.CPYMENUMAP = CPYMENUMAP;
+    this._menuItems.CPYMENUEXTENT = CPYMENUEXTENT;
+    this._menuItems.CPYMENULOC = CPYMENULOC;
+    this._createItem(
+      this._copySubMenu,
+      this._items[CTXCOPY].submenu[CPYMENUMAP],
+      CPYMENUMAP
+    );
+    this._createItem(
+      this._copySubMenu,
+      this._items[CTXCOPY].submenu[CPYMENUEXTENT],
+      CPYMENUEXTENT
+    );
+    this._createItem(
+      this._copySubMenu,
+      this._items[CTXCOPY].submenu[CPYMENULOC],
+      CPYMENULOC
+    );
 
-    this._items[6].el = this._createItem(this._container, this._items[6]);
-    this._items[7].el = this._createItem(this._container, this._items[7]);
-    this._items[8].el = this._createItem(this._container, this._items[8]);
-    this._items[9].el = this._createItem(this._container, this._items[9]);
-    this._items[10].el = this._createItem(this._container, this._items[10]);
+    this._items[CTXPASTE].el = this._createItem(
+      this._container,
+      this._items[CTXPASTE]
+    );
+    this._items[CTXSPACER2].el = this._createItem(
+      this._container,
+      this._items[CTXSPACER2]
+    );
+    this._items[CTXCNTRLS].el = this._createItem(
+      this._container,
+      this._items[CTXCNTRLS]
+    );
+    this._items[CTXDEBUG].el = this._createItem(
+      this._container,
+      this._items[CTXDEBUG]
+    );
+    this._items[CTXVWSRC].el = this._createItem(
+      this._container,
+      this._items[CTXVWSRC]
+    );
 
     this._layerMenu = L.DomUtil.create(
       'div',
       'mapml-contextmenu mapml-layer-menu',
-      map._container
+      map.getContainer()
     );
     this._layerMenu.setAttribute('hidden', '');
-    for (let i = 0; i < this._layerItems.length; i++) {
-      this._createItem(this._layerMenu, this._layerItems[i]);
-    }
+    this._createItem(this._layerMenu, this._layerItems[LYRZOOMTO]);
+    this._createItem(this._layerMenu, this._layerItems[LYRCOPY]);
 
     L.DomEvent.on(this._container, 'click', L.DomEvent.stop)
       .on(this._container, 'mousedown', L.DomEvent.stop)
@@ -357,7 +455,7 @@ export var ContextMenu = L.Handler.extend({
 
   _copyCoords: function (e) {
     let directory = this.contextMenu ? this.contextMenu : this;
-    directory._showCoordMenu(e);
+    directory._showCopySubMenu(e);
   },
 
   _copyData: function (data) {
@@ -687,6 +785,8 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _show: function (e) {
+    // don't show a context menu for features
+    if (e.originalEvent.target.closest('.mapml-vector-container')) return;
     if (this._mapMenuVisible) this._hide();
     this._clickEvent = e;
     let elem = e.originalEvent.target;
@@ -710,8 +810,21 @@ export var ContextMenu = L.Handler.extend({
       let layerList = this._map.options.mapEl.layers;
       this._layerClicked = Array.from(layerList).find((el) => el.checked);
       // the 'hidden' attribute must be removed before any attempt to get the size of container
+      let pt = e.containerPoint;
+      // this is for firefox, which reports the e.containerPoint as x=0 when you
+      // use a keyboard Shift+F10 to display the context menu; this appears
+      // to be because blink returns a PointerEvent of type==='contextmenu',
+      // while gecko returns an object (for e.originalEvent).
+      if (L.Browser.gecko) {
+        const getCenter = function (el) {
+          let w = el.getBoundingClientRect().width;
+          let h = el.getBoundingClientRect().height;
+          return { x: Number.parseInt(w / 2), y: Number.parseInt(h / 2) };
+        };
+        pt = getCenter(this._map.getContainer());
+      }
       this._container.removeAttribute('hidden');
-      this._showAtPoint(e.containerPoint, e, this._container);
+      this._showAtPoint(pt, e, this._container);
       this._updateCS();
     }
     if (e.originalEvent.button === 0 || e.originalEvent.button === -1) {
@@ -754,7 +867,7 @@ export var ContextMenu = L.Handler.extend({
     if (this._mapMenuVisible) {
       this._mapMenuVisible = false;
       this._container.setAttribute('hidden', '');
-      this._coordMenu.setAttribute('hidden', '');
+      this._copySubMenu.setAttribute('hidden', '');
       this._layerMenu.setAttribute('hidden', '');
       this._map.fire('contextmenu.hide', { contextmenu: this });
       setTimeout(() => this._map._container.focus(), 0);
@@ -894,60 +1007,43 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _onKeyDown: function (e) {
-    if (!this._mapMenuVisible) return;
+    if (!this._mapMenuVisible || e.key === 'Shift') return;
 
-    let key = e.keyCode;
-    let path = e.path || e.composedPath();
+    if (e.code === 'Enter' || e.code === 'Tab' || e.code.startsWith('Arrow'))
+      e.preventDefault();
 
-    if (key === 13) e.preventDefault();
-    // keep track of where the focus is on the layer menu and when the layer menu is tabbed out of, focus on layer control
-    if (this._layerMenuTabs && (key === 9 || key === 27)) {
-      if (e.shiftKey) {
-        this._layerMenuTabs -= 1;
-      } else {
-        this._layerMenuTabs += 1;
-      }
+    if (e.code === 'ArrowUp' || (e.shiftKey && e.code === 'Tab')) {
       if (
-        this._layerMenuTabs === 0 ||
-        this._layerMenuTabs === 3 ||
-        key === 27
-      ) {
-        L.DomEvent.stop(e);
-        this._focusOnLayerControl();
-      }
-    } else if (key === 38) {
-      //up arrow
-      if (
-        !this._coordMenu.hasAttribute('hidden') &&
+        !this._copySubMenu.hasAttribute('hidden') &&
         (document.activeElement.shadowRoot === null || //null happens when the focus is on submenu and when mouse hovers on main menu, submenu disappears
           document.activeElement.shadowRoot.activeElement.innerHTML ===
-            this._coordMenu.children[0].innerHTML)
+            this._copySubMenu.children[this._menuItems.CPYMENUMAP].innerHTML)
       ) {
         //"map" on submenu
-        this._coordMenu.children[2].focus();
+        this._copySubMenu.children[this._menuItems.CPYMENULOC].focus();
       } else if (
-        !this._coordMenu.hasAttribute('hidden') &&
+        !this._copySubMenu.hasAttribute('hidden') &&
         document.activeElement.shadowRoot.activeElement.innerHTML ===
-          this._coordMenu.children[1].innerHTML
+          this._copySubMenu.children[this._menuItems.CPYMENUEXTENT].innerHTML
       ) {
         //"extent" on submenu
-        this._coordMenu.children[0].focus();
+        this._copySubMenu.children[this._menuItems.CPYMENUMAP].focus();
       } else if (
-        !this._coordMenu.hasAttribute('hidden') &&
+        !this._copySubMenu.hasAttribute('hidden') &&
         document.activeElement.shadowRoot.activeElement.innerHTML ===
-          this._coordMenu.children[2].innerHTML
+          this._copySubMenu.children[this._menuItems.CPYMENULOC].innerHTML
       ) {
         //"Location" on submenu
-        this._coordMenu.children[1].focus();
+        this._copySubMenu.children[this._menuItems.CPYMENUEXTENT].focus();
       } else if (
         !this._layerMenu.hasAttribute('hidden') &&
         document.activeElement.shadowRoot.activeElement.innerHTML ===
-          this._layerMenu.children[0].innerHTML
+          this._layerMenu.children[this._menuItems.LYRZOOMTO].innerHTML
       ) {
         //"zoom to layer" on layermenu
-        this._layerMenu.children[1].focus();
+        this._layerMenu.children[this._menuItems.LYRCOPY].focus();
       } else if (!this._layerMenu.hasAttribute('hidden')) {
-        this._layerMenu.children[0].focus();
+        this._layerMenu.children[this._menuItems.LYRZOOMTO].focus();
       } else {
         if (this.activeIndex > 0) {
           let prevIndex = this.activeIndex - 1;
@@ -962,39 +1058,34 @@ export var ContextMenu = L.Handler.extend({
           this._setActiveItem(this._items.length - 1);
         }
       }
-    } else if (key === 40) {
-      //down arrow
+    } else if (e.code === 'ArrowDown' || e.code === 'Tab') {
       if (
-        !this._coordMenu.hasAttribute('hidden') &&
+        !this._copySubMenu.hasAttribute('hidden') &&
         (document.activeElement.shadowRoot === null ||
           document.activeElement.shadowRoot.activeElement.innerHTML ===
-            this._coordMenu.children[2].innerHTML)
+            this._copySubMenu.children[this._menuItems.CPYMENULOC].innerHTML)
       ) {
-        //"map" on submenu
-        this._coordMenu.children[0].focus();
+        this._copySubMenu.children[this._menuItems.CPYMENUMAP].focus();
       } else if (
-        !this._coordMenu.hasAttribute('hidden') &&
+        !this._copySubMenu.hasAttribute('hidden') &&
         document.activeElement.shadowRoot.activeElement.innerHTML ===
-          this._coordMenu.children[1].innerHTML
+          this._copySubMenu.children[this._menuItems.CPYMENUEXTENT].innerHTML
       ) {
-        //"extent" on submenu
-        this._coordMenu.children[2].focus();
+        this._copySubMenu.children[this._menuItems.CPYMENULOC].focus();
       } else if (
-        !this._coordMenu.hasAttribute('hidden') &&
+        !this._copySubMenu.hasAttribute('hidden') &&
         document.activeElement.shadowRoot.activeElement.innerHTML ===
-          this._coordMenu.children[0].innerHTML
+          this._copySubMenu.children[this._menuItems.CPYMENUMAP].innerHTML
       ) {
-        //"Location" on submenu
-        this._coordMenu.children[1].focus();
+        this._copySubMenu.children[this._menuItems.CPYMENUEXTENT].focus();
       } else if (
         !this._layerMenu.hasAttribute('hidden') &&
         document.activeElement.shadowRoot.activeElement.innerHTML ===
-          this._layerMenu.children[0].innerHTML
+          this._layerMenu.children[this._menuItems.LYRZOOMTO].innerHTML
       ) {
-        //"zoom to layer" on layermenu
-        this._layerMenu.children[1].focus();
+        this._layerMenu.children[this._menuItems.LYRCOPY].focus();
       } else if (!this._layerMenu.hasAttribute('hidden')) {
-        this._layerMenu.children[0].focus();
+        this._layerMenu.children[this._menuItems.LYRZOOMTO].focus();
       } else {
         if (this.activeIndex < this._items.length - 1) {
           //edge case at index 0
@@ -1027,82 +1118,85 @@ export var ContextMenu = L.Handler.extend({
           this._setActiveItem(nextIndex);
         }
       }
-    } else if (key === 39) {
-      //right arrow
+    } else if (e.code === 'ArrowRight') {
       if (
         document.activeElement.shadowRoot !== null &&
         document.activeElement.shadowRoot.activeElement.innerHTML ===
-          this._items[5].el.el.innerHTML && //'copy'
-        this._coordMenu.hasAttribute('hidden')
+          this._items[this._menuItems.CTXCOPY].el.el.innerHTML && //'copy'
+        this._copySubMenu.hasAttribute('hidden')
       ) {
-        this._showCoordMenu();
-        this._coordMenu.children[0].focus();
+        this._showCopySubMenu();
+        this._copySubMenu.children[0].focus();
       } else if (
         document.activeElement.shadowRoot.activeElement.innerHTML ===
-          this._items[5].el.el.innerHTML &&
-        !this._coordMenu.hasAttribute('hidden')
+          this._items[this._menuItems.CTXCOPY].el.el.innerHTML &&
+        !this._copySubMenu.hasAttribute('hidden')
       ) {
-        this._coordMenu.children[0].focus();
+        this._copySubMenu.children[0].focus();
       }
-    } else if (key === 37) {
-      //left arrow
+    } else if (e.code === 'ArrowLeft') {
       if (
-        !this._coordMenu.hasAttribute('hidden') &&
+        !this._copySubMenu.hasAttribute('hidden') &&
         document.activeElement.shadowRoot !== null
       ) {
         if (
           document.activeElement.shadowRoot.activeElement.innerHTML ===
-            this._coordMenu.children[0].innerHTML ||
+            this._copySubMenu.children[this._menuItems.CPYMENUMAP].innerHTML ||
           document.activeElement.shadowRoot.activeElement.innerHTML ===
-            this._coordMenu.children[1].innerHTML ||
+            this._copySubMenu.children[this._menuItems.CPYMENUEXTENT]
+              .innerHTML ||
           document.activeElement.shadowRoot.activeElement.innerHTML ===
-            this._coordMenu.children[2].innerHTML
+            this._copySubMenu.children[this._menuItems.CPYMENULOC].innerHTML
         ) {
-          this._coordMenu.setAttribute('hidden', '');
-          this._setActiveItem(5);
+          this._copySubMenu.setAttribute('hidden', '');
+          this._setActiveItem(this._menuItems.CTXCOPY);
         }
       }
-    } else if (key === 27) {
-      //esc key
+    } else if (e.code === 'Escape') {
+      if (this._layerMenuTabs) {
+        L.DomEvent.stop(e);
+        this._focusOnLayerControl();
+        return;
+      }
       if (document.activeElement.shadowRoot === null) {
         this._hide();
       } else {
-        if (!this._coordMenu.hasAttribute('hidden')) {
+        if (!this._copySubMenu.hasAttribute('hidden')) {
           if (
             document.activeElement.shadowRoot.activeElement.innerHTML ===
-              this._coordMenu.children[0].innerHTML ||
+              this._copySubMenu.children[this._menuItems.CPYMENUMAP]
+                .innerHTML ||
             document.activeElement.shadowRoot.activeElement.innerHTML ===
-              this._coordMenu.children[1].innerHTML ||
+              this._copySubMenu.children[this._menuItems.CPYMENUEXTENT]
+                .innerHTML ||
             document.activeElement.shadowRoot.activeElement.innerHTML ===
-              this._coordMenu.children[2].innerHTML
+              this._copySubMenu.children[this._menuItems.CPYMENULOC].innerHTML
           ) {
-            this._coordMenu.setAttribute('hidden', '');
-            this._setActiveItem(5);
+            this._copySubMenu.setAttribute('hidden', '');
+            this._setActiveItem(this._menuItems.CTXCOPY);
           }
         } else {
           this._hide();
         }
       }
     } else if (
-      key !== 16 &&
-      key !== 9 &&
-      !(
-        !this._layerClicked.className.includes('mapml-layer-item') && key === 67
-      ) &&
-      path[0].innerText !== M.options.locale.cmCopyCoords + ' (C)'
+      e.code !== 'KeyC' &&
+      document.activeElement.shadowRoot.activeElement.innerHTML !==
+        this._items[this._menuItems.CTXCOPY].el.el.innerHTML
     ) {
       this._hide();
     }
-    switch (key) {
-      case 13: //ENTER KEY
+    // using KeyboardEvent.code for its mnemonics and case-independence
+    switch (e.code) {
+      case 'Enter':
         if (
           document.activeElement.shadowRoot.activeElement.innerHTML ===
-          this._items[5].el.el.innerHTML
+          this._items[this._menuItems.CTXCOPY].el.el.innerHTML
         ) {
           this._copyCoords({
             latlng: this._map.getCenter()
           });
-          this._coordMenu.firstChild.focus();
+          this._copySubMenu.firstChild.focus();
         } else {
           if (
             this._map._container.parentNode.activeElement.parentNode.classList.contains(
@@ -1112,7 +1206,7 @@ export var ContextMenu = L.Handler.extend({
             this._map._container.parentNode.activeElement.click();
         }
         break;
-      case 32: //SPACE KEY
+      case 'Space':
         if (
           this._map._container.parentNode.activeElement.parentNode.classList.contains(
             'mapml-contextmenu'
@@ -1120,45 +1214,46 @@ export var ContextMenu = L.Handler.extend({
         )
           this._map._container.parentNode.activeElement.click();
         break;
-      case 67: //C KEY
+      case 'KeyC':
         this._copyCoords({
           latlng: this._map.getCenter()
         });
-        this._coordMenu.firstChild.focus();
+        this._copySubMenu.firstChild.focus();
         break;
-      case 68: //D KEY
+      case 'KeyD':
         this._toggleDebug(e);
         break;
-      case 77: //M KEY
+      case 'KeyM':
         this._copyMapML(e);
         break;
-      case 76: //L KEY
+      case 'KeyL':
         if (this._layerClicked.className.includes('mapml-layer-item'))
           this._copyLayer(e);
         break;
-      case 70: //F KEY
+      case 'KeyF':
         this._toggleFullScreen(e);
         break;
-      case 80: //P KEY
+      case 'KeyP':
         this._paste(e);
         break;
-      case 84: //T KEY
+      case 'KeyT':
         this._toggleControls(e);
         break;
-      case 86: //V KEY
+      case 'KeyV':
         this._viewSource(e);
         break;
-      case 90: //Z KEY
-        if (this._layerClicked.className.includes('mapml-layer-item'))
+      case 'KeyZ':
+        if (this._layerClicked.className.includes('mapml-layer-item')) {
           this._zoomToLayer(e);
+        }
         break;
     }
   },
 
-  _showCoordMenu: function (e) {
+  _showCopySubMenu: function (e) {
     let mapSize = this._map.getSize(),
       click = this._clickEvent,
-      menu = this._coordMenu,
+      menu = this._copySubMenu,
       copyEl = this._items[5].el.el;
 
     copyEl.setAttribute('aria-expanded', 'true');
@@ -1179,7 +1274,7 @@ export var ContextMenu = L.Handler.extend({
     menu.style.bottom = 'auto';
   },
 
-  _hideCoordMenu: function (e) {
+  _hideCopySubMenu: function (e) {
     if (
       !e.relatedTarget ||
       !e.relatedTarget.parentElement ||
@@ -1187,7 +1282,7 @@ export var ContextMenu = L.Handler.extend({
       e.relatedTarget.classList.contains('mapml-submenu')
     )
       return;
-    let menu = this._coordMenu,
+    let menu = this._copySubMenu,
       copyEl = this._items[4].el.el;
     copyEl.setAttribute('aria-expanded', 'false');
     menu.setAttribute('hidden', '');
@@ -1197,12 +1292,12 @@ export var ContextMenu = L.Handler.extend({
   _onItemMouseOver: function (e) {
     L.DomUtil.addClass(e.target || e.srcElement, 'over');
     if (e.srcElement.innerText === M.options.locale.cmCopyCoords + ' (C)')
-      this._showCoordMenu(e);
+      this._showCopySubMenu(e);
   },
 
   _onItemMouseOut: function (e) {
     L.DomUtil.removeClass(e.target || e.srcElement, 'over');
-    this._hideCoordMenu(e);
+    this._hideCopySubMenu(e);
   },
 
   toggleContextMenuItem: function (options, state) {
