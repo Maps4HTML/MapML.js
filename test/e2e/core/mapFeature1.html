@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>map-feature Event tests</title>
+  <meta charset="UTF-8">
+  <script type="module" src="mapml-viewer.js"></script>
+</head>
+
+<body>
+	<mapml-viewer width="500" height="500" projection="OSMTILE" zoom="10" lon="-75.7" lat="45.4" controls>
+		<layer- label="Features" checked>
+			<map-meta name="projection" content="OSMTILE"></map-meta>
+			<map-feature>
+				<map-featurecaption>Polygon</map-featurecaption>
+				<map-geometry cs="gcrs">
+					<map-polygon class="polygon">
+						<map-coordinates>-75.5859375 45.4656690 -75.6813812 45.4533876 -75.6961441 45.4239978
+							-75.7249832 45.4083331 -75.7792282 45.3772317 -75.7534790 45.3294614 -75.5831909 45.3815724
+							-75.6024170 45.4273712 -75.5673981 45.4639834 -75.5859375 45.4656690</map-coordinates>
+					</map-polygon>
+				</map-geometry>
+				<map-properties>
+					<h2>This is a Polygon</h2>
+				</map-properties>
+			</map-feature>
+
+			<map-feature>
+				<map-featurecaption>Line</map-featurecaption>
+				<map-geometry cs="gcrs">
+					<map-linestring class="line">
+						<map-coordinates>-75.6168365 45.471929 -75.6855011 45.458445 -75.7016373 45.4391764 -75.7030106
+							45.4259255 -75.7236099 45.4208652 -75.7565689 45.4117074 -75.7833481 45.384225 -75.8197403
+							45.3714435 -75.8516693 45.377714</map-coordinates>
+					</map-linestring>
+				</map-geometry>
+				<map-properties>
+					<h2>This is a Line</h2>
+				</map-properties>
+			</map-feature>
+
+			<map-feature>
+				<map-featurecaption>Point</map-featurecaption>
+				<map-geometry cs="gcrs">
+					<map-point class="point">
+						<map-coordinates>-75.6916809 45.4186964</map-coordinates>
+					</map-point>
+				</map-geometry>
+				<map-properties>
+					<h2>This is a Point</h2>
+				</map-properties>
+			</map-feature>
+		</layer->
+	</mapml-viewer>
+	
+	<div id="property"></div>
+	
+	<script>
+		function preventDefaultFunc(e) {
+			e.originalEvent.stopPropagation();
+			let out = document.getElementById('property');
+			out.innerHTML = e.srcElement.querySelector("map-properties").innerHTML;
+		}
+		// Replace map-feature click handling
+		document.querySelectorAll('map-feature').forEach((f) => {
+			f.onclick = preventDefaultFunc;
+		});
+	</script>
+</body>
+
+</html>
