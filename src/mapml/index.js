@@ -75,7 +75,7 @@ import { FeatureGroup, featureGroup } from './features/featureGroup';
 import { AnnounceMovement } from './handlers/AnnounceMovement';
 import { FeatureIndex } from './handlers/FeatureIndex';
 import { Options } from './options';
-import './keyboard';
+import './handlers/keyboard';
 import {
   featureIndexOverlay,
   FeatureIndexOverlay
