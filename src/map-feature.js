@@ -1,6 +1,6 @@
 export class MapFeature extends HTMLElement {
   static get observedAttributes() {
-    return ['zoom', 'onfocus', 'onclick', 'onblur'];
+    return ['zoom', 'min', 'max'];
   }
 
   get zoom() {

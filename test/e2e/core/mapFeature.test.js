@@ -328,4 +328,27 @@ test.describe('MapFeature Events', () => {
     // check custom event is displaying properties
     expect(propertyDiv).toEqual('This is a Polygon');
   });
+
+  test('click() method - stopPropagation', async () => {
+    // click() method on line feature
+    await page.$eval(
+      'body > mapml-viewer > layer- > map-feature#line',
+      (line) => line.click()
+    );
+
+    const popupCount = await page.$eval(
+      'body > mapml-viewer > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
+      (popupPane) => popupPane.childElementCount
+    );
+    // expect no popup is binded
+    expect(popupCount).toEqual(0);
+
+    // custom click property displaying on div
+    const propertyDiv = await page.$eval(
+      'body > div#property',
+      (div) => div.firstElementChild.innerText
+    );
+    // check custom event is displaying properties
+    expect(propertyDiv).toEqual('This is a Line');
+  });
 });
