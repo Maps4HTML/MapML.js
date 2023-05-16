@@ -549,17 +549,14 @@ export class MapFeature extends HTMLElement {
   }
 
   // a method that simulates a click, or invoking the user-defined click event
-  //      event (optional): a MouseEvent object, can be passed as an argument of the user-defined click event handlers
-  click(event) {
+  click() {
     let g = this._groupEl,
       rect = g.getBoundingClientRect();
-    if (!event) {
-      event = new MouseEvent('click', {
-        clientX: rect.x + rect.width / 2,
-        clientY: rect.y + rect.height / 2,
-        button: 0
-      });
-    }
+    let event = new MouseEvent('click', {
+      clientX: rect.x + rect.width / 2,
+      clientY: rect.y + rect.height / 2,
+      button: 0
+    });
     let properties = this.querySelector('map-properties');
     if (g.getAttribute('role') === 'link') {
       for (let path of g.children) {
@@ -592,25 +589,15 @@ export class MapFeature extends HTMLElement {
   }
 
   // a method that sets the current focus to the <g> element, or invoking the user-defined focus event
-  //      event (optional): a FocusEvent object, can be passed as an argument of the user-defined focus event handlers
   //      options (optional): as options parameter for native HTMLelemnt
   //                          https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus
-  focus(event, options) {
-    let g = this._groupEl;
-    if (typeof this.onfocus === 'function') {
-      this.onfocus.call(this._groupEl, event);
-      return;
-    } else {
-      g.focus(options);
-    }
+  focus(options) {
+    this._groupEl.focus(options);
   }
 
   // a method that makes the <g> element lose focus, or invoking the user-defined blur event
-  //      event (optional): a FocusEvent object, can be passed as an argument of the user-defined blur event handlers
-  blur(event) {
-    if (typeof this.onblur === 'function') {
-      this.onblur.call(this._groupEl, event);
-    } else if (
+  blur() {
+    if (
       document.activeElement.shadowRoot?.activeElement === this._groupEl ||
       document.activeElement.shadowRoot?.activeElement.parentNode ===
         this._groupEl
