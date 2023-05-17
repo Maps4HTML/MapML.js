@@ -265,7 +265,7 @@ export class MapFeature extends HTMLElement {
   }
 
   _setUpEvents() {
-    ['click', 'focus', 'blur'].forEach((name) => {
+    ['click', 'focus', 'blur', 'keyup', 'keydown'].forEach((name) => {
       // when <g> is clicked / focused / blurred
       // should dispatch the click / focus / blur event listener on **linked HTMLFeatureElements**
       this._groupEl.addEventListener(name, (e) => {
@@ -274,6 +274,10 @@ export class MapFeature extends HTMLElement {
           let clickEv = new PointerEvent(name, { cancelable: true });
           clickEv.originalEvent = e;
           this.dispatchEvent(clickEv);
+        } else if (name === 'keyup' || name === 'keydown') {
+          let keyEv = new KeyboardEvent(name, { cancelable: true });
+          keyEv.originalEvent = e;
+          this.dispatchEvent(keyEv);
         } else {
           // dispatch a cloned focusevent to trigger the focus/blue event handlers set on HTMLFeatureElement
           let focusEv = new FocusEvent(name, { cancelable: true });
@@ -589,7 +593,7 @@ export class MapFeature extends HTMLElement {
   }
 
   // a method that sets the current focus to the <g> element, or invoking the user-defined focus event
-  //      options (optional): as options parameter for native HTMLelemnt
+  //      options (optional): as options parameter for native HTMLElement
   //                          https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus
   focus(options) {
     this._groupEl.focus(options);
