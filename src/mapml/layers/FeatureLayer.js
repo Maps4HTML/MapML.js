@@ -130,7 +130,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         M._metaContentToObject(
           mapml.querySelector('map-meta[name=cs]').getAttribute('content')
         ).content) ||
-      'PCRS';
+      'GCRS';
     return { zoom: nativeZoom, cs: nativeCS };
   },
 

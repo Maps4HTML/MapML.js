@@ -310,7 +310,7 @@ export class MapFeature extends HTMLElement {
       if (this._extentEl.querySelector('map-link[rel=query]')) {
         // for query, fallback zoom is the current map zoom level that the query is returned
         nativeZoom = this._map.getZoom();
-        nativeCS = 'pcrs';
+        nativeCS = 'gcrs';
       } else if (this._extentEl.querySelector('map-link[rel=features]')) {
         // for templated feature, read fallback from the fetched mapml's map-meta[name=zoom / cs]
         nativeZoom = this._extentEl._nativeZoom;
@@ -340,7 +340,7 @@ export class MapFeature extends HTMLElement {
           csLength = csMeta?.length;
         nativeCS = csLength
           ? csMeta[csLength - 1].getAttribute('content')
-          : 'pcrs';
+          : 'gcrs';
         return { zoom: nativeZoom, cs: nativeCS };
       }
     }
