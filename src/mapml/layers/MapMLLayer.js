@@ -2057,6 +2057,7 @@ export var MapMLLayer = L.Layer.extend({
         if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
         e.preventDefault();
         featureEl.zoomTo();
+        featureEl._map.closePopup();
       };
       content.insertBefore(
         zoomLink,
