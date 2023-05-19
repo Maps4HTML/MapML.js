@@ -304,6 +304,12 @@ test.describe('Playwright Query Link Tests', () => {
       await page.keyboard.press('Enter');
       await page.waitForTimeout(200);
 
+      // zoom to here link closes popup
+      const popupCount = await page.evaluate(
+        `document.querySelector("mapml-viewer").shadowRoot.querySelector(".leaflet-popup-pane").childElementCount`
+      );
+      expect(popupCount).toBe(0);
+
       const endTopLeft = await page.evaluate(
         `document.querySelector('mapml-viewer').extent.topLeft.pcrs`
       );

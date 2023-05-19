@@ -292,3 +292,63 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
     expect(test).toEqual(true);
   });
 });
+
+test.describe('MapFeature Events', () => {
+  let page, context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    page =
+      context.pages().find((page) => page.url() === 'about:blank') ||
+      (await context.newPage());
+    await page.goto('mapFeature1.html');
+  });
+  test.afterAll(async function () {
+    await context.close();
+  });
+
+  test('Custom Click event - stopPropagation', async () => {
+    // Click on polygon
+    await page
+      .locator(
+        'mapml-viewer[role="application"]:has-text("Polygon -75.5859375 45.4656690 -75.6813812 45.4533876 -75.6961441 45.4239978 -75")'
+      )
+      .click();
+    const popupCount = await page.$eval(
+      'body > mapml-viewer > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
+      (popupPane) => popupPane.childElementCount
+    );
+    // expect no popup is binded
+    expect(popupCount).toEqual(0);
+
+    // custom click property displaying on div
+    const propertyDiv = await page.$eval(
+      'body > div#property',
+      (div) => div.firstElementChild.innerText
+    );
+    // check custom event is displaying properties
+    expect(propertyDiv).toEqual('This is a Polygon');
+  });
+
+  test('click() method - stopPropagation', async () => {
+    // click() method on line feature
+    await page.$eval(
+      'body > mapml-viewer > layer- > map-feature#line',
+      (line) => line.click()
+    );
+
+    const popupCount = await page.$eval(
+      'body > mapml-viewer > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
+      (popupPane) => popupPane.childElementCount
+    );
+    // expect no popup is binded
+    expect(popupCount).toEqual(0);
+
+    // custom click property displaying on div
+    const propertyDiv = await page.$eval(
+      'body > div#property',
+      (div) => div.firstElementChild.innerText
+    );
+    // check custom event is displaying properties
+    expect(propertyDiv).toEqual('This is a Line');
+  });
+});
