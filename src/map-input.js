@@ -1,4 +1,4 @@
-import { MapLink } from './map-link.js';
+import { ZoomInput } from './zoomInput.js';
 
 export class MapInput extends HTMLElement {
   static get observedAttributes() {
@@ -89,7 +89,7 @@ export class MapInput extends HTMLElement {
     }
   }
   get step() {
-    return this.getAttribute('step');
+    return this.getAttribute('step') || 1;
   }
   set step(val) {
     if (val) {
@@ -97,6 +97,7 @@ export class MapInput extends HTMLElement {
     }
   }
   attributeChangedCallback(name, oldValue, newValue) {
+    console.log(name);
     switch (name) {
       case 'name':
         if (oldValue !== newValue) {
@@ -154,7 +155,64 @@ export class MapInput extends HTMLElement {
     // Always call super first in constructor
     super();
   }
-  connectedCallback() {}
+  connectedCallback() {
+    switch (this.type) {
+      case 'zoom':
+        // input will store the input Class specific to the input type
+        this.input = new ZoomInput(
+          this.name,
+          this.min,
+          this.max,
+          this.value,
+          this.step
+        );
+        break;
+      case 'location':
+        //this.input = ...
+        break;
+      case 'width':
+        //this.input = ...
+        break;
+      case 'height':
+        //this.input = ...
+        break;
+      case 'hidden':
+        //this.input = ...
+        break;
+    }
+  }
   disconnectedCallback() {}
+
+  //https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/checkValidity
+  checkValidity() {
+    if (this.input.validateInput()) {
+      return true;
+    } else {
+      const evt = new Event('invalid', {
+        bubbles: true,
+        cancelable: true,
+        composed: true
+      });
+      this.dispatchEvent(evt);
+      return false;
+    }
+  }
+
+  //https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/reportValidity
+  reportValidity() {
+    if (this.input.validateInput()) {
+      return true;
+    } else {
+      const evt = new Event('invalid', {
+        bubbles: true,
+        cancelable: true,
+        composed: true
+      });
+      this.dispatchEvent(evt);
+      //if the event isn't canceled reports the problem to the user.
+      // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#dom-cva-reportvalidity-dev
+      console.log("Input type='" + this.type + "' is not valid!");
+      return false;
+    }
+  }
 }
-window.customElements.define('map-input', MapInput);
