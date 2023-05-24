@@ -5,6 +5,7 @@ import { MapLayer } from './layer.js';
 import { MapCaption } from './map-caption.js';
 import { MapFeature } from './map-feature.js';
 import { MapExtent } from './map-extent.js';
+import { MapInput } from './map-input.js';
 
 export class MapViewer extends HTMLElement {
   static get observedAttributes() {
@@ -1389,3 +1390,4 @@ window.customElements.define('layer-', MapLayer);
 window.customElements.define('map-caption', MapCaption);
 window.customElements.define('map-feature', MapFeature);
 window.customElements.define('map-extent', MapExtent);
+window.customElements.define('map-input', MapInput);

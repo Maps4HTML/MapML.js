@@ -29,6 +29,8 @@ module.exports = function(grunt) {
           'dist/map-caption.js':  ['src/map-caption.js'],
           'dist/map-feature.js':  ['src/map-feature.js'],
           'dist/map-extent.js':   ['src/map-extent.js'],
+          'dist/map-input.js':    ['src/map-input.js'],
+          'dist/zoomInput.js':    ['src/mapml/elementSupport/inputs/zoomInput.js'],
           'dist/map-area.js':     ['src/map-area.js'],
           'dist/layer.js':        ['src/layer.js'],
           'dist/leaflet.js':      ['dist/leaflet-src.js',
