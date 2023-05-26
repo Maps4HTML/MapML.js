@@ -1,4 +1,8 @@
 import { ZoomInput } from './zoomInput.js';
+import { HiddenInput } from './hiddenInput.js';
+import { WidthInput } from './widthInput.js';
+import { HeightInput } from './heightInput.js';
+import { LocationInput } from './locationInput.js';
 
 export class MapInput extends HTMLElement {
   static get observedAttributes() {
@@ -33,7 +37,7 @@ export class MapInput extends HTMLElement {
     }
   }
   get value() {
-    return this.getAttribute('value');
+    return this.input.getValue();
   }
   set value(val) {
     if (val) {
@@ -73,7 +77,26 @@ export class MapInput extends HTMLElement {
     }
   }
   get min() {
-    return this.getAttribute('min');
+    if (
+      this.type === 'height' ||
+      this.type === 'width' ||
+      this.type === 'hidden'
+    ) {
+      return null;
+    }
+    if (this.getAttribute('min')) {
+      return this.getAttribute('min');
+    } else if (this._layer._layerEl.querySelector('map-meta[name=zoom]')) {
+      // fallback map-meta on layer
+      return M._metaContentToObject(
+        this._layer._layerEl
+          .querySelector('map-meta[name=zoom]')
+          .getAttribute('content')
+      ).min;
+    } else {
+      // fallback map min
+      return this._layer._map.getMinZoom().toString();
+    }
   }
   set min(val) {
     if (val) {
@@ -81,7 +104,26 @@ export class MapInput extends HTMLElement {
     }
   }
   get max() {
-    return this.getAttribute('max');
+    if (
+      this.type === 'height' ||
+      this.type === 'width' ||
+      this.type === 'hidden'
+    ) {
+      return null;
+    }
+    if (this.getAttribute('max')) {
+      return this.getAttribute('max');
+    } else if (this._layer._layerEl.querySelector('map-meta[name=zoom]')) {
+      // fallback map-meta on layer
+      return M._metaContentToObject(
+        this._layer._layerEl
+          .querySelector('map-meta[name=zoom]')
+          .getAttribute('content')
+      ).max;
+    } else {
+      // fallback map max
+      return this._layer._map.getMaxZoom().toString();
+    }
   }
   set max(val) {
     if (val) {
@@ -89,7 +131,11 @@ export class MapInput extends HTMLElement {
     }
   }
   get step() {
-    return this.getAttribute('step') || 1;
+    if (this.type !== 'zoom') {
+      return null;
+    } else {
+      return this.getAttribute('step') || '1';
+    }
   }
   set step(val) {
     if (val) {
@@ -97,11 +143,13 @@ export class MapInput extends HTMLElement {
     }
   }
   attributeChangedCallback(name, oldValue, newValue) {
-    console.log(name);
     switch (name) {
       case 'name':
         if (oldValue !== newValue) {
-          // handle side effects
+          // update associated class value on attribute change
+          if (oldValue !== null) {
+            this.input.name = newValue;
+          }
         }
         break;
       case 'type':
@@ -111,7 +159,11 @@ export class MapInput extends HTMLElement {
         break;
       case 'value':
         if (oldValue !== newValue) {
-          // handle side effects
+          if (oldValue !== null) {
+            this.input.value = newValue;
+          } else {
+            this._initValue = newValue;
+          }
         }
         break;
       case 'axis':
@@ -156,6 +208,9 @@ export class MapInput extends HTMLElement {
     super();
   }
   connectedCallback() {
+    if (this.parentElement.nodeName === 'MAP-EXTENT') {
+      this._layer = this.parentElement._layer;
+    }
     switch (this.type) {
       case 'zoom':
         // input will store the input Class specific to the input type
@@ -163,21 +218,35 @@ export class MapInput extends HTMLElement {
           this.name,
           this.min,
           this.max,
-          this.value,
-          this.step
+          this._initValue,
+          this.step,
+          this._layer
         );
         break;
       case 'location':
-        //this.input = ...
+        // input will store the input Class specific to the input type
+        this.input = new LocationInput(
+          this.name,
+          this.position,
+          this.axis,
+          this.units,
+          this.min,
+          this.max,
+          this.rel,
+          this._layer
+        );
         break;
       case 'width':
-        //this.input = ...
+        // input will store the input Class specific to the input type
+        this.input = new WidthInput(this.name, this._layer);
         break;
       case 'height':
-        //this.input = ...
+        // input will store the input Class specific to the input type
+        this.input = new HeightInput(this.name, this._layer);
         break;
       case 'hidden':
-        //this.input = ...
+        // input will store the input Class specific to the input type
+        this.input = new HiddenInput(this.name, this._initValue);
         break;
     }
   }
