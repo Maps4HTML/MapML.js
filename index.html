@@ -105,5 +105,39 @@
       </map-extent>
     </layer->
   </mapml-viewer>
+
+
+  <mapml-viewer style="width: 500px;height: 500px;" is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040"
+    lon="-75.2202344" controls>
+    <layer- id="query" label="Fire" checked>
+      <map-extent units="CBMTILE">
+        <map-input name="z" type="zoom" value="18" min="0" max="18" ></map-input>
+        <map-input name="txmin" type="location" units="tilematrix" position="top-left" axis="easting" min="-2.003750834E7"
+          max="2.003750834E7" ></map-input>
+        <map-input name="tymin" type="location" units="tilematrix" position="bottom-left" axis="northing"
+          min="-2.003750834E7" max="2.003750834E7" ></map-input>
+        <map-input name="txmax" type="location" units="tilematrix" position="top-right" axis="easting" min="-2.003750834E7"
+          max="2.003750834E7" ></map-input>
+        <map-input name="tymax" type="location" units="tilematrix" position="top-left" axis="northing" min="-2.003750834E7"
+          max="2.003750834E7" ></map-input>
+        <map-link rel="tile"
+                  tref="https://cwfis.cfs.nrcan.gc.ca/geoserver/public/wms?service=WMS&version=1.3.0&request=GetMap&layers=public:fdr_current&styles=&bbox={txmin},{tymin},{txmax},{tymax}&width=256&height=256&crs=EPSG:3978&FORMAT=image/png&TRANSPARENT=TRUE&m4h=t" ></map-link>
+        <map-input name="i" type="location" units="map" axis="i" ></map-input>
+        <map-input name="j" type="location" units="map" axis="j" ></map-input>
+        <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="-2.003750834E7"
+          max="2.003750834E7" ></map-input>
+        <map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" min="-2.003750834E7"
+          max="2.003750834E7" ></map-input>
+        <map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" min="-2.003750834E7"
+          max="2.003750834E7" ></map-input>
+        <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="-2.003750834E7"
+          max="2.003750834E7" ></map-input>
+        <map-input name="w" type="width" ></map-input>
+        <map-input name="h" type="height" ></map-input>
+        <map-link rel="query"
+                  tref="https://cwfis.cfs.nrcan.gc.ca/geoserver/public/wms?i={i}&j={j}&service=WMS&version=1.3.0&request=GetFeatureInfo&layers=public:fdr_current&QUERY_LAYERS=current:fdr_current&styles=&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}&srs=EPSG:3978&INFO_FORMAT=text/html&m4h=t" ></map-link>
+      </map-extent>
+    </layer->
+  </mapml-viewer>
   </body>
 </html>
