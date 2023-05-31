@@ -95,7 +95,7 @@ export class MapInput extends HTMLElement {
       ).min;
     } else {
       // fallback map min
-      return this._layer._map.getMinZoom().toString();
+      return this._layer._layerEl.extent.zoom.minZoom.toString();
     }
   }
   set min(val) {
@@ -122,7 +122,7 @@ export class MapInput extends HTMLElement {
       ).max;
     } else {
       // fallback map max
-      return this._layer._map.getMaxZoom().toString();
+      return this._layer._layerEl.extent.zoom.maxZoom.toString();
     }
   }
   set max(val) {
@@ -155,6 +155,7 @@ export class MapInput extends HTMLElement {
       case 'type':
         if (oldValue !== newValue) {
           // handle side effects
+          // not allowed to change 'type'
         }
         break;
       case 'value':
@@ -162,43 +163,50 @@ export class MapInput extends HTMLElement {
           if (oldValue !== null) {
             this.input.value = newValue;
           } else {
-            this._initValue = newValue;
+            this.initialValue = newValue;
           }
         }
         break;
       case 'axis':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.axis = newValue;
         }
         break;
       case 'units':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.units = newValue;
         }
         break;
       case 'position':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.position = newValue;
         }
         break;
       case 'rel':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.rel = newValue;
         }
         break;
       case 'min':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.min = newValue;
         }
         break;
       case 'max':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.max = newValue;
         }
         break;
       case 'step':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.step = newValue;
         }
         break;
     }
@@ -218,7 +226,7 @@ export class MapInput extends HTMLElement {
           this.name,
           this.min,
           this.max,
-          this._initValue,
+          this.initialValue,
           this.step,
           this._layer
         );
@@ -246,7 +254,7 @@ export class MapInput extends HTMLElement {
         break;
       case 'hidden':
         // input will store the input Class specific to the input type
-        this.input = new HiddenInput(this.name, this._initValue);
+        this.input = new HiddenInput(this.name, this.initialValue);
         break;
     }
   }
