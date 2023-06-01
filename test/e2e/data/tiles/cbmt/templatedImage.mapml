@@ -3,7 +3,7 @@
     <map-title>Toporama</map-title>
     <map-meta charset="utf-8"></map-meta>
     <map-link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/atlas-canada/read-about-topographic-maps/16840#topolicensing" title="Toporama © Natural Resources Canada"></map-link>
-    <map-link rel="legend" href="http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&amp;REQUEST=GetLegendGraphic&amp;LAYER=WMS-Toporama&amp;VERSION=1.1&amp;FORMAT=image/png"></map-link>
+    <map-link rel="legend" href="http://maps.geogratis.gc.ca/wms/toporama_en?SERVICE=WMS&amp;REQUEST=GetLegendGraphic&amp;LAYER=WMS-Toporama&amp;VERSION=1.1&amp;FORMAT=image/png"></map-link>
   </map-head>
   <map-body>
     <map-extent units="CBMTILE">
@@ -14,7 +14,7 @@
       <map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" min="28448056.0" max="42672085.0"></map-input>
       <map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" min="28448056.0" max="38608077.0"></map-input>
       <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" min="28448056.0" max="42672085.0"></map-input>
-      <map-link rel="image" tref="http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&amp;REQUEST=GetMap&amp;FORMAT=image/jpeg&amp;TRANSPARENT=FALSE&amp;STYLES=&amp;VERSION=1.3.0&amp;LAYERS=WMS-Toporama&amp;WIDTH={w}&amp;HEIGHT={h}&amp;CRS=EPSG:3978&amp;BBOX={xmin},{ymin},{xmax},{ymax}&amp;m4h=t"></map-link>
+      <map-link rel="image" tref="http://maps.geogratis.gc.ca/wms/toporama_en?SERVICE=WMS&amp;REQUEST=GetMap&amp;FORMAT=image/jpeg&amp;TRANSPARENT=FALSE&amp;STYLES=&amp;VERSION=1.3.0&amp;LAYERS=WMS-Toporama&amp;WIDTH={w}&amp;HEIGHT={h}&amp;CRS=EPSG:3978&amp;BBOX={xmin},{ymin},{xmax},{ymax}&amp;m4h=t"></map-link>
     </map-extent>
   </map-body>
 </mapml->
