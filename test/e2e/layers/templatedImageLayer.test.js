@@ -65,4 +65,17 @@ test.describe('Playwright templatedImage Layer Tests', () => {
     };
     expect(imagePos).toEqual(expectedPos);
   });
+  test('Templated image layer - remove previous image on moveend', async () => {
+    await page.click('body > map');
+    // generate a few map moves
+    await page.keyboard.press('ArrowUp');
+    await page.keyboard.press('ArrowLeft');
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowDown');
+    await page.waitForLoadState('networkidle');
+    const images = await page.locator(
+      '.mapml-templatedlayer-container > .mapml-image-container > .leaflet-image-loaded'
+    );
+    await expect(images).toHaveCount(1);
+  });
 });
