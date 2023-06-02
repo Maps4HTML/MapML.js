@@ -90,4 +90,8 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
       expectedGCRSSecondLayer.bottomRight
     );
   });
+  test("Layer with no map-meta's is rendered on map", async () => {
+    let vector = await page.locator('.mapml-vector-container > svg');
+    await expect(vector).toHaveCount(1);
+  });
 });
