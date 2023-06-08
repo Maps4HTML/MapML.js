@@ -6,6 +6,8 @@ import { MapArea } from './map-area.js';
 import { MapCaption } from './map-caption.js';
 import { MapFeature } from './map-feature.js';
 import { MapExtent } from './map-extent.js';
+import { MapInput } from './map-input.js';
+import { MapLink } from './map-link.js';
 
 export class WebMap extends HTMLMapElement {
   static get observedAttributes() {
@@ -1371,3 +1373,5 @@ window.customElements.define('map-area', MapArea, { extends: 'area' });
 window.customElements.define('map-caption', MapCaption);
 window.customElements.define('map-feature', MapFeature);
 window.customElements.define('map-extent', MapExtent);
+window.customElements.define('map-input', MapInput);
+window.customElements.define('map-link', MapLink);
