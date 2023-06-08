@@ -30,6 +30,8 @@ module.exports = function(grunt) {
           'dist/map-feature.js':  ['src/map-feature.js'],
           'dist/map-extent.js':   ['src/map-extent.js'],
           'dist/map-input.js':    ['src/map-input.js'],
+          'dist/map-link.js':    ['src/map-link.js'],
+          // temporary, will be bundled into mapml.js possibly
           'dist/zoomInput.js':    ['src/mapml/elementSupport/inputs/zoomInput.js'],
           'dist/hiddenInput.js':  ['src/mapml/elementSupport/inputs/hiddenInput.js'],
           'dist/widthInput.js':   ['src/mapml/elementSupport/inputs/widthInput.js'],
