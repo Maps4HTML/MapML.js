@@ -72,25 +72,58 @@
      </noscript> 
   </head>
   <body>
-<mapml-viewer projection="OSMTILE" zoom="10" lon="-75.7" lat="45.4" controls="">
-  <layer- label="OpenStreetMap" src="https://maps4html.org/web-map-doc/demo/data/osm.mapml" checked=""></layer->
-  
-  <layer- label="Polygon" checked>
-    <map-meta name="projection" content="OSMTILE"></map-meta>
-    <map-meta name="zoom" content="min=10,max=11"></map-meta>
-    <map-feature zoom="10">
-      <map-featurecaption>Click me!</map-featurecaption>
-      <!-- Setting the geometry coordinates to gcrs, as the default is pcrs -->
-      <map-geometry>
-        <map-a href="#15, -75.699, 45.420">
-          <map-polygon class="polygon">
-            <map-coordinates>-75.8242035 45.3526278 -75.6793213 45.4572409 -75.5680847 45.4692806 -75.6092834 45.4215881 -75.5756378 45.3810901 -75.7946777 45.3120804</map-coordinates>
-          </map-polygon>
-        </map-a>
-      </map-geometry>
-      <map-properties></map-properties>
-    </map-feature>
-  </layer->
+    <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls controlslist="nofullscreen geolocation">
+      <map-caption>A pleasing map of Canada</map-caption>
+      <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
+      <layer- label="Hat Guy" checked>
+        <map-feature id="twohats" zoom="15" class="twohats">
+        <map-properties>
+          <table>
+            <tr>
+              <th>code</th>
+              <td>1200020</td>
+            </tr>
+            <tr>
+              <th>accuracy</th>
+              <td>26</td>
+            </tr>
+            <tr>
+              <th>valdate</th>
+              <td>1995</td>
+            </tr>
+            <tr>
+              <th>image</th>
+              <td><a href="https://www.veterans.gc.ca/eng/remembrance/memorials/national-inventory-canadian-memorials/details/9304">
+                <img src="https://www.veterans.gc.ca/images/remembrance/memorials/national-inventory-canadian-memorials/mem/35059-173a.jpg" width="60" height="60"/>
+              </a>
+              </td>
+            </tr>
+            <tr>
+              <th>theme</th>
+              <td>FO</td>
+            </tr>
+            <tr>
+              <th>type</th>
+              <td>2</td>
+            </tr>
+            <tr>
+              <th>elevation</th>
+              <td>61</td>
+            </tr>
+            <tr>
+              <th>altiaccu</th>
+              <td>5</td>
+            </tr>
+          </table>
+        </map-properties>
+        <map-geometry>
+          <map-point>
+            <map-coordinates>-75.705278 45.397778</map-coordinates>
+          </map-point>
+        </map-geometry>
+      </map-feature>
+      </layer->
+    </mapml-viewer>-->
 
 
     
@@ -115,7 +148,7 @@
   </mapml-viewer>
 
 
-  <mapml-viewer style="width: 500px;height: 500px;" is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040"
+  <!--<mapml-viewer style="width: 500px;height: 500px;" is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040"
     lon="-75.2202344" controls>
     <layer- id="query" label="Fire" checked>
       <map-extent units="CBMTILE">
@@ -146,6 +179,6 @@
                   tref="https://cwfis.cfs.nrcan.gc.ca/geoserver/public/wms?i={i}&j={j}&service=WMS&version=1.3.0&request=GetFeatureInfo&layers=public:fdr_current&QUERY_LAYERS=current:fdr_current&styles=&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}&srs=EPSG:3978&INFO_FORMAT=text/html&m4h=t" ></map-link>
       </map-extent>
     </layer->
-  </mapml-viewer>
+  </mapml-viewer>-->
   </body>
 </html>

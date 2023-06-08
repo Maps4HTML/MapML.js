@@ -149,5 +149,30 @@ export class MapLink extends HTMLElement {
   }
   connectedCallback() {}
   disconnectedCallback() {}
+
+  // Resolve the templated URL with info from the sibling map-input's
+  resolve() {
+    if (this.tref) {
+      let obj = {};
+      const inputs = this.parentElement.querySelectorAll('map-input');
+      if (this.rel === 'image') {
+        // image/map
+        for (let i = 0; i < inputs.length; i++) {
+          const inp = inputs[i];
+          obj[inp.name] = inp.value;
+        }
+        console.log(obj); // DEBUGGING
+        return L.Util.template(this.tref, obj);
+      } else if (this.rel === 'tile') {
+        // TODO. Need to get tile coords from moveend
+        // should be done/called from the TemplatedTilelayer.js file
+        return obj;
+      } else if (this.rel === 'query') {
+        // TODO. Need to get the click coords from click event
+        // should be done/called from the templatedlayer.js file
+      } else if (this.rel === 'features') {
+        // TODO.
+      }
+    }
+  }
 }
-window.customElements.define('map-link', MapLink);
