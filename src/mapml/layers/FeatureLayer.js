@@ -116,21 +116,52 @@ export var FeatureLayer = L.FeatureGroup.extend({
     }
   },
 
+  // _getNativeVariables" returns an object with the native zoom and CS,
+  //                     based on the map-metas that are available within
+  //                     the layer or the fallback default values.
+  // _getNativeVariables: mapml-||layer-||null||[map-feature,...] -> {zoom: _, val: _}
+  // mapml can be a mapml- element, layer- element, null, or an array of map-features
   _getNativeVariables: function (mapml) {
-    let nativeZoom =
-      (mapml.querySelector &&
-        mapml.querySelector('map-meta[name=zoom]') &&
-        +M._metaContentToObject(
-          mapml.querySelector('map-meta[name=zoom]').getAttribute('content')
-        ).value) ||
-      0;
-    let nativeCS =
-      (mapml.querySelector &&
-        mapml.querySelector('map-meta[name=cs]') &&
-        M._metaContentToObject(
-          mapml.querySelector('map-meta[name=cs]').getAttribute('content')
-        ).content) ||
-      'GCRS';
+    let nativeZoom, nativeCS;
+    // when mapml is an array of features provided by the query
+    if (
+      mapml.length &&
+      mapml[0].parentElement.parentElement &&
+      mapml[0].parentElement.parentElement.tagName === 'mapml-'
+    ) {
+      let mapmlEl = mapml[0].parentElement.parentElement;
+      console.log(mapmlEl);
+      nativeZoom =
+        (mapmlEl.querySelector &&
+          mapmlEl.querySelector('map-meta[name=zoom]') &&
+          +M._metaContentToObject(
+            mapmlEl.querySelector('map-meta[name=zoom]').getAttribute('content')
+          ).value) ||
+        0;
+      nativeCS =
+        (mapmlEl.querySelector &&
+          mapmlEl.querySelector('map-meta[name=cs]') &&
+          M._metaContentToObject(
+            mapmlEl.querySelector('map-meta[name=cs]').getAttribute('content')
+          ).content) ||
+        'GCRS';
+    } else {
+      // when mapml is null or a layer-/mapml- element
+      nativeZoom =
+        (mapml.querySelector &&
+          mapml.querySelector('map-meta[name=zoom]') &&
+          +M._metaContentToObject(
+            mapml.querySelector('map-meta[name=zoom]').getAttribute('content')
+          ).value) ||
+        0;
+      nativeCS =
+        (mapml.querySelector &&
+          mapml.querySelector('map-meta[name=cs]') &&
+          M._metaContentToObject(
+            mapml.querySelector('map-meta[name=cs]').getAttribute('content')
+          ).content) ||
+        'GCRS';
+    }
     return { zoom: nativeZoom, cs: nativeCS };
   },
 
