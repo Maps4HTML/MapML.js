@@ -88,14 +88,21 @@ export var FeatureLayer = L.FeatureGroup.extend({
   showPaginationFeature: function (e) {
     if (this.options.query && this._mapmlFeatures[e.i]) {
       let feature = this._mapmlFeatures[e.i];
-      // remove the prev / next one <map-feature> from shadow if there is any
-      feature._extentEl.shadowRoot.firstChild?.remove();
+      // empty the map-extent shadowRoot
+      // remove the prev / next one <map-feature> and <map-meta>'s from shadow if there is any
+      feature._extentEl.shadowRoot.replaceChildren();
       this.clearLayers();
       feature._featureGroup = this.addData(
         feature,
         this.options.nativeCS,
         this.options.nativeZoom
       );
+      // append all map-meta from mapml document
+      if (e.meta) {
+        for (let i = 0; i < e.meta.length; i++) {
+          feature._extentEl.shadowRoot.appendChild(e.meta[i]);
+        }
+      }
       feature._extentEl.shadowRoot.appendChild(feature);
       e.popup._navigationBar.querySelector('p').innerText =
         e.i + 1 + '/' + this.options._leafletLayer._totalFeatureCount;
@@ -116,7 +123,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
     }
   },
 
-  // _getNativeVariables" returns an object with the native zoom and CS,
+  // _getNativeVariables: returns an object with the native zoom and CS,
   //                     based on the map-metas that are available within
   //                     the layer or the fallback default values.
   // _getNativeVariables: mapml-||layer-||null||[map-feature,...] -> {zoom: _, val: _}
@@ -130,7 +137,6 @@ export var FeatureLayer = L.FeatureGroup.extend({
       mapml[0].parentElement.parentElement.tagName === 'mapml-'
     ) {
       let mapmlEl = mapml[0].parentElement.parentElement;
-      console.log(mapmlEl);
       nativeZoom =
         (mapmlEl.querySelector &&
           mapmlEl.querySelector('map-meta[name=zoom]') &&

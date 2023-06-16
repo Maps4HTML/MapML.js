@@ -303,14 +303,32 @@ export class MapFeature extends HTMLElement {
   _getNativeZoomAndCS(content) {
     // content: referred to <layer- > if the <layer- > has inline <map-extent>, <map-feature> or <map-tile>
     //          referred to remote mapml if the <layer- > has a src attribute, and the fetched mapml contains <map-feature>
+    //          referred to [map-meta, ...] if it is query
     //          referred to null otherwise (i.e. <layer- > has fetched <map-extent> in shadow, the <map-feature> attaches to <map-extent>'s shadow)
     let nativeZoom, nativeCS;
     if (this._extentEl) {
       // feature attaches to extent's shadow
       if (this._extentEl.querySelector('map-link[rel=query]')) {
         // for query, fallback zoom is the current map zoom level that the query is returned
-        nativeZoom = this._map.getZoom();
-        nativeCS = 'gcrs';
+        let metaZoom, metaCS;
+        if (content) {
+          metaZoom = M._metaContentToObject(
+            Array.prototype.filter
+              .call(content, function (elem) {
+                return elem.matches('map-meta[name=zoom]');
+              })[0]
+              ?.getAttribute('content')
+          ).content;
+          metaCS = M._metaContentToObject(
+            Array.prototype.filter
+              .call(content, function (elem) {
+                return elem.matches('map-meta[name=cs]');
+              })[0]
+              ?.getAttribute('content')
+          ).content;
+        }
+        nativeZoom = metaZoom || this._map.getZoom();
+        nativeCS = metaCS || 'gcrs';
       } else if (this._extentEl.querySelector('map-link[rel=features]')) {
         // for templated feature, read fallback from the fetched mapml's map-meta[name=zoom / cs]
         nativeZoom = this._extentEl._nativeZoom;
@@ -361,7 +379,9 @@ export class MapFeature extends HTMLElement {
         // calculate feature extent
         let map = this._map,
           geometry = this.querySelector('map-geometry'),
-          native = this._getNativeZoomAndCS(this._layer._content),
+          native = this._getNativeZoomAndCS(
+            this._layer._content || this._layer.metas
+          ),
           cs = geometry.getAttribute('cs') || native.cs,
           // zoom level that the feature rendered at
           zoom = this.zoom || native.zoom,

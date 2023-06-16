@@ -109,6 +109,12 @@ export var QueryHandler = L.Handler.extend({
               features = Array.prototype.slice.call(
                 mapmldoc.querySelectorAll('map-feature')
               );
+            // <map-meta> elements
+            layer.metas = Array.prototype.slice.call(
+              mapmldoc.querySelectorAll(
+                'map-meta[name=cs], map-meta[name=zoom], map-meta[name=projection]'
+              )
+            );
             if (features.length)
               layer._mapmlFeatures = layer._mapmlFeatures.concat(features);
           } else {
@@ -279,7 +285,7 @@ export var QueryHandler = L.Handler.extend({
       layer.on('popupclose', function () {
         map.removeLayer(f);
       });
-      f.showPaginationFeature({ i: 0, popup: layer._popup });
+      f.showPaginationFeature({ i: 0, popup: layer._popup, meta: layer.metas });
     }
   }
 });
