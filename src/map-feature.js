@@ -246,6 +246,7 @@ export class MapFeature extends HTMLElement {
       this._layer = parentEl._layer;
       _attachedToMap();
     }
+    this._groupEl._feature = this;
   }
 
   _updateFeature() {

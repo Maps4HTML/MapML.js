@@ -94,4 +94,24 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
     let vector = await page.locator('.mapml-vector-container > svg');
     await expect(vector).toHaveCount(1);
   });
+  test('cs defaults / falls back to gcrs; priority is cs attribute, then map-meta, then fallback (gcrs)', async () => {
+    await page.click('body');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    const f1 = await page.evaluate(
+      () =>
+        document.activeElement.shadowRoot.activeElement._feature.querySelector(
+          'map-coordinates'
+        ).textContent
+    );
+    expect(f1).toBe('1515460 -157975');
+    await page.keyboard.press('ArrowRight');
+    const f2 = await page.evaluate(
+      () =>
+        document.activeElement.shadowRoot.activeElement._feature.querySelector(
+          'map-coordinates'
+        ).textContent
+    );
+    expect(f2).toBe('-79.477626 43.764814');
+  });
 });
