@@ -252,6 +252,7 @@ export var QueryHandler = L.Handler.extend({
       }
     }
     function displayFeaturesPopup(features, loc) {
+      if (features.length === 0) return;
       let f = M.featureLayer(features, {
         // pass the vector layer a renderer of its own, otherwise leaflet
         // puts everything into the overlayPane
