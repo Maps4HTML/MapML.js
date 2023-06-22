@@ -136,6 +136,19 @@ export var MapMLLayer = L.Layer.extend({
       this._setLayerElExtent();
     }
   },
+  setName(newName) {
+    // a layer's accessible name is set by the <map-title>, if present
+    // if it's not available the <layer- label="accessible-name"> attribute
+    // can be used
+    if (!this._titleIsReadOnly) {
+      this._title = newName;
+      this._mapmlLayerItem.querySelector('.mapml-layer-item-name').innerHTML =
+        newName;
+    }
+  },
+  getName() {
+    return this._title;
+  },
 
   onAdd: function (map) {
     if (this._extent && !this._validProjection(map)) {
@@ -1615,6 +1628,7 @@ export var MapMLLayer = L.Layer.extend({
 
         if (mapml.querySelector('map-title')) {
           layer._title = mapml.querySelector('map-title').textContent.trim();
+          layer._titleIsReadOnly = true;
         } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
           layer._title = mapml.getAttribute('label').trim();
         }
@@ -1642,7 +1656,7 @@ export var MapMLLayer = L.Layer.extend({
         layer._layerEl.parentElement._toggleControls();
       }
       layer._layerEl.dispatchEvent(
-        new CustomEvent('extentload', { detail: layer })
+        new CustomEvent('extentload', { detail: layer, bubbles: true })
       );
     }
 
