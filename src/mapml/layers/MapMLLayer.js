@@ -136,7 +136,16 @@ export var MapMLLayer = L.Layer.extend({
       this._setLayerElExtent();
     }
   },
-
+  setName(newName) {
+    // a layer's accessible name is set by the <map-title>, if present
+    // if it's not available the <layer- label="accessible-name"> attribute
+    // can be used
+    if (!this._titleIsReadOnly) {
+      this._title = newName;
+      this._mapmlLayerItem.querySelector('.mapml-layer-item-name').innerHTML =
+        newName;
+    }
+  },
   onAdd: function (map) {
     if (this._extent && !this._validProjection(map)) {
       this.validProjection = false;

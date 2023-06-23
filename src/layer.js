@@ -119,23 +119,10 @@ export class MapLayer extends HTMLElement {
   adoptedCallback() {
     //    console.log('Custom map element moved to new page.');
   }
-  _changeLayerNameIfAllowed(newValue) {
-    if (this?._layer?._title && !this._layer._titleIsReadOnly) {
-      this._layer._title = newValue;
-      this._layer._mapmlLayerItem.querySelector(
-        '.mapml-layer-item-name'
-      ).innerHTML = newValue;
-    }
-  }
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'label':
-        if (oldValue !== newValue) {
-          this._changeLayerNameIfAllowed(newValue);
-          this.dispatchEvent(
-            new CustomEvent('labelchanged', { detail: { target: this } })
-          );
-        }
+        this?._layer?.setName(newValue);
         break;
       case 'checked':
         if (this._layer) {
