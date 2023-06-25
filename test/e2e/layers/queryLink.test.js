@@ -164,7 +164,8 @@ test.describe('Playwright Query Link Tests', () => {
       const featureCount = await page.evaluate(
         `document.querySelector('mapml-viewer > layer- > map-extent').shadowRoot.children.length`
       );
-      expect(featureCount).toEqual(1);
+      // shadowRoot contains 1 map-feature and 3 map-meta (cs, zoom, projection)
+      expect(featureCount).toEqual(4);
       const property = await page.evaluate(
         `document.querySelector('mapml-viewer > layer- > map-extent').shadowRoot.querySelector('map-properties').innerText.trim()`
       );
@@ -197,7 +198,8 @@ test.describe('Playwright Query Link Tests', () => {
       const featureCount = await page.evaluate(
         `document.querySelector('mapml-viewer > layer- > map-extent').shadowRoot.children.length`
       );
-      expect(featureCount).toEqual(1);
+      // shadowRoot contains 1 map-feature and 3 map-meta (cs, zoom, projection)
+      expect(featureCount).toEqual(4);
       const property = await page.evaluate(
         `document.querySelector('mapml-viewer > layer- > map-extent').shadowRoot.querySelector('map-properties').innerText.trim()`
       );

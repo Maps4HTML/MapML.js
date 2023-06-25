@@ -88,9 +88,14 @@ export var FeatureLayer = L.FeatureGroup.extend({
   showPaginationFeature: function (e) {
     if (this.options.query && this._mapmlFeatures[e.i]) {
       let feature = this._mapmlFeatures[e.i];
-      // empty the map-extent shadowRoot
-      // remove the prev / next one <map-feature> and <map-meta>'s from shadow if there is any
-      feature._extentEl.shadowRoot.replaceChildren();
+      if (e.type === 'featurepagination') {
+        // remove map-feature only (keep meta's) when paginating
+        feature._extentEl.shadowRoot.querySelector('map-feature').remove();
+      } else {
+        // empty the map-extent shadowRoot
+        // remove the prev / next one <map-feature> and <map-meta>'s from shadow if there is any
+        feature._extentEl.shadowRoot.replaceChildren();
+      }
       this.clearLayers();
       feature._featureGroup = this.addData(
         feature,
