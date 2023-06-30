@@ -2057,6 +2057,7 @@ export var MapMLLayer = L.Layer.extend({
         e.preventDefault();
         featureEl.zoomTo();
         featureEl._map.closePopup();
+        featureEl._map.getContainer().focus();
       };
       content.insertBefore(
         zoomLink,

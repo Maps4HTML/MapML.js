@@ -190,11 +190,7 @@ export var FeatureIndexOverlay = L.Layer.extend({
   },
 
   _toggleEvents: function () {
-    this._map.on(
-      'viewreset move moveend focus blur popupclose',
-      this._addOrRemoveFeatureIndex,
-      this
-    );
+    this._map.on('focus blur popupclose', this._addOrRemoveFeatureIndex, this);
   },
 
   _addOrRemoveFeatureIndex: function (e) {
@@ -214,8 +210,8 @@ export var FeatureIndexOverlay = L.Layer.extend({
       this._output.popupClosed = true;
     } else if (e && e.type === 'focus') {
       this._container.removeAttribute('hidden');
-      if (features !== 0)
-        this._output.classList.remove('mapml-screen-reader-output');
+      //      if (features !== 0)
+      this._output.classList.remove('mapml-screen-reader-output');
     } else if (e && e.originalEvent && e.originalEvent.type === 'pointermove') {
       this._container.setAttribute('hidden', '');
       this._output.classList.add('mapml-screen-reader-output');

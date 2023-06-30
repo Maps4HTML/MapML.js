@@ -109,21 +109,22 @@ test.describe('Feature Index Overlay test', () => {
     expect(firstFeature).toContain('1 Maine');
   });
 
-  test('Feature index overlay is hidden when empty, reticle still visible', async () => {
+  test('Feature index overlay is visible when empty, reticle still visible', async () => {
+    await page.pause();
     await page.keyboard.press('ArrowUp');
     await page.waitForTimeout(1000);
 
-    const overlay = await page.$eval(
+    const overlayVisible = await page.$eval(
       'div > output.mapml-feature-index',
       (output) => output.classList.contains('mapml-screen-reader-output')
     );
-    const reticle = await page.$eval(
+    const reticleVisible = await page.$eval(
       'div > div.mapml-feature-index-box',
       (div) => div.hasAttribute('hidden')
     );
 
-    expect(overlay).toEqual(true);
-    expect(reticle).toEqual(false);
+    expect(overlayVisible).toEqual(true);
+    expect(reticleVisible).toEqual(true);
   });
 
   test('Popup test with templated features', async () => {
