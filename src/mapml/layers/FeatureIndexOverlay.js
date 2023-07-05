@@ -215,7 +215,6 @@ export var FeatureIndexOverlay = L.Layer.extend({
       this._output.popupClosed = true;
     } else if (e && e.type === 'focus') {
       this._container.removeAttribute('hidden');
-      //      if (features !== 0)
       this._output.classList.remove('mapml-screen-reader-output');
     } else if (e && e.originalEvent && e.originalEvent.type === 'pointermove') {
       this._container.setAttribute('hidden', '');
