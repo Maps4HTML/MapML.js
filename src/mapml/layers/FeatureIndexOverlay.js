@@ -199,7 +199,6 @@ export var FeatureIndexOverlay = L.Layer.extend({
   },
 
   _addOrRemoveFeatureIndex: function (e) {
-    let features = this._body.allFeatures ? this._body.allFeatures.length : 0;
     //Toggle aria-hidden attribute so screen reader rereads the feature index on focus
     if (!this._output.initialFocus) {
       this._output.setAttribute('aria-hidden', 'true');
@@ -216,9 +215,14 @@ export var FeatureIndexOverlay = L.Layer.extend({
     } else if (e && e.type === 'focus') {
       this._container.removeAttribute('hidden');
       this._output.classList.remove('mapml-screen-reader-output');
-    } else if (e && e.originalEvent && e.originalEvent.type === 'pointermove') {
-      this._container.setAttribute('hidden', '');
-      this._output.classList.add('mapml-screen-reader-output');
+      // this is a very subtle branch.  The event that gets handled below is a blur
+      // event, which happens to have the e.target._popup property
+      // when there will be a popup.  Because blur gets handled here, it doesn't
+      // get handled in the next else if block, which would hide both the reticle
+      // and the index menu, and then recursively call this method with no event
+      // argument, which manipulates the aria-hidden attribute on the output
+      // in order to have the screenreader read its contents when the focus returns
+      // to (what exactly???).
     } else if (e && e.target._popup) {
       this._container.setAttribute('hidden', '');
     } else if (e && e.type === 'blur') {
@@ -226,14 +230,8 @@ export var FeatureIndexOverlay = L.Layer.extend({
       this._output.classList.add('mapml-screen-reader-output');
       this._output.initialFocus = false;
       this._addOrRemoveFeatureIndex();
-    } else if (this._map.isFocused && e) {
-      this._container.removeAttribute('hidden');
-      if (features !== 0) {
-        this._output.classList.remove('mapml-screen-reader-output');
-      } else {
-        this._output.classList.add('mapml-screen-reader-output');
-      }
     } else {
+      // this is the default block, called when no event is passed (recursive call)
       this._container.setAttribute('hidden', '');
       this._output.classList.add('mapml-screen-reader-output');
     }

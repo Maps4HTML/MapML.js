@@ -558,6 +558,7 @@ export var Util = {
       );
       if (opacity) layer.opacity = opacity;
     }
+    map.getContainer().focus();
   },
 
   // _gcrsToTileMatrix returns the [column, row] of the tiles at map center. Used for Announce movement for screen readers
