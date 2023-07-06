@@ -84,6 +84,7 @@ L.Map.include({
         this._enablePseudoFullscreen(container);
       }
     }
+    this.getContainer().focus();
   },
 
   _enablePseudoFullscreen: function (container) {

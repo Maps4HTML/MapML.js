@@ -1132,6 +1132,7 @@ export class WebMap extends HTMLMapElement {
       this._traversalCall = 1;
       this._map.panBy([initialLocation.x - curr.x, initialLocation.y - curr.y]);
     }
+    this._map.getContainer().focus();
   }
 
   _toggleFullScreen() {
