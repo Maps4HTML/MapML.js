@@ -56,8 +56,8 @@
     "leaflet": "^1.9.4",
     "leaflet.locatecontrol": "^0.79.0",
     "path": "^0.12.7",
-    "@playwright/test": "^1.24.2",
-    "playwright": "^1.24.2",
+    "@playwright/test": "^1.27.0",
+    "playwright": "^1.27.0",
     "proj4": "^2.6.2",
     "proj4leaflet": "^1.0.2",
     "rollup": "^2.23.1"
