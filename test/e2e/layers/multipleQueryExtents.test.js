@@ -52,21 +52,13 @@ test.describe('Multiple Extent Query Tests', () => {
 
   test('Querying overlapping extents, user is able to navigate into second set of query results using popup controls', async () => {
     let feature;
-    let nextFeatureButton =
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)';
-    await page.click(nextFeatureButton);
-    //        await page.waitForTimeout(500);
-    await page.click(nextFeatureButton);
-    //        await page.waitForTimeout(500);
-    await page.click(nextFeatureButton);
-    //        await page.waitForTimeout(500);
-    await page.click(nextFeatureButton);
-    //        await page.waitForTimeout(500);
-    await page.click(nextFeatureButton);
-    //        await page.waitForTimeout(500);
-    await page.click(nextFeatureButton);
-    //        await page.waitForTimeout(500);
-
+    await page.getByTitle('Next Feature', {exact: true}).click();
+    await page.getByTitle('Next Feature', {exact: true}).click();
+    await page.getByTitle('Next Feature', {exact: true}).click();
+    await page.getByTitle('Next Feature', {exact: true}).click();
+    await page.getByTitle('Next Feature', {exact: true}).click();
+    await page.getByTitle('Next Feature', {exact: true}).click();
+      
     const name = await page
       .frameLocator('iframe')
       .locator('h1')
@@ -87,10 +79,7 @@ test.describe('Multiple Extent Query Tests', () => {
   });
 
   test("Navigate back from second query result set to end of first query result set by clicking '< / Previous'", async () => {
-    // click the '<' (previous) button in the popup.
-    await page.click(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(2)'
-    );
+    await page.getByTitle('Previous Feature', {exact: true}).click();
     const feature = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g',
       (g) => (g.firstElementChild ? g.firstElementChild : false)
@@ -114,10 +103,8 @@ test.describe('Multiple Extent Query Tests', () => {
     await page.evaluateHandle(() =>
       document.querySelector('mapml-viewer').zoomTo(10, 5, 0)
     );
-    await page.click('div');
-    await page.waitForSelector(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div'
-    );
+    await page.locator('mapml-viewer').click({ position: { x: 250, y: 250} });
+    await page.locator('div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div').waitFor();
     const popupNum = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
       (div) => div.childElementCount
@@ -126,32 +113,23 @@ test.describe('Multiple Extent Query Tests', () => {
   });
 
   test('Only features from one extent are returned for queries inside its (non overlapping) bounds', async () => {
-    var numFeatures = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p',
-      (p) => p.innerText
-    );
-    expect(numFeatures).toEqual('1/6');
-    for (let i = 0; i < 6; i++) {
-      await page.click(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)'
-      );
-      await page.waitForSelector(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe'
-      );
-    }
-    let feature = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g',
-      (g) => (g.firstElementChild ? g.firstElementChild : false)
-    );
-    expect(feature).toBeFalsy();
+    await page.getByRole('button', { name: 'Close popup' }).click();
+    await page.locator('mapml-viewer').click({ position: { x: 450, y: 150} });
+    await page.getByTitle('Next Feature').click();
+    await page.getByTitle('Next Feature').click();
+    await page.getByTitle('Next Feature').click();
+    await page.getByTitle('Next Feature').click();
+    await page.getByTitle('Next Feature').click();
+    let feature = page.locator('.mapml-vector-container > svg > g');
+    await expect(feature).toBeEmpty();
 
-    const popup = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe',
+    const frame = page.locator('iframe');
+    const popup = await frame.evaluate(
       (iframe) => iframe.contentWindow.document.querySelector('h1').innerText
     );
     expect(popup).toEqual('No Geometry');
 
-    numFeatures = await page.$eval(
+    let numFeatures = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p',
       (p) => p.innerText
     );
@@ -159,14 +137,11 @@ test.describe('Multiple Extent Query Tests', () => {
   });
 
   test('No features returned when queried outside of bounds of all extents', async () => {
+    await page.keyboard.press('Escape');
     await page.evaluateHandle(() =>
       document.querySelector('mapml-viewer').zoomTo(-18, 5, 0)
     );
-    await page.click('div');
-    await page.waitForSelector(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div',
-      { state: 'hidden' }
-    );
+    await page.locator('mapml-viewer').click({ position: { x: 400, y: 250} });
     const popupNumRight = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
       (div) => div.childElementCount
@@ -175,7 +150,7 @@ test.describe('Multiple Extent Query Tests', () => {
     await page.evaluateHandle(() =>
       document.querySelector('mapml-viewer').zoomTo(-16, -40, 0)
     );
-    await page.click('div');
+    await page.locator('mapml-viewer').click({ position: { x: 250, y: 400} });
     const popupNumBottom = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
       (div) => div.childElementCount
@@ -184,7 +159,7 @@ test.describe('Multiple Extent Query Tests', () => {
     await page.evaluateHandle(() =>
       document.querySelector('mapml-viewer').zoomTo(33, -170, 0)
     );
-    await page.click('div');
+    await page.locator('mapml-viewer').click({ position: { x: 50, y: 250} });
     const popupNumLeft = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
       (div) => div.childElementCount
@@ -193,7 +168,7 @@ test.describe('Multiple Extent Query Tests', () => {
     await page.evaluateHandle(() =>
       document.querySelector('mapml-viewer').zoomTo(30, 98, 0)
     );
-    await page.click('div');
+    await page.locator('mapml-viewer').click({ position: { x: 250, y: 50} });
     const popupNumTop = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
       (div) => div.childElementCount
