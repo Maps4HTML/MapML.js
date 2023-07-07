@@ -1,5 +1,10 @@
 import { test, expect, chromium } from '@playwright/test';
 
+test.use({
+  geolocation: { longitude: -75.705278, latitude: 45.397778 }, 
+  permissions: ['geolocation']
+});
+
 test.describe('Feature Index Overlay test', () => {
   let page;
   let context;
@@ -97,12 +102,6 @@ test.describe('Feature Index Overlay test', () => {
       )
     ).toBe(false);
     await page.locator('#map1').getByTitle('Reload').click();
-  });
-  test('Feature index overlay and reticle show on geolocation activation, deactivation', async () => {});
-  test('Feature index overlay and reticle show after following a link', async () => {
-    await page.locator('#map3').scrollIntoViewIfNeeded();
-
-    //const feature = page.locator('#linkedfeature').click({force: true});
   });
   test('Feature index content is correct', async () => {
     const spanCount = await page.$eval(
@@ -240,5 +239,62 @@ test.describe('Feature Index Overlay test', () => {
     expect(popupCount).toEqual(1);
     expect(popupName).toContain('Banditos');
     expect(overlay).toEqual(false);
+  });
+  test('Feature index overlay and reticle show on geolocation activation, deactivation', 
+    async () => {
+      await page.locator('#map3').getByTitle('Show my location - location tracking off').click();
+      const afterGeolocationStartReticle = page.locator(
+        '#map3 .mapml-feature-index-box'
+      );
+      expect(await afterGeolocationStartReticle.isHidden()).toBe(false);
+
+      const afterGeolocationStartOutput = page.locator(
+        '#map3 output.mapml-feature-index'
+      );
+      expect(
+        await afterGeolocationStartOutput.evaluate((o) =>
+          o.classList.contains('mapml-screen-reader-output')
+        )
+      ).toBe(false);
+      
+      // had to make the map3 800 px wide because the geolocation button was
+      // underneath the output for the feature index, and playwright logged
+      // that the output was intercepting pointer events (i.e. click(), below).
+      // this means we should make the output responsive, so that it always fits
+      // between the controls on the left and right bottom of the map, without
+      // over/underlap.
+      await page.locator('#map3').getByTitle('Show my location - location tracking on').click();
+      const afterGeolocationStopReticle = page.locator(
+        '#map3 .mapml-feature-index-box'
+      );
+      expect(await afterGeolocationStopReticle.isHidden()).toBe(false);
+
+      const afterGeolocationStopOutput = page.locator(
+        '#map3 output.mapml-feature-index'
+      );
+      expect(
+        await afterGeolocationStopOutput.evaluate((o) =>
+          o.classList.contains('mapml-screen-reader-output')
+        )
+      ).toBe(false);
+    await page.locator('#map3').getByTitle('Reload').click();
+  });
+  test('Feature index overlay and reticle show after following a link', async () => {
+    await page.locator('#map3').scrollIntoViewIfNeeded();
+    await page.locator('#map3 .leaflet-interactive.map-a').click();
+    const afterFollowingLinkReticle = page.locator(
+      '#map3 .mapml-feature-index-box'
+    );
+    expect(await afterFollowingLinkReticle.isHidden()).toBe(false);
+
+    const afterFollowingLinkOutput = page.locator(
+      '#map3 output.mapml-feature-index'
+    );
+    expect(
+      await afterFollowingLinkOutput.evaluate((o) =>
+        o.classList.contains('mapml-screen-reader-output')
+      )
+    ).toBe(false);
+  await page.locator('#map3').getByTitle('Reload').click();
   });
 });
