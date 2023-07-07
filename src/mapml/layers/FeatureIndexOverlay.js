@@ -24,11 +24,7 @@ export var FeatureIndexOverlay = L.Layer.extend({
     );
     this._body.index = 0;
     this._output.initialFocus = false;
-    map.on(
-      'layerchange layeradd layerremove overlayremove',
-      this._toggleEvents,
-      this
-    );
+    map.on('focus blur popupclose', this._addOrRemoveFeatureIndex, this);
     map.on('moveend focus templatedfeatureslayeradd', this._checkOverlap, this);
     map.on('keydown', this._onKeyDown, this);
     this._addOrRemoveFeatureIndex();
@@ -192,10 +188,6 @@ export var FeatureIndexOverlay = L.Layer.extend({
         body.appendChild(this._updateOutput(feature.label, index, key));
       }
     }
-  },
-
-  _toggleEvents: function () {
-    this._map.on('focus blur popupclose', this._addOrRemoveFeatureIndex, this);
   },
 
   _addOrRemoveFeatureIndex: function (e) {
