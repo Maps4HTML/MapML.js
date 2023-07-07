@@ -95,25 +95,11 @@ export class MapLayer extends HTMLElement {
     if (this.getAttribute('src') && !this.shadowRoot) {
       this.attachShadow({ mode: 'open' });
     }
-    //creates listener that waits for createmap event, this allows for delayed builds of maps
-    //this allows a safeguard for the case where loading a custom TCRS takes longer than loading mapml-viewer.js/web-map.js
-    this.parentNode.addEventListener(
-      'createmap',
-      () => {
-        this._ready();
-        // if the map has been attached, set this layer up wrt Leaflet map
-        if (this.parentNode._map) {
-          this._attachedToMap();
-        }
-        if (this._layerControl && !this.hidden) {
-          this._layerControl.addOrUpdateOverlay(this._layer, this.label);
-        }
-      },
-      { once: true }
-    ); //listener stops listening after event occurs once
-    //if map is already created then dispatch createmap event, allowing layer to be built
-    if (this.parentNode._map)
-      this.parentNode.dispatchEvent(new CustomEvent('createmap'));
+    this._ready();
+    this._attachedToMap();
+    if (this._layerControl && !this.hidden) {
+      this._layerControl.addOrUpdateOverlay(this._layer, this.label);
+    }
   }
 
   adoptedCallback() {
