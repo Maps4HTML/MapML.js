@@ -220,23 +220,12 @@ export class MapFeature extends HTMLElement {
       }
     };
 
-    if (!this._parentEl._layer) {
-      // for custom projection cases, the MapMLLayer has not yet created and binded with the layer- at this point,
-      // because the "createMap" event of mapml-viewer has not yet been dispatched, the map has not yet been created
-      // the event will be dispatched after defineCustomProjection > projection setter
-      // should wait until MapMLLayer is built
-      let parentLayer =
-        this._parentEl.nodeName.toUpperCase() === 'LAYER-'
-          ? this._parentEl
-          : this._parentEl.parentElement || this._parentEl.parentNode.host;
-      parentLayer.parentNode.addEventListener('createmap', (e) => {
-        this._layer = parentLayer._layer;
-        _attachedToMap();
-      });
-    } else {
-      this._layer = this._parentEl._layer;
-      _attachedToMap();
-    }
+    let parentLayer =
+      parentEl.nodeName.toUpperCase() === 'LAYER-'
+        ? parentEl
+        : parentEl.parentElement || parentEl.parentNode.host;
+    this._layer = parentLayer._layer;
+    _attachedToMap();
   }
 
   _updateFeature() {

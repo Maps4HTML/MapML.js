@@ -1260,7 +1260,10 @@ export var MapMLLayer = L.Layer.extend({
           cs
         );
       } else {
-        extentFallback.bounds = M[projection].options.crs.pcrs.bounds;
+        // for custom projections, M[projection] may not be loaded, so uses M['OSMTILE'] as backup, this code will need to get rerun once projection is changed and M[projection] is available
+        // TODO: This is a temporary fix, _initTemplateVars (or processinitialextent) should not be called when projection of the layer and map do not match, this should be called/reinitialized once the layer projection matches with the map projection
+        let fallbackProjection = M[projection] || M.OSMTILE;
+        extentFallback.bounds = fallbackProjection.options.crs.pcrs.bounds;
       }
 
       for (var i = 0; i < tlist.length; i++) {
@@ -1491,6 +1494,7 @@ export var MapMLLayer = L.Layer.extend({
           );
           return;
         } else if (
+          // when there is only one layer with different projection from the map, change's map's projection to match layer
           !projectionMatch &&
           layer._map &&
           layer._map.options.mapEl.querySelectorAll('layer-').length === 1

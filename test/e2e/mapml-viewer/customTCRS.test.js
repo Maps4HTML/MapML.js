@@ -18,8 +18,13 @@ test.describe('Playwright Custom TCRS Tests', () => {
 
   test('Simple Custom TCRS, tiles load, mismatched layer disabled', async () => {
     const misMatchedLayerDisabled = await page.$eval(
-      'body > mapml-viewer:nth-child(1) > layer-:nth-child(1)',
-      (layer) => layer.hasAttribute('disabled')
+      'body > mapml-viewer:nth-child(1)',
+      (map) => map.querySelectorAll('layer-')[0].hasAttribute('disabled')
+    );
+
+    const matchedLayerEnabled = await page.$eval(
+      'body > mapml-viewer:nth-child(1)',
+      (map) => map.querySelectorAll('layer-')[1].hasAttribute('disabled')
     );
 
     const tilesLoaded = await page.$eval(
@@ -29,6 +34,7 @@ test.describe('Playwright Custom TCRS Tests', () => {
 
     expect(tilesLoaded).toEqual(2);
     expect(misMatchedLayerDisabled).toEqual(true);
+    expect(matchedLayerEnabled).toEqual(false);
   });
   test('A projection name containing a colon is invalid', async () => {
     const message = await page.$eval(
@@ -39,13 +45,13 @@ test.describe('Playwright Custom TCRS Tests', () => {
   });
   test('Complex Custom TCRS, static features loaded, templated features loaded', async () => {
     const staticFeatures = await page.$eval(
-      'body > mapml-viewer:nth-child(3) > layer-:nth-child(1)',
-      (layer) => layer.hasAttribute('disabled')
+      'body > mapml-viewer:nth-child(3)',
+      (map) => map.querySelectorAll('layer-')[0].hasAttribute('disabled')
     );
 
     const templatedFeatures = await page.$eval(
-      'body > mapml-viewer:nth-child(3) > layer-:nth-child(2)',
-      (layer) => layer.hasAttribute('disabled')
+      'body > mapml-viewer:nth-child(3)',
+      (map) => map.querySelectorAll('layer-')[1].hasAttribute('disabled')
     );
 
     const featureOne = await page.$eval(
