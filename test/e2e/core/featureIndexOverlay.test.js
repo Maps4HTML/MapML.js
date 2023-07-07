@@ -1,7 +1,7 @@
 import { test, expect, chromium } from '@playwright/test';
 
 test.use({
-  geolocation: { longitude: -75.705278, latitude: 45.397778 }, 
+  geolocation: { longitude: -75.705278, latitude: 45.397778 },
   permissions: ['geolocation']
 });
 
@@ -240,43 +240,48 @@ test.describe('Feature Index Overlay test', () => {
     expect(popupName).toContain('Banditos');
     expect(overlay).toEqual(false);
   });
-  test('Feature index overlay and reticle show on geolocation activation, deactivation', 
-    async () => {
-      await page.locator('#map3').getByTitle('Show my location - location tracking off').click();
-      const afterGeolocationStartReticle = page.locator(
-        '#map3 .mapml-feature-index-box'
-      );
-      expect(await afterGeolocationStartReticle.isHidden()).toBe(false);
+  test('Feature index overlay and reticle show on geolocation activation, deactivation', async () => {
+    await page
+      .locator('#map3')
+      .getByTitle('Show my location - location tracking off')
+      .click();
+    const afterGeolocationStartReticle = page.locator(
+      '#map3 .mapml-feature-index-box'
+    );
+    expect(await afterGeolocationStartReticle.isHidden()).toBe(false);
 
-      const afterGeolocationStartOutput = page.locator(
-        '#map3 output.mapml-feature-index'
-      );
-      expect(
-        await afterGeolocationStartOutput.evaluate((o) =>
-          o.classList.contains('mapml-screen-reader-output')
-        )
-      ).toBe(false);
-      
-      // had to make the map3 800 px wide because the geolocation button was
-      // underneath the output for the feature index, and playwright logged
-      // that the output was intercepting pointer events (i.e. click(), below).
-      // this means we should make the output responsive, so that it always fits
-      // between the controls on the left and right bottom of the map, without
-      // over/underlap.
-      await page.locator('#map3').getByTitle('Show my location - location tracking on').click();
-      const afterGeolocationStopReticle = page.locator(
-        '#map3 .mapml-feature-index-box'
-      );
-      expect(await afterGeolocationStopReticle.isHidden()).toBe(false);
+    const afterGeolocationStartOutput = page.locator(
+      '#map3 output.mapml-feature-index'
+    );
+    expect(
+      await afterGeolocationStartOutput.evaluate((o) =>
+        o.classList.contains('mapml-screen-reader-output')
+      )
+    ).toBe(false);
 
-      const afterGeolocationStopOutput = page.locator(
-        '#map3 output.mapml-feature-index'
-      );
-      expect(
-        await afterGeolocationStopOutput.evaluate((o) =>
-          o.classList.contains('mapml-screen-reader-output')
-        )
-      ).toBe(false);
+    // had to make the map3 800 px wide because the geolocation button was
+    // underneath the output for the feature index, and playwright logged
+    // that the output was intercepting pointer events (i.e. click(), below).
+    // this means we should make the output responsive, so that it always fits
+    // between the controls on the left and right bottom of the map, without
+    // over/underlap.
+    await page
+      .locator('#map3')
+      .getByTitle('Show my location - location tracking on')
+      .click();
+    const afterGeolocationStopReticle = page.locator(
+      '#map3 .mapml-feature-index-box'
+    );
+    expect(await afterGeolocationStopReticle.isHidden()).toBe(false);
+
+    const afterGeolocationStopOutput = page.locator(
+      '#map3 output.mapml-feature-index'
+    );
+    expect(
+      await afterGeolocationStopOutput.evaluate((o) =>
+        o.classList.contains('mapml-screen-reader-output')
+      )
+    ).toBe(false);
     await page.locator('#map3').getByTitle('Reload').click();
   });
   test('Feature index overlay and reticle show after following a link', async () => {
@@ -295,6 +300,6 @@ test.describe('Feature Index Overlay test', () => {
         o.classList.contains('mapml-screen-reader-output')
       )
     ).toBe(false);
-  await page.locator('#map3').getByTitle('Reload').click();
+    await page.locator('#map3').getByTitle('Reload').click();
   });
 });
