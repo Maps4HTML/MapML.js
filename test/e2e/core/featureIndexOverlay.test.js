@@ -46,13 +46,19 @@ test.describe('Feature Index Overlay test', () => {
   });
   test('Feature index overlay and reticle show on fullscreen', async () => {
     await page.locator('#map1').getByTitle('View Fullscreen').click();
-    const afterFullscreenReticle = page.locator('#map1 .mapml-feature-index-box');
+    const afterFullscreenReticle = page.locator(
+      '#map1 .mapml-feature-index-box'
+    );
     expect(await afterFullscreenReticle.isHidden()).toBe(false);
-    
-    const afterFullscreenOutput = page.locator('#map1 output.mapml-feature-index');
-    expect(await afterFullscreenOutput.evaluate(
-        o => o.classList.contains('mapml-screen-reader-output')
-    )).toBe(false);
+
+    const afterFullscreenOutput = page.locator(
+      '#map1 output.mapml-feature-index'
+    );
+    expect(
+      await afterFullscreenOutput.evaluate((o) =>
+        o.classList.contains('mapml-screen-reader-output')
+      )
+    ).toBe(false);
     await page.locator('#map1').getByTitle('Exit Fullscreen').click();
   });
   test('Feature index overlay and reticle show on reload', async () => {
@@ -60,12 +66,13 @@ test.describe('Feature Index Overlay test', () => {
     await page.locator('#map1').getByTitle('Reload').click();
     const afterReloadReticle = page.locator('#map1 .mapml-feature-index-box');
     expect(await afterReloadReticle.isHidden()).toBe(false);
-    
+
     const afterReloadOutput = page.locator('#map1 output.mapml-feature-index');
-    expect(await afterReloadOutput.evaluate(
-        o => o.classList.contains('mapml-screen-reader-output')
-    )).toBe(false);
-    
+    expect(
+      await afterReloadOutput.evaluate((o) =>
+        o.classList.contains('mapml-screen-reader-output')
+      )
+    ).toBe(false);
   });
   test('Feature index overlay and reticle show on history-based navigation', async () => {
     await page.keyboard.press('ArrowRight');
@@ -76,20 +83,26 @@ test.describe('Feature Index Overlay test', () => {
     await page.locator('#map1').getByText('Back').click();
     await page.keyboard.press('Shift+F10');
     await page.locator('#map1').getByText('Back').click();
-    const afterHistoryNavReticle = page.locator('#map1 .mapml-feature-index-box');
+    const afterHistoryNavReticle = page.locator(
+      '#map1 .mapml-feature-index-box'
+    );
     expect(await afterHistoryNavReticle.isHidden()).toBe(false);
-    
-    const afterHistoryNavOutput = page.locator('#map1 output.mapml-feature-index');
-    expect(await afterHistoryNavOutput.evaluate(
-        o => o.classList.contains('mapml-screen-reader-output')
-    )).toBe(false);
+
+    const afterHistoryNavOutput = page.locator(
+      '#map1 output.mapml-feature-index'
+    );
+    expect(
+      await afterHistoryNavOutput.evaluate((o) =>
+        o.classList.contains('mapml-screen-reader-output')
+      )
+    ).toBe(false);
     await page.locator('#map1').getByTitle('Reload').click();
   });
-  test.only('Feature index overlay and reticle show after following a link', async () => {
+  test('Feature index overlay and reticle show on geolocation activation, deactivation', async () => {});
+  test('Feature index overlay and reticle show after following a link', async () => {
     await page.locator('#map3').scrollIntoViewIfNeeded();
-    
+
     //const feature = page.locator('#linkedfeature').click({force: true});
-    
   });
   test('Feature index content is correct', async () => {
     const spanCount = await page.$eval(
