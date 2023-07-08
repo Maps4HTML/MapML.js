@@ -122,12 +122,6 @@ test.describe('Feature Index Overlay Focus tests', () => {
       )
     ).toBe(false);
 
-    // had to make the map3 800 px wide because the geolocation button was
-    // underneath the output for the feature index, and playwright logged
-    // that the output was intercepting pointer events (i.e. click(), below).
-    // this means we should make the output responsive, so that it always fits
-    // between the controls on the left and right bottom of the map, without
-    // over/underlap.
     await page
       .locator('#map3')
       .getByTitle('Show my location - location tracking on')
