@@ -620,7 +620,7 @@ export class MapViewer extends HTMLElement {
       'locationfound',
       function (e) {
         this.dispatchEvent(
-          new CustomEvent('maplocationfound', {
+          new CustomEvent('map-locationfound', {
             detail: { latlng: e.latlng, accuracy: e.accuracy }
           })
         );
@@ -631,7 +631,7 @@ export class MapViewer extends HTMLElement {
       'locationerror',
       function (e) {
         this.dispatchEvent(
-          new CustomEvent('locationerror', { detail: { error: e.message } })
+          new CustomEvent('map-locationerror', { detail: { error: e.message } })
         );
       },
       this
@@ -640,7 +640,7 @@ export class MapViewer extends HTMLElement {
       'load',
       function () {
         this.dispatchEvent(
-          new CustomEvent('load', { detail: { target: this } })
+          new CustomEvent('map-load', { detail: { target: this } })
         );
       },
       this
@@ -649,7 +649,7 @@ export class MapViewer extends HTMLElement {
       'preclick',
       function (e) {
         this.dispatchEvent(
-          new CustomEvent('preclick', {
+          new CustomEvent('map-preclick', {
             detail: {
               lat: e.latlng.lat,
               lon: e.latlng.lng,
@@ -681,7 +681,7 @@ export class MapViewer extends HTMLElement {
       'dblclick',
       function (e) {
         this.dispatchEvent(
-          new CustomEvent('dblclick', {
+          new CustomEvent('map-dblclick', {
             detail: {
               lat: e.latlng.lat,
               lon: e.latlng.lng,
@@ -697,7 +697,7 @@ export class MapViewer extends HTMLElement {
       'mousemove',
       function (e) {
         this.dispatchEvent(
-          new CustomEvent('mousemove', {
+          new CustomEvent('map-mousemove', {
             detail: {
               lat: e.latlng.lat,
               lon: e.latlng.lng,
@@ -713,7 +713,7 @@ export class MapViewer extends HTMLElement {
       'mouseover',
       function (e) {
         this.dispatchEvent(
-          new CustomEvent('mouseover', {
+          new CustomEvent('map-mouseover', {
             detail: {
               lat: e.latlng.lat,
               lon: e.latlng.lng,
@@ -729,7 +729,7 @@ export class MapViewer extends HTMLElement {
       'mouseout',
       function (e) {
         this.dispatchEvent(
-          new CustomEvent('mouseout', {
+          new CustomEvent('map-mouseout', {
             detail: {
               lat: e.latlng.lat,
               lon: e.latlng.lng,
