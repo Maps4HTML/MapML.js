@@ -640,7 +640,7 @@ export class MapViewer extends HTMLElement {
       'load',
       function () {
         this.dispatchEvent(
-          new CustomEvent('map-load', { detail: { target: this } })
+          new CustomEvent('load', { detail: { target: this } })
         );
       },
       this
@@ -681,7 +681,7 @@ export class MapViewer extends HTMLElement {
       'dblclick',
       function (e) {
         this.dispatchEvent(
-          new CustomEvent('map-dblclick', {
+          new CustomEvent('dblclick', {
             detail: {
               lat: e.latlng.lat,
               lon: e.latlng.lng,
@@ -697,7 +697,7 @@ export class MapViewer extends HTMLElement {
       'mousemove',
       function (e) {
         this.dispatchEvent(
-          new CustomEvent('map-mousemove', {
+          new CustomEvent('mousemove', {
             detail: {
               lat: e.latlng.lat,
               lon: e.latlng.lng,
@@ -713,7 +713,7 @@ export class MapViewer extends HTMLElement {
       'mouseover',
       function (e) {
         this.dispatchEvent(
-          new CustomEvent('map-mouseover', {
+          new CustomEvent('mouseover', {
             detail: {
               lat: e.latlng.lat,
               lon: e.latlng.lng,
@@ -729,7 +729,7 @@ export class MapViewer extends HTMLElement {
       'mouseout',
       function (e) {
         this.dispatchEvent(
-          new CustomEvent('map-mouseout', {
+          new CustomEvent('mouseout', {
             detail: {
               lat: e.latlng.lat,
               lon: e.latlng.lng,
@@ -794,7 +794,7 @@ export class MapViewer extends HTMLElement {
       function () {
         this._updateMapCenter();
         this.dispatchEvent(
-          new CustomEvent('movestart', { detail: { target: this } })
+          new CustomEvent('map-movestart', { detail: { target: this } })
         );
       },
       this
@@ -804,7 +804,7 @@ export class MapViewer extends HTMLElement {
       function () {
         this._updateMapCenter();
         this.dispatchEvent(
-          new CustomEvent('move', { detail: { target: this } })
+          new CustomEvent('map-move', { detail: { target: this } })
         );
       },
       this
@@ -815,7 +815,7 @@ export class MapViewer extends HTMLElement {
         this._updateMapCenter();
         this._addToHistory();
         this.dispatchEvent(
-          new CustomEvent('moveend', { detail: { target: this } })
+          new CustomEvent('map-moveend', { detail: { target: this } })
         );
       },
       this
@@ -825,7 +825,7 @@ export class MapViewer extends HTMLElement {
       function () {
         this._updateMapCenter();
         this.dispatchEvent(
-          new CustomEvent('zoomstart', { detail: { target: this } })
+          new CustomEvent('map-zoomstart', { detail: { target: this } })
         );
       },
       this
@@ -835,7 +835,7 @@ export class MapViewer extends HTMLElement {
       function () {
         this._updateMapCenter();
         this.dispatchEvent(
-          new CustomEvent('zoom', { detail: { target: this } })
+          new CustomEvent('map-zoom', { detail: { target: this } })
         );
       },
       this
@@ -845,7 +845,7 @@ export class MapViewer extends HTMLElement {
       function () {
         this._updateMapCenter();
         this.dispatchEvent(
-          new CustomEvent('zoomend', { detail: { target: this } })
+          new CustomEvent('map-zoomend', { detail: { target: this } })
         );
       },
       this
