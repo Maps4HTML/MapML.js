@@ -413,15 +413,6 @@ export class MapLayer extends HTMLElement {
   }
   _setUpEvents() {
     this._layer.on(
-      'loadstart',
-      function () {
-        this.dispatchEvent(
-          new CustomEvent('loadstart', { detail: { target: this } })
-        );
-      },
-      this
-    );
-    this._layer.on(
       'changestyle',
       function (e) {
         this.src = e.src;
