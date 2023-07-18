@@ -78,7 +78,17 @@ export class MapExtent extends HTMLElement {
       this.parentNode.nodeName.toUpperCase() === 'LAYER-'
         ? this.parentNode
         : this.parentNode.host;
-    this._layer = parentLayer._layer;
+    if (!parentLayer._layer) {
+      // for custom projection cases, the MapMLLayer has not yet created and binded with the layer- at this point,
+      // because the "createMap" event of mapml-viewer has not yet been dispatched, the map has not yet been created
+      // the event will be dispatched after defineCustomProjection > projection setter
+      // should wait until MapMLLayer is built
+      parentLayer.parentNode.addEventListener('createmap', (e) => {
+        this._layer = parentLayer._layer;
+      });
+    } else {
+      this._layer = parentLayer._layer;
+    }
   }
   disconnectedCallback() {}
 }

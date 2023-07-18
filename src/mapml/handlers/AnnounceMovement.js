@@ -5,10 +5,7 @@ export var AnnounceMovement = L.Handler.extend({
       layerremove: this.totalBounds
     });
 
-    this._map.options.mapEl.addEventListener(
-      'map-moveend',
-      this.announceBounds
-    );
+    this._map.options.mapEl.addEventListener('moveend', this.announceBounds);
     this._map.dragging._draggable.addEventListener('dragstart', this.dragged);
     this._map.options.mapEl.addEventListener(
       'mapfocused',
@@ -21,10 +18,7 @@ export var AnnounceMovement = L.Handler.extend({
       layerremove: this.totalBounds
     });
 
-    this._map.options.mapEl.removeEventListener(
-      'map-moveend',
-      this.announceBounds
-    );
+    this._map.options.mapEl.removeEventListener('moveend', this.announceBounds);
     this._map.dragging._draggable.removeEventListener(
       'dragstart',
       this.dragged
