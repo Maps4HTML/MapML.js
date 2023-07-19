@@ -1,6 +1,6 @@
 export class MapFeature extends HTMLElement {
   static get observedAttributes() {
-    return ['zoom', 'onfocus', 'onclick', 'onblur'];
+    return ['zoom', 'min', 'max'];
   }
 
   get zoom() {
@@ -88,15 +88,6 @@ export class MapFeature extends HTMLElement {
         }
         break;
       }
-      case 'onfocus':
-      case 'onclick':
-      case 'onblur':
-        if (this._groupEl) {
-          // "synchronize" the onevent properties (i.e. onfocus, onclick, onblur)
-          // between the mapFeature and its associated <g> element
-          this._groupEl[name] = this[name].bind(this._groupEl);
-          break;
-        }
     }
   }
 
@@ -183,7 +174,7 @@ export class MapFeature extends HTMLElement {
   }
 
   _addFeature() {
-    let parentEl =
+    this._parentEl =
       this.parentNode.nodeName.toUpperCase() === 'LAYER-' ||
       this.parentNode.nodeName.toUpperCase() === 'MAP-EXTENT'
         ? this.parentNode
@@ -191,7 +182,7 @@ export class MapFeature extends HTMLElement {
 
     // arrow function is not hoisted, define before use
     var _attachedToMap = (e) => {
-      if (!parentEl._layer._map) {
+      if (!this._parentEl._layer._map) {
         // if the parent layer- el has not yet added to the map (i.e. not yet rendered), wait until it is added
         this._layer.once(
           'attached',
@@ -229,21 +220,21 @@ export class MapFeature extends HTMLElement {
       }
     };
 
-    if (!parentEl._layer) {
+    if (!this._parentEl._layer) {
       // for custom projection cases, the MapMLLayer has not yet created and binded with the layer- at this point,
       // because the "createMap" event of mapml-viewer has not yet been dispatched, the map has not yet been created
       // the event will be dispatched after defineCustomProjection > projection setter
       // should wait until MapMLLayer is built
       let parentLayer =
-        parentEl.nodeName.toUpperCase() === 'LAYER-'
-          ? parentEl
-          : parentEl.parentElement || parentEl.parentNode.host;
+        this._parentEl.nodeName.toUpperCase() === 'LAYER-'
+          ? this._parentEl
+          : this._parentEl.parentElement || this._parentEl.parentNode.host;
       parentLayer.parentNode.addEventListener('createmap', (e) => {
         this._layer = parentLayer._layer;
         _attachedToMap();
       });
     } else {
-      this._layer = parentEl._layer;
+      this._layer = this._parentEl._layer;
       _attachedToMap();
     }
   }
@@ -274,28 +265,25 @@ export class MapFeature extends HTMLElement {
   }
 
   _setUpEvents() {
-    ['click', 'focus', 'blur'].forEach((name) => {
-      // onevent properties & onevent attributes
-      if (this[`on${name}`] && typeof this[`on${name}`] === 'function') {
-        this._groupEl[`on${name}`] = this[`on${name}`];
-      }
-      // handle event handlers set via addEventlistener
-      // for HTMLElement
+    ['click', 'focus', 'blur', 'keyup', 'keydown'].forEach((name) => {
       // when <g> is clicked / focused / blurred
       // should dispatch the click / focus / blur event listener on **linked HTMLFeatureElements**
       this._groupEl.addEventListener(name, (e) => {
-        // this === mapFeature as arrow function does not have their own "this" pointer
-        // store onEvent handler of mapFeature if there is any to ensure that it will not be re-triggered when the cloned mouseevent is dispatched
-        // so that only the event handlers set on HTMLFeatureElement via addEventListener method will be triggered
-        const handler = this[`on${name}`]; // a deep copy, var handler will not change when this.onevent is set to null (i.e. store the onevent property)
-        this[`on${name}`] = null;
         if (name === 'click') {
           // dispatch a cloned mouseevent to trigger the click event handlers set on HTMLFeatureElement
-          this.dispatchEvent(new PointerEvent(name, { ...e }));
+          let clickEv = new PointerEvent(name, { cancelable: true });
+          clickEv.originalEvent = e;
+          this.dispatchEvent(clickEv);
+        } else if (name === 'keyup' || name === 'keydown') {
+          let keyEv = new KeyboardEvent(name, { cancelable: true });
+          keyEv.originalEvent = e;
+          this.dispatchEvent(keyEv);
         } else {
-          this.dispatchEvent(new FocusEvent(name, { ...e }));
+          // dispatch a cloned focusevent to trigger the focus/blue event handlers set on HTMLFeatureElement
+          let focusEv = new FocusEvent(name, { cancelable: true });
+          focusEv.originalEvent = e;
+          this.dispatchEvent(focusEv);
         }
-        this[`on${name}`] = handler;
       });
     });
   }
@@ -342,9 +330,7 @@ export class MapFeature extends HTMLElement {
         return this._layer._mapmlvectors._getNativeVariables(content);
       } else if (content.nodeName.toUpperCase() === 'LAYER-') {
         // for inline features, read native zoom and cs from inline map-meta
-        let zoomMeta = this.parentElement.querySelectorAll(
-            'map-meta[name=zoom]'
-          ),
+        let zoomMeta = this._parentEl.querySelectorAll('map-meta[name=zoom]'),
           zoomLength = zoomMeta?.length;
         nativeZoom = zoomLength
           ? +zoomMeta[zoomLength - 1]
@@ -354,7 +340,7 @@ export class MapFeature extends HTMLElement {
               ?.split('=')[1]
           : 0;
 
-        let csMeta = this.parentElement.querySelectorAll('map-meta[name=cs]'),
+        let csMeta = this._parentEl.querySelectorAll('map-meta[name=cs]'),
           csLength = csMeta?.length;
         nativeCS = csLength
           ? csMeta[csLength - 1].getAttribute('content')
@@ -587,68 +573,55 @@ export class MapFeature extends HTMLElement {
   }
 
   // a method that simulates a click, or invoking the user-defined click event
-  //      event (optional): a MouseEvent object, can be passed as an argument of the user-defined click event handlers
-  click(event) {
+  click() {
     let g = this._groupEl,
       rect = g.getBoundingClientRect();
-    if (!event) {
-      event = new MouseEvent('click', {
-        clientX: rect.x + rect.width / 2,
-        clientY: rect.y + rect.height / 2,
-        button: 0
-      });
+    let event = new MouseEvent('click', {
+      clientX: rect.x + rect.width / 2,
+      clientY: rect.y + rect.height / 2,
+      button: 0
+    });
+    let properties = this.querySelector('map-properties');
+    if (g.getAttribute('role') === 'link') {
+      for (let path of g.children) {
+        path.mousedown.call(this._featureGroup, event);
+        path.mouseup.call(this._featureGroup, event);
+      }
     }
-    if (typeof this.onclick === 'function') {
-      this.onclick.call(this._groupEl, event);
-      return;
-    } else {
-      let properties = this.querySelector('map-properties');
-      if (g.getAttribute('role') === 'link') {
-        for (let path of g.children) {
-          path.mousedown.call(this._featureGroup, event);
-          path.mouseup.call(this._featureGroup, event);
+    // dispatch click event for map-feature to allow events entered by 'addEventListener'
+    let clickEv = new PointerEvent('click', { cancelable: true });
+    clickEv.originalEvent = event;
+    this.dispatchEvent(clickEv);
+    // for custom projection, layer- element may disconnect and re-attach to the map after the click
+    // so check whether map-feature element is still connected before any further operations
+    if (properties && this.isConnected) {
+      let featureGroup = this._featureGroup,
+        shapes = featureGroup._layers;
+      // close popup if the popup is currently open
+      for (let id in shapes) {
+        if (shapes[id].isPopupOpen()) {
+          shapes[id].closePopup();
         }
       }
-      // for custom projection, layer- element may disconnect and re-attach to the map after the click
-      // so check whether map-feature element is still connected before any further operations
-      if (properties && this.isConnected) {
-        let featureGroup = this._featureGroup,
-          shapes = featureGroup._layers;
-        // close popup if the popup is currently open
-        for (let id in shapes) {
-          if (shapes[id].isPopupOpen()) {
-            shapes[id].closePopup();
-          }
-        }
-        if (featureGroup.isPopupOpen()) {
-          featureGroup.closePopup();
-        } else {
-          featureGroup.openPopup();
-        }
+      if (featureGroup.isPopupOpen()) {
+        featureGroup.closePopup();
+      } else if (!clickEv.originalEvent.cancelBubble) {
+        // If stopPropagation is not set on originalEvent by user
+        featureGroup.openPopup();
       }
     }
   }
 
   // a method that sets the current focus to the <g> element, or invoking the user-defined focus event
-  //      event (optional): a FocusEvent object, can be passed as an argument of the user-defined focus event handlers
-  //      options (optional): as options parameter for native HTMLelemnt
+  //      options (optional): as options parameter for native HTMLElement
   //                          https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus
-  focus(event, options) {
-    let g = this._groupEl;
-    if (typeof this.onfocus === 'function') {
-      this.onfocus.call(this._groupEl, event);
-      return;
-    } else {
-      g.focus(options);
-    }
+  focus(options) {
+    this._groupEl.focus(options);
   }
 
   // a method that makes the <g> element lose focus, or invoking the user-defined blur event
-  //      event (optional): a FocusEvent object, can be passed as an argument of the user-defined blur event handlers
-  blur(event) {
-    if (typeof this.onblur === 'function') {
-      this.onblur.call(this._groupEl, event);
-    } else if (
+  blur() {
+    if (
       document.activeElement.shadowRoot?.activeElement === this._groupEl ||
       document.activeElement.shadowRoot?.activeElement.parentNode ===
         this._groupEl

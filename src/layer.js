@@ -122,11 +122,7 @@ export class MapLayer extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'label':
-        if (oldValue !== newValue) {
-          this.dispatchEvent(
-            new CustomEvent('labelchanged', { detail: { target: this } })
-          );
-        }
+        this?._layer?.setName(newValue);
         break;
       case 'checked':
         if (this._layer) {
