@@ -1388,11 +1388,20 @@ export var MapMLLayer = L.Layer.extend({
         layer._content = mapml;
       if (!this.responseXML && this.responseText)
         mapml = new DOMParser().parseFromString(this.responseText, 'text/xml');
+
+      // if everything is ok, continue with the processing
       if (
         this.readyState === this.DONE &&
         mapml.querySelector &&
         !mapml.querySelector('parsererror')
       ) {
+        // Get layer's title/label
+        if (mapml.querySelector('map-title')) {
+          layer._title = mapml.querySelector('map-title').textContent.trim();
+        } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
+          layer._title = mapml.getAttribute('label').trim();
+        }
+
         var serverExtent = mapml.querySelectorAll('map-extent'),
           projection,
           projectionMatch,
@@ -1434,7 +1443,7 @@ export var MapMLLayer = L.Layer.extend({
           projectionMatch = true;
           serverMeta = projection;
           console.log(
-            `A projection was not assigned to the '${this._layerEl.label}' Layer. Please specify a projection for that layer using a map-meta element. See more here - https://maps4html.org/web-map-doc/docs/elements/meta/`
+            `A projection was not assigned to the '${layer._title}' Layer. Please specify a projection for that layer using a map-meta element. See more here - https://maps4html.org/web-map-doc/docs/elements/meta/`
           );
           // TODO: Add a more obvious warning.
         }
@@ -1628,11 +1637,6 @@ export var MapMLLayer = L.Layer.extend({
           layer._styles = stylesControl;
         }
 
-        if (mapml.querySelector('map-title')) {
-          layer._title = mapml.querySelector('map-title').textContent.trim();
-        } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
-          layer._title = mapml.getAttribute('label').trim();
-        }
         if (layer._map) {
           layer._validateExtent();
           // if the layer is checked in the layer control, force the addition

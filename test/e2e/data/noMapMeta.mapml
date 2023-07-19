@@ -1,0 +1,18 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+    <map-head>
+        <map-title>Capital of Canada</map-title>
+        <map-meta charset="utf-8" ></map-meta>
+        <map-meta content="text/mapml" http-equiv="Content-Type" ></map-meta>
+    </map-head>
+    <map-body>
+        <map-feature zoom="12">
+          <map-featurecaption>Ottawa</map-featurecaption>
+          <map-properties><h2 style="text-align:center">Ottawa</h2></map-properties>
+          <map-geometry>
+            <map-point>
+              <map-coordinates>-75.715027 45.424721</map-coordinates>
+            </map-point>
+          </map-geometry>
+        </map-feature>
+    </map-body>
+</mapml->

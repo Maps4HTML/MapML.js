@@ -91,7 +91,39 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
     );
   });
   test("Layer with no map-meta's is rendered on map", async () => {
-    let vector = await page.locator('.mapml-vector-container > svg');
-    await expect(vector).toHaveCount(1);
+    const viewer = await page.evaluateHandle(() =>
+      document.querySelector('mapml-viewer')
+    );
+    const layerSVG = await (
+      await page.evaluateHandle(
+        (map) =>
+          map.shadowRoot
+            .querySelectorAll('.mapml-layer')[2]
+            .querySelector('path')
+            .getAttribute('d'),
+        viewer
+      )
+    ).jsonValue();
+    expect(layerSVG).toEqual(
+      'M190 311 L177.5 281 C177.5 261, 202.5 261, 202.5 281 L190 311z'
+    );
+  });
+  test("Fetched layer with no map-meta's is rendered on map", async () => {
+    const viewer = await page.evaluateHandle(() =>
+      document.querySelector('mapml-viewer')
+    );
+    const layerSVG = await (
+      await page.evaluateHandle(
+        (map) =>
+          map.shadowRoot
+            .querySelectorAll('.mapml-layer')[3]
+            .querySelector('path')
+            .getAttribute('d'),
+        viewer
+      )
+    ).jsonValue();
+    expect(layerSVG).toEqual(
+      'M243 255 L230.5 225 C230.5 205, 255.5 205, 255.5 225 L243 255z'
+    );
   });
 });
