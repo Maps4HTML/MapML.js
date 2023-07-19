@@ -1411,6 +1411,7 @@ export var MapMLLayer = L.Layer.extend({
         // Get layer's title/label
         if (mapml.querySelector('map-title')) {
           layer._title = mapml.querySelector('map-title').textContent.trim();
+          layer._titleIsReadOnly = true;
         } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
           layer._title = mapml.getAttribute('label').trim();
         }
