@@ -1148,11 +1148,11 @@ export var MapMLLayer = L.Layer.extend({
     if (this._href) {
       var xhr = new XMLHttpRequest();
       //            xhr.withCredentials = true;
-      _get(this._href, _processInitialExtent);
+      _get(this._href, _processContent);
     } else if (content) {
       // may not set this._extent if it can't be done from the content
       // (eg a single point) and there's no map to provide a default yet
-      _processInitialExtent.call(this, content);
+      _processContent.call(this, content);
     }
     function _get(url, fCallback) {
       xhr.onreadystatechange = function () {
@@ -1396,29 +1396,45 @@ export var MapMLLayer = L.Layer.extend({
       }
       return templateVars;
     }
-
-    function _processInitialExtent(content) {
-      //TODO: include inline extents
+    function _processContent(content) {
       var mapml = this.responseXML || content;
+      var base = new URL(
+        mapml.querySelector('map-base')
+          ? mapml.querySelector('map-base').getAttribute('href')
+          : mapml.baseURI || this.responseURL,
+        this.responseURL
+      ).href;
       if (mapml.querySelector && mapml.querySelector('map-feature'))
         layer._content = mapml;
       if (!this.responseXML && this.responseText)
         mapml = new DOMParser().parseFromString(this.responseText, 'text/xml');
-
-      // if everything is ok, continue with the processing
-      if (
-        this.readyState === this.DONE &&
-        mapml.querySelector &&
-        !mapml.querySelector('parsererror')
-      ) {
-        // Get layer's title/label
-        if (mapml.querySelector('map-title')) {
-          layer._title = mapml.querySelector('map-title').textContent.trim();
-          layer._titleIsReadOnly = true;
-        } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
-          layer._title = mapml.getAttribute('label').trim();
+      if (mapml.querySelector && mapml.querySelector('parsererror')) {
+        layer.error = 'true';
+        throw new Error('Error parsing content');
+      } else if (this.readyState === this.DONE && mapml.querySelector) {
+        setLayerTitle();
+        thinkOfAGoodName();
+        parseLicenseAndLegend();
+        setZoomInOrOutLinks();
+        resetTemplatedLayers();
+        processTiles();
+        M._parseStylesheetAsHTML(mapml, base, layer._container);
+        getExtentLayerControls();
+        layer._styles = getAlternateStyles();
+        layer._validateExtent();
+        copyRemoteContentToShadowRoot();
+        // update controls if needed based on mapml-viewer controls/controlslist attribute
+        if (layer._layerEl.parentElement) {
+          // if layer does not have a parent Element, do not need to set Controls
+          layer._layerEl.parentElement._toggleControls();
         }
-
+        layer.fire('extentload', layer, false);
+        layer._layerEl.dispatchEvent(
+          new CustomEvent('extentload', { detail: layer, bubbles: true })
+        );
+      }
+      // local functions
+      function thinkOfAGoodName() {
         var serverExtent = mapml.querySelectorAll('map-extent'),
           projection,
           projectionMatch,
@@ -1472,13 +1488,7 @@ export var MapMLLayer = L.Layer.extend({
               'map-head map-link[rel=alternate][projection=' +
                 layer.options.mapprojection +
                 ']'
-            ),
-          base = new URL(
-            mapml.querySelector('map-base')
-              ? mapml.querySelector('map-base').getAttribute('href')
-              : mapml.baseURI || this.responseURL,
-            this.responseURL
-          ).href;
+            );
 
         if (
           !projectionMatch &&
@@ -1492,14 +1502,6 @@ export var MapMLLayer = L.Layer.extend({
             },
             false
           );
-          return;
-        } else if (
-          // when there is only one layer with different projection from the map, change's map's projection to match layer
-          !projectionMatch &&
-          layer._map &&
-          layer._map.options.mapEl.querySelectorAll('layer-').length === 1
-        ) {
-          layer._map.options.mapEl.projection = projection;
           return;
         } else if (!serverMeta) {
           layer._extent = {};
@@ -1540,8 +1542,18 @@ export var MapMLLayer = L.Layer.extend({
             layer._extent = serverMeta;
           }
         }
-        layer._parseLicenseAndLegend(mapml, layer, projection);
-
+      }
+      function getExtentLayerControls() {
+        // add multiple extents
+        if (layer._extent._mapExtents) {
+          for (let j = 0; j < layer._extent._mapExtents.length; j++) {
+            var labelName = layer._extent._mapExtents[j].getAttribute('label');
+            var extentElement = layer.getLayerExtentHTML(labelName, j);
+            layer._extent._mapExtents[j].extentAnatomy = extentElement;
+          }
+        }
+      }
+      function setZoomInOrOutLinks() {
         var zoomin = mapml.querySelector('map-link[rel=zoomin]'),
           zoomout = mapml.querySelector('map-link[rel=zoomout]');
         delete layer._extent.zoomin;
@@ -1558,6 +1570,8 @@ export var MapMLLayer = L.Layer.extend({
             base
           ).href;
         }
+      }
+      function resetTemplatedLayers() {
         if (layer._extent._mapExtents) {
           for (let i = 0; i < layer._extent._mapExtents.length; i++) {
             if (layer._extent._mapExtents[i].templatedLayer) {
@@ -1568,6 +1582,8 @@ export var MapMLLayer = L.Layer.extend({
             }
           }
         }
+      }
+      function processTiles() {
         if (mapml.querySelector('map-tile')) {
           var tiles = document.createElement('map-tiles'),
             zoom =
@@ -1585,17 +1601,8 @@ export var MapMLLayer = L.Layer.extend({
           }
           layer._mapmlTileContainer.appendChild(tiles);
         }
-        M._parseStylesheetAsHTML(mapml, base, layer._container);
-
-        // add multiple extents
-        if (layer._extent._mapExtents) {
-          for (let j = 0; j < layer._extent._mapExtents.length; j++) {
-            var labelName = layer._extent._mapExtents[j].getAttribute('label');
-            var extentElement = layer.getLayerExtentHTML(labelName, j);
-            layer._extent._mapExtents[j].extentAnatomy = extentElement;
-          }
-        }
-
+      }
+      function getAlternateStyles() {
         var styleLinks = mapml.querySelectorAll(
           'map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]'
         );
@@ -1622,7 +1629,7 @@ export var MapMLLayer = L.Layer.extend({
               'id',
               'rad-' + L.stamp(styleOptionInput)
             );
-            styleOptionInput.setAttribute('name', 'styles-' + this._title);
+            styleOptionInput.setAttribute('name', 'styles-' + layer._title);
             styleOptionInput.setAttribute(
               'value',
               styleLinks[j].getAttribute('title')
@@ -1652,41 +1659,25 @@ export var MapMLLayer = L.Layer.extend({
             );
             L.DomEvent.on(styleOptionInput, 'click', changeStyle, layer);
           }
-          layer._styles = stylesControl;
+          return stylesControl;
         }
-
-        if (layer._map) {
-          layer._validateExtent();
-          // if the layer is checked in the layer control, force the addition
-          // of the attribution just received
-          if (layer._map.hasLayer(layer)) {
-            layer._map.attributionControl.addAttribution(
-              layer.getAttribution()
-            );
-          }
-          //layer._map.fire('moveend', layer);
+      }
+      function setLayerTitle() {
+        if (mapml.querySelector('map-title')) {
+          layer._title = mapml.querySelector('map-title').textContent.trim();
+          layer._titleIsReadOnly = true;
+        } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
+          layer._title = mapml.getAttribute('label').trim();
         }
-      } else {
-        layer.error = true;
       }
-      if (this.responseXML) {
-        _attachToLayer.call(layer);
-      }
-      layer.fire('extentload', layer, false);
-      // update controls if needed based on mapml-viewer controls/controlslist attribute
-      if (layer._layerEl.parentElement) {
-        // if layer does not have a parent Element, do not need to set Controls
-        layer._layerEl.parentElement._toggleControls();
-      }
-      layer._layerEl.dispatchEvent(
-        new CustomEvent('extentload', { detail: layer, bubbles: true })
-      );
-    }
-
-    function _attachToLayer() {
-      let mapml = xhr.responseXML,
-        shadowRoot = this._layerEl.shadowRoot;
-      if (mapml) {
+      function copyRemoteContentToShadowRoot() {
+        // only run when content is loaded from network, puts features etc
+        // into layer shadow root
+        if (!xhr) {
+          return;
+        }
+        let mapml = xhr.responseXML,
+          shadowRoot = layer._layerEl.shadowRoot;
         let elements = mapml.children[0].children[1].children;
         if (elements) {
           let baseURL = mapml.children[0].children[0]
@@ -1714,6 +1705,38 @@ export var MapMLLayer = L.Layer.extend({
               }
             }
             shadowRoot.appendChild(node);
+          }
+        }
+      }
+      function parseLicenseAndLegend() {
+        var licenseLink = mapml.querySelector('map-link[rel=license]'),
+          licenseTitle,
+          licenseUrl,
+          attText;
+        if (licenseLink) {
+          licenseTitle = licenseLink.getAttribute('title');
+          licenseUrl = licenseLink.getAttribute('href');
+          attText =
+            '<a href="' +
+            licenseUrl +
+            '" title="' +
+            licenseTitle +
+            '">' +
+            licenseTitle +
+            '</a>';
+        }
+        L.setOptions(layer, { attribution: attText });
+        var legendLink = mapml.querySelector('map-link[rel=legend]');
+        if (legendLink) {
+          layer._legendUrl = legendLink.getAttribute('href');
+        }
+        if (layer._map) {
+          // if the layer is checked in the layer control, force the addition
+          // of the attribution just received
+          if (layer._map.hasLayer(layer)) {
+            layer._map.attributionControl.addAttribution(
+              layer.getAttribution()
+            );
           }
         }
       }
@@ -1757,7 +1780,7 @@ export var MapMLLayer = L.Layer.extend({
     }
   },
   // a layer must share a projection with the map so that all the layers can
-  // be overlayed in one coordinate space.  WGS84 is a 'wildcard', sort of.
+  // be overlayed in one coordinate space.
   getProjection: function () {
     if (!this._extent) {
       return;
@@ -1785,29 +1808,6 @@ export var MapMLLayer = L.Layer.extend({
         return FALLBACK_PROJECTION;
     }
     return FALLBACK_PROJECTION;
-  },
-  _parseLicenseAndLegend: function (xml, layer) {
-    var licenseLink = xml.querySelector('map-link[rel=license]'),
-      licenseTitle,
-      licenseUrl,
-      attText;
-    if (licenseLink) {
-      licenseTitle = licenseLink.getAttribute('title');
-      licenseUrl = licenseLink.getAttribute('href');
-      attText =
-        '<a href="' +
-        licenseUrl +
-        '" title="' +
-        licenseTitle +
-        '">' +
-        licenseTitle +
-        '</a>';
-    }
-    L.setOptions(layer, { attribution: attText });
-    var legendLink = xml.querySelector('map-link[rel=legend]');
-    if (legendLink) {
-      layer._legendUrl = legendLink.getAttribute('href');
-    }
   },
   getQueryTemplates: function (pcrsClick) {
     if (this._extent && this._extent._queries) {

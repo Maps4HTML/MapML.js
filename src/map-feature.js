@@ -221,9 +221,9 @@ export class MapFeature extends HTMLElement {
     };
 
     let parentLayer =
-      parentEl.nodeName.toUpperCase() === 'LAYER-'
-        ? parentEl
-        : parentEl.parentElement || parentEl.parentNode.host;
+      this._parentEl.nodeName.toUpperCase() === 'LAYER-'
+        ? this._parentEl
+        : this._parentEl.parentElement || this._parentEl.parentNode.host;
     this._layer = parentLayer._layer;
     _attachedToMap();
   }
