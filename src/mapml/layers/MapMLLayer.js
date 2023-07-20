@@ -88,15 +88,15 @@ export var MapMLLayer = L.Layer.extend({
   },
   // remove all the extents before removing the layer from the map
   _removeExtents: function (map) {
-    if (this._extent._mapExtents) {
-      for (let i = 0; i < this._extent._mapExtents.length; i++) {
-        if (this._extent._mapExtents[i].templatedLayer) {
-          map.removeLayer(this._extent._mapExtents[i].templatedLayer);
+    if (this._properties._mapExtents) {
+      for (let i = 0; i < this._properties._mapExtents.length; i++) {
+        if (this._properties._mapExtents[i].templatedLayer) {
+          map.removeLayer(this._properties._mapExtents[i].templatedLayer);
         }
       }
     }
-    if (this._extent._queries) {
-      delete this._extent._queries;
+    if (this._properties._queries) {
+      delete this._properties._queries;
     }
   },
   _changeOpacity: function (e) {
@@ -151,7 +151,7 @@ export var MapMLLayer = L.Layer.extend({
   },
 
   onAdd: function (map) {
-    if (this._extent && !this._validProjection(map)) {
+    if (this._properties && !this._validProjection(map)) {
       this.validProjection = false;
       return;
     }
@@ -248,9 +248,9 @@ export var MapMLLayer = L.Layer.extend({
     const createAndAdd = createAndAddTemplatedLayers.bind(this);
     // if the extent has been initialized and received, update the map,
     if (
-      this._extent &&
-      this._extent._mapExtents &&
-      this._extent._mapExtents[0]._templateVars
+      this._properties &&
+      this._properties._mapExtents &&
+      this._properties._mapExtents[0]._templateVars
     ) {
       createAndAdd();
     } else {
@@ -276,40 +276,44 @@ export var MapMLLayer = L.Layer.extend({
     map.on('popupopen', this._attachSkipButtons, this);
 
     function createAndAddTemplatedLayers() {
-      if (this._extent && this._extent._mapExtents) {
-        for (let i = 0; i < this._extent._mapExtents.length; i++) {
+      if (this._properties && this._properties._mapExtents) {
+        for (let i = 0; i < this._properties._mapExtents.length; i++) {
           if (
-            this._extent._mapExtents[i]._templateVars &&
-            this._extent._mapExtents[i].checked
+            this._properties._mapExtents[i]._templateVars &&
+            this._properties._mapExtents[i].checked
           ) {
-            if (!this._extent._mapExtents[i].extentZIndex)
-              this._extent._mapExtents[i].extentZIndex = i;
+            if (!this._properties._mapExtents[i].extentZIndex)
+              this._properties._mapExtents[i].extentZIndex = i;
             this._templatedLayer = M.templatedLayer(
-              this._extent._mapExtents[i]._templateVars,
+              this._properties._mapExtents[i]._templateVars,
               {
                 pane: this._container,
-                opacity: this._extent._mapExtents[i]._templateVars.opacity,
+                opacity: this._properties._mapExtents[i]._templateVars.opacity,
                 _leafletLayer: this,
-                crs: this._extent.crs,
-                extentZIndex: this._extent._mapExtents[i].extentZIndex,
+                crs: this._properties.crs,
+                extentZIndex: this._properties._mapExtents[i].extentZIndex,
                 // when a <map-extent> migrates from a remote mapml file and attaches to the shadow of <layer- >
-                // this._extent._mapExtents[i] refers to the <map-extent> in remote mapml
+                // this._properties._mapExtents[i] refers to the <map-extent> in remote mapml
                 extentEl:
-                  this._extent._mapExtents[i]._DOMnode ||
-                  this._extent._mapExtents[i]
+                  this._properties._mapExtents[i]._DOMnode ||
+                  this._properties._mapExtents[i]
               }
             ).addTo(map);
-            this._extent._mapExtents[i].templatedLayer = this._templatedLayer;
+            this._properties._mapExtents[i].templatedLayer =
+              this._templatedLayer;
             if (this._templatedLayer._queries) {
-              if (!this._extent._queries) this._extent._queries = [];
-              this._extent._queries = this._extent._queries.concat(
+              if (!this._properties._queries) this._properties._queries = [];
+              this._properties._queries = this._properties._queries.concat(
                 this._templatedLayer._queries
               );
             }
           }
-          if (this._extent._mapExtents[i].hasAttribute('opacity')) {
-            let opacity = this._extent._mapExtents[i].getAttribute('opacity');
-            this._extent._mapExtents[i].templatedLayer.changeOpacity(opacity);
+          if (this._properties._mapExtents[i].hasAttribute('opacity')) {
+            let opacity =
+              this._properties._mapExtents[i].getAttribute('opacity');
+            this._properties._mapExtents[i].templatedLayer.changeOpacity(
+              opacity
+            );
           }
         }
         this._setLayerElExtent();
@@ -319,10 +323,10 @@ export var MapMLLayer = L.Layer.extend({
 
   _validProjection: function (map) {
     let noLayer = false;
-    if (this._extent && this._extent._mapExtents) {
-      for (let i = 0; i < this._extent._mapExtents.length; i++) {
-        if (this._extent._mapExtents[i]._templateVars) {
-          for (let template of this._extent._mapExtents[i]._templateVars)
+    if (this._properties && this._properties._mapExtents) {
+      for (let i = 0; i < this._properties._mapExtents.length; i++) {
+        if (this._properties._mapExtents[i]._templateVars) {
+          for (let template of this._properties._mapExtents[i]._templateVars)
             if (
               !template.projectionMatch &&
               template.projection !== map.options.projection
@@ -360,71 +364,73 @@ export var MapMLLayer = L.Layer.extend({
     layerTypes.forEach((type) => {
       if (this[type]) {
         if (type === '_templatedLayer') {
-          for (let i = 0; i < this._extent._mapExtents.length; i++) {
+          for (let i = 0; i < this._properties._mapExtents.length; i++) {
             for (
               let j = 0;
-              j < this._extent._mapExtents[i]._templateVars.length;
+              j < this._properties._mapExtents[i]._templateVars.length;
               j++
             ) {
               let inputData = M._extractInputBounds(
-                this._extent._mapExtents[i]._templateVars[j]
+                this._properties._mapExtents[i]._templateVars[j]
               );
-              this._extent._mapExtents[i]._templateVars[j].tempExtentBounds =
-                inputData.bounds;
-              this._extent._mapExtents[i]._templateVars[j].extentZoomBounds =
-                inputData.zoomBounds;
+              this._properties._mapExtents[i]._templateVars[
+                j
+              ].tempExtentBounds = inputData.bounds;
+              this._properties._mapExtents[i]._templateVars[
+                j
+              ].extentZoomBounds = inputData.zoomBounds;
             }
           }
-          for (let i = 0; i < this._extent._mapExtents.length; i++) {
-            if (this._extent._mapExtents[i].checked) {
+          for (let i = 0; i < this._properties._mapExtents.length; i++) {
+            if (this._properties._mapExtents[i].checked) {
               for (
                 let j = 0;
-                j < this._extent._mapExtents[i]._templateVars.length;
+                j < this._properties._mapExtents[i]._templateVars.length;
                 j++
               ) {
                 if (!bounds) {
                   bounds =
-                    this._extent._mapExtents[i]._templateVars[j]
+                    this._properties._mapExtents[i]._templateVars[j]
                       .tempExtentBounds;
                   zoomMax =
-                    this._extent._mapExtents[i]._templateVars[j]
+                    this._properties._mapExtents[i]._templateVars[j]
                       .extentZoomBounds.maxZoom;
                   zoomMin =
-                    this._extent._mapExtents[i]._templateVars[j]
+                    this._properties._mapExtents[i]._templateVars[j]
                       .extentZoomBounds.minZoom;
                   maxNativeZoom =
-                    this._extent._mapExtents[i]._templateVars[j]
+                    this._properties._mapExtents[i]._templateVars[j]
                       .extentZoomBounds.maxNativeZoom;
                   minNativeZoom =
-                    this._extent._mapExtents[i]._templateVars[j]
+                    this._properties._mapExtents[i]._templateVars[j]
                       .extentZoomBounds.minNativeZoom;
                 } else {
                   bounds.extend(
-                    this._extent._mapExtents[i]._templateVars[j]
+                    this._properties._mapExtents[i]._templateVars[j]
                       .tempExtentBounds.min
                   );
                   bounds.extend(
-                    this._extent._mapExtents[i]._templateVars[j]
+                    this._properties._mapExtents[i]._templateVars[j]
                       .tempExtentBounds.max
                   );
                   zoomMax = Math.max(
                     zoomMax,
-                    this._extent._mapExtents[i]._templateVars[j]
+                    this._properties._mapExtents[i]._templateVars[j]
                       .extentZoomBounds.maxZoom
                   );
                   zoomMin = Math.min(
                     zoomMin,
-                    this._extent._mapExtents[i]._templateVars[j]
+                    this._properties._mapExtents[i]._templateVars[j]
                       .extentZoomBounds.minZoom
                   );
                   maxNativeZoom = Math.max(
                     maxNativeZoom,
-                    this._extent._mapExtents[i]._templateVars[j]
+                    this._properties._mapExtents[i]._templateVars[j]
                       .extentZoomBounds.maxNativeZoom
                   );
                   minNativeZoom = Math.min(
                     minNativeZoom,
-                    this._extent._mapExtents[i]._templateVars[j]
+                    this._properties._mapExtents[i]._templateVars[j]
                       .extentZoomBounds.minNativeZoom
                   );
                 }
@@ -435,12 +441,13 @@ export var MapMLLayer = L.Layer.extend({
           zoomBounds.maxZoom = zoomMax;
           zoomBounds.minNativeZoom = minNativeZoom;
           zoomBounds.maxNativeZoom = maxNativeZoom;
-          this._extent.zoomBounds = zoomBounds;
-          this._extent.layerBounds = bounds;
+          this._properties.zoomBounds = zoomBounds;
+          this._properties.layerBounds = bounds;
           // assign each template the layer and zoom bounds
-          for (let i = 0; i < this._extent._mapExtents.length; i++) {
-            this._extent._mapExtents[i].templatedLayer.layerBounds = bounds;
-            this._extent._mapExtents[i].templatedLayer.zoomBounds = zoomBounds;
+          for (let i = 0; i < this._properties._mapExtents.length; i++) {
+            this._properties._mapExtents[i].templatedLayer.layerBounds = bounds;
+            this._properties._mapExtents[i].templatedLayer.zoomBounds =
+              zoomBounds;
           }
         } else {
           if (this[type].layerBounds) {
@@ -473,10 +480,10 @@ export var MapMLLayer = L.Layer.extend({
   },
   redraw: function () {
     // for now, only redraw templated layers.
-    if (this._extent._mapExtents) {
-      for (let i = 0; i < this._extent._mapExtents.length; i++) {
-        if (this._extent._mapExtents[i].templatedLayer) {
-          this._extent._mapExtents[i].templatedLayer.redraw();
+    if (this._properties._mapExtents) {
+      for (let i = 0; i < this._properties._mapExtents.length; i++) {
+        if (this._properties._mapExtents[i].templatedLayer) {
+          this._properties._mapExtents[i].templatedLayer.redraw();
         }
       }
     }
@@ -491,8 +498,10 @@ export var MapMLLayer = L.Layer.extend({
     // get the min and max zooms from all extents
     var toZoom = e.zoom,
       zoom =
-        this._extent && this._extent._mapExtents
-          ? this._extent._mapExtents[0].querySelector('map-input[type=zoom]')
+        this._properties && this._properties._mapExtents
+          ? this._properties._mapExtents[0].querySelector(
+              'map-input[type=zoom]'
+            )
           : null,
       min =
         zoom && zoom.hasAttribute('min')
@@ -503,8 +512,8 @@ export var MapMLLayer = L.Layer.extend({
           ? parseInt(zoom.getAttribute('max'))
           : this._map.getMaxZoom();
     if (zoom) {
-      for (let i = 1; i < this._extent._mapExtents.length; i++) {
-        zoom = this._extent._mapExtents[i].querySelector(
+      for (let i = 1; i < this._properties._mapExtents.length; i++) {
+        zoom = this._properties._mapExtents[i].querySelector(
           'map-input[type=zoom]'
         );
         if (zoom && zoom.hasAttribute('min')) {
@@ -516,23 +525,23 @@ export var MapMLLayer = L.Layer.extend({
       }
     }
     var canZoom =
-      (toZoom < min && this._extent.zoomout) ||
-      (toZoom > max && this._extent.zoomin);
+      (toZoom < min && this._properties.zoomout) ||
+      (toZoom > max && this._properties.zoomin);
     if (!(min <= toZoom && toZoom <= max)) {
-      if (this._extent.zoomin && toZoom > max) {
+      if (this._properties.zoomin && toZoom > max) {
         // this._href is the 'original' url from which this layer came
         // since we are following a zoom link we will be getting a new
         // layer almost, resetting child content as appropriate
-        this._href = this._extent.zoomin;
-        this._layerEl.src = this._extent.zoomin;
+        this._href = this._properties.zoomin;
+        this._layerEl.src = this._properties.zoomin;
         // this.href is the "public" property. When a dynamic layer is
         // accessed, this value changes with every new extent received
-        this.href = this._extent.zoomin;
-        this._layerEl.src = this._extent.zoomin;
-      } else if (this._extent.zoomout && toZoom < min) {
-        this._href = this._extent.zoomout;
-        this.href = this._extent.zoomout;
-        this._layerEl.src = this._extent.zoomout;
+        this.href = this._properties.zoomin;
+        this._layerEl.src = this._properties.zoomin;
+      } else if (this._properties.zoomout && toZoom < min) {
+        this._href = this._properties.zoomout;
+        this.href = this._properties.zoomout;
+        this._layerEl.src = this._properties.zoomout;
       }
     }
     if (this._templatedLayer && canZoom) {
@@ -545,7 +554,8 @@ export var MapMLLayer = L.Layer.extend({
     if (this._staticTileLayer) map.removeLayer(this._staticTileLayer);
     if (this._mapmlvectors) map.removeLayer(this._mapmlvectors);
     if (this._imageLayer) map.removeLayer(this._imageLayer);
-    if (this._extent && this._extent._mapExtents) this._removeExtents(map);
+    if (this._properties && this._properties._mapExtents)
+      this._removeExtents(map);
 
     map.fire('checkdisabled');
     map.off('popupopen', this._attachSkipButtons);
@@ -595,7 +605,7 @@ export var MapMLLayer = L.Layer.extend({
     if (!labelName) {
       // if a label attribute is not present, set it to hidden in layer control
       extent.setAttribute('hidden', '');
-      this._extent._mapExtents[i].hidden = true;
+      this._properties._mapExtents[i].hidden = true;
     }
 
     // append the svg paths
@@ -627,18 +637,18 @@ export var MapMLLayer = L.Layer.extend({
       (e) => {
         let allRemoved = true;
         e.target.checked = false;
-        this._extent._mapExtents[i].removed = true;
-        this._extent._mapExtents[i].checked = false;
+        this._properties._mapExtents[i].removed = true;
+        this._properties._mapExtents[i].checked = false;
         if (this._layerEl.checked)
-          this._changeExtent(e, this._extent._mapExtents[i]);
-        this._extent._mapExtents[i].extentAnatomy.parentNode.removeChild(
-          this._extent._mapExtents[i].extentAnatomy
+          this._changeExtent(e, this._properties._mapExtents[i]);
+        this._properties._mapExtents[i].extentAnatomy.parentNode.removeChild(
+          this._properties._mapExtents[i].extentAnatomy
         );
-        for (let j = 0; j < this._extent._mapExtents.length; j++) {
-          if (!this._extent._mapExtents[j].removed) allRemoved = false;
+        for (let j = 0; j < this._properties._mapExtents.length; j++) {
+          if (!this._properties._mapExtents[j].removed) allRemoved = false;
         }
         if (allRemoved)
-          this._layerItemSettingsHTML.removeChild(this._extentGroupAnatomy);
+          this._layerItemSettingsHTML.removeChild(this._propertiesGroupAnatomy);
       },
       this
     );
@@ -682,17 +692,17 @@ export var MapMLLayer = L.Layer.extend({
       'aria-labelledby',
       'mapml-layer-item-opacity-' + L.stamp(extentOpacitySummary)
     );
-    let opacityValue = this._extent._mapExtents[i].hasAttribute('opacity')
-      ? this._extent._mapExtents[i].getAttribute('opacity')
+    let opacityValue = this._properties._mapExtents[i].hasAttribute('opacity')
+      ? this._properties._mapExtents[i].getAttribute('opacity')
       : '1.0';
-    this._extent._mapExtents[i]._templateVars.opacity = opacityValue;
+    this._properties._mapExtents[i]._templateVars.opacity = opacityValue;
     opacity.setAttribute('value', opacityValue);
     opacity.value = opacityValue;
     L.DomEvent.on(
       opacity,
       'change',
       this._changeExtentOpacity,
-      this._extent._mapExtents[i]
+      this._properties._mapExtents[i]
     );
 
     var extentItemNameSpan = L.DomUtil.create(
@@ -700,17 +710,17 @@ export var MapMLLayer = L.Layer.extend({
       'mapml-layer-item-name',
       extentLabel
     );
-    input.defaultChecked = this._extent._mapExtents[i] ? true : false;
-    this._extent._mapExtents[i].checked = input.defaultChecked;
+    input.defaultChecked = this._properties._mapExtents[i] ? true : false;
+    this._properties._mapExtents[i].checked = input.defaultChecked;
     input.type = 'checkbox';
     extentItemNameSpan.innerHTML = labelName;
     L.DomEvent.on(input, 'change', (e) => {
-      this._changeExtent(e, this._extent._mapExtents[i]);
+      this._changeExtent(e, this._properties._mapExtents[i]);
     });
     extentItemNameSpan.id =
       'mapml-extent-item-name-{' + L.stamp(extentItemNameSpan) + '}';
     extent.setAttribute('aria-labelledby', extentItemNameSpan.id);
-    extentItemNameSpan.extent = this._extent._mapExtents[i];
+    extentItemNameSpan.extent = this._properties._mapExtents[i];
 
     extent.ontouchstart = extent.onmousedown = (downEvent) => {
       if (
@@ -1086,7 +1096,7 @@ export var MapMLLayer = L.Layer.extend({
 
     if (this._userInputs) {
       var frag = document.createDocumentFragment();
-      var templates = this._extent._templateVars;
+      var templates = this._properties._templateVars;
       if (templates) {
         for (var i = 0; i < templates.length; i++) {
           var template = templates[i];
@@ -1122,14 +1132,16 @@ export var MapMLLayer = L.Layer.extend({
     }
 
     // if there are extents, add them to the layer control
-    if (this._extent && this._extent._mapExtents) {
+    if (this._properties && this._properties._mapExtents) {
       var allHidden = true;
       this._layerItemSettingsHTML = layerItemSettings;
-      this._extentGroupAnatomy = extentsFieldset;
+      this._propertiesGroupAnatomy = extentsFieldset;
       extentsFieldset.setAttribute('aria-label', 'Sublayers');
-      for (let j = 0; j < this._extent._mapExtents.length; j++) {
-        extentsFieldset.appendChild(this._extent._mapExtents[j].extentAnatomy);
-        if (!this._extent._mapExtents[j].hidden) allHidden = false;
+      for (let j = 0; j < this._properties._mapExtents.length; j++) {
+        extentsFieldset.appendChild(
+          this._properties._mapExtents[j].extentAnatomy
+        );
+        if (!this._properties._mapExtents[j].hidden) allHidden = false;
       }
       if (!allHidden) layerItemSettings.appendChild(extentsFieldset);
     }
@@ -1150,7 +1162,7 @@ export var MapMLLayer = L.Layer.extend({
       //            xhr.withCredentials = true;
       _get(this._href, _processContent);
     } else if (content) {
-      // may not set this._extent if it can't be done from the content
+      // may not set this._properties if it can't be done from the content
       // (eg a single point) and there's no map to provide a default yet
       _processContent.call(this, content);
     }
@@ -1404,8 +1416,7 @@ export var MapMLLayer = L.Layer.extend({
           : mapml.baseURI || this.responseURL,
         this.responseURL
       ).href;
-      // TODO try to remove need for _extent, or rename it to e.g. _private
-      layer._extent = {};
+      layer._properties = {};
       if (mapml.querySelector && mapml.querySelector('map-feature'))
         layer._content = mapml;
       if (!this.responseXML && this.responseText)
@@ -1506,10 +1517,10 @@ export var MapMLLayer = L.Layer.extend({
           return;
         } else if (!serverMeta) {
           if (projectionMatch) {
-            layer._extent.crs = M[projection];
+            layer._properties.crs = M[projection];
           }
-          layer._extent._mapExtents = []; // stores all the map-extent elements in the layer
-          layer._extent._templateVars = []; // stores all template variables coming from all extents
+          layer._properties._mapExtents = []; // stores all the map-extent elements in the layer
+          layer._properties._templateVars = []; // stores all template variables coming from all extents
           for (let j = 0; j < serverExtent.length; j++) {
             if (
               serverExtent[j].querySelector(
@@ -1517,7 +1528,7 @@ export var MapMLLayer = L.Layer.extend({
               ) &&
               serverExtent[j].hasAttribute('units')
             ) {
-              layer._extent._mapExtents.push(serverExtent[j]);
+              layer._properties._mapExtents.push(serverExtent[j]);
               projectionMatch = projectionMatch || selectedAlternate;
               let templateVars = _initTemplateVars.call(
                 layer,
@@ -1528,28 +1539,29 @@ export var MapMLLayer = L.Layer.extend({
                 base,
                 projectionMatch
               );
-              layer._extent._mapExtents[j]._templateVars = templateVars;
-              layer._extent._templateVars =
-                layer._extent._templateVars.concat(templateVars);
+              layer._properties._mapExtents[j]._templateVars = templateVars;
+              layer._properties._templateVars =
+                layer._properties._templateVars.concat(templateVars);
             }
           }
         } else {
           if (typeof serverMeta === 'string') {
             // when map-meta projection not present for layer
-            layer._extent = { serverMeta };
+            layer._properties = { serverMeta };
           } else {
             // when map-meta projection present for layer
-            layer._extent = serverMeta;
+            layer._properties = serverMeta;
           }
         }
       }
       function getExtentLayerControls() {
         // add multiple extents
-        if (layer._extent._mapExtents) {
-          for (let j = 0; j < layer._extent._mapExtents.length; j++) {
-            var labelName = layer._extent._mapExtents[j].getAttribute('label');
+        if (layer._properties._mapExtents) {
+          for (let j = 0; j < layer._properties._mapExtents.length; j++) {
+            var labelName =
+              layer._properties._mapExtents[j].getAttribute('label');
             var extentElement = layer.getLayerExtentHTML(labelName, j);
-            layer._extent._mapExtents[j].extentAnatomy = extentElement;
+            layer._properties._mapExtents[j].extentAnatomy = extentElement;
           }
         }
       }
@@ -1557,13 +1569,13 @@ export var MapMLLayer = L.Layer.extend({
         var zoomin = mapml.querySelector('map-link[rel=zoomin]'),
           zoomout = mapml.querySelector('map-link[rel=zoomout]');
         if (zoomin) {
-          layer._extent.zoomin = new URL(
+          layer._properties.zoomin = new URL(
             zoomin.getAttribute('href'),
             base
           ).href;
         }
         if (zoomout) {
-          layer._extent.zoomout = new URL(
+          layer._properties.zoomout = new URL(
             zoomout.getAttribute('href'),
             base
           ).href;
@@ -1730,12 +1742,12 @@ export var MapMLLayer = L.Layer.extend({
   },
   _validateExtent: function () {
     // TODO: change so that the _extent bounds are set based on inputs
-    if (!this._extent || !this._map) {
+    if (!this._properties || !this._map) {
       return;
     }
-    var serverExtent = this._extent._mapExtents
-        ? this._extent._mapExtents
-        : [this._extent],
+    var serverExtent = this._properties._mapExtents
+        ? this._properties._mapExtents
+        : [this._properties],
       lp;
 
     // loop through the map-extent elements and assign each one its crs
@@ -1756,24 +1768,25 @@ export var MapMLLayer = L.Layer.extend({
         ? serverExtent[i].getAttribute('units')
         : null;
       if (lp && M[lp]) {
-        if (this._extent._mapExtents) this._extent._mapExtents[i].crs = M[lp];
-        else this._extent.crs = M[lp];
+        if (this._properties._mapExtents)
+          this._properties._mapExtents[i].crs = M[lp];
+        else this._properties.crs = M[lp];
       } else {
-        if (this._extent._mapExtents)
-          this._extent._mapExtents[i].crs = M.OSMTILE;
-        else this._extent.crs = M.OSMTILE;
+        if (this._properties._mapExtents)
+          this._properties._mapExtents[i].crs = M.OSMTILE;
+        else this._properties.crs = M.OSMTILE;
       }
     }
   },
   // a layer must share a projection with the map so that all the layers can
   // be overlayed in one coordinate space.
   getProjection: function () {
-    if (!this._extent) {
+    if (!this._properties) {
       return;
     }
-    let extent = this._extent._mapExtents
-      ? this._extent._mapExtents[0]
-      : this._extent; // the projections for each extent eould be the same (as) validated in _validProjection, so can use mapExtents[0]
+    let extent = this._properties._mapExtents
+      ? this._properties._mapExtents[0]
+      : this._properties; // the projections for each extent eould be the same (as) validated in _validProjection, so can use mapExtents[0]
     if (extent.serverMeta) return extent.serverMeta;
     switch (extent.tagName.toUpperCase()) {
       case 'MAP-EXTENT':
@@ -1796,7 +1809,7 @@ export var MapMLLayer = L.Layer.extend({
     return FALLBACK_PROJECTION;
   },
   getQueryTemplates: function (pcrsClick) {
-    if (this._extent && this._extent._queries) {
+    if (this._properties && this._properties._queries) {
       var templates = [];
       // only return queries that are in bounds
       if (
@@ -1810,17 +1823,17 @@ export var MapMLLayer = L.Layer.extend({
         for (let i = 0; i < layerAndExtents.length; i++) {
           if (
             layerAndExtents[i].extent ||
-            this._extent._mapExtents.length === 1
+            this._properties._mapExtents.length === 1
           ) {
             // the layer won't have an .extent property, this is kind of a hack
             let extent =
-              layerAndExtents[i].extent || this._extent._mapExtents[0];
+              layerAndExtents[i].extent || this._properties._mapExtents[0];
             for (let j = 0; j < extent._templateVars.length; j++) {
               if (extent.checked) {
                 let template = extent._templateVars[j];
-                // for each template in the extent, see if it corresponds to one in the this._extent._queries array
-                for (let k = 0; k < this._extent._queries.length; k++) {
-                  let queryTemplate = this._extent._queries[k];
+                // for each template in the extent, see if it corresponds to one in the this._properties._queries array
+                for (let k = 0; k < this._properties._queries.length; k++) {
+                  let queryTemplate = this._properties._queries[k];
                   if (
                     template === queryTemplate &&
                     queryTemplate.extentBounds.contains(pcrsClick)

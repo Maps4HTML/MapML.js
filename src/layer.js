@@ -219,29 +219,34 @@ export class MapLayer extends HTMLElement {
             let type = layerTypes[j];
             if (this.checked && layer[type]) {
               if (type === '_templatedLayer') {
-                for (let i = 0; i < layer._extent._mapExtents.length; i++) {
+                for (let i = 0; i < layer._properties._mapExtents.length; i++) {
                   for (
                     let j = 0;
                     j <
-                    layer._extent._mapExtents[i].templatedLayer._templates
+                    layer._properties._mapExtents[i].templatedLayer._templates
                       .length;
                     j++
                   ) {
                     if (
-                      layer._extent._mapExtents[i].templatedLayer._templates[j]
-                        .rel === 'query'
+                      layer._properties._mapExtents[i].templatedLayer
+                        ._templates[j].rel === 'query'
                     )
                       continue;
                     total++;
-                    layer._extent._mapExtents[i].removeAttribute('disabled');
-                    layer._extent._mapExtents[i].disabled = false;
+                    layer._properties._mapExtents[i].removeAttribute(
+                      'disabled'
+                    );
+                    layer._properties._mapExtents[i].disabled = false;
                     if (
-                      !layer._extent._mapExtents[i].templatedLayer._templates[j]
-                        .layer.isVisible
+                      !layer._properties._mapExtents[i].templatedLayer
+                        ._templates[j].layer.isVisible
                     ) {
                       count++;
-                      layer._extent._mapExtents[i].setAttribute('disabled', '');
-                      layer._extent._mapExtents[i].disabled = true;
+                      layer._properties._mapExtents[i].setAttribute(
+                        'disabled',
+                        ''
+                      );
+                      layer._properties._mapExtents[i].disabled = true;
                     }
                   }
                 }

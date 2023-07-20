@@ -206,7 +206,7 @@ export class MapFeature extends HTMLElement {
           layerEl.querySelectorAll('map-feature').length === 1
         ) {
           // if the map-feature is added to an empty layer, fire extentload to create vector layer
-          // must re-run _initialize of MapMLLayer.js to re-set layer._extent (layer._extent is null for an empty layer)
+          // must re-run _initialize of MapMLLayer.js to re-set layer._properties (layer._properties is null for an empty layer)
           this._layer._initialize(layerEl);
           this._layer.fire('extentload');
         }
