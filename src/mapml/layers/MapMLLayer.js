@@ -1404,6 +1404,8 @@ export var MapMLLayer = L.Layer.extend({
           : mapml.baseURI || this.responseURL,
         this.responseURL
       ).href;
+      // TODO try to remove need for _extent, or rename it to e.g. _private
+      layer._extent = {};
       if (mapml.querySelector && mapml.querySelector('map-feature'))
         layer._content = mapml;
       if (!this.responseXML && this.responseText)
@@ -1416,7 +1418,6 @@ export var MapMLLayer = L.Layer.extend({
         thinkOfAGoodName();
         parseLicenseAndLegend();
         setZoomInOrOutLinks();
-        resetTemplatedLayers();
         processTiles();
         M._parseStylesheetAsHTML(mapml, base, layer._container);
         getExtentLayerControls();
@@ -1504,7 +1505,6 @@ export var MapMLLayer = L.Layer.extend({
           );
           return;
         } else if (!serverMeta) {
-          layer._extent = {};
           if (projectionMatch) {
             layer._extent.crs = M[projection];
           }
@@ -1556,8 +1556,6 @@ export var MapMLLayer = L.Layer.extend({
       function setZoomInOrOutLinks() {
         var zoomin = mapml.querySelector('map-link[rel=zoomin]'),
           zoomout = mapml.querySelector('map-link[rel=zoomout]');
-        delete layer._extent.zoomin;
-        delete layer._extent.zoomout;
         if (zoomin) {
           layer._extent.zoomin = new URL(
             zoomin.getAttribute('href'),
@@ -1569,18 +1567,6 @@ export var MapMLLayer = L.Layer.extend({
             zoomout.getAttribute('href'),
             base
           ).href;
-        }
-      }
-      function resetTemplatedLayers() {
-        if (layer._extent._mapExtents) {
-          for (let i = 0; i < layer._extent._mapExtents.length; i++) {
-            if (layer._extent._mapExtents[i].templatedLayer) {
-              layer._extent._mapExtents[i].templatedLayer.reset(
-                layer._extent._mapExtents[i]._templateVars,
-                layer._extent._mapExtents[i].extentZIndex
-              );
-            }
-          }
         }
       }
       function processTiles() {
