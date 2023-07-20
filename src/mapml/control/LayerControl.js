@@ -109,20 +109,20 @@ export var LayerControl = L.Control.Layers.extend({
       }
       // check if an extent is disabled and disable it
       if (
-        this._layers[i].layer._extent &&
-        this._layers[i].layer._extent._mapExtents
+        this._layers[i].layer._properties &&
+        this._layers[i].layer._properties._mapExtents
       ) {
         for (
           let j = 0;
-          j < this._layers[i].layer._extent._mapExtents.length;
+          j < this._layers[i].layer._properties._mapExtents.length;
           j++
         ) {
           let input =
-              this._layers[i].layer._extent._mapExtents[j].extentAnatomy,
+              this._layers[i].layer._properties._mapExtents[j].extentAnatomy,
             label = input.getElementsByClassName('mapml-layer-item-name')[0];
           if (
-            this._layers[i].layer._extent._mapExtents[j].disabled &&
-            this._layers[i].layer._extent._mapExtents[j].checked
+            this._layers[i].layer._properties._mapExtents[j].disabled &&
+            this._layers[i].layer._properties._mapExtents[j].checked
           ) {
             label.style.fontStyle = 'italic';
             input.disabled = true;
