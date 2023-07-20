@@ -1401,11 +1401,21 @@ export var MapMLLayer = L.Layer.extend({
         layer._content = mapml;
       if (!this.responseXML && this.responseText)
         mapml = new DOMParser().parseFromString(this.responseText, 'text/xml');
+
+      // if everything is ok, continue with the processing
       if (
         this.readyState === this.DONE &&
         mapml.querySelector &&
         !mapml.querySelector('parsererror')
       ) {
+        // Get layer's title/label
+        if (mapml.querySelector('map-title')) {
+          layer._title = mapml.querySelector('map-title').textContent.trim();
+          layer._titleIsReadOnly = true;
+        } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
+          layer._title = mapml.getAttribute('label').trim();
+        }
+
         var serverExtent = mapml.querySelectorAll('map-extent'),
           projection,
           projectionMatch,
@@ -1441,6 +1451,15 @@ export var MapMLLayer = L.Layer.extend({
             projectionMatch =
               projection && projection === layer.options.mapprojection;
           }
+        } else {
+          // default projection set to parent projection when no map-meta projection element present
+          projection = layer.options.mapprojection;
+          projectionMatch = true;
+          serverMeta = projection;
+          console.log(
+            `A projection was not assigned to the '${layer._title}' Layer. Please specify a projection for that layer using a map-meta element. See more here - https://maps4html.org/web-map-doc/docs/elements/meta/`
+          );
+          // TODO: Add a more obvious warning.
         }
 
         var metaExtent = mapml.querySelector('map-meta[name=extent]'),
@@ -1509,7 +1528,13 @@ export var MapMLLayer = L.Layer.extend({
             }
           }
         } else {
-          layer._extent = serverMeta;
+          if (typeof serverMeta === 'string') {
+            // when map-meta projection not present for layer
+            layer._extent = { serverMeta };
+          } else {
+            // when map-meta projection present for layer
+            layer._extent = serverMeta;
+          }
         }
         layer._parseLicenseAndLegend(mapml, layer, projection);
 
@@ -1626,12 +1651,6 @@ export var MapMLLayer = L.Layer.extend({
           layer._styles = stylesControl;
         }
 
-        if (mapml.querySelector('map-title')) {
-          layer._title = mapml.querySelector('map-title').textContent.trim();
-          layer._titleIsReadOnly = true;
-        } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
-          layer._title = mapml.getAttribute('label').trim();
-        }
         if (layer._map) {
           layer._validateExtent();
           // if the layer is checked in the layer control, force the addition
@@ -1742,7 +1761,7 @@ export var MapMLLayer = L.Layer.extend({
     let extent = this._extent._mapExtents
       ? this._extent._mapExtents[0]
       : this._extent; // the projections for each extent eould be the same (as) validated in _validProjection, so can use mapExtents[0]
-    if (!extent) return FALLBACK_PROJECTION;
+    if (extent.serverMeta) return extent.serverMeta;
     switch (extent.tagName.toUpperCase()) {
       case 'MAP-EXTENT':
         if (extent.hasAttribute('units'))

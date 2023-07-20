@@ -159,7 +159,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
                     .querySelector('map-meta[name=cs]')
                     .getAttribute('content')
                 ).content) ||
-              'PCRS');
+              'GCRS');
             features.addData(mapml, nativeCS, nativeZoom);
             // "migrate" to extent's shadow
             // make a clone, prevent the elements from being removed from mapml file
