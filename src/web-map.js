@@ -75,23 +75,13 @@ export class WebMap extends HTMLMapElement {
     }
   }
   get projection() {
-    return this.hasAttribute('projection')
+    return this.hasAttribute('projection') && M[this.getAttribute('projection')]
       ? this.getAttribute('projection')
       : 'OSMTILE';
   }
   set projection(val) {
     if (val && M[val]) {
       this.setAttribute('projection', val);
-      if (this._map && this._map.options.projection !== val) {
-        this._map.options.crs = M[val];
-        this._map.options.projection = val;
-        for (let layer of this.querySelectorAll('layer-')) {
-          layer.removeAttribute('disabled');
-          let reAttach = this.removeChild(layer);
-          this.appendChild(reAttach);
-        }
-        if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
-      } else this.dispatchEvent(new CustomEvent('createmap'));
     } else throw new Error('Undefined Projection');
   }
   get zoom() {
@@ -180,18 +170,16 @@ export class WebMap extends HTMLMapElement {
     // is because the mapml-viewer element has / can have a size of 0 up until after
     // something that happens between this point and the event handler executing
     // perhaps a browser rendering cycle??
-    this.addEventListener('createmap', this._createMap);
 
     let custom = !['CBMTILE', 'APSTILE', 'OSMTILE', 'WGS84'].includes(
       this.projection
     );
-    if (!custom) {
-      // this is worth a read, because dispatchEvent is synchronous
-      // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent
-      // In particular:
-      //   "All applicable event handlers are called and return before dispatchEvent() returns."
-      this.dispatchEvent(new CustomEvent('createmap'));
-    }
+    // this is worth a read, because dispatchEvent is synchronous
+    // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent
+    // In particular:
+    //   "All applicable event handlers are called and return before dispatchEvent() returns."
+    this._createMap();
+
     this._toggleStatic();
 
     /*
@@ -406,6 +394,22 @@ export class WebMap extends HTMLMapElement {
         break;
       case 'static':
         this._toggleStatic();
+        break;
+      case 'projection':
+        if (newValue && M[newValue]) {
+          if (this._map && this._map.options.projection !== newValue) {
+            this._map.options.crs = M[newValue];
+            this._map.options.projection = newValue;
+            for (let layer of this.querySelectorAll('layer-')) {
+              layer.removeAttribute('disabled');
+              let reAttach = this.removeChild(layer);
+              this.appendChild(reAttach);
+            }
+            if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
+            this.zoomTo(this.lat, this.lon, this.zoom);
+            //this.dispatchEvent(new CustomEvent('projectionchange'));
+          }
+        }
         break;
     }
   }
@@ -860,7 +864,7 @@ export class WebMap extends HTMLMapElement {
         this._updateMapCenter();
         this._addToHistory();
         this.dispatchEvent(
-          new CustomEvent('moveend', { detail: { target: this } })
+          new CustomEvent('map-moveend', { detail: { target: this } })
         );
       },
       this

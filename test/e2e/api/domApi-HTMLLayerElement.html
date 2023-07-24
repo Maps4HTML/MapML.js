@@ -54,7 +54,7 @@
      localWithTitle = document.querySelector('mapml-viewer').appendChild(localWithTitle);
      
    
-    addEventListener("extentload", (e) => {
+    addEventListener("loadedmetadata", (e) => {
       if (e.target === remoteWithTitle) {
         // setting label should not change the layer name in layer control
         remoteWithTitle.label = "Unforsettable in every way"; 
@@ -75,7 +75,7 @@
           localNoTitle.label = "Go ahead, make my day!"; 
         }, 500);
       }
-    });
+    }, {capture: true});
   
   </script>
 </html>
