@@ -108,11 +108,8 @@ test.describe('mapml-viewer DOM API Tests', () => {
       (layer) => document.querySelector('mapml-viewer').appendChild(layer),
       layerHandle
     );
-    let layerControlHidden = await page.$eval(
-      'css=body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div',
-      (elem) => elem.hasAttribute('hidden')
-    );
-    expect(layerControlHidden).toEqual(false);
+    let layerControl = await page.locator('.leaflet-control-layers');
+    await expect(layerControl).toBeVisible();
 
     // set the layer's hidden attribute, the layer should be removed from the layer
     // control (but not the map), which leaves 0 layers in the layer control, which means the
@@ -121,11 +118,7 @@ test.describe('mapml-viewer DOM API Tests', () => {
       (layer) => layer.setAttribute('hidden', ''),
       layerHandle
     );
-    layerControlHidden = await page.$eval(
-      'css=body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div',
-      (elem) => elem.hasAttribute('hidden')
-    );
-    expect(layerControlHidden).toEqual(true);
+    await expect(layerControl).toBeHidden();
 
     // takes a couple of seconds for the tiles to load
 
@@ -138,6 +131,7 @@ test.describe('mapml-viewer DOM API Tests', () => {
   });
 
   test('Remove mapml-viewer from DOM, add it back in', async () => {
+    await page.pause();
     // check for error messages in console
     let errorLogs = [];
     page.on('pageerror', (err) => {
@@ -145,12 +139,15 @@ test.describe('mapml-viewer DOM API Tests', () => {
     });
     // locators avoid flaky tests, allegedly
     const viewer = await page.locator('mapml-viewer');
-    await viewer.evaluate(() => {});
+    await viewer.evaluate(() => {
+      let m = document.querySelector('mapml-viewer');
+      document.body.removeChild(m);
+      document.body.appendChild(m);
+    });
+    await page.waitForTimeout(200);
     expect(
       await viewer.evaluate(() => {
         let m = document.querySelector('mapml-viewer');
-        document.body.removeChild(m);
-        document.body.appendChild(m);
         let l = m.querySelector('layer-');
         return l.label;
         // the label attribute is ignored if the mapml document has a map-title
@@ -365,10 +362,7 @@ test.describe('mapml-viewer DOM API Tests', () => {
       '.leaflet-top.leaflet-left > .leaflet-control-fullscreen',
       (div) => div.hidden
     );
-    let layerControlHidden = await page.$eval(
-      '.leaflet-top.leaflet-right > .leaflet-control-layers',
-      (div) => div.hidden
-    );
+    let layerControl = await page.locator('.leaflet-control-layers');
     let scaleHidden = await page.$eval(
       '.leaflet-bottom.leaflet-left > .mapml-control-scale',
       (div) => div.hidden
@@ -381,7 +375,7 @@ test.describe('mapml-viewer DOM API Tests', () => {
     expect(zoomHidden).toEqual(true);
     expect(reloadHidden).toEqual(true);
     expect(fullscreenHidden).toEqual(true);
-    expect(layerControlHidden).toEqual(true);
+    await expect(layerControl).toBeHidden();
     expect(scaleHidden).toEqual(true);
   });
 

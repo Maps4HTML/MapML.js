@@ -15,11 +15,13 @@ export class MapLayer extends HTMLElement {
     }
   }
   get label() {
-    return this.hasAttribute('label') ? this.getAttribute('label') : '';
+    if (this._layer) return this._layer.getName();
+    else return this.hasAttribute('label') ? this.getAttribute('label') : '';
   }
   set label(val) {
     if (val) {
-      this.setAttribute('label', val);
+      if (this._layer && !this._layer.titleIsReadOnly())
+        this.setAttribute('label', val);
     }
   }
   get checked() {
@@ -95,11 +97,60 @@ export class MapLayer extends HTMLElement {
     if (this.getAttribute('src') && !this.shadowRoot) {
       this.attachShadow({ mode: 'open' });
     }
-    this._ready();
-    this._attachedToMap();
-    if (this._layerControl && !this.hidden) {
-      this._layerControl.addOrUpdateOverlay(this._layer, this.label);
-    }
+    new Promise((resolve, reject) => {
+      this.addEventListener(
+        'extentload',
+        (event) => {
+          event.stopPropagation();
+          if (event.detail.error) {
+            reject();
+          } else {
+            resolve();
+          }
+        },
+        { once: true }
+      );
+      this.addEventListener(
+        'changestyle',
+        function (e) {
+          e.stopPropagation();
+          this.src = e.detail.src;
+        },
+        { once: true }
+      );
+      this.addEventListener(
+        'changeprojection',
+        function (e) {
+          e.stopPropagation();
+          this.src = e.detail.href;
+        },
+        { once: true }
+      );
+      let base = this.baseURI ? this.baseURI : document.baseURI;
+      let opacity_value = this.hasAttribute('opacity')
+        ? this.getAttribute('opacity')
+        : '1.0';
+      this._layer = M.mapMLLayer(
+        this.src ? new URL(this.src, base).href : null,
+        this,
+        {
+          mapprojection: this.parentElement._map.options.projection,
+          opacity: opacity_value
+        }
+      );
+    })
+      .then(() => {
+        this._onLayerExtentLoad();
+        this._attachedToMap();
+        if (this._layerControl && !this.hidden) {
+          this._layerControl.addOrUpdateOverlay(this._layer, this.label);
+        }
+      })
+      .catch((e) => {
+        this.dispatchEvent(
+          new CustomEvent('error', { detail: { target: this } })
+        );
+      });
   }
 
   adoptedCallback() {
@@ -188,18 +239,12 @@ export class MapLayer extends HTMLElement {
     if (this._layerControl) {
       this._layerControl.addOrUpdateOverlay(this._layer, this.label);
     }
-    if (!this._layer.error) {
-      // re-use 'loadedmetadata' event from HTMLMediaElement inteface, applied
-      // to MapML extent as metadata
-      // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/loadedmetadata_event
-      this.dispatchEvent(
-        new CustomEvent('loadedmetadata', { detail: { target: this } })
-      );
-    } else {
-      this.dispatchEvent(
-        new CustomEvent('error', { detail: { target: this } })
-      );
-    }
+    // re-use 'loadedmetadata' event from HTMLMediaElement inteface, applied
+    // to MapML extent as metadata
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/loadedmetadata_event
+    this.dispatchEvent(
+      new CustomEvent('loadedmetadata', { detail: { target: this } })
+    );
   }
   _validateDisabled() {
     setTimeout(() => {
@@ -323,28 +368,6 @@ export class MapLayer extends HTMLElement {
       this.checked = this._layer._map.hasLayer(this._layer);
     }
   }
-  _ready() {
-    // the layer might not be attached to a map
-    // so we need a way for non-src based layers to establish what their
-    // zoom range, extent and projection are.  meta elements in content to
-    // allow the author to provide this explicitly are one way, they will
-    // be parsed from the second parameter here
-    // IE 11 did not have a value for this.baseURI for some reason
-    var base = this.baseURI ? this.baseURI : document.baseURI;
-    let opacity_value = this.hasAttribute('opacity')
-      ? this.getAttribute('opacity')
-      : '1.0';
-    this._layer = M.mapMLLayer(
-      this.src ? new URL(this.src, base).href : null,
-      this,
-      {
-        mapprojection: this.parentElement._map.options.projection,
-        opacity: opacity_value
-      }
-    );
-    this._layer.on('extentload', this._onLayerExtentLoad, this);
-    this._setUpEvents();
-  }
   _attachedToMap() {
     // set i to the position of this layer element in the set of layers
     var i = 0,
@@ -401,37 +424,6 @@ export class MapLayer extends HTMLElement {
     if (this._layer) {
       this._layer.off();
     }
-  }
-  _setUpEvents() {
-    this._layer.on(
-      'loadstart',
-      function () {
-        this.dispatchEvent(
-          new CustomEvent('loadstart', { detail: { target: this } })
-        );
-      },
-      this
-    );
-    this._layer.on(
-      'changestyle',
-      function (e) {
-        this.src = e.src;
-        this.dispatchEvent(
-          new CustomEvent('changestyle', { detail: { target: this } })
-        );
-      },
-      this
-    );
-    this._layer.on(
-      'changeprojection',
-      function (e) {
-        this.src = e.href;
-        this.dispatchEvent(
-          new CustomEvent('changeprojection', { detail: { target: this } })
-        );
-      },
-      this
-    );
   }
   zoomTo() {
     if (!this.extent) return;

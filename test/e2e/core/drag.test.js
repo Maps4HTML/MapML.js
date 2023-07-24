@@ -73,8 +73,8 @@ test.describe('UI Drag&Drop Test', () => {
       (span) => span.innerText
     );
     const layerIndex = await page.$eval(
-      '.leaflet-pane.leaflet-overlay-pane > div:nth-child(1)',
-      (div) => div.style.zIndex
+      '.leaflet-pane.leaflet-overlay-pane .mapml-templated-tile-container',
+      (div) => div.parentElement.parentElement.style.zIndex
     );
     const domLayer = await page.$eval(
       'body > map > layer-:nth-child(4)',
@@ -109,8 +109,8 @@ test.describe('UI Drag&Drop Test', () => {
       (span) => span.innerText
     );
     const layerIndex = await page.$eval(
-      '.leaflet-overlay-pane > div:nth-child(2)',
-      (div) => div.style.zIndex
+      '.leaflet-overlay-pane .mapml-static-tile-layer',
+      (div) => div.parentElement.style.zIndex
     );
     const domLayer = await page.$eval(
       'map > layer-:nth-child(3)',

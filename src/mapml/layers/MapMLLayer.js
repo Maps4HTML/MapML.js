@@ -1,3 +1,5 @@
+/* global M */
+
 import { FALLBACK_PROJECTION, BLANK_TT_TREF } from '../utils/Constants';
 
 export var MapMLLayer = L.Layer.extend({
@@ -63,10 +65,6 @@ export var MapMLLayer = L.Layer.extend({
     // above.  Not going to change this, but failing to understand ATM.
     // may revisit some time.
     this.validProjection = true;
-
-    // _mapmlLayerItem is set to the root element representing this layer
-    // in the layer control, iff the layer is not 'hidden'
-    this._mapmlLayerItem = {};
   },
   setZIndex: function (zIndex) {
     this.options.zIndex = zIndex;
@@ -136,11 +134,14 @@ export var MapMLLayer = L.Layer.extend({
       this._setLayerElExtent();
     }
   },
+  titleIsReadOnly() {
+    return !!this._titleIsReadOnly;
+  },
   setName(newName) {
     // a layer's accessible name is set by the <map-title>, if present
     // if it's not available the <layer- label="accessible-name"> attribute
     // can be used
-    if (!this._titleIsReadOnly) {
+    if (!this.titleIsReadOnly()) {
       this._title = newName;
       this._mapmlLayerItem.querySelector('.mapml-layer-item-name').innerHTML =
         newName;
@@ -821,331 +822,343 @@ export var MapMLLayer = L.Layer.extend({
     };
     return extent;
   },
-
   getLayerUserControlsHTML: function () {
-    var fieldset = L.DomUtil.create('fieldset', 'mapml-layer-item'),
-      input = L.DomUtil.create('input'),
-      layerItemName = L.DomUtil.create('span', 'mapml-layer-item-name'),
-      settingsButtonNameIcon = L.DomUtil.create('span'),
-      layerItemProperty = L.DomUtil.create(
-        'div',
-        'mapml-layer-item-properties',
-        fieldset
-      ),
-      layerItemSettings = L.DomUtil.create(
-        'div',
-        'mapml-layer-item-settings',
-        fieldset
-      ),
-      itemToggleLabel = L.DomUtil.create(
-        'label',
-        'mapml-layer-item-toggle',
-        layerItemProperty
-      ),
-      layerItemControls = L.DomUtil.create(
-        'div',
-        'mapml-layer-item-controls',
-        layerItemProperty
-      ),
-      opacityControl = L.DomUtil.create(
-        'details',
-        'mapml-layer-item-opacity mapml-control-layers',
-        layerItemSettings
-      ),
-      opacity = L.DomUtil.create('input'),
-      opacityControlSummary = L.DomUtil.create('summary'),
-      svgSettingsControlIcon = L.SVG.create('svg'),
-      settingsControlPath1 = L.SVG.create('path'),
-      settingsControlPath2 = L.SVG.create('path'),
-      extentsFieldset = L.DomUtil.create(
-        'fieldset',
-        'mapml-layer-grouped-extents'
-      ),
-      mapEl = this._layerEl.parentNode;
-    this.opacityEl = opacity;
-    this._mapmlLayerItem = fieldset;
+    return this._mapmlLayerItem
+      ? this._mapmlLayerItem
+      : this._createLayerControlHTML();
+  },
+  _createLayerControlHTML: function () {
+    if (!this._mapmlLayerItem) {
+      var fieldset = L.DomUtil.create('fieldset', 'mapml-layer-item'),
+        input = L.DomUtil.create('input'),
+        layerItemName = L.DomUtil.create('span', 'mapml-layer-item-name'),
+        settingsButtonNameIcon = L.DomUtil.create('span'),
+        layerItemProperty = L.DomUtil.create(
+          'div',
+          'mapml-layer-item-properties',
+          fieldset
+        ),
+        layerItemSettings = L.DomUtil.create(
+          'div',
+          'mapml-layer-item-settings',
+          fieldset
+        ),
+        itemToggleLabel = L.DomUtil.create(
+          'label',
+          'mapml-layer-item-toggle',
+          layerItemProperty
+        ),
+        layerItemControls = L.DomUtil.create(
+          'div',
+          'mapml-layer-item-controls',
+          layerItemProperty
+        ),
+        opacityControl = L.DomUtil.create(
+          'details',
+          'mapml-layer-item-opacity mapml-control-layers',
+          layerItemSettings
+        ),
+        opacity = L.DomUtil.create('input'),
+        opacityControlSummary = L.DomUtil.create('summary'),
+        svgSettingsControlIcon = L.SVG.create('svg'),
+        settingsControlPath1 = L.SVG.create('path'),
+        settingsControlPath2 = L.SVG.create('path'),
+        extentsFieldset = L.DomUtil.create(
+          'fieldset',
+          'mapml-layer-grouped-extents'
+        ),
+        mapEl = this._layerEl.parentNode;
+      this.opacityEl = opacity;
+      this._mapmlLayerItem = fieldset;
 
-    // append the paths in svg for the remove layer and toggle icons
-    svgSettingsControlIcon.setAttribute('viewBox', '0 0 24 24');
-    svgSettingsControlIcon.setAttribute('height', '22');
-    svgSettingsControlIcon.setAttribute('width', '22');
-    svgSettingsControlIcon.setAttribute('fill', 'currentColor');
-    settingsControlPath1.setAttribute('d', 'M0 0h24v24H0z');
-    settingsControlPath1.setAttribute('fill', 'none');
-    settingsControlPath2.setAttribute(
-      'd',
-      'M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'
-    );
-    svgSettingsControlIcon.appendChild(settingsControlPath1);
-    svgSettingsControlIcon.appendChild(settingsControlPath2);
+      // append the paths in svg for the remove layer and toggle icons
+      svgSettingsControlIcon.setAttribute('viewBox', '0 0 24 24');
+      svgSettingsControlIcon.setAttribute('height', '22');
+      svgSettingsControlIcon.setAttribute('width', '22');
+      svgSettingsControlIcon.setAttribute('fill', 'currentColor');
+      settingsControlPath1.setAttribute('d', 'M0 0h24v24H0z');
+      settingsControlPath1.setAttribute('fill', 'none');
+      settingsControlPath2.setAttribute(
+        'd',
+        'M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'
+      );
+      svgSettingsControlIcon.appendChild(settingsControlPath1);
+      svgSettingsControlIcon.appendChild(settingsControlPath2);
 
-    layerItemSettings.hidden = true;
-    settingsButtonNameIcon.setAttribute('aria-hidden', true);
+      layerItemSettings.hidden = true;
+      settingsButtonNameIcon.setAttribute('aria-hidden', true);
 
-    let removeControlButton = L.DomUtil.create(
-      'button',
-      'mapml-layer-item-remove-control',
-      layerItemControls
-    );
-    removeControlButton.type = 'button';
-    removeControlButton.title = 'Remove Layer';
-    removeControlButton.innerHTML = "<span aria-hidden='true'>&#10005;</span>";
-    removeControlButton.classList.add('mapml-button');
-    //L.DomEvent.disableClickPropagation(removeControlButton);
-    L.DomEvent.on(removeControlButton, 'click', L.DomEvent.stop);
-    L.DomEvent.on(
-      removeControlButton,
-      'click',
-      (e) => {
-        let fieldset = 0,
-          elem,
-          root;
-        root =
-          mapEl.tagName === 'MAPML-VIEWER'
-            ? mapEl.shadowRoot
-            : mapEl.querySelector('.mapml-web-map').shadowRoot;
-        if (
-          e.target.closest('fieldset').nextElementSibling &&
-          !e.target.closest('fieldset').nextElementSibling.disbaled
-        ) {
-          elem = e.target.closest('fieldset').previousElementSibling;
-          while (elem) {
-            fieldset += 2; // find the next layer menu item
-            elem = elem.previousElementSibling;
-          }
-        } else {
-          // focus on the link
-          elem = 'link';
-        }
-        mapEl.removeChild(
-          e.target.closest('fieldset').querySelector('span').layer._layerEl
-        );
-        elem = elem
-          ? root.querySelector('.leaflet-control-attribution').firstElementChild
-          : (elem = root.querySelectorAll('input')[fieldset]);
-        elem.focus();
-      },
-      this
-    );
-
-    let itemSettingControlButton = L.DomUtil.create(
-      'button',
-      'mapml-layer-item-settings-control',
-      layerItemControls
-    );
-    itemSettingControlButton.type = 'button';
-    itemSettingControlButton.title = 'Layer Settings';
-    itemSettingControlButton.setAttribute('aria-expanded', false);
-    itemSettingControlButton.classList.add('mapml-button');
-    L.DomEvent.on(
-      itemSettingControlButton,
-      'click',
-      (e) => {
-        let layerControl = this._layerEl._layerControl._container;
-        if (!layerControl._isExpanded && e.pointerType === 'touch') {
-          layerControl._isExpanded = true;
-          return;
-        }
-        if (layerItemSettings.hidden === true) {
-          itemSettingControlButton.setAttribute('aria-expanded', true);
-          layerItemSettings.hidden = false;
-        } else {
-          itemSettingControlButton.setAttribute('aria-expanded', false);
-          layerItemSettings.hidden = true;
-        }
-      },
-      this
-    );
-
-    input.defaultChecked = this._map ? true : false;
-    input.type = 'checkbox';
-    input.setAttribute('class', 'leaflet-control-layers-selector');
-    layerItemName.layer = this;
-
-    if (this._legendUrl) {
-      var legendLink = document.createElement('a');
-      legendLink.text = ' ' + this._title;
-      legendLink.href = this._legendUrl;
-      legendLink.target = '_blank';
-      legendLink.draggable = false;
-      layerItemName.appendChild(legendLink);
-    } else {
-      layerItemName.innerHTML = this._title;
-    }
-    layerItemName.id = 'mapml-layer-item-name-{' + L.stamp(layerItemName) + '}';
-    opacityControlSummary.innerText = 'Opacity';
-    opacityControlSummary.id =
-      'mapml-layer-item-opacity-' + L.stamp(opacityControlSummary);
-    opacityControl.appendChild(opacityControlSummary);
-    opacityControl.appendChild(opacity);
-    opacity.setAttribute('type', 'range');
-    opacity.setAttribute('min', '0');
-    opacity.setAttribute('max', '1.0');
-    opacity.setAttribute('value', this._container.style.opacity || '1.0');
-    opacity.setAttribute('step', '0.1');
-    opacity.setAttribute('aria-labelledby', opacityControlSummary.id);
-    opacity.value = this._container.style.opacity || '1.0';
-
-    fieldset.setAttribute('aria-grabbed', 'false');
-    fieldset.setAttribute('aria-labelledby', layerItemName.id);
-
-    fieldset.ontouchstart = fieldset.onmousedown = (downEvent) => {
-      if (
-        (downEvent.target.parentElement.tagName.toLowerCase() === 'label' &&
-          downEvent.target.tagName.toLowerCase() !== 'input') ||
-        downEvent.target.tagName.toLowerCase() === 'label'
-      ) {
-        downEvent =
-          downEvent instanceof TouchEvent ? downEvent.touches[0] : downEvent;
-        let control = fieldset,
-          controls = fieldset.parentNode,
-          moving = false,
-          yPos = downEvent.clientY;
-
-        document.body.ontouchmove = document.body.onmousemove = (moveEvent) => {
-          moveEvent.preventDefault();
-          moveEvent =
-            moveEvent instanceof TouchEvent ? moveEvent.touches[0] : moveEvent;
-
-          // Fixes flickering by only moving element when there is enough space
-          let offset = moveEvent.clientY - yPos;
-          moving = Math.abs(offset) > 5 || moving;
+      let removeControlButton = L.DomUtil.create(
+        'button',
+        'mapml-layer-item-remove-control',
+        layerItemControls
+      );
+      removeControlButton.type = 'button';
+      removeControlButton.title = 'Remove Layer';
+      removeControlButton.innerHTML =
+        "<span aria-hidden='true'>&#10005;</span>";
+      removeControlButton.classList.add('mapml-button');
+      //L.DomEvent.disableClickPropagation(removeControlButton);
+      L.DomEvent.on(removeControlButton, 'click', L.DomEvent.stop);
+      L.DomEvent.on(
+        removeControlButton,
+        'click',
+        (e) => {
+          let fieldset = 0,
+            elem,
+            root;
+          root =
+            mapEl.tagName === 'MAPML-VIEWER'
+              ? mapEl.shadowRoot
+              : mapEl.querySelector('.mapml-web-map').shadowRoot;
           if (
-            (controls && !moving) ||
-            (controls && controls.childElementCount <= 1) ||
-            controls.getBoundingClientRect().top >
-              control.getBoundingClientRect().bottom ||
-            controls.getBoundingClientRect().bottom <
-              control.getBoundingClientRect().top
+            e.target.closest('fieldset').nextElementSibling &&
+            !e.target.closest('fieldset').nextElementSibling.disbaled
           ) {
+            elem = e.target.closest('fieldset').previousElementSibling;
+            while (elem) {
+              fieldset += 2; // find the next layer menu item
+              elem = elem.previousElementSibling;
+            }
+          } else {
+            // focus on the link
+            elem = 'link';
+          }
+          mapEl.removeChild(
+            e.target.closest('fieldset').querySelector('span').layer._layerEl
+          );
+          elem = elem
+            ? root.querySelector('.leaflet-control-attribution')
+                .firstElementChild
+            : (elem = root.querySelectorAll('input')[fieldset]);
+          elem.focus();
+        },
+        this
+      );
+
+      let itemSettingControlButton = L.DomUtil.create(
+        'button',
+        'mapml-layer-item-settings-control',
+        layerItemControls
+      );
+      itemSettingControlButton.type = 'button';
+      itemSettingControlButton.title = 'Layer Settings';
+      itemSettingControlButton.setAttribute('aria-expanded', false);
+      itemSettingControlButton.classList.add('mapml-button');
+      L.DomEvent.on(
+        itemSettingControlButton,
+        'click',
+        (e) => {
+          let layerControl = this._layerEl._layerControl._container;
+          if (!layerControl._isExpanded && e.pointerType === 'touch') {
+            layerControl._isExpanded = true;
             return;
           }
-
-          controls.classList.add('mapml-draggable');
-          control.style.transform = 'translateY(' + offset + 'px)';
-          control.style.pointerEvents = 'none';
-
-          let x = moveEvent.clientX,
-            y = moveEvent.clientY,
-            root =
-              mapEl.tagName === 'MAPML-VIEWER'
-                ? mapEl.shadowRoot
-                : mapEl.querySelector('.mapml-web-map').shadowRoot,
-            elementAt = root.elementFromPoint(x, y),
-            swapControl =
-              !elementAt || !elementAt.closest('fieldset')
-                ? control
-                : elementAt.closest('fieldset');
-
-          swapControl =
-            Math.abs(offset) <= swapControl.offsetHeight
-              ? control
-              : swapControl;
-
-          control.setAttribute('aria-grabbed', 'true');
-          control.setAttribute('aria-dropeffect', 'move');
-          if (swapControl && controls === swapControl.parentNode) {
-            swapControl =
-              swapControl !== control.nextSibling
-                ? swapControl
-                : swapControl.nextSibling;
-            if (control !== swapControl) {
-              yPos = moveEvent.clientY;
-              control.style.transform = null;
-            }
-            controls.insertBefore(control, swapControl);
+          if (layerItemSettings.hidden === true) {
+            itemSettingControlButton.setAttribute('aria-expanded', true);
+            layerItemSettings.hidden = false;
+          } else {
+            itemSettingControlButton.setAttribute('aria-expanded', false);
+            layerItemSettings.hidden = true;
           }
-        };
+        },
+        this
+      );
 
-        document.body.ontouchend = document.body.onmouseup = () => {
-          control.setAttribute('aria-grabbed', 'false');
-          control.removeAttribute('aria-dropeffect');
-          control.style.pointerEvents = null;
-          control.style.transform = null;
-          let controlsElems = controls.children,
-            zIndex = 1;
-          for (let c of controlsElems) {
-            let layerEl = c.querySelector('span').layer._layerEl;
+      input.defaultChecked = this._map ? true : false;
+      input.type = 'checkbox';
+      input.setAttribute('class', 'leaflet-control-layers-selector');
+      layerItemName.layer = this;
 
-            layerEl.setAttribute('data-moving', '');
-            mapEl.insertAdjacentElement('beforeend', layerEl);
-            layerEl.removeAttribute('data-moving');
-
-            layerEl._layer.setZIndex(zIndex);
-            zIndex++;
-          }
-          controls.classList.remove('mapml-draggable');
-          document.body.ontouchmove =
-            document.body.onmousemove =
-            document.body.onmouseup =
-              null;
-        };
+      if (this._legendUrl) {
+        var legendLink = document.createElement('a');
+        legendLink.text = ' ' + this._title;
+        legendLink.href = this._legendUrl;
+        legendLink.target = '_blank';
+        legendLink.draggable = false;
+        layerItemName.appendChild(legendLink);
+      } else {
+        layerItemName.innerHTML = this._title;
       }
-    };
+      layerItemName.id =
+        'mapml-layer-item-name-{' + L.stamp(layerItemName) + '}';
+      opacityControlSummary.innerText = 'Opacity';
+      opacityControlSummary.id =
+        'mapml-layer-item-opacity-' + L.stamp(opacityControlSummary);
+      opacityControl.appendChild(opacityControlSummary);
+      opacityControl.appendChild(opacity);
+      opacity.setAttribute('type', 'range');
+      opacity.setAttribute('min', '0');
+      opacity.setAttribute('max', '1.0');
+      opacity.setAttribute('value', this._container.style.opacity || '1.0');
+      opacity.setAttribute('step', '0.1');
+      opacity.setAttribute('aria-labelledby', opacityControlSummary.id);
+      opacity.value = this._container.style.opacity || '1.0';
 
-    L.DomEvent.on(opacity, 'change', this._changeOpacity, this);
+      fieldset.setAttribute('aria-grabbed', 'false');
+      fieldset.setAttribute('aria-labelledby', layerItemName.id);
 
-    itemToggleLabel.appendChild(input);
-    itemToggleLabel.appendChild(layerItemName);
-    itemSettingControlButton.appendChild(settingsButtonNameIcon);
-    settingsButtonNameIcon.appendChild(svgSettingsControlIcon);
+      fieldset.ontouchstart = fieldset.onmousedown = (downEvent) => {
+        if (
+          (downEvent.target.parentElement.tagName.toLowerCase() === 'label' &&
+            downEvent.target.tagName.toLowerCase() !== 'input') ||
+          downEvent.target.tagName.toLowerCase() === 'label'
+        ) {
+          downEvent =
+            downEvent instanceof TouchEvent ? downEvent.touches[0] : downEvent;
+          let control = fieldset,
+            controls = fieldset.parentNode,
+            moving = false,
+            yPos = downEvent.clientY;
 
-    if (this._styles) {
-      layerItemSettings.appendChild(this._styles);
-    }
+          document.body.ontouchmove = document.body.onmousemove = (
+            moveEvent
+          ) => {
+            moveEvent.preventDefault();
+            moveEvent =
+              moveEvent instanceof TouchEvent
+                ? moveEvent.touches[0]
+                : moveEvent;
 
-    if (this._userInputs) {
-      var frag = document.createDocumentFragment();
-      var templates = this._properties._templateVars;
-      if (templates) {
-        for (var i = 0; i < templates.length; i++) {
-          var template = templates[i];
-          for (var j = 0; j < template.values.length; j++) {
-            var mapmlInput = template.values[j],
-              id = '#' + mapmlInput.getAttribute('id');
-            // don't add it again if it is referenced > once
+            // Fixes flickering by only moving element when there is enough space
+            let offset = moveEvent.clientY - yPos;
+            moving = Math.abs(offset) > 5 || moving;
             if (
-              mapmlInput.tagName.toLowerCase() === 'map-select' &&
-              !frag.querySelector(id)
+              (controls && !moving) ||
+              (controls && controls.childElementCount <= 1) ||
+              controls.getBoundingClientRect().top >
+                control.getBoundingClientRect().bottom ||
+              controls.getBoundingClientRect().bottom <
+                control.getBoundingClientRect().top
             ) {
-              // generate a <details><summary></summary><select...></details>
-              var selectdetails = L.DomUtil.create(
-                  'details',
-                  'mapml-layer-item-time mapml-control-layers',
-                  frag
-                ),
-                selectsummary = L.DomUtil.create('summary'),
-                selectSummaryLabel = L.DomUtil.create('label');
-              selectSummaryLabel.innerText = mapmlInput.getAttribute('name');
-              selectSummaryLabel.setAttribute(
-                'for',
-                mapmlInput.getAttribute('id')
-              );
-              selectsummary.appendChild(selectSummaryLabel);
-              selectdetails.appendChild(selectsummary);
-              selectdetails.appendChild(mapmlInput.htmlselect);
+              return;
+            }
+
+            controls.classList.add('mapml-draggable');
+            control.style.transform = 'translateY(' + offset + 'px)';
+            control.style.pointerEvents = 'none';
+
+            let x = moveEvent.clientX,
+              y = moveEvent.clientY,
+              root =
+                mapEl.tagName === 'MAPML-VIEWER'
+                  ? mapEl.shadowRoot
+                  : mapEl.querySelector('.mapml-web-map').shadowRoot,
+              elementAt = root.elementFromPoint(x, y),
+              swapControl =
+                !elementAt || !elementAt.closest('fieldset')
+                  ? control
+                  : elementAt.closest('fieldset');
+
+            swapControl =
+              Math.abs(offset) <= swapControl.offsetHeight
+                ? control
+                : swapControl;
+
+            control.setAttribute('aria-grabbed', 'true');
+            control.setAttribute('aria-dropeffect', 'move');
+            if (swapControl && controls === swapControl.parentNode) {
+              swapControl =
+                swapControl !== control.nextSibling
+                  ? swapControl
+                  : swapControl.nextSibling;
+              if (control !== swapControl) {
+                yPos = moveEvent.clientY;
+                control.style.transform = null;
+              }
+              controls.insertBefore(control, swapControl);
+            }
+          };
+
+          document.body.ontouchend = document.body.onmouseup = () => {
+            control.setAttribute('aria-grabbed', 'false');
+            control.removeAttribute('aria-dropeffect');
+            control.style.pointerEvents = null;
+            control.style.transform = null;
+            let controlsElems = controls.children,
+              zIndex = 1;
+            for (let c of controlsElems) {
+              let layerEl = c.querySelector('span').layer._layerEl;
+
+              layerEl.setAttribute('data-moving', '');
+              mapEl.insertAdjacentElement('beforeend', layerEl);
+              layerEl.removeAttribute('data-moving');
+
+              layerEl._layer.setZIndex(zIndex);
+              zIndex++;
+            }
+            controls.classList.remove('mapml-draggable');
+            document.body.ontouchmove =
+              document.body.onmousemove =
+              document.body.onmouseup =
+                null;
+          };
+        }
+      };
+
+      L.DomEvent.on(opacity, 'change', this._changeOpacity, this);
+
+      itemToggleLabel.appendChild(input);
+      itemToggleLabel.appendChild(layerItemName);
+      itemSettingControlButton.appendChild(settingsButtonNameIcon);
+      settingsButtonNameIcon.appendChild(svgSettingsControlIcon);
+
+      if (this._styles) {
+        layerItemSettings.appendChild(this._styles);
+      }
+
+      if (this._userInputs) {
+        var frag = document.createDocumentFragment();
+        var templates = this._properties._templateVars;
+        if (templates) {
+          for (var i = 0; i < templates.length; i++) {
+            var template = templates[i];
+            for (var j = 0; j < template.values.length; j++) {
+              var mapmlInput = template.values[j],
+                id = '#' + mapmlInput.getAttribute('id');
+              // don't add it again if it is referenced > once
+              if (
+                mapmlInput.tagName.toLowerCase() === 'map-select' &&
+                !frag.querySelector(id)
+              ) {
+                // generate a <details><summary></summary><select...></details>
+                var selectdetails = L.DomUtil.create(
+                    'details',
+                    'mapml-layer-item-time mapml-control-layers',
+                    frag
+                  ),
+                  selectsummary = L.DomUtil.create('summary'),
+                  selectSummaryLabel = L.DomUtil.create('label');
+                selectSummaryLabel.innerText = mapmlInput.getAttribute('name');
+                selectSummaryLabel.setAttribute(
+                  'for',
+                  mapmlInput.getAttribute('id')
+                );
+                selectsummary.appendChild(selectSummaryLabel);
+                selectdetails.appendChild(selectsummary);
+                selectdetails.appendChild(mapmlInput.htmlselect);
+              }
             }
           }
         }
+        layerItemSettings.appendChild(frag);
       }
-      layerItemSettings.appendChild(frag);
-    }
 
-    // if there are extents, add them to the layer control
-    if (this._properties && this._properties._mapExtents) {
-      var allHidden = true;
-      this._layerItemSettingsHTML = layerItemSettings;
-      this._propertiesGroupAnatomy = extentsFieldset;
-      extentsFieldset.setAttribute('aria-label', 'Sublayers');
-      for (let j = 0; j < this._properties._mapExtents.length; j++) {
-        extentsFieldset.appendChild(
-          this._properties._mapExtents[j].extentAnatomy
-        );
-        if (!this._properties._mapExtents[j].hidden) allHidden = false;
+      // if there are extents, add them to the layer control
+      if (this._properties && this._properties._mapExtents) {
+        var allHidden = true;
+        this._layerItemSettingsHTML = layerItemSettings;
+        this._propertiesGroupAnatomy = extentsFieldset;
+        extentsFieldset.setAttribute('aria-label', 'Sublayers');
+        for (let j = 0; j < this._properties._mapExtents.length; j++) {
+          extentsFieldset.appendChild(
+            this._properties._mapExtents[j].extentAnatomy
+          );
+          if (!this._properties._mapExtents[j].hidden) allHidden = false;
+        }
+        if (!allHidden) layerItemSettings.appendChild(extentsFieldset);
       }
-      if (!allHidden) layerItemSettings.appendChild(extentsFieldset);
     }
-
     return this._mapmlLayerItem;
   },
   _initialize: function (content) {
@@ -1158,38 +1171,32 @@ export var MapMLLayer = L.Layer.extend({
     // but there *is* child content of the <layer> element (which is copied/
     // referred to by this._content), we should use that content.
     if (this._href) {
-      var xhr = new XMLHttpRequest();
-      //            xhr.withCredentials = true;
       _get(this._href, _processContent);
     } else if (content) {
       // may not set this._properties if it can't be done from the content
       // (eg a single point) and there's no map to provide a default yet
-      _processContent.call(this, content);
+      _processContent.call(this, content, true);
     }
     function _get(url, fCallback) {
-      xhr.onreadystatechange = function () {
-        if (this.readyState === this.DONE) {
-          if (
-            this.status === 400 ||
-            this.status === 404 ||
-            this.status === 500 ||
-            this.status === 406
-          ) {
-            layer.error = true;
-            layer.fire('extentload', layer, true);
-            xhr.abort();
+      const headers = new Headers();
+      headers.append('Accept', 'text/mapml');
+      fetch(url, { headers: headers })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
           }
-        }
-      };
-      xhr.onload = fCallback;
-      xhr.onerror = function () {
-        layer.error = true;
-        layer.fire('extentload', layer, true);
-      };
-      xhr.open('GET', url);
-      xhr.setRequestHeader('Accept', M.mime);
-      xhr.overrideMimeType('text/xml');
-      xhr.send();
+          return response.text();
+        })
+        .then((response) => {
+          fCallback(response, false);
+        })
+        .catch((response) => {
+          layer.error = true;
+          layer._layerEl.dispatchEvent(
+            new CustomEvent('extentload', { detail: layer })
+          );
+          console.log(`HTTP error! Status: ${response.message}`);
+        });
     }
     function transcribe(element) {
       var select = document.createElement('select');
@@ -1408,43 +1415,52 @@ export var MapMLLayer = L.Layer.extend({
       }
       return templateVars;
     }
-    function _processContent(content) {
-      var mapml = this.responseXML || content;
+    function _processContent(content, local) {
+      var mapml = !local
+        ? new DOMParser().parseFromString(content, 'text/xml')
+        : content;
+      if (
+        !local &&
+        (mapml.querySelector('parsererror') || !mapml.querySelector('mapml-'))
+      ) {
+        layer.error = true;
+        layer._layerEl.dispatchEvent(
+          new CustomEvent('extentload', { detail: layer })
+        );
+        throw new Error('Parser error');
+      }
       var base = new URL(
         mapml.querySelector('map-base')
           ? mapml.querySelector('map-base').getAttribute('href')
-          : mapml.baseURI || this.responseURL,
-        this.responseURL
+          : local
+          ? mapml.baseURI
+          : layer._href,
+        layer._href
       ).href;
       layer._properties = {};
       if (mapml.querySelector && mapml.querySelector('map-feature'))
         layer._content = mapml;
-      if (!this.responseXML && this.responseText)
-        mapml = new DOMParser().parseFromString(this.responseText, 'text/xml');
-      if (mapml.querySelector && mapml.querySelector('parsererror')) {
-        layer.error = 'true';
-        throw new Error('Error parsing content');
-      } else if (this.readyState === this.DONE && mapml.querySelector) {
-        setLayerTitle();
-        thinkOfAGoodName();
-        parseLicenseAndLegend();
-        setZoomInOrOutLinks();
-        processTiles();
-        M._parseStylesheetAsHTML(mapml, base, layer._container);
-        getExtentLayerControls();
-        layer._styles = getAlternateStyles();
-        layer._validateExtent();
-        copyRemoteContentToShadowRoot();
-        // update controls if needed based on mapml-viewer controls/controlslist attribute
-        if (layer._layerEl.parentElement) {
-          // if layer does not have a parent Element, do not need to set Controls
-          layer._layerEl.parentElement._toggleControls();
-        }
-        layer.fire('extentload', layer, false);
-        layer._layerEl.dispatchEvent(
-          new CustomEvent('extentload', { detail: layer, bubbles: true })
-        );
+      if (thinkOfAGoodName()) return;
+      layer._styles = getAlternateStyles();
+      setLayerTitle();
+      parseLicenseAndLegend();
+      setZoomInOrOutLinks();
+      processTiles();
+      M._parseStylesheetAsHTML(mapml, base, layer._container);
+      layer._styles = getAlternateStyles();
+      layer._validateExtent();
+      copyRemoteContentToShadowRoot();
+      // update controls if needed based on mapml-viewer controls/controlslist attribute
+      if (layer._layerEl.parentElement) {
+        // if layer does not have a parent Element, do not need to set Controls
+        layer._layerEl.parentElement._toggleControls();
       }
+      layer.fire('extentload', layer, false);
+      // need this to enable processing by the <layer-> element connectedCallback
+      // processing
+      layer._layerEl.dispatchEvent(
+        new CustomEvent('extentload', { detail: layer })
+      );
       // local functions
       function thinkOfAGoodName() {
         var serverExtent = mapml.querySelectorAll('map-extent'),
@@ -1507,14 +1523,14 @@ export var MapMLLayer = L.Layer.extend({
           selectedAlternate &&
           selectedAlternate.hasAttribute('href')
         ) {
-          layer.fire(
-            'changeprojection',
-            {
-              href: new URL(selectedAlternate.getAttribute('href'), base).href
-            },
-            false
+          layer._layerEl.dispatchEvent(
+            new CustomEvent('changeprojection', {
+              detail: {
+                href: new URL(selectedAlternate.getAttribute('href'), base).href
+              }
+            })
           );
-          return;
+          return true;
         } else if (!serverMeta) {
           if (projectionMatch) {
             layer._properties.crs = M[projection];
@@ -1553,8 +1569,6 @@ export var MapMLLayer = L.Layer.extend({
             layer._properties = serverMeta;
           }
         }
-      }
-      function getExtentLayerControls() {
         // add multiple extents
         if (layer._properties._mapExtents) {
           for (let j = 0; j < layer._properties._mapExtents.length; j++) {
@@ -1564,6 +1578,7 @@ export var MapMLLayer = L.Layer.extend({
             layer._properties._mapExtents[j].extentAnatomy = extentElement;
           }
         }
+        return false;
       }
       function setZoomInOrOutLinks() {
         var zoomin = mapml.querySelector('map-link[rel=zoomin]'),
@@ -1610,10 +1625,12 @@ export var MapMLLayer = L.Layer.extend({
           stylesControlSummary.innerText = 'Style';
           stylesControl.appendChild(stylesControlSummary);
           var changeStyle = function (e) {
-            layer.fire(
-              'changestyle',
-              { src: e.target.getAttribute('data-href') },
-              false
+            layer._layerEl.dispatchEvent(
+              new CustomEvent('changestyle', {
+                detail: {
+                  src: e.target.getAttribute('data-href')
+                }
+              })
             );
           };
 
@@ -1667,15 +1684,17 @@ export var MapMLLayer = L.Layer.extend({
         } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
           layer._title = mapml.getAttribute('label').trim();
         }
+        // _mapmlLayerItem is set to the root element representing this layer
+        // in the layer control, iff the layer is not 'hidden'
+        layer._createLayerControlHTML();
       }
       function copyRemoteContentToShadowRoot() {
         // only run when content is loaded from network, puts features etc
         // into layer shadow root
-        if (!xhr) {
+        if (local) {
           return;
         }
-        let mapml = xhr.responseXML,
-          shadowRoot = layer._layerEl.shadowRoot;
+        let shadowRoot = layer._layerEl.shadowRoot;
         let elements = mapml.children[0].children[1].children;
         if (elements) {
           let baseURL = mapml.children[0].children[0]
