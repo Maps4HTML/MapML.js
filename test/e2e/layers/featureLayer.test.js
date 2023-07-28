@@ -46,7 +46,9 @@ test.describe('Playwright featureLayer (Static Features) Layer Tests', () => {
     test('Loading in retrieved features', async () => {
       const features = await page.$eval(
         'layer-#US',
-        (layer) => layer._layer._container.querySelector('svg').firstChild.childElementCount
+        (layer) =>
+          layer._layer._container.querySelector('svg').firstChild
+            .childElementCount
       );
       expect(features).toEqual(52);
     });
@@ -120,13 +122,13 @@ test.describe('Playwright featureLayer (Static Features) Layer Tests', () => {
       await context.close();
     });
     test('Feature without properties renders & is not interactable', async () => {
-      const feature = await page.$eval(
-        'layer-#inline',
-        (layer) => layer._layer._container.querySelector('path').getAttribute('d')
+      const feature = await page.$eval('layer-#inline', (layer) =>
+        layer._layer._container.querySelector('path').getAttribute('d')
       );
-      const classList = await page.$eval(
-        'layer-#inline',
-        (layer) => layer._layer._container.querySelector('svg').firstChild.firstChild.getAttribute('class')
+      const classList = await page.$eval('layer-#inline', (layer) =>
+        layer._layer._container
+          .querySelector('svg')
+          .firstChild.firstChild.getAttribute('class')
       );
       expect(feature).toEqual('M74 -173L330 -173L330 83L74 83L74 -173z');
       expect(classList).toBeFalsy();
