@@ -1462,13 +1462,14 @@ export var MapMLLayer = L.Layer.extend({
       // the dependencies on convoluted getProjection() interface, but doesn't quite
       // succeed, yet.
       function determineLayerProjection() {
-        layer._properties.projection = FALLBACK_PROJECTION;
+        let projection = layer.options.mapprojection || FALLBACK_PROJECTION;
         if (mapml.querySelector('map-meta[name=projection][content]')) {
-          layer._propertes.projection = M._metaContentToObject(
-            mapml
-              .querySelector('map-meta[name=projection]')
-              .getAttribute('content')
-          ).content.toUpperCase();
+          projection =
+            M._metaContentToObject(
+              mapml
+                .querySelector('map-meta[name=projection]')
+                .getAttribute('content')
+            ).content.toUpperCase() || projection;
         } else if (mapml.querySelector('map-extent[units]')) {
           const getProjectionFrom = (extents) => {
             const projectionMatches = (extent) => {
@@ -1480,9 +1481,16 @@ export var MapMLLayer = L.Layer.extend({
               return layer.options.mapprojection;
             }
           };
-          layer._properties.projection = getProjectionFrom(
-            Array.from(mapml.querySelectorAll('map-extent[units]'))
-          );
+          projection =
+            getProjectionFrom(
+              Array.from(mapml.querySelectorAll('map-extent[units]'))
+            ) || projection;
+        }
+        layer._properties.projection = projection;
+        let projectionMatch =
+          layer._properties.projection === layer.options.mapprojection;
+        if (projectionMatch) {
+          layer._properties.crs = M[layer._properties.projection];
         }
       }
       // determine if, where there's no match of the current layer's projection
@@ -1516,10 +1524,10 @@ export var MapMLLayer = L.Layer.extend({
       function processExtents() {
         let projectionMatch =
           layer._properties.projection === layer.options.mapprojection;
-        if (projectionMatch) {
-          layer._properties.crs = M[layer._properties.projection];
-        }
         let extents = mapml.querySelectorAll('map-extent[units]');
+        if (extents.length === 0) {
+          return;
+        }
         layer._properties._mapExtents = []; // stores all the map-extent elements in the layer
         layer._properties._templateVars = []; // stores all template variables coming from all extents
         for (let j = 0; j < extents.length; j++) {
@@ -1889,42 +1897,42 @@ export var MapMLLayer = L.Layer.extend({
     }
   },
   // new getProjection, maybe simpler, but doesn't work...
-  //  getProjection: function () {
-  //    if (!this._properties) {
-  //      return;
-  //    }
-  //    return this._properties.projection;
-  //  }
-  // a layer must share a projection with the map so that all the layers can
-  // be overlayed in one coordinate space.
   getProjection: function () {
     if (!this._properties) {
       return;
     }
-    let extent = this._properties._mapExtents
-      ? this._properties._mapExtents[0]
-      : this._properties; // the projections for each extent eould be the same (as) validated in _validProjection, so can use mapExtents[0]
-    if (extent.serverMeta) return extent.serverMeta;
-    switch (extent.tagName.toUpperCase()) {
-      case 'MAP-EXTENT':
-        if (extent.hasAttribute('units'))
-          return extent.getAttribute('units').toUpperCase();
-        break;
-      case 'MAP-INPUT':
-        if (extent.hasAttribute('value'))
-          return extent.getAttribute('value').toUpperCase();
-        break;
-      case 'MAP-META':
-        if (extent.hasAttribute('content'))
-          return M._metaContentToObject(
-            extent.getAttribute('content')
-          ).content.toUpperCase();
-        break;
-      default:
-        return FALLBACK_PROJECTION;
-    }
-    return FALLBACK_PROJECTION;
+    return this._properties.projection;
   },
+  // a layer must share a projection with the map so that all the layers can
+  // be overlayed in one coordinate space.
+  //  getProjection: function () {
+  //    if (!this._properties) {
+  //      return;
+  //    }
+  //    let extent = this._properties._mapExtents
+  //      ? this._properties._mapExtents[0]
+  //      : this._properties; // the projections for each extent eould be the same (as) validated in _validProjection, so can use mapExtents[0]
+  //    if (extent.serverMeta) return extent.serverMeta;
+  //    switch (extent.tagName.toUpperCase()) {
+  //      case 'MAP-EXTENT':
+  //        if (extent.hasAttribute('units'))
+  //          return extent.getAttribute('units').toUpperCase();
+  //        break;
+  //      case 'MAP-INPUT':
+  //        if (extent.hasAttribute('value'))
+  //          return extent.getAttribute('value').toUpperCase();
+  //        break;
+  //      case 'MAP-META':
+  //        if (extent.hasAttribute('content'))
+  //          return M._metaContentToObject(
+  //            extent.getAttribute('content')
+  //          ).content.toUpperCase();
+  //        break;
+  //      default:
+  //        return FALLBACK_PROJECTION;
+  //    }
+  //    return FALLBACK_PROJECTION;
+  //  },
   getQueryTemplates: function (pcrsClick) {
     if (this._properties && this._properties._queries) {
       var templates = [];

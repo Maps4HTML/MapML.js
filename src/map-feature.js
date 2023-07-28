@@ -200,16 +200,6 @@ export class MapFeature extends HTMLElement {
         // if vector layer has not yet created (i.e. the layer- is not yet rendered on the map / layer is empty)
         let layerEl = this._layer._layerEl;
         this._layer.once('add', this._setUpEvents, this);
-        if (
-          !layerEl.querySelector('map-extent, map-tile') &&
-          !layerEl.hasAttribute('src') &&
-          layerEl.querySelectorAll('map-feature').length === 1
-        ) {
-          // if the map-feature is added to an empty layer, fire extentload to create vector layer
-          // must re-run _initialize of MapMLLayer.js to re-set layer._properties (layer._properties is null for an empty layer)
-          this._layer._initialize(layerEl);
-          this._layer.fire('extentload');
-        }
         return;
       } else if (!this._featureGroup) {
         // if the map-feature el or its subtree is updated
