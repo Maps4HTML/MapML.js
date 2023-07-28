@@ -145,6 +145,7 @@ export class MapLayer extends HTMLElement {
         if (this._layerControl && !this.hidden) {
           this._layerControl.addOrUpdateOverlay(this._layer, this.label);
         }
+        this._validateDisabled();
       })
       .catch((e) => {
         this.dispatchEvent(

@@ -1472,24 +1472,24 @@ export var MapMLLayer = L.Layer.extend({
             ).content.toUpperCase() || projection;
         } else if (mapml.querySelector('map-extent[units]')) {
           const getProjectionFrom = (extents) => {
-            const projectionMatches = (extent) => {
-              return (
-                extent.attributes.units.value === layer.options.mapprojection
-              );
-            };
-            if (extents.every(projectionMatches)) {
-              return layer.options.mapprojection;
+            let extentProj = extents[0].attributes.units.value;
+            let isMatch = true;
+            for (let i = 0; i < extents.length; i++) {
+              if (extentProj !== extents[i].attributes.units.value) {
+                isMatch = false;
+              }
             }
+            return isMatch ? extentProj : null;
           };
           projection =
             getProjectionFrom(
               Array.from(mapml.querySelectorAll('map-extent[units]'))
             ) || projection;
+        } else {
+          // Warn when no map-meta[name=projection] or map-extent[units] are present, as the map's projection is being used.
         }
         layer._properties.projection = projection;
-        let projectionMatch =
-          layer._properties.projection === layer.options.mapprojection;
-        if (projectionMatch) {
+        if (layer._properties.projection === layer.options.mapprojection) {
           layer._properties.crs = M[layer._properties.projection];
         }
       }
