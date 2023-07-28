@@ -564,8 +564,7 @@ export var MapMLLayer = L.Layer.extend({
   getAttribution: function () {
     return this.options.attribution;
   },
-
-  getLayerExtentHTML: function (labelName, i) {
+  createLayerControlExtentHTML: function (mapExtent) {
     var extent = L.DomUtil.create('fieldset', 'mapml-layer-extent'),
       extentProperties = L.DomUtil.create(
         'div',
@@ -603,10 +602,10 @@ export var MapMLLayer = L.Layer.extend({
       opacity = L.DomUtil.create('input', '', opacityControl);
     extentSettings.hidden = true;
     extent.setAttribute('aria-grabbed', 'false');
-    if (!labelName) {
+    if (!mapExtent.hasAttribute('label')) {
       // if a label attribute is not present, set it to hidden in layer control
       extent.setAttribute('hidden', '');
-      this._properties._mapExtents[i].hidden = true;
+      mapExtent.hidden = true;
     }
 
     // append the svg paths
@@ -638,13 +637,10 @@ export var MapMLLayer = L.Layer.extend({
       (e) => {
         let allRemoved = true;
         e.target.checked = false;
-        this._properties._mapExtents[i].removed = true;
-        this._properties._mapExtents[i].checked = false;
-        if (this._layerEl.checked)
-          this._changeExtent(e, this._properties._mapExtents[i]);
-        this._properties._mapExtents[i].extentAnatomy.parentNode.removeChild(
-          this._properties._mapExtents[i].extentAnatomy
-        );
+        mapExtent.removed = true;
+        mapExtent.checked = false;
+        if (this._layerEl.checked) this._changeExtent(e, mapExtent);
+        mapExtent.extentAnatomy.parentNode.removeChild(mapExtent.extentAnatomy);
         for (let j = 0; j < this._properties._mapExtents.length; j++) {
           if (!this._properties._mapExtents[j].removed) allRemoved = false;
         }
@@ -693,35 +689,30 @@ export var MapMLLayer = L.Layer.extend({
       'aria-labelledby',
       'mapml-layer-item-opacity-' + L.stamp(extentOpacitySummary)
     );
-    let opacityValue = this._properties._mapExtents[i].hasAttribute('opacity')
-      ? this._properties._mapExtents[i].getAttribute('opacity')
+    let opacityValue = mapExtent.hasAttribute('opacity')
+      ? mapExtent.getAttribute('opacity')
       : '1.0';
-    this._properties._mapExtents[i]._templateVars.opacity = opacityValue;
+    mapExtent._templateVars.opacity = opacityValue;
     opacity.setAttribute('value', opacityValue);
     opacity.value = opacityValue;
-    L.DomEvent.on(
-      opacity,
-      'change',
-      this._changeExtentOpacity,
-      this._properties._mapExtents[i]
-    );
+    L.DomEvent.on(opacity, 'change', this._changeExtentOpacity, mapExtent);
 
     var extentItemNameSpan = L.DomUtil.create(
       'span',
       'mapml-layer-item-name',
       extentLabel
     );
-    input.defaultChecked = this._properties._mapExtents[i] ? true : false;
-    this._properties._mapExtents[i].checked = input.defaultChecked;
+    input.defaultChecked = mapExtent ? true : false;
+    mapExtent.checked = input.defaultChecked;
     input.type = 'checkbox';
-    extentItemNameSpan.innerHTML = labelName;
+    extentItemNameSpan.innerHTML = mapExtent.getAttribute('label');
     L.DomEvent.on(input, 'change', (e) => {
-      this._changeExtent(e, this._properties._mapExtents[i]);
+      this._changeExtent(e, mapExtent);
     });
     extentItemNameSpan.id =
       'mapml-extent-item-name-{' + L.stamp(extentItemNameSpan) + '}';
     extent.setAttribute('aria-labelledby', extentItemNameSpan.id);
-    extentItemNameSpan.extent = this._properties._mapExtents[i];
+    extentItemNameSpan.extent = mapExtent;
 
     extent.ontouchstart = extent.onmousedown = (downEvent) => {
       if (
@@ -1549,12 +1540,11 @@ export var MapMLLayer = L.Layer.extend({
             // re-write layer.getLayerExtentHTML(label, i)
             // as local function createExtentLayerControlHTML(extent) ??
             // rename extentAnatomy to extentLayerControlItem or similar...
-            extents[j].extentAnatomy = layer.getLayerExtentHTML(
-              extents[j].getAttribute('label'),
-              j
+            extents[j].extentAnatomy = layer.createLayerControlExtentHTML(
+              extents[j]
             );
             layer._properties._mapExtents.push(extents[j]);
-            // possibly get rid of layer._properties._templateVars, TBD.
+            // get rid of layer._properties._templateVars, TBD.
             layer._properties._templateVars =
               layer._properties._templateVars.concat(extents[j]._templateVars);
           }
