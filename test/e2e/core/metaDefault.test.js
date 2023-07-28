@@ -91,17 +91,15 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
     );
   });
   test("Layer with no map-meta's is rendered on map", async () => {
-    const viewer = await page.evaluateHandle(() =>
-      document.querySelector('mapml-viewer')
+    await page.waitForTimeout(200);
+    const layer = await page.evaluateHandle(() =>
+      document.querySelector('layer-[id=defaultMeta]')
     );
     const layerSVG = await (
       await page.evaluateHandle(
-        (map) =>
-          map.shadowRoot
-            .querySelectorAll('.mapml-layer')[2]
-            .querySelector('path')
-            .getAttribute('d'),
-        viewer
+        (layer) =>
+          layer._layer._container.querySelector('path').getAttribute('d'),
+        layer
       )
     ).jsonValue();
     expect(layerSVG).toEqual(
@@ -109,17 +107,14 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
     );
   });
   test("Fetched layer with no map-meta's is rendered on map", async () => {
-    const viewer = await page.evaluateHandle(() =>
-      document.querySelector('mapml-viewer')
+    const layer = await page.evaluateHandle(() =>
+      document.querySelector('layer-[id=defaultMetaFetched]')
     );
     const layerSVG = await (
       await page.evaluateHandle(
-        (map) =>
-          map.shadowRoot
-            .querySelectorAll('.mapml-layer')[3]
-            .querySelector('path')
-            .getAttribute('d'),
-        viewer
+        (layer) =>
+          layer._layer._container.querySelector('path').getAttribute('d'),
+        layer
       )
     ).jsonValue();
     expect(layerSVG).toEqual(

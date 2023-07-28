@@ -1440,7 +1440,13 @@ export var MapMLLayer = L.Layer.extend({
       layer._properties = {};
       if (mapml.querySelector && mapml.querySelector('map-feature'))
         layer._content = mapml;
-      if (thinkOfAGoodName()) return;
+      // sets layer._properties.projection
+      determineLayerProjection();
+      // requires that layer._properties.projection be set
+      if (selectMatchingAlternateProjection()) return;
+      // sets layer._properties._mapExtents and layer._properties._templateVars, if applicable
+      processExtents();
+      //      if (thinkOfAGoodName()) return;
       layer._styles = getAlternateStyles();
       setLayerTitle();
       parseLicenseAndLegend();
@@ -1461,6 +1467,99 @@ export var MapMLLayer = L.Layer.extend({
       layer._layerEl.dispatchEvent(
         new CustomEvent('extentload', { detail: layer })
       );
+      // sets layer._properties.projection.  Supposed to replace / simplify
+      // the dependencies on convoluted getProjection() interface, but doesn't quite
+      // succeed, yet.
+      function determineLayerProjection() {
+        layer._properties.projection = FALLBACK_PROJECTION;
+        if (mapml.querySelector('map-meta[name=projection][content]')) {
+          layer._propertes.projection = M._metaContentToObject(
+            mapml
+              .querySelector('map-meta[name=projection]')
+              .getAttribute('content')
+          ).content.toUpperCase();
+        } else if (mapml.querySelector('map-extent[units]')) {
+          const getProjectionFrom = (extents) => {
+            const projectionMatches = (extent) => {
+              return (
+                extent.attributes.units.value === layer.options.mapprojection
+              );
+            };
+            if (extents.every(projectionMatches)) {
+              return layer.options.mapprojection;
+            }
+          };
+          layer._properties.projection = getProjectionFrom(
+            Array.from(mapml.querySelectorAll('map-extent[units]'))
+          );
+        }
+      }
+      // determine if, where there's no match of the current layer's projection
+      // and that of the map, if there is a linked alternate text/mapml
+      // resource that matches the map's projection
+      function selectMatchingAlternateProjection() {
+        let selectedAlternate =
+          layer._properties.projection !== layer.options.mapprojection &&
+          mapml.querySelector(
+            'map-head map-link[rel=alternate][projection=' +
+              layer.options.mapprojection +
+              '][href]'
+          );
+        try {
+          if (selectedAlternate) {
+            let url = new URL(selectedAlternate.getAttribute('href'), base)
+              .href;
+            layer._layerEl.dispatchEvent(
+              new CustomEvent('changeprojection', {
+                detail: {
+                  href: url
+                }
+              })
+            );
+            return true;
+          }
+        } catch (error) {}
+        return false;
+      }
+      // initialize layer._properties._mapExtents (and associated/derived/convenience property _templateVars
+      function processExtents() {
+        let projectionMatch =
+          layer._properties.projection === layer.options.mapprojection;
+        if (projectionMatch) {
+          layer._properties.crs = M[layer._properties.projection];
+        }
+        let extents = mapml.querySelectorAll('map-extent[units]');
+        layer._properties._mapExtents = []; // stores all the map-extent elements in the layer
+        layer._properties._templateVars = []; // stores all template variables coming from all extents
+        for (let j = 0; j < extents.length; j++) {
+          if (
+            extents[j].querySelector(
+              'map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query]'
+            )
+          ) {
+            extents[j]._templateVars = _initTemplateVars.call(
+              layer,
+              extents[j],
+              mapml.querySelector('map-meta[name=extent]'),
+              layer._properties.projection,
+              mapml,
+              base,
+              projectionMatch
+            );
+            // re-write layer.getLayerExtentHTML(label, i)
+            // as local function createExtentLayerControlHTML(extent) ??
+            // rename extentAnatomy to extentLayerControlItem or similar...
+            extents[j].extentAnatomy = layer.getLayerExtentHTML(
+              extents[j].getAttribute('label'),
+              j
+            );
+            layer._properties._mapExtents.push(extents[j]);
+            // possibly get rid of layer._properties._templateVars, TBD.
+            layer._properties._templateVars =
+              layer._properties._templateVars.concat(extents[j]._templateVars);
+          }
+        }
+      }
       // local functions
       function thinkOfAGoodName() {
         var serverExtent = mapml.querySelectorAll('map-extent'),
@@ -1556,26 +1655,28 @@ export var MapMLLayer = L.Layer.extend({
                 projectionMatch
               );
               layer._properties._mapExtents[j]._templateVars = templateVars;
+              let labelName =
+                layer._properties._mapExtents[j].getAttribute('label');
+              layer._properties._mapExtents[j].extentAnatomy =
+                layer.getLayerExtentHTML(labelName, j);
               layer._properties._templateVars =
                 layer._properties._templateVars.concat(templateVars);
             }
           }
         } else {
+          // TODO simplify the interface to layer._properties (projection string)
+          // by making it an explicit property
+          // i.e. layer._properties.projection
+          // so that getProjection can act as an accessor function that
+          /// doesn't have to deal with a variety of possible formats for the
+          // property
+          //NB this typeof is not working,
           if (typeof serverMeta === 'string') {
             // when map-meta projection not present for layer
             layer._properties = { serverMeta };
           } else {
             // when map-meta projection present for layer
             layer._properties = serverMeta;
-          }
-        }
-        // add multiple extents
-        if (layer._properties._mapExtents) {
-          for (let j = 0; j < layer._properties._mapExtents.length; j++) {
-            var labelName =
-              layer._properties._mapExtents[j].getAttribute('label');
-            var extentElement = layer.getLayerExtentHTML(labelName, j);
-            layer._properties._mapExtents[j].extentAnatomy = extentElement;
           }
         }
         return false;
@@ -1797,6 +1898,13 @@ export var MapMLLayer = L.Layer.extend({
       }
     }
   },
+  // new getProjection, maybe simpler, but doesn't work...
+  //  getProjection: function () {
+  //    if (!this._properties) {
+  //      return;
+  //    }
+  //    return this._properties.projection;
+  //  }
   // a layer must share a projection with the map so that all the layers can
   // be overlayed in one coordinate space.
   getProjection: function () {
