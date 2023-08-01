@@ -28,7 +28,7 @@ test.describe('Playwright Custom TCRS Tests', () => {
     );
 
     const tilesLoaded = await page.$eval(
-      'xpath=//html/body/mapml-viewer[1] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-static-tile-layer > div',
+      'body > mapml-viewer:nth-child(1) >> .mapml-static-tile-layer > div',
       (tileGroup) => tileGroup.getElementsByTagName('map-tile').length
     );
 

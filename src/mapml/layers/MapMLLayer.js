@@ -50,8 +50,6 @@ export var MapMLLayer = L.Layer.extend({
     // hit the service to determine what its extent might be
     // OR use the extent of the content provided
 
-    if (!mapml && content && content.hasAttribute('label'))
-      this._title = content.getAttribute('label');
     this._initialize(mapml ? content : null);
 
     // a default extent can't be correctly set without the map to provide
@@ -59,7 +57,7 @@ export var MapMLLayer = L.Layer.extend({
     // established by metadata in the content, we should use map properties
     // to set the extent, but the map won't be available until the <layer>
     // element is attached to the <map> element, wait for that to happen.
-    this.on('attached', this._validateExtent, this);
+    //    this.on('attached', this._validateExtent, this);
     // weirdness.  options is actually undefined here, despite the hardcoded
     // options above. If you use this.options, you see the options defined
     // above.  Not going to change this, but failing to understand ATM.
@@ -819,14 +817,20 @@ export var MapMLLayer = L.Layer.extend({
             control.style.transform = null;
             let controlsElems = controls.children,
               zIndex = 1;
+            // re-order layer elements DOM order
             for (let c of controlsElems) {
               let layerEl = c.querySelector('span').layer._layerEl;
-
               layerEl.setAttribute('data-moving', '');
               mapEl.insertAdjacentElement('beforeend', layerEl);
               layerEl.removeAttribute('data-moving');
-
-              layerEl._layer.setZIndex(zIndex);
+            }
+            // update zIndex of all layer- elements
+            let layers = mapEl.querySelectorAll('layer-');
+            for (let i = 0; i < layers.length; i++) {
+              let layer = layers[i]._layer;
+              if (layer.options.zIndex !== zIndex) {
+                layer.setZIndex(zIndex);
+              }
               zIndex++;
             }
             controls.classList.remove('mapml-draggable');
@@ -969,24 +973,22 @@ export var MapMLLayer = L.Layer.extend({
       determineLayerProjection();
       // requires that layer._properties.projection be set
       if (selectMatchingAlternateProjection()) return;
-      // sets layer._properties._mapExtents and layer._properties._templateVars, if applicable
-      processExtents();
-      //      if (thinkOfAGoodName()) return;
+      // set layer._properties._mapExtents and layer._properties._templateVars
+      if (layer._properties.crs) processExtents();
       layer._styles = getAlternateStyles();
       setLayerTitle();
       parseLicenseAndLegend();
       setZoomInOrOutLinks();
       processTiles();
       M._parseStylesheetAsHTML(mapml, base, layer._container);
-      layer._styles = getAlternateStyles();
-      layer._validateExtent();
+      //      layer._validateExtent();
       copyRemoteContentToShadowRoot();
       // update controls if needed based on mapml-viewer controls/controlslist attribute
       if (layer._layerEl.parentElement) {
         // if layer does not have a parent Element, do not need to set Controls
         layer._layerEl.parentElement._toggleControls();
       }
-      layer.fire('extentload', layer, false);
+      //      layer.fire('extentload', layer, false);
       // need this to enable processing by the <layer-> element connectedCallback
       // processing
       layer._layerEl.dispatchEvent(
