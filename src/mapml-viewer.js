@@ -74,12 +74,12 @@ export class MapViewer extends HTMLElement {
     }
   }
   get projection() {
-    return this.hasAttribute('projection') && M[this.getAttribute('projection')]
+    return this.hasAttribute('projection')
       ? this.getAttribute('projection')
       : 'OSMTILE';
   }
   set projection(val) {
-    if (val && M[val]) {
+    if (val) {
       this.setAttribute('projection', val);
     } else throw new Error('Undefined Projection');
   }
@@ -131,79 +131,88 @@ export class MapViewer extends HTMLElement {
     this._traversalCall = false;
   }
   connectedCallback() {
-    this._initShadowRoot();
+    this.whenProjectionDefined(this.projection)
+      .then(() => {
+        this._initShadowRoot();
 
-    this._controlsList = new DOMTokenList(
-      this.getAttribute('controlslist'),
-      this,
-      'controlslist',
-      [
-        'noreload',
-        'nofullscreen',
-        'nozoom',
-        'nolayer',
-        'noscale',
-        'geolocation'
-      ]
-    );
+        this._controlsList = new DOMTokenList(
+          this.getAttribute('controlslist'),
+          this,
+          'controlslist',
+          [
+            'noreload',
+            'nofullscreen',
+            'nozoom',
+            'nolayer',
+            'noscale',
+            'geolocation'
+          ]
+        );
 
-    var s = window.getComputedStyle(this),
-      wpx = s.width,
-      hpx = s.height,
-      w = this.hasAttribute('width')
-        ? this.getAttribute('width')
-        : parseInt(wpx.replace('px', '')),
-      h = this.hasAttribute('height')
-        ? this.getAttribute('height')
-        : parseInt(hpx.replace('px', ''));
-    this._changeWidth(w);
-    this._changeHeight(h);
+        var s = window.getComputedStyle(this),
+          wpx = s.width,
+          hpx = s.height,
+          w = this.hasAttribute('width')
+            ? this.getAttribute('width')
+            : parseInt(wpx.replace('px', '')),
+          h = this.hasAttribute('height')
+            ? this.getAttribute('height')
+            : parseInt(hpx.replace('px', ''));
+        this._changeWidth(w);
+        this._changeHeight(h);
 
-    // wait for createmap event before creating leaflet map
-    // this allows a safeguard for the case where loading a custom TCRS takes
-    // longer than loading mapml-viewer.js/web-map.js
-    // the REASON we need a synchronous event listener (see comment below)
-    // is because the mapml-viewer element has / can have a size of 0 up until after
-    // something that happens between this point and the event handler executing
-    // perhaps a browser rendering cycle??
+        // wait for createmap event before creating leaflet map
+        // this allows a safeguard for the case where loading a custom TCRS takes
+        // longer than loading mapml-viewer.js/web-map.js
+        // the REASON we need a synchronous event listener (see comment below)
+        // is because the mapml-viewer element has / can have a size of 0 up until after
+        // something that happens between this point and the event handler executing
+        // perhaps a browser rendering cycle??
 
-    let custom = !['CBMTILE', 'APSTILE', 'OSMTILE', 'WGS84'].includes(
-      this.projection
-    );
-    // this is worth a read, because dispatchEvent is synchronous
-    // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent
-    // In particular:
-    //   "All applicable event handlers are called and return before dispatchEvent() returns."
-    this._createMap();
+        let custom = !['CBMTILE', 'APSTILE', 'OSMTILE', 'WGS84'].includes(
+          this.projection
+        );
+        // this is worth a read, because dispatchEvent is synchronous
+        // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent
+        // In particular:
+        //   "All applicable event handlers are called and return before dispatchEvent() returns."
+        this._createMap();
 
-    // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
-    this.setAttribute('role', 'application');
-    this._toggleStatic();
+        // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
+        this.setAttribute('role', 'application');
+        this._toggleStatic();
 
-    /*
-    1. only deletes aria-label when the last (only remaining) map caption is removed
-    2. only deletes aria-label if the aria-label was defined by the map caption element itself
-    */
+        /*
+      1. only deletes aria-label when the last (only remaining) map caption is removed
+      2. only deletes aria-label if the aria-label was defined by the map caption element itself
+      */
 
-    let mapcaption = this.querySelector('map-caption');
+        let mapcaption = this.querySelector('map-caption');
 
-    if (mapcaption !== null) {
-      setTimeout(() => {
-        let ariaupdate = this.getAttribute('aria-label');
+        if (mapcaption !== null) {
+          setTimeout(() => {
+            let ariaupdate = this.getAttribute('aria-label');
 
-        if (ariaupdate === mapcaption.innerHTML) {
-          this.mapCaptionObserver = new MutationObserver((m) => {
-            let mapcaptionupdate = this.querySelector('map-caption');
-            if (mapcaptionupdate !== mapcaption) {
-              this.removeAttribute('aria-label');
+            if (ariaupdate === mapcaption.innerHTML) {
+              this.mapCaptionObserver = new MutationObserver((m) => {
+                let mapcaptionupdate = this.querySelector('map-caption');
+                if (mapcaptionupdate !== mapcaption) {
+                  this.removeAttribute('aria-label');
+                }
+              });
+              this.mapCaptionObserver.observe(this, {
+                childList: true
+              });
             }
-          });
-          this.mapCaptionObserver.observe(this, {
-            childList: true
-          });
+          }, 0);
         }
-      }, 0);
-    }
+        this.dispatchEvent(
+          new CustomEvent('load', { detail: { target: this } })
+        );
+      })
+      .catch(() => {
+        throw new Error('Projection not defined');
+      });
   }
   _initShadowRoot() {
     if (!this.shadowRoot) {
@@ -361,7 +370,10 @@ export class MapViewer extends HTMLElement {
               this.appendChild(reAttach);
             }
             if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
-            this.zoomTo(this.lat, this.lon, this.zoom);
+            this.dispatchEvent(
+              new CustomEvent('load', { detail: { target: this } })
+            );
+            //this.zoomTo(this.lat, this.lon, this.zoom);
             //this.dispatchEvent(new CustomEvent('projectionchange'));
           }
         }
@@ -1292,7 +1304,25 @@ export class MapViewer extends HTMLElement {
     M[t.projection.toUpperCase()] = M[t.projection]; //adds the projection uppercase to global M
     return t.projection;
   }
-
+  async whenProjectionDefined(projection) {
+    return new Promise((resolve, reject) => {
+      if (M[projection]) {
+        resolve();
+      }
+      const interval = setInterval(testForProjection, 300, projection);
+      function testForProjection() {
+        if (M[projection]) {
+          clearInterval(interval);
+          resolve();
+        }
+      }
+      function removeTestForProjection() {
+        clearInterval(interval);
+        reject();
+      }
+      setTimeout(removeTestForProjection, 10000);
+    });
+  }
   geojson2mapml(json, options = {}) {
     if (options.projection === undefined) {
       options.projection = this.projection;
