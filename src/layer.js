@@ -103,7 +103,7 @@ export class MapLayer extends HTMLElement {
         (event) => {
           event.stopPropagation();
           if (event.detail.error) {
-            reject();
+            reject(event.detail.error);
           } else {
             resolve();
           }
@@ -122,7 +122,7 @@ export class MapLayer extends HTMLElement {
         'changeprojection',
         function (e) {
           e.stopPropagation();
-          this.src = e.detail.href;
+          reject(e);
         },
         { once: true }
       );
@@ -148,9 +148,14 @@ export class MapLayer extends HTMLElement {
         this._validateDisabled();
       })
       .catch((e) => {
-        this.dispatchEvent(
-          new CustomEvent('error', { detail: { target: this } })
-        );
+        console.log('Entering catch with e=' + e);
+        if (e.type === 'changeprojection') {
+          this.src = e.detail.href;
+        } else {
+          this.dispatchEvent(
+            new CustomEvent('error', { detail: { target: this } })
+          );
+        }
       });
   }
 
