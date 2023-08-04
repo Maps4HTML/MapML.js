@@ -104,18 +104,6 @@ export class MapLayer extends HTMLElement {
     }
     new Promise((resolve, reject) => {
       this.addEventListener(
-        'extentload',
-        (event) => {
-          event.stopPropagation();
-          if (event.detail.error) {
-            reject(event.detail.error);
-          } else {
-            resolve();
-          }
-        },
-        { once: true }
-      );
-      this.addEventListener(
         'changestyle',
         function (e) {
           e.stopPropagation();
@@ -135,18 +123,54 @@ export class MapLayer extends HTMLElement {
       let opacity_value = this.hasAttribute('opacity')
         ? this.getAttribute('opacity')
         : '1.0';
-      this._layer = M.mapMLLayer(
-        this.src ? new URL(this.src, base).href : null,
-        this,
-        {
+
+      const headers = new Headers();
+      headers.append('Accept', 'text/mapml');
+      if (this.src) {
+        fetch(this.src, { headers: headers })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.text();
+          })
+          .then((mapml) => {
+            let content = new DOMParser().parseFromString(mapml, 'text/xml');
+            if (
+              content.querySelector('parsererror') ||
+              !content.querySelector('mapml-')
+            ) {
+              throw new Error('Parser error');
+            }
+            if (this._layer) {
+              this._onRemove();
+            }
+            this._layer = M.mapMLLayer(
+              new URL(this.src, base).href,
+              this,
+              content,
+              {
+                mapprojection: this.parentElement.projection,
+                opacity: opacity_value
+              }
+            );
+            resolve();
+          })
+          .catch((error) => {
+            console.log('Error fetching layer content' + error);
+          });
+      } else {
+        if (this._layer) {
+          this._onRemove();
+        }
+        this._layer = M.mapMLLayer(null, this, null, {
           mapprojection: this.parentElement.projection,
           opacity: opacity_value
-        }
-      );
-      console.log(this._layer);
+        });
+        resolve();
+      }
     })
       .then(() => {
-        console.log(this._layer);
         this._attachedToMap();
         this._validateDisabled();
       })
@@ -230,9 +254,6 @@ export class MapLayer extends HTMLElement {
     );
   }
 
-  adoptedCallback() {
-    //    console.log('Custom map element moved to new page.');
-  }
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'label':

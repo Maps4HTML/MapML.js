@@ -13,22 +13,18 @@ export var MapMLLayer = L.Layer.extend({
     opacity: '1.0'
   },
   // initialize is executed before the layer is added to a map
-  initialize: function (href, content, options) {
+  initialize: function (href, layerEl, mapml, options) {
     // in the custom element, the attribute is actually 'src'
     // the _href version is the URL received from layer-@src
-    var mapml;
     if (href) {
       this._href = href;
     }
-    if (content) {
-      this._layerEl = content;
-      mapml = content.querySelector('map-feature,map-tile,map-extent')
-        ? true
-        : false;
-      if (!href && mapml) {
-        this._content = content;
-      }
-    }
+    let local;
+    this._layerEl = layerEl;
+    local = layerEl.querySelector('map-feature,map-tile,map-extent')
+      ? true
+      : false;
+    this._content = local ? layerEl : mapml;
     L.setOptions(this, options);
     this._container = L.DomUtil.create('div', 'leaflet-layer');
     this.changeOpacity(this.options.opacity);
@@ -50,14 +46,14 @@ export var MapMLLayer = L.Layer.extend({
     // hit the service to determine what its extent might be
     // OR use the extent of the content provided
 
-    this._initialize(mapml ? content : null);
+    this._initialize(local ? layerEl : mapml);
 
     // a default extent can't be correctly set without the map to provide
     // its bounds , projection, zoom range etc, so if that stuff's not
     // established by metadata in the content, we should use map properties
     // to set the extent, but the map won't be available until the <layer>
     // element is attached to the <map> element, wait for that to happen.
-    //    this.on('attached', this._validateExtent, this);
+    this.on('attached', this._validateExtent, this);
     // weirdness.  options is actually undefined here, despite the hardcoded
     // options above. If you use this.options, you see the options defined
     // above.  Not going to change this, but failing to understand ATM.
@@ -184,7 +180,7 @@ export var MapMLLayer = L.Layer.extend({
       map.addLayer(this._mapmlvectors);
     } else {
       this.once(
-        'extentload',
+        'foo',
         function () {
           if (!this._validProjection(map)) {
             this.validProjection = false;
@@ -255,7 +251,7 @@ export var MapMLLayer = L.Layer.extend({
     } else {
       // wait for extent to be loaded
       this.once(
-        'extentload',
+        'foo',
         function () {
           if (!this._validProjection(map)) {
             this.validProjection = false;
@@ -916,48 +912,8 @@ export var MapMLLayer = L.Layer.extend({
     // content of the <layer> element, but if no this._href / src is provided
     // but there *is* child content of the <layer> element (which is copied/
     // referred to by this._content), we should use that content.
-    if (this._href) {
-      _get(this._href, _processContent);
-    } else if (content) {
-      // may not set this._properties if it can't be done from the content
-      // (eg a single point) and there's no map to provide a default yet
-      _processContent.call(this, content, true);
-    }
-    function _get(url, fCallback) {
-      const headers = new Headers();
-      headers.append('Accept', 'text/mapml');
-      fetch(url, { headers: headers })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          return response.text();
-        })
-        .then((response) => {
-          fCallback(response, false);
-        })
-        .catch((response) => {
-          layer.error = true;
-          layer._layerEl.dispatchEvent(
-            new CustomEvent('extentload', { detail: layer })
-          );
-          console.log(`HTTP error! Status: ${response.message}`);
-        });
-    }
-    function _processContent(content, local) {
-      var mapml = !local
-        ? new DOMParser().parseFromString(content, 'text/xml')
-        : content;
-      if (
-        !local &&
-        (mapml.querySelector('parsererror') || !mapml.querySelector('mapml-'))
-      ) {
-        layer.error = true;
-        layer._layerEl.dispatchEvent(
-          new CustomEvent('extentload', { detail: layer })
-        );
-        throw new Error('Parser error');
-      }
+    _processContent.call(this, content, this._href ? false : true);
+    function _processContent(mapml, local) {
       var base = new URL(
         mapml.querySelector('map-base')
           ? mapml.querySelector('map-base').getAttribute('href')
@@ -967,8 +923,6 @@ export var MapMLLayer = L.Layer.extend({
         layer._href
       ).href;
       layer._properties = {};
-      if (mapml.querySelector && mapml.querySelector('map-feature'))
-        layer._content = mapml;
       // sets layer._properties.projection
       determineLayerProjection();
       // requires that layer._properties.projection be set
@@ -981,19 +935,14 @@ export var MapMLLayer = L.Layer.extend({
       setZoomInOrOutLinks();
       processTiles();
       M._parseStylesheetAsHTML(mapml, base, layer._container);
-      //      layer._validateExtent();
+      layer._validateExtent();
       copyRemoteContentToShadowRoot();
       // update controls if needed based on mapml-viewer controls/controlslist attribute
       if (layer._layerEl.parentElement) {
         // if layer does not have a parent Element, do not need to set Controls
         layer._layerEl.parentElement._toggleControls();
       }
-      //      layer.fire('extentload', layer, false);
-      // need this to enable processing by the <layer-> element connectedCallback
-      // processing
-      layer._layerEl.dispatchEvent(
-        new CustomEvent('extentload', { detail: layer })
-      );
+      layer.fire('foo', layer, false);
       // local functions
       // sets layer._properties.projection.  Supposed to replace / simplify
       // the dependencies on convoluted getProjection() interface, but doesn't quite
@@ -2096,7 +2045,7 @@ export var MapMLLayer = L.Layer.extend({
     }
   }
 });
-export var mapMLLayer = function (url, node, options) {
+export var mapMLLayer = function (url, node, mapml, options) {
   if (!url && !node) return null;
-  return new MapMLLayer(url, node, options);
+  return new MapMLLayer(url, node, mapml, options);
 };

@@ -533,7 +533,7 @@ export var Util = {
           newLayer = true;
       }
       if (!link.inPlace && newLayer)
-        L.DomEvent.on(layer, 'extentload', function focusOnLoad(e) {
+        L.DomEvent.on(layer, 'foo', function focusOnLoad(e) {
           if (
             newLayer &&
             ['_parent', '_self'].includes(link.target) &&
@@ -544,7 +544,7 @@ export var Util = {
             if (zoomTo)
               layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
             else layer.zoomTo();
-            L.DomEvent.off(layer, 'extentload', focusOnLoad);
+            L.DomEvent.off(layer, 'foo', focusOnLoad);
           }
 
           if (opacity) layer.opacity = opacity;
