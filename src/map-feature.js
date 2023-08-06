@@ -185,7 +185,7 @@ export class MapFeature extends HTMLElement {
       if (!this._parentEl._layer._map) {
         // if the parent layer- el has not yet added to the map (i.e. not yet rendered), wait until it is added
         this._layer.once(
-          'attached',
+          'foo',
           function () {
             this._map = this._layer._map;
           },
