@@ -80,8 +80,14 @@ export class MapViewer extends HTMLElement {
   }
   set projection(val) {
     if (val) {
-      this.setAttribute('projection', val);
-    } else throw new Error('Undefined Projection');
+      this.whenProjectionDefined(val)
+        .then(() => {
+          this.setAttribute('projection', val);
+        })
+        .catch(() => {
+          throw new Error('Undefined projection:'+val);
+        });
+    }
   }
   get zoom() {
     return this.hasAttribute('zoom') ? this.getAttribute('zoom') : 0;
@@ -360,7 +366,7 @@ export class MapViewer extends HTMLElement {
         this._toggleStatic();
         break;
       case 'projection':
-        if (newValue && M[newValue]) {
+        const reconnectLayers = () => {
           if (this._map && this._map.options.projection !== newValue) {
             this._map.options.crs = M[newValue];
             this._map.options.projection = newValue;
@@ -369,13 +375,17 @@ export class MapViewer extends HTMLElement {
               let reAttach = this.removeChild(layer);
               this.appendChild(reAttach);
             }
-            if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
-            this.dispatchEvent(
-              new CustomEvent('load', { detail: { target: this } })
-            );
-            //this.zoomTo(this.lat, this.lon, this.zoom);
-            //this.dispatchEvent(new CustomEvent('projectionchange'));
           }
+        };
+        if (newValue) {
+          const connect = reconnectLayers.bind(this);
+          new Promise((resolve, reject) => {
+            connect();
+            resolve();
+          })
+            .then(() => {
+              if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
+            });
         }
         break;
     }
@@ -1310,17 +1320,19 @@ export class MapViewer extends HTMLElement {
         resolve();
       }
       const interval = setInterval(testForProjection, 300, projection);
-      function testForProjection() {
-        if (M[projection]) {
+      const failureTimer = setTimeout(projectionNotDefined, 10000);
+      function testForProjection(p) {
+        if (M[p]) {
           clearInterval(interval);
+          clearTimeout(failureTimer);
           resolve();
         }
       }
-      function removeTestForProjection() {
+      function projectionNotDefined() {
         clearInterval(interval);
+        clearTimeout(failureTimer);
         reject();
       }
-      setTimeout(removeTestForProjection, 10000);
     });
   }
   geojson2mapml(json, options = {}) {

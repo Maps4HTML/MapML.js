@@ -95,7 +95,11 @@ export class MapLayer extends HTMLElement {
   connectedCallback() {
     if (this.hasAttribute('data-moving')) return;
     const doConnected = this._onAdd.bind(this);
-    this.parentElement.addEventListener('load', doConnected, { once: true });
+    if (this.parentElement._map) {
+      doConnected();
+    } else {
+      this.parentElement.addEventListener('load', doConnected, { once: true });
+    }
   }
 
   _onAdd() {
