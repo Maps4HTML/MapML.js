@@ -95,11 +95,14 @@ export class MapLayer extends HTMLElement {
   connectedCallback() {
     if (this.hasAttribute('data-moving')) return;
     const doConnected = this._onAdd.bind(this);
-    if (this.parentElement._map) {
-      doConnected();
-    } else {
-      this.parentElement.addEventListener('load', doConnected, { once: true });
-    }
+    this.parentElement
+      .whenReady()
+      .then(() => {
+        doConnected();
+      })
+      .catch(() => {
+        throw new Error('Map never became ready');
+      });
   }
 
   _onAdd() {
@@ -469,5 +472,29 @@ export class MapLayer extends HTMLElement {
           this.appendChild(feature);
         }
     }
+  }
+  whenReady() {
+    return new Promise((resolve, reject) => {
+      let interval, failureTimer;
+      if (this._layer) {
+        resolve();
+      } else {
+        let layerElement = this;
+        interval = setInterval(testForLayer, 300, layerElement);
+        failureTimer = setTimeout(layerNotDefined, 10000);
+      }
+      function testForLayer(layerElement) {
+        if (layerElement._layer) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          resolve();
+        }
+      }
+      function layerNotDefined() {
+        clearInterval(interval);
+        clearTimeout(failureTimer);
+        reject('Timeout reached waiting for layer to be ready');
+      }
+    });
   }
 }

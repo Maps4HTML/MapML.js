@@ -167,21 +167,6 @@ export class MapViewer extends HTMLElement {
         this._changeWidth(w);
         this._changeHeight(h);
 
-        // wait for createmap event before creating leaflet map
-        // this allows a safeguard for the case where loading a custom TCRS takes
-        // longer than loading mapml-viewer.js/web-map.js
-        // the REASON we need a synchronous event listener (see comment below)
-        // is because the mapml-viewer element has / can have a size of 0 up until after
-        // something that happens between this point and the event handler executing
-        // perhaps a browser rendering cycle??
-
-        let custom = !['CBMTILE', 'APSTILE', 'OSMTILE', 'WGS84'].includes(
-          this.projection
-        );
-        // this is worth a read, because dispatchEvent is synchronous
-        // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent
-        // In particular:
-        //   "All applicable event handlers are called and return before dispatchEvent() returns."
         this._createMap();
 
         // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
@@ -212,9 +197,6 @@ export class MapViewer extends HTMLElement {
             }
           }, 0);
         }
-        this.dispatchEvent(
-          new CustomEvent('load', { detail: { target: this } })
-        );
       })
       .catch(() => {
         throw new Error('Projection not defined');
@@ -1313,13 +1295,39 @@ export class MapViewer extends HTMLElement {
     M[t.projection.toUpperCase()] = M[t.projection]; //adds the projection uppercase to global M
     return t.projection;
   }
-  async whenProjectionDefined(projection) {
+  whenReady() {
     return new Promise((resolve, reject) => {
+      let interval, failureTimer;
+      if (this._map) {
+        resolve();
+      } else {
+        let viewer = this;
+        interval = setInterval(testForMap, 300, viewer);
+        failureTimer = setTimeout(mapNotDefined, 10000);
+      }
+      function testForMap(viewer) {
+        if (viewer._map) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          resolve();
+        }
+      }
+      function mapNotDefined() {
+        clearInterval(interval);
+        clearTimeout(failureTimer);
+        reject('Timeout reached waiting for map to be ready');
+      }
+    });
+  }
+  whenProjectionDefined(projection) {
+    return new Promise((resolve, reject) => {
+      let interval, failureTimer;
       if (M[projection]) {
         resolve();
+      } else {
+        interval = setInterval(testForProjection, 300, projection);
+        failureTimer = setTimeout(projectionNotDefined, 10000);
       }
-      const interval = setInterval(testForProjection, 300, projection);
-      const failureTimer = setTimeout(projectionNotDefined, 10000);
       function testForProjection(p) {
         if (M[p]) {
           clearInterval(interval);
@@ -1330,7 +1338,7 @@ export class MapViewer extends HTMLElement {
       function projectionNotDefined() {
         clearInterval(interval);
         clearTimeout(failureTimer);
-        reject();
+        reject('Timeout reached waiting for projection to be defined');
       }
     });
   }
