@@ -85,7 +85,7 @@ export class MapViewer extends HTMLElement {
           this.setAttribute('projection', val);
         })
         .catch(() => {
-          throw new Error('Undefined projection:'+val);
+          throw new Error('Undefined projection:' + val);
         });
     }
   }
@@ -382,10 +382,9 @@ export class MapViewer extends HTMLElement {
           new Promise((resolve, reject) => {
             connect();
             resolve();
-          })
-            .then(() => {
-              if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
-            });
+          }).then(() => {
+            if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
+          });
         }
         break;
     }
