@@ -151,70 +151,8 @@ export var MapMLLayer = L.Layer.extend({
       return;
     }
     this._map = map;
-    if (this._content) {
-      if (!this._mapmlvectors) {
-        this._mapmlvectors = M.featureLayer(this._content, {
-          // pass the vector layer a renderer of its own, otherwise leaflet
-          // puts everything into the overlayPane
-          renderer: M.featureRenderer(),
-          // pass the vector layer the container for the parent into which
-          // it will append its own container for rendering into
-          pane: this._container,
-          opacity: this.options.opacity,
-          projection: map.options.projection,
-          // each owned child layer gets a reference to the root layer
-          _leafletLayer: this,
-          static: true,
-          onEachFeature: function (properties, geometry) {
-            // need to parse as HTML to preserve semantics and styles
-            if (properties) {
-              var c = document.createElement('div');
-              c.classList.add('mapml-popup-content');
-              c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-              geometry.bindPopup(c, { autoClose: false, minWidth: 165 });
-            }
-          }
-        });
-      }
-      this._setLayerElExtent();
-      map.addLayer(this._mapmlvectors);
-    } else {
-      this.once(
-        'foo',
-        function () {
-          if (!this._validProjection(map)) {
-            this.validProjection = false;
-            return;
-          }
-          if (!this._mapmlvectors) {
-            this._mapmlvectors = M.featureLayer(this._content, {
-              // pass the vector layer a renderer of its own, otherwise leaflet
-              // puts everything into the overlayPane
-              renderer: M.featureRenderer(),
-              // pass the vector layer the container for the parent into which
-              // it will append its own container for rendering into
-              pane: this._container,
-              opacity: this.options.opacity,
-              projection: map.options.projection,
-              // each owned child layer gets a reference to the root layer
-              _leafletLayer: this,
-              static: true,
-              onEachFeature: function (properties, geometry) {
-                // need to parse as HTML to preserve semantics and styles
-                if (properties) {
-                  var c = document.createElement('div');
-                  c.classList.add('mapml-popup-content');
-                  c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-                  geometry.bindPopup(c, { autoClose: false, minWidth: 165 });
-                }
-              }
-            }).addTo(map);
-          }
-          this._setLayerElExtent();
-        },
-        this
-      );
-    }
+    if (this._mapmlvectors) map.addLayer(this._mapmlvectors);
+    this._setLayerElExtent();
 
     if (!this._imageLayer) {
       this._imageLayer = L.layerGroup();
@@ -934,6 +872,7 @@ export var MapMLLayer = L.Layer.extend({
       parseLicenseAndLegend();
       setZoomInOrOutLinks();
       processTiles();
+      processFeatures();
       M._parseStylesheetAsHTML(mapml, base, layer._container);
       layer._validateExtent();
       copyRemoteContentToShadowRoot();
@@ -1545,6 +1484,30 @@ export var MapMLLayer = L.Layer.extend({
             base
           ).href;
         }
+      }
+      function processFeatures() {
+        layer._mapmlvectors = M.featureLayer(layer._content, {
+          // pass the vector layer a renderer of its own, otherwise leaflet
+          // puts everything into the overlayPane
+          renderer: M.featureRenderer(),
+          // pass the vector layer the container for the parent into which
+          // it will append its own container for rendering into
+          pane: layer._container,
+          opacity: layer.options.opacity,
+          projection: layer._properties.projection,
+          // each owned child layer gets a reference to the root layer
+          _leafletLayer: layer,
+          static: true,
+          onEachFeature: function (properties, geometry) {
+            // need to parse as HTML to preserve semantics and styles
+            if (properties) {
+              var c = document.createElement('div');
+              c.classList.add('mapml-popup-content');
+              c.insertAdjacentHTML('afterbegin', properties.innerHTML);
+              geometry.bindPopup(c, { autoClose: false, minWidth: 165 });
+            }
+          }
+        });
       }
       function processTiles() {
         if (mapml.querySelector('map-tile')) {
