@@ -51,15 +51,16 @@ export var FeatureLayer = L.FeatureGroup.extend({
         L.extend(this.options, this.zoomBounds);
       }
       this.addData(mapml, native.cs, native.zoom);
-      if (this._staticFeature) {
-        this._resetFeatures();
-        this.options._leafletLayer._map._addZoomLimit(this);
-      }
     }
   },
 
   onAdd: function (map) {
+    this._map = map;
     L.FeatureGroup.prototype.onAdd.call(this, map);
+    if (this._staticFeature) {
+      this._resetFeatures();
+      this.options._leafletLayer._map._addZoomLimit(this);
+    }
     if (this._mapmlFeatures)
       map.on('featurepagination', this.showPaginationFeature, this);
   },

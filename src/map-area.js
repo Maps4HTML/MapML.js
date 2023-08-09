@@ -60,10 +60,9 @@ export class MapArea extends HTMLAreaElement {
   }
   attributeChangedCallback(name, oldValue, newValue) {}
   connectedCallback() {
-    // if the map has been attached, set this layer up wrt Leaflet map
-    if (this.parentElement._map) {
+    this.parentElement.whenReady().then(() => {
       this._attachedToMap();
-    }
+    });
   }
   _attachedToMap() {
     // need the map to convert container points to LatLngs

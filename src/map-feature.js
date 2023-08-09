@@ -181,40 +181,31 @@ export class MapFeature extends HTMLElement {
         : this.parentNode.host;
 
     // arrow function is not hoisted, define before use
-    var _attachedToMap = (e) => {
-      if (!this._parentEl._layer._map) {
-        // if the parent layer- el has not yet added to the map (i.e. not yet rendered), wait until it is added
-        this._layer.once(
-          'foo',
-          function () {
-            this._map = this._layer._map;
-          },
-          this
-        );
-      } else {
+    let _attachedToMap = (e) => {
+      this._parentEl.whenReady().then(() => {
+        let parentLayer =
+          this._parentEl.nodeName.toUpperCase() === 'LAYER-'
+            ? this._parentEl
+            : this._parentEl.parentElement || this._parentEl.parentNode.host;
+        this._layer = parentLayer._layer;
         this._map = this._layer._map;
-      }
-      // "synchronize" the event handlers between map-feature and <g>
-      if (!this.querySelector('map-geometry')) return;
-      if (!this._layer._mapmlvectors) {
-        // if vector layer has not yet created (i.e. the layer- is not yet rendered on the map / layer is empty)
-        let layerEl = this._layer._layerEl;
-        this._layer.once('add', this._setUpEvents, this);
-        return;
-      } else if (!this._featureGroup) {
-        // if the map-feature el or its subtree is updated
-        // this._featureGroup has been free in this._removeFeature()
-        this._updateFeature();
-      } else {
-        this._setUpEvents();
-      }
+        // "synchronize" the event handlers between map-feature and <g>
+        if (!this.querySelector('map-geometry')) return;
+        if (!this._parentEl._layer._mapmlvectors) {
+          // if vector layer has not yet created (i.e. the layer- is not yet rendered on the map / layer is empty)
+          let layerEl = this._layer._layerEl;
+          this._layer.once('add', this._setUpEvents, this);
+          return;
+        } else if (!this._featureGroup) {
+          // if the map-feature el or its subtree is updated
+          // this._featureGroup has been free in this._removeFeature()
+          this._updateFeature();
+        } else {
+          this._setUpEvents();
+        }
+      });
     };
 
-    let parentLayer =
-      this._parentEl.nodeName.toUpperCase() === 'LAYER-'
-        ? this._parentEl
-        : this._parentEl.parentElement || this._parentEl.parentNode.host;
-    this._layer = parentLayer._layer;
     _attachedToMap();
   }
 

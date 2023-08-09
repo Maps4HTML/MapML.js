@@ -54,7 +54,7 @@ export class MapLayer extends HTMLElement {
 
   set opacity(val) {
     if (+val > 1 || +val < 0) return;
-    this._layer.changeOpacity(val);
+    this.setAttribute('opacity', val);
   }
 
   constructor() {
@@ -182,7 +182,6 @@ export class MapLayer extends HTMLElement {
         this._validateDisabled();
       })
       .catch((e) => {
-        console.log('Entering catch with e=' + e);
         if (e.type === 'changeprojection') {
           this.src = e.detail.href;
         } else {
@@ -292,7 +291,7 @@ export class MapLayer extends HTMLElement {
         break;
       case 'opacity':
         if (oldValue !== newValue && this._layer) {
-          this.opacity = newValue;
+          this._layer.changeOpacity(val);
         }
         break;
       case 'src':
