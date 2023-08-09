@@ -1537,7 +1537,9 @@ export var MapMLLayer = L.Layer.extend({
             stylesControlSummary = document.createElement('summary');
           stylesControlSummary.innerText = 'Style';
           stylesControl.appendChild(stylesControlSummary);
+
           var changeStyle = function (e) {
+            L.DomEvent.stop(e);
             layer._layerEl.dispatchEvent(
               new CustomEvent('changestyle', {
                 detail: {
