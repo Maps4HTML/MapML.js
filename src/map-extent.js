@@ -78,7 +78,38 @@ export class MapExtent extends HTMLElement {
       this.parentNode.nodeName.toUpperCase() === 'LAYER-'
         ? this.parentNode
         : this.parentNode.host;
-    this._layer = parentLayer._layer;
+    parentLayer
+      .whenReady()
+      .then(() => {
+        this._layer = parentLayer._layer;
+      })
+      .catch(() => {
+        throw new Error('Map never became ready');
+      });
   }
   disconnectedCallback() {}
+  whenReady() {
+    return new Promise((resolve, reject) => {
+      let interval, failureTimer;
+      if (this._layer) {
+        resolve();
+      } else {
+        let extentElement = this;
+        interval = setInterval(testForExtent, 300, extentElement);
+        failureTimer = setTimeout(extentNotDefined, 10000);
+      }
+      function testForExtent(extentElement) {
+        if (extentElement._layer) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          resolve();
+        }
+      }
+      function extentNotDefined() {
+        clearInterval(interval);
+        clearTimeout(failureTimer);
+        reject('Timeout reached waiting for extent to be ready');
+      }
+    });
+  }
 }
