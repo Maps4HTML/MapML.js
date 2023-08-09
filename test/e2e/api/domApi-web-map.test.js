@@ -137,7 +137,7 @@ test.describe('web-map DOM API Tests', () => {
       document.body.removeChild(m);
       document.body.appendChild(m);
     });
-    await page.waitForTimeout(200);
+    await viewer.evaluate((viewer)=>viewer.querySelector('layer-').whenReady());
     expect(
       await viewer.evaluate(() => {
         let m = document.querySelector('map');
