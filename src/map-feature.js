@@ -134,6 +134,7 @@ export class MapFeature extends HTMLElement {
   }
 
   disconnectedCallback() {
+    if (!this._layer) return;
     if (this._layer._layerEl.hasAttribute('data-moving')) return;
     this._removeFeature();
     this._observer.disconnect();

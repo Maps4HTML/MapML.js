@@ -395,13 +395,23 @@ export class WebMap extends HTMLMapElement {
       case 'projection':
         const reconnectLayers = () => {
           if (this._map && this._map.options.projection !== newValue) {
+            // save map location and zoom
+            let lat = this.lat;
+            let lon = this.lon;
+            let zoom = this.zoom;
             this._map.options.crs = M[newValue];
             this._map.options.projection = newValue;
+            let layersReady = [];
             for (let layer of this.querySelectorAll('layer-')) {
               layer.removeAttribute('disabled');
               let reAttach = this.removeChild(layer);
               this.appendChild(reAttach);
+              layersReady.push(reAttach.whenReady());
             }
+            Promise.allSettled(layersReady).then(() => {
+              this.zoomTo(lat, lon, zoom);
+              this._resetHistory();
+            });
           }
         };
         if (newValue) {

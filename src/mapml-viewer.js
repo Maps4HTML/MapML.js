@@ -350,13 +350,23 @@ export class MapViewer extends HTMLElement {
       case 'projection':
         const reconnectLayers = () => {
           if (this._map && this._map.options.projection !== newValue) {
+            // save map location and zoom
+            let lat = this.lat;
+            let lon = this.lon;
+            let zoom = this.zoom;
             this._map.options.crs = M[newValue];
             this._map.options.projection = newValue;
+            let layersReady = [];
             for (let layer of this.querySelectorAll('layer-')) {
               layer.removeAttribute('disabled');
               let reAttach = this.removeChild(layer);
               this.appendChild(reAttach);
+              layersReady.push(reAttach.whenReady());
             }
+            Promise.allSettled(layersReady).then(() => {
+              this.zoomTo(lat, lon, zoom);
+              this._resetHistory();
+            });
           }
         };
         if (newValue) {
@@ -943,7 +953,13 @@ export class MapViewer extends HTMLElement {
     this.lon = this._map.getCenter().lng;
     this.zoom = this._map.getZoom();
   }
-
+  _resetHistory() {
+    this._history = [];
+    this._historyIndex = -1;
+    this._traversalCall = false;
+    // weird but ok
+    this._addToHistory();
+  }
   /**
    * Adds to the maps history on moveends
    * @private
