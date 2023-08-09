@@ -1105,8 +1105,15 @@ test.describe('mapml-viewer DOM API Tests', () => {
         (viewer) => viewer.setAttribute('height', '600'),
         viewerHandle
       );
+
+      // Adding custom projection
+      const custProj = await page.evaluate((viewer) => {
+        return viewer.defineCustomProjection(template);
+      }, viewerHandle);
+      expect(custProj).toEqual('basic');
+
       await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('projection', 'other'),
+        (viewer) => viewer.setAttribute('projection', 'basic'),
         viewerHandle
       );
       await page.evaluateHandle(
@@ -1114,11 +1121,6 @@ test.describe('mapml-viewer DOM API Tests', () => {
         viewerHandle
       );
 
-      // Adding custom projection
-      const custProj = await page.evaluate((viewer) => {
-        return viewer.defineCustomProjection(template);
-      }, viewerHandle);
-      expect(custProj).toEqual('basic');
       await page.evaluate((viewer) => {
         viewer.projection = 'basic';
       }, viewerHandle);

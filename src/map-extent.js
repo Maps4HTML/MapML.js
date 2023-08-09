@@ -84,7 +84,7 @@ export class MapExtent extends HTMLElement {
         this._layer = parentLayer._layer;
       })
       .catch(() => {
-        throw new Error('Map never became ready');
+        throw new Error('Layer never became ready');
       });
   }
   disconnectedCallback() {}

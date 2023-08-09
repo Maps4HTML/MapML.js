@@ -1087,8 +1087,15 @@ test.describe('web-map DOM API Tests', () => {
         (viewer) => viewer.setAttribute('height', '600'),
         mapHandle
       );
+      
+      // Adding custom projection
+      const custProj = await page.evaluate((viewer) => {
+        return viewer.defineCustomProjection(template);
+      }, mapHandle);
+      expect(custProj).toEqual('basic');
+
       await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('projection', 'other'),
+        (viewer) => viewer.setAttribute('projection', 'basic'),
         mapHandle
       );
       await page.evaluateHandle(
@@ -1096,11 +1103,6 @@ test.describe('web-map DOM API Tests', () => {
         mapHandle
       );
 
-      // Adding custom projection
-      const custProj = await page.evaluate((viewer) => {
-        return viewer.defineCustomProjection(template);
-      }, mapHandle);
-      expect(custProj).toEqual('basic');
       await page.evaluate((viewer) => {
         viewer.projection = 'basic';
       }, mapHandle);
