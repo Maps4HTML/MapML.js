@@ -42,40 +42,23 @@
   <mapml-viewer projection="OSMTILE" controls  zoom="15" lat="45.39778" lon="-75.70528" width="500" height="500">
   </mapml-viewer>
   </body>
-  <script>
-    
-    let remoteWithTitle = document.querySelector('template').content.cloneNode(true).querySelector('#remote-with-title');
-    remoteWithTitle = document.querySelector('mapml-viewer').appendChild(remoteWithTitle);
-    let remoteNoTitle = document.querySelector('template').content.cloneNode(true).querySelector('#remote-no-title');
-    remoteNoTitle  = document.querySelector('mapml-viewer').appendChild(remoteNoTitle);
-    let localNoTitle = document.querySelector('template').content.cloneNode(true).querySelector('#local-no-title');
-     localNoTitle = document.querySelector('mapml-viewer').appendChild(localNoTitle);
-    let localWithTitle = document.querySelector('template').content.cloneNode(true).querySelector('#local-with-title');
-     localWithTitle = document.querySelector('mapml-viewer').appendChild(localWithTitle);
-     
-   
-    addEventListener("loadedmetadata", (e) => {
-      if (e.target === remoteWithTitle) {
-        // setting label should not change the layer name in layer control
+  <script type="module">
+    const elementsDefined = ['mapml-viewer','layer-','map-feature'].map((e)=>{customElements.whenDefined(e);});
+    Promise.all(elementsDefined).then(()=>{
+      let remoteWithTitle = document.querySelector('template').content.cloneNode(true).querySelector('#remote-with-title');
+      remoteWithTitle = document.querySelector('mapml-viewer').appendChild(remoteWithTitle);
+      let remoteNoTitle = document.querySelector('template').content.cloneNode(true).querySelector('#remote-no-title');
+      remoteNoTitle  = document.querySelector('mapml-viewer').appendChild(remoteNoTitle);
+      let localNoTitle = document.querySelector('template').content.cloneNode(true).querySelector('#local-no-title');
+       localNoTitle = document.querySelector('mapml-viewer').appendChild(localNoTitle);
+      let localWithTitle = document.querySelector('template').content.cloneNode(true).querySelector('#local-with-title');
+      localWithTitle = document.querySelector('mapml-viewer').appendChild(localWithTitle);
+      document.querySelector('mapml-viewer').whenLayersReady().then(()=>{
         remoteWithTitle.label = "Unforsettable in every way"; 
-      } else if (e.target === remoteNoTitle) {
-        // setting label should set the layer name in layer control
         remoteNoTitle.label = "Bedtime For Bonzo";  
-      } else if (e.target === localWithTitle) {
-        // setting label should not set the layer name in layer control
         localWithTitle.label = "No dice, buddy!";
-      } else if (e.target === localNoTitle) {
-        // setting label should set the layer name in layer control
-        // but because the layer is not fully initialized, need to wait unit
-        // it triggers the createmap event, which eventually creates layer-._layer
-        // but if we run this too early, before createmap, then the setter
-        // for label does not have any (desired) side effects, namely running
-        // layer-._layer.setName(labelValue). hence setTimeout.
-        setTimeout(()=>{
-          localNoTitle.label = "Go ahead, make my day!"; 
-        }, 500);
-      }
-    }, {capture: true});
-  
+        localNoTitle.label = "Go ahead, make my day!"; 
+      });
+    });
   </script>
 </html>

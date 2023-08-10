@@ -131,6 +131,7 @@ test.describe('mapml-viewer DOM API Tests', () => {
   });
 
   test('Remove mapml-viewer from DOM, add it back in', async () => {
+    await page.pause();
     // check for error messages in console
     let errorLogs = [];
     page.on('pageerror', (err) => {
@@ -143,7 +144,10 @@ test.describe('mapml-viewer DOM API Tests', () => {
       document.body.removeChild(m);
       document.body.appendChild(m);
     });
-    await viewer.evaluate((viewer)=>viewer.querySelector('layer-').whenReady());
+    await viewer.evaluate((viewer) =>
+      viewer.querySelector('layer-').whenReady()
+    );
+    await page.waitForTimeout(250);
     expect(
       await viewer.evaluate(() => {
         let m = document.querySelector('mapml-viewer');

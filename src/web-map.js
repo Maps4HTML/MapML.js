@@ -1357,8 +1357,8 @@ export class WebMap extends HTMLMapElement {
         resolve();
       } else {
         let viewer = this;
-        interval = setInterval(testForMap, 300, viewer);
-        failureTimer = setTimeout(mapNotDefined, 10000);
+        interval = setInterval(testForMap, 200, viewer);
+        failureTimer = setTimeout(mapNotDefined, 5000);
       }
       function testForMap(viewer) {
         if (viewer._map) {
@@ -1374,14 +1374,21 @@ export class WebMap extends HTMLMapElement {
       }
     });
   }
+  async whenLayersReady() {
+    let layersReady = [];
+    for (let layer of [...this.layers]) {
+      layersReady.push(layer.whenReady());
+    }
+    return Promise.allSettled(layersReady);
+  }
   whenProjectionDefined(projection) {
     return new Promise((resolve, reject) => {
       let interval, failureTimer;
       if (M[projection]) {
         resolve();
       } else {
-        interval = setInterval(testForProjection, 300, projection);
-        failureTimer = setTimeout(projectionNotDefined, 10000);
+        interval = setInterval(testForProjection, 200, projection);
+        failureTimer = setTimeout(projectionNotDefined, 5000);
       }
       function testForProjection(p) {
         if (M[p]) {
