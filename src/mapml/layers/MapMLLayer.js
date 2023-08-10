@@ -1975,26 +1975,30 @@ export var MapMLLayer = L.Layer.extend({
         content.querySelector('a.mapml-zoom-link').remove();
       }
       if (!featureEl.querySelector('map-geometry')) return;
-      let tL = featureEl.extent.topLeft.gcrs,
-        bR = featureEl.extent.bottomRight.gcrs,
-        center = L.latLngBounds(
-          L.latLng(tL.horizontal, tL.vertical),
-          L.latLng(bR.horizontal, bR.vertical)
-        ).getCenter(true);
-      let zoomLink = document.createElement('a');
-      zoomLink.href = `#${featureEl.getMaxZoom()},${center.lng},${center.lat}`;
-      zoomLink.innerHTML = `${M.options.locale.popupZoom}`;
-      zoomLink.className = 'mapml-zoom-link';
-      zoomLink.onclick = zoomLink.onkeydown = function (e) {
-        if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
-        e.preventDefault();
-        featureEl.zoomTo();
-        featureEl._map.closePopup();
-      };
-      content.insertBefore(
-        zoomLink,
-        content.querySelector('hr.mapml-popup-divider')
-      );
+      featureEl.whenReady().then(() => {
+        let tL = featureEl.extent.topLeft.gcrs,
+          bR = featureEl.extent.bottomRight.gcrs,
+          center = L.latLngBounds(
+            L.latLng(tL.horizontal, tL.vertical),
+            L.latLng(bR.horizontal, bR.vertical)
+          ).getCenter(true);
+        let zoomLink = document.createElement('a');
+        zoomLink.href = `#${featureEl.getMaxZoom()},${center.lng},${
+          center.lat
+        }`;
+        zoomLink.innerHTML = `${M.options.locale.popupZoom}`;
+        zoomLink.className = 'mapml-zoom-link';
+        zoomLink.onclick = zoomLink.onkeydown = function (e) {
+          if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
+          e.preventDefault();
+          featureEl.zoomTo();
+          featureEl._map.closePopup();
+        };
+        content.insertBefore(
+          zoomLink,
+          content.querySelector('hr.mapml-popup-divider')
+        );
+      });
     }
 
     // if popup closes then the focusFeature handler can be removed

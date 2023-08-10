@@ -16,6 +16,11 @@ test.describe('HTMLLayerElement DOM API Tests', () => {
     await context.close();
   });
   test('Setting HTMLLayerElement.label sets the layer name per spec', async () => {
+    const viewer = await page.locator('mapml-viewer');
+    await viewer.evaluate((viewer) => {
+      return viewer.whenLayersReady();
+    });
+    await page.waitForTimeout(200);
     let remoteWithTitleLabel = await page.evaluate(() => {
       return document.querySelector('#remote-with-title').label;
     });
@@ -52,8 +57,8 @@ test.describe('HTMLLayerElement DOM API Tests', () => {
     });
     expect(localWithTitleName).toEqual(localWithTitleLabel);
 
-    // THIS SHOULD NOT BE NECESSARY, BUT IT IS see comment below
-    await page.waitForTimeout(500);
+    //    // THIS SHOULD NOT BE NECESSARY, BUT IT IS see comment below
+    //    await page.waitForTimeout(500);
     let localNoTitleLabel = await page.evaluate(() => {
       return document.querySelector('#local-no-title').label;
     });

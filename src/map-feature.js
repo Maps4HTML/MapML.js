@@ -616,4 +616,28 @@ export class MapFeature extends HTMLElement {
       center = map.options.crs.unproject(bound.getCenter(true));
     map.setView(center, this.getMaxZoom(), { animate: false });
   }
+  whenReady() {
+    return new Promise((resolve, reject) => {
+      let interval, failureTimer;
+      if (this._featureGroup) {
+        resolve();
+      } else {
+        let featureElement = this;
+        interval = setInterval(testForFeature, 200, featureElement);
+        failureTimer = setTimeout(featureNotDefined, 5000);
+      }
+      function testForFeature(featureElement) {
+        if (featureElement._featureGroup) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          resolve();
+        }
+      }
+      function featureNotDefined() {
+        clearInterval(interval);
+        clearTimeout(failureTimer);
+        reject('Timeout reached waiting for feature to be ready');
+      }
+    });
+  }
 }

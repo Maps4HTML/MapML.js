@@ -137,7 +137,10 @@ test.describe('web-map DOM API Tests', () => {
       document.body.removeChild(m);
       document.body.appendChild(m);
     });
-    await viewer.evaluate((viewer)=>viewer.querySelector('layer-').whenReady());
+    await viewer.evaluate((viewer) =>
+      viewer.querySelector('layer-').whenReady()
+    );
+    await page.waitForTimeout(250);
     expect(
       await viewer.evaluate(() => {
         let m = document.querySelector('map');
@@ -1087,7 +1090,7 @@ test.describe('web-map DOM API Tests', () => {
         (viewer) => viewer.setAttribute('height', '600'),
         mapHandle
       );
-      
+
       // Adding custom projection
       const custProj = await page.evaluate((viewer) => {
         return viewer.defineCustomProjection(template);

@@ -20,8 +20,7 @@ export class MapLayer extends HTMLElement {
   }
   set label(val) {
     if (val) {
-      if (this._layer && !this._layer.titleIsReadOnly())
-        this.setAttribute('label', val);
+      this.setAttribute('label', val);
     }
   }
   get checked() {
@@ -263,7 +262,9 @@ export class MapLayer extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'label':
-        this?._layer?.setName(newValue);
+        this.whenReady().then(() => {
+          this._layer.setName(newValue);
+        });
         break;
       case 'checked':
         if (this._layer) {
@@ -479,8 +480,8 @@ export class MapLayer extends HTMLElement {
         resolve();
       } else {
         let layerElement = this;
-        interval = setInterval(testForLayer, 300, layerElement);
-        failureTimer = setTimeout(layerNotDefined, 10000);
+        interval = setInterval(testForLayer, 200, layerElement);
+        failureTimer = setTimeout(layerNotDefined, 5000);
       }
       function testForLayer(layerElement) {
         if (layerElement._layer) {
