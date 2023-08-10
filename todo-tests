@@ -1,0 +1,24 @@
+ 23 failed
+    core\featureIndexOverlay.test.js:96:7 › Feature Index Overlay test › Feature index content is correct on moveend
+    core\featureIndexOverlay.test.js:112:7 › Feature Index Overlay test › Feature index overlay is hidden when empty, reticle still visible
+    core\featureLinks.test.js:37:9 › Playwright Feature Links Tests › Sub Part Link Tests › Sub-point inplace link adds new layer, parent feature has separate link
+    core\featureLinks.test.js:79:9 › Playwright Feature Links Tests › Main Part Link Tests › Main part adds new layer
+    core\featureNavigation.test.js:19:9 › Playwright Keyboard Navigation + Query Layer Tests › Arrow Key Navigable Tests › Tab focuses inline features
+    core\layerContextMenu.test.js:50:7 › Playwright Layer Context Menu Tests › Layer context menu copy layer
+    core\linkTypes.test.js:60:9 › Playwright Feature Links Tests › HTML Link Type Tests › HTML _blank target projection negotiation with hash
+    core\mapFeature.test.js:36:7 › Playwright MapFeature Custom Element Tests › MapFeature interactivity tests
+    core\mapFeature.test.js:177:7 › Playwright MapFeature Custom Element Tests › Default click method test
+    core\mapFeature.test.js:222:7 › Playwright MapFeature Custom Element Tests › Default focus method test
+    core\popupTabNavigation.test.js:19:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Inline features popup focus order
+    core\projectionChange.test.js:19:9 › Playwright Projection Change Tests › Linked Feature Projection Change Tests › _self Linked Feature Change To OSMTILE
+    core\projectionChange.test.js:57:9 › Playwright Projection Change Tests › Linked Feature Projection Change Tests › Debug components update with projection changes
+    core\reticle.test.js:19:9 › Playwright Keyboard Navigation + Query Layer Tests › Crosshair Reticle Tests › Crosshair hidden onload, shows on focus
+    core\zoomChangeProjection.test.js:18:7 › Playwright zoomin zoomout Projection Change Tests › zoomin link changes projections
+    layers\general\zoomLimit.js:17:9 › Playwright featureLayer (Static Features) Layer Tests › Map Zoom Limit Tests for featureLayer › Limit map zooming (zooming in)
+    layers\general\zoomLimit.js:41:9 › Playwright featureLayer (Static Features) Layer Tests › Map Zoom Limit Tests for featureLayer › Limit map zooming (zooming out)
+    layers\multipleQueryExtents.test.js:128:7 › Multiple Extent Query Tests › Only features from one extent are returned for queries inside its (non overlapping) bounds
+    layers\multipleQueryExtents.test.js:161:7 › Multiple Extent Query Tests › No features returned when queried outside of bounds of all extents
+    layers\queryableMapExtent.test.js:18:7 › Playwright Remote MapML with <map-extent> Tests › Query remote MapML document
+    layers\templatedImageLayer.test.js:68:7 › Playwright templatedImage Layer Tests › Templated image layer - remove previous image on moveend
+    mapml-viewer\customTCRS.test.js:46:7 › Playwright Custom TCRS Tests › Complex Custom TCRS, static features loaded, templated features loaded
+    mapml-viewer\viewerContextMenu.test.js:343:7 › Playwright mapml-viewer Context Menu (and api) Tests › Submenu, copy ma

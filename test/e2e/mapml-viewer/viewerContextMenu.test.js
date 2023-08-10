@@ -342,8 +342,11 @@ test.describe('Playwright mapml-viewer Context Menu (and api) Tests', () => {
 
   test('Submenu, copy map (MapML)', async () => {
     await page.reload();
-    await page.waitForTimeout(3000);
-    await page.click('body > mapml-viewer');
+    const viewer = page.getByTestId('testviewer');
+    // have to wait for whenLayersReady because the extent sprouts implicit attributes
+    // from properties that are set by default
+    await viewer.evaluate((viewer) => viewer.whenLayersReady());
+    await viewer.click();
     await page.keyboard.press('Shift+F10');
     await page.keyboard.press('Tab');
     await page.keyboard.press('Enter');
@@ -355,9 +358,9 @@ test.describe('Playwright mapml-viewer Context Menu (and api) Tests', () => {
       'body > textarea#coord',
       (text) => text.value
     );
-    const expected = `<mapml-viewer style="height: 600px;width:500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls="" role="application">
-    <layer- label="CBMT - INLINE" checked="">
-      <map-extent units="CBMTILE" hidden="">
+    const expected = `<mapml-viewer data-testid="testviewer" style="height: 600px;width:500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls="" role="application">
+    <layer- data-testid="testlayer" label="CBMT - INLINE" checked="">
+      <map-extent units="CBMTILE" hidden="" checked="">
         <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
         <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>
         <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>
