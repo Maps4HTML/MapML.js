@@ -71,7 +71,7 @@ test.describe('Playwright Map Context Menu Keyboard Tests', () => {
     });
     await page.goto('mapContextMenu.html');
     const viewer = await page.locator('mapml-viewer');
-    await viewer.evaluate((viewer)=>viewer.whenLayersReady());
+    await viewer.evaluate((viewer) => viewer.whenLayersReady());
     await viewer.press('Tab');
     await page
       .locator('[aria-label="The Man With Two Hats"]')

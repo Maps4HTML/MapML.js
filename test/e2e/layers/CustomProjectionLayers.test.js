@@ -10,7 +10,7 @@ test.describe('Custom Projection Feature & Extent Tests', () => {
       (await context.newPage());
     await page.goto('CustomProjectionLayers.html');
     const map = page.locator('mapml-viewer');
-    await map.evaluate((map)=> map.whenLayersReady());
+    await map.evaluate((map) => map.whenLayersReady());
   });
 
   test.afterAll(async function () {

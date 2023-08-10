@@ -269,13 +269,7 @@ export class MapViewer extends HTMLElement {
         mapEl: this,
         crs: M[this.projection],
         zoom: this.zoom,
-        zoomControl: false,
-        // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
-        // the mapml response is received the screen tends to flash.  I'm sure
-        // there is a better configuration than that, but at this moment
-        // I'm not sure how to approach that issue.
-        // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
-        fadeAnimation: true
+        zoomControl: false
       });
       this._addToHistory();
 
