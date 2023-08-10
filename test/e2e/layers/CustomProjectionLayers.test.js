@@ -9,6 +9,8 @@ test.describe('Custom Projection Feature & Extent Tests', () => {
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('CustomProjectionLayers.html');
+    const map = page.locator('mapml-viewer');
+    await map.evaluate((map)=> map.whenLayersReady());
   });
 
   test.afterAll(async function () {

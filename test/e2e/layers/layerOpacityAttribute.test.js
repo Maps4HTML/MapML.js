@@ -9,6 +9,8 @@ test.describe('Adding Opacity Attribute to the Layer- Element', () => {
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('layerOpacityAttribute.html');
+    const l = await page.locator('layer-');
+    await l.evaluate(l=>l.whenReady());
   });
   test.afterAll(async function () {
     await context.close();
