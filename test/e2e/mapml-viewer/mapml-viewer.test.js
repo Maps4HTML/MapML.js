@@ -177,13 +177,15 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
   });
 
   test('Paste Invalid link to map using ctrl+v', async () => {
+    await page.pause();
     await page.click('body > textarea#invalidLink');
     await page.keyboard.press('Control+a');
     await page.keyboard.press('Control+c');
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    await page.waitForTimeout(1000);
+    const viewer = await page.getByTestId('testviewer');
+    await viewer.evaluate(viewer => viewer.whenLayersReady());
     const layerCount = await page.$eval(
       'body > mapml-viewer',
       (map) => map.layers.length

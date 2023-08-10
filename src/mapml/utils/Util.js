@@ -585,7 +585,7 @@ export var Util = {
         M.options.locale.dfLayer +
         '" checked=""></layer->';
       mapEl.insertAdjacentHTML('beforeend', l);
-      mapEl.lastChild.addEventListener('error', function () {
+      mapEl.lastElementChild.whenReady().catch(() => {
         if (mapEl) {
           // should invoke lifecyle callbacks automatically by removing it from DOM
           mapEl.removeChild(mapEl.lastChild);
