@@ -292,7 +292,7 @@ export class MapLayer extends HTMLElement {
         break;
       case 'opacity':
         if (oldValue !== newValue && this._layer) {
-          this._layer.changeOpacity(val);
+          this._layer.changeOpacity(newValue);
         }
         break;
       case 'src':
