@@ -66,7 +66,8 @@ test.describe('Playwright web-map Element Tests', () => {
 
     await page.click('body > map');
     await page.keyboard.press('Control+v');
-    await page.waitForTimeout(500);
+    const viewer = await page.getByTestId('testviewer');
+    await viewer.evaluate(viewer => viewer.whenLayersReady());
     const layerCount = await page.$eval(
       'body > map',
       (map) => map.layers.length
