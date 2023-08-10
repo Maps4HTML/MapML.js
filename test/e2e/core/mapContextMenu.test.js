@@ -329,7 +329,7 @@ test.describe('Playwright Map Context Menu Tests', () => {
   test('Submenu, copy map (MapML)', async () => {
     await page.reload();
     const map = await page.getByTestId('firstmap');
-    await map.evaluate((map)=>map.whenLayersReady());
+    await map.evaluate((map) => map.whenLayersReady());
     await page.click('body > map');
     await page.keyboard.press('Shift+F10');
     await page.keyboard.press('Tab');
