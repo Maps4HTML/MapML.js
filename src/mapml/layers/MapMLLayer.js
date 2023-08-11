@@ -1994,6 +1994,17 @@ export var MapMLLayer = L.Layer.extend({
           featureEl.zoomTo();
           featureEl._map.closePopup();
         };
+        // we found that the popupopen event is fired as many times as there
+        // are layers on the map (<layer-> elements / MapMLLayers that is).
+        // In each case the target layer is always this layer, so we can't
+        // detect and conditionally add the zoomLink if the target is not this.
+        // so, like Ahmad, we are taking a 'delete everyting each time'
+        // approach (see _attachSkipButtons for this approach taken with
+        // feature navigation buttons); obviously he dealt with this leaflet bug
+        // this way some time ago, and we can't figure out how to get around it
+        // apart from this slightly non-optimal method. Revisit sometime!
+        let link = content.querySelector('.mapml-zoom-link');
+        if (link) link.remove();
         content.insertBefore(
           zoomLink,
           content.querySelector('hr.mapml-popup-divider')

@@ -9,7 +9,6 @@
     core\mapFeature.test.js:36:7 › Playwright MapFeature Custom Element Tests › MapFeature interactivity tests
     core\mapFeature.test.js:177:7 › Playwright MapFeature Custom Element Tests › Default click method test
     core\mapFeature.test.js:222:7 › Playwright MapFeature Custom Element Tests › Default focus method test
-    core\popupTabNavigation.test.js:19:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Inline features popup focus order
     core\projectionChange.test.js:19:9 › Playwright Projection Change Tests › Linked Feature Projection Change Tests › _self Linked Feature Change To OSMTILE
     core\projectionChange.test.js:57:9 › Playwright Projection Change Tests › Linked Feature Projection Change Tests › Debug components update with projection changes
     core\reticle.test.js:19:9 › Playwright Keyboard Navigation + Query Layer Tests › Crosshair Reticle Tests › Crosshair hidden onload, shows on focus
@@ -21,4 +20,3 @@
     layers\queryableMapExtent.test.js:18:7 › Playwright Remote MapML with <map-extent> Tests › Query remote MapML document
     layers\templatedImageLayer.test.js:68:7 › Playwright templatedImage Layer Tests › Templated image layer - remove previous image on moveend
     mapml-viewer\customTCRS.test.js:46:7 › Playwright Custom TCRS Tests › Complex Custom TCRS, static features loaded, templated features loaded
-    mapml-viewer\viewerContextMenu.test.js:343:7 › Playwright mapml-viewer Context Menu (and api) Tests › Submenu, copy ma
