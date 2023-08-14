@@ -142,20 +142,29 @@ export var Feature = L.Path.extend({
       },
       this
     );
-    // NOTE because the initialization of map features was moved from the
-    // layer.onAdd handler to the initialize phase, there is no leafletLayer._map
-    // property available... not sure what this handler is doing, TBD????
-    //    L.DomEvent.on(
-    //      leafletLayer._map.getContainer(),
-    //      'mouseout mouseenter click',
-    //      (e) => {
-    //        //adds a lot of event handlers
-    //        if (!container.parentElement) return;
-    //        hovered = false;
-    //        this._map.getContainer().removeChild(container);
-    //      },
-    //      this
-    //    );
+    leafletLayer.on('add', addMouseHandler, this);
+    function handleMouse(e) {
+      //adds a lot of event handlers
+      if (!container.parentElement) return;
+      hovered = false;
+      this._map.getContainer().removeChild(container);
+    }
+    function addMouseHandler() {
+      L.DomEvent.on(
+        this._map.getContainer(),
+        'mouseout mouseenter click',
+        handleMouse,
+        this
+      );
+    }
+    leafletLayer.on('remove', removeMouseHandler, this);
+    function removeMouseHandler() {
+      L.DomEvent.off(this._map.getContainer(), {
+        mouseout: handleMouse,
+        mouseenter: handleMouse,
+        click: handleMouse
+      });
+    }
   },
 
   /**
