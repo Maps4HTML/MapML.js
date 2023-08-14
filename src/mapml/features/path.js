@@ -1,5 +1,5 @@
 /**
- * M.Feature is a extension of L.Path that understands mapml feature markup
+ * M.Path is a extension of L.Path that understands mapml feature markup
  * It converts the markup to the following structure (abstract enough to encompass all feature types) for example:
  *  this._outlinePath = HTMLElement;
  *  this._parts = [
@@ -18,9 +18,9 @@
  *    ...
  *  ];
  */
-export var Feature = L.Path.extend({
+export var Path = L.Path.extend({
   /**
-   * Initializes the M.Feature
+   * Initializes the M.Path
    * @param {HTMLElement} markup - The markup representation of the feature
    * @param {Object} options - The options of the feature
    */
@@ -469,8 +469,8 @@ export var Feature = L.Path.extend({
  *
  * @param {HTMLElement} markup - The markup of the feature
  * @param {Object} options - Options of the feature
- * @returns {M.Feature}
+ * @returns {M.Path}
  */
-export var feature = function (markup, options) {
-  return new Feature(markup, options);
+export var path = function (markup, options) {
+  return new Path(markup, options);
 };

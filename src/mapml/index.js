@@ -69,9 +69,9 @@ import { ScaleBar, scaleBar } from './control/ScaleBar';
 import { FullscreenButton, fullscreenButton } from './control/FullscreenButton';
 import { geolocationButton } from './control/GeolocationButton';
 import { Crosshair, crosshair } from './layers/Crosshair';
-import { Feature, feature } from './features/feature';
+import { Path, path } from './features/path';
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
-import { FeatureGroup, featureGroup } from './features/featureGroup';
+import { Geometry, geometry } from './features/geometry';
 import { AnnounceMovement } from './handlers/AnnounceMovement';
 import { FeatureIndex } from './handlers/FeatureIndex';
 import { Options } from './options';
@@ -889,12 +889,12 @@ import {
   M.FeatureIndexOverlay = FeatureIndexOverlay;
   M.featureIndexOverlay = featureIndexOverlay;
 
-  M.Feature = Feature;
-  M.feature = feature;
+  M.Path = Path;
+  M.path = path;
 
   M.FeatureRenderer = FeatureRenderer;
   M.featureRenderer = featureRenderer;
 
-  M.FeatureGroup = FeatureGroup;
-  M.featureGroup = featureGroup;
+  M.Geometry = Geometry;
+  M.geometry = geometry;
 })(window, document);

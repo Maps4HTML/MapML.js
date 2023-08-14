@@ -3,6 +3,8 @@ import { FALLBACK_CS, FALLBACK_PROJECTION } from '../utils/Constants';
 export var FeatureLayer = L.FeatureGroup.extend({
   /*
    * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.
+   *
+   * Used by MapMLLayer to create _mapmlvectors property, used to render features
    */
   initialize: function (mapml, options) {
     /*
@@ -482,7 +484,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         'map-polygon, map-linestring, map-multilinestring, map-point, map-multipoint'
       )) {
         group.push(
-          M.feature(
+          M.path(
             geo,
             Object.assign(copyOptions, {
               nativeCS: cs,
@@ -513,7 +515,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         groupOptions.wrappers = this._getGeometryParents(
           collections.parentElement
         );
-      return M.featureGroup(group, groupOptions);
+      return M.geometry(group, groupOptions);
     }
   },
 
