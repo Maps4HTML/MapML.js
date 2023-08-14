@@ -22,8 +22,8 @@ export var FeatureRenderer = L.SVG.extend({
   },
 
   /**
-   * Creates all the appropriate path elements for a M.Feature
-   * @param {M.Feature} layer - The M.Feature that needs paths generated
+   * Creates all the appropriate path elements for a M.Path
+   * @param {M.Path} layer - The M.Path that needs paths generated
    * @param {boolean} stampLayer - Whether or not a layer should be stamped and stored in the renderer layers
    * @private
    */
@@ -107,7 +107,7 @@ export var FeatureRenderer = L.SVG.extend({
 
   /**
    * Adds all the paths needed for a feature
-   * @param {M.Feature} layer - The feature that needs it's paths added
+   * @param {M.Path} layer - The feature that needs it's paths added
    * @param {HTMLElement} container - The location the paths need to be added to
    * @param {boolean} interactive - Whether a feature is interactive or not
    * @private
@@ -157,7 +157,7 @@ export var FeatureRenderer = L.SVG.extend({
 
   /**
    * Removes all the paths related to a feature
-   * @param {M.Feature} layer - The feature who's paths need to be removed
+   * @param {M.Path} layer - The feature who's paths need to be removed
    * @private
    */
   _removePath: function (layer) {
@@ -178,7 +178,7 @@ export var FeatureRenderer = L.SVG.extend({
 
   /**
    * Updates the d attribute of all paths of a feature
-   * @param {M.Feature} layer - The Feature that needs updating
+   * @param {M.Path} layer - The Feature that needs updating
    * @private
    */
   _updateFeature: function (layer) {
@@ -212,7 +212,7 @@ export var FeatureRenderer = L.SVG.extend({
 
   /**
    * Updates the styles of all paths of a feature
-   * @param {M.Feature} layer - The feature that needs styles updated
+   * @param {M.Path} layer - The feature that needs styles updated
    * @private
    */
   _updateStyle: function (layer) {
@@ -230,7 +230,7 @@ export var FeatureRenderer = L.SVG.extend({
   /**
    * Updates the style of a single path
    * @param {HTMLElement} path - The path that needs updating
-   * @param {M.Feature} layer - The feature layer
+   * @param {M.Path} layer - The feature layer
    * @param {boolean} isMain - Whether it's the main parts or not
    * @param {boolean} isOutline - Whether a path is an outline or not
    * @private
