@@ -78,7 +78,7 @@ export class MapFeature extends HTMLElement {
           if (mapmlvectors?._staticFeature) {
             this._removeInFeatureList(oldValue);
             let native = this._getNativeZoomAndCS(layer._content);
-            mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(
+            mapmlvectors.zoomBounds = M.getZoomBounds(
               layerEl.shadowRoot || layerEl,
               native.zoom
             );
@@ -159,7 +159,7 @@ export class MapFeature extends HTMLElement {
           }
           let container = this._layer.shadowRoot || this._layer._layerEl;
           // update zoom bounds of vector layer
-          mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(
+          mapmlvectors.zoomBounds = M.getZoomBounds(
             container,
             this._getNativeZoomAndCS(this._layer._content).zoom
           );
@@ -194,7 +194,6 @@ export class MapFeature extends HTMLElement {
         if (!this.querySelector('map-geometry')) return;
         if (!this._parentEl._layer._mapmlvectors) {
           // if vector layer has not yet created (i.e. the layer- is not yet rendered on the map / layer is empty)
-          let layerEl = this._layer._layerEl;
           this._layer.once('add', this._setUpEvents, this);
           return;
         } else if (!this._featureGroup) {
@@ -222,7 +221,7 @@ export class MapFeature extends HTMLElement {
     if (mapmlvectors._staticFeature) {
       let container = this._layer.shadowRoot || this._layer._layerEl;
       // update zoom bounds of vector layer
-      mapmlvectors.zoomBounds = mapmlvectors._getZoomBounds(
+      mapmlvectors.zoomBounds = M.getZoomBounds(
         container,
         this._getNativeZoomAndCS(this._layer._content).zoom
       );
@@ -298,7 +297,7 @@ export class MapFeature extends HTMLElement {
       // feature attaches to layer- or layer-'s shadow
       if (content.nodeType === Node.DOCUMENT_NODE) {
         // for features migrated from mapml, read native zoom and cs from the remote mapml
-        return this._layer._mapmlvectors._getNativeVariables(content);
+        return M.getNativeVariables(content);
       } else if (content.nodeName.toUpperCase() === 'LAYER-') {
         // for inline features, read native zoom and cs from inline map-meta
         let zoomMeta = this._parentEl.querySelectorAll('map-meta[name=zoom]'),

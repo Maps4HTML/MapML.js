@@ -992,7 +992,13 @@ export class WebMap extends HTMLMapElement {
     this.lon = this._map.getCenter().lng;
     this.zoom = this._map.getZoom();
   }
-
+  _resetHistory() {
+    this._history = [];
+    this._historyIndex = -1;
+    this._traversalCall = false;
+    // weird but ok
+    this._addToHistory();
+  }
   /**
    * Adds to the maps history on moveends
    * @private

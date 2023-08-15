@@ -152,7 +152,6 @@ export var MapMLLayer = L.Layer.extend({
     }
     this._map = map;
     if (this._mapmlvectors) map.addLayer(this._mapmlvectors);
-    this._setLayerElExtent();
 
     if (!this._imageLayer) {
       this._imageLayer = L.layerGroup();
@@ -175,7 +174,6 @@ export var MapMLLayer = L.Layer.extend({
         tileSize: map.options.crs.options.crs.tile.bounds.max.x
       });
       map.addLayer(this._staticTileLayer);
-      this._setLayerElExtent();
     }
 
     const createAndAdd = createAndAddTemplatedLayers.bind(this);
@@ -249,7 +247,6 @@ export var MapMLLayer = L.Layer.extend({
             );
           }
         }
-        this._setLayerElExtent();
       }
     }
   },
@@ -881,6 +878,7 @@ export var MapMLLayer = L.Layer.extend({
         // if layer does not have a parent Element, do not need to set Controls
         layer._layerEl.parentElement._toggleControls();
       }
+      layer._setLayerElExtent();
       layer.fire('foo', layer, false);
       // local functions
       // sets layer._properties.projection.  Supposed to replace / simplify
@@ -942,6 +940,15 @@ export var MapMLLayer = L.Layer.extend({
                 }
               })
             );
+            return true;
+            //if this is the only layer, but the projection doesn't match,
+            // set the map's projection to that of the layer
+          } else if (
+            layer._properties.projection !== layer.options.mapprojection &&
+            layer._layerEl.parentElement.layers.length === 1
+          ) {
+            layer._layerEl.parentElement.projection =
+              layer._properties.projection;
             return true;
           }
         } catch (error) {}
@@ -1486,7 +1493,8 @@ export var MapMLLayer = L.Layer.extend({
         }
       }
       function processFeatures() {
-        layer._mapmlvectors = M.featureLayer(layer._content, {
+        let native = M.getNativeVariables(layer._content);
+        layer._mapmlvectors = M.featureLayer(null, {
           // pass the vector layer a renderer of its own, otherwise leaflet
           // puts everything into the overlayPane
           renderer: M.featureRenderer(),
@@ -1495,6 +1503,9 @@ export var MapMLLayer = L.Layer.extend({
           pane: layer._container,
           opacity: layer.options.opacity,
           projection: layer._properties.projection,
+          extent: M.getBounds(layer._content),
+          native: native,
+          zoomBounds: M.getZoomBounds(layer._content, native.zoom),
           // each owned child layer gets a reference to the root layer
           _leafletLayer: layer,
           static: true,

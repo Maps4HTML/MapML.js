@@ -142,7 +142,7 @@ export var Path = L.Path.extend({
       },
       this
     );
-    leafletLayer.on('add', addMouseHandler, this);
+    leafletLayer.on('add', addMouseHandler, leafletLayer);
     function handleMouse(e) {
       //adds a lot of event handlers
       if (!container.parentElement) return;
@@ -157,7 +157,7 @@ export var Path = L.Path.extend({
         this
       );
     }
-    leafletLayer.on('remove', removeMouseHandler, this);
+    leafletLayer.on('remove', removeMouseHandler, leafletLayer);
     function removeMouseHandler() {
       L.DomEvent.off(this._map.getContainer(), {
         mouseout: handleMouse,
