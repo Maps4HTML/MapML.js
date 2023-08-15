@@ -351,6 +351,7 @@ export class MapViewer extends HTMLElement {
             this._map.options.crs = M[newValue];
             this._map.options.projection = newValue;
             let layersReady = [];
+            this._map.announceMovement.disable();
             for (let layer of this.querySelectorAll('layer-')) {
               layer.removeAttribute('disabled');
               let reAttach = this.removeChild(layer);
@@ -360,6 +361,7 @@ export class MapViewer extends HTMLElement {
             Promise.allSettled(layersReady).then(() => {
               this.zoomTo(lat, lon, zoom);
               this._resetHistory();
+              this._map.announceMovement.enable();
             });
           }
         };

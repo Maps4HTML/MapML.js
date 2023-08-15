@@ -163,7 +163,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       xOffset = coords.x * tileSize,
       yOffset = coords.y * tileSize;
 
-    let tileFeatures = M.featureLayer(markup, {
+    let tileFeatures = M.featureLayer(null, {
       projection: this._map.options.projection,
       static: false,
       interactive: false

@@ -28,17 +28,15 @@ export var FeatureLayer = L.FeatureGroup.extend({
       );
       L.setOptions(this.options.renderer, { pane: this._container });
     }
-
     this._layers = {};
     if (this.options.query) {
       this._mapmlFeatures = mapml.features ? mapml.features : mapml;
       this.isVisible = true;
-      let native = this._getNativeVariables(mapml);
+      let native = M.getNativeVariables(mapml);
       this.options.nativeZoom = native.zoom;
       this.options.nativeCS = native.cs;
-    }
-    if (mapml && !this.options.query) {
-      let native = this._getNativeVariables(mapml);
+    } else if (mapml) {
+      let native = M.getNativeVariables(mapml);
       //needed to check if the feature is static or not, since this method is used by templated also
       if (
         !mapml.querySelector('map-extent') &&
@@ -48,11 +46,15 @@ export var FeatureLayer = L.FeatureGroup.extend({
         this._features = {};
         this._staticFeature = true;
         this.isVisible = true; //placeholder for when this actually gets updated in the future
-        this.zoomBounds = this._getZoomBounds(mapml, native.zoom);
-        this.layerBounds = this._getLayerBounds(mapml);
+        this.zoomBounds = M.getZoomBounds(mapml, native.zoom);
+        this.layerBounds = M.getLayerBounds(mapml);
         L.extend(this.options, this.zoomBounds);
       }
       this.addData(mapml, native.cs, native.zoom);
+    } else if (!mapml) {
+      this.isVisible = true;
+      this.layerBounds = this.options.extent;
+      this.zoomBounds = this.options.zoomBounds;
     }
   },
 
@@ -131,54 +133,6 @@ export var FeatureLayer = L.FeatureGroup.extend({
     }
   },
 
-  // _getNativeVariables: returns an object with the native zoom and CS,
-  //                     based on the map-metas that are available within
-  //                     the layer or the fallback default values.
-  // _getNativeVariables: mapml-||layer-||null||[map-feature,...] -> {zoom: _, val: _}
-  // mapml can be a mapml- element, layer- element, null, or an array of map-features
-  _getNativeVariables: function (mapml) {
-    let nativeZoom, nativeCS;
-    // when mapml is an array of features provided by the query
-    if (
-      mapml.length &&
-      mapml[0].parentElement.parentElement &&
-      mapml[0].parentElement.parentElement.tagName === 'mapml-'
-    ) {
-      let mapmlEl = mapml[0].parentElement.parentElement;
-      nativeZoom =
-        (mapmlEl.querySelector &&
-          mapmlEl.querySelector('map-meta[name=zoom]') &&
-          +M._metaContentToObject(
-            mapmlEl.querySelector('map-meta[name=zoom]').getAttribute('content')
-          ).value) ||
-        0;
-      nativeCS =
-        (mapmlEl.querySelector &&
-          mapmlEl.querySelector('map-meta[name=cs]') &&
-          M._metaContentToObject(
-            mapmlEl.querySelector('map-meta[name=cs]').getAttribute('content')
-          ).content) ||
-        'GCRS';
-    } else {
-      // when mapml is null or a layer-/mapml- element
-      nativeZoom =
-        (mapml.querySelector &&
-          mapml.querySelector('map-meta[name=zoom]') &&
-          +M._metaContentToObject(
-            mapml.querySelector('map-meta[name=zoom]').getAttribute('content')
-          ).value) ||
-        0;
-      nativeCS =
-        (mapml.querySelector &&
-          mapml.querySelector('map-meta[name=cs]') &&
-          M._metaContentToObject(
-            mapml.querySelector('map-meta[name=cs]').getAttribute('content')
-          ).content) ||
-        'GCRS';
-    }
-    return { zoom: nativeZoom, cs: nativeCS };
-  },
-
   _handleMoveEnd: function () {
     let mapZoom = this._map.getZoom(),
       withinZoom =
@@ -208,60 +162,6 @@ export var FeatureLayer = L.FeatureGroup.extend({
       return;
     }
     this._resetFeatures();
-  },
-
-  //sets default if any are missing, better to only replace ones that are missing
-  _getLayerBounds: function (container) {
-    if (!container) return null;
-    let cs = FALLBACK_CS,
-      projection =
-        (container.querySelector('map-meta[name=projection]') &&
-          M._metaContentToObject(
-            container
-              .querySelector('map-meta[name=projection]')
-              .getAttribute('content')
-          ).content.toUpperCase()) ||
-        FALLBACK_PROJECTION;
-    try {
-      let meta =
-        container.querySelector('map-meta[name=extent]') &&
-        M._metaContentToObject(
-          container
-            .querySelector('map-meta[name=extent]')
-            .getAttribute('content')
-        );
-
-      let zoom = meta.zoom || 0;
-
-      let metaKeys = Object.keys(meta);
-      for (let i = 0; i < metaKeys.length; i++) {
-        if (!metaKeys[i].includes('zoom')) {
-          cs = M.axisToCS(metaKeys[i].split('-')[2]);
-          break;
-        }
-      }
-      let axes = M.csToAxes(cs);
-      return M.boundsToPCRSBounds(
-        L.bounds(
-          L.point(+meta[`top-left-${axes[0]}`], +meta[`top-left-${axes[1]}`]),
-          L.point(
-            +meta[`bottom-right-${axes[0]}`],
-            +meta[`bottom-right-${axes[1]}`]
-          )
-        ),
-        zoom,
-        projection,
-        cs
-      );
-    } catch (error) {
-      //if error then by default set the layer to osm and bounds to the entire map view
-      return M.boundsToPCRSBounds(
-        M[projection].options.crs.tilematrix.bounds(0),
-        0,
-        projection,
-        cs
-      );
-    }
   },
 
   _resetFeatures: function () {
@@ -298,45 +198,6 @@ export var FeatureLayer = L.FeatureGroup.extend({
     } else {
       L.setPosition(this._layers[clampZoom], translate);
     }
-  },
-
-  _getZoomBounds: function (container, nativeZoom) {
-    if (!container) return null;
-    let nMin = 100,
-      nMax = 0,
-      features = container.querySelectorAll('map-feature'),
-      meta,
-      projection;
-    for (let i = 0; i < features.length; i++) {
-      let lZoom = +features[i].getAttribute('zoom');
-      if (!features[i].getAttribute('zoom')) lZoom = nativeZoom;
-      nMax = Math.max(nMax, lZoom);
-      nMin = Math.min(nMin, lZoom);
-    }
-    try {
-      projection = M._metaContentToObject(
-        container
-          .querySelector('map-meta[name=projection]')
-          .getAttribute('content')
-      ).content;
-      meta = M._metaContentToObject(
-        container.querySelector('map-meta[name=zoom]').getAttribute('content')
-      );
-    } catch (error) {
-      return {
-        minZoom: 0,
-        maxZoom:
-          M[projection || FALLBACK_PROJECTION].options.resolutions.length - 1,
-        minNativeZoom: nMin,
-        maxNativeZoom: nMax
-      };
-    }
-    return {
-      minZoom: +meta.min,
-      maxZoom: +meta.max,
-      minNativeZoom: nMin,
-      maxNativeZoom: nMax
-    };
   },
 
   addData: function (mapml, nativeCS, nativeZoom) {

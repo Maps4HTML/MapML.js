@@ -104,13 +104,13 @@ test.describe('Playwright Projection Change Tests', () => {
       expect(colBefore).toEqual('10');
       expect(rowBefore).toEqual('11');
       expect(zoomBefore).toEqual('2');
-      expect(colAfter).toEqual('0');
-      expect(rowAfter).toEqual('0');
-      expect(zoomAfter).toEqual('0');
+      expect(colAfter).toEqual('1');
+      expect(rowAfter).toEqual('1');
+      expect(zoomAfter).toEqual('2');
       expect(centerBefore).toEqual(
         'M132.64578432000008,238.45862407874074a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0 '
       );
-      expect(centerAfter).toEqual('M249,250a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0 ');
+      expect(centerAfter).toEqual('M463,396a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0 ');
     });
   });
 });

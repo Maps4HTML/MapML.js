@@ -827,6 +827,9 @@ import {
   M._pcrsToGcrs = Util._pcrsToGcrs;
   M.mapml2geojson = Util.mapml2geojson;
   M.getMaxZoom = Util.getMaxZoom;
+  M.getBounds = Util.getBounds;
+  M.getZoomBounds = Util.getZoomBounds;
+  M.getNativeVariables = Util.getNativeVariables;
 
   M.QueryHandler = QueryHandler;
   M.ContextMenu = ContextMenu;
