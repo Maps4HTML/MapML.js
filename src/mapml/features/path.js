@@ -75,11 +75,16 @@ export var Path = L.Path.extend({
         nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
       while (nextLayer && onTop) {
         if (nextLayer.tagName && nextLayer.tagName.toUpperCase() === 'LAYER-')
-          onTop = !(nextLayer.checked && nextLayer._layer.queryable);
+          onTop = !(
+            nextLayer.checked &&
+            nextLayer._layer &&
+            nextLayer._layer.queryable
+          );
         nextLayer = nextLayer.nextElementSibling;
       }
       if (onTop && dragStart) {
-        //M._handleLink gets called twice, once in the target phase on the path element, then in the bubble phase on the g element
+        //M._handleLink gets called twice, once in the target phase on the path
+        //element, then in the bubble phase on the g element
         //Using stopPropagation leaves the mouse in the mousedown state
         if (e.eventPhase === Event.BUBBLING_PHASE) return;
         let dist = Math.sqrt(

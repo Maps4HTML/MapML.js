@@ -3,25 +3,19 @@ import { FALLBACK_CS, FALLBACK_PROJECTION } from './Constants';
 export var Util = {
   // _convertAndFormatPCRS returns the converted CRS and formatted pcrsBounds in gcrs, pcrs, tcrs, and tilematrix. Used for setting extent for the map and layer (map.extent, layer.extent).
   // _convertAndFormatPCRS: L.Bounds, _map -> {...}
-  _convertAndFormatPCRS: function (pcrsBounds, map) {
-    if (!pcrsBounds || !map) return {};
+  _convertAndFormatPCRS: function (pcrsBounds, crs) {
+    if (!pcrsBounds || !crs) return {};
 
     let tcrsTopLeft = [],
       tcrsBottomRight = [],
       tileMatrixTopLeft = [],
       tileMatrixBottomRight = [],
-      tileSize = map.options.crs.options.crs.tile.bounds.max.y;
+      tileSize = crs.options.crs.tile.bounds.max.y;
 
-    for (let i = 0; i < map.options.crs.options.resolutions.length; i++) {
-      let scale = map.options.crs.scale(i),
-        minConverted = map.options.crs.transformation.transform(
-          pcrsBounds.min,
-          scale
-        ),
-        maxConverted = map.options.crs.transformation.transform(
-          pcrsBounds.max,
-          scale
-        );
+    for (let i = 0; i < crs.options.resolutions.length; i++) {
+      let scale = crs.scale(i),
+        minConverted = crs.transformation.transform(pcrsBounds.min, scale),
+        maxConverted = crs.transformation.transform(pcrsBounds.max, scale);
 
       tcrsTopLeft.push({
         horizontal: minConverted.x,
@@ -44,8 +38,8 @@ export var Util = {
     }
 
     //converts the gcrs, I believe it can take any number values from -inf to +inf
-    let unprojectedMin = map.options.crs.unproject(pcrsBounds.min),
-      unprojectedMax = map.options.crs.unproject(pcrsBounds.max);
+    let unprojectedMin = crs.unproject(pcrsBounds.min),
+      unprojectedMax = crs.unproject(pcrsBounds.max);
 
     let gcrs = {
       topLeft: {
@@ -83,8 +77,7 @@ export var Util = {
         tilematrix: tileMatrixBottomRight,
         gcrs: gcrs.bottomRight,
         pcrs: pcrs.bottomRight
-      },
-      projection: map.options.projection
+      }
     };
   },
 
@@ -533,14 +526,12 @@ export var Util = {
           newLayer = true;
       }
       if (!link.inPlace && newLayer)
-        layer.whenReady().then(() => {
-          if (zoomTo)
-            layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
-          else layer.zoomTo();
+        if (zoomTo)
+          layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
+        else layer.zoomTo();
 
-          if (opacity) layer.opacity = opacity;
-          map.getContainer().focus();
-        });
+      if (opacity) layer.opacity = opacity;
+      map.getContainer().focus();
     } else if (zoomTo && !link.inPlace && justPan) {
       leafletLayer._map.options.mapEl.zoomTo(
         +zoomTo.lat,

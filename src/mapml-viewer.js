@@ -109,13 +109,14 @@ export class MapViewer extends HTMLElement {
         map.getZoom(),
         map.options.projection
       );
-    let formattedExtent = M._convertAndFormatPCRS(pcrsBounds, map);
+    let formattedExtent = M._convertAndFormatPCRS(pcrsBounds, map.options.crs);
     if (map.getMaxZoom() !== Infinity) {
       formattedExtent.zoom = {
         minZoom: map.getMinZoom(),
         maxZoom: map.getMaxZoom()
       };
     }
+    formattedExtent.projection = this.projection;
     return formattedExtent;
   }
   get static() {
