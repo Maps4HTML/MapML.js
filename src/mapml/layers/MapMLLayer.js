@@ -395,7 +395,7 @@ export var MapMLLayer = L.Layer.extend({
     if (bounds) {
       //assigns the formatted extent object to .extent and spreads the zoom ranges to .extent also
       this._layerEl.extent = Object.assign(
-        M._convertAndFormatPCRS(bounds, this._map),
+        M._convertAndFormatPCRS(bounds, this._properties.crs),
         { zoom: zoomBounds }
       );
     }

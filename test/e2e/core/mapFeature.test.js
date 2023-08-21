@@ -52,7 +52,7 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
       (g) => g.getAttribute('aria-label')
     );
     // expect the associated <g> el to re-render and re-attach to the map
-    expect(label).toEqual('Point, with no zoom attribute');
+    expect(label).toEqual('feature with table properties');
 
     // change <map-coordinates>
     await page.reload();
@@ -73,7 +73,7 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
       (g) => g.getAttribute('aria-label')
     );
     // expect the associated <g> el to re-render and re-attach to the map
-    expect(label).toEqual('Point, with no zoom attribute');
+    expect(label).toEqual('feature with table properties');
 
     // remove <map-properties>
     await page.$eval('body > map', (map) => {
@@ -175,6 +175,8 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
   });
 
   test('Default click method test', async () => {
+    await page.pause();
+    
     // click method test
     // <map-feature> with role="button" should have popup opened after click
     const popup = await page.$eval('body > map', (map) => {
@@ -193,7 +195,7 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
 
     // the <path> element should be marked as "visited" after click
     let status = await page.$eval(
-      'body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(4)',
+      'body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(3)',
       (g) => {
         for (let path of g.querySelectorAll('path')) {
           if (!path.classList.contains('map-a-visited')) {

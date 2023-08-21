@@ -16,7 +16,7 @@ export var QueryHandler = L.Handler.extend({
     // work backwards in document order (top down)
     for (var l = layers.length - 1; l >= 0; l--) {
       var mapmlLayer = layers[l]._layer;
-      if (layers[l].checked && mapmlLayer.queryable) {
+      if (layers[l].checked && mapmlLayer && mapmlLayer.queryable) {
         return mapmlLayer;
       }
     }
@@ -253,7 +253,7 @@ export var QueryHandler = L.Handler.extend({
     }
     function displayFeaturesPopup(features, loc) {
       if (features.length === 0) return;
-      let f = M.featureLayer(null, {
+      let f = M.featureLayer(features, {
         // pass the vector layer a renderer of its own, otherwise leaflet
         // puts everything into the overlayPane
         renderer: M.featureRenderer(),

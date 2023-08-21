@@ -383,7 +383,10 @@ export class MapFeature extends HTMLElement {
             projection
           );
         }
-        let result = M._convertAndFormatPCRS(pcrsBound, map);
+        let result = Object.assign(
+          M._convertAndFormatPCRS(pcrsBound, map.options.crs),
+          { projection: map.options.projection }
+        );
         // memoize calculated result
         extentCache = result;
         return result;
