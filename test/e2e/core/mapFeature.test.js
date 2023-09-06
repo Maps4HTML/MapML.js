@@ -176,7 +176,7 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
 
   test('Default click method test', async () => {
     await page.pause();
-    
+
     // click method test
     // <map-feature> with role="button" should have popup opened after click
     const popup = await page.$eval('body > map', (map) => {

@@ -40,7 +40,7 @@ test.describe('Playwright Map Element Tests', () => {
 
   test('Reasonable debug layer extent created', async () => {
     const feature = await page.$eval(
-      'xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(2)',
+      'xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path[stroke="#8DFF33"]',
       (tile) => tile.getAttribute('d')
     );
     expect(feature).toEqual(
@@ -50,7 +50,7 @@ test.describe('Playwright Map Element Tests', () => {
 
   test('Large debug layer extent created', async () => {
     const feature = await page.$eval(
-      'xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(4)',
+      'xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path[stroke="#E433FF"]',
       (tile) => tile.getAttribute('d')
     );
     expect(feature).toEqual('M-659 500L365 500L365 -780L-659 -780z');
@@ -58,7 +58,7 @@ test.describe('Playwright Map Element Tests', () => {
 
   test('Debug layer extent beyond ((0,0), (5,5))  created', async () => {
     const feature = await page.$eval(
-      'xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(6)',
+      'xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path[d="M-1683 1268L1133 1268L1133 -1292L-1683 -1292z"]',
       (tile) => tile.getAttribute('d')
     );
     expect(feature).toEqual('M-1683 1268L1133 1268L1133 -1292L-1683 -1292z');
