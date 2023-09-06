@@ -5,22 +5,21 @@ export var StaticTileLayer = L.GridLayer.extend({
       options.maxZoomBound
     );
     L.extend(options, this.zoomBounds);
+    L.extend(options, { _leafletLayer: this });
     L.setOptions(this, options);
     this._groups = this._groupTiles(
       this.options.tileContainer.getElementsByTagName('map-tile')
     );
-  },
-
-  onAdd: function () {
-    this._bounds = this._getLayerBounds(
-      this._groups,
-      this._map.options.projection
-    ); //stores meter values of bounds
+    this._bounds = this._getLayerBounds(this._groups, this.options.projection); //stores meter values of bounds
     this.layerBounds = this._bounds[Object.keys(this._bounds)[0]];
     for (let key of Object.keys(this._bounds)) {
       this.layerBounds.extend(this._bounds[key].min);
       this.layerBounds.extend(this._bounds[key].max);
     }
+  },
+
+  onAdd: function (map) {
+    this._map = map;
     L.GridLayer.prototype.onAdd.call(this, this._map);
     this._handleMoveEnd();
   },
@@ -116,7 +115,6 @@ export var StaticTileLayer = L.GridLayer.extend({
         projection
       );
     }
-
     return layerBounds;
   },
 

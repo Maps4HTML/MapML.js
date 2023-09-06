@@ -22,13 +22,10 @@ test.describe('Geolocation control tests', () => {
 
   test('Using geolocation control to control map', async () => {
     await page.click('body > mapml-viewer');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
+    for (let i = 0; i < 7; i++) {
+      await page.keyboard.press('Tab');
+      await page.waitForTimeout(50);
+    }
     await page.keyboard.press('Enter');
 
     let locateButton_lat = await page.$eval(

@@ -161,18 +161,7 @@ export var MapMLLayer = L.Layer.extend({
     // content will be maintained
 
     //only add the layer if there are tiles to be rendered
-    if (
-      (!this._staticTileLayer || this._staticTileLayer._container === null) &&
-      this._mapmlTileContainer.getElementsByTagName('map-tiles').length > 0
-    ) {
-      this._staticTileLayer = M.staticTileLayer({
-        pane: this._container,
-        _leafletLayer: this,
-        className: 'mapml-static-tile-layer',
-        tileContainer: this._mapmlTileContainer,
-        maxZoomBound: map.options.crs.options.resolutions.length - 1,
-        tileSize: map.options.crs.options.crs.tile.bounds.max.x
-      });
+    if (this._staticTileLayer) {
       map.addLayer(this._staticTileLayer);
     }
 
@@ -868,7 +857,8 @@ export var MapMLLayer = L.Layer.extend({
       setLayerTitle();
       parseLicenseAndLegend();
       setZoomInOrOutLinks();
-      processTiles();
+      // crs is only set if the layer has the same projection as the map
+      if (layer._properties.crs) processTiles();
       processFeatures();
       M._parseStylesheetAsHTML(mapml, base, layer._container);
       layer._validateExtent();
@@ -1537,6 +1527,14 @@ export var MapMLLayer = L.Layer.extend({
             tiles.appendChild(document.importNode(newTiles[nt], true));
           }
           layer._mapmlTileContainer.appendChild(tiles);
+          layer._staticTileLayer = M.staticTileLayer({
+            pane: layer._container,
+            projection: layer._properties.projection,
+            className: 'mapml-static-tile-layer',
+            tileContainer: layer._mapmlTileContainer,
+            maxZoomBound: layer._properties.crs.options.resolutions.length - 1,
+            tileSize: layer._properties.crs.options.crs.tile.bounds.max.x
+          });
         }
       }
       function getAlternateStyles() {
