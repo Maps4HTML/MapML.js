@@ -216,6 +216,7 @@ export class MapFeature extends HTMLElement {
     // if the <layer- > is not removed, then regenerate featureGroup and update the mapmlvectors accordingly
     let native = this._getNativeZoomAndCS(this._layer._content);
     this._featureGroup = mapmlvectors.addData(this, native.cs, native.zoom);
+    this._layer._setLayerElExtent();
     mapmlvectors._layers[this._featureGroup._leaflet_id] = this._featureGroup;
     this._groupEl = this._featureGroup.options.group;
     if (mapmlvectors._staticFeature) {

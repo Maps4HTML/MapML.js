@@ -5,7 +5,6 @@ export var StaticTileLayer = L.GridLayer.extend({
       options.maxZoomBound
     );
     L.extend(options, this.zoomBounds);
-    L.extend(options, { _leafletLayer: this });
     L.setOptions(this, options);
     this._groups = this._groupTiles(
       this.options.tileContainer.getElementsByTagName('map-tile')
