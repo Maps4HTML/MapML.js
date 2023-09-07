@@ -52,7 +52,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
       }
       this.addData(mapml, native.cs, native.zoom);
     } else if (!mapml) {
-      this.isVisible = true;
+      this.isVisible = false;
       this.layerBounds = this.options.extent;
       this.zoomBounds = this.options.zoomBounds;
     }
@@ -201,6 +201,9 @@ export var FeatureLayer = L.FeatureGroup.extend({
   },
 
   addData: function (mapml, nativeCS, nativeZoom) {
+    if (mapml) {
+      this.isVisible = true;
+    }
     var features =
         mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === 'LAYER-'
           ? mapml.getElementsByTagName('map-feature')

@@ -187,6 +187,7 @@ export var MapMLLayer = L.Layer.extend({
         this
       );
     }
+    this._setLayerElExtent();
 
     this.setZIndex(this.options.zIndex);
     this.getPane().appendChild(this._container);
@@ -368,7 +369,31 @@ export var MapMLLayer = L.Layer.extend({
             this._properties._mapExtents[i].templatedLayer.zoomBounds =
               zoomBounds;
           }
-        } else {
+        } else if (type === '_staticTileLayer') {
+          if (this[type].layerBounds) {
+            if (!bounds) {
+              bounds = this[type].layerBounds;
+              zoomBounds = this[type].zoomBounds;
+            } else {
+              bounds.extend(this[type].layerBounds.min);
+              bounds.extend(this[type].layerBounds.max);
+            }
+          }
+        } else if (type === '_imageLayer') {
+          if (this[type].layerBounds) {
+            if (!bounds) {
+              bounds = this[type].layerBounds;
+              zoomBounds = this[type].zoomBounds;
+            } else {
+              bounds.extend(this[type].layerBounds.min);
+              bounds.extend(this[type].layerBounds.max);
+            }
+          }
+        } else if (
+          // only process extent if mapmlvectors is not empty
+          type === '_mapmlvectors' &&
+          Object.keys(this[type]._layers).length !== 0
+        ) {
           if (this[type].layerBounds) {
             if (!bounds) {
               bounds = this[type].layerBounds;
@@ -385,7 +410,7 @@ export var MapMLLayer = L.Layer.extend({
       //assigns the formatted extent object to .extent and spreads the zoom ranges to .extent also
       this._layerEl.extent = Object.assign(
         M._convertAndFormatPCRS(bounds, this._properties.crs),
-        { zoom: zoomBounds }
+        { zoom: zoomBounds, projection: this._properties.projection }
       );
     }
   },
@@ -868,7 +893,6 @@ export var MapMLLayer = L.Layer.extend({
         // if layer does not have a parent Element, do not need to set Controls
         layer._layerEl.parentElement._toggleControls();
       }
-      layer._setLayerElExtent();
       layer.fire('foo', layer, false);
       // local functions
       // sets layer._properties.projection.  Supposed to replace / simplify
@@ -1529,6 +1553,7 @@ export var MapMLLayer = L.Layer.extend({
           layer._mapmlTileContainer.appendChild(tiles);
           layer._staticTileLayer = M.staticTileLayer({
             pane: layer._container,
+            _leafletLayer: layer,
             projection: layer._properties.projection,
             className: 'mapml-static-tile-layer',
             tileContainer: layer._mapmlTileContainer,
