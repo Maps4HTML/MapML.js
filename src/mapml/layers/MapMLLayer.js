@@ -257,9 +257,7 @@ export var MapMLLayer = L.Layer.extend({
         }
       }
     }
-    return !(
-      noLayer || this.getProjection() !== map.options.projection.toUpperCase()
-    );
+    return !(noLayer || this.getProjection() !== map.options.projection);
   },
 
   //sets the <layer-> elements .bounds property
@@ -906,7 +904,7 @@ export var MapMLLayer = L.Layer.extend({
               mapml
                 .querySelector('map-meta[name=projection]')
                 .getAttribute('content')
-            ).content.toUpperCase() || projection;
+            ).content || projection;
         } else if (mapml.querySelector('map-extent[units]')) {
           const getProjectionFrom = (extents) => {
             let extentProj = extents[0].attributes.units.value;

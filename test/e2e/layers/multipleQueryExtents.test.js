@@ -114,6 +114,7 @@ test.describe('Multiple Extent Query Tests', () => {
     await page.evaluateHandle(() =>
       document.querySelector('mapml-viewer').zoomTo(10, 5, 0)
     );
+    await page.waitForTimeout(300);
     await page.click('div');
     await page.waitForSelector(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div'
@@ -162,6 +163,7 @@ test.describe('Multiple Extent Query Tests', () => {
     await page.evaluateHandle(() =>
       document.querySelector('mapml-viewer').zoomTo(-18, 5, 0)
     );
+    await page.waitForTimeout(300);
     await page.click('div');
     await page.waitForSelector(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div',
@@ -175,6 +177,7 @@ test.describe('Multiple Extent Query Tests', () => {
     await page.evaluateHandle(() =>
       document.querySelector('mapml-viewer').zoomTo(-16, -40, 0)
     );
+    await page.waitForTimeout(300);
     await page.click('div');
     const popupNumBottom = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
@@ -184,6 +187,7 @@ test.describe('Multiple Extent Query Tests', () => {
     await page.evaluateHandle(() =>
       document.querySelector('mapml-viewer').zoomTo(33, -170, 0)
     );
+    await page.waitForTimeout(300);
     await page.click('div');
     const popupNumLeft = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
@@ -193,6 +197,7 @@ test.describe('Multiple Extent Query Tests', () => {
     await page.evaluateHandle(() =>
       document.querySelector('mapml-viewer').zoomTo(30, 98, 0)
     );
+    await page.waitForTimeout(300);
     await page.click('div');
     const popupNumTop = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
