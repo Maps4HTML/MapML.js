@@ -526,12 +526,21 @@ export var Util = {
           newLayer = true;
       }
       if (!link.inPlace && newLayer)
-        if (zoomTo)
-          layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
-        else layer.zoomTo();
-
-      if (opacity) layer.opacity = opacity;
-      map.getContainer().focus();
+        layer.whenReady().then(() => {
+          if (
+            newLayer &&
+            ['_parent', '_self'].includes(link.target) &&
+            layer.parentElement.querySelectorAll('layer-').length === 1
+          )
+            layer.parentElement.projection = layer._layer.getProjection();
+          if (layer.extent) {
+            if (zoomTo)
+              layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
+            else layer.zoomTo();
+          }
+          if (opacity) layer.opacity = opacity;
+          map.getContainer().focus();
+        });
     } else if (zoomTo && !link.inPlace && justPan) {
       leafletLayer._map.options.mapEl.zoomTo(
         +zoomTo.lat,
