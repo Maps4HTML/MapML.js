@@ -13,6 +13,11 @@ export var FeatureLayer = L.FeatureGroup.extend({
         2. for static templated feature: null
         3. for non-templated feature: layer- (with no src) or mapml file (with src)
       */
+    // options.extent: when you use a FeatureLayer, you can either get it to calculate the
+    // .layerBounds dynamically (the default), based on adds/removes of features from the layer/
+    // or you can construct it with a bounds (via options.extent),
+    // which will then remain static for the lifetime of the layer
+
     L.setOptions(this, options);
     if (this.options.static) {
       this._container = L.DomUtil.create(
@@ -47,13 +52,15 @@ export var FeatureLayer = L.FeatureGroup.extend({
         this._staticFeature = true;
         this.isVisible = true; //placeholder for when this actually gets updated in the future
         this.zoomBounds = M.getZoomBounds(mapml, native.zoom);
-        this.layerBounds = M.getLayerBounds(mapml);
+        this.layerBounds = M.getBounds(mapml);
         L.extend(this.options, this.zoomBounds);
       }
       this.addData(mapml, native.cs, native.zoom);
     } else if (!mapml) {
       this.isVisible = false;
-      this.layerBounds = this.options.extent;
+      this.layerBounds = this.options.layerBounds
+        ? this.options.layerBounds
+        : null;
       this.zoomBounds = this.options.zoomBounds;
     }
   },

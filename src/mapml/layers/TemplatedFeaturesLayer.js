@@ -35,6 +35,8 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
         // pass the vector layer the container for the parent into which
         // it will append its own container for rendering into
         pane: container,
+        // the bounds will be static, fixed, constant for the lifetime of the layer
+        layerBounds: this.extentBounds,
         opacity: opacity,
         projection: map.options.projection,
         static: true,

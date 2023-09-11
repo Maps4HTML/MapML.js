@@ -1515,7 +1515,10 @@ export var MapMLLayer = L.Layer.extend({
           pane: layer._container,
           opacity: layer.options.opacity,
           projection: layer._properties.projection,
-          extent: M.getBounds(layer._content),
+          layerBounds: M.getBounds(layer._content),
+          // by NOT passing options.extent, we are asking the FeatureLayer
+          // to dynamically update its .layerBounds property as features are
+          // added or removed from it
           native: native,
           zoomBounds: M.getZoomBounds(layer._content, native.zoom),
           // each owned child layer gets a reference to the root layer
