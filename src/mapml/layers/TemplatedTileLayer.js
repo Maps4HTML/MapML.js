@@ -166,6 +166,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     let tileFeatures = M.featureLayer(null, {
       projection: this._map.options.projection,
       static: false,
+      layerBounds: this.extentBounds,
       interactive: false
     });
 
