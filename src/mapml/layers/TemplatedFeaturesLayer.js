@@ -37,6 +37,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
         pane: container,
         // the bounds will be static, fixed, constant for the lifetime of the layer
         layerBounds: this.extentBounds,
+        zoomBounds: this.zoomBounds,
         opacity: opacity,
         projection: map.options.projection,
         static: true,

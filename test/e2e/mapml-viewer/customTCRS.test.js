@@ -17,6 +17,7 @@ test.describe('Playwright Custom TCRS Tests', () => {
   });
 
   test('Simple Custom TCRS, tiles load, mismatched layer disabled', async () => {
+    await page.waitForTimeout(100);
     const misMatchedLayerDisabled = await page.$eval(
       'body > mapml-viewer:nth-child(1)',
       (map) => map.querySelectorAll('layer-')[0].hasAttribute('disabled')
