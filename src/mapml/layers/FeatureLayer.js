@@ -40,28 +40,23 @@ export var FeatureLayer = L.FeatureGroup.extend({
       let native = M.getNativeVariables(mapml);
       this.options.nativeZoom = native.zoom;
       this.options.nativeCS = native.cs;
-    } else if (mapml) {
-      let native = M.getNativeVariables(mapml);
-      //needed to check if the feature is static or not, since this method is used by templated also
-      if (
-        !mapml.querySelector('map-extent') &&
-        mapml.querySelector('map-feature') &&
-        this.options.static
-      ) {
-        this._features = {};
-        this._staticFeature = true;
-        this.isVisible = true; //placeholder for when this actually gets updated in the future
-        this.zoomBounds = M.getZoomBounds(mapml, native.zoom);
-        this.layerBounds = M.getBounds(mapml);
-        L.extend(this.options, this.zoomBounds);
+    } else {
+      if (mapml) {
+        let native = M.getNativeVariables(mapml);
+        this.addData(mapml, native.cs, native.zoom);
+      } else if (!mapml) {
+        this.isVisible = false;
+        // use this.options._leafletLayer to distinguish the featureLayer constructed for initialization and for templated features / tiles
+        if (this.options._leafletLayer) {
+          // this._staticFeature should be set to true to make sure the _getEvents works properly
+          this._features = {};
+          this._staticFeature = true;
+        }
+        this.layerBounds = this.options.layerBounds
+          ? this.options.layerBounds
+          : null;
+        this.zoomBounds = this.options.zoomBounds;
       }
-      this.addData(mapml, native.cs, native.zoom);
-    } else if (!mapml) {
-      this.isVisible = false;
-      this.layerBounds = this.options.layerBounds
-        ? this.options.layerBounds
-        : null;
-      this.zoomBounds = this.options.zoomBounds;
     }
   },
 

@@ -581,6 +581,7 @@ test.describe('Playwright Map Context Menu Tests', () => {
     await page.click('body > map');
     await page.keyboard.press('Shift+F10');
     await page.keyboard.press('p');
+    await page.waitForTimeout(500);
     const layerLabel = await page.$eval(
       'body > map',
       (map) => map.layers[2].outerHTML

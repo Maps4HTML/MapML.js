@@ -56,6 +56,7 @@ test.describe('Playwright Projection Change Tests', () => {
 
     test('Debug components update with projection changes', async () => {
       await page.reload();
+      await page.waitForTimeout(500);
       await page.$eval('body > map:nth-child(1)', (map) => map.toggleDebug());
 
       const colBefore = await page.$eval(
@@ -81,7 +82,8 @@ test.describe('Playwright Projection Change Tests', () => {
         await page.waitForTimeout(200);
       }
       await page.keyboard.press('Enter');
-      await page.waitForTimeout(2000);
+      // enter on the wrong thing
+      await page.waitForTimeout(1000);
 
       const colAfter = await page.$eval(
         'xpath=//html/body/map[1] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-layer.mapml-debug-grid > div > div:nth-child(1)',
