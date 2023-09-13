@@ -55,7 +55,9 @@ export var FeatureLayer = L.FeatureGroup.extend({
         this.layerBounds = this.options.layerBounds
           ? this.options.layerBounds
           : null;
-        this.zoomBounds = this.options.zoomBounds;
+        this.zoomBounds = this.options.zoomBounds
+          ? this.options.zoomBounds
+          : null;
       }
     }
   },
@@ -137,9 +139,10 @@ export var FeatureLayer = L.FeatureGroup.extend({
 
   _handleMoveEnd: function () {
     let mapZoom = this._map.getZoom(),
-      withinZoom =
-        mapZoom <= this.zoomBounds.maxZoom &&
-        mapZoom >= this.zoomBounds.minZoom;
+      withinZoom = this.zoomBounds
+        ? mapZoom <= this.zoomBounds.maxZoom &&
+          mapZoom >= this.zoomBounds.minZoom
+        : false;
     this.isVisible =
       withinZoom &&
       this._layers &&
@@ -157,8 +160,8 @@ export var FeatureLayer = L.FeatureGroup.extend({
   _handleZoomEnd: function (e) {
     let mapZoom = this._map.getZoom();
     if (
-      mapZoom > this.zoomBounds.maxZoom ||
-      mapZoom < this.zoomBounds.minZoom
+      this.zoomBounds &&
+      (mapZoom > this.zoomBounds.maxZoom || mapZoom < this.zoomBounds.minZoom)
     ) {
       this.clearLayers();
       return;
