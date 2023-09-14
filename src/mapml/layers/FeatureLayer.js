@@ -52,12 +52,6 @@ export var FeatureLayer = L.FeatureGroup.extend({
           this._features = {};
           this._staticFeature = true;
         }
-        this.layerBounds = this.options.layerBounds
-          ? this.options.layerBounds
-          : null;
-        this.zoomBounds = this.options.zoomBounds
-          ? this.options.zoomBounds
-          : null;
       }
     }
   },
