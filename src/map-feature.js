@@ -70,22 +70,25 @@ export class MapFeature extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'zoom': {
-        if (oldValue !== newValue && this._layer) {
-          let layer = this._layer,
-            layerEl = layer._layerEl,
-            mapmlvectors = layer._mapmlvectors;
-          // if the vector layer only has static features, should update zoom bounds when zoom attribute is changed
-          if (mapmlvectors?._staticFeature) {
-            this._removeInFeatureList(oldValue);
-            let native = this._getNativeZoomAndCS(layer._content);
-            mapmlvectors.zoomBounds = M.getZoomBounds(
-              layer._content,
-              native.zoom
-            );
+        this.whenReady().then(() => {
+          if (oldValue !== newValue) {
+            let layer = this._layer,
+              layerEl = layer._layerEl,
+              mapmlvectors = layer._mapmlvectors;
+            // if the vector layer only has static features, should update zoom bounds when zoom attribute is changed
+            if (mapmlvectors?._staticFeature) {
+              this._removeInFeatureList(oldValue);
+              let native = this._getNativeZoomAndCS(layer._content);
+              mapmlvectors.zoomBounds = M.getZoomBounds(
+                layer._content,
+                native.zoom
+              );
+            }
+            //this._removeFeature();
+            //this._updateFeature();
+            this._reRender();
           }
-          this._removeFeature();
-          this._updateFeature();
-        }
+        });
         break;
       }
     }
@@ -138,6 +141,21 @@ export class MapFeature extends HTMLElement {
     if (this._layer._layerEl.hasAttribute('data-moving')) return;
     this._removeFeature();
     this._observer.disconnect();
+  }
+
+  _reRender() {
+    if (this._groupEl.isConnected) {
+      let native = this._getNativeZoomAndCS(this._layer._content);
+      let placeholder = document.createElement('span');
+      this._groupEl.insertAdjacentElement('beforebegin', placeholder);
+
+      this._featureGroup._map.removeLayer(this._featureGroup);
+      // Garbage collection needed
+      this._featureGroup = this._layer._mapmlvectors
+        .addData(this, native.cs, native.zoom)
+        .addTo(this._map);
+      placeholder.replaceWith(this._featureGroup.options.group);
+    }
   }
 
   _removeFeature() {
@@ -424,7 +442,11 @@ export class MapFeature extends HTMLElement {
 
   // find and remove the feature from mapmlvectors._features if vector layer only contains static features, helper function
   //      prevent it from being rendered again when zooming in / out (mapmlvectors.resetFeature() is invoked)
+  // TODO: Can be moved to FeatureLayer.js, pass in leaflet id for layer to remove
   _removeInFeatureList(zoom) {
+    if (zoom === null) {
+      return;
+    }
     let mapmlvectors = this._layer._mapmlvectors;
     for (let i = 0; i < mapmlvectors._features[zoom].length; ++i) {
       let feature = mapmlvectors._features[zoom][i];
