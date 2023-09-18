@@ -77,6 +77,11 @@ export var FeatureLayer = L.FeatureGroup.extend({
     this._map.featureIndex.cleanIndex();
   },
 
+  removeLayer: function (featureGroupLayer) {
+    L.FeatureGroup.prototype.removeLayer.call(this, featureGroupLayer);
+    delete this._layers[featureGroupLayer._leaflet_id];
+  },
+
   getEvents: function () {
     if (this._staticFeature) {
       return {
@@ -164,21 +169,35 @@ export var FeatureLayer = L.FeatureGroup.extend({
   },
 
   _resetFeatures: function () {
-    this.clearLayers();
     // since features are removed and re-added by zoom level, need to clean the feature index before re-adding
     if (this._map) this._map.featureIndex.cleanIndex();
     let map = this._map || this.options._leafletLayer._map;
     if (this._features) {
       for (let zoom in this._features) {
         for (let k = 0; k < this._features[zoom].length; k++) {
-          let feature = this._features[zoom][k],
-            checkRender = feature._checkRender(
+          let featureGroupLayer = this._features[zoom][k],
+            checkRender = featureGroupLayer._checkRender(
               map.getZoom(),
               this.zoomBounds.minZoom,
               this.zoomBounds.maxZoom
             );
-          if (checkRender) {
-            this.addLayer(feature);
+          if (!checkRender) {
+            let placeholder = document.createElement('span');
+            placeholder.id = featureGroupLayer._leaflet_id;
+            featureGroupLayer.defaultOptions.group.insertAdjacentElement(
+              'beforebegin',
+              placeholder
+            );
+            // removing the rendering without removing the feature from the feature list
+            this.removeLayer(featureGroupLayer);
+          } else if (!map.hasLayer(featureGroupLayer)) {
+            this.addLayer(featureGroupLayer);
+            // update the layerbounds
+            let placeholder =
+              featureGroupLayer.defaultOptions.group.parentNode.querySelector(
+                `span[id="${featureGroupLayer._leaflet_id}"]`
+              );
+            placeholder.replaceWith(featureGroupLayer.defaultOptions.group);
           }
         }
       }
