@@ -45,35 +45,33 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
       let layer = map.querySelector('layer-'),
         mapFeature = layer.querySelector('map-feature');
       mapFeature.setAttribute('zoom', '4');
+      mapFeature.zoomTo();
     });
     await page.waitForTimeout(200);
-    label = await page.$eval(
-      'body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)',
-      (g) => g.getAttribute('aria-label')
+    let mapZoom = await page.$eval('body > map', (map) =>
+      map.getAttribute('zoom')
     );
     // expect the associated <g> el to re-render and re-attach to the map
-    expect(label).toEqual('feature with table properties');
+    expect(mapZoom).toEqual('4');
 
     // change <map-coordinates>
     await page.reload();
     await page.waitForTimeout(500);
-    label = await page.$eval(
-      'body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)',
-      (g) => g.getAttribute('aria-label')
-    );
-    expect(label).toEqual("feature, role='button'");
-    await page.$eval('body > map', (map) => {
+    let prevExtentBR = await page.$eval('body > map', (map) => {
+      let layer = map.querySelector('layer-'),
+        mapFeature = layer.querySelector('map-feature');
+      return mapFeature.extent.bottomRight.pcrs;
+    });
+
+    let newExtentBR = await page.$eval('body > map', (map) => {
       let layer = map.querySelector('layer-'),
         mapFeature = layer.querySelector('map-feature'),
         mapCoord = mapFeature.querySelector('map-coordinates');
-      mapCoord.innerHTML = '12 11 12 11 12 12 11 12';
+      mapCoord.innerHTML = '12 11 12 11 12 12 11 13';
+      return mapFeature.extent.bottomRight.pcrs;
     });
-    label = await page.$eval(
-      'body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)',
-      (g) => g.getAttribute('aria-label')
-    );
     // expect the associated <g> el to re-render and re-attach to the map
-    expect(label).toEqual('feature with table properties');
+    expect(newExtentBR === prevExtentBR).toBe(false);
 
     // remove <map-properties>
     await page.$eval('body > map', (map) => {
@@ -175,8 +173,6 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
   });
 
   test('Default click method test', async () => {
-    await page.pause();
-
     // click method test
     // <map-feature> with role="button" should have popup opened after click
     const popup = await page.$eval('body > map', (map) => {

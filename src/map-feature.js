@@ -70,25 +70,25 @@ export class MapFeature extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'zoom': {
-        this.whenReady().then(() => {
-          if (oldValue !== newValue) {
-            let layer = this._layer,
-              layerEl = layer._layerEl,
-              mapmlvectors = layer._mapmlvectors;
-            // if the vector layer only has static features, should update zoom bounds when zoom attribute is changed
-            if (mapmlvectors?._staticFeature) {
-              this._removeInFeatureList(oldValue);
-              let native = this._getNativeZoomAndCS(layer._content);
-              mapmlvectors.zoomBounds = M.getZoomBounds(
-                layer._content,
-                native.zoom
-              );
+        if (oldValue !== newValue && this._layer) {
+          let layer = this._layer,
+            zoom = newValue,
+            mapmlvectors = layer._mapmlvectors;
+          // if the vector layer only has static features, should update zoom bounds when zoom attribute is changed
+          if (mapmlvectors._staticFeature) {
+            this._removeInFeatureList(oldValue);
+            if (zoom in mapmlvectors._features) {
+              mapmlvectors._features[zoom].push(this._featureGroup);
+            } else {
+              mapmlvectors._features[zoom] = [this._featureGroup];
             }
-            //this._removeFeature();
-            //this._updateFeature();
-            this._reRender();
+            let native = this._getNativeZoomAndCS(layer._content);
+            mapmlvectors.zoomBounds = M.getZoomBounds(
+              layer._content,
+              native.zoom
+            );
           }
-        });
+        }
         break;
       }
     }
@@ -123,8 +123,7 @@ export class MapFeature extends HTMLElement {
           return;
         }
         // re-render feature if there is any observed change
-        this._removeFeature();
-        this._updateFeature();
+        this._reRender();
       }
     });
     this._observer.observe(this, {
@@ -147,6 +146,7 @@ export class MapFeature extends HTMLElement {
     if (this._groupEl.isConnected) {
       let native = this._getNativeZoomAndCS(this._layer._content);
       let placeholder = document.createElement('span');
+      let mapmlvectors = this._layer._mapmlvectors;
       this._groupEl.insertAdjacentElement('beforebegin', placeholder);
 
       this._featureGroup._map.removeLayer(this._featureGroup);
@@ -155,6 +155,9 @@ export class MapFeature extends HTMLElement {
         .addData(this, native.cs, native.zoom)
         .addTo(this._map);
       placeholder.replaceWith(this._featureGroup.options.group);
+      // TODO: getBounds() should dynamically update the layerBounds
+      this._layer._setLayerElExtent();
+      delete this._getFeatureExtent;
     }
   }
 
@@ -199,32 +202,43 @@ export class MapFeature extends HTMLElement {
         ? this.parentNode
         : this.parentNode.host;
 
-    // arrow function is not hoisted, define before use
-    let _attachedToMap = (e) => {
-      this._parentEl.whenReady().then(() => {
-        let parentLayer =
-          this._parentEl.nodeName.toUpperCase() === 'LAYER-'
-            ? this._parentEl
-            : this._parentEl.parentElement || this._parentEl.parentNode.host;
-        this._layer = parentLayer._layer;
-        this._map = this._layer._map;
-        // "synchronize" the event handlers between map-feature and <g>
-        if (!this.querySelector('map-geometry')) return;
-        if (!this._parentEl._layer._mapmlvectors) {
-          // if vector layer has not yet created (i.e. the layer- is not yet rendered on the map / layer is empty)
-          this._layer.once('add', this._setUpEvents, this);
-          return;
-        } else if (!this._featureGroup) {
-          // if the map-feature el or its subtree is updated
-          // this._featureGroup has been free in this._removeFeature()
-          this._updateFeature();
-        } else {
-          this._setUpEvents();
+    this._parentEl.whenReady().then(() => {
+      let parentLayer =
+        this._parentEl.nodeName.toUpperCase() === 'LAYER-'
+          ? this._parentEl
+          : this._parentEl.parentElement || this._parentEl.parentNode.host;
+      this._layer = parentLayer._layer;
+      this._map = this._layer._map;
+      let mapmlvectors = this._layer._mapmlvectors;
+      // "synchronize" the event handlers between map-feature and <g>
+      if (!this.querySelector('map-geometry')) return;
+      if (!this._extentEl) {
+        let native = this._getNativeZoomAndCS(this._layer._content);
+        this._featureGroup = mapmlvectors.addData(this, native.cs, native.zoom);
+        if (parentLayer.checked) {
+          this._featureGroup.addTo(this._map);
         }
-      });
-    };
+        mapmlvectors._layers[this._featureGroup._leaflet_id] =
+          this._featureGroup;
+        if (mapmlvectors._staticFeature && !this._extentEl) {
+          // update zoom bounds of vector layer
+          mapmlvectors.zoomBounds = M.getZoomBounds(
+            this._layer._content,
+            this._getNativeZoomAndCS(this._layer._content).zoom
+          );
+          // todo: dynamically update layer bounds of vector layer
+          mapmlvectors.layerBounds = M.getBounds(this._layer._content);
+          // update map's zoom limit
+          this._map._addZoomLimit(mapmlvectors);
+          L.extend(mapmlvectors.options, mapmlvectors.zoomBounds);
+        }
+      }
 
-    _attachedToMap();
+      if (Object.keys(mapmlvectors._layers).length === 1) {
+        this._layer._setLayerElExtent();
+      }
+      this._setUpEvents();
+    });
   }
 
   _updateFeature() {
@@ -246,7 +260,7 @@ export class MapFeature extends HTMLElement {
       // update layer bounds of vector layer
       mapmlvectors.layerBounds = M.getBounds(this._layer._content);
       // add feature layers to map
-      mapmlvectors._resetFeatures();
+      // mapmlvectors._resetFeatures();
       this._layer._setLayerElExtent();
       // update map's zoom limit
       this._map._addZoomLimit(mapmlvectors);
