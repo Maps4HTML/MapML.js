@@ -533,11 +533,12 @@ export var Util = {
             layer.parentElement.querySelectorAll('layer-').length === 1
           )
             layer.parentElement.projection = layer._layer.getProjection();
-          if (layer.extent) {
-            if (zoomTo)
-              layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
-            else layer.zoomTo();
+          if (!layer.extent) {
+            layer._layer._setLayerElExtent();
           }
+          if (zoomTo)
+            layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
+          else layer.zoomTo();
           if (opacity) layer.opacity = opacity;
           map.getContainer().focus();
         });
