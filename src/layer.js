@@ -48,6 +48,7 @@ export class MapLayer extends HTMLElement {
   }
 
   get opacity() {
+    // use ?? since 0 is falsy, || would return rhs in that case
     return this._opacity ?? this.getAttribute('opacity');
   }
 
@@ -157,6 +158,8 @@ export class MapLayer extends HTMLElement {
                 opacity: this.opacity
               }
             );
+            this._attachedToMap();
+            this._validateDisabled();
             resolve();
           })
           .catch((error) => {
@@ -170,23 +173,20 @@ export class MapLayer extends HTMLElement {
           mapprojection: this.parentElement.projection,
           opacity: this.opacity
         });
-        resolve();
-      }
-    })
-      .then(() => {
         this._attachedToMap();
         this._validateDisabled();
-      })
-      .catch((e) => {
-        if (e.type === 'changeprojection') {
-          this.src = e.detail.href;
-        } else {
-          console.log(e);
-          this.dispatchEvent(
-            new CustomEvent('error', { detail: { target: this } })
-          );
-        }
-      });
+        resolve();
+      }
+    }).catch((e) => {
+      if (e.type === 'changeprojection') {
+        this.src = e.detail.href;
+      } else {
+        console.log(e);
+        this.dispatchEvent(
+          new CustomEvent('error', { detail: { target: this } })
+        );
+      }
+    });
   }
   _attachedToMap() {
     // set i to the position of this layer element in the set of layers
