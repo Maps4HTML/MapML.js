@@ -48,7 +48,7 @@ export class MapLayer extends HTMLElement {
   }
 
   get opacity() {
-    return this._opacity;
+    return this._opacity ?? this.getAttribute('opacity');
   }
 
   set opacity(val) {
