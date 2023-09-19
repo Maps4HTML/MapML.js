@@ -48,7 +48,7 @@ export class MapLayer extends HTMLElement {
   }
 
   get opacity() {
-    return this._layer._container.style.opacity || this._layer.options.opacity;
+    return this._opacity;
   }
 
   set opacity(val) {
@@ -126,9 +126,6 @@ export class MapLayer extends HTMLElement {
         { once: true }
       );
       let base = this.baseURI ? this.baseURI : document.baseURI;
-      let opacity_value = this.hasAttribute('opacity')
-        ? this.getAttribute('opacity')
-        : '1.0';
 
       const headers = new Headers();
       headers.append('Accept', 'text/mapml');
@@ -157,7 +154,7 @@ export class MapLayer extends HTMLElement {
               content,
               {
                 mapprojection: this.parentElement.projection,
-                opacity: opacity_value
+                opacity: this.opacity
               }
             );
             resolve();
@@ -171,7 +168,7 @@ export class MapLayer extends HTMLElement {
         }
         this._layer = M.mapMLLayer(null, this, null, {
           mapprojection: this.parentElement.projection,
-          opacity: opacity_value
+          opacity: this.opacity
         });
         resolve();
       }
@@ -184,6 +181,7 @@ export class MapLayer extends HTMLElement {
         if (e.type === 'changeprojection') {
           this.src = e.detail.href;
         } else {
+          console.log(e);
           this.dispatchEvent(
             new CustomEvent('error', { detail: { target: this } })
           );
@@ -292,27 +290,20 @@ export class MapLayer extends HTMLElement {
         break;
       case 'opacity':
         if (oldValue !== newValue && this._layer) {
+          this._opacity = newValue;
           this._layer.changeOpacity(newValue);
         }
         break;
       case 'src':
         if (oldValue !== newValue && this._layer) {
-          this._reload();
+          this._onRemove();
+          if (this.isConnected) {
+            this._onAdd();
+          }
           // the original inline content will not be removed
           // but has NO EFFECT and works as a fallback
         }
     }
-  }
-  // re-load the layer element when the src attribute is changed
-  _reload() {
-    let oldOpacity = this.opacity;
-    // go through the same sequence as if the layer had been removed from
-    // the DOM and re-attached with a new URL source.
-    this._onRemove();
-    if (this.isConnected) {
-      this._onAdd();
-    }
-    this.opacity = oldOpacity;
   }
   _validateDisabled() {
     setTimeout(() => {

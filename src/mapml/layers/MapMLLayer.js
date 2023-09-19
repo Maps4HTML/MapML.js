@@ -98,7 +98,7 @@ export var MapMLLayer = L.Layer.extend({
   },
   changeOpacity: function (opacity) {
     this._container.style.opacity = opacity;
-    this._layerEl.opacity = opacity;
+    this._layerEl._opacity = opacity;
     if (this.opacityEl) this.opacityEl.value = opacity;
   },
   _changeExtentOpacity: function (e) {
