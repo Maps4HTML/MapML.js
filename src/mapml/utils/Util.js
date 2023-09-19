@@ -527,12 +527,6 @@ export var Util = {
       }
       if (!link.inPlace && newLayer)
         layer.whenReady().then(() => {
-          if (
-            newLayer &&
-            ['_parent', '_self'].includes(link.target) &&
-            layer.parentElement.querySelectorAll('layer-').length === 1
-          )
-            layer.parentElement.projection = layer._layer.getProjection();
           if (!layer.extent) {
             layer._layer._setLayerElExtent();
           }

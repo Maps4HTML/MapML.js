@@ -360,8 +360,12 @@ export class MapViewer extends HTMLElement {
               layersReady.push(reAttach.whenReady());
             }
             Promise.allSettled(layersReady).then(() => {
-              this.zoomTo(lat, lon, zoom);
+              // if don't do a zoomTo, the BNG experiment ends up at zoom=5 (incorrectly)
+              // BUT the feature link from Canada/BC to BCTILE layer works
+              // can have one but not both tbd
+              //
               this._resetHistory();
+              this.zoomTo(lat, lon, zoom);
               this._map.announceMovement.enable();
             });
           }
