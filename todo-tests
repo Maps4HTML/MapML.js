@@ -1,10 +1,5 @@
 TODO
 
-
-experiments/linking/features - clicking on BC does not work, Ontario link not working
-experiments/vector tiles - not working
-experiments/custom-projections/Arctic-SDI/ Canada  link not working
-
 deal with flaky tests???
 
 core/featureIndexOverlay test is broken, integrate other PR
