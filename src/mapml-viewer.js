@@ -349,6 +349,11 @@ export class MapViewer extends HTMLElement {
             let lat = this.lat;
             let lon = this.lon;
             let zoom = this.zoom;
+            // saving the lat, lon and zoom is necessary because Leaflet seems
+            // to try to compensate for the change in the scales for each zoom
+            // level in the crs by changing the zoom level of the map when
+            // you set the map crs.  So, we save the current view for use below
+            // when all the layers' reconnections have settled.
             this._map.options.crs = M[newValue];
             this._map.options.projection = newValue;
             let layersReady = [];
@@ -360,12 +365,11 @@ export class MapViewer extends HTMLElement {
               layersReady.push(reAttach.whenReady());
             }
             Promise.allSettled(layersReady).then(() => {
-              // if don't do a zoomTo, the BNG experiment ends up at zoom=5 (incorrectly)
-              // BUT the feature link from Canada/BC to BCTILE layer works
-              // can have one but not both tbd
-              //
-              this._resetHistory();
+              // use the saved map location to ensure it is correct after
+              // changing the map CRS.  Specifically affects projection
+              // upgrades, e.g. https://maps4html.org/experiments/custom-projections/BNG/
               this.zoomTo(lat, lon, zoom);
+              this._resetHistory();
               this._map.announceMovement.enable();
             });
           }

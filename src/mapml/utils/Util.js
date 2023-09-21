@@ -496,7 +496,6 @@ export var Util = {
       if (['/', '.', '#'].includes(link.url[0])) link.target = '_self';
     }
     if (!justPan) {
-      let newLayer = false;
       layer = document.createElement('layer-');
       layer.setAttribute('src', link.url);
       layer.setAttribute('checked', '');
@@ -505,18 +504,12 @@ export var Util = {
           if (link.type === 'text/html') {
             window.open(link.url);
           } else {
-            newLayer = true;
-            if (!link.inPlace && zoomTo) {
-              updateMapZoomTo(zoomTo);
-            }
+            postTraversalSetup();
             map.options.mapEl.appendChild(layer);
           }
           break;
         case '_parent':
-          newLayer = true;
-          if (!link.inPlace && zoomTo) {
-            updateMapZoomTo(zoomTo);
-          }
+          postTraversalSetup();
           for (let l of map.options.mapEl.querySelectorAll('layer-'))
             if (l._layer !== leafletLayer) map.options.mapEl.removeChild(l);
           map.options.mapEl.appendChild(layer);
@@ -526,25 +519,11 @@ export var Util = {
           window.location.href = link.url;
           break;
         default:
-          newLayer = true;
-          if (!link.inPlace && zoomTo) {
-            updateMapZoomTo(zoomTo);
-          }
+          postTraversalSetup();
           opacity = leafletLayer._layerEl.opacity;
           leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
           map.options.mapEl.removeChild(leafletLayer._layerEl);
       }
-      if (!link.inPlace && newLayer)
-        layer.whenReady().then(() => {
-          if (!layer.extent) {
-            layer._layer._setLayerElExtent();
-          }
-          if (zoomTo)
-            layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
-          else layer.zoomTo();
-          if (opacity) layer.opacity = opacity;
-          map.getContainer().focus();
-        });
     } else if (zoomTo && !link.inPlace && justPan) {
       leafletLayer._map.options.mapEl.zoomTo(
         +zoomTo.lat,
@@ -554,7 +533,38 @@ export var Util = {
       if (opacity) layer.opacity = opacity;
     }
 
+    function postTraversalSetup() {
+      // when the projection is changed as part of the link traversal process,
+      // it's necessary to set the map viewer's lat, lon and zoom NOW, so that
+      // the promises that are created when the viewer's projection is changed
+      // can use the viewer's lat, lon and zoom properties that were in effect
+      // before the projection change i.e. in the closure for that code
+      // see mapml-viewer / map is=web-map projection attributeChangedCallback
+      // specifically required for use cases like changing projection after
+      // link traversal, e.g. BC link here https://maps4html.org/experiments/linking/features/
+      if (!link.inPlace && zoomTo) updateMapZoomTo(zoomTo);
+      // the layer is newly created, so have to wait until it's fully init'd
+      // before setting properties.
+      layer.whenReady().then(() => {
+        // TODO refactor _setLayerElExtent so that it's invoked automatically
+        // by layer.extent getter TBD.
+        if (!layer.extent) {
+          layer._layer._setLayerElExtent();
+        }
+        // if the map projection isnt' changed by link traversal, it's necessary
+        // to perform pan/zoom operations after the layer is ready
+        if (!link.inPlace && zoomTo)
+          layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
+        else if (!link.inPlace) layer.zoomTo();
+        // not sure if this is necessary
+        if (opacity) layer.opacity = opacity;
+        // this is necessary to display the FeatureIndexOverlay, I believe
+        map.getContainer().focus();
+      });
+    }
+
     function updateMapZoomTo(zoomTo) {
+      // can't use mapEl.zoomTo(...) here, it's too slow!
       map.options.mapEl.lat = +zoomTo.lat;
       map.options.mapEl.lon = +zoomTo.lng;
       map.options.mapEl.zoom = +zoomTo.z;
