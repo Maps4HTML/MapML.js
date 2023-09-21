@@ -878,8 +878,8 @@ export var MapMLLayer = L.Layer.extend({
       // set layer._properties._mapExtents and layer._properties._templateVars
       if (layer._properties.crs) processExtents();
       layer._styles = getAlternateStyles();
-      setLayerTitle();
       parseLicenseAndLegend();
+      setLayerTitle();
       setZoomInOrOutLinks();
       // crs is only set if the layer has the same projection as the map
       if (layer._properties.crs) processTiles();
