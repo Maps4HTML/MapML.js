@@ -505,25 +505,34 @@ export var Util = {
           if (link.type === 'text/html') {
             window.open(link.url);
           } else {
-            map.options.mapEl.appendChild(layer);
             newLayer = true;
+            if (!link.inPlace && zoomTo) {
+              updateMapZoomTo(zoomTo);
+            }
+            map.options.mapEl.appendChild(layer);
           }
           break;
         case '_parent':
+          newLayer = true;
+          if (!link.inPlace && zoomTo) {
+            updateMapZoomTo(zoomTo);
+          }
           for (let l of map.options.mapEl.querySelectorAll('layer-'))
             if (l._layer !== leafletLayer) map.options.mapEl.removeChild(l);
           map.options.mapEl.appendChild(layer);
           map.options.mapEl.removeChild(leafletLayer._layerEl);
-          newLayer = true;
           break;
         case '_top':
           window.location.href = link.url;
           break;
         default:
+          newLayer = true;
+          if (!link.inPlace && zoomTo) {
+            updateMapZoomTo(zoomTo);
+          }
           opacity = leafletLayer._layerEl.opacity;
           leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
           map.options.mapEl.removeChild(leafletLayer._layerEl);
-          newLayer = true;
       }
       if (!link.inPlace && newLayer)
         layer.whenReady().then(() => {
@@ -543,6 +552,12 @@ export var Util = {
         +zoomTo.z
       );
       if (opacity) layer.opacity = opacity;
+    }
+
+    function updateMapZoomTo(zoomTo) {
+      map.options.mapEl.lat = +zoomTo.lat;
+      map.options.mapEl.lon = +zoomTo.lng;
+      map.options.mapEl.zoom = +zoomTo.z;
     }
   },
   getBounds: function (mapml) {
