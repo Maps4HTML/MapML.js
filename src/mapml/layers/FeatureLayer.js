@@ -168,6 +168,8 @@ export var FeatureLayer = L.FeatureGroup.extend({
     this._resetFeatures();
   },
 
+  // remove or add features based on the min max attribute of the features,
+  //  and add placeholders to maintain position
   _resetFeatures: function () {
     // since features are removed and re-added by zoom level, need to clean the feature index before re-adding
     if (this._map) this._map.featureIndex.cleanIndex();
@@ -190,7 +192,11 @@ export var FeatureLayer = L.FeatureGroup.extend({
             );
             // removing the rendering without removing the feature from the feature list
             this.removeLayer(featureGroupLayer);
-          } else if (!map.hasLayer(featureGroupLayer)) {
+          } else if (
+            // checking for _map so we do not enter this code block during the connectedCallBack of the map-feature
+            !map.hasLayer(featureGroupLayer) &&
+            !featureGroupLayer._map
+          ) {
             this.addLayer(featureGroupLayer);
             // update the layerbounds
             let placeholder =
