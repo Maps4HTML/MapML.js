@@ -45,6 +45,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     ).jsonValue();
 
     expect(menuDisplay).toEqual('block');
+    await page.keyboard.press('Escape');
   });
 
   test('Layer context menu copy layer', async () => {
@@ -157,6 +158,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
   });
 
   test('Copy layer with relative src attribute', async () => {
+    await page.reload();
     await page.hover(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
     );
@@ -167,8 +169,10 @@ test.describe('Playwright Layer Context Menu Tests', () => {
 
     await page.keyboard.press('l');
     await page.click('body > textarea#messageLayer');
-    await page.keyboard.press('Control+a');
-    await page.keyboard.press('Backspace');
+    // reload is better than deleting text, because of cross-platform issue
+    // with copy-pasting text on Windows/Linux
+    //    await page.keyboard.press('Control+a');
+    //    await page.keyboard.press('Backspace');
     await page.keyboard.press('Control+v');
     const copyLayer = await page.$eval(
       'body > textarea#messageLayer',

@@ -102,25 +102,23 @@ export var QueryHandler = L.Handler.extend({
           }
         })
         .then((response) => {
-          if (!layer._mapmlFeatures) layer._mapmlFeatures = [];
+          let features = [];
           if (response.contenttype.startsWith('text/mapml')) {
             // the mapmldoc could have <map-meta> elements that are important, perhaps
             // also, the mapmldoc can have many features
             let mapmldoc = parser.parseFromString(
-                response.text,
-                'application/xml'
-              ),
-              features = Array.prototype.slice.call(
-                mapmldoc.querySelectorAll('map-feature')
-              );
+              response.text,
+              'application/xml'
+            );
+            features = Array.prototype.slice.call(
+              mapmldoc.querySelectorAll('map-feature')
+            );
             // <map-meta> elements
             layer.metas = Array.prototype.slice.call(
               mapmldoc.querySelectorAll(
                 'map-meta[name=cs], map-meta[name=zoom], map-meta[name=projection]'
               )
             );
-            if (features.length)
-              layer._mapmlFeatures = layer._mapmlFeatures.concat(features);
           } else {
             // synthesize a single feature from text or html content
             let geom =
@@ -139,9 +137,9 @@ export var QueryHandler = L.Handler.extend({
                   'text/html'
                 )
                 .querySelector('map-feature');
-            layer._mapmlFeatures.push(feature);
+            features.push(feature);
           }
-          return layer._mapmlFeatures;
+          return { features: features, template: template };
         })
         .catch((err) => {
           console.log('Looks like there was a problem. Status: ' + err.message);
@@ -248,14 +246,21 @@ export var QueryHandler = L.Handler.extend({
         fetches.push(fetchFeatures(template, obj));
       }
     }
-    Promise.allSettled(fetches).then(() => {
-      // create connection between queried <map-feature> and its parent <map-extent>
-      if (layer._mapmlFeatures) {
-        for (let feature of layer._mapmlFeatures) {
-          feature._extentEl = template._extentEl;
+    Promise.allSettled(fetches).then((results) => {
+      layer._mapmlFeatures = [];
+      // f is an array of {features[], template}
+
+      for (let f of results) {
+        if (f.status === 'fulfilled') {
+          // create connection between queried <map-feature> and its parent <map-extent>
+          for (let feature of f.value.features) {
+            feature._extentEl = f.value.template._extentEl;
+          }
+          layer._mapmlFeatures = layer._mapmlFeatures.concat(f.value.features);
         }
-        displayFeaturesPopup(layer._mapmlFeatures, e.latlng);
       }
+      if (layer._mapmlFeatures.length > 0)
+        displayFeaturesPopup(layer._mapmlFeatures, e.latlng);
     });
 
     function displayFeaturesPopup(features, loc) {
