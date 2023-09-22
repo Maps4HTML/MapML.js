@@ -22,11 +22,7 @@ test.describe('Geolocation control tests', () => {
 
   test('Using geolocation control to control map', async () => {
     await page.click('body > mapml-viewer');
-    for (let i = 0; i < 7; i++) {
-      await page.keyboard.press('Tab');
-      await page.waitForTimeout(50);
-    }
-    await page.keyboard.press('Enter');
+    await page.getByTitle('Show my location - location tracking off').click();
 
     let locateButton_lat = await page.$eval(
       'body > mapml-viewer',
@@ -51,14 +47,7 @@ test.describe('Geolocation control tests', () => {
 
   test('Geolocation control state changes when pressed', async () => {
     await page.click('body > mapml-viewer');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Enter');
+    await page.getByTitle('Show my location - location tracking on').click();
 
     let locationOnText = await page.evaluate(
       () => M.options.locale.btnLocTrackOn
@@ -76,7 +65,7 @@ test.describe('Geolocation control tests', () => {
     );
 
     expect(locateButton_title1).toEqual(locationOffText);
-    await page.keyboard.press('Enter');
+    await page.getByTitle('Show my location - location tracking off').click();
 
     let locateButton_title2 = await page.$eval(
       'div > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div > a',
