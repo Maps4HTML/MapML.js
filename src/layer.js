@@ -429,7 +429,7 @@ export class MapLayer extends HTMLElement {
   }
   zoomTo() {
     if (!this.extent) return;
-    let map = this._layer._map,
+    let map = this.parentElement._map,
       tL = this.extent.topLeft.pcrs,
       bR = this.extent.bottomRight.pcrs,
       layerBounds = L.bounds(
