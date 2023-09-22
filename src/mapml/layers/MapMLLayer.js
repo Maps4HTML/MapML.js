@@ -2017,6 +2017,7 @@ export var MapMLLayer = L.Layer.extend({
           e.preventDefault();
           featureEl.zoomTo();
           featureEl._map.closePopup();
+          featureEl._map.getContainer().focus();
         };
         // we found that the popupopen event is fired as many times as there
         // are layers on the map (<layer-> elements / MapMLLayers that is).

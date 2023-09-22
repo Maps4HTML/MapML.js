@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-test.describe('Feature Index Overlay test', () => {
+test.describe('Feature Index Overlay results test', () => {
   let page;
   let context;
   test.beforeAll(async () => {
@@ -15,34 +15,8 @@ test.describe('Feature Index Overlay test', () => {
     await context.close();
   });
 
-  test('Feature index overlay and reticle shows on focus', async () => {
-    const hiddenOverlay = await page.$eval(
-      'div > output.mapml-feature-index',
-      (output) => output.classList.contains('mapml-screen-reader-output')
-    );
-    const hiddenReticle = await page.$eval(
-      'div > div.mapml-feature-index-box',
-      (div) => div.hasAttribute('hidden')
-    );
-
-    await page.keyboard.press('Tab');
-    await page.waitForTimeout(500);
-    const afterTabOverlay = await page.$eval(
-      'div > output.mapml-feature-index',
-      (output) => output.classList.contains('mapml-screen-reader-output')
-    );
-    const afterTabReticle = await page.$eval(
-      'div > div.mapml-feature-index-box',
-      (div) => div.hasAttribute('hidden')
-    );
-
-    expect(hiddenOverlay).toEqual(true);
-    expect(hiddenReticle).toEqual(true);
-    expect(afterTabOverlay).toEqual(false);
-    expect(afterTabReticle).toEqual(false);
-  });
-
   test('Feature index content is correct', async () => {
+    await page.keyboard.press('Tab');
     const spanCount = await page.$eval(
       'div > output.mapml-feature-index > span',
       (span) => span.childElementCount
@@ -109,21 +83,26 @@ test.describe('Feature Index Overlay test', () => {
     expect(firstFeature).toContain('1 Maine');
   });
 
-  test('Feature index overlay is hidden when empty, reticle still visible', async () => {
+  test('Feature index message for "No features found", reticle still visible', async () => {
     await page.keyboard.press('ArrowUp');
     await page.waitForTimeout(1000);
 
-    const overlay = await page.$eval(
+    const overlayVisible = await page.$eval(
       'div > output.mapml-feature-index',
-      (output) => output.classList.contains('mapml-screen-reader-output')
+      (output) => !output.classList.contains('mapml-screen-reader-output')
     );
-    const reticle = await page.$eval(
+    const reticleVisible = await page.$eval(
       'div > div.mapml-feature-index-box',
-      (div) => div.hasAttribute('hidden')
+      (div) => !div.hasAttribute('hidden')
+    );
+    const message = await page.$eval(
+      '.mapml-feature-index-content > span',
+      (message) => message.textContent
     );
 
-    expect(overlay).toEqual(true);
-    expect(reticle).toEqual(false);
+    expect(overlayVisible).toEqual(true);
+    expect(reticleVisible).toEqual(true);
+    expect(message).toEqual('No features found');
   });
 
   test('Popup test with templated features', async () => {

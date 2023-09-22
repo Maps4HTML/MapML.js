@@ -53,6 +53,7 @@ export var Options = {
     kbdNextFeature: 'Next feature',
     dfLayer: 'Layer',
     popupZoom: 'Zoom to here',
-    dfPastedLayer: 'Pasted layer'
+    dfPastedLayer: 'Pasted layer',
+    fIndexNoFeatures: 'No features found'
   }
 };

@@ -535,6 +535,7 @@ export var Util = {
         +zoomTo.z
       );
       if (opacity) layer.opacity = opacity;
+      map.getContainer().focus();
     }
 
     function postTraversalSetup() {

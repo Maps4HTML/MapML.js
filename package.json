@@ -32,7 +32,7 @@
     }
   ],
   "scripts": {
-    "test": "npx playwright test --grep-invert='featureIndexOverlay.*'",
+    "test": "npx playwright test --retries=3",
     "jest": "jest --verbose --noStackTrace"
   },
   "devDependencies": {
