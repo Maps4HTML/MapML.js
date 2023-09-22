@@ -63,7 +63,6 @@ export var LayerControl = L.Control.Layers.extend({
     // on the map it does not generate layer events
     for (var i = 0; i < this._layers.length; i++) {
       this._layers[i].layer.off('add remove', this._onLayerChange, this);
-      this._layers[i].layer.off('foo', this._validateInput, this);
     }
   },
   addOrUpdateOverlay: function (layer, name) {
@@ -163,11 +162,6 @@ export var LayerControl = L.Control.Layers.extend({
     obj.input.layerId = L.stamp(obj.layer);
 
     L.DomEvent.on(obj.input, 'click', this._onInputClick, this);
-    // this is necessary because when there are several layers in the
-    // layer control, the response to the last one can be a long time
-    // after the info is first displayed, so we have to go back and
-    // verify the layer element is not disabled and can have an enabled input.
-    obj.layer.on('foo', this._validateInput, this);
     this._overlaysList.appendChild(layercontrols);
     return layercontrols;
   },

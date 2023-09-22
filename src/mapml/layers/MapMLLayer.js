@@ -174,19 +174,6 @@ export var MapMLLayer = L.Layer.extend({
       this._properties._mapExtents[0]._templateVars
     ) {
       createAndAdd();
-    } else {
-      // wait for extent to be loaded
-      this.once(
-        'foo',
-        function () {
-          if (!this._validProjection(map)) {
-            this.validProjection = false;
-            return;
-          }
-          createAndAdd();
-        },
-        this
-      );
     }
     this._setLayerElExtent();
 
@@ -896,7 +883,6 @@ export var MapMLLayer = L.Layer.extend({
         // if layer does not have a parent Element, do not need to set Controls
         layer._layerEl.parentElement._toggleControls();
       }
-      layer.fire('foo', layer, false);
       // local functions
       // sets layer._properties.projection.  Supposed to replace / simplify
       // the dependencies on convoluted getProjection() interface, but doesn't quite

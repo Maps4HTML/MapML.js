@@ -222,7 +222,7 @@ export class MapLayer extends HTMLElement {
     // user checking/unchecking the layer from the layer control
     // this must be done *after* the layer is actually added to the map
     this._layer.on('add remove', this._onLayerChange, this);
-    this._layer.on('add remove foo', this._validateDisabled, this);
+    this._layer.on('add remove', this._validateDisabled, this);
     // toggle the this.disabled attribute depending on whether the layer
     // is: same prj as map, within view/zoom of map
     this._layer._map.on('moveend layeradd', this._validateDisabled, this);
