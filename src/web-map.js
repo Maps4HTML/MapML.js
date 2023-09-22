@@ -113,14 +113,17 @@ export class WebMap extends HTMLMapElement {
         map.getZoom(),
         map.options.projection
       );
-    let formattedExtent = M._convertAndFormatPCRS(pcrsBounds, map.options.crs);
+    let formattedExtent = M._convertAndFormatPCRS(
+      pcrsBounds,
+      map.options.crs,
+      this.projection
+    );
     if (map.getMaxZoom() !== Infinity) {
       formattedExtent.zoom = {
         minZoom: map.getMinZoom(),
         maxZoom: map.getMaxZoom()
       };
     }
-    formattedExtent.projection = this.projection;
     return formattedExtent;
   }
   get static() {

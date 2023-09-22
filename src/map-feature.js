@@ -421,8 +421,11 @@ export class MapFeature extends HTMLElement {
           );
         }
         let result = Object.assign(
-          M._convertAndFormatPCRS(pcrsBound, map.options.crs),
-          { projection: map.options.projection }
+          M._convertAndFormatPCRS(
+            pcrsBound,
+            map.options.crs,
+            map.options.projection
+          )
         );
         // memoize calculated result
         extentCache = result;

@@ -2,8 +2,8 @@ import { FALLBACK_CS, FALLBACK_PROJECTION } from './Constants';
 
 export var Util = {
   // _convertAndFormatPCRS returns the converted CRS and formatted pcrsBounds in gcrs, pcrs, tcrs, and tilematrix. Used for setting extent for the map and layer (map.extent, layer.extent).
-  // _convertAndFormatPCRS: L.Bounds, _map -> {...}
-  _convertAndFormatPCRS: function (pcrsBounds, crs) {
+  // _convertAndFormatPCRS: L.Bounds, _map, projection -> {...}
+  _convertAndFormatPCRS: function (pcrsBounds, crs, projection) {
     if (!pcrsBounds || !crs) return {};
 
     let tcrsTopLeft = [],
@@ -65,7 +65,7 @@ export var Util = {
     };
 
     //formats all extent data
-    return {
+    let extent = {
       topLeft: {
         tcrs: tcrsTopLeft,
         tilematrix: tileMatrixTopLeft,
@@ -79,6 +79,10 @@ export var Util = {
         pcrs: pcrs.bottomRight
       }
     };
+    if (projection) {
+      extent.projection = projection;
+    }
+    return extent;
   },
 
   // _extractInputBounds extracts and returns Input Bounds from the provided template
