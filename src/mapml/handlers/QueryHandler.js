@@ -82,9 +82,13 @@ export var QueryHandler = L.Handler.extend({
       );
     let templates = layer.getQueryTemplates(pcrsClick);
 
-    var fetchFeatures = function (template, obj, lastOne) {
+    let fetches = [];
+
+    var fetchFeatures = function (template, obj) {
       const parser = new DOMParser();
-      fetch(L.Util.template(template.template, obj), { redirect: 'follow' })
+      return fetch(L.Util.template(template.template, obj), {
+        redirect: 'follow'
+      })
         .then((response) => {
           if (response.status >= 200 && response.status < 300) {
             return response.text().then((text) => {
@@ -137,13 +141,7 @@ export var QueryHandler = L.Handler.extend({
                 .querySelector('map-feature');
             layer._mapmlFeatures.push(feature);
           }
-          if (lastOne) {
-            // create connection between queried <map-feature> and its parent <map-extent>
-            for (let feature of layer._mapmlFeatures) {
-              feature._extentEl = template._extentEl;
-            }
-            displayFeaturesPopup(layer._mapmlFeatures, e.latlng);
-          }
+          return layer._mapmlFeatures;
         })
         .catch((err) => {
           console.log('Looks like there was a problem. Status: ' + err.message);
@@ -247,10 +245,19 @@ export var QueryHandler = L.Handler.extend({
       }
 
       if (template.extentBounds.contains(pcrsClick)) {
-        let lastOne = i === templates.length - 1 ? true : false;
-        fetchFeatures(template, obj, lastOne);
+        fetches.push(fetchFeatures(template, obj));
       }
     }
+    Promise.allSettled(fetches).then(() => {
+      // create connection between queried <map-feature> and its parent <map-extent>
+      if (layer._mapmlFeatures) {
+        for (let feature of layer._mapmlFeatures) {
+          feature._extentEl = template._extentEl;
+        }
+        displayFeaturesPopup(layer._mapmlFeatures, e.latlng);
+      }
+    });
+
     function displayFeaturesPopup(features, loc) {
       if (features.length === 0) return;
       let f = M.featureLayer(features, {

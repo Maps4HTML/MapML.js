@@ -92,6 +92,8 @@ test.describe('Multiple Extent Queries with heterogeneous response content types
       (span) => span.innerText.toLowerCase()
     );
     expect(thirdExtentInLayerControl).toEqual('html query response');
+    
+    await page.waitForTimeout(1000);
 
     await page.click('div');
     await page.waitForSelector(
