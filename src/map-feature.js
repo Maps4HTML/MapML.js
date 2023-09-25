@@ -146,7 +146,6 @@ export class MapFeature extends HTMLElement {
     if (this._groupEl.isConnected) {
       let native = this._getNativeZoomAndCS(this._layer._content);
       let placeholder = document.createElement('span');
-      let mapmlvectors = this._layer._mapmlvectors;
       this._groupEl.insertAdjacentElement('beforebegin', placeholder);
 
       this._featureGroup._map.removeLayer(this._featureGroup);
@@ -155,9 +154,10 @@ export class MapFeature extends HTMLElement {
         .addData(this, native.cs, native.zoom)
         .addTo(this._map);
       placeholder.replaceWith(this._featureGroup.options.group);
-      // TODO: getBounds() should dynamically update the layerBounds
+      // TODO: getBounds() should dynamically update the layerBounds and zoomBounds
       this._layer._setLayerElExtent();
       delete this._getFeatureExtent;
+      this._setUpEvents();
     }
   }
 
@@ -241,34 +241,6 @@ export class MapFeature extends HTMLElement {
       }
       this._setUpEvents();
     });
-  }
-
-  _updateFeature() {
-    let mapmlvectors = this._layer._mapmlvectors;
-    // if the parent layer has not yet rendered on the map
-    if (!mapmlvectors) return;
-    // if the <layer- > is not removed, then regenerate featureGroup and update the mapmlvectors accordingly
-    let native = this._getNativeZoomAndCS(this._layer._content);
-    this._featureGroup = mapmlvectors.addData(this, native.cs, native.zoom);
-    mapmlvectors._layers[this._featureGroup._leaflet_id] = this._featureGroup;
-    this._groupEl = this._featureGroup.options.group;
-    if (mapmlvectors._staticFeature) {
-      let container = this._layer.shadowRoot || this._layer._layerEl;
-      // update zoom bounds of vector layer
-      mapmlvectors.zoomBounds = M.getZoomBounds(
-        this._layer._content,
-        this._getNativeZoomAndCS(this._layer._content).zoom
-      );
-      // update layer bounds of vector layer
-      mapmlvectors.layerBounds = M.getBounds(this._layer._content);
-      // add feature layers to map
-      // mapmlvectors._resetFeatures();
-      this._layer._setLayerElExtent();
-      // update map's zoom limit
-      this._map._addZoomLimit(mapmlvectors);
-      L.extend(mapmlvectors.options, mapmlvectors.zoomBounds);
-    }
-    this._setUpEvents();
   }
 
   _setUpEvents() {
