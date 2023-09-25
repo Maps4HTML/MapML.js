@@ -80,6 +80,7 @@ test.describe('Feature Index Overlay Focus tests', () => {
     ).toBe(false);
   });
   test('Feature index overlay and reticle show on history-based navigation', async () => {
+    await page.locator('#map1').focus();
     await page.keyboard.press('ArrowRight');
     await page.keyboard.press('ArrowUp');
     await page.keyboard.press('ArrowRight');
@@ -88,11 +89,10 @@ test.describe('Feature Index Overlay Focus tests', () => {
     await page.locator('#map1').getByText('Back').click();
     await page.keyboard.press('Shift+F10');
     await page.locator('#map1').getByText('Back').click();
-    const afterHistoryNavReticle = page.locator(
+    const afterHistoryNavReticle = await page.locator(
       '#map1 .mapml-feature-index-box'
     );
     expect(await afterHistoryNavReticle.isHidden()).toBe(false);
-
     const afterHistoryNavOutput = page.locator(
       '#map1 output.mapml-feature-index'
     );
@@ -101,7 +101,7 @@ test.describe('Feature Index Overlay Focus tests', () => {
         o.classList.contains('mapml-screen-reader-output')
       )
     ).toBe(false);
-    await page.locator('#map1').getByTitle('Reload').click();
+    //await page.locator('#map1').getByTitle('Reload').click();
   });
   test('Feature index overlay and reticle show on geolocation activation, deactivation', async () => {
     await page
