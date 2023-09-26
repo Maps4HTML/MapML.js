@@ -215,7 +215,8 @@ export class MapInput extends HTMLElement {
     // Always call super first in constructor
     super();
   }
-  connectedCallback() {
+  async connectedCallback() {
+    await this.parentElement.whenReady();
     if (this.parentElement.nodeName === 'MAP-EXTENT') {
       this._layer = this.parentElement._layer;
     }
@@ -291,5 +292,29 @@ export class MapInput extends HTMLElement {
       console.log("Input type='" + this.type + "' is not valid!");
       return false;
     }
+  }
+  whenReady() {
+    return new Promise((resolve, reject) => {
+      let interval, failureTimer;
+      if (this.input) {
+        resolve();
+      } else {
+        let inputElement = this;
+        interval = setInterval(testForInput, 300, inputElement);
+        failureTimer = setTimeout(inputNotDefined, 10000);
+      }
+      function testForInput(inputElement) {
+        if (inputElement.input) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          resolve();
+        }
+      }
+      function inputNotDefined() {
+        clearInterval(interval);
+        clearTimeout(failureTimer);
+        reject('Timeout reached waiting for input to be ready');
+      }
+    });
   }
 }
