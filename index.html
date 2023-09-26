@@ -72,56 +72,15 @@
      </noscript> 
   </head>
   <body>
-    <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls controlslist="nofullscreen geolocation">
-      <map-caption>A pleasing map of Canada</map-caption>
-      <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
-      <layer- label="Hat Guy" checked>
-        <map-feature id="twohats" zoom="15" class="twohats">
-        <map-properties>
-          <table>
-            <tr>
-              <th>code</th>
-              <td>1200020</td>
-            </tr>
-            <tr>
-              <th>accuracy</th>
-              <td>26</td>
-            </tr>
-            <tr>
-              <th>valdate</th>
-              <td>1995</td>
-            </tr>
-            <tr>
-              <th>image</th>
-              <td><a href="https://www.veterans.gc.ca/eng/remembrance/memorials/national-inventory-canadian-memorials/details/9304">
-                <img src="https://www.veterans.gc.ca/images/remembrance/memorials/national-inventory-canadian-memorials/mem/35059-173a.jpg" width="60" height="60"/>
-              </a>
-              </td>
-            </tr>
-            <tr>
-              <th>theme</th>
-              <td>FO</td>
-            </tr>
-            <tr>
-              <th>type</th>
-              <td>2</td>
-            </tr>
-            <tr>
-              <th>elevation</th>
-              <td>61</td>
-            </tr>
-            <tr>
-              <th>altiaccu</th>
-              <td>5</td>
-            </tr>
-          </table>
-        </map-properties>
-        <map-geometry>
-          <map-point>
-            <map-coordinates>-75.705278 45.397778</map-coordinates>
-          </map-point>
-        </map-geometry>
-      </map-feature>
+    <!--<mapml-viewer width="500" height="500" projection="OSMTILE" lat="10" lon="0" zoom="1">
+      <layer- label="OpenStreetMap" checked>
+        <map-extent units="OSMTILE">
+          <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
+          <map-input name="domain" type="hidden" value="openstreetmap"></map-input>
+          <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+          <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+          <map-link rel="tile" tref="https://tile.{domain}.org/{z}/{x}/{y}.png"></map-link>
+        </map-extent>
       </layer->
     </mapml-viewer>-->
 
@@ -142,7 +101,7 @@
         <map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" ></map-input>
         <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" ></map-input>
         <map-link rel="image"
-          tref="http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/jpeg&TRANSPARENT=FALSE&STYLES=&VERSION=1.3.0&LAYERS=WMS-Toporama&WIDTH={w}&HEIGHT={h}&CRS=EPSG:3978&BBOX={xmin},{ymin},{xmax},{ymax}&m4h=t" ></map-link>
+          tref="https://maps.geogratis.gc.ca/wms/toporama_en?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/jpeg&TRANSPARENT=FALSE&STYLES=&VERSION=1.3.0&LAYERS=WMS-Toporama&WIDTH={w}&HEIGHT={h}&CRS=EPSG:3978&BBOX={xmin},{ymin},{xmax},{ymax}&m4h=t" ></map-link>
       </map-extent>
     </layer->
   </mapml-viewer>
