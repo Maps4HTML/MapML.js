@@ -73,6 +73,7 @@ app.get('/data/noMapMeta', (req, res, next) => {
 
 app.use('/data', express.static(path.join(__dirname, 'e2e/data/tiles/cbmt')));
 app.use('/data', express.static(path.join(__dirname, 'e2e/data/tiles/wgs84')));
+app.use('/images', express.static(path.join(__dirname, 'e2e/data/images')));
 app.use(
   '/data',
   express.static(path.join(__dirname, 'e2e/data/tiles/osmtile'))
