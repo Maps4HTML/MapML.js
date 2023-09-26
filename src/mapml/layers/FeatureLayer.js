@@ -157,15 +157,10 @@ export var FeatureLayer = L.FeatureGroup.extend({
   },
 
   _handleZoomEnd: function (e) {
-    let mapZoom = this._map.getZoom();
-    if (
-      this.zoomBounds &&
-      (mapZoom > this.zoomBounds.maxZoom || mapZoom < this.zoomBounds.minZoom)
-    ) {
-      this.clearLayers();
-      return;
+    // handle zoom end gets called twice for every zoom, this condition makes it go through once only.
+    if (this.zoomBounds) {
+      this._resetFeatures();
     }
-    this._resetFeatures();
   },
 
   // remove or add features based on the min max attribute of the features,
