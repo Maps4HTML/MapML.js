@@ -345,7 +345,9 @@ export class MapFeature extends HTMLElement {
         let map = this._map,
           geometry = this.querySelector('map-geometry'),
           native = this._getNativeZoomAndCS(
-            this._layer._content || this._layer.metas
+            this._layer.queryMetas?.length
+              ? this._layer.queryMetas
+              : this._layer._content
           ),
           cs = geometry.getAttribute('cs') || native.cs,
           // zoom level that the feature rendered at
