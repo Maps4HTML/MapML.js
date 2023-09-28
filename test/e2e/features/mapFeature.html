@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <title>&lt;map-feature&gt; Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../mapml-viewer.js"></script>
+    <style>
+      mapml-viewer {
+        width: 100%;
+        height: 500px;
+        max-width: 100%;
+      }
+
+    </style>
+  </head>
+
+  <body>
+  <mapml-viewer data-testid="viewer" zoom="10" lon="-75.7" lat="45.4" controls="">
+
+    <layer- label="Polygon" checked>
+      <map-meta name="projection" content="OSMTILE"></map-meta>
+      <map-meta name="zoom" content="min=10,max=11"></map-meta>
+      <map-feature>
+        <map-featurecaption>Click me!</map-featurecaption>
+        <!-- Setting the geometry coordinates to gcrs, as the default is pcrs -->
+        <map-geometry cs="gcrs">
+          <map-a href="#15,-75.699,45.420">
+            <map-polygon class="polygon">
+              <map-coordinates>-75.8242035 45.3526278 -75.6793213 45.4572409 -75.5680847 45.4692806 -75.6092834 45.4215881 -75.5756378 45.3810901 -75.7946777 45.3120804</map-coordinates>
+            </map-polygon>
+          </map-a>
+        </map-geometry>
+        <map-properties></map-properties>
+      </map-feature>
+    </layer->
+
+
+
+    <layer- data-testid="points" label="Points" checked>
+      <map-meta name="projection" content="OSMTILE"></map-meta>
+      <map-meta name="zoom" content="value=14,min=14,max=24"></map-meta>
+      <map-feature>
+      <map-feature min="14" max="24" zoom="14">
+  
+        <map-featurecaption>Point 1</map-featurecaption>
+<!--         Setting the geometry coordinates to gcrs, as the default is pcrs -->
+        <map-geometry cs="gcrs">
+          <map-point class="point">
+            <map-coordinates>-75.6978285 45.4202251</map-coordinates>
+          </map-point>
+        </map-geometry>
+        <map-properties><h2>Point 1</h2></map-properties>
+      </map-feature>
+      
+      <map-feature>
+      <map-feature min="14" max="24" zoom="14">
+        <map-featurecaption>Point 2</map-featurecaption>
+<!--         Setting the geometry coordinates to gcrs, as the default is pcrs -->
+        <map-geometry cs="gcrs">
+          <map-point class="point">
+            <map-coordinates>-75.7002854 45.4199465</map-coordinates>
+          </map-point>
+        </map-geometry>
+        <map-properties><h2>Point 2</h2></map-properties>
+      </map-feature>
+      <map-feature>
+      <map-feature min="14" max="24" zoom="14">
+        <map-featurecaption>Point 3</map-featurecaption>
+<!--         Setting the geometry coordinates to gcrs, as the default is pcrs -->
+        <map-geometry cs="gcrs">
+          <map-point class="point">
+            <map-coordinates>-75.6984723 45.4179207</map-coordinates>
+          </map-point>
+        </map-geometry>
+        <map-properties><h2>Point 3</h2></map-properties>
+      </map-feature>
+    </layer->
+  </mapml-viewer>
+</body>
+
+</html>
