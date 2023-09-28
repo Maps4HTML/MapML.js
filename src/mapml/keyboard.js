@@ -40,7 +40,7 @@ L.Map.Keyboard.include({
       }
     } else if (key in this._zoomKeys) {
       if (
-        (key in zoomIn && map._layersMaxZoom !== map.getZoom()) ||
+        (key in zoomIn && map.getMaxZoom() !== map.getZoom()) ||
         (key in zoomOut && map._layersMinZoom !== map.getZoom())
       )
         map.setZoom(map.getZoom() + (e.shiftKey ? 3 : 1) * this._zoomKeys[key]);
