@@ -45,10 +45,9 @@ export var AnnounceMovement = L.Handler.extend({
         : mapEl.shadowRoot.querySelector('.leaflet-container');
 
       let mapZoom = mapEl._map.getZoom();
-      let location = M._gcrsToTileMatrix(mapEl);
       let standard = M.options.locale.amZoom + ' ' + mapZoom;
 
-      if (mapZoom === mapEl._map._layersMaxZoom) {
+      if (mapZoom === mapEl._map.getMaxZoom()) {
         standard = M.options.locale.amMaxZoom + ' ' + standard;
       } else if (mapZoom === mapEl._map._layersMinZoom) {
         standard = M.options.locale.amMinZoom + ' ' + standard;
@@ -75,8 +74,8 @@ export var AnnounceMovement = L.Handler.extend({
     let visible = true;
     if (this._map.totalLayerBounds) {
       visible =
-        mapZoom <= this._map._layersMaxZoom &&
-        mapZoom >= this._map._layersMinZoom &&
+        mapZoom <= this._map.getMaxZoom() &&
+        mapZoom >= this._map.getMinZoom() &&
         this._map.totalLayerBounds.overlaps(mapBounds);
     }
 
@@ -86,8 +85,6 @@ export var AnnounceMovement = L.Handler.extend({
         )
       : this.shadowRoot.querySelector('.mapml-screen-reader-output');
 
-    //GCRS to TileMatrix
-    let location = M._gcrsToTileMatrix(this);
     let standard = M.options.locale.amZoom + ' ' + mapZoom;
 
     if (!visible) {
@@ -113,7 +110,7 @@ export var AnnounceMovement = L.Handler.extend({
       let prevZoom = this._history[this._historyIndex - 1]
         ? this._history[this._historyIndex - 1].zoom
         : this._history[this._historyIndex].zoom;
-      if (mapZoom === this._map._layersMaxZoom && mapZoom !== prevZoom) {
+      if (mapZoom === this._map.getMaxZoom() && mapZoom !== prevZoom) {
         output.innerText = M.options.locale.amMaxZoom + ' ' + standard;
       } else if (mapZoom === this._map._layersMinZoom && mapZoom !== prevZoom) {
         output.innerText = M.options.locale.amMinZoom + ' ' + standard;
