@@ -229,7 +229,7 @@ export class MapFeature extends HTMLElement {
           // todo: dynamically update layer bounds of vector layer
           mapmlvectors.layerBounds = M.getBounds(this._layer._content);
           // update map's zoom limit
-          this._map._addZoomLimit(mapmlvectors);
+          //this._map._addZoomLimit(mapmlvectors);
           // TODO: can be set as a handler of featureLayer
           mapmlvectors._resetFeatures();
           L.extend(mapmlvectors.options, mapmlvectors.zoomBounds);
