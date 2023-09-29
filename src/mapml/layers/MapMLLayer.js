@@ -375,11 +375,7 @@ export var MapMLLayer = L.Layer.extend({
               bounds.extend(this[type].layerBounds.max);
             }
           }
-        } else if (
-          // only process extent if mapmlvectors is not empty
-          type === '_mapmlvectors' &&
-          Object.keys(this[type]._layers).length !== 0
-        ) {
+        } else if (type === '_mapmlvectors') {
           if (this[type].layerBounds) {
             if (!bounds) {
               bounds = this[type].layerBounds;

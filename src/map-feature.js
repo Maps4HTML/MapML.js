@@ -229,14 +229,17 @@ export class MapFeature extends HTMLElement {
           // todo: dynamically update layer bounds of vector layer
           mapmlvectors.layerBounds = M.getBounds(this._layer._content);
           // update map's zoom limit
-          // this._map._addZoomLimit(mapmlvectors);
+          this._map._addZoomLimit(mapmlvectors);
           // TODO: can be set as a handler of featureLayer
           mapmlvectors._resetFeatures();
           L.extend(mapmlvectors.options, mapmlvectors.zoomBounds);
         }
       }
 
-      if (Object.keys(mapmlvectors._layers).length === 1) {
+      // Number of features that are being displayed on the map
+      let renderedFeatureCount = Object.keys(mapmlvectors._layers).length;
+      // 0 because feature could be hidden by the min/max attr., 1 so as other features are added, _setLayerElExtent() is not run multiple times
+      if (renderedFeatureCount === 1 || renderedFeatureCount === 0) {
         this._layer._setLayerElExtent();
       }
       this._setUpEvents();
