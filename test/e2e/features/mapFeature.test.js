@@ -36,9 +36,7 @@ test.describe('Playwright map-feature tests', () => {
     // expect the popup for Point 1 to have specific content
     await page.getByRole('heading', { name: 'Point 1' });
     // expect the popup to have a Zoom to here link
-    await page
-      .getByRole('link', { name: 'Zoom to here' })
-      .click();
+    await page.getByRole('link', { name: 'Zoom to here' }).click();
 
     // traversing the link, expect the new map location to be centered #24,-75.6978309903406,45.42022684737822 because it is zooming to the map-feature, and it has no map-meta value set, or a map-feature zoom attribute
     await expect(page.getByTestId('viewer')).toHaveJSProperty(
@@ -55,10 +53,8 @@ test.describe('Playwright map-feature tests', () => {
     // expect the popup for Point 1 to have specific content
     await page.getByRole('heading', { name: 'Point 1' });
     // expect the popup to have a Zoom to here link
-    await page.getByRole('link', { name: 'Zoom to here' })
+    await page.getByRole('link', { name: 'Zoom to here' });
     // close the popup
-    await page
-      .getByRole('button', { name: 'Close popup' })
-      .click();
+    await page.getByRole('button', { name: 'Close popup' }).click();
   });
 });
