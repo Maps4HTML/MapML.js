@@ -842,6 +842,16 @@ export var MapMLLayer = L.Layer.extend({
     }
     return this._mapmlLayerItem;
   },
+  getBase: function () {
+    return new URL(
+      this._content.querySelector('map-base')
+        ? this._content.querySelector('map-base').getAttribute('href')
+        : this._content.nodeName === 'LAYER-'
+        ? this._content.baseURI
+        : this._href,
+      this._href
+    ).href;
+  },
   _initialize: function (content) {
     if (!this._href && !content) {
       return;
