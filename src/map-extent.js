@@ -53,13 +53,7 @@ export class MapExtent extends HTMLElement {
         break;
       case 'checked':
         this.whenReady().then(() => {
-          if (typeof newValue === 'string') {
-            // handle side effects, such as adding / removing from map
-            this._templatedLayer.addTo(this._map);
-          } else {
-            // remove from map
-            this._templatedLayer.remove();
-          }
+          this._changeExtent();
         });
         break;
       case 'opacity':
@@ -74,6 +68,7 @@ export class MapExtent extends HTMLElement {
     super();
   }
   async connectedCallback() {
+    if (this.hasAttribute('data-moving')) return;
     if (
       this.querySelector('map-link[rel=query], map-link[rel=features]') &&
       !this.shadowRoot
@@ -120,7 +115,58 @@ export class MapExtent extends HTMLElement {
       this._templatedLayer.changeOpacity(this.getAttribute('opacity'));
     }
   }
+  getLayerControlHTML() {
+    return this._layerControlHTML;
+  }
+  _validateDisabled() {
+    if (!this._templatedLayer) return;
+    let totalTemplateCount = this._templatedLayer._templates.length,
+      disabledTemplateCount = 0;
+
+    for (let j = 0; j < this._templatedLayer._templates.length; j++) {
+      if (!this._templatedLayer._templates[j].layer.isVisible) {
+        disabledTemplateCount++;
+      }
+    }
+    if (totalTemplateCount === disabledTemplateCount) {
+      this.setAttribute('disabled', '');
+      this.disabled = true;
+    } else {
+      this.removeAttribute('disabled');
+      this.disabled = false;
+    }
+    return this.disabled;
+  }
   _initTemplateVars(metaExtent, projection, mapml, base, projectionMatch) {
+    function transcribe(element) {
+      var select = document.createElement('select');
+      var elementAttrNames = element.getAttributeNames();
+
+      for (let i = 0; i < elementAttrNames.length; i++) {
+        select.setAttribute(
+          elementAttrNames[i],
+          element.getAttribute(elementAttrNames[i])
+        );
+      }
+
+      var options = element.children;
+
+      for (let i = 0; i < options.length; i++) {
+        var option = document.createElement('option');
+        var optionAttrNames = options[i].getAttributeNames();
+
+        for (let j = 0; j < optionAttrNames.length; j++) {
+          option.setAttribute(
+            optionAttrNames[j],
+            options[i].getAttribute(optionAttrNames[j])
+          );
+        }
+
+        option.innerHTML = options[i].innerHTML;
+        select.appendChild(option);
+      }
+      return select;
+    }
     var templateVars = [];
     // set up the URL template and associated inputs (which yield variable values when processed)
     var tlist = this.querySelectorAll(
@@ -430,7 +476,10 @@ export class MapExtent extends HTMLElement {
     this.checked = input.defaultChecked;
     input.type = 'checkbox';
     extentItemNameSpan.innerHTML = this.getAttribute('label');
-    input.addEventListener('change', this._changeExtent);
+    const changeCheck = function () {
+      this.checked = !this.checked;
+    };
+    input.addEventListener('change', changeCheck.bind(this));
     extentItemNameSpan.id =
       'mapml-extent-item-name-{' + L.stamp(extentItemNameSpan) + '}';
     extent.setAttribute('aria-labelledby', extentItemNameSpan.id);
@@ -521,7 +570,7 @@ export class MapExtent extends HTMLElement {
             extentEl.removeAttribute('data-moving');
 
             extentEl.extentZIndex = zIndex;
-            extentEl.templatedLayer.setZIndex(zIndex);
+            extentEl._templatedLayer.setZIndex(zIndex);
             zIndex++;
           }
           controls.classList.remove('mapml-draggable');
@@ -535,29 +584,29 @@ export class MapExtent extends HTMLElement {
     };
     return extent;
   }
-  _changeExtent(e) {
-    if (e.target.checked) {
-      this.checked = true;
+  _changeExtent() {
+    if (this.checked) {
       if (this.parentLayer.checked) {
-        this.templatedLayer = M.templatedLayer(this._templateVars, {
+        this._templatedLayer = M.templatedLayer(this._templateVars, {
           pane: this._layer._container,
           opacity: this._templateVars.opacity,
           _leafletLayer: this._layer,
-          crs: this._layer.crs,
-          extentZIndex: this.extentZIndex,
+          crs: this._layer._properties.crs,
+          extentZIndex: Array.from(
+            this.parentLayer.querySelectorAll('map-extent')
+          ).indexOf(this),
           extentEl: this._DOMnode || this
         }).addTo(this._layer._map);
-        this.templatedLayer.setZIndex();
+        this._templatedLayer.setZIndex();
         this._layer._setLayerElExtent();
       }
     } else {
-      L.DomEvent.stopPropagation(e);
-      this.checked = false;
-      if (this.parentLayer.checked) this._map.removeLayer(this.templatedLayer);
+      if (this.parentLayer.checked) this._map.removeLayer(this._templatedLayer);
       this._layer._setLayerElExtent();
     }
   }
   disconnectedCallback() {
+    if (this.hasAttribute('data-moving')) return;
     let extentsFieldset = this._layerControlHTML.closest(
       'fieldset.mapml-layer-grouped-extents'
     );
@@ -570,7 +619,7 @@ export class MapExtent extends HTMLElement {
   }
   _changeOpacity(e) {
     if (e && e.target && e.target.value >= 0 && e.target.value <= 1.0) {
-      this.templatedLayer.changeOpacity(e.target.value);
+      this._templatedLayer.changeOpacity(e.target.value);
       this._templateVars.opacity = e.target.value;
     }
   }
