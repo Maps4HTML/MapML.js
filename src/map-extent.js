@@ -610,6 +610,10 @@ export class MapExtent extends HTMLElement {
   }
   disconnectedCallback() {
     if (this.hasAttribute('data-moving')) return;
+    // PROBLEM 'this' has already been disconnected, so the 'closest' function
+    // won't work.  Need a direct reference to the extentsFieldset, which 
+    // is available from the MapMLLayer._propertiesGroupAnatomy, which should
+    // have its own getter.
     let extentsFieldset = this._layerControlHTML.closest(
       'fieldset.mapml-layer-grouped-extents'
     );
