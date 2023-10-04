@@ -724,22 +724,11 @@ export var MapMLLayer = L.Layer.extend({
         layerItemSettings.appendChild(frag);
       }
 
-      // if there are extents, add them to the layer control
-      const mapExtents = this._layerEl.querySelectorAll('map-extent');
-      const promises = Array.from(mapExtents).map((e) => e.whenReady());
-      Promise.allSettled(promises).then(() => {
-        if (this._properties && mapExtents.length) {
-          var allHidden = true;
-          this._layerItemSettingsHTML = layerItemSettings;
-          this._propertiesGroupAnatomy = extentsFieldset;
-          extentsFieldset.setAttribute('aria-label', 'Sublayers');
-          for (let j = 0; j < mapExtents.length; j++) {
-            extentsFieldset.appendChild(mapExtents[j].getLayerControlHTML());
-            if (!mapExtents[j].hidden) allHidden = false;
-          }
-          if (!allHidden) layerItemSettings.appendChild(extentsFieldset);
-        }
-      });
+      this._layerItemSettingsHTML = layerItemSettings;
+      this._propertiesGroupAnatomy = extentsFieldset;
+      extentsFieldset.setAttribute('aria-label', 'Sublayers');
+      extentsFieldset.setAttribute('hidden', '');
+      layerItemSettings.appendChild(extentsFieldset);
     }
     return this._mapmlLayerItem;
   },
@@ -753,6 +742,11 @@ export var MapMLLayer = L.Layer.extend({
       this._href
     ).href;
   },
+  addExtentToLayerControl: function (contents) {
+    this._propertiesGroupAnatomy.appendChild(contents);
+    // remove hidden attribute, if it exists
+    this._propertiesGroupAnatomy.removeAttribute('hidden');
+  },
   _initialize: function (content) {
     if (!this._href && !content) {
       return;
@@ -764,14 +758,7 @@ export var MapMLLayer = L.Layer.extend({
     // referred to by this._content), we should use that content.
     _processContent.call(this, content, this._href ? false : true);
     function _processContent(mapml, local) {
-      var base = new URL(
-        mapml.querySelector('map-base')
-          ? mapml.querySelector('map-base').getAttribute('href')
-          : local
-          ? mapml.baseURI
-          : layer._href,
-        layer._href
-      ).href;
+      var base = layer.getBase();
       layer._properties = {};
       // sets layer._properties.projection
       determineLayerProjection();

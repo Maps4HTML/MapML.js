@@ -92,7 +92,10 @@ export class MapExtent extends HTMLElement {
       this._layer.getBase(),
       this.units === this._layer.options.mapprojection
     );
+    // this._layerControlHTML is the fieldset for the extent in the LayerControl
     this._layerControlHTML = this.createLayerControlExtentHTML(this);
+    if (!this.hidden)
+      this._layer.addExtentToLayerControl(this._layerControlHTML);
     this._templatedLayer = M.templatedLayer(this._templateVars, {
       pane: this._layer._container,
       opacity: this._templateVars.opacity,
@@ -614,7 +617,7 @@ export class MapExtent extends HTMLElement {
     this._layerControlHTML.remove();
     // remove the map-extent from DOM
     if (this.parentLayer.querySelectorAll('map-extent').length === 0) {
-      extentsFieldset.remove();
+      extentsFieldset.setAttribute('hidden', '');
     }
   }
   _changeOpacity(e) {
