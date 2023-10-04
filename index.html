@@ -23,9 +23,8 @@
          /* Responsive map. */ 
           max-width: 100%;  
           
-         /* Full viewport. 
           width: 100%;  
-          height: 100%;  */
+          height: 100%;  
           
          /* Remove default (native-like) border. */ 
          border: none;
@@ -86,24 +85,44 @@
 
 
     
-    <mapml-viewer style="width: 500px; height: 500px;" projection="CBMTILE" zoom="0" lat="45.5052040" lon="-75.2202344"
-    controls>
-    <layer- label="Toporama" checked>
-      <map-meta name="zoom" content="min=4,max=5"></map-meta>
-      <map-meta name="extent"
-                content="zoom=19,top-left-easting=-7786477.0,top-left-northing=-927808.0,bottom-right-easting=7148753.0,bottom-right-northing=7928344.0"></map-meta>
-      <map-extent units="CBMTILE">
-        <map-input name="z" type="zoom" value="11" min="4" max="4" ></map-input>
-        <map-input name="w" type="width" ></map-input>
-        <map-input name="h" type="height" ></map-input>
-        <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" ></map-input>
-        <map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing" ></map-input>
-        <map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting" ></map-input>
-        <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing" ></map-input>
-        <map-link rel="image"
-          tref="https://maps.geogratis.gc.ca/wms/toporama_en?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/jpeg&TRANSPARENT=FALSE&STYLES=&VERSION=1.3.0&LAYERS=WMS-Toporama&WIDTH={w}&HEIGHT={h}&CRS=EPSG:3978&BBOX={xmin},{ymin},{xmax},{ymax}&m4h=t" ></map-link>
+  <mapml-viewer zoom="15" lon="-75.703611" lat="45.411105" controls projection="OSMTILE">
+    <layer- label="National Geographic" checked >
+      <map-extent label="National Geographic"  units="OSMTILE">
+        <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
+        <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+        <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+        <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/WMTS/tile/1.0.0/NatGeo_World_Map/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
+      </map-extent>
+      <map-extent label="Labelled Imagery" units="OSMTILE">
+        <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
+        <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+        <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+        <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS/tile/1.0.0/World_Imagery/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
+        <map-link rel="tile" tref="https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places/MapServer/WMTS/tile/1.0.0/Reference_World_Boundaries_and_Places/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.png"></map-link>
+      </map-extent>
+      <map-extent label="Imagery" units="OSMTILE">
+        <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
+        <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+        <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+        <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS/tile/1.0.0/World_Imagery/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
       </map-extent>
     </layer->
+<!--    <layer- label="Restaurants">
+     <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
+      <map-extent units="OSMTILE">
+        <map-select id="restaurants" name="cusine">
+            <map-option value="restaurants" selected="selected">All cuisines</map-option>
+            <map-option value="african">African</map-option>
+            <map-option value="asian">Asian</map-option>
+            <map-option value="cajun">Cajun</map-option>
+            <map-option value="indian">Indian</map-option>
+            <map-option value="italian">Italian</map-option>
+            <map-option value="mexican">Mexican</map-option>
+        </map-select>
+        <map-link tref="../shared/restaurants/{cusine}.mapml" rel="features"/>
+      </map-extent>
+    </layer->-->
+
   </mapml-viewer>
 
 
