@@ -526,6 +526,8 @@ export class MapExtent extends HTMLElement {
     const changeCheck = function () {
       this.checked = !this.checked;
     };
+    // save for later access by API
+    this._layerControlCheckbox = input;
     input.addEventListener('change', changeCheck.bind(this));
     extentItemNameSpan.id =
       'mapml-extent-item-name-{' + L.stamp(extentItemNameSpan) + '}';
@@ -634,23 +636,20 @@ export class MapExtent extends HTMLElement {
   _changeExtent() {
     if (this.checked) {
       if (this.parentLayer.checked) {
-        this._templatedLayer = M.templatedLayer(this._templateVars, {
-          pane: this._layer._container,
-          opacity: this._templateVars.opacity,
-          _leafletLayer: this._layer,
-          crs: this._layer._properties.crs,
-          extentZIndex: Array.from(
-            this.parentLayer.querySelectorAll('map-extent')
-          ).indexOf(this),
-          extentEl: this._DOMnode || this
-        }).addTo(this._layer._map);
-        this._templatedLayer.setZIndex();
-        this._layer._setLayerElExtent();
+        this._templatedLayer.addTo(this._layer._map);
+        this._templatedLayer.setZIndex(
+          Array.from(this.parentLayer.querySelectorAll('map-extent')).indexOf(
+            this
+          )
+        );
       }
     } else {
       if (this.parentLayer.checked) this._map.removeLayer(this._templatedLayer);
-      this._layer._setLayerElExtent();
     }
+    // change the checkbox in the layer control to match map-extent.checked
+    // doesn't trigger the event handler because it's not user-caused AFAICT
+    this._layerControlCheckbox = this.checked;
+    this._layer._setLayerElExtent();
   }
   _validateLayerControlContainerHidden() {
     let extentsFieldset = this._layer.getLayerControlExtentContainer();

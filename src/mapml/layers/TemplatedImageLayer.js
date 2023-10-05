@@ -1,7 +1,7 @@
 export var TemplatedImageLayer = L.Layer.extend({
   initialize: function (template, options) {
     this._template = template;
-    this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
+    this._container = L.DomUtil.create('div', 'leaflet-layer');
     L.DomUtil.addClass(this._container, 'mapml-image-container');
     let inputData = M._extractInputBounds(template);
     this.zoomBounds = inputData.zoomBounds;
@@ -22,6 +22,7 @@ export var TemplatedImageLayer = L.Layer.extend({
     return events;
   },
   onAdd: function () {
+    this.options.pane.appendChild(this._container);
     this._map._addZoomLimit(this); //used to set the zoom limit of the map
     this.setZIndex(this.options.zIndex);
     this._onAdd();
@@ -159,9 +160,9 @@ export var TemplatedImageLayer = L.Layer.extend({
     }
   },
   onRemove: function (map) {
+    L.DomUtil.remove(this._container);
     this._clearLayer();
     map._removeZoomLimit(this);
-    this._container = null;
   },
   getImageUrl: function (pixelBounds, zoom) {
     var obj = {};
