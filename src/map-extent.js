@@ -75,7 +75,8 @@ export class MapExtent extends HTMLElement {
       case 'hidden':
         if (oldValue !== newValue) {
           this.whenReady().then(() => {
-            let extentsRootFieldset = this._layer.getLayerUserControlsHTML();
+            let extentsRootFieldset =
+              this._layer.getLayerControlExtentContainer();
             let position = Array.from(
               this.parentLayer.querySelectorAll('map-extent:not([hidden])')
             ).indexOf(this);
@@ -91,14 +92,15 @@ export class MapExtent extends HTMLElement {
                   this._layerControlHTML
                 );
               } else if (position > 0) {
-                this.querySelectorAll('map-extent:not([hidden])')[
-                  position - 1
-                ]._layerControlHTML.insertAdjacentElement(
-                  'afterend',
-                  this._layerControlHTML
-                );
+                this.parentLayer
+                  .querySelectorAll('map-extent:not([hidden])')
+                  [position - 1]._layerControlHTML.insertAdjacentElement(
+                    'afterend',
+                    this._layerControlHTML
+                  );
               }
             }
+            this._validateLayerControlContainerHidden();
           });
         }
         break;
@@ -137,6 +139,7 @@ export class MapExtent extends HTMLElement {
     this._layerControlHTML = this.createLayerControlExtentHTML(this);
     if (!this.hidden)
       this._layer.addExtentToLayerControl(this._layerControlHTML);
+    this._validateLayerControlContainerHidden();
     this._templatedLayer = M.templatedLayer(this._templateVars, {
       pane: this._layer._container,
       opacity: this._templateVars.opacity,
@@ -649,14 +652,19 @@ export class MapExtent extends HTMLElement {
       this._layer._setLayerElExtent();
     }
   }
-  disconnectedCallback() {
-    if (this.hasAttribute('data-moving')) return;
+  _validateLayerControlContainerHidden() {
     let extentsFieldset = this._layer.getLayerControlExtentContainer();
     if (
       this.parentLayer.querySelectorAll('map-extent:not([hidden])').length === 0
     ) {
       extentsFieldset.setAttribute('hidden', '');
+    } else {
+      extentsFieldset.removeAttribute('hidden');
     }
+  }
+  disconnectedCallback() {
+    if (this.hasAttribute('data-moving')) return;
+    this._validateLayerControlContainerHidden();
     // remove layer control for map-extent from layer control DOM
     this._layerControlHTML.remove();
 
