@@ -73,30 +73,24 @@
   </head>
   <body>
     
-  <mapml-viewer zoom="15" lon="-75.703611" lat="45.411105" controls projection="OSMTILE">
-    <layer- label="National Geographic"  checked>
-      <map-extent label="National Geographic" units="OSMTILE" hidden checked>
-        <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
-        <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
-        <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
-        <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/WMTS/tile/1.0.0/NatGeo_World_Map/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
-      </map-extent>
-      <map-extent label="Labelled Imagery" units="OSMTILE" checked>
-        <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
-        <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
-        <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
-        <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS/tile/1.0.0/World_Imagery/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
-        <map-link rel="tile" tref="https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places/MapServer/WMTS/tile/1.0.0/Reference_World_Boundaries_and_Places/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.png"></map-link>
-      </map-extent>
-      <map-extent label="Imagery" units="OSMTILE" checked>
-        <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
-        <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
-        <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
-        <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS/tile/1.0.0/World_Imagery/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
-      </map-extent>
-    </layer->
-
-
-</mapml-viewer>
+    <mapml-viewer projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation">
+      <layer- label="OpenStreetMap" src="osm.mapml" checked hidden></layer->
+      <layer- id="restaurant" label="Restaurants" checked>
+        <map-meta name="cs" content="gcrs" ></map-meta>
+        <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
+        <map-extent units="OSMTILE">
+           <map-select id="restaurants" name="cusine">
+              <map-option value="restaurants" selected>All cuisines</map-option>
+              <map-option value="african">African</map-option>
+              <map-option value="asian">Asian</map-option>
+              <map-option value="cajun">Cajun</map-option>
+              <map-option value="indian">Indian</map-option>
+              <map-option value="italian">Italian</map-option>
+              <map-option value="mexican">Mexican</map-option>
+            </map-select>
+            <map-link tref="shared/restaurants/{cusine}.mapml" rel="features"/>
+          </map-extent>
+      </layer->
+    </mapml-viewer>
   </body>
 </html>

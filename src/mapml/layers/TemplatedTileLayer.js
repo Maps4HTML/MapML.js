@@ -27,13 +27,17 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     L.TileLayer.prototype.initialize.call(
       this,
       template.template,
-      L.extend(options, { pane: this._container })
+      L.extend(options, { pane: this.options.pane })
     );
   },
   onAdd: function () {
+    this.options.pane.appendChild(this._container);
     this._map._addZoomLimit(this);
     L.TileLayer.prototype.onAdd.call(this, this._map);
     this._handleMoveEnd();
+  },
+  onRemove: function () {
+    L.DomUtil.remove(this._container);
   },
 
   getEvents: function () {

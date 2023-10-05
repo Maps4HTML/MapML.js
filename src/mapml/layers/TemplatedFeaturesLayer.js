@@ -7,7 +7,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     this.isVisible = true;
     this._template = template;
     this._extentEl = options.extentEl;
-    this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
+    this._container = L.DomUtil.create('div', 'leaflet-layer');
     L.extend(options, this.zoomBounds);
     L.DomUtil.addClass(this._container, 'mapml-features-container');
     delete options.opacity;
@@ -23,6 +23,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     return events;
   },
   onAdd: function () {
+    this.options.pane.appendChild(this._container);
     this._map._addZoomLimit(this);
     var opacity = this.options.opacity || 1,
       container = this._container,
@@ -221,6 +222,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     }
   },
   onRemove: function () {
+    L.DomUtil.remove(this._container);
     this._map.removeLayer(this._features);
   },
   _getfeaturesUrl: function (zoom, bounds) {
