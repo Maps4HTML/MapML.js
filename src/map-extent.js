@@ -1,6 +1,6 @@
 export class MapExtent extends HTMLElement {
   static get observedAttributes() {
-    return ['units', 'checked', 'label', 'opacity'];
+    return ['units', 'checked', 'label', 'opacity', 'hidden'];
   }
   get units() {
     return this.getAttribute('units');
@@ -39,6 +39,17 @@ export class MapExtent extends HTMLElement {
     if (+val > 1 || +val < 0) return;
     this.setAttribute('opacity', val);
   }
+  get hidden() {
+    return this.hasAttribute('hidden');
+  }
+
+  set hidden(val) {
+    if (val) {
+      this.setAttribute('hidden', '');
+    } else {
+      this.removeAttribute('hidden');
+    }
+  }
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'units':
@@ -59,6 +70,36 @@ export class MapExtent extends HTMLElement {
       case 'opacity':
         if (oldValue !== newValue) {
           // handle side effects
+        }
+        break;
+      case 'hidden':
+        if (oldValue !== newValue) {
+          this.whenReady().then(() => {
+            let extentsRootFieldset = this._layer.getLayerUserControlsHTML();
+            let position = Array.from(
+              this.parentLayer.querySelectorAll('map-extent:not([hidden])')
+            ).indexOf(this);
+            if (newValue !== null) {
+              // remove from layer control (hide from user)
+              this._layerControlHTML.remove();
+            } else {
+              // insert the extent fieldset into the layer control container in
+              // the calculated position
+              if (position === 0) {
+                extentsRootFieldset.insertAdjacentElement(
+                  'afterbegin',
+                  this._layerControlHTML
+                );
+              } else if (position > 0) {
+                this.querySelectorAll('map-extent:not([hidden])')[
+                  position - 1
+                ]._layerControlHTML.insertAdjacentElement(
+                  'afterend',
+                  this._layerControlHTML
+                );
+              }
+            }
+          });
         }
         break;
     }
@@ -610,19 +651,18 @@ export class MapExtent extends HTMLElement {
   }
   disconnectedCallback() {
     if (this.hasAttribute('data-moving')) return;
-    // PROBLEM 'this' has already been disconnected, so the 'closest' function
-    // won't work.  Need a direct reference to the extentsFieldset, which 
-    // is available from the MapMLLayer._propertiesGroupAnatomy, which should
-    // have its own getter.
-    let extentsFieldset = this._layerControlHTML.closest(
-      'fieldset.mapml-layer-grouped-extents'
-    );
-    // remove layer control for map-extent from layer control DOM
-    this._layerControlHTML.remove();
-    // remove the map-extent from DOM
-    if (this.parentLayer.querySelectorAll('map-extent').length === 0) {
+    let extentsFieldset = this._layer.getLayerControlExtentContainer();
+    if (
+      this.parentLayer.querySelectorAll('map-extent:not([hidden])').length === 0
+    ) {
       extentsFieldset.setAttribute('hidden', '');
     }
+    // remove layer control for map-extent from layer control DOM
+    this._layerControlHTML.remove();
+
+    this._map.removeLayer(this._templatedLayer);
+    delete this._templatedLayer;
+    this._layer._setLayerElExtent();
   }
   _changeOpacity(e) {
     if (e && e.target && e.target.value >= 0 && e.target.value <= 1.0) {

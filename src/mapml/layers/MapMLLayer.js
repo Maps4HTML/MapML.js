@@ -728,6 +728,9 @@ export var MapMLLayer = L.Layer.extend({
     }
     return this._mapmlLayerItem;
   },
+  getLayerControlExtentContainer: function () {
+    return this._propertiesGroupAnatomy;
+  },
   getBase: function () {
     return new URL(
       this._content.querySelector('map-base')
