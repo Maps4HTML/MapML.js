@@ -100,38 +100,51 @@ export class MapFeature extends HTMLElement {
   }
 
   connectedCallback() {
-    // if mapFeature element is not connected to layer- or layer-'s shadowroot,
-    // or the parent layer- element has a "data-moving" attribute
-    if (
-      (this.parentNode.nodeType !== document.DOCUMENT_FRAGMENT_NODE &&
-        this.parentNode.nodeName.toLowerCase() !== 'layer-') ||
-      (this.parentNode.nodeType === document.DOCUMENT_FRAGMENT_NODE &&
-        this.parentNode.host.hasAttribute('data-moving')) ||
-      (this.parentNode.nodeName.toLowerCase() === 'layer-' &&
-        this.parentNode.hasAttribute('data-moving'))
-    ) {
-      return;
-    }
-    // set up the map-feature object properties
-    this._addFeature();
-    // use observer to monitor the changes in mapFeature's subtree
-    // (i.e. map-properties, map-featurecaption, map-coordinates)
-    this._observer = new MutationObserver((mutationList) => {
-      for (let mutation of mutationList) {
-        // the attributes changes of <map-feature> element should be handled by attributeChangedCallback()
-        if (mutation.type === 'attributes' && mutation.target === this) {
-          return;
-        }
-        // re-render feature if there is any observed change
-        this._reRender();
+    this._parentEl =
+      this.parentNode.nodeName.toUpperCase() === 'LAYER-' ||
+      this.parentNode.nodeName.toUpperCase() === 'MAP-EXTENT'
+        ? this.parentNode
+        : this.parentNode.host;
+    this._parentEl.whenReady().then(() => {
+      this._layer = this._parentEl._layer;
+      if (
+        this._layer._layerEl.hasAttribute('data-moving') ||
+        this._parentEl.hasAttribute('data-moving')
+      )
+        return;
+      // if mapFeature element is not connected to layer- or layer-'s shadowroot,
+      // or the parent layer- element has a "data-moving" attribute
+      if (
+        (this.parentNode.nodeType !== document.DOCUMENT_FRAGMENT_NODE &&
+          this.parentNode.nodeName.toLowerCase() !== 'layer-') ||
+        (this.parentNode.nodeType === document.DOCUMENT_FRAGMENT_NODE &&
+          this.parentNode.host.hasAttribute('data-moving')) ||
+        (this.parentNode.nodeName.toLowerCase() === 'layer-' &&
+          this.parentNode.hasAttribute('data-moving'))
+      ) {
+        return;
       }
-    });
-    this._observer.observe(this, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeOldValue: true,
-      characterData: true
+      // set up the map-feature object properties
+      this._addFeature();
+      // use observer to monitor the changes in mapFeature's subtree
+      // (i.e. map-properties, map-featurecaption, map-coordinates)
+      this._observer = new MutationObserver((mutationList) => {
+        for (let mutation of mutationList) {
+          // the attributes changes of <map-feature> element should be handled by attributeChangedCallback()
+          if (mutation.type === 'attributes' && mutation.target === this) {
+            return;
+          }
+          // re-render feature if there is any observed change
+          this._reRender();
+        }
+      });
+      this._observer.observe(this, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeOldValue: true,
+        characterData: true
+      });
     });
   }
 
@@ -196,18 +209,11 @@ export class MapFeature extends HTMLElement {
   }
 
   _addFeature() {
-    this._parentEl =
-      this.parentNode.nodeName.toUpperCase() === 'LAYER-' ||
-      this.parentNode.nodeName.toUpperCase() === 'MAP-EXTENT'
-        ? this.parentNode
-        : this.parentNode.host;
-
     this._parentEl.whenReady().then(() => {
       let parentLayer =
         this._parentEl.nodeName.toUpperCase() === 'LAYER-'
           ? this._parentEl
           : this._parentEl.parentElement || this._parentEl.parentNode.host;
-      this._layer = parentLayer._layer;
       this._map = this._layer._map;
       let mapmlvectors = this._layer._mapmlvectors;
       // "synchronize" the event handlers between map-feature and <g>

@@ -583,7 +583,10 @@ export var MapMLLayer = L.Layer.extend({
           let control = fieldset,
             controls = fieldset.parentNode,
             moving = false,
-            yPos = downEvent.clientY;
+            yPos = downEvent.clientY,
+            originalPosition = Array.from(
+              controls.querySelectorAll('fieldset')
+            ).indexOf(fieldset);
 
           document.body.ontouchmove = document.body.onmousemove = (
             moveEvent
@@ -596,7 +599,7 @@ export var MapMLLayer = L.Layer.extend({
 
             // Fixes flickering by only moving element when there is enough space
             let offset = moveEvent.clientY - yPos;
-            moving = Math.abs(offset) > 5 || moving;
+            moving = Math.abs(offset) > 15 || moving;
             if (
               (controls && !moving) ||
               (controls && controls.childElementCount <= 1) ||
@@ -645,27 +648,32 @@ export var MapMLLayer = L.Layer.extend({
           };
 
           document.body.ontouchend = document.body.onmouseup = () => {
+            let newPosition = Array.from(
+              controls.querySelectorAll('fieldset')
+            ).indexOf(fieldset);
             control.setAttribute('aria-grabbed', 'false');
             control.removeAttribute('aria-dropeffect');
             control.style.pointerEvents = null;
             control.style.transform = null;
-            let controlsElems = controls.children,
-              zIndex = 1;
-            // re-order layer elements DOM order
-            for (let c of controlsElems) {
-              let layerEl = c.querySelector('span').layer._layerEl;
-              layerEl.setAttribute('data-moving', '');
-              mapEl.insertAdjacentElement('beforeend', layerEl);
-              layerEl.removeAttribute('data-moving');
-            }
-            // update zIndex of all layer- elements
-            let layers = mapEl.querySelectorAll('layer-');
-            for (let i = 0; i < layers.length; i++) {
-              let layer = layers[i]._layer;
-              if (layer.options.zIndex !== zIndex) {
-                layer.setZIndex(zIndex);
+            if (originalPosition !== newPosition) {
+              let controlsElems = controls.children,
+                zIndex = 1;
+              // re-order layer elements DOM order
+              for (let c of controlsElems) {
+                let layerEl = c.querySelector('span').layer._layerEl;
+                layerEl.setAttribute('data-moving', '');
+                mapEl.insertAdjacentElement('beforeend', layerEl);
+                layerEl.removeAttribute('data-moving');
               }
-              zIndex++;
+              // update zIndex of all layer- elements
+              let layers = mapEl.querySelectorAll('layer-');
+              for (let i = 0; i < layers.length; i++) {
+                let layer = layers[i]._layer;
+                if (layer.options.zIndex !== zIndex) {
+                  layer.setZIndex(zIndex);
+                }
+                zIndex++;
+              }
             }
             controls.classList.remove('mapml-draggable');
             document.body.ontouchmove =
