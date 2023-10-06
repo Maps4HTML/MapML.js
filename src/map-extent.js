@@ -111,21 +111,26 @@ export class MapExtent extends HTMLElement {
     super();
   }
   async connectedCallback() {
-    if (this.hasAttribute('data-moving')) return;
+    // this.parentNode.host returns the layer- element when parentNode is
+    // the shadow root
+    this.parentLayer =
+      this.parentNode.nodeName.toUpperCase() === 'LAYER-'
+        ? this.parentNode
+        : this.parentNode.host;
+    if (
+      this.hasAttribute('data-moving') ||
+      this.parentLayer.hasAttribute('data-moving')
+    )
+      return;
     if (
       this.querySelector('map-link[rel=query], map-link[rel=features]') &&
       !this.shadowRoot
     ) {
       this.attachShadow({ mode: 'open' });
     }
-    this.parentLayer =
-      this.parentNode.nodeName.toUpperCase() === 'LAYER-'
-        ? this.parentNode
-        : this.parentNode.host;
     await this.parentLayer.whenReady();
     this._layer = this.parentLayer._layer;
-    let viewer = this.closest('mapml-viewer') || this.closest('map');
-    this._map = viewer._map;
+    this._map = this._layer._map;
     // this code comes from MapMLLayer._initialize.processExtents
     this._templateVars = this._initTemplateVars(
       // mapml is the layer- element OR the mapml- document root
@@ -547,7 +552,10 @@ export class MapExtent extends HTMLElement {
         let control = extent,
           controls = extent.parentNode,
           moving = false,
-          yPos = downEvent.clientY;
+          yPos = downEvent.clientY,
+          originalPosition = Array.from(
+            extent.parentElement.querySelectorAll('fieldset')
+          ).indexOf(extent);
 
         document.body.ontouchmove = document.body.onmousemove = (moveEvent) => {
           moveEvent.preventDefault();
@@ -556,7 +564,7 @@ export class MapExtent extends HTMLElement {
 
           // Fixes flickering by only moving element when there is enough space
           let offset = moveEvent.clientY - yPos;
-          moving = Math.abs(offset) > 5 || moving;
+          moving = Math.abs(offset) > 15 || moving;
           if (
             (controls && !moving) ||
             (controls && controls.childElementCount <= 1) ||
@@ -605,22 +613,27 @@ export class MapExtent extends HTMLElement {
         };
 
         document.body.ontouchend = document.body.onmouseup = () => {
+          let newPosition = Array.from(
+            extent.parentElement.querySelectorAll('fieldset')
+          ).indexOf(extent);
           control.setAttribute('aria-grabbed', 'false');
           control.removeAttribute('aria-dropeffect');
           control.style.pointerEvents = null;
           control.style.transform = null;
-          let controlsElems = controls.children,
-            zIndex = 0;
-          for (let c of controlsElems) {
-            let extentEl = c.querySelector('span').extent;
+          if (originalPosition !== newPosition) {
+            let controlsElems = controls.children,
+              zIndex = 0;
+            for (let c of controlsElems) {
+              let extentEl = c.querySelector('span').extent;
 
-            extentEl.setAttribute('data-moving', '');
-            layerEl.insertAdjacentElement('beforeend', extentEl);
-            extentEl.removeAttribute('data-moving');
+              extentEl.setAttribute('data-moving', '');
+              layerEl.insertAdjacentElement('beforeend', extentEl);
+              extentEl.removeAttribute('data-moving');
 
-            extentEl.extentZIndex = zIndex;
-            extentEl._templatedLayer.setZIndex(zIndex);
-            zIndex++;
+              extentEl.extentZIndex = zIndex;
+              extentEl._templatedLayer.setZIndex(zIndex);
+              zIndex++;
+            }
           }
           controls.classList.remove('mapml-draggable');
           document.body.ontouchmove =
@@ -648,13 +661,14 @@ export class MapExtent extends HTMLElement {
     }
     // change the checkbox in the layer control to match map-extent.checked
     // doesn't trigger the event handler because it's not user-caused AFAICT
-    this._layerControlCheckbox = this.checked;
+    this._layerControlCheckbox.checked = this.checked;
     this._layer._setLayerElExtent();
   }
   _validateLayerControlContainerHidden() {
     let extentsFieldset = this._layer.getLayerControlExtentContainer();
+    let nodeToSearch = this.parentLayer.shadowRoot || this.parentLayer;
     if (
-      this.parentLayer.querySelectorAll('map-extent:not([hidden])').length === 0
+      nodeToSearch.querySelectorAll('map-extent:not([hidden])').length === 0
     ) {
       extentsFieldset.setAttribute('hidden', '');
     } else {
@@ -662,7 +676,11 @@ export class MapExtent extends HTMLElement {
     }
   }
   disconnectedCallback() {
-    if (this.hasAttribute('data-moving')) return;
+    if (
+      this.hasAttribute('data-moving') ||
+      this.parentLayer.hasAttribute('data-moving')
+    )
+      return;
     this._validateLayerControlContainerHidden();
     // remove layer control for map-extent from layer control DOM
     this._layerControlHTML.remove();

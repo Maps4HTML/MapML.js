@@ -23,6 +23,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     return events;
   },
   onAdd: function () {
+    // this causes the layer (this._features) to actually render...
     this.options.pane.appendChild(this._container);
     this._map._addZoomLimit(this);
     var opacity = this.options.opacity || 1,
@@ -50,9 +51,15 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
           geometry.bindPopup(c, { autoClose: false, minWidth: 108 });
         }
       });
+    } else {
+      // if this._features exists add the layer back
+      this._map.addLayer(this._features);
     }
 
     map.fire('moveend'); // TODO: replace with moveend handler for layer and not entire map
+  },
+  onRemove: function () {
+    this._map.removeLayer(this._features);
   },
   redraw: function () {
     this._onMoveEnd();
@@ -220,10 +227,6 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     ) {
       this._container.style.zIndex = this.options.zIndex;
     }
-  },
-  onRemove: function () {
-    L.DomUtil.remove(this._container);
-    this._map.removeLayer(this._features);
   },
   _getfeaturesUrl: function (zoom, bounds) {
     if (zoom === undefined) zoom = this._map.getZoom();
