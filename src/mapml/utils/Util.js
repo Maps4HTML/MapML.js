@@ -169,10 +169,10 @@ export var Util = {
     };
     if (
       !locInputs &&
-      template.extentPCRSFallback &&
-      template.extentPCRSFallback.bounds
+      template.boundsFallbackPCRS &&
+      template.boundsFallbackPCRS.bounds
     ) {
-      bounds = template.extentPCRSFallback.bounds;
+      bounds = template.boundsFallbackPCRS.bounds;
     } else if (locInputs) {
       bounds = this.boundsToPCRSBounds(bounds, value, projection, boundsUnit);
     } else {

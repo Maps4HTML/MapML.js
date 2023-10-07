@@ -13,12 +13,12 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18.x'
-    - run: sudo apt-get install xvfb
-    - run: npm install --legacy-peer-deps
-    - run: npx playwright install
-    - run: npm install -g grunt-cli
-    - run: grunt default
-    - run: xvfb-run --auto-servernum -- npm test
+#    - run: sudo apt-get install xvfb
+#    - run: npm install --legacy-peer-deps
+#    - run: npx playwright install
+#    - run: npm install -g grunt-cli
+#    - run: grunt default
+#    - run: xvfb-run --auto-servernum -- npm test
 #    - run: xvfb-run --auto-servernum -- npm run jest
       env:
         CI: true

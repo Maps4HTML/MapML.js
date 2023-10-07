@@ -1,4 +1,8 @@
-import { MapLink } from './map-link.js';
+import { ZoomInput } from './zoomInput.js';
+import { HiddenInput } from './hiddenInput.js';
+import { WidthInput } from './widthInput.js';
+import { HeightInput } from './heightInput.js';
+import { LocationInput } from './locationInput.js';
 
 export class MapInput extends HTMLElement {
   static get observedAttributes() {
@@ -33,7 +37,7 @@ export class MapInput extends HTMLElement {
     }
   }
   get value() {
-    return this.getAttribute('value');
+    return this.input.getValue();
   }
   set value(val) {
     if (val) {
@@ -73,7 +77,26 @@ export class MapInput extends HTMLElement {
     }
   }
   get min() {
-    return this.getAttribute('min');
+    if (
+      this.type === 'height' ||
+      this.type === 'width' ||
+      this.type === 'hidden'
+    ) {
+      return null;
+    }
+    if (this.getAttribute('min')) {
+      return this.getAttribute('min');
+    } else if (this._layer._layerEl.querySelector('map-meta[name=zoom]')) {
+      // fallback map-meta on layer
+      return M._metaContentToObject(
+        this._layer._layerEl
+          .querySelector('map-meta[name=zoom]')
+          .getAttribute('content')
+      ).min;
+    } else {
+      // fallback map min
+      return this._layer._layerEl.extent.zoom.minZoom.toString();
+    }
   }
   set min(val) {
     if (val) {
@@ -81,7 +104,26 @@ export class MapInput extends HTMLElement {
     }
   }
   get max() {
-    return this.getAttribute('max');
+    if (
+      this.type === 'height' ||
+      this.type === 'width' ||
+      this.type === 'hidden'
+    ) {
+      return null;
+    }
+    if (this.getAttribute('max')) {
+      return this.getAttribute('max');
+    } else if (this._layer._layerEl.querySelector('map-meta[name=zoom]')) {
+      // fallback map-meta on layer
+      return M._metaContentToObject(
+        this._layer._layerEl
+          .querySelector('map-meta[name=zoom]')
+          .getAttribute('content')
+      ).max;
+    } else {
+      // fallback map max
+      return this._layer._layerEl.extent.zoom.maxZoom.toString();
+    }
   }
   set max(val) {
     if (val) {
@@ -89,7 +131,11 @@ export class MapInput extends HTMLElement {
     }
   }
   get step() {
-    return this.getAttribute('step');
+    if (this.type !== 'zoom') {
+      return null;
+    } else {
+      return this.getAttribute('step') || '1';
+    }
   }
   set step(val) {
     if (val) {
@@ -100,52 +146,67 @@ export class MapInput extends HTMLElement {
     switch (name) {
       case 'name':
         if (oldValue !== newValue) {
-          // handle side effects
+          // update associated class value on attribute change
+          if (oldValue !== null) {
+            this.input.name = newValue;
+          }
         }
         break;
       case 'type':
         if (oldValue !== newValue) {
           // handle side effects
+          // not allowed to change 'type'
         }
         break;
       case 'value':
         if (oldValue !== newValue) {
-          // handle side effects
+          if (oldValue !== null) {
+            this.input.value = newValue;
+          } else {
+            this.initialValue = newValue;
+          }
         }
         break;
       case 'axis':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.axis = newValue;
         }
         break;
       case 'units':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.units = newValue;
         }
         break;
       case 'position':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.position = newValue;
         }
         break;
       case 'rel':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.rel = newValue;
         }
         break;
       case 'min':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.min = newValue;
         }
         break;
       case 'max':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.max = newValue;
         }
         break;
       case 'step':
-        if (oldValue !== newValue) {
+        if (oldValue !== newValue && this.input) {
           // handle side effects
+          this.input.step = newValue;
         }
         break;
     }
@@ -154,7 +215,106 @@ export class MapInput extends HTMLElement {
     // Always call super first in constructor
     super();
   }
-  connectedCallback() {}
+  async connectedCallback() {
+    await this.parentElement.whenReady();
+    if (this.parentElement.nodeName === 'MAP-EXTENT') {
+      this._layer = this.parentElement._layer;
+    }
+    switch (this.type) {
+      case 'zoom':
+        // input will store the input Class specific to the input type
+        this.input = new ZoomInput(
+          this.name,
+          this.min,
+          this.max,
+          this.initialValue,
+          this.step,
+          this._layer
+        );
+        break;
+      case 'location':
+        // input will store the input Class specific to the input type
+        this.input = new LocationInput(
+          this.name,
+          this.position,
+          this.axis,
+          this.units,
+          this.min,
+          this.max,
+          this.rel,
+          this._layer
+        );
+        break;
+      case 'width':
+        // input will store the input Class specific to the input type
+        this.input = new WidthInput(this.name, this._layer);
+        break;
+      case 'height':
+        // input will store the input Class specific to the input type
+        this.input = new HeightInput(this.name, this._layer);
+        break;
+      case 'hidden':
+        // input will store the input Class specific to the input type
+        this.input = new HiddenInput(this.name, this.initialValue);
+        break;
+    }
+  }
   disconnectedCallback() {}
+
+  //https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/checkValidity
+  checkValidity() {
+    if (this.input.validateInput()) {
+      return true;
+    } else {
+      const evt = new Event('invalid', {
+        bubbles: true,
+        cancelable: true,
+        composed: true
+      });
+      this.dispatchEvent(evt);
+      return false;
+    }
+  }
+
+  //https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/reportValidity
+  reportValidity() {
+    if (this.input.validateInput()) {
+      return true;
+    } else {
+      const evt = new Event('invalid', {
+        bubbles: true,
+        cancelable: true,
+        composed: true
+      });
+      this.dispatchEvent(evt);
+      //if the event isn't canceled reports the problem to the user.
+      // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#dom-cva-reportvalidity-dev
+      console.log("Input type='" + this.type + "' is not valid!");
+      return false;
+    }
+  }
+  whenReady() {
+    return new Promise((resolve, reject) => {
+      let interval, failureTimer;
+      if (this.input) {
+        resolve();
+      } else {
+        let inputElement = this;
+        interval = setInterval(testForInput, 300, inputElement);
+        failureTimer = setTimeout(inputNotDefined, 10000);
+      }
+      function testForInput(inputElement) {
+        if (inputElement.input) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          resolve();
+        }
+      }
+      function inputNotDefined() {
+        clearInterval(interval);
+        clearTimeout(failureTimer);
+        reject('Timeout reached waiting for input to be ready');
+      }
+    });
+  }
 }
-window.customElements.define('map-input', MapInput);

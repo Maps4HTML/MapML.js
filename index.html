@@ -23,7 +23,7 @@
          /* Responsive map. */ 
           max-width: 100%;  
           
-         /* Full viewport. */ 
+         /* Full viewport. */
           width: 100%;  
           height: 100%;  
           
@@ -72,56 +72,24 @@
      </noscript> 
   </head>
   <body>
-    <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls controlslist="nofullscreen geolocation">
-      <map-caption>A pleasing map of Canada</map-caption>
-      <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
-      <layer- label="Hat Guy" checked>
-        <map-feature id="twohats" zoom="15" class="twohats">
-        <map-properties>
-          <table>
-            <tr>
-              <th>code</th>
-              <td>1200020</td>
-            </tr>
-            <tr>
-              <th>accuracy</th>
-              <td>26</td>
-            </tr>
-            <tr>
-              <th>valdate</th>
-              <td>1995</td>
-            </tr>
-            <tr>
-              <th>image</th>
-              <td><a href="https://www.veterans.gc.ca/eng/remembrance/memorials/national-inventory-canadian-memorials/details/9304">
-                <img src="https://www.veterans.gc.ca/images/remembrance/memorials/national-inventory-canadian-memorials/mem/35059-173a.jpg" width="60" height="60"/>
-              </a>
-              </td>
-            </tr>
-            <tr>
-              <th>theme</th>
-              <td>FO</td>
-            </tr>
-            <tr>
-              <th>type</th>
-              <td>2</td>
-            </tr>
-            <tr>
-              <th>elevation</th>
-              <td>61</td>
-            </tr>
-            <tr>
-              <th>altiaccu</th>
-              <td>5</td>
-            </tr>
-          </table>
-        </map-properties>
-        <map-geometry>
-          <map-point>
-            <map-coordinates>-75.705278 45.397778</map-coordinates>
-          </map-point>
-        </map-geometry>
-      </map-feature>
+    
+    <mapml-viewer projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation">
+      <layer- label="OpenStreetMap" src="osm.mapml" checked hidden></layer->
+      <layer- id="restaurant" label="Restaurants" checked>
+        <map-meta name="cs" content="gcrs" ></map-meta>
+        <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
+        <map-extent units="OSMTILE">
+           <map-select id="restaurants" name="cusine">
+              <map-option value="restaurants" selected>All cuisines</map-option>
+              <map-option value="african">African</map-option>
+              <map-option value="asian">Asian</map-option>
+              <map-option value="cajun">Cajun</map-option>
+              <map-option value="indian">Indian</map-option>
+              <map-option value="italian">Italian</map-option>
+              <map-option value="mexican">Mexican</map-option>
+            </map-select>
+            <map-link tref="shared/restaurants/{cusine}.mapml" rel="features"/>
+          </map-extent>
       </layer->
     </mapml-viewer>
   </body>

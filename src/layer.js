@@ -310,8 +310,9 @@ export class MapLayer extends HTMLElement {
       let layer = this._layer,
         map = layer?._map;
       if (map) {
-        let count = 0,
-          total = 0,
+        const mapExtents = this.querySelectorAll('map-extent');
+        let disabledExtentCount = 0,
+          totalExtentCount = 0,
           layerTypes = [
             '_staticTileLayer',
             '_imageLayer',
@@ -321,51 +322,28 @@ export class MapLayer extends HTMLElement {
         if (layer.validProjection) {
           for (let j = 0; j < layerTypes.length; j++) {
             let type = layerTypes[j];
-            if (this.checked && layer[type]) {
+            if (this.checked && mapExtents.length > 0) {
               if (type === '_templatedLayer') {
-                for (let i = 0; i < layer._properties._mapExtents.length; i++) {
-                  for (
-                    let j = 0;
-                    j <
-                    layer._properties._mapExtents[i].templatedLayer._templates
-                      .length;
-                    j++
-                  ) {
-                    if (
-                      layer._properties._mapExtents[i].templatedLayer
-                        ._templates[j].rel === 'query'
-                    )
-                      continue;
-                    total++;
-                    layer._properties._mapExtents[i].removeAttribute(
-                      'disabled'
-                    );
-                    layer._properties._mapExtents[i].disabled = false;
-                    if (
-                      !layer._properties._mapExtents[i].templatedLayer
-                        ._templates[j].layer.isVisible
-                    ) {
-                      count++;
-                      layer._properties._mapExtents[i].setAttribute(
-                        'disabled',
-                        ''
-                      );
-                      layer._properties._mapExtents[i].disabled = true;
-                    }
-                  }
+                for (let i = 0; i < mapExtents.length; i++) {
+                  totalExtentCount++;
+                  if (mapExtents[i]._validateDisabled()) disabledExtentCount++;
                 }
-              } else {
-                total++;
-                if (!layer[type].isVisible) count++;
+              } else if (layer[type]) {
+                // not a templated layer
+                totalExtentCount++;
+                if (!layer[type].isVisible) disabledExtentCount++;
               }
             }
           }
         } else {
-          count = 1;
-          total = 1;
+          disabledExtentCount = 1;
+          totalExtentCount = 1;
         }
-
-        if (count === total && count !== 0) {
+        // if all extents are not visible / disabled, set layer to disabled
+        if (
+          disabledExtentCount === totalExtentCount &&
+          disabledExtentCount !== 0
+        ) {
           this.setAttribute('disabled', ''); //set a disabled attribute on the layer element
           this.disabled = true;
         } else {
