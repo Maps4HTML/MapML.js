@@ -656,7 +656,6 @@ export class MapExtent extends HTMLElement {
     // change the checkbox in the layer control to match map-extent.checked
     // doesn't trigger the event handler because it's not user-caused AFAICT
     this._layerControlCheckbox.checked = this.checked;
-    this._layer._setLayerElExtent();
   }
   _validateLayerControlContainerHidden() {
     let extentsFieldset = this._layer.getLayerControlExtentContainer();
@@ -681,7 +680,6 @@ export class MapExtent extends HTMLElement {
 
     this._map.removeLayer(this._templatedLayer);
     delete this._templatedLayer;
-    this._layer._setLayerElExtent();
   }
   _changeOpacity() {
     if (this.opacity >= 0 && this.opacity <= 1.0) {

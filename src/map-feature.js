@@ -168,7 +168,6 @@ export class MapFeature extends HTMLElement {
         .addTo(this._map);
       placeholder.replaceWith(this._featureGroup.options.group);
       // TODO: getBounds() should dynamically update the layerBounds and zoomBounds
-      this._layer._setLayerElExtent();
       delete this._getFeatureExtent;
       this._setUpEvents();
     }
@@ -245,12 +244,6 @@ export class MapFeature extends HTMLElement {
         }
       }
 
-      // Number of features that are being displayed on the map
-      let renderedFeatureCount = Object.keys(mapmlvectors._layers).length;
-      // 0 because feature could be hidden by the min/max attr., 1 so as other features are added, _setLayerElExtent() is not run multiple times
-      if (renderedFeatureCount === 1 || renderedFeatureCount === 0) {
-        this._layer._setLayerElExtent();
-      }
       this._setUpEvents();
     });
   }
