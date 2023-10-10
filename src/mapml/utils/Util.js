@@ -551,11 +551,6 @@ export var Util = {
       // the layer is newly created, so have to wait until it's fully init'd
       // before setting properties.
       layer.whenReady().then(() => {
-        // TODO refactor _setLayerElExtent so that it's invoked automatically
-        // by layer.extent getter TBD.
-        if (!layer.extent) {
-          layer._layer._setLayerElExtent();
-        }
         // if the map projection isnt' changed by link traversal, it's necessary
         // to perform pan/zoom operations after the layer is ready
         if (!link.inPlace && zoomTo)
