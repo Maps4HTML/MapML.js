@@ -429,10 +429,12 @@ export class MapLayer extends HTMLElement {
       '_mapmlvectors',
       '_templatedLayer'
     ];
+    const mapExtents = this.querySelectorAll('map-extent').length
+      ? this.querySelectorAll('map-extent')
+      : this.shadowRoot
+      ? this.shadowRoot.querySelectorAll('map-extent')
+      : [];
     layerTypes.forEach((type) => {
-      const mapExtents = this.querySelectorAll('map-extent').length
-        ? this.querySelectorAll('map-extent')
-        : this.shadowRoot.querySelectorAll('map-extent');
       if (type === '_templatedLayer' && mapExtents.length) {
         for (let i = 0; i < mapExtents.length; i++) {
           for (let j = 0; j < mapExtents[i]._templateVars.length; j++) {
@@ -545,20 +547,22 @@ export class MapLayer extends HTMLElement {
     }
   }
   zoomTo() {
-    let map = this.parentElement._map,
-      extent = this.extent,
-      tL = extent.topLeft.pcrs,
-      bR = extent.bottomRight.pcrs,
-      layerBounds = L.bounds(
-        L.point(tL.horizontal, tL.vertical),
-        L.point(bR.horizontal, bR.vertical)
-      ),
-      center = map.options.crs.unproject(layerBounds.getCenter(true));
+    this.whenReady().then(() => {
+      let map = this.parentElement._map,
+        extent = this.extent,
+        tL = extent.topLeft.pcrs,
+        bR = extent.bottomRight.pcrs,
+        layerBounds = L.bounds(
+          L.point(tL.horizontal, tL.vertical),
+          L.point(bR.horizontal, bR.vertical)
+        ),
+        center = map.options.crs.unproject(layerBounds.getCenter(true));
 
-    let maxZoom = extent.zoom.maxZoom,
-      minZoom = extent.zoom.minZoom;
-    map.setView(center, M.getMaxZoom(layerBounds, map, minZoom, maxZoom), {
-      animate: false
+      let maxZoom = extent.zoom.maxZoom,
+        minZoom = extent.zoom.minZoom;
+      map.setView(center, M.getMaxZoom(layerBounds, map, minZoom, maxZoom), {
+        animate: false
+      });
     });
   }
   mapml2geojson(options = {}) {
