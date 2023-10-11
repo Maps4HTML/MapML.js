@@ -59,7 +59,10 @@ export class MapLayer extends HTMLElement {
 
   get extent() {
     // calculate the bounds of all content, return it.
-    return this._calculateExtent();
+    if (!this._extent) {
+      this._calculateExtent();
+    }
+    return this._extent;
   }
 
   constructor() {
@@ -536,7 +539,7 @@ export class MapLayer extends HTMLElement {
     });
     if (bounds) {
       //assigns the formatted extent object to .extent and spreads the zoom ranges to .extent also
-      return Object.assign(
+      this._extent = Object.assign(
         M._convertAndFormatPCRS(
           bounds,
           this._layer._properties.crs,
