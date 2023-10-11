@@ -988,6 +988,9 @@ export var MapMLLayer = L.Layer.extend({
     return this._properties.projection;
   },
   getQueryTemplates: function (pcrsClick) {
+    const mapExtents =
+      this._layerEl.querySelectorAll('map-extent') ||
+      this._layerEl.shadowRoot.querySelectorAll('map-extent');
     if (this._properties && this._properties._queries) {
       var templates = [];
       // only return queries that are in bounds
@@ -1000,13 +1003,9 @@ export var MapMLLayer = L.Layer.extend({
           '.mapml-layer-item-name'
         );
         for (let i = 0; i < layerAndExtents.length; i++) {
-          if (
-            layerAndExtents[i].extent ||
-            this._properties._mapExtents.length === 1
-          ) {
+          if (layerAndExtents[i].extent || mapExtents.length === 1) {
             // the layer won't have an .extent property, this is kind of a hack
-            let extent =
-              layerAndExtents[i].extent || this._properties._mapExtents[0];
+            let extent = layerAndExtents[i].extent || mapExtents[0];
             for (let j = 0; j < extent._templateVars.length; j++) {
               if (extent.checked) {
                 let template = extent._templateVars[j];
@@ -1053,7 +1052,11 @@ export var MapMLLayer = L.Layer.extend({
       // if the popup is for a static / templated feature, the "zoom to here" link can be attached once the popup opens
       attachZoomLink.call(popup);
     } else {
-      layer = popup._source._templatedLayer;
+      // getting access to the first map-extent to get access to _templatedLayer to use it's (possibly) generic _previousFeature + _nextFeature methods.
+      const mapExtent =
+        popup._source._layerEl.querySelector('map-extent') ||
+        popup._source._layerEl.shadowRoot.querySelector('map-extent');
+      layer = mapExtent._templatedLayer;
       // if the popup is for a query, the "zoom to here" link should be re-attached every time new pagination features are displayed
       map.on('attachZoomLink', attachZoomLink, popup);
     }
