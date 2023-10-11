@@ -8,7 +8,7 @@
         <map-link rel="legend" href="http://nfi.nfis.org/mapserver/cgi-bin/nfis-kNN.cgi?service=WMS&amp;version=1.3.0&amp;request=GetLegendGraphic&amp;sld_version=1.1.0&amp;format=image/png&amp;layer=kNN_Genus_Pseu&amp;style=default"></map-link>
     </map-head>
     <map-body>
-        <map-extent units="CBMTILE">
+        <map-extent units="CBMTILE" checked="checked" hidden="hidden">
             <map-input name="z" type="zoom" value="19" min="0" max="19"></map-input>
             <map-input name="txmin" type="location" units="tilematrix" position="top-left" axis="easting" min="-7786477.0" max="7148753.0"></map-input>
             <map-input name="tymin" type="location" units="tilematrix" position="bottom-left" axis="northing" min="-927808.0" max="7928344.0"></map-input>

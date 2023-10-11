@@ -1,0 +1,69 @@
+ api\domApi-web-map.test.js:78:7 › web-map DOM API Tests › Create a layer with document.createElement(layer-)
+    api\domApi-web-map.test.js:127:7 › web-map DOM API Tests › Remove map from DOM, add it back in ─
+    api\domApi-web-map.test.js:169:7 › web-map DOM API Tests › Toggle all web map controls by adding or removing controls attribute
+    api\domApi-web-map.test.js:226:7 › web-map DOM API Tests › Removing layer removes layer control
+    api\domApi-web-map.test.js:246:7 › web-map DOM API Tests › Create map without controls ─────────
+    api\domApi-web-map.test.js:310:7 › web-map DOM API Tests › Adding a layer to a map without controls does not add controls
+    api\domApi-web-map.test.js:365:7 › web-map DOM API Tests › Adding controls to a map which was created without controls
+    core\announceMovement.test.js:72:7 › Announce movement test › Output values are correct at bounds and bounces back
+    core\debugMode.test.js:41:7 › Playwright Map Element Tests › Reasonable debug layer extent created
+    core\debugMode.test.js:51:7 › Playwright Map Element Tests › Large debug layer extent created ──
+    core\debugMode.test.js:59:7 › Playwright Map Element Tests › Debug layer extent beyond ((0,0), (5,5))  created
+    core\debugMode.test.js:67:7 › Playwright Map Element Tests › Accurate debug coordinates ────────
+    core\debugMode.test.js:117:7 › Playwright Map Element Tests › Debug mode correctly re-enabled after disabling
+    core\debugMode.test.js:141:7 › Playwright Map Element Tests › Layer deselected then reselected 1
+    core\debugMode.test.js:153:7 › Playwright Map Element Tests › Layer deselected then reselected 2
+    core\featureLinks.test.js:37:9 › Playwright Feature Links Tests › Sub Part Link Tests › Sub-point inplace link adds new layer, parent feature has separate link
+    core\featureLinks.test.js:79:9 › Playwright Feature Links Tests › Main Part Link Tests › Main part adds new layer
+    core\layerContextMenu.test.js:51:7 › Playwright Layer Context Menu Tests › Layer context menu copy layer
+    core\layerContextMenuKeyboard.test.js:18:7 › Playwright Layer Context Menu Tests › Enter activates layer context menu item
+
+    core\mapContextMenu.test.js:329:7 › Playwright Map Context Menu Tests › Submenu, copy map (MapML)
+    core\mapSpan.test.js:18:7 › <map-span> test  › <map-span> hides tile boundaries ────────────────
+    core\mapSpan.test.js:45:7 › <map-span> test  › White space parsing for map-coordinates ─────────
+    core\metaDefault.test.js:60:7 › Playwright Missing Min Max Attribute, Meta Default Tests › Inline layer extent test
+    core\styleParsing.test.js:35:7 › Style Parsed and Implemented Test › CSS from a retrieved MapML file added inorder inside templated-layer container
+    core\zoomChangeProjection.test.js:18:7 › Playwright zoomin zoomout Projection Change Tests › zoomin link changes projections
+    layers\clientTemplatedTileLayer.test.js:18:7 › Playwright Client Tile Tests › Custom Tiles Loaded In, Accurate Coordinates
+
+    layers\general\isVisible.js:13:9 › Playwright featureLayer (Static Features) Layer Tests › isVisible Property Tests for featureLayer › isVisible property false when zoomed out of bounds (zooming in)
+    layers\general\isVisible.js:26:9 › Playwright featureLayer (Static Features) Layer Tests › isVisible Property Tests for featureLayer › isVisible property false when zoomed out of bounds (zooming out)
+    layers\featureLayer.test.js:46:9 › Playwright featureLayer (Static Features) Layer Tests › Retrieved Static Features Tests › Loading in retrieved features
+    layers\featureLayer.test.js:81:9 › Playwright featureLayer (Static Features) Layer Tests › Retrieved Static Features Tests › valid <layer>.extent
+    layers\multipleExtents.test.js:14:7 › Adding and Removing Multiple Extents › Layer's multiple extents display on map and in layer control
+    layers\multipleExtents.test.js:115:7 › Adding and Removing Multiple Extents › Changing extent opacity, removing and adding extent effects expected changes to only that specific content
+    layers\multipleExtents.test.js:179:7 › Adding and Removing Multiple Extents › Extents retain their state when turning layer off and on
+    layers\multipleExtents.test.js:246:7 › Multiple Extents Bounds Tests › Both Extent Bounds and Layer Bounds show in debug mode
+    layers\multipleExtents.test.js:286:7 › Multiple Extents Bounds Tests › Layer bounds are recalculated, should equal remaining extent bounds when one of two extents removed from map
+    layers\multipleExtents.test.js:321:7 › Multiple Extents Bounds Tests › Layer bounds are recalculated when a different child extent is removed
+    layers\multipleExtents.test.js:354:7 › Multiple Extents Bounds Tests › Layer is disabled in layer control when all extents are out of bounds
+    layers\multipleExtents.test.js:388:7 › Multiple Extents Bounds Tests › Extent is individually disabled in layer control when out of bounds
+    layers\multipleExtentsOpacity.test.js:17:7 › Adding Opacity Attribute to the <map-extent> Element › Setting Opacity Attibute Value to map-extent Element
+    layers\multipleExtentsOpacity.test.js:35:7 › Adding Opacity Attribute to the <map-extent> Element › Opacity Slider Value Matches the Extent Opacity
+    layers\multipleHeterogeneousQueryExtents.test.js:18:7 › Multiple Extent Queries with heterogeneous response content types › Query multiple overlapping extents which return heterogeneous document types (text/mapml, text/html)
+    layers\multipleHeterogeneousQueryExtents.test.js:37:7 › Multiple Extent Queries with heterogeneous response content types › Re-order queryable extents, verify response order changes accordingly
+    layers\multipleHeterogeneousQueryExtents.test.js:127:7 › Multiple Extent Queries with heterogeneous response content types › Enusre extents that are unchecked or removed are not included in query results
+    layers\multipleQueryExtents.test.js:21:7 › Multiple Extent Query Tests › Query on overlapping extents returns features from both extents
+    layers\multipleQueryExtents.test.js:35:7 › Multiple Extent Query Tests › Turning layer off then on restores query links
+    layers\multipleQueryExtents.test.js:54:7 › Multiple Extent Query Tests › Querying overlapping extents, user is able to navigate into second set of query results using popup controls
+    layers\multipleQueryExtents.test.js:82:7 › Multiple Extent Query Tests › Navigate back from second query result set to end of first query result set by clicking '< / Previous'
+    layers\multipleQueryExtents.test.js:103:7 › Multiple Extent Query Tests › Popup comes up when non overlapping bounds clicked
+    layers\multipleQueryExtents.test.js:121:7 › Multiple Extent Query Tests › Only features from one extent are returned for queries inside its (non overlapping) bounds
+    layers\queryableMapExtent.test.js:18:7 › Playwright Remote MapML with <map-extent> Tests › Query remote MapML document
+    layers\queryLink.test.js:19:9 › Playwright Query Link Tests › Query Popup Tests › Query link shows when within bounds
+    layers\queryLink.test.js:31:9 › Playwright Query Link Tests › Query Popup Tests › Query link closes previous popup when new query made within bounds
+    layers\queryLink.test.js:103:9 › Playwright Query Link Tests › Queried Feature Tests › First feature added + popup content updated
+    layers\queryLink.test.js:141:9 › Playwright Query Link Tests › Queried Feature Tests › Next feature added + popup content updated
+    layers\queryLink.test.js:175:9 › Playwright Query Link Tests › Queried Feature Tests › Previous feature added + popup content updated
+    layers\queryLink.test.js:209:9 › Playwright Query Link Tests › Queried Feature Tests › PCRS feature added + popup content updated
+    layers\queryLink.test.js:227:9 › Playwright Query Link Tests › Queried Feature Tests › TCRS feature added + popup content updated
+    layers\queryLink.test.js:244:9 › Playwright Query Link Tests › Queried Feature Tests › Tilematrix feature added + popup content updated
+    layers\queryLink.test.js:260:9 › Playwright Query Link Tests › Queried Feature Tests › Synthesized point, valid location
+    layers\queryLink.test.js:282:9 › Playwright Query Link Tests › Queried Feature Tests › 'Zoom to here' link test
+    layers\general\isVisible.js:13:9 › Playwright StaticTile Layer Tests › isVisible Property Tests for staticTileLayer › isVisible property false when zoomed out of bounds (zooming in)
+    layers\general\isVisible.js:26:9 › Playwright StaticTile Layer Tests › isVisible Property Tests for staticTileLayer › isVisible property false when zoomed out of bounds (zooming out)
+    layers\templatedFeaturesFilter.test.js:21:7 › Simple query by select values without map extent filter tests › User can select/filter features by category
+    layers\templatedFeaturesFilter.test.js:45:7 › Simple query by select values without map extent filter tests › <map-select> <map-option> attributes are copied to layer control <option> elements
+    layers\templatedTileLayer.test.js:47:9 › Playwright mapMLTemplatedTile Layer Tests › General Tests  › SVG tiles load in on default map zoom level
+    mapml-viewer\viewerContextMenu.test.js:343:7 › Playwright mapml-viewer Context Menu (and api) Tests › Submenu, copy map (MapML)
+  387 passed (6.6m)

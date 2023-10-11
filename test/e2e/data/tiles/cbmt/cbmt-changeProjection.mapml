@@ -6,7 +6,7 @@
     <map-link rel="zoomin" href="osm-changeProjection.mapml" type="text/mapml"></map-link>
   </map-head>
   <map-body>
-  <map-extent units="CBMTILE" >
+  <map-extent units="CBMTILE"  checked="checked" hidden="hidden">
     <map-input name="z" type="zoom" min="0" max="8"></map-input>
     <map-input name="y" type="location" units="tilematrix" axis="row"></map-input>
     <map-input name="x" type="location" units="tilematrix" axis="column"></map-input>
