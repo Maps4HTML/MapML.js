@@ -62,7 +62,11 @@ export class MapExtent extends HTMLElement {
         break;
       case 'label':
         if (oldValue !== newValue) {
-          // handle side effects
+          this.whenReady().then(() => {
+            this._layerControlHTML.querySelector(
+              '.mapml-layer-item-name'
+            ).innerHTML = newValue || M.options.locale.dfExtent;
+          });
         }
         break;
       case 'checked':
