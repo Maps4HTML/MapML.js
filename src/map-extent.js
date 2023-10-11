@@ -185,6 +185,9 @@ export class MapExtent extends HTMLElement {
       disabledTemplateCount = 0;
 
     for (let j = 0; j < this._templatedLayer._templates.length; j++) {
+      if (this._templatedLayer._templates[j].rel === 'query') {
+        continue;
+      }
       if (!this._templatedLayer._templates[j].layer.isVisible) {
         disabledTemplateCount++;
       }
