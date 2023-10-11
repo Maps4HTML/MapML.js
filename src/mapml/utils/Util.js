@@ -570,6 +570,7 @@ export var Util = {
       map.options.mapEl.zoom = +zoomTo.z;
     }
   },
+  // TODO: make this dynamic based on the individual features/extents
   getBounds: function (mapml) {
     if (!mapml) return null;
     let cs = FALLBACK_CS,

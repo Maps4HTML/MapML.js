@@ -107,6 +107,7 @@ export class MapFeature extends HTMLElement {
         : this.parentNode.host;
     this._parentEl.whenReady().then(() => {
       this._layer = this._parentEl._layer;
+      delete this._parentEl._extent;
       if (
         this._layer._layerEl.hasAttribute('data-moving') ||
         this._parentEl.hasAttribute('data-moving')
@@ -136,6 +137,7 @@ export class MapFeature extends HTMLElement {
           }
           // re-render feature if there is any observed change
           this._reRender();
+          delete this._parentEl._extent;
         }
       });
       this._observer.observe(this, {
@@ -153,6 +155,7 @@ export class MapFeature extends HTMLElement {
     if (this._layer._layerEl.hasAttribute('data-moving')) return;
     this._removeFeature();
     this._observer.disconnect();
+    delete this._parentEl._extent;
   }
 
   _reRender() {

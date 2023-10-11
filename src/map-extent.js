@@ -137,6 +137,8 @@ export class MapExtent extends HTMLElement {
     await this.parentLayer.whenReady();
     this._layer = this.parentLayer._layer;
     this._map = this._layer._map;
+    // reset the extent
+    delete this.parentLayer._extent;
     // this code comes from MapMLLayer._initialize.processExtents
     this._templateVars = this._initTemplateVars(
       // mapml is the layer- element OR the mapml- document root
@@ -684,6 +686,7 @@ export class MapExtent extends HTMLElement {
 
     this._map.removeLayer(this._templatedLayer);
     delete this._templatedLayer;
+    delete this.parentLayer._extent;
   }
   _changeOpacity() {
     if (this.opacity >= 0 && this.opacity <= 1.0) {
