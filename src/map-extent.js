@@ -24,7 +24,9 @@ export class MapExtent extends HTMLElement {
     }
   }
   get label() {
-    return this.hasAttribute('label') ? this.getAttribute('label') : '';
+    return this.hasAttribute('label')
+      ? this.getAttribute('label')
+      : M.options.locale.dfExtent;
   }
   set label(val) {
     if (val) {
@@ -32,7 +34,7 @@ export class MapExtent extends HTMLElement {
     }
   }
   get opacity() {
-    return this._opacity;
+    return this.getAttribute('opacity') ? this.getAttribute('opacity') : 1.0;
   }
 
   set opacity(val) {
@@ -69,7 +71,9 @@ export class MapExtent extends HTMLElement {
         break;
       case 'opacity':
         if (oldValue !== newValue) {
-          // handle side effects
+          this.whenReady().then(() => {
+            this._changeOpacity();
+          });
         }
         break;
       case 'hidden':
@@ -78,7 +82,7 @@ export class MapExtent extends HTMLElement {
             let extentsRootFieldset =
               this._layer.getLayerControlExtentContainer();
             let position = Array.from(
-              this.parentLayer.querySelectorAll('map-extent:not([hidden])')
+              this.parentNode.querySelectorAll('map-extent:not([hidden])')
             ).indexOf(this);
             if (newValue !== null) {
               // remove from layer control (hide from user)
@@ -92,7 +96,7 @@ export class MapExtent extends HTMLElement {
                   this._layerControlHTML
                 );
               } else if (position > 0) {
-                this.parentLayer
+                this.parentNode
                   .querySelectorAll('map-extent:not([hidden])')
                   [position - 1]._layerControlHTML.insertAdjacentElement(
                     'afterend',
@@ -162,9 +166,6 @@ export class MapExtent extends HTMLElement {
         this._layer._properties._queries = [];
       this._layer._properties._queries =
         this._layer._properties._queries.concat(this._templatedLayer._queries);
-    }
-    if (this.hasAttribute('opacity')) {
-      this._templatedLayer.changeOpacity(this.getAttribute('opacity'));
     }
   }
   getLayerControlHTML() {
@@ -438,11 +439,6 @@ export class MapExtent extends HTMLElement {
       opacity = L.DomUtil.create('input', '', opacityControl);
     extentSettings.hidden = true;
     extent.setAttribute('aria-grabbed', 'false');
-    if (!this.hasAttribute('label')) {
-      // if a label attribute is not present, set it to hidden in layer control
-      extent.setAttribute('hidden', '');
-      this.hidden = true;
-    }
 
     // append the svg paths
     svgExtentControlIcon.setAttribute('viewBox', '0 0 24 24');
@@ -511,23 +507,21 @@ export class MapExtent extends HTMLElement {
       'aria-labelledby',
       'mapml-layer-item-opacity-' + L.stamp(extentOpacitySummary)
     );
-    let opacityValue = this.hasAttribute('opacity')
-      ? this.getAttribute('opacity')
-      : '1.0';
-    this._templateVars.opacity = opacityValue;
-    opacity.setAttribute('value', opacityValue);
-    opacity.value = opacityValue;
-    opacity.addEventListener('change', this._changeOpacity);
+    const changeOpacity = function () {
+      this.opacity = opacity.value;
+    };
+    opacity.setAttribute('value', this.opacity);
+    opacity.value = this.opacity;
+    opacity.addEventListener('change', changeOpacity.bind(this));
+    this._opacitySlider = opacity;
 
     var extentItemNameSpan = L.DomUtil.create(
       'span',
       'mapml-layer-item-name',
       extentLabel
     );
-    input.defaultChecked = this ? true : false;
-    this.checked = input.defaultChecked;
     input.type = 'checkbox';
-    extentItemNameSpan.innerHTML = this.getAttribute('label');
+    extentItemNameSpan.innerHTML = this.label;
     const changeCheck = function () {
       this.checked = !this.checked;
     };
@@ -662,7 +656,6 @@ export class MapExtent extends HTMLElement {
     // change the checkbox in the layer control to match map-extent.checked
     // doesn't trigger the event handler because it's not user-caused AFAICT
     this._layerControlCheckbox.checked = this.checked;
-    this._layer._setLayerElExtent();
   }
   _validateLayerControlContainerHidden() {
     let extentsFieldset = this._layer.getLayerControlExtentContainer();
@@ -687,12 +680,12 @@ export class MapExtent extends HTMLElement {
 
     this._map.removeLayer(this._templatedLayer);
     delete this._templatedLayer;
-    this._layer._setLayerElExtent();
   }
-  _changeOpacity(e) {
-    if (e && e.target && e.target.value >= 0 && e.target.value <= 1.0) {
-      this._templatedLayer.changeOpacity(e.target.value);
-      this._templateVars.opacity = e.target.value;
+  _changeOpacity() {
+    if (this.opacity >= 0 && this.opacity <= 1.0) {
+      this._templatedLayer.changeOpacity(this.opacity);
+      this._templateVars.opacity = this.opacity;
+      this._opacitySlider.value = this.opacity;
     }
   }
 
