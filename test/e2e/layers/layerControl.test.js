@@ -18,15 +18,18 @@ test.describe('Playwright layerControl Tests', () => {
 
     test('Control panel hidden when no layers/all layers hidden', async () => {
       const controlsHidden = await page.$eval(
-        'css=body > mapml-viewer:nth-child(1) >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div',
+        'body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div',
         (elem) => elem.hasAttribute('hidden')
       );
       expect(controlsHidden).toEqual(true);
     });
 
     test('Control panel shown when layers are on map', async () => {
+      const map = await page.locator('body > mapml-viewer');
+      await map.evaluate((map) => map.querySelector('layer-').removeAttribute('hidden'));
+      await page.waitForTimeout(500);
       const controlsHidden = await page.$eval(
-        'css=body > mapml-viewer:nth-child(2) >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div',
+        'body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div',
         (elem) => elem.hasAttribute('hidden')
       );
       expect(controlsHidden).toEqual(false);
