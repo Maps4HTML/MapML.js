@@ -34,7 +34,8 @@ export class MapExtent extends HTMLElement {
     }
   }
   get opacity() {
-    return this.getAttribute('opacity') ? this.getAttribute('opacity') : 1.0;
+    // use ?? since 0 is falsy, || would return rhs in that case
+    return this._opacity ?? this.getAttribute('opacity');
   }
 
   set opacity(val) {
@@ -71,9 +72,9 @@ export class MapExtent extends HTMLElement {
         break;
       case 'opacity':
         if (oldValue !== newValue) {
-          this.whenReady().then(() => {
-            this._changeOpacity();
-          });
+          this._opacity = newValue;
+          if (this._templatedLayer)
+            this._templatedLayer.changeOpacity(newValue);
         }
         break;
       case 'hidden':
@@ -113,6 +114,7 @@ export class MapExtent extends HTMLElement {
   constructor() {
     // Always call super first in constructor
     super();
+    this._opacity = 1.0;
   }
   async connectedCallback() {
     // this.parentNode.host returns the layer- element when parentNode is
@@ -151,7 +153,7 @@ export class MapExtent extends HTMLElement {
     this._validateLayerControlContainerHidden();
     this._templatedLayer = M.templatedLayer(this._templateVars, {
       pane: this._layer._container,
-      opacity: this._templateVars.opacity,
+      opacity: this.opacity,
       _leafletLayer: this._layer,
       crs: this._layer._properties.crs,
       extentZIndex: Array.from(
@@ -507,8 +509,10 @@ export class MapExtent extends HTMLElement {
       'aria-labelledby',
       'mapml-layer-item-opacity-' + L.stamp(extentOpacitySummary)
     );
-    const changeOpacity = function () {
-      this.opacity = opacity.value;
+    const changeOpacity = function (e) {
+      if (e && e.target && e.target.value >= 0 && e.target.value <= 1.0) {
+        this._templatedLayer.changeOpacity(e.target.value);
+      }
     };
     opacity.setAttribute('value', this.opacity);
     opacity.value = this.opacity;
