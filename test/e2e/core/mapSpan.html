@@ -22,7 +22,7 @@
 <mapml-viewer projection="WGS84" zoom="0" lat="0" lon="0" controls>
   <layer- label="Countries - WorldCRS84Quad" checked>
     <map-link rel="stylesheet" href="mapSpan.css" >
-      <map-extent units="WGS84">
+      <map-extent units="WGS84" checked hidden>
         <map-input name="zoomLevel" type="zoom" min="0" max="2" value="0"></map-input>
 
         <map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="5"></map-input>
@@ -36,7 +36,7 @@
 <mapml-viewer projection="OSMTILE" zoom="2" lat="0" lon="0" controls>
   <layer- label="Countries - WebMercatorQuad" checked>
     <map-link rel="stylesheet" href="mapSpan.css" >
-      <map-extent units="OSMTILE">
+      <map-extent units="OSMTILE" checked hidden>
         <map-input  name="zoomLevel" type="zoom" min="0" max="2" value="0"></map-input>
         <map-input  name="row" type="location" axis="row" units="tilematrix" min="0" max="1"></map-input>
         <map-input  name="col" type="location" axis="column" units="tilematrix" min="0" max="1"></map-input>

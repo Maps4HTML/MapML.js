@@ -74,20 +74,20 @@
   <body>
     <mapml-viewer zoom="15" lon="-75.703611" lat="45.411105" controls="" projection="OSMTILE" role="application">    
       <layer- opacity = "0.5" label="National Geographic" checked="">
-            <map-extent opacity = "0.9" label="National Geographic" units="OSMTILE">
+            <map-extent opacity = "0.9" label="National Geographic" units="OSMTILE" checked hidden>
               <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
               <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
               <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
               <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/WMTS/tile/1.0.0/NatGeo_World_Map/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
             </map-extent>
-            <map-extent opacity = "0.3" label="Labelled Imagery" units="OSMTILE">
+            <map-extent opacity = "0.3" label="Labelled Imagery" units="OSMTILE" checked hidden>
               <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
               <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
               <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
               <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS/tile/1.0.0/World_Imagery/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
               <map-link rel="tile" tref="https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places/MapServer/WMTS/tile/1.0.0/Reference_World_Boundaries_and_Places/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.png"></map-link>
             </map-extent>
-            <map-extent opacity = "0.2" label="Imagery" units="OSMTILE">
+            <map-extent opacity = "0.2" label="Imagery" units="OSMTILE" checked hidden>
               <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
               <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
               <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>

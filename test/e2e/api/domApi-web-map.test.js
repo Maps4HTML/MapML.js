@@ -91,7 +91,7 @@ test.describe('web-map DOM API Tests', () => {
       (layer) =>
         layer.setAttribute(
           'src',
-          'http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/'
+          'tiles/cbmt/cbmt.mapml'
         ),
       layerHandle
     );
@@ -319,7 +319,7 @@ test.describe('web-map DOM API Tests', () => {
       (layer) =>
         layer.setAttribute(
           'src',
-          'http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/'
+          'tiles/cbmt/cbmt.mapml'
         ),
       layerHandle
     );
