@@ -93,11 +93,7 @@ test.describe('mapml-viewer DOM API Tests', () => {
       layerHandle
     );
     await page.evaluateHandle(
-      (layer) =>
-        layer.setAttribute(
-          'src',
-          'tiles/cbmt/cbmt.mapml'
-        ),
+      (layer) => layer.setAttribute('src', 'tiles/cbmt/cbmt.mapml'),
       layerHandle
     );
     await page.evaluateHandle(
@@ -335,11 +331,7 @@ test.describe('mapml-viewer DOM API Tests', () => {
       layerHandle
     );
     await page.evaluateHandle(
-      (layer) =>
-        layer.setAttribute(
-          'src',
-          'tiles/cbmt/cbmt.mapml'
-        ),
+      (layer) => layer.setAttribute('src', 'tiles/cbmt/cbmt.mapml'),
       layerHandle
     );
     await page.evaluateHandle(
