@@ -100,6 +100,8 @@ export class MapFeature extends HTMLElement {
   }
 
   connectedCallback() {
+    // if the features are connected to the remote mapml
+    if (this.closest('mapml-')) return;
     this._parentEl =
       this.parentNode.nodeName.toUpperCase() === 'LAYER-' ||
       this.parentNode.nodeName.toUpperCase() === 'MAP-EXTENT'
