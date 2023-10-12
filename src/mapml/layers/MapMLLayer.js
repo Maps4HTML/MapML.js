@@ -988,9 +988,9 @@ export var MapMLLayer = L.Layer.extend({
     return this._properties.projection;
   },
   getQueryTemplates: function (pcrsClick) {
-    const mapExtents =
-      this._layerEl.querySelectorAll('map-extent') ||
-      this._layerEl.shadowRoot.querySelectorAll('map-extent');
+    const mapExtents = this._layerEl.querySelectorAll('map-extent').length
+      ? this._layerEl.querySelectorAll('map-extent')
+      : this._layerEl.shadowRoot.querySelectorAll('map-extent');
     if (this._properties && this._properties._queries) {
       var templates = [];
       // only return queries that are in bounds
