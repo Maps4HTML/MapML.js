@@ -122,21 +122,20 @@ export var AnnounceMovement = L.Handler.extend({
   },
 
   totalBounds: function () {
-    let layers = Object.keys(this._layers);
-    let bounds = L.bounds();
-
-    layers.forEach((i) => {
-      if (this._layers[i].layerBounds) {
-        if (!bounds) {
-          let point = this._layers[i].layerBounds.getCenter();
-          bounds = L.bounds(point, point);
+    let map = this.options.mapEl;
+    map.whenLayersReady().then(() => {
+      let layers = map.querySelectorAll('layer-');
+      let bounds;
+      for (let i = 0; i < layers.length; i++) {
+        if (bounds) {
+          bounds.extend(layers[i].extent.getBounds());
+        } else {
+          bounds = layers[i].extent.getBounds();
         }
-        bounds.extend(this._layers[i].layerBounds.min);
-        bounds.extend(this._layers[i].layerBounds.max);
       }
-    });
 
-    this.totalLayerBounds = bounds;
+      this.totalLayerBounds = bounds;
+    });
   },
 
   dragged: function () {
