@@ -82,6 +82,13 @@ export var Util = {
     if (projection) {
       extent.projection = projection;
     }
+    function getBounds() {
+      return L.bounds(
+        L.point(pcrs.topLeft.horizontal, pcrs.topLeft.vertical),
+        L.point(pcrs.bottomRight.horizontal, pcrs.bottomRight.vertical)
+      );
+    }
+    extent.getBounds = getBounds;
     return extent;
   },
 
