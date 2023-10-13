@@ -199,7 +199,8 @@ export var DebugVectors = L.LayerGroup.extend({
       map.options.crs.scale(0)
     );
     this._centerVector = L.circle(map.options.crs.pointToLatLng(center, 0), {
-      radius: 250
+      radius: 250,
+      className: 'mapml-debug-vectors projection-centre'
     });
     this._centerVector.bindTooltip('Projection Center');
 
@@ -235,7 +236,24 @@ export var DebugVectors = L.LayerGroup.extend({
             L.point(layers[i].extentBounds.min.x, layers[i].extentBounds.max.y)
           ];
         }
+
+        // boundsTestTag adds the value of from the <layer-@data-testid> element
+        // if it exists. this simplifies debugging because the svg path will be
+        // tagged with the layer it came from
+        let boundsTestTag =
+          layers[i].extentBounds &&
+          layers[i].options.extentEl.parentLayer.hasAttribute('data-testid')
+            ? layers[i].options.extentEl.parentLayer.getAttribute('data-testid')
+            : layers[i].layerBounds &&
+              layers[i].options._leafletLayer._layerEl.hasAttribute(
+                'data-testid'
+              )
+            ? layers[i].options._leafletLayer._layerEl.getAttribute(
+                'data-testid'
+              )
+            : '';
         let boundsRect = projectedExtent(boundsArray, {
+          className: this.options.className.concat(' ', boundsTestTag),
           color: colors[j % colors.length],
           weight: 2,
           opacity: 1,
@@ -260,6 +278,7 @@ export var DebugVectors = L.LayerGroup.extend({
       ];
 
       let totalBounds = projectedExtent(totalBoundsArray, {
+        className: 'mapml-debug-vectors mapml-total-bounds',
         color: '#808080',
         weight: 5,
         opacity: 0.5,

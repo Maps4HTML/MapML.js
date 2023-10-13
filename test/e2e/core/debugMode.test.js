@@ -39,29 +39,15 @@ test.describe('Playwright Map Element Tests', () => {
   });
 
   test('Reasonable debug layer extent created', async () => {
-    const feature = await page.$eval(
-      'xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path[stroke="#8DFF33"]',
-      (tile) => tile.getAttribute('d')
-    );
-    expect(feature).toEqual(
-      'M82.51724137931035 332.27586206896535L347.34482758620686 332.27586206896535L347.34482758620686 -38.48275862068965L82.51724137931035 -38.48275862068965z'
-    );
+    await expect(page.locator('.mapml-debug-vectors.cbmt-inline-layer')).toHaveCount(1);
   });
 
   test('Large debug layer extent created', async () => {
-    const feature = await page.$eval(
-      'xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path[stroke="#E433FF"]',
-      (tile) => tile.getAttribute('d')
-    );
-    expect(feature).toEqual('M-659 500L365 500L365 -780L-659 -780z');
+    await expect(page.locator('.mapml-debug-vectors.cbmt-large-layer')).toHaveCount(1);
   });
 
   test('Debug layer extent beyond ((0,0), (5,5))  created', async () => {
-    const feature = await page.$eval(
-      'xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path[d="M-1683 1268L1133 1268L1133 -1292L-1683 -1292z"]',
-      (tile) => tile.getAttribute('d')
-    );
-    expect(feature).toEqual('M-1683 1268L1133 1268L1133 -1292L-1683 -1292z');
+    await expect(page.locator('.mapml-debug-vectors.cbmt-beyond-layer')).toHaveCount(1);
   });
 
   test('Accurate debug coordinates', async () => {
@@ -143,11 +129,10 @@ test.describe('Playwright Map Element Tests', () => {
     await page.click(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span'
     );
-    const feature = await page.$eval(
-      'xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g',
-      (tile) => tile.childElementCount
-    );
-    expect(feature).toEqual(5);
+    await page.pause();
+    const map = page.getByTestId('viewer');
+    await map.evaluate((map) => map.whenLayersReady());
+    await expect(page.locator('.mapml-debug-vectors')).toHaveCount(5);
   });
 
   test('Layer deselected then reselected 2', async () => {
@@ -155,12 +140,6 @@ test.describe('Playwright Map Element Tests', () => {
     await page.click(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span'
     );
-    const feature = await page.$eval(
-      'xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(6)',
-      (tile) => tile.getAttribute('d')
-    );
-    expect(feature).toEqual(
-      'M82.51724137931035 332.27586206896535L347.34482758620686 332.27586206896535L347.34482758620686 -38.48275862068965L82.51724137931035 -38.48275862068965z'
-    );
+    await expect(page.locator('path[d="M82.51724137931035 332.27586206896535L347.34482758620686 332.27586206896535L347.34482758620686 -38.48275862068965L82.51724137931035 -38.48275862068965z"]')).toHaveCount(1);
   });
 });

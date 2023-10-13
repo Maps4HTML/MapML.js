@@ -1,10 +1,4 @@
  api\domApi-web-map.test.js:78:7 › web-map DOM API Tests › Create a layer with document.createElement(layer-)
-    api\domApi-web-map.test.js:127:7 › web-map DOM API Tests › Remove map from DOM, add it back in ─
-    api\domApi-web-map.test.js:169:7 › web-map DOM API Tests › Toggle all web map controls by adding or removing controls attribute
-    api\domApi-web-map.test.js:226:7 › web-map DOM API Tests › Removing layer removes layer control
-    api\domApi-web-map.test.js:246:7 › web-map DOM API Tests › Create map without controls ─────────
-    api\domApi-web-map.test.js:310:7 › web-map DOM API Tests › Adding a layer to a map without controls does not add controls
-    api\domApi-web-map.test.js:365:7 › web-map DOM API Tests › Adding controls to a map which was created without controls
     core\announceMovement.test.js:72:7 › Announce movement test › Output values are correct at bounds and bounces back
     core\debugMode.test.js:41:7 › Playwright Map Element Tests › Reasonable debug layer extent created
     core\debugMode.test.js:51:7 › Playwright Map Element Tests › Large debug layer extent created ──
