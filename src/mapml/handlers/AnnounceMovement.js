@@ -127,10 +127,11 @@ export var AnnounceMovement = L.Handler.extend({
       let layers = map.querySelectorAll('layer-');
       let bounds;
       for (let i = 0; i < layers.length; i++) {
-        if (bounds) {
-          bounds.extend(M.extentToBounds(layers[i].extent, 'pcrs'));
-        } else {
-          bounds = M.extentToBounds(layers[i].extent, 'pcrs');
+        let extent = layers[i].extent;
+        if (bounds && extent) {
+          bounds.extend(M.extentToBounds(extent, 'pcrs'));
+        } else if (extent) {
+          bounds = M.extentToBounds(extent, 'pcrs');
         }
       }
 

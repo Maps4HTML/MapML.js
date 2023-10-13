@@ -493,13 +493,9 @@ export class MapLayer extends HTMLElement {
         zoomBounds.maxZoom = zoomMax;
         zoomBounds.minNativeZoom = minNativeZoom;
         zoomBounds.maxNativeZoom = maxNativeZoom;
+        // is this necessary anymore?  it's a side effect, probably not desirable
         this._layer._properties.zoomBounds = zoomBounds;
         this._layer._properties.layerBounds = bounds;
-        // assign each template the layer and zoom bounds
-        for (let i = 0; i < mapExtents.length; i++) {
-          mapExtents[i]._templatedLayer.layerBounds = bounds;
-          mapExtents[i]._templatedLayer.zoomBounds = zoomBounds;
-        }
       } else if (type === '_staticTileLayer' && this._layer._staticTileLayer) {
         if (this._layer[type].layerBounds) {
           if (!bounds) {
@@ -613,9 +609,9 @@ export class MapLayer extends HTMLElement {
     });
   }
   // check if all child elements are ready
-  async whenElemsReady() {
+  whenElemsReady() {
     let elemsReady = [];
-    let target = this.shadowRoot || this
+    let target = this.shadowRoot || this;
     for (let elem of [
       ...target.querySelectorAll('map-extent'),
       ...target.querySelectorAll('map-feature')

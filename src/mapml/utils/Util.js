@@ -98,7 +98,10 @@ export var Util = {
         );
       case 'GCRS':
         return L.latLngBounds(
-          L.latLng(extent.topLeft.gcrs.vertical, extent.topLeft.gcrs.horizontal),
+          L.latLng(
+            extent.topLeft.gcrs.vertical,
+            extent.topLeft.gcrs.horizontal
+          ),
           L.latLng(
             extent.bottomRight.gcrs.vertical,
             extent.bottomRight.gcrs.horizontal
