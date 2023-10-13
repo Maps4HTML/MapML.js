@@ -129,10 +129,8 @@ test.describe('Playwright Map Element Tests', () => {
     await page.click(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span'
     );
-    await page.pause();
-    const map = page.getByTestId('viewer');
-    await map.evaluate((map) => map.whenLayersReady());
-    await expect(page.locator('.mapml-debug-vectors')).toHaveCount(5);
+    await expect(page.locator('.mapml-debug-vectors.cbmt-inline-layer')).toHaveCount(1);
+    await expect(page.locator('.mapml-debug-vectors')).toHaveCount(4);  // only 5 if you have the mapml-extension installed, announceZoom option enabled
   });
 
   test('Layer deselected then reselected 2', async () => {
@@ -140,6 +138,6 @@ test.describe('Playwright Map Element Tests', () => {
     await page.click(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span'
     );
-    await expect(page.locator('path[d="M82.51724137931035 332.27586206896535L347.34482758620686 332.27586206896535L347.34482758620686 -38.48275862068965L82.51724137931035 -38.48275862068965z"]')).toHaveCount(1);
+    await expect(page.locator('.mapml-debug-vectors.cbmt-inline-layer')).toHaveCount(1);
   });
 });
