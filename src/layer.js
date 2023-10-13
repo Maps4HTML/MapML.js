@@ -612,4 +612,16 @@ export class MapLayer extends HTMLElement {
       }
     });
   }
+  // check if all child elements are ready
+  async whenElemsReady() {
+    let elemsReady = [];
+    let target = this.shadowRoot || this
+    for (let elem of [
+      ...target.querySelectorAll('map-extent'),
+      ...target.querySelectorAll('map-feature')
+    ]) {
+      elemsReady.push(elem.whenReady());
+    }
+    return Promise.allSettled(elemsReady);
+  }
 }

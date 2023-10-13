@@ -805,6 +805,7 @@ import {
   M.axisToXY = Util.axisToXY;
   M.csToAxes = Util.csToAxes;
   M._convertAndFormatPCRS = Util._convertAndFormatPCRS;
+  M.extentToBounds = Util.extentToBounds;
   M.axisToCS = Util.axisToCS;
   M._parseNumber = Util._parseNumber;
   M._extractInputBounds = Util._extractInputBounds;

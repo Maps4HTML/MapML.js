@@ -82,14 +82,29 @@ export var Util = {
     if (projection) {
       extent.projection = projection;
     }
-    function getBounds() {
-      return L.bounds(
-        L.point(pcrs.topLeft.horizontal, pcrs.topLeft.vertical),
-        L.point(pcrs.bottomRight.horizontal, pcrs.bottomRight.vertical)
-      );
-    }
-    extent.getBounds = getBounds;
     return extent;
+  },
+  // extentToBounds: returns bounds in gcrs, pcrs. Used for setting bounds for the map (map.totalLayerBounds).
+  // extentToBounds: {...}, crs -> L.Bounds / L.LatlngBounds
+  extentToBounds(extent, crs) {
+    switch (crs.toUpperCase()) {
+      case 'PCRS':
+        return L.bounds(
+          L.point(extent.topLeft.pcrs.horizontal, extent.topLeft.pcrs.vertical),
+          L.point(
+            extent.bottomRight.pcrs.horizontal,
+            extent.bottomRight.pcrs.vertical
+          )
+        );
+      case 'GCRS':
+        return L.latLngBounds(
+          L.latLng(extent.topLeft.gcrs.vertical, extent.topLeft.gcrs.horizontal),
+          L.latLng(
+            extent.bottomRight.gcrs.vertical,
+            extent.bottomRight.gcrs.horizontal
+          )
+        );
+    }
   },
 
   // _extractInputBounds extracts and returns Input Bounds from the provided template
