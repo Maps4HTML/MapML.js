@@ -128,9 +128,9 @@ export var AnnounceMovement = L.Handler.extend({
       let bounds;
       for (let i = 0; i < layers.length; i++) {
         if (bounds) {
-          bounds.extend(layers[i].extent.getBounds());
+          bounds.extend(M.extentToBounds(layers[i].extent, 'pcrs'));
         } else {
-          bounds = layers[i].extent.getBounds();
+          bounds = M.extentToBounds(layers[i].extent, 'pcrs');
         }
       }
 
