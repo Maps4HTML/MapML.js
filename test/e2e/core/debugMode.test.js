@@ -39,15 +39,21 @@ test.describe('Playwright Map Element Tests', () => {
   });
 
   test('Reasonable debug layer extent created', async () => {
-    await expect(page.locator('.mapml-debug-vectors.cbmt-inline-layer')).toHaveCount(1);
+    await expect(
+      page.locator('.mapml-debug-vectors.cbmt-inline-layer')
+    ).toHaveCount(1);
   });
 
   test('Large debug layer extent created', async () => {
-    await expect(page.locator('.mapml-debug-vectors.cbmt-large-layer')).toHaveCount(1);
+    await expect(
+      page.locator('.mapml-debug-vectors.cbmt-large-layer')
+    ).toHaveCount(1);
   });
 
   test('Debug layer extent beyond ((0,0), (5,5))  created', async () => {
-    await expect(page.locator('.mapml-debug-vectors.cbmt-beyond-layer')).toHaveCount(1);
+    await expect(
+      page.locator('.mapml-debug-vectors.cbmt-beyond-layer')
+    ).toHaveCount(1);
   });
 
   test('Accurate debug coordinates', async () => {
@@ -129,8 +135,10 @@ test.describe('Playwright Map Element Tests', () => {
     await page.click(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span'
     );
-    await expect(page.locator('.mapml-debug-vectors.cbmt-inline-layer')).toHaveCount(1);
-    await expect(page.locator('.mapml-debug-vectors')).toHaveCount(4);  // only 5 if you have the mapml-extension installed, announceZoom option enabled
+    await expect(
+      page.locator('.mapml-debug-vectors.cbmt-inline-layer')
+    ).toHaveCount(1);
+    await expect(page.locator('.mapml-debug-vectors')).toHaveCount(4); // only 5 if you have the mapml-extension installed, announceZoom option enabled
   });
 
   test('Layer deselected then reselected 2', async () => {
@@ -138,6 +146,8 @@ test.describe('Playwright Map Element Tests', () => {
     await page.click(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span'
     );
-    await expect(page.locator('.mapml-debug-vectors.cbmt-inline-layer')).toHaveCount(1);
+    await expect(
+      page.locator('.mapml-debug-vectors.cbmt-inline-layer')
+    ).toHaveCount(1);
   });
 });

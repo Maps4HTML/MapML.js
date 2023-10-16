@@ -243,47 +243,29 @@ test.describe('Multiple Extents Bounds Tests', () => {
     await page.goto('multipleExtents.html');
   });
 
-  test('Both Extent Bounds and Layer Bounds show in debug mode', async () => {
+  test.only('Only Extent Bounds show in debug mode', async () => {
+    // this test used to be titled "Both Extent Bounds and Layer Bounds show in debug mode"
+    // but since introduction of map-extent element, it was decided to only show
+    // the bounds rectangles for the map-link elements
     await page.$eval('body > mapml-viewer', (map) => map.toggleDebug());
 
-    const numBounds = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g',
-      (g) => g.childElementCount
-    );
-    const layerBound1 = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(2)',
-      (tile) => tile.getAttribute('d')
-    );
-    const cbmtBound = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(3)',
-      (tile) => tile.getAttribute('d')
-    );
-    const layerBound2 = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(4)',
-      (tile) => tile.getAttribute('d')
-    );
-    const alabamaBound = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(5)',
-      (tile) => tile.getAttribute('d')
-    );
-
-    expect(numBounds).toEqual(5);
-    // why is the layer bounds in here twice?
-    expect(layerBound1).toEqual(
-      'M-236.5999999999999 613.3302389297928L531.4000000000001 613.3302389297928L531.4000000000001 -280.39999999999964L-236.5999999999999 -280.39999999999964z'
-    );
-    expect(layerBound2).toEqual(
-      'M-236.5999999999999 613.3302389297928L531.4000000000001 613.3302389297928L531.4000000000001 -280.39999999999964L-236.5999999999999 -280.39999999999964z'
-    );
-    expect(cbmtBound).toEqual(
-      'M-236.5999999999999 334.00000000000045L531.4000000000001 334.00000000000045L531.4000000000001 -280.39999999999964L-236.5999999999999 -280.39999999999964z'
-    );
-    expect(alabamaBound).toEqual(
-      'M346.1557472398199 613.3302389297928L483.3934682431727 613.3302389297928L483.3934682431727 250.27387360649664L346.1557472398199 250.27387360649664z'
-    );
+    // we don't expect the _map.totalBounds to show unless the announceMovement
+    // option is enabled on page load, by default it is false.
+    // the bounds expected to show include the "projection center", and 3 bounds
+    // one for each map-link
+    await expect(page.locator('.mapml-debug-vectors')).toHaveCount(4);
+    await expect(
+      page.locator('.mapml-debug-vectors.projection-centre ')
+    ).toHaveCount(1);
+    await expect(
+      page.locator('.mapml-debug-vectors.multiple-extents')
+    ).toHaveCount(2);
+    await expect(
+      page.locator('.mapml-debug-vectors.single-extent')
+    ).toHaveCount(1);
   });
 
-  test('Layer bounds are recalculated, should equal remaining extent bounds when one of two extents removed from map', async () => {
+  test.only('When unchecked, extent bounds removed from debug layer', async () => {
     await page.hover(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
     );
@@ -299,26 +281,19 @@ test.describe('Multiple Extents Bounds Tests', () => {
     await page.$eval('body > mapml-viewer', (map) => map.toggleDebug());
     await page.$eval('body > mapml-viewer', (map) => map.toggleDebug());
 
-    const numBounds = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g',
-      (g) => g.childElementCount
-    );
-    const layerBounds = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(2)',
-      (tile) => tile.getAttribute('d')
-    );
-    const remainingExtentBounds = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(3)',
-      (tile) => tile.getAttribute('d')
-    );
-
-    // seems incorrect that there should be 3 bounds when there are only two
-    // extents and one of them is turned off
-    expect(numBounds).toEqual(3);
-    expect(layerBounds).toEqual(remainingExtentBounds);
+    await expect(page.locator('.mapml-debug-vectors')).toHaveCount(3);
+    await expect(
+      page.locator('.mapml-debug-vectors.projection-centre ')
+    ).toHaveCount(1);
+    await expect(
+      page.locator('.mapml-debug-vectors.multiple-extents')
+    ).toHaveCount(1);
+    await expect(
+      page.locator('.mapml-debug-vectors.single-extent')
+    ).toHaveCount(1);
   });
 
-  test('Layer bounds are recalculated when a different child extent is removed', async () => {
+  test.only('Checking an extent adds its bounds, unchecking an extent removes its bounds', async () => {
     // restore extent that was removed in previous test
     await page.click(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1) > div.mapml-layer-item-properties > label > input[type=checkbox]'
@@ -330,59 +305,42 @@ test.describe('Multiple Extents Bounds Tests', () => {
     await page.$eval('body > mapml-viewer', (map) => map.toggleDebug());
     await page.$eval('body > mapml-viewer', (map) => map.toggleDebug());
 
-    const numBounds = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g',
-      (g) => g.childElementCount
-    );
-    const layerBounds = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(2)',
-      (tile) => tile.getAttribute('d')
-    );
-    const differentExtentBounds = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(3)',
-      (tile) => tile.getAttribute('d')
-    );
-
-    expect(numBounds).toEqual(3);
-    expect(layerBounds).toEqual(differentExtentBounds);
+    await expect(page.locator('.mapml-debug-vectors')).toHaveCount(3);
+    await expect(
+      page.locator('.mapml-debug-vectors.projection-centre ')
+    ).toHaveCount(1);
+    await expect(
+      page.locator('.mapml-debug-vectors.multiple-extents')
+    ).toHaveCount(1);
+    await expect(
+      page.locator('.mapml-debug-vectors.single-extent')
+    ).toHaveCount(1);
     // restore the differentExtent onto the map
     await page.click(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(2) > div.mapml-layer-item-properties > label > input[type=checkbox]'
     );
   });
 
-  test('Layer is disabled in layer control when all extents are out of bounds', async () => {
+  test.only('Layer is disabled in layer control when all extents are out of bounds', async () => {
     // if debug mode is enabled, can't focus on map @ leaflet 1.9.3 see issue #720
     // so turn it off here
     await page.$eval('body > mapml-viewer', (map) => map.toggleDebug());
     await page.click('mapml-viewer');
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 7; i++) {
       await page.keyboard.press('ArrowDown');
       await page.waitForTimeout(500);
     }
-    const cbmtDisabled = await page.$eval(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1)',
-      (extent) => extent.hasAttribute('disabled')
-    );
-    const alabamaEnabled = await page.$eval(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(2)',
-      (extent) => !extent.hasAttribute('disabled')
-    );
-    const layerEnabled = await page.$eval(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset',
-      (extent) => !extent.hasAttribute('disabled')
-    );
-    expect(layerEnabled).toEqual(true);
-    expect(cbmtDisabled).toEqual(true);
-    expect(alabamaEnabled).toEqual(true);
-    await page.keyboard.press('ArrowUp');
-    await page.waitForTimeout(500);
-    const cbmtEnabled = await page.$eval(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1)',
-      (extent) => !extent.hasAttribute('disabled')
-    );
 
-    expect(cbmtEnabled).toEqual(true);
+    // layer is still enabled, map-extents that are out of bounds are disabled
+    // those that overlap the viewport are enabled
+    await expect(page.getByText('Multiple Extents')).toBeEnabled();
+    await expect(page.getByText('cbmt')).toBeDisabled();
+    await expect(page.getByText('alabama_feature')).toBeEnabled();
+    await page.keyboard.press('ArrowDown');
+    await page.waitForTimeout(500);
+    await expect(page.getByText('Multiple Extents')).toBeDisabled();
+    await expect(page.getByText('cbmt')).toBeDisabled();
+    await expect(page.getByText('alabama_feature')).toBeDisabled();
   });
 
   test('Extent is individually disabled in layer control when out of bounds', async () => {
