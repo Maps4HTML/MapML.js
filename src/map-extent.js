@@ -72,6 +72,7 @@ export class MapExtent extends HTMLElement {
       case 'checked':
         this.whenReady().then(() => {
           this._changeExtent();
+          this._calculateBounds();
         });
         break;
       case 'opacity':
@@ -142,7 +143,7 @@ export class MapExtent extends HTMLElement {
     this._layer = this.parentLayer._layer;
     this._map = this._layer._map;
     // reset the extent
-    delete this.parentLayer._extent;
+    delete this.parentLayer.bounds;
     // this code comes from MapMLLayer._initialize.processExtents
     this._templateVars = this._initTemplateVars(
       // mapml is the layer- element OR the mapml- document root
@@ -175,6 +176,7 @@ export class MapExtent extends HTMLElement {
       this._layer._properties._queries =
         this._layer._properties._queries.concat(this._templatedLayer._queries);
     }
+    this._calculateBounds();
   }
   getLayerControlHTML() {
     return this._layerControlHTML;
@@ -693,7 +695,7 @@ export class MapExtent extends HTMLElement {
 
     this._map.removeLayer(this._templatedLayer);
     delete this._templatedLayer;
-    delete this.parentLayer._extent;
+    delete this.parentLayer.bounds;
   }
   _changeOpacity() {
     if (this.opacity >= 0 && this.opacity <= 1.0) {
@@ -701,6 +703,55 @@ export class MapExtent extends HTMLElement {
       this._templateVars.opacity = this.opacity;
       this._opacitySlider.value = this.opacity;
     }
+  }
+  _calculateBounds() {
+    // await this.whenReady();
+    let bounds = null,
+      zoomMax = 0,
+      zoomMin = 0,
+      maxNativeZoom = 0,
+      minNativeZoom = 0;
+    if (this.checked) {
+      for (let j = 0; j < this._templateVars.length; j++) {
+        let inputData = M._extractInputBounds(this._templateVars[j]);
+        this._templateVars[j].tempExtentBounds = inputData.bounds;
+        this._templateVars[j].extentZoomBounds = inputData.zoomBounds;
+        if (!bounds) {
+          bounds = this._templateVars[j].tempExtentBounds;
+          zoomMax = this._templateVars[j].extentZoomBounds.maxZoom;
+          zoomMin = this._templateVars[j].extentZoomBounds.minZoom;
+          maxNativeZoom = this._templateVars[j].extentZoomBounds.maxNativeZoom;
+          minNativeZoom = this._templateVars[j].extentZoomBounds.minNativeZoom;
+        } else {
+          bounds.extend(this._templateVars[j].tempExtentBounds.min);
+          bounds.extend(this._templateVars[j].tempExtentBounds.max);
+          zoomMax = Math.max(
+            zoomMax,
+            this._templateVars[j].extentZoomBounds.maxZoom
+          );
+          zoomMin = Math.min(
+            zoomMin,
+            this._templateVars[j].extentZoomBounds.minZoom
+          );
+          maxNativeZoom = Math.max(
+            maxNativeZoom,
+            this._templateVars[j].extentZoomBounds.maxNativeZoom
+          );
+          minNativeZoom = Math.min(
+            minNativeZoom,
+            this._templateVars[j].extentZoomBounds.minNativeZoom
+          );
+        }
+      }
+    }
+    // cannot be named as layerBounds if we decide to keep the debugoverlay logic
+    this._templatedLayer.bounds = bounds;
+    this._templatedLayer.zoomBounds = {
+      minZoom: zoomMin,
+      maxZoom: zoomMax,
+      maxNativeZoom,
+      minNativeZoom
+    };
   }
 
   whenReady() {
