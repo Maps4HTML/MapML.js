@@ -4,7 +4,7 @@ test.describe('Adding and Removing Multiple Extents', () => {
   let page;
   let context;
   test.beforeAll(async function () {
-    context = await chromium.launchPersistentContext('');
+    context = await chromium.launchPersistentContext('', { slowMo: 500 });
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
@@ -232,18 +232,18 @@ test.describe('Adding and Removing Multiple Extents', () => {
   });
 });
 
-test.describe('Multiple Extents Bounds Tests', () => {
+test.describe.only('Multiple Extents Bounds Tests', () => {
   let page;
   let context;
   test.beforeAll(async function () {
-    context = await chromium.launchPersistentContext('');
+    context = await chromium.launchPersistentContext('', { slowMo: 500 });
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('multipleExtents.html');
   });
 
-  test.only('Only Extent Bounds show in debug mode', async () => {
+  test('Only Extent Bounds show in debug mode', async () => {
     // this test used to be titled "Both Extent Bounds and Layer Bounds show in debug mode"
     // but since introduction of map-extent element, it was decided to only show
     // the bounds rectangles for the map-link elements
@@ -265,7 +265,7 @@ test.describe('Multiple Extents Bounds Tests', () => {
     ).toHaveCount(1);
   });
 
-  test.only('When unchecked, extent bounds removed from debug layer', async () => {
+  test('When unchecked, extent bounds removed from debug layer', async () => {
     await page.hover(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
     );
@@ -293,7 +293,7 @@ test.describe('Multiple Extents Bounds Tests', () => {
     ).toHaveCount(1);
   });
 
-  test.only('Checking an extent adds its bounds, unchecking an extent removes its bounds', async () => {
+  test('Checking an extent adds its bounds, unchecking an extent removes its bounds', async () => {
     // restore extent that was removed in previous test
     await page.click(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1) > div.mapml-layer-item-properties > label > input[type=checkbox]'
@@ -321,33 +321,39 @@ test.describe('Multiple Extents Bounds Tests', () => {
     );
   });
 
-  test.only('Layer is disabled in layer control when all extents are out of bounds', async () => {
+  test('Layer is disabled in layer control when all extents are out of bounds', async () => {
     // if debug mode is enabled, can't focus on map @ leaflet 1.9.3 see issue #720
     // so turn it off here
     await page.$eval('body > mapml-viewer', (map) => map.toggleDebug());
     await page.click('mapml-viewer');
     for (let i = 0; i < 7; i++) {
       await page.keyboard.press('ArrowDown');
-      await page.waitForTimeout(500);
     }
 
     // layer is still enabled, map-extents that are out of bounds are disabled
     // those that overlap the viewport are enabled
     await expect(page.getByText('Multiple Extents')).toBeEnabled();
-    await expect(page.getByText('cbmt')).toBeDisabled();
+    // currently, we don't italicize extents except when ALL extents in the layer
+    // are disabled due to the layer being disabled.
+    // await expect(page.getByText('cbmt')).toBeDisabled();
     await expect(page.getByText('alabama_feature')).toBeEnabled();
     await page.keyboard.press('ArrowDown');
-    await page.waitForTimeout(500);
     await expect(page.getByText('Multiple Extents')).toBeDisabled();
-    await expect(page.getByText('cbmt')).toBeDisabled();
-    await expect(page.getByText('alabama_feature')).toBeDisabled();
+    await expect(page.getByText('cbmt')).toHaveCSS('font-style', 'italic');
+    await expect(page.getByText('alabama_feature')).toHaveCSS(
+      'font-style',
+      'italic'
+    );
   });
 
   test('Extent is individually disabled in layer control when out of bounds', async () => {
+    await page.pause();
     for (let i = 0; i < 2; i++) {
       await page.keyboard.press('ArrowLeft');
-      await page.waitForTimeout(500);
     }
+    const layerControl = await page.locator('leaflet-control-layers.leaflet-control');
+    const alabamaFieldset = layerControl.getByText('alabama_feature');
+    await expect(alabamaFieldset).toHaveCount(1);
     const alabamaDisabled = await page.$eval(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(2)',
       (extent) => extent.hasAttribute('disabled')
@@ -362,11 +368,12 @@ test.describe('Multiple Extents Bounds Tests', () => {
     );
     expect(cbmtEnabled).toEqual(true);
     expect(layerEnabled).toEqual(true);
+    
+    await expect(page.getByText('alabama_feature')).toBeDisabled();
     expect(alabamaDisabled).toEqual(true);
     // move Alabama back into bounds
     for (let i = 0; i < 2; i++) {
       await page.keyboard.press('ArrowRight');
-      await page.waitForTimeout(500);
     }
     const alabamaEnabled = await page.$eval(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(2)',

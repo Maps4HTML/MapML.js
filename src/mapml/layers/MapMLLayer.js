@@ -78,19 +78,6 @@ export var MapMLLayer = L.Layer.extend({
       this._container.style.zIndex = this.options.zIndex;
     }
   },
-  // remove all the extents before removing the layer from the map
-  _removeExtents: function (map) {
-    if (this._properties._mapExtents) {
-      for (let i = 0; i < this._properties._mapExtents.length; i++) {
-        if (this._properties._mapExtents[i].templatedLayer) {
-          map.removeLayer(this._properties._mapExtents[i].templatedLayer);
-        }
-      }
-    }
-    if (this._properties._queries) {
-      delete this._properties._queries;
-    }
-  },
   _changeOpacity: function (e) {
     if (e && e.target && e.target.value >= 0 && e.target.value <= 1.0) {
       this.changeOpacity(e.target.value);
@@ -171,16 +158,6 @@ export var MapMLLayer = L.Layer.extend({
   getEvents: function () {
     return { zoomanim: this._onZoomAnim };
   },
-  redraw: function () {
-    // for now, only redraw templated layers.
-    if (this._properties._mapExtents) {
-      for (let i = 0; i < this._properties._mapExtents.length; i++) {
-        if (this._properties._mapExtents[i]._templatedLayer) {
-          this._properties._mapExtents[i]._templatedLayer.redraw();
-        }
-      }
-    }
-  },
   _onZoomAnim: function (e) {
     // this callback will be invoked AFTER <layer- > has been removed
     // but due to the characteristic of JavaScript, the context (this pointer) can still be used
@@ -247,9 +224,6 @@ export var MapMLLayer = L.Layer.extend({
     if (this._staticTileLayer) map.removeLayer(this._staticTileLayer);
     if (this._mapmlvectors) map.removeLayer(this._mapmlvectors);
     if (this._imageLayer) map.removeLayer(this._imageLayer);
-    if (this._properties && this._properties._mapExtents)
-      this._removeExtents(map);
-
     map.off('popupopen', this._attachSkipButtons);
   },
   getAttribution: function () {
@@ -947,9 +921,11 @@ export var MapMLLayer = L.Layer.extend({
     if (!this._properties || !this._map) {
       return;
     }
-    var serverExtent = this._properties._mapExtents
-        ? this._properties._mapExtents
-        : [this._properties],
+    var serverExtent = 
+//            this._properties._mapExtents
+//        ? this._properties._mapExtents
+//        : 
+                [this._properties],
       lp;
 
     // loop through the map-extent elements and assign each one its crs
@@ -970,13 +946,15 @@ export var MapMLLayer = L.Layer.extend({
         ? serverExtent[i].getAttribute('units')
         : null;
       if (lp && M[lp]) {
-        if (this._properties._mapExtents)
-          this._properties._mapExtents[i].crs = M[lp];
-        else this._properties.crs = M[lp];
+//        if (this._properties._mapExtents)
+//          this._properties._mapExtents[i].crs = M[lp];
+//        else 
+        this._properties.crs = M[lp];
       } else {
-        if (this._properties._mapExtents)
-          this._properties._mapExtents[i].crs = M.OSMTILE;
-        else this._properties.crs = M.OSMTILE;
+//        if (this._properties._mapExtents)
+//          this._properties._mapExtents[i].crs = M.OSMTILE;
+//        else 
+          this._properties.crs = M.OSMTILE;
       }
     }
   },
