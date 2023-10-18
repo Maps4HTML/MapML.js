@@ -59,10 +59,17 @@ export class MapLayer extends HTMLElement {
 
   get extent() {
     // calculate the bounds of all content, return it.
-    if (!this._extent) {
-      this._calculateExtent();
+    if (!this._layer.bounds) {
+      this._layer._calculateBounds();
     }
-    return this._extent;
+    return Object.assign(
+      M._convertAndFormatPCRS(
+        this._layer.bounds,
+        this._layer._properties.crs,
+        this._layer._properties.projection
+      ),
+      { zoom: this._layer.zoomBounds }
+    );
   }
 
   constructor() {
@@ -413,140 +420,8 @@ export class MapLayer extends HTMLElement {
       this.checked = this._layer._map.hasLayer(this._layer);
     }
   }
-  //sets the <layer-> elements .bounds property
-  _calculateExtent() {
-    let bounds,
-      zoomMax,
-      zoomMin,
-      maxNativeZoom,
-      minNativeZoom,
-      zoomBounds = {
-        minZoom: 0,
-        maxZoom: 0,
-        maxNativeZoom: 0,
-        minNativeZoom: 0
-      };
-    let layerTypes = [
-      '_staticTileLayer',
-      '_imageLayer',
-      '_mapmlvectors',
-      '_templatedLayer'
-    ];
-    const mapExtents = this.querySelectorAll('map-extent').length
-      ? this.querySelectorAll('map-extent')
-      : this.shadowRoot
-      ? this.shadowRoot.querySelectorAll('map-extent')
-      : [];
-    layerTypes.forEach((type) => {
-      if (type === '_templatedLayer' && mapExtents.length) {
-        for (let i = 0; i < mapExtents.length; i++) {
-          for (let j = 0; j < mapExtents[i]._templateVars.length; j++) {
-            let inputData = M._extractInputBounds(
-              mapExtents[i]._templateVars[j]
-            );
-            mapExtents[i]._templateVars[j].tempExtentBounds = inputData.bounds;
-            mapExtents[i]._templateVars[j].extentZoomBounds =
-              inputData.zoomBounds;
-          }
-        }
-        for (let i = 0; i < mapExtents.length; i++) {
-          if (mapExtents[i].checked) {
-            for (let j = 0; j < mapExtents[i]._templateVars.length; j++) {
-              if (!bounds) {
-                bounds = mapExtents[i]._templateVars[j].tempExtentBounds;
-                zoomMax =
-                  mapExtents[i]._templateVars[j].extentZoomBounds.maxZoom;
-                zoomMin =
-                  mapExtents[i]._templateVars[j].extentZoomBounds.minZoom;
-                maxNativeZoom =
-                  mapExtents[i]._templateVars[j].extentZoomBounds.maxNativeZoom;
-                minNativeZoom =
-                  mapExtents[i]._templateVars[j].extentZoomBounds.minNativeZoom;
-              } else {
-                bounds.extend(
-                  mapExtents[i]._templateVars[j].tempExtentBounds.min
-                );
-                bounds.extend(
-                  mapExtents[i]._templateVars[j].tempExtentBounds.max
-                );
-                zoomMax = Math.max(
-                  zoomMax,
-                  mapExtents[i]._templateVars[j].extentZoomBounds.maxZoom
-                );
-                zoomMin = Math.min(
-                  zoomMin,
-                  mapExtents[i]._templateVars[j].extentZoomBounds.minZoom
-                );
-                maxNativeZoom = Math.max(
-                  maxNativeZoom,
-                  mapExtents[i]._templateVars[j].extentZoomBounds.maxNativeZoom
-                );
-                minNativeZoom = Math.min(
-                  minNativeZoom,
-                  mapExtents[i]._templateVars[j].extentZoomBounds.minNativeZoom
-                );
-              }
-            }
-          }
-        }
-        zoomBounds.minZoom = zoomMin;
-        zoomBounds.maxZoom = zoomMax;
-        zoomBounds.minNativeZoom = minNativeZoom;
-        zoomBounds.maxNativeZoom = maxNativeZoom;
-        // is this necessary anymore?  it's a side effect, probably not desirable
-        this._layer._properties.zoomBounds = zoomBounds;
-        this._layer._properties.layerBounds = bounds;
-      } else if (type === '_staticTileLayer' && this._layer._staticTileLayer) {
-        if (this._layer[type].layerBounds) {
-          if (!bounds) {
-            bounds = this._layer[type].layerBounds;
-            zoomBounds = this._layer[type].zoomBounds;
-          } else {
-            bounds.extend(this._layer[type].layerBounds.min);
-            bounds.extend(this._layer[type].layerBounds.max);
-          }
-        }
-      } else if (type === '_imageLayer' && this._layer._imageLayer) {
-        if (this._layer[type].layerBounds) {
-          if (!bounds) {
-            bounds = this._layer[type].layerBounds;
-            zoomBounds = this._layer[type].zoomBounds;
-          } else {
-            bounds.extend(this._layer[type].layerBounds.min);
-            bounds.extend(this._layer[type].layerBounds.max);
-          }
-        }
-      } else if (
-        // only process extent if mapmlvectors is not empty
-        type === '_mapmlvectors' &&
-        this._layer._mapmlvectors &&
-        Object.keys(this._layer[type]._layers).length !== 0
-      ) {
-        if (this._layer[type].layerBounds) {
-          if (!bounds) {
-            bounds = this._layer[type].layerBounds;
-            zoomBounds = this._layer[type].zoomBounds;
-          } else {
-            bounds.extend(this._layer[type].layerBounds.min);
-            bounds.extend(this._layer[type].layerBounds.max);
-          }
-        }
-      }
-    });
-    if (bounds) {
-      //assigns the formatted extent object to .extent and spreads the zoom ranges to .extent also
-      this._extent = Object.assign(
-        M._convertAndFormatPCRS(
-          bounds,
-          this._layer._properties.crs,
-          this._layer._properties.projection
-        ),
-        { zoom: zoomBounds }
-      );
-    }
-  }
   zoomTo() {
-    this.whenReady().then(() => {
+    this.whenElemsReady().then(() => {
       let map = this.parentElement._map,
         extent = this.extent,
         tL = extent.topLeft.pcrs,
@@ -587,7 +462,7 @@ export class MapLayer extends HTMLElement {
   whenReady() {
     return new Promise((resolve, reject) => {
       let interval, failureTimer;
-      if (this._layer) {
+      if (this._layer && (!this.src || this.shadowRoot?.childNodes.length)) {
         resolve();
       } else {
         let layerElement = this;
@@ -595,7 +470,10 @@ export class MapLayer extends HTMLElement {
         failureTimer = setTimeout(layerNotDefined, 5000);
       }
       function testForLayer(layerElement) {
-        if (layerElement._layer) {
+        if (
+          layerElement._layer &&
+          (!layerElement.src || layerElement.shadowRoot?.childNodes.length)
+        ) {
           clearInterval(interval);
           clearTimeout(failureTimer);
           resolve();

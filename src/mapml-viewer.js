@@ -1351,7 +1351,6 @@ export class MapViewer extends HTMLElement {
     // check if all the children elements (map-extent, map-feature) of all layer- are ready
     for (let layer of [...this.layers]) {
       layersReady.push(layer.whenElemsReady());
-      layersReady.push(layer.whenReady());
     }
     return Promise.allSettled(layersReady);
   }

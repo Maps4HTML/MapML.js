@@ -131,6 +131,106 @@ export var MapMLLayer = L.Layer.extend({
     map.on('popupopen', this._attachSkipButtons, this);
   },
 
+  _calculateBounds: function () {
+    // await this._layerEl.whenReady();
+    // await this._layerEl.whenElemsReady();
+    let bounds,
+      zoomBounds = {
+        minZoom: 0,
+        maxZoom: 0,
+        maxNativeZoom: 0,
+        minNativeZoom: 0
+      };
+    let layerTypes = [
+      '_staticTileLayer',
+      '_imageLayer',
+      '_mapmlvectors',
+      '_templatedLayer'
+    ];
+    const mapExtents = this._layerEl.querySelectorAll('map-extent').length
+      ? this._layerEl.querySelectorAll('map-extent')
+      : this._layerEl.shadowRoot
+      ? this._layerEl.shadowRoot.querySelectorAll('map-extent')
+      : [];
+    layerTypes.forEach((type) => {
+      if (type === '_templatedLayer' && mapExtents.length) {
+        let zoomMax = zoomBounds.maxZoom,
+          zoomMin = zoomBounds.minZoom,
+          maxNativeZoom = zoomBounds.maxNativeZoom,
+          minNativeZoom = zoomBounds.minNativeZoom;
+        for (let i = 0; i < mapExtents.length; i++) {
+          if (mapExtents[i]._templatedLayer.bounds) {
+            let templatedLayer = mapExtents[i]._templatedLayer;
+            if (!bounds) {
+              bounds = templatedLayer.bounds;
+              zoomBounds = templatedLayer.zoomBounds;
+            } else {
+              bounds.extend(templatedLayer.bounds.min);
+              bounds.extend(templatedLayer.bounds.max);
+              zoomMax = Math.max(zoomMax, templatedLayer.zoomBounds.maxZoom);
+              zoomMin = Math.min(zoomMin, templatedLayer.zoomBounds.minZoom);
+              maxNativeZoom = Math.max(
+                maxNativeZoom,
+                templatedLayer.zoomBounds.maxNativeZoom
+              );
+              minNativeZoom = Math.min(
+                minNativeZoom,
+                templatedLayer.zoomBounds.minNativeZoom
+              );
+              zoomBounds.minZoom = zoomMin;
+              zoomBounds.maxZoom = zoomMax;
+              zoomBounds.minNativeZoom = minNativeZoom;
+              zoomBounds.maxNativeZoom = maxNativeZoom;
+            }
+          }
+        }
+        // is this necessary anymore?  it's a side effect, probably not desirable
+        // this._layer._properties.zoomBounds = zoomBounds;
+        // this._layer._properties.layerBounds = bounds;
+      } else if (type === '_staticTileLayer' && this._staticTileLayer) {
+        if (this[type].layerBounds) {
+          if (!bounds) {
+            bounds = this[type].layerBounds;
+            zoomBounds = this[type].zoomBounds;
+          } else {
+            bounds.extend(this[type].layerBounds.min);
+            bounds.extend(this[type].layerBounds.max);
+          }
+        }
+      } else if (type === '_imageLayer' && this._imageLayer) {
+        if (this[type].layerBounds) {
+          if (!bounds) {
+            bounds = this[type].layerBounds;
+            zoomBounds = this[type].zoomBounds;
+          } else {
+            bounds.extend(this[type].layerBounds.min);
+            bounds.extend(this[type].layerBounds.max);
+          }
+        }
+      } else if (
+        // only process extent if mapmlvectors is not empty
+        type === '_mapmlvectors' &&
+        this._mapmlvectors &&
+        Object.keys(this[type]._layers).length !== 0
+      ) {
+        if (this[type].layerBounds) {
+          if (!bounds) {
+            bounds = this[type].layerBounds;
+            zoomBounds = this[type].zoomBounds;
+          } else {
+            bounds.extend(this[type].layerBounds.min);
+            bounds.extend(this[type].layerBounds.max);
+          }
+        }
+      }
+    });
+    if (bounds) {
+      //assigns the formatted extent object to .extent and spreads the zoom ranges to .extent also
+      this.bounds = bounds;
+      this.zoomBounds = zoomBounds;
+    }
+  },
+
   _validProjection: function (map) {
     const mapExtents = this._layerEl.querySelectorAll('map-extent');
     let noLayer = false;
