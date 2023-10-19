@@ -1,5 +1,6 @@
 import './leaflet.js'; // a lightly modified version of Leaflet for use as browser module
 import './mapml.js'; // modified URI to make the function a property of window scope (possibly a bad thing to do).
+import { createLayerControlHTML } from './createLayerControlForLayer.js';
 
 export class MapLayer extends HTMLElement {
   static get observedAttributes() {
@@ -110,6 +111,7 @@ export class MapLayer extends HTMLElement {
   connectedCallback() {
     if (this.hasAttribute('data-moving')) return;
     const doConnected = this._onAdd.bind(this);
+    this._createLayerControlHTML = createLayerControlHTML;
     this.parentElement
       .whenReady()
       .then(() => {
@@ -325,7 +327,14 @@ export class MapLayer extends HTMLElement {
       let layer = this._layer,
         map = layer?._map;
       if (map) {
-        const mapExtents = this.querySelectorAll('map-extent');
+        let mapExtents = this.querySelectorAll('map-extent');
+        if (this.shadowRoot) {
+          mapExtents.concat(this.shadowRoot.querySelectorAll('map-extent'));
+        }
+        let input = this._layerControlCheckbox,
+          label = this._layerControlLabel,
+          opacityControl = this._opacityControl,
+          opacitySlider = this._opacitySlider;
         let disabledExtentCount = 0,
           totalExtentCount = 0,
           layerTypes = [
@@ -361,10 +370,18 @@ export class MapLayer extends HTMLElement {
         ) {
           this.setAttribute('disabled', ''); //set a disabled attribute on the layer element
           this.disabled = true;
+          input.disabled = true;
+          opacitySlider.disabled = true;
+          label.style.fontStyle = 'italic';
+          opacityControl.style.fontStyle = 'italic';
         } else {
           //might be better not to disable the layer controls, might want to deselect layer even when its out of bounds
           this.removeAttribute('disabled');
           this.disabled = false;
+          input.disabled = false;
+          opacitySlider.disabled = false;
+          label.style.fontStyle = 'normal';
+          opacityControl.style.fontStyle = 'normal';
         }
         map.fire('validate');
       }
