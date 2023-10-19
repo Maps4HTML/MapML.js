@@ -85,8 +85,7 @@ export class MapExtent extends HTMLElement {
       case 'hidden':
         if (oldValue !== newValue) {
           this.whenReady().then(() => {
-            let extentsRootFieldset =
-              this._layer.getLayerControlExtentContainer();
+            let extentsRootFieldset = this._propertiesGroupAnatomy;
             let position = Array.from(
               this.parentNode.querySelectorAll('map-extent:not([hidden])')
             ).indexOf(this);
@@ -185,6 +184,10 @@ export class MapExtent extends HTMLElement {
     if (!this._templatedLayer) return;
     let totalTemplateCount = this._templatedLayer._templates.length,
       disabledTemplateCount = 0;
+    let input = this._layerControlCheckbox,
+      label = this._layerControlLabel, // access to the label for the specific map-extent
+      opacityControl = this._opacityControl,
+      opacitySlider = this._opacitySlider;
 
     for (let j = 0; j < this._templatedLayer._templates.length; j++) {
       if (this._templatedLayer._templates[j].rel === 'query') {
@@ -197,9 +200,18 @@ export class MapExtent extends HTMLElement {
     if (totalTemplateCount === disabledTemplateCount) {
       this.setAttribute('disabled', '');
       this.disabled = true;
+      // update the status of layerControl
+      input.disabled = true;
+      opacitySlider.disabled = true;
+      label.style.fontStyle = 'italic';
+      opacityControl.style.fontStyle = 'italic';
     } else {
       this.removeAttribute('disabled');
       this.disabled = false;
+      input.disabled = false;
+      opacitySlider.disabled = false;
+      label.style.fontStyle = 'normal';
+      opacityControl.style.fontStyle = 'normal';
     }
     return this.disabled;
   }
@@ -528,7 +540,6 @@ export class MapExtent extends HTMLElement {
     opacity.setAttribute('value', this.opacity);
     opacity.value = this.opacity;
     opacity.addEventListener('change', changeOpacity.bind(this));
-    this._opacitySlider = opacity;
 
     var extentItemNameSpan = L.DomUtil.create(
       'span',
@@ -653,6 +664,9 @@ export class MapExtent extends HTMLElement {
         };
       }
     };
+    this._opacitySlider = opacity;
+    this._opacityControl = opacityControl;
+    this._layerControlLabel = extentLabel;
     return extent;
   }
   _changeExtent() {
@@ -673,7 +687,7 @@ export class MapExtent extends HTMLElement {
     this._layerControlCheckbox.checked = this.checked;
   }
   _validateLayerControlContainerHidden() {
-    let extentsFieldset = this._layer.getLayerControlExtentContainer();
+    let extentsFieldset = this._layer._layerEl._propertiesGroupAnatomy;
     let nodeToSearch = this.parentLayer.shadowRoot || this.parentLayer;
     if (
       nodeToSearch.querySelectorAll('map-extent:not([hidden])').length === 0
