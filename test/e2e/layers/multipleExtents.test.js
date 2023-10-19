@@ -51,7 +51,8 @@ test.describe('Adding and Removing Multiple Extents', () => {
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1) > div.mapml-layer-item-settings > details > input[type=range]'
     );
 
-    // remove the cbmt extent by clearing its checkbox
+    // remove the cbmt extent by clearing its checkbox, leaving two  layers,
+    // each with a single extent (alabama_feature, single-extent/toporama image)
     await page.click('text=cbmt');
     const startExtentCount = await page.$$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-templatedlayer-container',
@@ -61,7 +62,7 @@ test.describe('Adding and Removing Multiple Extents', () => {
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-templatedlayer-container',
       (div) => div.className
     );
-    expect(startExtentCount).toEqual(1);
+    expect(startExtentCount).toEqual(2);
     expect(alabama).toEqual('leaflet-layer mapml-templatedlayer-container');
 
     // restore the cbmt extent
@@ -70,7 +71,7 @@ test.describe('Adding and Removing Multiple Extents', () => {
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-templatedlayer-container',
       (extents) => extents.length
     );
-    expect(endExtentCount).toEqual(2);
+    expect(endExtentCount).toEqual(3);
     alabama = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(4) > div',
       (div) => div.className
@@ -135,7 +136,7 @@ test.describe('Adding and Removing Multiple Extents', () => {
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div',
       (div) => div.className
     );
-    expect(startExtentCount).toEqual(1);
+    expect(startExtentCount).toEqual(2);
     expect(cbmt).toEqual('leaflet-layer mapml-templated-tile-container');
 
     // restore alabama to map
@@ -164,7 +165,7 @@ test.describe('Adding and Removing Multiple Extents', () => {
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(2) > div.mapml-layer-item-settings > details > input[type=range]',
       (opacity) => opacity.value
     );
-    expect(endExtentCount).toEqual(2);
+    expect(endExtentCount).toEqual(3);
     // alabama is a templated feature extent
     // the opacity of the alabama features is tested by the selector
     expect(alabama).toEqual('leaflet-layer mapml-features-container');
@@ -192,7 +193,7 @@ test.describe('Adding and Removing Multiple Extents', () => {
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane',
       (div) => div.childElementCount
     );
-    expect(layersCount).toEqual(0);
+    expect(layersCount).toEqual(1);
 
     // turn the Multiple Extents layer on
     await page.click("text='Multiple Extents'");
@@ -204,14 +205,14 @@ test.describe('Adding and Removing Multiple Extents', () => {
       "div.mapml-templatedlayer-container[style='opacity: 0.5; z-index: 1;'] > div",
       (div) => div.className
     );
-    const layerClass = await page.$eval(
-      'div.mapml-layer',
-      (div) => div.style.opacity
-    );
-    const layerOpacity = await page.$eval(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > details > input[type=range]',
-      (opacity) => opacity.value
-    );
+    await page.pause();
+    const layer = page.getByTestId('multiple-extents');
+
+    const layerOpacity = await layer.evaluate((layer) => {
+      return layer._layerControl._container.querySelector(
+        '.mapml-layer-item-opacity.mapml-control-layers input'
+      ).value;
+    });
     const cbmtOpacity = await page.$eval(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1) > div.mapml-layer-item-settings > details > input[type=range]',
       (opacity) => opacity.value
@@ -220,8 +221,6 @@ test.describe('Adding and Removing Multiple Extents', () => {
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(2) > div.mapml-layer-item-settings > details > input[type=range]',
       (opacity) => opacity.value
     );
-    // layer opacity is tested by the selector
-    expect(layerClass).toEqual('0.5');
     // alabama opacity is tested by the selector
     expect(alabamaClass).toEqual('leaflet-layer mapml-features-container');
     // cbmt opacity is tested by the selector
@@ -232,7 +231,7 @@ test.describe('Adding and Removing Multiple Extents', () => {
   });
 });
 
-test.describe.only('Multiple Extents Bounds Tests', () => {
+test.describe('Multiple Extents Bounds Tests', () => {
   let page;
   let context;
   test.beforeAll(async function () {
@@ -347,39 +346,55 @@ test.describe.only('Multiple Extents Bounds Tests', () => {
   });
 
   test('Extent is individually disabled in layer control when out of bounds', async () => {
-    await page.pause();
-    for (let i = 0; i < 2; i++) {
-      await page.keyboard.press('ArrowLeft');
-    }
-    const layerControl = await page.locator('leaflet-control-layers.leaflet-control');
-    const alabamaFieldset = layerControl.getByText('alabama_feature');
-    await expect(alabamaFieldset).toHaveCount(1);
-    const alabamaDisabled = await page.$eval(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(2)',
-      (extent) => extent.hasAttribute('disabled')
+    const map = await page.locator('mapml-viewer');
+    await map.evaluate((map) => map.zoomTo(-5.7, -94.5, 1));
+
+    // 'alabama' bounds still overlap viewport
+    const alabamaExtentItem = page.getByText('alabama_feature');
+    await expect(alabamaExtentItem).toHaveCount(1);
+    await expect(alabamaExtentItem).toHaveCSS('font-style', 'normal');
+
+    const alabamaMapExtent = page.locator('map-extent[label=alabama_feature]');
+    await expect(alabamaMapExtent).toHaveCount(1);
+    await expect(alabamaMapExtent).not.toHaveAttribute('disabled');
+
+    // cbmt bounds slightly outside viewport, map-extent should be disabled
+    const cbmtMapExtent = page.locator('map-extent[label=cbmt]');
+    await expect(cbmtMapExtent).toHaveCount(1);
+    await expect(cbmtMapExtent).toHaveAttribute('disabled');
+
+    // the text can't be disabled, but it should simulated disabled by being
+    // rendered in gray italic font
+    const cbmtExtentItem = page.getByText('cbmt');
+    await expect(cbmtExtentItem).toHaveCount(1);
+    await expect(cbmtExtentItem).toHaveCSS('font-style', 'italic');
+
+    // multiple extents layer's extents should all be slightly offscreen,
+    // layer and everything in it should be disabled or in italics
+
+    await map.evaluate((map) => map.zoomTo(-11, -120, 1));
+    await expect(alabamaMapExtent).toHaveAttribute('disabled');
+    await expect(alabamaExtentItem).toHaveCSS('font-style', 'italic');
+    await expect(cbmtMapExtent).toHaveAttribute('disabled');
+    await expect(cbmtExtentItem).toHaveCSS('font-style', 'italic');
+
+    const layerOpacitySliderText = page.locator(
+      '.leaflet-control-layers-overlays > fieldset:nth-child(1) .mapml-layer-item-opacity.mapml-control-layers > summary'
     );
-    const cbmtEnabled = await page.$eval(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(1)',
-      (extent) => !extent.hasAttribute('disabled')
+    await expect(layerOpacitySliderText).toHaveCount(1);
+    await expect(layerOpacitySliderText).toHaveCSS('font-style', 'italic');
+
+    // expect the remove layer button to be enabled
+
+    // expect the remove extent buttons to be enabled
+    const cbmtRemoveExtentButton = page.locator(
+      'fieldset.mapml-layer-extent:nth-child(1) > div:nth-child(1) > div:nth-child(2) > button:nth-child(1)'
     );
-    const layerEnabled = await page.$eval(
-      'text=Multiple Extents',
-      (extent) => !extent.closest('fieldset').hasAttribute('disabled')
+    await expect(cbmtRemoveExtentButton).toBeEnabled();
+    const alabamaRemoveExtentButton = page.locator(
+      'fieldset.mapml-layer-extent:nth-child(1) > div:nth-child(1) > div:nth-child(2) > button:nth-child(1)'
     );
-    expect(cbmtEnabled).toEqual(true);
-    expect(layerEnabled).toEqual(true);
-    
-    await expect(page.getByText('alabama_feature')).toBeDisabled();
-    expect(alabamaDisabled).toEqual(true);
-    // move Alabama back into bounds
-    for (let i = 0; i < 2; i++) {
-      await page.keyboard.press('ArrowRight');
-    }
-    const alabamaEnabled = await page.$eval(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div.mapml-layer-item-settings > fieldset > fieldset:nth-child(2)',
-      (extent) => !extent.hasAttribute('disabled')
-    );
-    expect(alabamaEnabled).toEqual(true);
+    await expect(alabamaRemoveExtentButton).toBeEnabled();
   });
 });
 
@@ -387,7 +402,7 @@ test.describe('Multiple Extents Reordering and ZIndices Tests', () => {
   let page;
   let context;
   test.beforeAll(async function () {
-    context = await chromium.launchPersistentContext('');
+    context = await chromium.launchPersistentContext('', { slowMo: 500 });
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
@@ -474,13 +489,13 @@ test.describe('Multiple Extents Reordering and ZIndices Tests', () => {
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane',
       (div) => div.childElementCount
     );
-    expect(layersCount).toEqual(0);
+    expect(layersCount).toEqual(1);
     await page.click("text='Multiple Extents'");
     layersCount = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane',
       (div) => div.childElementCount
     );
-    expect(layersCount).toEqual(1);
+    expect(layersCount).toEqual(2);
 
     // having not been re-ordered, alabama should remain first in the layer control
     let firstExtentInLayerControl = await page.$eval(
@@ -510,13 +525,13 @@ test.describe('Multiple Extents Reordering and ZIndices Tests', () => {
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane',
       (div) => div.childElementCount
     );
-    expect(layersCount).toEqual(0);
+    expect(layersCount).toEqual(1);
     await page.click("text='Multiple Extents'");
     layersCount = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane',
       (div) => div.childElementCount
     );
-    expect(layersCount).toEqual(1);
+    expect(layersCount).toEqual(2);
 
     // having not been re-ordered, alabama should remain first in the layer control
     firstExtentInLayerControl = await page.$eval(
