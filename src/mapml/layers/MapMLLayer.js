@@ -267,12 +267,15 @@ export var MapMLLayer = L.Layer.extend({
       return;
     }
     // get the min and max zooms from all extents
+    const layerEl = this._layerEl,
+      // prerequisite: no inline and remote mapml elements exists at the same time
+      mapExtents = layerEl.shadowRoot
+        ? layerEl.shadowRoot.querySelectorAll('map-extent')
+        : layerEl.querySelectorAll('map-extent');
     var toZoom = e.zoom,
       zoom =
-        this._properties && this._properties._mapExtents
-          ? this._properties._mapExtents[0].querySelector(
-              'map-input[type=zoom]'
-            )
+        mapExtents.length > 0
+          ? mapExtents[0].querySelector('map-input[type=zoom]')
           : null,
       min =
         zoom && zoom.hasAttribute('min')
@@ -283,10 +286,8 @@ export var MapMLLayer = L.Layer.extend({
           ? parseInt(zoom.getAttribute('max'))
           : this._map.getMaxZoom();
     if (zoom) {
-      for (let i = 1; i < this._properties._mapExtents.length; i++) {
-        zoom = this._properties._mapExtents[i].querySelector(
-          'map-input[type=zoom]'
-        );
+      for (let i = 1; i < mapExtents.length; i++) {
+        zoom = mapExtents[i].querySelector('map-input[type=zoom]');
         if (zoom && zoom.hasAttribute('min')) {
           min = Math.min(parseInt(zoom.getAttribute('min')), min);
         }
@@ -728,9 +729,9 @@ export var MapMLLayer = L.Layer.extend({
       if (
         this._layerEl.checked &&
         !this._layerEl.hidden &&
-        this._mapmlLayerItem
+        this._layerEl._layerControlHTML
       ) {
-        let layerAndExtents = this._mapmlLayerItem.querySelectorAll(
+        let layerAndExtents = this._layerEl._layerControlHTML.querySelectorAll(
           '.mapml-layer-item-name'
         );
         for (let i = 0; i < layerAndExtents.length; i++) {

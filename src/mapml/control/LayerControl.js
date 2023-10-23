@@ -59,11 +59,6 @@ export var LayerControl = L.Control.Layers.extend({
       this._focusFirstLayer,
       this._container
     );
-    // remove layer-registerd event handlers so that if the control is not
-    // on the map it does not generate layer events
-    for (var i = 0; i < this._layers.length; i++) {
-      this._layers[i].layer.off('add remove', this._onLayerChange, this);
-    }
   },
   addOrUpdateOverlay: function (layer, name) {
     var alreadyThere = false;
@@ -111,7 +106,7 @@ export var LayerControl = L.Control.Layers.extend({
     return range.min <= zoom && zoom <= range.max;
   },
   _addItem: function (obj) {
-    var layercontrols = obj.layer._layerEl._createLayerControlHTML();
+    var layercontrols = obj.layer._layerEl._layerControlHTML;
     // the input is required by Leaflet...
     obj.input = layercontrols.querySelector(
       'input.leaflet-control-layers-selector'
@@ -120,7 +115,6 @@ export var LayerControl = L.Control.Layers.extend({
     this._layerControlInputs.push(obj.input);
     obj.input.layerId = L.stamp(obj.layer);
 
-    L.DomEvent.on(obj.input, 'click', this._onInputClick, this);
     this._overlaysList.appendChild(layercontrols);
     return layercontrols;
   },
