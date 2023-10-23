@@ -136,7 +136,10 @@ export var createLayerControlHTML = function () {
     input.type = 'checkbox';
     input.setAttribute('class', 'leaflet-control-layers-selector');
     layerItemName.layer = this._layer;
-
+    const changeCheck = function () {
+      this.checked = !this.checked;
+    };
+    input.addEventListener('change', changeCheck.bind(this));
     if (this._layer._legendUrl) {
       var legendLink = document.createElement('a');
       legendLink.text = ' ' + this._layer._title;

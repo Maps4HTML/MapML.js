@@ -1,12 +1,12 @@
-LayerControl._validateInput needs to be changed to avoid use of layer._properties._mapExtents, which is no longer created nor used.
-the method seems to be still required however.
+LayerControl._validateInput needs to be changed to avoid use of layer._properties._mapExtents, which is no longer created nor used. the method seems to be still required however. - deleted
 removeExtents method of MapMLLayer should not be responsible for removing individual extents when an extent is removed  from the map - deleted
-deleted MapMLLayer.redraw method, which was only drawing templated layers via TemplatedLayer.redraw();
-refactor MapMLLayer._onZoomAnim which relies on _mapExtents array, to rely on
-map-extent elements in DOM / SD.
+deleted MapMLLayer.redraw method, which was only drawing templated layers via TemplatedLayer.redraw() - deleted
+refactor MapMLLayer._onZoomAnim which relies on _mapExtents array, to rely on - done
+map-extent elements in DOM / SD. - done?
 refactor MapMLLayer._validateExtent to make sense.  Deleted reliance on this._properties._mapExtents, but a more meaningful program needs to be written
+fix the bug that the checkbox initial state is set to unchecked - done
 
-
+make map-select working
 
  api\domApi-web-map.test.js:78:7 › web-map DOM API Tests › Create a layer with document.createElement(layer-)
     core\announceMovement.test.js:72:7 › Announce movement test › Output values are correct at bounds and bounces back
