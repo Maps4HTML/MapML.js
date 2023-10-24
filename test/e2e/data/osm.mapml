@@ -1,4 +1,4 @@
-<mapml- xmlns="http://www.w3.org/1999/xhtml/">
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
   <map-head>
     <map-title>OpenStreetMap</map-title>
     <meta http-equiv="Content-Type" content="text/mapml;projection=OSMTILE"/>
