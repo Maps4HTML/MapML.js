@@ -1,4 +1,4 @@
-<mapml- xmlns="http://www.w3.org/1999/xhtml/">
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
   <map-head>
     <map-title>Canada Base Map - Transportation (CBMT)</map-title>
     <map-meta http-equiv="Content-Type" content="text/mapml;projection=CBMTILE"></map-meta>
