@@ -543,6 +543,7 @@ export class MapExtent extends HTMLElement {
       extentLabel
     );
     input.type = 'checkbox';
+    input.defaultChecked = this.checked;
     extentItemNameSpan.innerHTML = this.label;
     const changeCheck = function () {
       this.checked = !this.checked;

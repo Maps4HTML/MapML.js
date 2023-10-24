@@ -132,7 +132,7 @@ export var createLayerControlHTML = function () {
       this._layer
     );
 
-    input.defaultChecked = this._layer._map ? true : false;
+    input.defaultChecked = this.checked;
     input.type = 'checkbox';
     input.setAttribute('class', 'leaflet-control-layers-selector');
     layerItemName.layer = this._layer;
