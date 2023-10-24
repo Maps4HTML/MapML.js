@@ -54,66 +54,69 @@ export class MapExtent extends HTMLElement {
     }
   }
   attributeChangedCallback(name, oldValue, newValue) {
-    switch (name) {
-      case 'units':
-        if (oldValue !== newValue) {
-          // handle side effects
-        }
-        break;
-      case 'label':
-        if (oldValue !== newValue) {
-          this.whenReady().then(() => {
-            this._layerControlHTML.querySelector(
-              '.mapml-layer-item-name'
-            ).innerHTML = newValue || M.options.locale.dfExtent;
-          });
-        }
-        break;
-      case 'checked':
-        this.whenReady().then(() => {
-          this._handleChange();
-          this._calculateBounds();
-        });
-        break;
-      case 'opacity':
-        if (oldValue !== newValue) {
-          this._opacity = newValue;
-          if (this._templatedLayer)
-            this._templatedLayer.changeOpacity(newValue);
-        }
-        break;
-      case 'hidden':
-        if (oldValue !== newValue) {
-          this.whenReady().then(() => {
-            let extentsRootFieldset = this._propertiesGroupAnatomy;
-            let position = Array.from(
-              this.parentNode.querySelectorAll('map-extent:not([hidden])')
-            ).indexOf(this);
-            if (newValue !== null) {
-              // remove from layer control (hide from user)
-              this._layerControlHTML.remove();
-            } else {
-              // insert the extent fieldset into the layer control container in
-              // the calculated position
-              if (position === 0) {
-                extentsRootFieldset.insertAdjacentElement(
-                  'afterbegin',
-                  this._layerControlHTML
-                );
-              } else if (position > 0) {
-                this.parentNode
-                  .querySelectorAll('map-extent:not([hidden])')
-                  [position - 1]._layerControlHTML.insertAdjacentElement(
-                    'afterend',
+    this.whenReady()
+      .then(() => {
+        switch (name) {
+          case 'units':
+            if (oldValue !== newValue) {
+              // handle side effects
+            }
+            break;
+          case 'label':
+            if (oldValue !== newValue) {
+              this._layerControlHTML.querySelector(
+                '.mapml-layer-item-name'
+              ).innerHTML = newValue || M.options.locale.dfExtent;
+            }
+            break;
+          case 'checked':
+            this._handleChange();
+            this._calculateBounds();
+            break;
+          case 'opacity':
+            if (oldValue !== newValue) {
+              this._opacity = newValue;
+              if (this._templatedLayer)
+                this._templatedLayer.changeOpacity(newValue);
+            }
+            break;
+          case 'hidden':
+            if (oldValue !== newValue) {
+              let extentsRootFieldset = this._propertiesGroupAnatomy;
+              let position = Array.from(
+                this.parentNode.querySelectorAll('map-extent:not([hidden])')
+              ).indexOf(this);
+              if (newValue !== null) {
+                // remove from layer control (hide from user)
+                this._layerControlHTML.remove();
+              } else {
+                // insert the extent fieldset into the layer control container in
+                // the calculated position
+                if (position === 0) {
+                  extentsRootFieldset.insertAdjacentElement(
+                    'afterbegin',
                     this._layerControlHTML
                   );
+                } else if (position > 0) {
+                  this.parentNode
+                    .querySelectorAll('map-extent:not([hidden])')
+                    [position - 1]._layerControlHTML.insertAdjacentElement(
+                      'afterend',
+                      this._layerControlHTML
+                    );
+                }
               }
+              this._validateLayerControlContainerHidden();
             }
-            this._validateLayerControlContainerHidden();
-          });
+            break;
         }
-        break;
-    }
+      })
+      .catch((reason) => {
+        console.log(
+          reason,
+          `\nin mapExtent.attributeChangeCallback when changing attribute ${name}`
+        );
+      });
   }
   constructor() {
     // Always call super first in constructor
@@ -139,6 +142,12 @@ export class MapExtent extends HTMLElement {
       this.attachShadow({ mode: 'open' });
     }
     await this.parentLayer.whenReady();
+    // when projection is changed, the parent layer-._layer is created (so whenReady is fulfilled) but then removed,
+    // then the map-extent disconnectedCallback will be triggered by layer-._onRemove() (clear the shadowRoot)
+    // even before connectedCallback is finished
+    // in this case, the microtasks triggered by the fulfillment of the removed MapMLLayer should be stopped as well
+    // !this.isConnected <=> the disconnectedCallback has run before
+    if (!this.isConnected) return;
     this._layer = this.parentLayer._layer;
     this._map = this._layer._map;
     // reset the extent
@@ -184,24 +193,32 @@ export class MapExtent extends HTMLElement {
   getLayerControlHTML() {
     return this._layerControlHTML;
   }
+  _projectionMatch() {
+    return (
+      this.units.toUpperCase() ===
+      this._layer.options.mapprojection.toUpperCase()
+    );
+  }
   _validateDisabled() {
     if (!this._templatedLayer) return;
-    let totalTemplateCount = this._templatedLayer._templates.length,
-      disabledTemplateCount = 0;
     let input = this._layerControlCheckbox,
       label = this._layerControlLabel, // access to the label for the specific map-extent
       opacityControl = this._opacityControl,
       opacitySlider = this._opacitySlider;
-
-    for (let j = 0; j < this._templatedLayer._templates.length; j++) {
-      if (this._templatedLayer._templates[j].rel === 'query') {
-        continue;
+    const noTemplateVisible = () => {
+      let totalTemplateCount = this._templatedLayer._templates.length,
+        disabledTemplateCount = 0;
+      for (let j = 0; j < this._templatedLayer._templates.length; j++) {
+        if (this._templatedLayer._templates[j].rel === 'query') {
+          continue;
+        }
+        if (!this._templatedLayer._templates[j].layer.isVisible) {
+          disabledTemplateCount++;
+        }
       }
-      if (!this._templatedLayer._templates[j].layer.isVisible) {
-        disabledTemplateCount++;
-      }
-    }
-    if (totalTemplateCount === disabledTemplateCount) {
+      return disabledTemplateCount === totalTemplateCount;
+    };
+    if (!this._projectionMatch() || noTemplateVisible()) {
       this.setAttribute('disabled', '');
       this.disabled = true;
       // update the status of layerControl
@@ -667,7 +684,7 @@ export class MapExtent extends HTMLElement {
   }
   _handleChange() {
     // if the parent layer- is checked, add _templatedLayer to map if map-extent is checked, otherwise remove it
-    if (this.checked && this.parentLayer.checked) {
+    if (this.checked && this.parentLayer.checked && !this.disabled) {
       this._templatedLayer.addTo(this._layer._map);
       this._templatedLayer.setZIndex(
         Array.from(this.parentLayer.querySelectorAll('map-extent')).indexOf(
@@ -692,9 +709,13 @@ export class MapExtent extends HTMLElement {
     }
   }
   disconnectedCallback() {
+    // in case of projection change, the disconnectedcallback will be triggered by removing layer-._layer even before
+    // map-extent.connectedcallback is finished (because it will wait for the layer- to be ready)
+    // !this._templatedLayer <=> this.connectedCallback has not yet been finished before disconnectedCallback is triggered
     if (
       this.hasAttribute('data-moving') ||
-      this.parentLayer.hasAttribute('data-moving')
+      this.parentLayer.hasAttribute('data-moving') ||
+      !this._templatedLayer
     )
       return;
     this._validateLayerControlContainerHidden();

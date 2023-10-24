@@ -53,7 +53,6 @@ export var MapMLLayer = L.Layer.extend({
     // established by metadata in the content, we should use map properties
     // to set the extent, but the map won't be available until the <layer>
     // element is attached to the <map> element, wait for that to happen.
-    this.on('attached', this._validateExtent, this);
     // weirdness.  options is actually undefined here, despite the hardcoded
     // options above. If you use this.options, you see the options defined
     // above.  Not going to change this, but failing to understand ATM.
@@ -371,7 +370,6 @@ export var MapMLLayer = L.Layer.extend({
       if (layer._properties.crs) processTiles();
       processFeatures();
       M._parseStylesheetAsHTML(mapml, base, layer._container);
-      layer._validateExtent();
       copyRemoteContentToShadowRoot();
       // update controls if needed based on mapml-viewer controls/controlslist attribute
       if (layer._layerEl.parentElement) {
@@ -412,9 +410,7 @@ export var MapMLLayer = L.Layer.extend({
           );
         }
         layer._properties.projection = projection;
-        if (layer._properties.projection === layer.options.mapprojection) {
-          layer._properties.crs = M[layer._properties.projection];
-        }
+        layer._properties.crs = M[layer._properties.projection];
       }
       // determine if, where there's no match of the current layer's projection
       // and that of the map, if there is a linked alternate text/mapml
@@ -667,48 +663,6 @@ export var MapMLLayer = L.Layer.extend({
             );
           }
         }
-      }
-    }
-  },
-  _validateExtent: function () {
-    // TODO: change so that the _extent bounds are set based on inputs
-    if (!this._properties || !this._map) {
-      return;
-    }
-    var serverExtent =
-        //            this._properties._mapExtents
-        //        ? this._properties._mapExtents
-        //        :
-        [this._properties],
-      lp;
-
-    // loop through the map-extent elements and assign each one its crs
-    for (let i = 0; i < serverExtent.length; i++) {
-      if (!serverExtent[i].querySelector) {
-        return;
-      }
-      if (
-        serverExtent[i].querySelector(
-          '[type=zoom][min=""], [type=zoom][max=""]'
-        )
-      ) {
-        var zoom = serverExtent[i].querySelector('[type=zoom]');
-        zoom.setAttribute('min', this._map.getMinZoom());
-        zoom.setAttribute('max', this._map.getMaxZoom());
-      }
-      lp = serverExtent[i].hasAttribute('units')
-        ? serverExtent[i].getAttribute('units')
-        : null;
-      if (lp && M[lp]) {
-        //        if (this._properties._mapExtents)
-        //          this._properties._mapExtents[i].crs = M[lp];
-        //        else
-        this._properties.crs = M[lp];
-      } else {
-        //        if (this._properties._mapExtents)
-        //          this._properties._mapExtents[i].crs = M.OSMTILE;
-        //        else
-        this._properties.crs = M.OSMTILE;
       }
     }
   },

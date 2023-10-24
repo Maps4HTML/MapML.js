@@ -215,49 +215,55 @@ export class MapInput extends HTMLElement {
     // Always call super first in constructor
     super();
   }
-  async connectedCallback() {
-    await this.parentElement.whenReady();
-    if (this.parentElement.nodeName === 'MAP-EXTENT') {
-      this._layer = this.parentElement._layer;
-    }
-    switch (this.type) {
-      case 'zoom':
-        // input will store the input Class specific to the input type
-        this.input = new ZoomInput(
-          this.name,
-          this.min,
-          this.max,
-          this.initialValue,
-          this.step,
-          this._layer
-        );
-        break;
-      case 'location':
-        // input will store the input Class specific to the input type
-        this.input = new LocationInput(
-          this.name,
-          this.position,
-          this.axis,
-          this.units,
-          this.min,
-          this.max,
-          this.rel,
-          this._layer
-        );
-        break;
-      case 'width':
-        // input will store the input Class specific to the input type
-        this.input = new WidthInput(this.name, this._layer);
-        break;
-      case 'height':
-        // input will store the input Class specific to the input type
-        this.input = new HeightInput(this.name, this._layer);
-        break;
-      case 'hidden':
-        // input will store the input Class specific to the input type
-        this.input = new HiddenInput(this.name, this.initialValue);
-        break;
-    }
+  connectedCallback() {
+    this.parentElement
+      .whenReady()
+      .then(() => {
+        if (this.parentElement.nodeName === 'MAP-EXTENT') {
+          this._layer = this.parentElement._layer;
+        }
+        switch (this.type) {
+          case 'zoom':
+            // input will store the input Class specific to the input type
+            this.input = new ZoomInput(
+              this.name,
+              this.min,
+              this.max,
+              this.initialValue,
+              this.step,
+              this._layer
+            );
+            break;
+          case 'location':
+            // input will store the input Class specific to the input type
+            this.input = new LocationInput(
+              this.name,
+              this.position,
+              this.axis,
+              this.units,
+              this.min,
+              this.max,
+              this.rel,
+              this._layer
+            );
+            break;
+          case 'width':
+            // input will store the input Class specific to the input type
+            this.input = new WidthInput(this.name, this._layer);
+            break;
+          case 'height':
+            // input will store the input Class specific to the input type
+            this.input = new HeightInput(this.name, this._layer);
+            break;
+          case 'hidden':
+            // input will store the input Class specific to the input type
+            this.input = new HiddenInput(this.name, this.initialValue);
+            break;
+        }
+      })
+      .catch((reason) => {
+        console.log(reason, '\nin mapInput.connectedCallback');
+      });
   }
   disconnectedCallback() {}
 
