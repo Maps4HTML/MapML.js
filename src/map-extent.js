@@ -71,7 +71,7 @@ export class MapExtent extends HTMLElement {
         break;
       case 'checked':
         this.whenReady().then(() => {
-          this._changeExtent();
+          this._handleChange();
           this._calculateBounds();
         });
         break;
@@ -154,6 +154,10 @@ export class MapExtent extends HTMLElement {
     );
     // this._layerControlHTML is the fieldset for the extent in the LayerControl
     this._layerControlHTML = this.createLayerControlExtentHTML(this);
+    this.parentLayer.addEventListener(
+      'map-change',
+      this._handleChange.bind(this)
+    );
     if (!this.hidden)
       this._layer.addExtentToLayerControl(this._layerControlHTML);
     this._validateLayerControlContainerHidden();
@@ -661,33 +665,20 @@ export class MapExtent extends HTMLElement {
     this._layerControlLabel = extentLabel;
     return extent;
   }
-  _changeExtent() {
-    if (this.parentLayer.checked) {
-      // if the parent layer- is checked, add _templatedLayer to map if map-extent is checked, otherwise remove it
-      if (this.checked) {
-        this._templatedLayer.addTo(this._layer._map);
-        this._templatedLayer.setZIndex(
-          Array.from(this.parentLayer.querySelectorAll('map-extent')).indexOf(
-            this
-          )
-        );
-      } else {
-        this._map.removeLayer(this._templatedLayer);
-      }
-      // change the checkbox in the layer control to match map-extent.checked
-      // doesn't trigger the event handler because it's not user-caused AFAICT
-      this._layerControlCheckbox.checked = this.checked;
+  _handleChange() {
+    // if the parent layer- is checked, add _templatedLayer to map if map-extent is checked, otherwise remove it
+    if (this.checked && this.parentLayer.checked) {
+      this._templatedLayer.addTo(this._layer._map);
+      this._templatedLayer.setZIndex(
+        Array.from(this.parentLayer.querySelectorAll('map-extent')).indexOf(
+          this
+        )
+      );
     } else {
-      // if the parent layer- is NOT checked, bind an event listener so that when layer- checked status is changed,
-      // the map-extent._templatedLayer can be properly added to the map as well
-      this.parentLayer.whenReady().then(() => {
-        // bind an event listener for this.parentLayer._layerControlCheckbox
-        this.parentLayer._layerControlCheckbox.addEventListener(
-          'change',
-          this._changeExtent.bind(this)
-        );
-      });
+      this._map.removeLayer(this._templatedLayer);
     }
+    // change the checkbox in the layer control to match map-extent.checked
+    // doesn't trigger the event handler because it's not user-caused AFAICT
   }
   _validateLayerControlContainerHidden() {
     let extentsFieldset = this.parentLayer._propertiesGroupAnatomy;
