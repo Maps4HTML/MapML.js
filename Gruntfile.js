@@ -37,6 +37,7 @@ module.exports = function(grunt) {
           'dist/widthInput.js':   ['src/mapml/elementSupport/inputs/widthInput.js'],
           'dist/heightInput.js':  ['src/mapml/elementSupport/inputs/heightInput.js'],
           'dist/locationInput.js':  ['src/mapml/elementSupport/inputs/locationInput.js'],
+          'dist/createLayerControlForLayer.js': ['src/mapml/elementSupport/layers/createLayerControlForLayer.js'],
           'dist/map-area.js':     ['src/map-area.js'],
           'dist/layer.js':        ['src/layer.js'],
           'dist/leaflet.js':      ['dist/leaflet-src.js',

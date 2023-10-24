@@ -1,5 +1,6 @@
 import './leaflet.js'; // a lightly modified version of Leaflet for use as browser module
 import './mapml.js'; // modified URI to make the function a property of window scope (possibly a bad thing to do).
+import { createLayerControlHTML } from './createLayerControlForLayer.js';
 
 export class MapLayer extends HTMLElement {
   static get observedAttributes() {
@@ -110,6 +111,7 @@ export class MapLayer extends HTMLElement {
   connectedCallback() {
     if (this.hasAttribute('data-moving')) return;
     const doConnected = this._onAdd.bind(this);
+    this._createLayerControlHTML = createLayerControlHTML;
     this.parentElement
       .whenReady()
       .then(() => {
@@ -173,6 +175,8 @@ export class MapLayer extends HTMLElement {
                 opacity: this.opacity
               }
             );
+            // create layer control for layer- unconditionally (not depend on this.hidden)
+            this._createLayerControlHTML();
             this._attachedToMap();
             this._validateDisabled();
             resolve();
@@ -188,6 +192,7 @@ export class MapLayer extends HTMLElement {
           mapprojection: this.parentElement.projection,
           opacity: this.opacity
         });
+        this._createLayerControlHTML();
         this._attachedToMap();
         this._validateDisabled();
         resolve();
@@ -236,7 +241,6 @@ export class MapLayer extends HTMLElement {
     // add the handler which toggles the 'checked' property based on the
     // user checking/unchecking the layer from the layer control
     // this must be done *after* the layer is actually added to the map
-    this._layer.on('add remove', this._onLayerChange, this);
     this._layer.on('add remove', this._validateDisabled, this);
     // toggle the this.disabled attribute depending on whether the layer
     // is: same prj as map, within view/zoom of map
@@ -280,14 +284,17 @@ export class MapLayer extends HTMLElement {
         });
         break;
       case 'checked':
-        if (this._layer) {
+        this.whenReady().then(() => {
           if (typeof newValue === 'string') {
             this.parentElement._map.addLayer(this._layer);
           } else {
             this.parentElement._map.removeLayer(this._layer);
           }
-          this.dispatchEvent(new Event('change', { bubbles: true }));
-        }
+          // change the checkbox in the layer control to match layer-.checked
+          // it's used to be the _onLayerChange function responsible for properly setting this.checked properly AFTER layer-._layer
+          // is added to the map, now can make it handle by the attributechangecallback with .whenReady()
+          this._layerControlCheckbox.checked = this.checked;
+        });
         break;
       case 'hidden':
         var map = this.parentElement && this.parentElement._map;
@@ -325,7 +332,14 @@ export class MapLayer extends HTMLElement {
       let layer = this._layer,
         map = layer?._map;
       if (map) {
-        const mapExtents = this.querySelectorAll('map-extent');
+        // prerequisite: no inline and remote mapml elements exists at the same time
+        const mapExtents = this.shadowRoot
+          ? this.shadowRoot.querySelectorAll('map-extent')
+          : this.querySelectorAll('map-extent');
+        let input = this._layerControlCheckbox,
+          label = this._layerControlLabel,
+          opacityControl = this._opacityControl,
+          opacitySlider = this._opacitySlider;
         let disabledExtentCount = 0,
           totalExtentCount = 0,
           layerTypes = [
@@ -337,8 +351,8 @@ export class MapLayer extends HTMLElement {
         if (layer.validProjection) {
           for (let j = 0; j < layerTypes.length; j++) {
             let type = layerTypes[j];
-            if (this.checked && mapExtents.length > 0) {
-              if (type === '_templatedLayer') {
+            if (this.checked) {
+              if (type === '_templatedLayer' && mapExtents.length > 0) {
                 for (let i = 0; i < mapExtents.length; i++) {
                   totalExtentCount++;
                   if (mapExtents[i]._validateDisabled()) disabledExtentCount++;
@@ -361,10 +375,18 @@ export class MapLayer extends HTMLElement {
         ) {
           this.setAttribute('disabled', ''); //set a disabled attribute on the layer element
           this.disabled = true;
+          input.disabled = true;
+          opacitySlider.disabled = true;
+          label.style.fontStyle = 'italic';
+          opacityControl.style.fontStyle = 'italic';
         } else {
           //might be better not to disable the layer controls, might want to deselect layer even when its out of bounds
           this.removeAttribute('disabled');
           this.disabled = false;
+          input.disabled = false;
+          opacitySlider.disabled = false;
+          label.style.fontStyle = 'normal';
+          opacityControl.style.fontStyle = 'normal';
         }
         map.fire('validate');
       }
@@ -412,14 +434,6 @@ export class MapLayer extends HTMLElement {
     return outerLayer;
   }
 
-  _onLayerChange() {
-    if (this._layer._map) {
-      // can't disable observers, have to set a flag telling it where
-      // the 'event' comes from: either the api or a user click/tap
-      // may not be necessary -> this._apiToggleChecked = false;
-      this.checked = this._layer._map.hasLayer(this._layer);
-    }
-  }
   zoomTo() {
     this.whenElemsReady().then(() => {
       let map = this.parentElement._map,

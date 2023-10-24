@@ -100,9 +100,6 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
       this._map.getCenter(),
       steppedZoom
     );
-    let url = this._getfeaturesUrl(steppedZoom, scaleBounds);
-    //No request needed if the current template url is the same as the url to request
-    if (url === this._url) return;
 
     let mapBounds = M.pixelToPCRSBounds(
       this._map.getPixelBounds(),
@@ -114,6 +111,12 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
       mapZoom >= this.zoomBounds.minZoom &&
       this.extentBounds.overlaps(mapBounds);
 
+    // should set this.isVisible properly BEFORE return, otherwise will cause layer-.validateDisabled not work properly
+    let url = this._getfeaturesUrl(steppedZoom, scaleBounds);
+    // No request needed if the current template url is the same as the url to request
+    if (url === this._url) return;
+
+    // do cleaning up for new request
     this._features.clearLayers();
     // shadow may has not yet attached to <map-extent> for the first-time rendering
     if (this._extentEl.shadowRoot) {

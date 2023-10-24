@@ -85,8 +85,7 @@ export class MapExtent extends HTMLElement {
       case 'hidden':
         if (oldValue !== newValue) {
           this.whenReady().then(() => {
-            let extentsRootFieldset =
-              this._layer.getLayerControlExtentContainer();
+            let extentsRootFieldset = this._propertiesGroupAnatomy;
             let position = Array.from(
               this.parentNode.querySelectorAll('map-extent:not([hidden])')
             ).indexOf(this);
@@ -185,6 +184,10 @@ export class MapExtent extends HTMLElement {
     if (!this._templatedLayer) return;
     let totalTemplateCount = this._templatedLayer._templates.length,
       disabledTemplateCount = 0;
+    let input = this._layerControlCheckbox,
+      label = this._layerControlLabel, // access to the label for the specific map-extent
+      opacityControl = this._opacityControl,
+      opacitySlider = this._opacitySlider;
 
     for (let j = 0; j < this._templatedLayer._templates.length; j++) {
       if (this._templatedLayer._templates[j].rel === 'query') {
@@ -197,9 +200,18 @@ export class MapExtent extends HTMLElement {
     if (totalTemplateCount === disabledTemplateCount) {
       this.setAttribute('disabled', '');
       this.disabled = true;
+      // update the status of layerControl
+      input.disabled = true;
+      opacitySlider.disabled = true;
+      label.style.fontStyle = 'italic';
+      opacityControl.style.fontStyle = 'italic';
     } else {
       this.removeAttribute('disabled');
       this.disabled = false;
+      input.disabled = false;
+      opacitySlider.disabled = false;
+      label.style.fontStyle = 'normal';
+      opacityControl.style.fontStyle = 'normal';
     }
     return this.disabled;
   }
@@ -354,14 +366,6 @@ export class MapExtent extends HTMLElement {
             // parse
             inp.htmlselect = div.querySelector('map-select');
             inp.htmlselect = transcribe(inp.htmlselect);
-
-            // this goes into the layer control, so add a listener
-            L.DomEvent.on(
-              inp.htmlselect,
-              'change',
-              this._layer.redraw,
-              this._layer
-            );
             if (!this._layer._userInputs) {
               this._layer._userInputs = [];
             }
@@ -528,7 +532,6 @@ export class MapExtent extends HTMLElement {
     opacity.setAttribute('value', this.opacity);
     opacity.value = this.opacity;
     opacity.addEventListener('change', changeOpacity.bind(this));
-    this._opacitySlider = opacity;
 
     var extentItemNameSpan = L.DomUtil.create(
       'span',
@@ -653,27 +656,41 @@ export class MapExtent extends HTMLElement {
         };
       }
     };
+    this._opacitySlider = opacity;
+    this._opacityControl = opacityControl;
+    this._layerControlLabel = extentLabel;
     return extent;
   }
   _changeExtent() {
-    if (this.checked) {
-      if (this.parentLayer.checked) {
+    if (this.parentLayer.checked) {
+      // if the parent layer- is checked, add _templatedLayer to map if map-extent is checked, otherwise remove it
+      if (this.checked) {
         this._templatedLayer.addTo(this._layer._map);
         this._templatedLayer.setZIndex(
           Array.from(this.parentLayer.querySelectorAll('map-extent')).indexOf(
             this
           )
         );
+      } else {
+        this._map.removeLayer(this._templatedLayer);
       }
+      // change the checkbox in the layer control to match map-extent.checked
+      // doesn't trigger the event handler because it's not user-caused AFAICT
+      this._layerControlCheckbox.checked = this.checked;
     } else {
-      if (this.parentLayer.checked) this._map.removeLayer(this._templatedLayer);
+      // if the parent layer- is NOT checked, bind an event listener so that when layer- checked status is changed,
+      // the map-extent._templatedLayer can be properly added to the map as well
+      this.parentLayer.whenReady().then(() => {
+        // bind an event listener for this.parentLayer._layerControlCheckbox
+        this.parentLayer._layerControlCheckbox.addEventListener(
+          'change',
+          this._changeExtent.bind(this)
+        );
+      });
     }
-    // change the checkbox in the layer control to match map-extent.checked
-    // doesn't trigger the event handler because it's not user-caused AFAICT
-    this._layerControlCheckbox.checked = this.checked;
   }
   _validateLayerControlContainerHidden() {
-    let extentsFieldset = this._layer.getLayerControlExtentContainer();
+    let extentsFieldset = this.parentLayer._propertiesGroupAnatomy;
     let nodeToSearch = this.parentLayer.shadowRoot || this.parentLayer;
     if (
       nodeToSearch.querySelectorAll('map-extent:not([hidden])').length === 0
@@ -692,7 +709,6 @@ export class MapExtent extends HTMLElement {
     this._validateLayerControlContainerHidden();
     // remove layer control for map-extent from layer control DOM
     this._layerControlHTML.remove();
-
     this._map.removeLayer(this._templatedLayer);
     delete this._templatedLayer;
     delete this.parentLayer.bounds;
@@ -711,37 +727,36 @@ export class MapExtent extends HTMLElement {
       zoomMin = 0,
       maxNativeZoom = 0,
       minNativeZoom = 0;
-    if (this.checked) {
-      for (let j = 0; j < this._templateVars.length; j++) {
-        let inputData = M._extractInputBounds(this._templateVars[j]);
-        this._templateVars[j].tempExtentBounds = inputData.bounds;
-        this._templateVars[j].extentZoomBounds = inputData.zoomBounds;
-        if (!bounds) {
-          bounds = this._templateVars[j].tempExtentBounds;
-          zoomMax = this._templateVars[j].extentZoomBounds.maxZoom;
-          zoomMin = this._templateVars[j].extentZoomBounds.minZoom;
-          maxNativeZoom = this._templateVars[j].extentZoomBounds.maxNativeZoom;
-          minNativeZoom = this._templateVars[j].extentZoomBounds.minNativeZoom;
-        } else {
-          bounds.extend(this._templateVars[j].tempExtentBounds.min);
-          bounds.extend(this._templateVars[j].tempExtentBounds.max);
-          zoomMax = Math.max(
-            zoomMax,
-            this._templateVars[j].extentZoomBounds.maxZoom
-          );
-          zoomMin = Math.min(
-            zoomMin,
-            this._templateVars[j].extentZoomBounds.minZoom
-          );
-          maxNativeZoom = Math.max(
-            maxNativeZoom,
-            this._templateVars[j].extentZoomBounds.maxNativeZoom
-          );
-          minNativeZoom = Math.min(
-            minNativeZoom,
-            this._templateVars[j].extentZoomBounds.minNativeZoom
-          );
-        }
+    // bounds should be able to be calculated unconditionally, not depend on map-extent.checked
+    for (let j = 0; j < this._templateVars.length; j++) {
+      let inputData = M._extractInputBounds(this._templateVars[j]);
+      this._templateVars[j].tempExtentBounds = inputData.bounds;
+      this._templateVars[j].extentZoomBounds = inputData.zoomBounds;
+      if (!bounds) {
+        bounds = this._templateVars[j].tempExtentBounds;
+        zoomMax = this._templateVars[j].extentZoomBounds.maxZoom;
+        zoomMin = this._templateVars[j].extentZoomBounds.minZoom;
+        maxNativeZoom = this._templateVars[j].extentZoomBounds.maxNativeZoom;
+        minNativeZoom = this._templateVars[j].extentZoomBounds.minNativeZoom;
+      } else {
+        bounds.extend(this._templateVars[j].tempExtentBounds.min);
+        bounds.extend(this._templateVars[j].tempExtentBounds.max);
+        zoomMax = Math.max(
+          zoomMax,
+          this._templateVars[j].extentZoomBounds.maxZoom
+        );
+        zoomMin = Math.min(
+          zoomMin,
+          this._templateVars[j].extentZoomBounds.minZoom
+        );
+        maxNativeZoom = Math.max(
+          maxNativeZoom,
+          this._templateVars[j].extentZoomBounds.maxNativeZoom
+        );
+        minNativeZoom = Math.min(
+          minNativeZoom,
+          this._templateVars[j].extentZoomBounds.minNativeZoom
+        );
       }
     }
     // cannot be named as layerBounds if we decide to keep the debugoverlay logic
