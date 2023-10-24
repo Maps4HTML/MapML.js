@@ -293,7 +293,8 @@ export class MapLayer extends HTMLElement {
           // change the checkbox in the layer control to match layer-.checked
           // it's used to be the _onLayerChange function responsible for properly setting this.checked properly AFTER layer-._layer
           // is added to the map, now can make it handle by the attributechangecallback with .whenReady()
-          this._layerControlCheckbox.checked = this.checked;
+          // this._layerControlCheckbox.checked = this.checked;
+          this.dispatchEvent(new CustomEvent('map-change'));
         });
         break;
       case 'hidden':
