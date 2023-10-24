@@ -232,7 +232,7 @@ export class MapLayer extends HTMLElement {
     // make sure the Leaflet layer has a reference to the map
     this._layer._map = this.parentNode._map;
     // notify the layer that it is attached to a map (layer._map)
-    this._layer.fire('attached');
+    // this._layer.fire('attached');
 
     if (this.checked) {
       this._layer.addTo(this._layer._map);
@@ -329,69 +329,66 @@ export class MapLayer extends HTMLElement {
     }
   }
   _validateDisabled() {
-    setTimeout(() => {
-      let layer = this._layer,
-        map = layer?._map;
-      if (map) {
-        // prerequisite: no inline and remote mapml elements exists at the same time
-        const mapExtents = this.shadowRoot
-          ? this.shadowRoot.querySelectorAll('map-extent')
-          : this.querySelectorAll('map-extent');
-        let input = this._layerControlCheckbox,
-          label = this._layerControlLabel,
-          opacityControl = this._opacityControl,
-          opacitySlider = this._opacitySlider;
-        let disabledExtentCount = 0,
-          totalExtentCount = 0,
-          layerTypes = [
-            '_staticTileLayer',
-            '_imageLayer',
-            '_mapmlvectors',
-            '_templatedLayer'
-          ];
-        if (layer.validProjection) {
-          for (let j = 0; j < layerTypes.length; j++) {
-            let type = layerTypes[j];
-            if (this.checked) {
-              if (type === '_templatedLayer' && mapExtents.length > 0) {
-                for (let i = 0; i < mapExtents.length; i++) {
-                  totalExtentCount++;
-                  if (mapExtents[i]._validateDisabled()) disabledExtentCount++;
-                }
-              } else if (layer[type]) {
-                // not a templated layer
+    let layer = this._layer,
+      map = layer?._map;
+    if (map) {
+      // prerequisite: no inline and remote mapml elements exists at the same time
+      const mapExtents = this.shadowRoot
+        ? this.shadowRoot.querySelectorAll('map-extent')
+        : this.querySelectorAll('map-extent');
+      let input = this._layerControlCheckbox,
+        label = this._layerControlLabel,
+        opacityControl = this._opacityControl,
+        opacitySlider = this._opacitySlider;
+      let disabledExtentCount = 0,
+        totalExtentCount = 0,
+        layerTypes = [
+          '_staticTileLayer',
+          '_imageLayer',
+          '_mapmlvectors',
+          '_templatedLayer'
+        ];
+      if (layer.validProjection) {
+        for (let j = 0; j < layerTypes.length; j++) {
+          let type = layerTypes[j];
+          if (this.checked) {
+            if (type === '_templatedLayer' && mapExtents.length > 0) {
+              for (let i = 0; i < mapExtents.length; i++) {
                 totalExtentCount++;
-                if (!layer[type].isVisible) disabledExtentCount++;
+                if (mapExtents[i]._validateDisabled()) disabledExtentCount++;
               }
+            } else if (layer[type]) {
+              // not a templated layer
+              totalExtentCount++;
+              if (!layer[type].isVisible) disabledExtentCount++;
             }
           }
-        } else {
-          disabledExtentCount = 1;
-          totalExtentCount = 1;
         }
-        // if all extents are not visible / disabled, set layer to disabled
-        if (
-          disabledExtentCount === totalExtentCount &&
-          disabledExtentCount !== 0
-        ) {
-          this.setAttribute('disabled', ''); //set a disabled attribute on the layer element
-          this.disabled = true;
-          input.disabled = true;
-          opacitySlider.disabled = true;
-          label.style.fontStyle = 'italic';
-          opacityControl.style.fontStyle = 'italic';
-        } else {
-          //might be better not to disable the layer controls, might want to deselect layer even when its out of bounds
-          this.removeAttribute('disabled');
-          this.disabled = false;
-          input.disabled = false;
-          opacitySlider.disabled = false;
-          label.style.fontStyle = 'normal';
-          opacityControl.style.fontStyle = 'normal';
-        }
-        map.fire('validate');
+      } else {
+        disabledExtentCount = 1;
+        totalExtentCount = 1;
       }
-    }, 0);
+      // if all extents are not visible / disabled, set layer to disabled
+      if (
+        disabledExtentCount === totalExtentCount &&
+        disabledExtentCount !== 0
+      ) {
+        this.setAttribute('disabled', ''); //set a disabled attribute on the layer element
+        this.disabled = true;
+        input.disabled = true;
+        opacitySlider.disabled = true;
+        label.style.fontStyle = 'italic';
+        opacityControl.style.fontStyle = 'italic';
+      } else {
+        //might be better not to disable the layer controls, might want to deselect layer even when its out of bounds
+        this.removeAttribute('disabled');
+        this.disabled = false;
+        input.disabled = false;
+        opacitySlider.disabled = false;
+        label.style.fontStyle = 'normal';
+        opacityControl.style.fontStyle = 'normal';
+      }
+    }
   }
   getOuterHTML() {
     let tempElement = this.cloneNode(true);

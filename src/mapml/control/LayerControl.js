@@ -43,7 +43,6 @@ export var LayerControl = L.Control.Layers.extend({
       this
     );
     this._update();
-    //this._validateExtents();
     if (this._layers.length < 1 && !this._map._showControls) {
       this._container.setAttribute('hidden', '');
     } else {
