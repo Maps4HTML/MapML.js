@@ -797,6 +797,10 @@ export class MapExtent extends HTMLElement {
           clearInterval(interval);
           clearTimeout(failureTimer);
           resolve();
+        } else if (!extentElement.isConnected) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          reject('map-extent was disconnected while waiting to be ready');
         }
       }
       function extentNotDefined() {

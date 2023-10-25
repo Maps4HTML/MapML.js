@@ -314,6 +314,10 @@ export class MapInput extends HTMLElement {
           clearInterval(interval);
           clearTimeout(failureTimer);
           resolve();
+        } else if (!inputElement.isConnected) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          reject('map-input was disconnected while waiting to be ready');
         }
       }
       function inputNotDefined() {

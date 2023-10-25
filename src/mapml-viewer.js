@@ -375,7 +375,8 @@ export class MapViewer extends HTMLElement {
               // upgrades, e.g. https://maps4html.org/experiments/custom-projections/BNG/
               this.zoomTo(lat, lon, zoom);
               this._resetHistory();
-              this._map.announceMovement.enable();
+              if (M.options.announceMovement)
+                this._map.announceMovement.enable();
             });
           }
         };
