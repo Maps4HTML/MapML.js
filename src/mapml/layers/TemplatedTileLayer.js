@@ -36,8 +36,13 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     L.TileLayer.prototype.onAdd.call(this, this._map);
     this._handleMoveEnd();
   },
+
   onRemove: function () {
     L.DomUtil.remove(this._container);
+    // should clean up the container
+    for (let child of this._container.children) {
+      L.DomUtil.remove(child);
+    }
   },
 
   getEvents: function () {
@@ -60,6 +65,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     L.DomUtil.addClass(this._container, 'mapml-templated-tile-container');
     this._updateZIndex();
   },
+
   _handleMoveEnd: function (e) {
     let mapZoom = this._map.getZoom();
     let mapBounds = M.pixelToPCRSBounds(
