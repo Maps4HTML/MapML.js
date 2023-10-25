@@ -283,42 +283,6 @@ export var createLayerControlHTML = function () {
     layerItemSettings.appendChild(this._layer._styles);
   }
 
-  if (this._layer._userInputs) {
-    var frag = document.createDocumentFragment();
-    var templates = this._layer._properties._templateVars;
-    if (templates) {
-      for (var i = 0; i < templates.length; i++) {
-        var template = templates[i];
-        for (var j = 0; j < template.values.length; j++) {
-          var mapmlInput = template.values[j],
-            id = '#' + mapmlInput.getAttribute('id');
-          // don't add it again if it is referenced > once
-          if (
-            mapmlInput.tagName.toLowerCase() === 'map-select' &&
-            !frag.querySelector(id)
-          ) {
-            // generate a <details><summary></summary><select...></details>
-            var selectdetails = L.DomUtil.create(
-                'details',
-                'mapml-layer-item-time mapml-control-layers',
-                frag
-              ),
-              selectsummary = L.DomUtil.create('summary'),
-              selectSummaryLabel = L.DomUtil.create('label');
-            selectSummaryLabel.innerText = mapmlInput.getAttribute('name');
-            selectSummaryLabel.setAttribute(
-              'for',
-              mapmlInput.getAttribute('id')
-            );
-            selectsummary.appendChild(selectSummaryLabel);
-            selectdetails.appendChild(selectsummary);
-            selectdetails.appendChild(mapmlInput.htmlselect);
-          }
-        }
-      }
-    }
-    layerItemSettings.appendChild(frag);
-  }
   this._layerControlCheckbox = input;
   this._layerControlLabel = itemToggleLabel;
   this._opacityControl = opacityControl;
