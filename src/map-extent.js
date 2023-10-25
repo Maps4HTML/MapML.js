@@ -161,15 +161,10 @@ export class MapExtent extends HTMLElement {
       this._layer.getBase(),
       this.units === this._layer.options.mapprojection
     );
-    // this._layerControlHTML is the fieldset for the extent in the LayerControl
-    this._layerControlHTML = this.createLayerControlExtentHTML(this);
     this.parentLayer.addEventListener(
       'map-change',
       this._handleChange.bind(this)
     );
-    if (!this.hidden)
-      this._layer.addExtentToLayerControl(this._layerControlHTML);
-    this._validateLayerControlContainerHidden();
     this._templatedLayer = M.templatedLayer(this._templateVars, {
       pane: this._layer._container,
       opacity: this.opacity,
@@ -182,6 +177,11 @@ export class MapExtent extends HTMLElement {
       // this._properties._mapExtents[i] refers to the <map-extent> in remote mapml
       extentEl: this._DOMnode || this
     });
+    // this._layerControlHTML is the fieldset for the extent in the LayerControl
+    this._layerControlHTML = this.createLayerControlExtentHTML(this);
+    if (!this.hidden)
+      this._layer.addExtentToLayerControl(this._layerControlHTML);
+    this._validateLayerControlContainerHidden();
     if (this._templatedLayer._queries) {
       if (!this._layer._properties._queries)
         this._layer._properties._queries = [];
@@ -233,7 +233,7 @@ export class MapExtent extends HTMLElement {
       opacitySlider.disabled = false;
       label.style.fontStyle = 'normal';
       opacityControl.style.fontStyle = 'normal';
-    }
+        }
     return this.disabled;
   }
   _initTemplateVars(metaExtent, projection, mapml, base, projectionMatch) {
@@ -387,10 +387,14 @@ export class MapExtent extends HTMLElement {
             // parse
             inp.htmlselect = div.querySelector('map-select');
             inp.htmlselect = transcribe(inp.htmlselect);
-            if (!this._layer._userInputs) {
-              this._layer._userInputs = [];
+
+            // this goes into the layer control, so add a listener
+            L.DomEvent.on(inp.htmlselect, 'change', this.redraw, this);
+
+            if (!this._userInputs) {
+              this._userInputs = [];
             }
-            this._layer._userInputs.push(inp.htmlselect);
+            this._userInputs.push(inp.htmlselect);
           }
           // TODO: if this is an input@type=location
           // get the TCRS min,max attribute values at the identified zoom level
@@ -439,6 +443,9 @@ export class MapExtent extends HTMLElement {
     }
     return templateVars;
   }
+  redraw() {
+    this._templatedLayer.redraw();
+  }
   createLayerControlExtentHTML() {
     var extent = L.DomUtil.create('fieldset', 'mapml-layer-extent'),
       extentProperties = L.DomUtil.create(
@@ -468,7 +475,7 @@ export class MapExtent extends HTMLElement {
       ),
       opacityControl = L.DomUtil.create(
         'details',
-        'mapml-layer-item-opacity',
+        'mapml-layer-item-details',
         extentSettings
       ),
       extentOpacitySummary = L.DomUtil.create('summary', '', opacityControl),
@@ -490,6 +497,43 @@ export class MapExtent extends HTMLElement {
     );
     svgExtentControlIcon.appendChild(extentControlPath1);
     svgExtentControlIcon.appendChild(extentControlPath2);
+
+    if (this._userInputs) {
+      var frag = document.createDocumentFragment();
+      var templates = this._templateVars;
+      if (templates) {
+        for (var i = 0; i < templates.length; i++) {
+          var template = templates[i];
+          for (var j = 0; j < template.values.length; j++) {
+            var mapmlInput = template.values[j],
+              id = '#' + mapmlInput.getAttribute('id');
+            // don't add it again if it is referenced > once
+            if (
+              mapmlInput.tagName.toLowerCase() === 'map-select' &&
+              !frag.querySelector(id)
+            ) {
+              // generate a <details><summary></summary><select...></details>
+              var selectdetails = L.DomUtil.create(
+                  'details',
+                  'mapml-layer-item-details mapml-control-layers',
+                  frag
+                ),
+                selectsummary = L.DomUtil.create('summary'),
+                selectSummaryLabel = L.DomUtil.create('label');
+              selectSummaryLabel.innerText = mapmlInput.getAttribute('name');
+              selectSummaryLabel.setAttribute(
+                'for',
+                mapmlInput.getAttribute('id')
+              );
+              selectsummary.appendChild(selectSummaryLabel);
+              selectdetails.appendChild(selectsummary);
+              selectdetails.appendChild(mapmlInput.htmlselect);
+            }
+          }
+        }
+      }
+      extentSettings.appendChild(frag);
+    }
 
     let removeExtentButton = L.DomUtil.create(
       'button',
@@ -536,14 +580,14 @@ export class MapExtent extends HTMLElement {
     extentNameIcon.appendChild(svgExtentControlIcon);
     extentOpacitySummary.innerText = 'Opacity';
     extentOpacitySummary.id =
-      'mapml-layer-item-opacity-' + L.stamp(extentOpacitySummary);
+      'mapml-layer-item-details-' + L.stamp(extentOpacitySummary);
     opacity.setAttribute('type', 'range');
     opacity.setAttribute('min', '0');
     opacity.setAttribute('max', '1.0');
     opacity.setAttribute('step', '0.1');
     opacity.setAttribute(
       'aria-labelledby',
-      'mapml-layer-item-opacity-' + L.stamp(extentOpacitySummary)
+      'mapml-layer-item-details-' + L.stamp(extentOpacitySummary)
     );
     const changeOpacity = function (e) {
       if (e && e.target && e.target.value >= 0 && e.target.value <= 1.0) {
