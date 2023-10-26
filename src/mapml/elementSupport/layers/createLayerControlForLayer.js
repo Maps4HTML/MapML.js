@@ -290,6 +290,7 @@ export var createLayerControlHTML = function () {
   this._layerControlHTML = fieldset;
   this._layerItemSettingsHTML = layerItemSettings;
   this._propertiesGroupAnatomy = extentsFieldset;
+  this._styles = this._layer._styles;
   // // need to be removed
   // this._layer._propertiesGroupAnatomy = extentsFieldset;
   // // end need to be removed
