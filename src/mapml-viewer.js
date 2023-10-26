@@ -377,6 +377,9 @@ export class MapViewer extends HTMLElement {
               this._resetHistory();
               if (M.options.announceMovement)
                 this._map.announceMovement.enable();
+              this.querySelectorAll('layer-').forEach((layer) => {
+                layer.dispatchEvent(new CustomEvent('map-change'));
+              });
             });
           }
         };

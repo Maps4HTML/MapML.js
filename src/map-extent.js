@@ -163,10 +163,8 @@ export class MapExtent extends HTMLElement {
       this._layer.getBase(),
       this.units === this._layer.options.mapprojection
     );
-    this.parentLayer.addEventListener(
-      'map-change',
-      this._handleChange.bind(this)
-    );
+    this._changeHandler = this._handleChange.bind(this);
+    this.parentLayer.addEventListener('map-change', this._changeHandler);
     this._templatedLayer = M.templatedLayer(this._templateVars, {
       pane: this._layer._container,
       opacity: this.opacity,
@@ -517,6 +515,7 @@ export class MapExtent extends HTMLElement {
     // remove layer control for map-extent from layer control DOM
     this._layerControlHTML.remove();
     this._map.removeLayer(this._templatedLayer);
+    this.parentLayer.removeEventListener('map-change', this._changeHandler);
     delete this._templatedLayer;
     delete this.parentLayer.bounds;
   }
