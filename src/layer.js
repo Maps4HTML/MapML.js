@@ -110,8 +110,8 @@ export class MapLayer extends HTMLElement {
 
   connectedCallback() {
     if (this.hasAttribute('data-moving')) return;
-    const doConnected = this._onAdd.bind(this);
     this._createLayerControlHTML = createLayerControlHTML;
+    const doConnected = this._onAdd.bind(this);
     this.parentElement
       .whenReady()
       .then(() => {
@@ -336,10 +336,6 @@ export class MapLayer extends HTMLElement {
       const mapExtents = this.shadowRoot
         ? this.shadowRoot.querySelectorAll('map-extent')
         : this.querySelectorAll('map-extent');
-      let input = this._layerControlCheckbox,
-        label = this._layerControlLabel,
-        opacityControl = this._opacityControl,
-        opacitySlider = this._opacitySlider;
       let disabledExtentCount = 0,
         totalExtentCount = 0,
         layerTypes = [
@@ -373,23 +369,48 @@ export class MapLayer extends HTMLElement {
         disabledExtentCount === totalExtentCount &&
         disabledExtentCount !== 0
       ) {
-        this.setAttribute('disabled', ''); //set a disabled attribute on the layer element
+        this.setAttribute('disabled', '');
         this.disabled = true;
-        input.disabled = true;
-        opacitySlider.disabled = true;
-        label.style.fontStyle = 'italic';
-        opacityControl.style.fontStyle = 'italic';
       } else {
-        //might be better not to disable the layer controls, might want to deselect layer even when its out of bounds
         this.removeAttribute('disabled');
         this.disabled = false;
-        input.disabled = false;
-        opacitySlider.disabled = false;
-        label.style.fontStyle = 'normal';
-        opacityControl.style.fontStyle = 'normal';
+      }
+      this.toggleLayerControlDisabled();
+    }
+  }
+
+  // disable/italicize layer control elements based on the layer-.disabled property
+  toggleLayerControlDisabled() {
+    let input = this._layerControlCheckbox,
+      label = this._layerControlLabel,
+      opacityControl = this._opacityControl,
+      opacitySlider = this._opacitySlider,
+      styleControl = this._styles;
+    if (this.disabled) {
+      input.disabled = true;
+      opacitySlider.disabled = true;
+      label.style.fontStyle = 'italic';
+      opacityControl.style.fontStyle = 'italic';
+      if (styleControl) {
+        styleControl.style.fontStyle = 'italic';
+        styleControl.querySelectorAll('input').forEach((i) => {
+          i.disabled = true;
+        });
+      }
+    } else {
+      input.disabled = false;
+      opacitySlider.disabled = false;
+      label.style.fontStyle = 'normal';
+      opacityControl.style.fontStyle = 'normal';
+      if (styleControl) {
+        styleControl.style.fontStyle = 'normal';
+        styleControl.querySelectorAll('input').forEach((i) => {
+          i.disabled = false;
+        });
       }
     }
   }
+
   getOuterHTML() {
     let tempElement = this.cloneNode(true);
 
