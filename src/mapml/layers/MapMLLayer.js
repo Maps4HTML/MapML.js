@@ -552,7 +552,11 @@ export var MapMLLayer = L.Layer.extend({
               'id',
               'rad-' + L.stamp(styleOptionInput)
             );
-            styleOptionInput.setAttribute('name', 'styles-' + layer._title);
+            styleOptionInput.setAttribute(
+              'name',
+              // grouping radio buttons based on parent layer's style <detail>
+              'styles-' + L.stamp(stylesControl)
+            );
             styleOptionInput.setAttribute(
               'value',
               styleLinks[j].getAttribute('title')
