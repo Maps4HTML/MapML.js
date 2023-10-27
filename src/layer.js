@@ -102,6 +102,7 @@ export class MapLayer extends HTMLElement {
       this._layerControl.removeLayer(this._layer);
     }
     delete this._layer;
+    delete this._fetchError;
 
     if (this.shadowRoot) {
       this.shadowRoot.innerHTML = '';
@@ -182,6 +183,7 @@ export class MapLayer extends HTMLElement {
             resolve();
           })
           .catch((error) => {
+            this._fetchError = true;
             console.log('Error fetching layer content' + error);
           });
       } else {
@@ -511,6 +513,10 @@ export class MapLayer extends HTMLElement {
           clearInterval(interval);
           clearTimeout(failureTimer);
           resolve();
+        } else if (layerElement._fetchError) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          reject('Error fetching layer content');
         }
       }
       function layerNotDefined() {
