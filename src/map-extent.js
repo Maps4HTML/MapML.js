@@ -83,7 +83,8 @@ export class MapExtent extends HTMLElement {
             break;
           case 'hidden':
             if (oldValue !== newValue) {
-              let extentsRootFieldset = this._propertiesGroupAnatomy;
+              let extentsRootFieldset =
+                this.parentLayer._propertiesGroupAnatomy;
               let position = Array.from(
                 this.parentNode.querySelectorAll('map-extent:not([hidden])')
               ).indexOf(this);
@@ -518,13 +519,6 @@ export class MapExtent extends HTMLElement {
     this.parentLayer.removeEventListener('map-change', this._changeHandler);
     delete this._templatedLayer;
     delete this.parentLayer.bounds;
-  }
-  _changeOpacity() {
-    if (this.opacity >= 0 && this.opacity <= 1.0) {
-      this._templatedLayer.changeOpacity(this.opacity);
-      this._templateVars.opacity = this.opacity;
-      this._opacitySlider.value = this.opacity;
-    }
   }
   _calculateBounds() {
     // await this.whenReady();

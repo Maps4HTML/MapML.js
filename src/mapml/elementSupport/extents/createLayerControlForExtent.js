@@ -27,7 +27,7 @@ export var createLayerControlExtentHTML = function () {
     ),
     opacityControl = L.DomUtil.create(
       'details',
-      'mapml-layer-item-details',
+      'mapml-layer-item-opacity mapml-control-layers',
       extentSettings
     ),
     extentOpacitySummary = L.DomUtil.create('summary', '', opacityControl),
@@ -134,14 +134,14 @@ export var createLayerControlExtentHTML = function () {
   extentNameIcon.appendChild(svgExtentControlIcon);
   extentOpacitySummary.innerText = 'Opacity';
   extentOpacitySummary.id =
-    'mapml-layer-item-details-' + L.stamp(extentOpacitySummary);
+    'mapml-extent-item-opacity-' + L.stamp(extentOpacitySummary);
   opacity.setAttribute('type', 'range');
   opacity.setAttribute('min', '0');
   opacity.setAttribute('max', '1.0');
   opacity.setAttribute('step', '0.1');
   opacity.setAttribute(
     'aria-labelledby',
-    'mapml-layer-item-details-' + L.stamp(extentOpacitySummary)
+    'mapml-extent-item-opacity-' + L.stamp(extentOpacitySummary)
   );
   const changeOpacity = function (e) {
     if (e && e.target && e.target.value >= 0 && e.target.value <= 1.0) {
@@ -149,7 +149,7 @@ export var createLayerControlExtentHTML = function () {
     }
   };
   opacity.setAttribute('value', this.opacity);
-  opacity.value = this.opacity;
+  opacity.value = this._templatedLayer._container.style.opacity || '1.0';
   opacity.addEventListener('change', changeOpacity.bind(this));
 
   var extentItemNameSpan = L.DomUtil.create(
@@ -274,6 +274,7 @@ export var createLayerControlExtentHTML = function () {
       };
     }
   };
+  this._extentRootFieldset = extent;
   this._opacitySlider = opacity;
   this._opacityControl = opacityControl;
   this._layerControlLabel = extentLabel;
