@@ -77,15 +77,11 @@ export var MapMLLayer = L.Layer.extend({
       this._container.style.zIndex = this.options.zIndex;
     }
   },
-  _changeOpacity: function (e) {
-    if (e && e.target && e.target.value >= 0 && e.target.value <= 1.0) {
-      this.changeOpacity(e.target.value);
-    }
-  },
   changeOpacity: function (opacity) {
     this._container.style.opacity = opacity;
     this._layerEl._opacity = opacity;
-    if (this.opacityEl) this.opacityEl.value = opacity;
+    if (this._layerEl._opacitySlider)
+      this._layerEl._opacitySlider.value = opacity;
   },
   titleIsReadOnly() {
     return !!this._titleIsReadOnly;

@@ -160,8 +160,18 @@ export var createLayerControlHTML = function () {
   opacity.setAttribute('max', '1.0');
   opacity.setAttribute('value', this._layer._container.style.opacity || '1.0');
   opacity.setAttribute('step', '0.1');
-  opacity.setAttribute('aria-labelledby', opacityControlSummary.id);
+  opacity.setAttribute(
+    'aria-labelledby',
+    'mapml-layer-item-opacity-' + L.stamp(opacityControlSummary)
+  );
+
+  const changeOpacity = function (e) {
+    if (e && e.target && e.target.value >= 0 && e.target.value <= 1.0) {
+      this._layer.changeOpacity(e.target.value);
+    }
+  };
   opacity.value = this._layer._container.style.opacity || '1.0';
+  opacity.addEventListener('change', changeOpacity.bind(this));
 
   fieldset.setAttribute('aria-grabbed', 'false');
   fieldset.setAttribute('aria-labelledby', layerItemName.id);
@@ -271,8 +281,6 @@ export var createLayerControlHTML = function () {
       };
     }
   };
-
-  L.DomEvent.on(opacity, 'change', this._layer._changeOpacity, this._layer);
 
   itemToggleLabel.appendChild(input);
   itemToggleLabel.appendChild(layerItemName);
