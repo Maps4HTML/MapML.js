@@ -404,6 +404,7 @@ export class WebMap extends HTMLMapElement {
             // level in the crs by changing the zoom level of the map when
             // you set the map crs.  So, we save the current view for use below
             // when all the layers' reconnections have settled.
+            // leaflet doesn't like this: https://github.com/Leaflet/Leaflet/issues/2553
             this._map.options.crs = M[newValue];
             this._map.options.projection = newValue;
             let layersReady = [];
@@ -418,9 +419,13 @@ export class WebMap extends HTMLMapElement {
               // use the saved map location to ensure it is correct after
               // changing the map CRS.  Specifically affects projection
               // upgrades, e.g. https://maps4html.org/experiments/custom-projections/BNG/
+              // see leaflet bug: https://github.com/Leaflet/Leaflet/issues/2553
               this.zoomTo(lat, lon, zoom);
-              this._resetHistory();
-              this._map.announceMovement.enable();
+              if (M.options.announceMovement)
+                this._map.announceMovement.enable();
+              this.querySelectorAll('layer-').forEach((layer) => {
+                layer.dispatchEvent(new CustomEvent('map-change'));
+              });
             });
           }
         };
@@ -430,6 +435,14 @@ export class WebMap extends HTMLMapElement {
             connect();
             resolve();
           }).then(() => {
+            if (this._map && this._map.options.projection !== oldValue) {
+              // this awful hack is brought to you by a leaflet bug/ feature request
+              // https://github.com/Leaflet/Leaflet/issues/2553
+              this.zoomTo(this.lat, this.lon, this.zoom + 1);
+              this.zoomTo(this.lat, this.lon, this.zoom - 1);
+              // this doesn't completely work either
+              this._resetHistory();
+            }
             if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
           });
         }
@@ -1391,10 +1404,11 @@ export class WebMap extends HTMLMapElement {
       }
     });
   }
-  async whenLayersReady() {
+  whenLayersReady() {
     let layersReady = [];
+    // check if all the children elements (map-extent, map-feature) of all layer- are ready
     for (let layer of [...this.layers]) {
-      layersReady.push(layer.whenReady());
+      layersReady.push(layer.whenElemsReady());
     }
     return Promise.allSettled(layersReady);
   }
