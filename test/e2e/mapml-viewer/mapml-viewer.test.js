@@ -26,7 +26,7 @@ let controls = [
 ];
 let options = ['nozoom', 'noreload', 'nofullscreen'];
 
-test.describe.only('Playwright mapml-viewer Element Tests', () => {
+test.describe('Playwright mapml-viewer Element Tests', () => {
   let page;
   let context;
   test.beforeAll(async () => {
