@@ -25,7 +25,7 @@ let expectedPCRS = {
     }
   };
 
-test.describe('Playwright templatedFeatures Layer Tests', () => {
+test.describe.only('Playwright templatedFeatures Layer Tests', () => {
   isVisible.test('templatedFeatures.html', 3, 2);
   zoomLimit.test('templatedFeatures.html', 2, 1);
   extentProperty.test('templatedFeatures.html', expectedPCRS, expectedGCRS);

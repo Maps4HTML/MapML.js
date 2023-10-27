@@ -45,11 +45,10 @@ test.describe('Playwright mapMLTemplatedTile Layer Tests', () => {
     });
 
     test('SVG tiles load in on default map zoom level', async () => {
-      const tiles = await page.$eval(
-        'xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div',
-        (tileGroup) => tileGroup.getElementsByTagName('svg').length
-      );
-      expect(tiles).toEqual(8);
+      // # of tiles = 8
+      await expect(
+        page.locator('.mapml-templatedlayer-container svg')
+      ).toHaveCount(8);
     });
 
     test('Templated tile layer works without <map-input> for zoom level', async () => {

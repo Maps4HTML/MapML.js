@@ -39,6 +39,7 @@
 
       </map-extent>
     </layer->
+    <!-- this layer is removed before the zoom in control test is done -->
     <layer- label="Static MapML with tiles" checked>
       <map-meta name="zoom" content="min=0,max=10"></map-meta>
       <map-meta name="projection" content="WGS84"></map-meta>
@@ -49,6 +50,8 @@
     </layer->
 
     <layer- label="Templated Tile Layer for Zoom" checked>
+      <!-- for the zoom in control disabled test to work at or above z=3, need to set the max zoom level -->
+      <map-meta name="zoom" content="min=1,max=2"></map-meta>
       <map-extent units="CBMTILE" checked hidden>
         <map-input name="txmin" type="location" rel="tile" position="top-left" axis="easting" units="tilematrix" ></map-input>
         <map-input name="tymin" type="location" rel="tile" position="bottom-left" axis="northing" units="tilematrix" ></map-input>
