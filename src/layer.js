@@ -329,54 +329,58 @@ export class MapLayer extends HTMLElement {
     }
   }
   _validateDisabled() {
-    let layer = this._layer,
-      map = layer?._map;
-    if (map) {
-      // prerequisite: no inline and remote mapml elements exists at the same time
-      const mapExtents = this.shadowRoot
-        ? this.shadowRoot.querySelectorAll('map-extent')
-        : this.querySelectorAll('map-extent');
-      let disabledExtentCount = 0,
-        totalExtentCount = 0,
-        layerTypes = [
-          '_staticTileLayer',
-          '_imageLayer',
-          '_mapmlvectors',
-          '_templatedLayer'
-        ];
-      if (layer.validProjection) {
-        for (let j = 0; j < layerTypes.length; j++) {
-          let type = layerTypes[j];
-          if (this.checked) {
-            if (type === '_templatedLayer' && mapExtents.length > 0) {
-              for (let i = 0; i < mapExtents.length; i++) {
+    // setTimeout is necessary to make the validateDisabled happen later than the moveend operations etc.,
+    // to ensure that the validated result is correct
+    setTimeout(() => {
+      let layer = this._layer,
+        map = layer?._map;
+      if (map) {
+        // prerequisite: no inline and remote mapml elements exists at the same time
+        const mapExtents = this.shadowRoot
+          ? this.shadowRoot.querySelectorAll('map-extent')
+          : this.querySelectorAll('map-extent');
+        let disabledExtentCount = 0,
+          totalExtentCount = 0,
+          layerTypes = [
+            '_staticTileLayer',
+            '_imageLayer',
+            '_mapmlvectors',
+            '_templatedLayer'
+          ];
+        if (layer.validProjection) {
+          for (let j = 0; j < layerTypes.length; j++) {
+            let type = layerTypes[j];
+            if (this.checked) {
+              if (type === '_templatedLayer' && mapExtents.length > 0) {
+                for (let i = 0; i < mapExtents.length; i++) {
+                  totalExtentCount++;
+                  if (mapExtents[i]._validateDisabled()) disabledExtentCount++;
+                }
+              } else if (layer[type]) {
+                // not a templated layer
                 totalExtentCount++;
-                if (mapExtents[i]._validateDisabled()) disabledExtentCount++;
+                if (!layer[type].isVisible) disabledExtentCount++;
               }
-            } else if (layer[type]) {
-              // not a templated layer
-              totalExtentCount++;
-              if (!layer[type].isVisible) disabledExtentCount++;
             }
           }
+        } else {
+          disabledExtentCount = 1;
+          totalExtentCount = 1;
         }
-      } else {
-        disabledExtentCount = 1;
-        totalExtentCount = 1;
+        // if all extents are not visible / disabled, set layer to disabled
+        if (
+          disabledExtentCount === totalExtentCount &&
+          disabledExtentCount !== 0
+        ) {
+          this.setAttribute('disabled', '');
+          this.disabled = true;
+        } else {
+          this.removeAttribute('disabled');
+          this.disabled = false;
+        }
+        this.toggleLayerControlDisabled();
       }
-      // if all extents are not visible / disabled, set layer to disabled
-      if (
-        disabledExtentCount === totalExtentCount &&
-        disabledExtentCount !== 0
-      ) {
-        this.setAttribute('disabled', '');
-        this.disabled = true;
-      } else {
-        this.removeAttribute('disabled');
-        this.disabled = false;
-      }
-      this.toggleLayerControlDisabled();
-    }
+    }, 0);
   }
 
   // disable/italicize layer control elements based on the layer-.disabled property
