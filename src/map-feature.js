@@ -239,10 +239,13 @@ export class MapFeature extends HTMLElement {
           // todo: dynamically update layer bounds of vector layer
           mapmlvectors.layerBounds = M.getBounds(this._layer._content);
           // update map's zoom limit
+          // the mapmlvectors.options should be updated with the new zoomBounds,
+          // to ensure the _addZoomLimit function call can read updated zoom info
+          // and update map zoom limit properly
+          L.extend(mapmlvectors.options, mapmlvectors.zoomBounds);
           this._map._addZoomLimit(mapmlvectors);
           // TODO: can be set as a handler of featureLayer
           mapmlvectors._resetFeatures();
-          L.extend(mapmlvectors.options, mapmlvectors.zoomBounds);
         }
       }
 
@@ -310,29 +313,7 @@ export class MapFeature extends HTMLElement {
       }
       return { zoom: nativeZoom, cs: nativeCS };
     } else {
-      // feature attaches to layer- or layer-'s shadow
-      if (content.nodeType === Node.DOCUMENT_NODE) {
-        // for features migrated from mapml, read native zoom and cs from the remote mapml
-        return M.getNativeVariables(content);
-      } else if (content.nodeName.toUpperCase() === 'LAYER-') {
-        // for inline features, read native zoom and cs from inline map-meta
-        let zoomMeta = this._parentEl.querySelectorAll('map-meta[name=zoom]'),
-          zoomLength = zoomMeta?.length;
-        nativeZoom = zoomLength
-          ? +zoomMeta[zoomLength - 1]
-              .getAttribute('content')
-              ?.split(',')
-              .find((str) => str.includes('value'))
-              ?.split('=')[1]
-          : 0;
-
-        let csMeta = this._parentEl.querySelectorAll('map-meta[name=cs]'),
-          csLength = csMeta?.length;
-        nativeCS = csLength
-          ? csMeta[csLength - 1].getAttribute('content')
-          : 'gcrs';
-        return { zoom: nativeZoom, cs: nativeCS };
-      }
+      return M.getNativeVariables(content);
     }
   }
 

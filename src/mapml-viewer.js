@@ -390,6 +390,14 @@ export class MapViewer extends HTMLElement {
             connect();
             resolve();
           }).then(() => {
+            if (this._map && this._map.options.projection !== oldValue) {
+              // this awful hack is brought to you by a leaflet bug/ feature request
+              // https://github.com/Leaflet/Leaflet/issues/2553
+              this.zoomTo(this.lat, this.lon, this.zoom + 1);
+              this.zoomTo(this.lat, this.lon, this.zoom - 1);
+              // this doesn't completely work either
+              this._resetHistory();
+            }
             if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
             // this awful hack is brought to you by a leaflet bug/ feature request
             // https://github.com/Leaflet/Leaflet/issues/2553

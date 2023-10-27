@@ -142,8 +142,9 @@ test.describe('Feature Index Overlay Focus tests', () => {
     await page.locator('#map3').getByTitle('Reload').click();
   });
   test('Feature index overlay and reticle show after following a link', async () => {
-    await page.locator('#map3').scrollIntoViewIfNeeded();
-    await page.locator('#map3 .leaflet-interactive.map-a').click();
+    await page.locator('#map3').click();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter');
     const afterFollowingLinkReticle = page.locator(
       '#map3 .mapml-feature-index-box'
     );
