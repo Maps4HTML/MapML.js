@@ -205,7 +205,6 @@ test.describe('Adding and Removing Multiple Extents', () => {
       "div.mapml-templatedlayer-container[style='opacity: 0.5; z-index: 1;'] > div",
       (div) => div.className
     );
-    await page.pause();
     const layer = page.getByTestId('multiple-extents');
 
     const layerOpacity = await layer.evaluate((layer) => {
@@ -379,7 +378,7 @@ test.describe('Multiple Extents Bounds Tests', () => {
     await expect(cbmtExtentItem).toHaveCSS('font-style', 'italic');
 
     const layerOpacitySliderText = page.locator(
-      '.leaflet-control-layers-overlays > fieldset:nth-child(1) .mapml-layer-item-opacity.mapml-control-layers > summary'
+      '.leaflet-control-layers-overlays > fieldset:nth-child(1) > div.mapml-layer-item-settings > details.mapml-layer-item-opacity'
     );
     await expect(layerOpacitySliderText).toHaveCount(1);
     await expect(layerOpacitySliderText).toHaveCSS('font-style', 'italic');
