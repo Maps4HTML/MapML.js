@@ -1,5 +1,3 @@
-import { FALLBACK_CS, FALLBACK_PROJECTION } from '../utils/Constants';
-
 export var FeatureLayer = L.FeatureGroup.extend({
   /*
    * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.

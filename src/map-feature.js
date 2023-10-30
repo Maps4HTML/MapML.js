@@ -195,7 +195,6 @@ export class MapFeature extends HTMLElement {
           if (mapmlvectors._features[this.zoom]) {
             this._removeInFeatureList(this.zoom);
           }
-          let container = this._layer.shadowRoot || this._layer._layerEl;
           // update zoom bounds of vector layer
           mapmlvectors.zoomBounds = M.getZoomBounds(
             this._layer._content,

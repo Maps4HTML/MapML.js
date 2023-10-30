@@ -1,3 +1,5 @@
+/* global M */
+import { FALLBACK_PROJECTION, BLANK_TT_TREF } from './Constants.js';
 import { createLayerControlExtentHTML } from './createLayerControlForExtent.js';
 export class MapExtent extends HTMLElement {
   static get observedAttributes() {

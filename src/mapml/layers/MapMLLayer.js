@@ -1,7 +1,3 @@
-/* global M */
-
-import { FALLBACK_PROJECTION, BLANK_TT_TREF } from '../utils/Constants';
-
 export var MapMLLayer = L.Layer.extend({
   // zIndex has to be set, for the case where the layer is added to the
   // map before the layercontrol is used to control it (where autoZindex is used)
