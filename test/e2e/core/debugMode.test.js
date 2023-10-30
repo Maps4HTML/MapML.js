@@ -130,18 +130,18 @@ test.describe('Playwright Map Element Tests', () => {
     expect(grid).toEqual(1);
   });
 
-  test('Layer deselected then reselected 1', async () => {
+  test('Layer deselected', async () => {
     await page.hover('.leaflet-top.leaflet-right');
     await page.click(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span'
     );
     await expect(
       page.locator('.mapml-debug-vectors.cbmt-inline-layer')
-    ).toHaveCount(1);
-    await expect(page.locator('.mapml-debug-vectors')).toHaveCount(4); // only 5 if you have the mapml-extension installed, announceZoom option enabled
+    ).toHaveCount(0);
+    await expect(page.locator('.mapml-debug-vectors')).toHaveCount(3); // only 4 if you have the mapml-extension installed, announceZoom option enabled
   });
 
-  test('Layer deselected then reselected 2', async () => {
+  test('Layer reselected', async () => {
     await page.hover('.leaflet-top.leaflet-right');
     await page.click(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span'
@@ -149,5 +149,6 @@ test.describe('Playwright Map Element Tests', () => {
     await expect(
       page.locator('.mapml-debug-vectors.cbmt-inline-layer')
     ).toHaveCount(1);
+    await expect(page.locator('.mapml-debug-vectors')).toHaveCount(4);
   });
 });
