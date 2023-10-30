@@ -143,73 +143,82 @@ export class MapInput extends HTMLElement {
     }
   }
   attributeChangedCallback(name, oldValue, newValue) {
-    switch (name) {
-      case 'name':
-        if (oldValue !== newValue) {
-          // update associated class value on attribute change
-          if (oldValue !== null) {
-            this.input.name = newValue;
-          }
+    this.whenReady()
+      .then(() => {
+        switch (name) {
+          case 'name':
+            if (oldValue !== newValue) {
+              // update associated class value on attribute change
+              if (oldValue !== null) {
+                this.input.name = newValue;
+              }
+            }
+            break;
+          case 'type':
+            if (oldValue !== newValue) {
+              // handle side effects
+              // not allowed to change 'type'
+            }
+            break;
+          case 'value':
+            if (oldValue !== newValue) {
+              if (oldValue !== null) {
+                this.input.value = newValue;
+              } else {
+                this.initialValue = newValue;
+              }
+            }
+            break;
+          case 'axis':
+            if (oldValue !== newValue && this.input) {
+              // handle side effects
+              this.input.axis = newValue;
+            }
+            break;
+          case 'units':
+            if (oldValue !== newValue && this.input) {
+              // handle side effects
+              this.input.units = newValue;
+            }
+            break;
+          case 'position':
+            if (oldValue !== newValue && this.input) {
+              // handle side effects
+              this.input.position = newValue;
+            }
+            break;
+          case 'rel':
+            if (oldValue !== newValue && this.input) {
+              // handle side effects
+              this.input.rel = newValue;
+            }
+            break;
+          case 'min':
+            if (oldValue !== newValue && this.input) {
+              // handle side effects
+              this.input.min = newValue;
+            }
+            break;
+          case 'max':
+            if (oldValue !== newValue && this.input) {
+              // handle side effects
+              this.input.max = newValue;
+            }
+            break;
+          case 'step':
+            if (oldValue !== newValue && this.input) {
+              // handle side effects
+              this.input.step = newValue;
+            }
+            break;
         }
-        break;
-      case 'type':
-        if (oldValue !== newValue) {
-          // handle side effects
-          // not allowed to change 'type'
-        }
-        break;
-      case 'value':
-        if (oldValue !== newValue) {
-          if (oldValue !== null) {
-            this.input.value = newValue;
-          } else {
-            this.initialValue = newValue;
-          }
-        }
-        break;
-      case 'axis':
-        if (oldValue !== newValue && this.input) {
-          // handle side effects
-          this.input.axis = newValue;
-        }
-        break;
-      case 'units':
-        if (oldValue !== newValue && this.input) {
-          // handle side effects
-          this.input.units = newValue;
-        }
-        break;
-      case 'position':
-        if (oldValue !== newValue && this.input) {
-          // handle side effects
-          this.input.position = newValue;
-        }
-        break;
-      case 'rel':
-        if (oldValue !== newValue && this.input) {
-          // handle side effects
-          this.input.rel = newValue;
-        }
-        break;
-      case 'min':
-        if (oldValue !== newValue && this.input) {
-          // handle side effects
-          this.input.min = newValue;
-        }
-        break;
-      case 'max':
-        if (oldValue !== newValue && this.input) {
-          // handle side effects
-          this.input.max = newValue;
-        }
-        break;
-      case 'step':
-        if (oldValue !== newValue && this.input) {
-          // handle side effects
-          this.input.step = newValue;
-        }
-        break;
-    }
+      })
+      .catch((reason) => {
+        console.log(
+          reason,
+          `\nin mapInput.attributeChangeCallback when changing attribute ${name}`
+        );
+      });
   }
   constructor() {
     // Always call super first in constructor

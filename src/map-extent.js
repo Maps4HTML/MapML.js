@@ -157,8 +157,16 @@ export class MapExtent extends HTMLElement {
     delete this.parentLayer.bounds;
     // this code comes from MapMLLayer._initialize.processExtents
     this._templateVars = this._initTemplateVars(
-      // mapml is the layer- element OR the mapml- document root
-      this.parentLayer.querySelector('map-meta[name=extent]'),
+      // read map-meta[name=extent] from shadowroot or layer-
+      // querySelector / querySelectorAll on layer- cannot get elements inside its shadowroot
+      this.parentLayer.shadowRoot
+        ? this.parentLayer.shadowRoot.querySelector(
+            'map-extent > map-meta[name=extent]'
+          ) ||
+            this.parentLayer.shadowRoot.querySelector('map-meta[name=extent]')
+        : this.parentLayer.querySelector(
+            'map-extent > map-meta[name=extent]'
+          ) || this.parentLayer.querySelector('map-meta[name=extent]'),
       this.units,
       this._layer._content,
       this._layer.getBase(),

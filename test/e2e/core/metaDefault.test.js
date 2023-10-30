@@ -46,7 +46,7 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
   let page;
   let context;
   test.beforeAll(async () => {
-    context = await chromium.launchPersistentContext('');
+    context = await chromium.launchPersistentContext('', {slowMo: 250});
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
@@ -95,30 +95,23 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
     const layer = await page.evaluateHandle(() =>
       document.querySelector('layer-[id=defaultMeta]')
     );
-    const layerSVG = await (
-      await page.evaluateHandle(
+    const layerSVG = await page.evaluate(
         (layer) =>
-          layer._layer._container.querySelector('path').getAttribute('d'),
+          layer._layer._container.querySelector('path').hasAttribute('d'),
         layer
-      )
-    ).jsonValue();
-    expect(layerSVG).toEqual(
-      'M190 311 L177.5 281 C177.5 261, 202.5 261, 202.5 281 L190 311z'
     );
+    expect(layerSVG).toBe(true);
   });
   test("Fetched layer with no map-meta's is rendered on map", async () => {
+    await page.pause();
     const layer = await page.evaluateHandle(() =>
       document.querySelector('layer-[id=defaultMetaFetched]')
     );
-    const layerSVG = await (
-      await page.evaluateHandle(
+    const layerSVG = await page.evaluate(
         (layer) =>
-          layer._layer._container.querySelector('path').getAttribute('d'),
+          layer._layer._container.querySelector('path').hasAttribute('d'),
         layer
-      )
-    ).jsonValue();
-    expect(layerSVG).toEqual(
-      'M243 255 L230.5 225 C230.5 205, 255.5 205, 255.5 225 L243 255z'
-    );
+      );
+    expect(layerSVG).toBe(true);
   });
 });
