@@ -46,7 +46,7 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
   let page;
   let context;
   test.beforeAll(async () => {
-    context = await chromium.launchPersistentContext('', {slowMo: 250});
+    context = await chromium.launchPersistentContext('', { slowMo: 250 });
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
@@ -96,9 +96,9 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
       document.querySelector('layer-[id=defaultMeta]')
     );
     const layerSVG = await page.evaluate(
-        (layer) =>
-          layer._layer._container.querySelector('path').hasAttribute('d'),
-        layer
+      (layer) =>
+        layer._layer._container.querySelector('path').hasAttribute('d'),
+      layer
     );
     expect(layerSVG).toBe(true);
   });
@@ -108,10 +108,10 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
       document.querySelector('layer-[id=defaultMetaFetched]')
     );
     const layerSVG = await page.evaluate(
-        (layer) =>
-          layer._layer._container.querySelector('path').hasAttribute('d'),
-        layer
-      );
+      (layer) =>
+        layer._layer._container.querySelector('path').hasAttribute('d'),
+      layer
+    );
     expect(layerSVG).toBe(true);
   });
 });

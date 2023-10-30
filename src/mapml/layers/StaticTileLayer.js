@@ -5,7 +5,7 @@ export var StaticTileLayer = L.GridLayer.extend({
       options.tileContainer,
       options.maxZoomBound
     );
-    L.extend(options, this.zoomBounds);
+    L.extend(this.options, this.zoomBounds);
     this._groups = this._groupTiles(
       this.options.tileContainer.getElementsByTagName('map-tile')
     );
@@ -122,7 +122,7 @@ export var StaticTileLayer = L.GridLayer.extend({
     // should read zoom information from map-meta (of layer-) instead of the zoom attribute value of map-tile
     let meta = M._metaContentToObject(
         this.options._leafletLayer._layerEl
-          .querySelector('map-meta[name=projection]')
+          .querySelector('map-meta[name=zoom]')
           .getAttribute('content')
       ),
       zoom = {},
