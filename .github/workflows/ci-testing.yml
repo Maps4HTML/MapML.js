@@ -4,6 +4,7 @@ on: [pull_request]
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
@@ -16,8 +17,8 @@ jobs:
     - run: npm install --legacy-peer-deps
     - run: npx playwright install
     - run: npm install -g grunt-cli
-    - run: grunt default 
+    - run: grunt default
     - run: xvfb-run --auto-servernum -- npm test
-    # - run: xvfb-run --auto-servernum -- npm run jest
-        env:
-          CI: true
+#    - run: xvfb-run --auto-servernum -- npm run jest
+      env:
+        CI: true
