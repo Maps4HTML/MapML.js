@@ -281,20 +281,28 @@ export class MapLayer extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'label':
-        this.whenReady().then(() => {
-          this._layer.setName(newValue);
-        });
+        this.whenReady()
+          .then(() => {
+            this._layer.setName(newValue);
+          })
+          .catch((e) => {
+            console.log(e);
+          });
         break;
       case 'checked':
-        this.whenReady().then(() => {
-          if (typeof newValue === 'string') {
-            this.parentElement._map.addLayer(this._layer);
-          } else {
-            this.parentElement._map.removeLayer(this._layer);
-          }
-          this._layerControlCheckbox.checked = this.checked;
-          this.dispatchEvent(new CustomEvent('map-change'));
-        });
+        this.whenReady()
+          .then(() => {
+            if (typeof newValue === 'string') {
+              this.parentElement._map.addLayer(this._layer);
+            } else {
+              this.parentElement._map.removeLayer(this._layer);
+            }
+            this._layerControlCheckbox.checked = this.checked;
+            this.dispatchEvent(new CustomEvent('map-change'));
+          })
+          .catch((e) => {
+            console.log(e);
+          });
         break;
       case 'hidden':
         var map = this.parentElement && this.parentElement._map;
