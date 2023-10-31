@@ -55,6 +55,7 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
   });
 
   test('Initial map element extent', async () => {
+    await page.waitForTimeout(500);
     const extent = await page.$eval('body > mapml-viewer', (map) => map.extent);
 
     expect(extent.projection).toEqual('CBMTILE');
