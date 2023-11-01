@@ -46,21 +46,21 @@ export class MapViewer extends HTMLElement {
     this.setAttribute('controlslist', value);
   }
   get width() {
-    return window.getComputedStyle(this).width.replace('px', '');
+    return +window.getComputedStyle(this).width.replace('px', '');
   }
   set width(val) {
     //img.height or img.width setters change or add the corresponding attributes
     this.setAttribute('width', val);
   }
   get height() {
-    return window.getComputedStyle(this).height.replace('px', '');
+    return +window.getComputedStyle(this).height.replace('px', '');
   }
   set height(val) {
     //img.height or img.width setters change or add the corresponding attributes
     this.setAttribute('height', val);
   }
   get lat() {
-    return this.hasAttribute('lat') ? this.getAttribute('lat') : '0';
+    return +(this.hasAttribute('lat') ? this.getAttribute('lat') : 0);
   }
   set lat(val) {
     if (val) {
@@ -68,7 +68,7 @@ export class MapViewer extends HTMLElement {
     }
   }
   get lon() {
-    return this.hasAttribute('lon') ? this.getAttribute('lon') : '0';
+    return +(this.hasAttribute('lon') ? this.getAttribute('lon') : 0);
   }
   set lon(val) {
     if (val) {
