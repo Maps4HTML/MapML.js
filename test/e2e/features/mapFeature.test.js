@@ -18,7 +18,7 @@ test.describe('Playwright map-feature tests', () => {
     // expect the map to start at initial lat/lon/zoom
     await expect(page.getByTestId('viewer')).toHaveJSProperty('lat', '45.4');
     await expect(page.getByTestId('viewer')).toHaveJSProperty('lon', '-75.7');
-    await expect(page.getByTestId('viewer')).toHaveJSProperty('zoom', '10');
+    await expect(page.getByTestId('viewer')).toHaveJSProperty('zoom', 10);
 
     // click the polygon link to zoom
     await page.getByLabel('Click me!').click();
@@ -26,7 +26,7 @@ test.describe('Playwright map-feature tests', () => {
     // traversing the link, expect the new map location to be centered #15, -75.699, 45.420
     await expect(page.getByTestId('viewer')).toHaveJSProperty('lat', '45.42');
     await expect(page.getByTestId('viewer')).toHaveJSProperty('lon', '-75.699');
-    await expect(page.getByTestId('viewer')).toHaveJSProperty('zoom', '15');
+    await expect(page.getByTestId('viewer')).toHaveJSProperty('zoom', 15);
 
     // remove this to fail on click
     // await page.getByTestId('points').evaluate((layer)=>layer._layer._setLayerElExtent());
@@ -47,7 +47,7 @@ test.describe('Playwright map-feature tests', () => {
       'lon',
       '-75.6978309903406'
     );
-    await expect(page.getByTestId('viewer')).toHaveJSProperty('zoom', '24');
+    await expect(page.getByTestId('viewer')).toHaveJSProperty('zoom', 24);
     // click the first point on the map
     await page.getByRole('button', { name: 'Point 1' }).click();
     // expect the popup for Point 1 to have specific content

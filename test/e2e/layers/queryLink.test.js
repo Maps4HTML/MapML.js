@@ -296,7 +296,7 @@ test.describe('Playwright Query Link Tests', () => {
       expect(startTopLeft.vertical).toBe(9155377.19075438);
       expect(startBottomRight.horizontal).toBe(10000664.312928632);
       expect(startBottomRight.vertical).toBe(-10026952.84057235);
-      expect(startZoomLevel).toBe('0');
+      expect(startZoomLevel).toBe(0);
 
       await page.click('div');
       await page.waitForSelector(
@@ -326,7 +326,7 @@ test.describe('Playwright Query Link Tests', () => {
       expect(endTopLeft.vertical).toBe(-1444381.5087630227);
       expect(endBottomRight.horizontal).toBe(1242409.2964185923);
       expect(endBottomRight.vertical).toBe(-2238133.096266195);
-      expect(endZoomLevel).toBe('6');
+      expect(endZoomLevel).toBe(6);
     });
   });
 });

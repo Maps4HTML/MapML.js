@@ -96,7 +96,7 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
       expect(startTopLeft.vertical).toBe(-169068.77063754946);
       expect(startBottomRight.horizontal).toBe(1512570.5867411792);
       expect(startBottomRight.vertical).toBe(-173037.52857506275);
-      expect(startZoomLevel).toBe('16');
+      expect(startZoomLevel).toBe(16);
       await page.evaluate(
         `document.querySelector('#map2 > layer- > map-extent').shadowRoot.querySelector('map-feature').zoomTo()`
       );
@@ -113,7 +113,7 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
       expect(endTopLeft.vertical).toBe(-171660.43571670353);
       expect(endBottomRight.horizontal).toBe(1509696.5445347577);
       expect(endBottomRight.vertical).toBe(-171693.50869952142);
-      expect(endZoomLevel).toBe('25');
+      expect(endZoomLevel).toBe(25);
     });
   });
 

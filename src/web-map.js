@@ -93,7 +93,7 @@ export class WebMap extends HTMLMapElement {
     }
   }
   get zoom() {
-    return this.hasAttribute('zoom') ? this.getAttribute('zoom') : 0;
+    return +(this.hasAttribute('zoom') ? this.getAttribute('zoom') : 0);
   }
   set zoom(val) {
     var parsedVal = parseInt(val, 10);

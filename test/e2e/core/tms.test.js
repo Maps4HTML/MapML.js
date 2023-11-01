@@ -4,7 +4,7 @@ test.describe('Playwright Map Element Tests', () => {
   let page;
   let context;
   test.beforeAll(async () => {
-    context = await chromium.launchPersistentContext('', {slowMo: 250});
+    context = await chromium.launchPersistentContext('', { slowMo: 250 });
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());

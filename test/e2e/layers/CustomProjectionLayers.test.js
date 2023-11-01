@@ -41,7 +41,7 @@ test.describe('Custom Projection Feature & Extent Tests', () => {
       const zoom = await page.evaluate(
         `document.querySelector('mapml-viewer').zoom`
       );
-      expect(zoom).toEqual('2');
+      expect(zoom).toEqual(2);
       let endTopLeft = await page.evaluate(
         `document.querySelector('mapml-viewer').extent.topLeft.gcrs`
       );
