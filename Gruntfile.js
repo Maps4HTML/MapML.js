@@ -170,7 +170,7 @@ module.exports = function(grunt) {
           {
             expand: true,
             src: ['dist/*'],
-            dest: '../web-map-doc'
+            dest: '../web-map-doc/static'
           }
         ]
       }
