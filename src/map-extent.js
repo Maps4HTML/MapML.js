@@ -1,6 +1,4 @@
 /* global M */
-import { FALLBACK_PROJECTION, BLANK_TT_TREF } from './Constants.js';
-import { createLayerControlExtentHTML } from './createLayerControlForExtent.js';
 export class MapExtent extends HTMLElement {
   static get observedAttributes() {
     return ['units', 'checked', 'label', 'opacity', 'hidden'];
@@ -130,7 +128,8 @@ export class MapExtent extends HTMLElement {
   async connectedCallback() {
     // this.parentNode.host returns the layer- element when parentNode is
     // the shadow root
-    this._createLayerControlExtentHTML = createLayerControlExtentHTML;
+    this._createLayerControlExtentHTML =
+      M._createLayerControlExtentHTML.bind(this);
     this.parentLayer =
       this.parentNode.nodeName.toUpperCase() === 'LAYER-'
         ? this.parentNode
@@ -189,7 +188,7 @@ export class MapExtent extends HTMLElement {
       extentEl: this._DOMnode || this
     });
     // this._layerControlHTML is the fieldset for the extent in the LayerControl
-    this._layerControlHTML = this._createLayerControlExtentHTML(this);
+    this._layerControlHTML = this._createLayerControlExtentHTML();
     if (!this.hidden)
       this._layer.addExtentToLayerControl(this._layerControlHTML);
     this._validateLayerControlContainerHidden();
@@ -357,7 +356,7 @@ export class MapExtent extends HTMLElement {
         template = t.getAttribute('tref');
       t.zoomInput = zoomInput;
       if (!template) {
-        template = BLANK_TT_TREF;
+        template = M.BLANK_TT_TREF;
         let blankInputs = mapml.querySelectorAll('map-input');
         for (let i of blankInputs) {
           template += `{${i.getAttribute('name')}}`;
@@ -453,7 +452,7 @@ export class MapExtent extends HTMLElement {
       }
       if (
         (template && vcount.length === inputs.length) ||
-        template === BLANK_TT_TREF
+        template === M.BLANK_TT_TREF
       ) {
         if (trel === 'query') {
           this._layer.queryable = true;
@@ -474,7 +473,7 @@ export class MapExtent extends HTMLElement {
           zoomBounds: zoomBounds,
           boundsFallbackPCRS: { bounds: boundsFallback.bounds },
           projectionMatch: projectionMatch,
-          projection: this.units || FALLBACK_PROJECTION,
+          projection: this.units || M.FALLBACK_PROJECTION,
           tms: tms,
           step: step
         });

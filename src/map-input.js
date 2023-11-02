@@ -1,9 +1,4 @@
-import { ZoomInput } from './zoomInput.js';
-import { HiddenInput } from './hiddenInput.js';
-import { WidthInput } from './widthInput.js';
-import { HeightInput } from './heightInput.js';
-import { LocationInput } from './locationInput.js';
-
+/* global M */
 export class MapInput extends HTMLElement {
   static get observedAttributes() {
     return [
@@ -234,7 +229,7 @@ export class MapInput extends HTMLElement {
         switch (this.type) {
           case 'zoom':
             // input will store the input Class specific to the input type
-            this.input = new ZoomInput(
+            this.input = new M.ZoomInput(
               this.name,
               this.min,
               this.max,
@@ -245,7 +240,7 @@ export class MapInput extends HTMLElement {
             break;
           case 'location':
             // input will store the input Class specific to the input type
-            this.input = new LocationInput(
+            this.input = new M.LocationInput(
               this.name,
               this.position,
               this.axis,
@@ -258,15 +253,15 @@ export class MapInput extends HTMLElement {
             break;
           case 'width':
             // input will store the input Class specific to the input type
-            this.input = new WidthInput(this.name, this._layer);
+            this.input = new M.WidthInput(this.name, this._layer);
             break;
           case 'height':
             // input will store the input Class specific to the input type
-            this.input = new HeightInput(this.name, this._layer);
+            this.input = new M.HeightInput(this.name, this._layer);
             break;
           case 'hidden':
             // input will store the input Class specific to the input type
-            this.input = new HiddenInput(this.name, this.initialValue);
+            this.input = new M.HiddenInput(this.name, this.initialValue);
             break;
         }
       })

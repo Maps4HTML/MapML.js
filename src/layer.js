@@ -1,6 +1,5 @@
 import './leaflet.js'; // a lightly modified version of Leaflet for use as browser module
 import './mapml.js'; // modified URI to make the function a property of window scope (possibly a bad thing to do).
-import { createLayerControlHTML } from './createLayerControlForLayer.js';
 
 export class MapLayer extends HTMLElement {
   static get observedAttributes() {
@@ -112,7 +111,7 @@ export class MapLayer extends HTMLElement {
 
   connectedCallback() {
     if (this.hasAttribute('data-moving')) return;
-    this._createLayerControlHTML = createLayerControlHTML;
+    this._createLayerControlHTML = M._createLayerControlHTML.bind(this);
     const doConnected = this._onAdd.bind(this);
     this.parentElement
       .whenReady()

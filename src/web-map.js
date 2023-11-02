@@ -1,6 +1,5 @@
 import './leaflet.js'; // bundled with proj4, proj4leaflet, modularized
 import './mapml.js';
-import DOMTokenList from './DOMTokenList.js';
 import { MapLayer } from './layer.js';
 import { MapArea } from './map-area.js';
 import { MapCaption } from './map-caption.js';
@@ -151,7 +150,7 @@ export class WebMap extends HTMLMapElement {
       .then(() => {
         this._initShadowRoot();
 
-        this._controlsList = new DOMTokenList(
+        this._controlsList = new M.DOMTokenList(
           this.getAttribute('controlslist'),
           this,
           'controlslist',
@@ -1208,7 +1207,7 @@ export class WebMap extends HTMLMapElement {
     if (M[t.projection.toUpperCase()]) return t.projection.toUpperCase();
     let tileSize = [256, 512, 1024, 2048, 4096].includes(t.tilesize)
       ? t.tilesize
-      : 256;
+      : M.TILE_SIZE;
 
     M[t.projection] = new L.Proj.CRS(t.projection, t.proj4string, {
       origin: t.origin,

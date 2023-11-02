@@ -1,5 +1,3 @@
-import { BLANK_TT_TREF } from '../utils/Constants';
-
 export var TemplatedTileLayer = L.TileLayer.extend({
   // a TemplateTileLayer is similar to a L.TileLayer except its templates are
   // defined by the <map-extent><template/></map-extent>
@@ -108,7 +106,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       tile.width = tileSize.x;
       tile.height = tileSize.y;
       tileGroup.appendChild(tile);
-    } else if (!this._url.includes(BLANK_TT_TREF)) {
+    } else if (!this._url.includes(M.BLANK_TT_TREF)) {
       // tiles of type="text/mapml" will have to fetch content while creating
       // the tile here, unless there can be a callback associated to the element
       // that will render the content in the alread-placed tile

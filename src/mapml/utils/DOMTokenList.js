@@ -1,4 +1,4 @@
-export default class DOMTokenList {
+export class DOMTokenList {
   /* jshint ignore:start */
   #element; // create element as a private property
   #valueSet; // needed to prevent infinite recursive calls to CE setAttribute

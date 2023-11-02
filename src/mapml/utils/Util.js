@@ -1,5 +1,3 @@
-import { FALLBACK_CS, FALLBACK_PROJECTION } from './Constants';
-
 export var Util = {
   // _convertAndFormatPCRS returns the converted CRS and formatted pcrsBounds in gcrs, pcrs, tcrs, and tilematrix. Used for setting extent for the map and layer (map.extent, layer.extent).
   // _convertAndFormatPCRS: L.Bounds, _map, projection -> {...}
@@ -117,9 +115,9 @@ export var Util = {
 
     //sets variables with their respective fallback values incase content is missing from the template
     let inputs = template.values,
-      projection = template.projection || FALLBACK_PROJECTION,
+      projection = template.projection || M.FALLBACK_PROJECTION,
       value = 0,
-      boundsUnit = FALLBACK_CS;
+      boundsUnit = M.FALLBACK_CS;
     let bounds = this[projection].options.crs.tilematrix.bounds(0),
       defaultMinZoom = 0,
       defaultMaxZoom = this[projection].options.resolutions.length - 1,
@@ -231,7 +229,7 @@ export var Util = {
         case 'easting':
           return 'PCRS';
         default:
-          return FALLBACK_CS;
+          return M.FALLBACK_CS;
       }
     } catch (e) {
       return undefined;
@@ -598,7 +596,7 @@ export var Util = {
   // TODO: make this dynamic based on the individual features/extents
   getBounds: function (mapml) {
     if (!mapml) return null;
-    let cs = FALLBACK_CS,
+    let cs = M.FALLBACK_CS,
       projection =
         (mapml.querySelector('map-meta[name=projection]') &&
           M._metaContentToObject(
@@ -606,7 +604,7 @@ export var Util = {
               .querySelector('map-meta[name=projection]')
               .getAttribute('content')
           ).content.toUpperCase()) ||
-        FALLBACK_PROJECTION;
+        M.FALLBACK_PROJECTION;
     try {
       let meta =
         mapml.querySelector('map-meta[name=extent]') &&
@@ -670,7 +668,7 @@ export var Util = {
       return {
         minZoom: 0,
         maxZoom:
-          M[projection || FALLBACK_PROJECTION].options.resolutions.length - 1,
+          M[projection || M.FALLBACK_PROJECTION].options.resolutions.length - 1,
         minNativeZoom: nMin,
         maxNativeZoom: nMax
       };

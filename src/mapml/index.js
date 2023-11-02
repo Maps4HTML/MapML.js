@@ -80,6 +80,16 @@ import {
   featureIndexOverlay,
   FeatureIndexOverlay
 } from './layers/FeatureIndexOverlay';
+// element support
+import { createLayerControlExtentHTML } from './elementSupport/extents/createLayerControlForExtent';
+import { createLayerControlHTML } from './elementSupport/layers/createLayerControlForLayer';
+import { ZoomInput } from './elementSupport/inputs/zoomInput';
+import { HiddenInput } from './elementSupport/inputs/hiddenInput';
+import { WidthInput } from './elementSupport/inputs/widthInput';
+import { HeightInput } from './elementSupport/inputs/heightInput';
+import { LocationInput } from './elementSupport/inputs/locationInput';
+
+import { DOMTokenList } from './utils/DOMTokenList';
 
 /* global L, Node */
 (function (window, document, undefined) {
@@ -901,4 +911,21 @@ import {
 
   M.Geometry = Geometry;
   M.geometry = geometry;
+
+  // element support
+  M._createLayerControlExtentHTML = createLayerControlExtentHTML;
+  M._createLayerControlHTML = createLayerControlHTML;
+  M.ZoomInput = ZoomInput;
+  M.HiddenInput = HiddenInput;
+  M.WidthInput = WidthInput;
+  M.HeightInput = HeightInput;
+  M.LocationInput = LocationInput;
+
+  // constants
+  M.TILE_SIZE = 256;
+  M.FALLBACK_PROJECTION = 'OSMTILE';
+  M.FALLBACK_CS = 'TILEMATRIX';
+  M.BLANK_TT_TREF = 'mapmltemplatedtileplaceholder';
+
+  M.DOMTokenList = DOMTokenList;
 })(window, document);
