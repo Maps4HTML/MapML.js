@@ -108,13 +108,13 @@ test.describe('Linked Feature Projection Change Tests', () => {
     expect(rowAfter).toEqual('0');
     expect(zoomAfter).toEqual('0');
     expect(centerBefore).toEqual({
-      lat: '45.5052040',
-      lon: '-75.2202344',
+      lat: 45.505204,
+      lon: -75.2202344,
       zoom: 2
     });
     expect(centerAfter).toEqual({
-      lat: '45.505204',
-      lon: '-75.2202344',
+      lat: 45.505204,
+      lon: -75.2202344,
       zoom: 0
     });
   });

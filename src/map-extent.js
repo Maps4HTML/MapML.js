@@ -38,7 +38,7 @@ export class MapExtent extends HTMLElement {
   }
   get opacity() {
     // use ?? since 0 is falsy, || would return rhs in that case
-    return this._opacity ?? this.getAttribute('opacity');
+    return +(this._opacity ?? this.getAttribute('opacity'));
   }
 
   set opacity(val) {

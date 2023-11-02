@@ -114,7 +114,7 @@ test.describe('Playwright Checked Attribute Tests', () => {
     test('Getting appropriate opacity', async () => {
       const layer = page.getByTestId('testlayer');
       let value = await layer.evaluate((layer) => layer.opacity);
-      expect(value).toEqual('0.4');
+      expect(value).toEqual(0.4);
     });
   });
 });

@@ -27,7 +27,7 @@ test.describe('Adding Width and Height Attribute to map', () => {
     let map_width = await page.$eval('body > map', (viewer) => viewer.width);
     // expect(height_attribute_value).not.toEqual(map_height);
     // expect(width_attribute_value).not.toEqual(map_width);
-    expect(map_width).toEqual(width_attribute_value);
-    expect(map_height).toEqual(height_attribute_value);
+    expect(map_width).toEqual(+width_attribute_value);
+    expect(map_height).toEqual(+height_attribute_value);
   });
 });

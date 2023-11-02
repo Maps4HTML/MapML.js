@@ -31,8 +31,8 @@ test.describe('Adding Width and Height Attribute to map', () => {
       'body > map',
       (viewer) => viewer.width
     );
-    expect(height_without_px).toEqual('800');
-    expect(width_without_px).toEqual('800');
+    expect(height_without_px).toEqual(800);
+    expect(width_without_px).toEqual(800);
   });
 
   test('Testing Validity of Width and Height Attributes', async () => {

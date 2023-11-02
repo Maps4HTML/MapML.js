@@ -26,7 +26,7 @@ test.describe('Adding Opacity Attribute to the Layer- Element', () => {
       'body > mapml-viewer > layer-',
       (layer) => layer.opacity
     );
-    expect(layer_opacity).toEqual(opacity_attribute_value);
+    expect(layer_opacity).toEqual(+opacity_attribute_value);
   });
   test('Opacity Slider Value Test', async () => {
     await page.pause();
@@ -38,6 +38,6 @@ test.describe('Adding Opacity Attribute to the Layer- Element', () => {
       'body > mapml-viewer > layer-',
       (layer) => layer.opacity
     );
-    expect(layer_opacity).toEqual(opacity_slider_value);
+    expect(layer_opacity).toEqual(+opacity_slider_value);
   });
 });

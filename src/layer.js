@@ -50,7 +50,7 @@ export class MapLayer extends HTMLElement {
 
   get opacity() {
     // use ?? since 0 is falsy, || would return rhs in that case
-    return this._opacity ?? this.getAttribute('opacity');
+    return +(this._opacity ?? this.getAttribute('opacity'));
   }
 
   set opacity(val) {
@@ -76,6 +76,7 @@ export class MapLayer extends HTMLElement {
   constructor() {
     // Always call super first in constructor
     super();
+    this._opacity = 1.0;
   }
   disconnectedCallback() {
     //    console.log('Custom map element removed from page.');

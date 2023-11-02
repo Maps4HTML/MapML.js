@@ -1,5 +1,5 @@
-import './leaflet.js'; // a lightly modified version of Leaflet for use as browser module
-import './mapml.js'; // refactored URI usage, replaced with URL standard
+import './leaflet.js'; // bundled with proj4, proj4leaflet, modularized
+import './mapml.js';
 import DOMTokenList from './DOMTokenList.js';
 import { MapLayer } from './layer.js';
 import { MapArea } from './map-area.js';
@@ -47,21 +47,21 @@ export class WebMap extends HTMLMapElement {
     this.setAttribute('controlslist', value);
   }
   get width() {
-    return window.getComputedStyle(this).width.replace('px', '');
+    return +window.getComputedStyle(this).width.replace('px', '');
   }
   set width(val) {
     //img.height or img.width setters change or add the corresponding attributes
     this.setAttribute('width', val);
   }
   get height() {
-    return window.getComputedStyle(this).height.replace('px', '');
+    return +window.getComputedStyle(this).height.replace('px', '');
   }
   set height(val) {
     //img.height or img.width setters change or add the corresponding attributes
     this.setAttribute('height', val);
   }
   get lat() {
-    return this.hasAttribute('lat') ? this.getAttribute('lat') : '0';
+    return +(this.hasAttribute('lat') ? this.getAttribute('lat') : 0);
   }
   set lat(val) {
     if (val) {
@@ -69,7 +69,7 @@ export class WebMap extends HTMLMapElement {
     }
   }
   get lon() {
-    return this.hasAttribute('lon') ? this.getAttribute('lon') : '0';
+    return +(this.hasAttribute('lon') ? this.getAttribute('lon') : 0);
   }
   set lon(val) {
     if (val) {
