@@ -27,8 +27,6 @@ export var LayerControl = L.Control.Layers.extend({
   },
   onAdd: function () {
     this._initLayout();
-    // this._map.on('validate', this._validateInput, this);
-    // L.DomEvent.on(this.options.mapEl, 'layerchange', this._validateInput, this);
     // Adding event on layer control button
     L.DomEvent.on(
       this._container.getElementsByTagName('a')[0],
@@ -51,7 +49,6 @@ export var LayerControl = L.Control.Layers.extend({
     return this._container;
   },
   onRemove: function (map) {
-    // map.off('validate', this._validateInput, this);
     L.DomEvent.off(
       this._container.getElementsByTagName('a')[0],
       'keydown',

@@ -17,7 +17,6 @@ test.describe('Adding Opacity Attribute to the Layer- Element', () => {
   });
 
   test('Setting Opacity Attibute to Layer- Element', async () => {
-    await page.pause();
     let opacity_attribute_value = await page.$eval(
       'body > mapml-viewer > layer-',
       (layer) => layer.getAttribute('opacity')
@@ -29,7 +28,6 @@ test.describe('Adding Opacity Attribute to the Layer- Element', () => {
     expect(layer_opacity).toEqual(+opacity_attribute_value);
   });
   test('Opacity Slider Value Test', async () => {
-    await page.pause();
     let opacity_slider_value = await page.$eval(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div:nth-child(2) > details > input[type=range]',
       (input) => input.value

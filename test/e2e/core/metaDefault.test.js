@@ -103,7 +103,6 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
     expect(layerSVG).toBe(true);
   });
   test("Fetched layer with no map-meta's is rendered on map", async () => {
-    await page.pause();
     const layer = await page.evaluateHandle(() =>
       document.querySelector('layer-[id=defaultMetaFetched]')
     );

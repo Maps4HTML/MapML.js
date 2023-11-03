@@ -65,7 +65,6 @@ export var createLayerControlHTML = function () {
   removeControlButton.title = 'Remove Layer';
   removeControlButton.innerHTML = "<span aria-hidden='true'>&#10005;</span>";
   removeControlButton.classList.add('mapml-button');
-  //L.DomEvent.disableClickPropagation(removeControlButton);
   L.DomEvent.on(removeControlButton, 'click', L.DomEvent.stop);
   L.DomEvent.on(
     removeControlButton,
@@ -299,9 +298,6 @@ export var createLayerControlHTML = function () {
   this._layerItemSettingsHTML = layerItemSettings;
   this._propertiesGroupAnatomy = extentsFieldset;
   this._styles = this._layer._styles;
-  // // need to be removed
-  // this._layer._propertiesGroupAnatomy = extentsFieldset;
-  // // end need to be removed
   extentsFieldset.setAttribute('aria-label', 'Sublayers');
   extentsFieldset.setAttribute('hidden', '');
   layerItemSettings.appendChild(extentsFieldset);

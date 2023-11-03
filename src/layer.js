@@ -78,13 +78,8 @@ export class MapLayer extends HTMLElement {
     this._opacity = 1.0;
   }
   disconnectedCallback() {
-    //    console.log('Custom map element removed from page.');
     // if the map-layer node is removed from the dom, the layer should be
     // removed from the map and the layer control
-
-    // this is moved up here so that the layer control doesn't respond
-    // to the layer being removed with the _onLayerChange execution
-    // that is set up in _attached:
     if (this.hasAttribute('data-moving')) return;
     this._onRemove();
   }
@@ -176,7 +171,6 @@ export class MapLayer extends HTMLElement {
                 opacity: this.opacity
               }
             );
-            // create layer control for layer- unconditionally (not depend on this.hidden)
             this._createLayerControlHTML();
             this._attachedToMap();
             this._validateDisabled();
@@ -233,16 +227,11 @@ export class MapLayer extends HTMLElement {
     });
     // make sure the Leaflet layer has a reference to the map
     this._layer._map = this.parentNode._map;
-    // notify the layer that it is attached to a map (layer._map)
-    // this._layer.fire('attached');
 
     if (this.checked) {
       this._layer.addTo(this._layer._map);
     }
 
-    // add the handler which toggles the 'checked' property based on the
-    // user checking/unchecking the layer from the layer control
-    // this must be done *after* the layer is actually added to the map
     this._layer.on('add remove', this._validateDisabled, this);
     // toggle the this.disabled attribute depending on whether the layer
     // is: same prj as map, within view/zoom of map

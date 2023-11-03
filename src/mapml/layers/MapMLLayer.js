@@ -124,8 +124,6 @@ export var MapMLLayer = L.Layer.extend({
   },
 
   _calculateBounds: function () {
-    // await this._layerEl.whenReady();
-    // await this._layerEl.whenElemsReady();
     let bounds,
       zoomBounds = {
         minZoom: 0,
@@ -176,9 +174,6 @@ export var MapMLLayer = L.Layer.extend({
             }
           }
         }
-        // is this necessary anymore?  it's a side effect, probably not desirable
-        // this._layer._properties.zoomBounds = zoomBounds;
-        // this._layer._properties.layerBounds = bounds;
       } else if (type === '_staticTileLayer' && this._staticTileLayer) {
         if (this[type].layerBounds) {
           if (!bounds) {
@@ -306,10 +301,6 @@ export var MapMLLayer = L.Layer.extend({
         this.href = this._properties.zoomout;
         this._layerEl.src = this._properties.zoomout;
       }
-    }
-    if (this._templatedLayer && canZoom) {
-      // get the new extent
-      //this._initExtent();
     }
   },
   onRemove: function (map) {
@@ -588,8 +579,6 @@ export var MapMLLayer = L.Layer.extend({
         } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
           layer._title = mapml.getAttribute('label').trim();
         }
-        // _mapmlLayerItem is set to the root element representing this layer
-        // in the layer control, iff the layer is not 'hidden'
       }
       function copyRemoteContentToShadowRoot() {
         // only run when content is loaded from network, puts features etc

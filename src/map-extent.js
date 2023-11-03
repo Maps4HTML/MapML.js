@@ -154,9 +154,8 @@ export class MapExtent extends HTMLElement {
     if (!this.isConnected) return;
     this._layer = this.parentLayer._layer;
     this._map = this._layer._map;
-    // reset the extent
+    // reset the layer extent
     delete this.parentLayer.bounds;
-    // this code comes from MapMLLayer._initialize.processExtents
     this._templateVars = this._initTemplateVars(
       // read map-meta[name=extent] from shadowroot or layer-
       // querySelector / querySelectorAll on layer- cannot get elements inside its shadowroot
@@ -530,7 +529,6 @@ export class MapExtent extends HTMLElement {
     delete this.parentLayer.bounds;
   }
   _calculateBounds() {
-    // await this.whenReady();
     let bounds = null,
       zoomMax = 0,
       zoomMin = 0,
