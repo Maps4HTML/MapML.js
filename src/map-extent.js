@@ -73,6 +73,7 @@ export class MapExtent extends HTMLElement {
           case 'checked':
             this._handleChange();
             this._calculateBounds();
+            this._layerControlCheckbox.checked = newValue !== null;
             break;
           case 'opacity':
             if (oldValue !== newValue) {
