@@ -142,5 +142,22 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
       );
       expect(feature).toEqual('M307 456L599 467L612 629L381 599z');
     });
+
+    test('templated features disabled when panned out of bounds', async () => {
+      await page.reload();
+      await page.getByTestId('map2').evaluate((map)=>{
+        map.zoomTo(45.428, -75.346, 14);
+      })
+
+      await page.waitForTimeout(500);
+
+      let layerAndLayerCheckboxDisabled = await page
+        .getByTestId('restaurants')
+        .evaluate((layer) => {
+          return layer.disabled === true && layer._layerControlCheckbox.disabled === true;
+        });
+      
+        expect(layerAndLayerCheckboxDisabled).toBe(true);
+    });
   });
 });
