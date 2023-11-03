@@ -75,7 +75,6 @@ export class MapLayer extends HTMLElement {
   constructor() {
     // Always call super first in constructor
     super();
-    this._opacity = 1.0;
   }
   disconnectedCallback() {
     // if the map-layer node is removed from the dom, the layer should be
@@ -107,6 +106,9 @@ export class MapLayer extends HTMLElement {
   connectedCallback() {
     if (this.hasAttribute('data-moving')) return;
     this._createLayerControlHTML = M._createLayerControlHTML.bind(this);
+    // this._opacity is used to record the current opacity value (with or without updates),
+    // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
+    this._opacity = +(this.getAttribute('opacity') || 1.0);
     const doConnected = this._onAdd.bind(this);
     this.parentElement
       .whenReady()

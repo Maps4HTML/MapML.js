@@ -9,6 +9,7 @@ test.describe('Style Parsed and Implemented Test', () => {
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('styleParsing.html');
+    await page.waitForTimeout(250);
   });
 
   test.afterAll(async function () {

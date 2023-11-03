@@ -123,7 +123,6 @@ export class MapExtent extends HTMLElement {
   constructor() {
     // Always call super first in constructor
     super();
-    this._opacity = 1.0;
   }
   async connectedCallback() {
     // this.parentNode.host returns the layer- element when parentNode is
@@ -174,6 +173,9 @@ export class MapExtent extends HTMLElement {
     );
     this._changeHandler = this._handleChange.bind(this);
     this.parentLayer.addEventListener('map-change', this._changeHandler);
+    // this._opacity is used to record the current opacity value (with or without updates),
+    // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
+    this._opacity = +(this.getAttribute('opacity') || 1.0);
     this._templatedLayer = M.templatedLayer(this._templateVars, {
       pane: this._layer._container,
       opacity: this.opacity,
