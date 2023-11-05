@@ -27,7 +27,7 @@ export var createLayerControlExtentHTML = function () {
     ),
     opacityControl = L.DomUtil.create(
       'details',
-      'mapml-layer-item-opacity mapml-control-layers',
+      'mapml-layer-item-details mapml-control-layers',
       extentSettings
     ),
     extentOpacitySummary = L.DomUtil.create('summary', '', opacityControl),

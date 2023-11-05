@@ -352,7 +352,7 @@ test.describe('Multiple Extents Bounds Tests', () => {
     const alabamaExtentItem = page.getByText('alabama_feature');
     await expect(alabamaExtentItem).toHaveCount(1);
     await expect(alabamaExtentItem).toHaveCSS('font-style', 'normal');
-
+    
     const alabamaMapExtent = page.locator('map-extent[label=alabama_feature]');
     await expect(alabamaMapExtent).toHaveCount(1);
     await expect(alabamaMapExtent).not.toHaveAttribute('disabled');
