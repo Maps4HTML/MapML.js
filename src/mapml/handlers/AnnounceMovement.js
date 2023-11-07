@@ -121,22 +121,27 @@ export var AnnounceMovement = L.Handler.extend({
     this._map.dragging._draggable.wasDragged = false;
   },
 
-  totalBounds: function () {
-    let layers = Object.keys(this._layers);
-    let bounds = L.bounds();
-
-    layers.forEach((i) => {
-      if (this._layers[i].layerBounds) {
-        if (!bounds) {
-          let point = this._layers[i].layerBounds.getCenter();
-          bounds = L.bounds(point, point);
+  totalBounds: function (e) {
+    // don't bother with non-MapMLLayer layers...
+    if (!e.layer._layerEl) return;
+    let map = this.options.mapEl;
+    map.whenLayersReady().then(() => {
+      let layers = map.querySelectorAll('layer-');
+      let bounds;
+      for (let i = 0; i < layers.length; i++) {
+        // the _layer may no longer exist if this is invoked by layerremove
+        if (layers[i]._layer) {
+          let extent = layers[i].extent;
+          if (bounds && extent) {
+            bounds.extend(M.extentToBounds(extent, 'pcrs'));
+          } else if (extent) {
+            bounds = M.extentToBounds(extent, 'pcrs');
+          }
         }
-        bounds.extend(this._layers[i].layerBounds.min);
-        bounds.extend(this._layers[i].layerBounds.max);
       }
-    });
 
-    this.totalLayerBounds = bounds;
+      this.totalLayerBounds = bounds;
+    });
   },
 
   dragged: function () {

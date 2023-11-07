@@ -28,12 +28,9 @@ test.describe('Playwright Custom TCRS Tests', () => {
       (map) => map.querySelectorAll('layer-')[1].hasAttribute('disabled')
     );
 
-    const tilesLoaded = await page.$eval(
-      'body > mapml-viewer:nth-child(1) >> .mapml-static-tile-layer > div',
-      (tileGroup) => tileGroup.getElementsByTagName('map-tile').length
-    );
-
-    expect(tilesLoaded).toEqual(2);
+    await expect(
+      page.locator('mapml-viewer:nth-child(1) map-tile.leaflet-tile-loaded')
+    ).toHaveCount(2);
     expect(misMatchedLayerDisabled).toEqual(true);
     expect(matchedLayerEnabled).toEqual(false);
   });

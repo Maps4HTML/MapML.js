@@ -27,8 +27,6 @@ export var LayerControl = L.Control.Layers.extend({
   },
   onAdd: function () {
     this._initLayout();
-    this._map.on('validate', this._validateInput, this);
-    L.DomEvent.on(this.options.mapEl, 'layerchange', this._validateInput, this);
     // Adding event on layer control button
     L.DomEvent.on(
       this._container.getElementsByTagName('a')[0],
@@ -43,7 +41,6 @@ export var LayerControl = L.Control.Layers.extend({
       this
     );
     this._update();
-    //this._validateExtents();
     if (this._layers.length < 1 && !this._map._showControls) {
       this._container.setAttribute('hidden', '');
     } else {
@@ -52,18 +49,12 @@ export var LayerControl = L.Control.Layers.extend({
     return this._container;
   },
   onRemove: function (map) {
-    map.off('validate', this._validateInput, this);
     L.DomEvent.off(
       this._container.getElementsByTagName('a')[0],
       'keydown',
       this._focusFirstLayer,
       this._container
     );
-    // remove layer-registerd event handlers so that if the control is not
-    // on the map it does not generate layer events
-    for (var i = 0; i < this._layers.length; i++) {
-      this._layers[i].layer.off('add remove', this._onLayerChange, this);
-    }
   },
   addOrUpdateOverlay: function (layer, name) {
     var alreadyThere = false;
@@ -90,49 +81,8 @@ export var LayerControl = L.Control.Layers.extend({
       this._container.setAttribute('hidden', '');
     }
   },
-  _validateInput: function (e) {
-    for (let i = 0; i < this._layers.length; i++) {
-      if (!this._layers[i].input.labels[0]) continue;
-      let label = this._layers[i].input.labels[0].getElementsByTagName('span'),
-        input = this._layers[i].input.labels[0].getElementsByTagName('input');
-      input[0].checked = this._layers[i].layer._layerEl.checked;
-      if (
-        this._layers[i].layer._layerEl.disabled &&
-        this._layers[i].layer._layerEl.checked
-      ) {
-        input[0].closest('fieldset').disabled = true;
-        label[0].style.fontStyle = 'italic';
-      } else {
-        input[0].closest('fieldset').disabled = false;
-        label[0].style.fontStyle = 'normal';
-      }
-      // check if an extent is disabled and disable it
-      if (
-        this._layers[i].layer._properties &&
-        this._layers[i].layer._properties._mapExtents
-      ) {
-        for (
-          let j = 0;
-          j < this._layers[i].layer._properties._mapExtents.length;
-          j++
-        ) {
-          let input =
-              this._layers[i].layer._properties._mapExtents[j].extentAnatomy,
-            label = input.getElementsByClassName('mapml-layer-item-name')[0];
-          if (
-            this._layers[i].layer._properties._mapExtents[j].disabled &&
-            this._layers[i].layer._properties._mapExtents[j].checked
-          ) {
-            label.style.fontStyle = 'italic';
-            input.disabled = true;
-          } else {
-            label.style.fontStyle = 'normal';
-            input.disabled = false;
-          }
-        }
-      }
-    }
-  },
+
+  _checkDisabledLayers: function () {},
 
   // focus the first layer in the layer control when enter is pressed
   _focusFirstLayer: function (e) {
@@ -152,7 +102,7 @@ export var LayerControl = L.Control.Layers.extend({
     return range.min <= zoom && zoom <= range.max;
   },
   _addItem: function (obj) {
-    var layercontrols = obj.layer.getLayerUserControlsHTML();
+    var layercontrols = obj.layer._layerEl._layerControlHTML;
     // the input is required by Leaflet...
     obj.input = layercontrols.querySelector(
       'input.leaflet-control-layers-selector'
@@ -161,7 +111,6 @@ export var LayerControl = L.Control.Layers.extend({
     this._layerControlInputs.push(obj.input);
     obj.input.layerId = L.stamp(obj.layer);
 
-    L.DomEvent.on(obj.input, 'click', this._onInputClick, this);
     this._overlaysList.appendChild(layercontrols);
     return layercontrols;
   },

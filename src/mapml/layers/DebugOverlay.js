@@ -199,7 +199,8 @@ export var DebugVectors = L.LayerGroup.extend({
       map.options.crs.scale(0)
     );
     this._centerVector = L.circle(map.options.crs.pointToLatLng(center, 0), {
-      radius: 250
+      radius: 250,
+      className: 'mapml-debug-vectors projection-centre'
     });
     this._centerVector.bindTooltip('Projection Center');
 
@@ -210,63 +211,92 @@ export var DebugVectors = L.LayerGroup.extend({
   },
 
   _addBounds: function (map) {
-    let id = Object.keys(map._layers),
-      layers = map._layers,
-      colors = ['#FF5733', '#8DFF33', '#3397FF', '#E433FF', '#F3FF33'],
-      j = 0;
+    // to delay the addBounds to wait for the layer.extentbounds / layer.layerbounds to be ready when the layer- checked attribute is changed
+    setTimeout(() => {
+      let id = Object.keys(map._layers),
+        layers = map._layers,
+        colors = ['#FF5733', '#8DFF33', '#3397FF', '#E433FF', '#F3FF33'],
+        j = 0;
 
-    this.addLayer(this._centerVector);
+      this.addLayer(this._centerVector);
 
-    for (let i of id) {
-      if (layers[i].layerBounds || layers[i].extentBounds) {
-        let boundsArray;
-        if (layers[i].layerBounds) {
-          boundsArray = [
-            layers[i].layerBounds.min,
-            L.point(layers[i].layerBounds.max.x, layers[i].layerBounds.min.y),
-            layers[i].layerBounds.max,
-            L.point(layers[i].layerBounds.min.x, layers[i].layerBounds.max.y)
-          ];
-        } else {
-          boundsArray = [
-            layers[i].extentBounds.min,
-            L.point(layers[i].extentBounds.max.x, layers[i].extentBounds.min.y),
-            layers[i].extentBounds.max,
-            L.point(layers[i].extentBounds.min.x, layers[i].extentBounds.max.y)
-          ];
-        }
-        let boundsRect = projectedExtent(boundsArray, {
-          color: colors[j % colors.length],
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.01,
-          fill: true
-        });
-        if (layers[i].options._leafletLayer)
-          boundsRect.bindTooltip(layers[i].options._leafletLayer._title, {
-            sticky: true
+      for (let i of id) {
+        if (layers[i].layerBounds || layers[i].extentBounds) {
+          let boundsArray;
+          if (layers[i].layerBounds) {
+            boundsArray = [
+              layers[i].layerBounds.min,
+              L.point(layers[i].layerBounds.max.x, layers[i].layerBounds.min.y),
+              layers[i].layerBounds.max,
+              L.point(layers[i].layerBounds.min.x, layers[i].layerBounds.max.y)
+            ];
+          } else {
+            boundsArray = [
+              layers[i].extentBounds.min,
+              L.point(
+                layers[i].extentBounds.max.x,
+                layers[i].extentBounds.min.y
+              ),
+              layers[i].extentBounds.max,
+              L.point(
+                layers[i].extentBounds.min.x,
+                layers[i].extentBounds.max.y
+              )
+            ];
+          }
+
+          // boundsTestTag adds the value of from the <layer-@data-testid> element
+          // if it exists. this simplifies debugging because the svg path will be
+          // tagged with the layer it came from
+          let boundsTestTag =
+            layers[i].extentBounds &&
+            layers[i].options.extentEl.parentLayer.hasAttribute('data-testid')
+              ? layers[i].options.extentEl.parentLayer.getAttribute(
+                  'data-testid'
+                )
+              : layers[i].layerBounds &&
+                layers[i].options._leafletLayer._layerEl.hasAttribute(
+                  'data-testid'
+                )
+              ? layers[i].options._leafletLayer._layerEl.getAttribute(
+                  'data-testid'
+                )
+              : '';
+          let boundsRect = projectedExtent(boundsArray, {
+            className: this.options.className.concat(' ', boundsTestTag),
+            color: colors[j % colors.length],
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.01,
+            fill: true
           });
-        this.addLayer(boundsRect);
-        j++;
+          if (layers[i].options._leafletLayer)
+            boundsRect.bindTooltip(layers[i].options._leafletLayer._title, {
+              sticky: true
+            });
+          this.addLayer(boundsRect);
+          j++;
+        }
       }
-    }
 
-    if (map.totalLayerBounds) {
-      let totalBoundsArray = [
-        map.totalLayerBounds.min,
-        L.point(map.totalLayerBounds.max.x, map.totalLayerBounds.min.y),
-        map.totalLayerBounds.max,
-        L.point(map.totalLayerBounds.min.x, map.totalLayerBounds.max.y)
-      ];
+      if (map.totalLayerBounds) {
+        let totalBoundsArray = [
+          map.totalLayerBounds.min,
+          L.point(map.totalLayerBounds.max.x, map.totalLayerBounds.min.y),
+          map.totalLayerBounds.max,
+          L.point(map.totalLayerBounds.min.x, map.totalLayerBounds.max.y)
+        ];
 
-      let totalBounds = projectedExtent(totalBoundsArray, {
-        color: '#808080',
-        weight: 5,
-        opacity: 0.5,
-        fill: false
-      });
-      this.addLayer(totalBounds);
-    }
+        let totalBounds = projectedExtent(totalBoundsArray, {
+          className: 'mapml-debug-vectors mapml-total-bounds',
+          color: '#808080',
+          weight: 5,
+          opacity: 0.5,
+          fill: false
+        });
+        this.addLayer(totalBounds);
+      }
+    }, 0);
   },
 
   _mapLayerUpdate: function (e) {

@@ -44,7 +44,7 @@ test.describe('Playwright featureLayer (Static Features) Layer Tests', () => {
     });
 
     test('Loading in retrieved features', async () => {
-      await page.waitForTimeout(200);
+      await page.waitForTimeout(350);
       const features = await page.$eval(
         'layer-#US',
         (layer) =>

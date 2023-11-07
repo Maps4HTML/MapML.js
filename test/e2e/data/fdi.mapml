@@ -1,4 +1,4 @@
-<mapml- xmlns="http://www.w3.org/1999/xhtml/">
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
   <map-head>
     <map-title>Fire Danger (forecast)</map-title>
     <map-meta http-equiv="Content-Type" content="text/mapml;projection=CBMTILE"></map-meta>
@@ -7,7 +7,7 @@
     <map-link rel="legend" href="https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image/png&amp;width=20&amp;height=20&amp;layer=fdr_current"></map-link>
   </map-head>
   <map-body>
-    <map-extent units="CBMTILE" >
+    <map-extent units="CBMTILE"  checked="checked" hidden="hidden">
       <map-input name="z" type="zoom"  value="18" min="0" max="18"></map-input>
       <map-input name="txmin" type="location" units="tilematrix" position="top-left" axis="easting" min="-2.003750834E7"  max="2.003750834E7" ></map-input>
       <map-input name="tymin" type="location" units="tilematrix" position="bottom-left" axis="northing" min="-2.003750834E7"  max="2.003750834E7" ></map-input>

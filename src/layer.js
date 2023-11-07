@@ -49,7 +49,7 @@ export class MapLayer extends HTMLElement {
 
   get opacity() {
     // use ?? since 0 is falsy, || would return rhs in that case
-    return this._opacity ?? this.getAttribute('opacity');
+    return +(this._opacity ?? this.getAttribute('opacity'));
   }
 
   set opacity(val) {
@@ -57,18 +57,28 @@ export class MapLayer extends HTMLElement {
     this.setAttribute('opacity', val);
   }
 
+  get extent() {
+    // calculate the bounds of all content, return it.
+    if (!this._layer.bounds) {
+      this._layer._calculateBounds();
+    }
+    return Object.assign(
+      M._convertAndFormatPCRS(
+        this._layer.bounds,
+        this._layer._properties.crs,
+        this._layer._properties.projection
+      ),
+      { zoom: this._layer.zoomBounds }
+    );
+  }
+
   constructor() {
     // Always call super first in constructor
     super();
   }
   disconnectedCallback() {
-    //    console.log('Custom map element removed from page.');
     // if the map-layer node is removed from the dom, the layer should be
     // removed from the map and the layer control
-
-    // this is moved up here so that the layer control doesn't respond
-    // to the layer being removed with the _onLayerChange execution
-    // that is set up in _attached:
     if (this.hasAttribute('data-moving')) return;
     this._onRemove();
   }
@@ -86,6 +96,7 @@ export class MapLayer extends HTMLElement {
       this._layerControl.removeLayer(this._layer);
     }
     delete this._layer;
+    delete this._fetchError;
 
     if (this.shadowRoot) {
       this.shadowRoot.innerHTML = '';
@@ -94,6 +105,10 @@ export class MapLayer extends HTMLElement {
 
   connectedCallback() {
     if (this.hasAttribute('data-moving')) return;
+    this._createLayerControlHTML = M._createLayerControlHTML.bind(this);
+    // this._opacity is used to record the current opacity value (with or without updates),
+    // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
+    this._opacity = +(this.getAttribute('opacity') || 1.0);
     const doConnected = this._onAdd.bind(this);
     this.parentElement
       .whenReady()
@@ -158,11 +173,13 @@ export class MapLayer extends HTMLElement {
                 opacity: this.opacity
               }
             );
+            this._createLayerControlHTML();
             this._attachedToMap();
             this._validateDisabled();
             resolve();
           })
           .catch((error) => {
+            this._fetchError = true;
             console.log('Error fetching layer content' + error);
           });
       } else {
@@ -173,6 +190,7 @@ export class MapLayer extends HTMLElement {
           mapprojection: this.parentElement.projection,
           opacity: this.opacity
         });
+        this._createLayerControlHTML();
         this._attachedToMap();
         this._validateDisabled();
         resolve();
@@ -211,17 +229,11 @@ export class MapLayer extends HTMLElement {
     });
     // make sure the Leaflet layer has a reference to the map
     this._layer._map = this.parentNode._map;
-    // notify the layer that it is attached to a map (layer._map)
-    this._layer.fire('attached');
 
     if (this.checked) {
       this._layer.addTo(this._layer._map);
     }
 
-    // add the handler which toggles the 'checked' property based on the
-    // user checking/unchecking the layer from the layer control
-    // this must be done *after* the layer is actually added to the map
-    this._layer.on('add remove', this._onLayerChange, this);
     this._layer.on('add remove', this._validateDisabled, this);
     // toggle the this.disabled attribute depending on whether the layer
     // is: same prj as map, within view/zoom of map
@@ -260,19 +272,28 @@ export class MapLayer extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'label':
-        this.whenReady().then(() => {
-          this._layer.setName(newValue);
-        });
+        this.whenReady()
+          .then(() => {
+            this._layer.setName(newValue);
+          })
+          .catch((e) => {
+            console.log(e);
+          });
         break;
       case 'checked':
-        if (this._layer) {
-          if (typeof newValue === 'string') {
-            this.parentElement._map.addLayer(this._layer);
-          } else {
-            this.parentElement._map.removeLayer(this._layer);
-          }
-          this.dispatchEvent(new Event('change', { bubbles: true }));
-        }
+        this.whenReady()
+          .then(() => {
+            if (typeof newValue === 'string') {
+              this.parentElement._map.addLayer(this._layer);
+            } else {
+              this.parentElement._map.removeLayer(this._layer);
+            }
+            this._layerControlCheckbox.checked = this.checked;
+            this.dispatchEvent(new CustomEvent('map-change'));
+          })
+          .catch((e) => {
+            console.log(e);
+          });
         break;
       case 'hidden':
         var map = this.parentElement && this.parentElement._map;
@@ -306,12 +327,18 @@ export class MapLayer extends HTMLElement {
     }
   }
   _validateDisabled() {
+    // setTimeout is necessary to make the validateDisabled happen later than the moveend operations etc.,
+    // to ensure that the validated result is correct
     setTimeout(() => {
       let layer = this._layer,
         map = layer?._map;
       if (map) {
-        let count = 0,
-          total = 0,
+        // prerequisite: no inline and remote mapml elements exists at the same time
+        const mapExtents = this.shadowRoot
+          ? this.shadowRoot.querySelectorAll('map-extent')
+          : this.querySelectorAll('map-extent');
+        let disabledExtentCount = 0,
+          totalExtentCount = 0,
           layerTypes = [
             '_staticTileLayer',
             '_imageLayer',
@@ -321,62 +348,71 @@ export class MapLayer extends HTMLElement {
         if (layer.validProjection) {
           for (let j = 0; j < layerTypes.length; j++) {
             let type = layerTypes[j];
-            if (this.checked && layer[type]) {
-              if (type === '_templatedLayer') {
-                for (let i = 0; i < layer._properties._mapExtents.length; i++) {
-                  for (
-                    let j = 0;
-                    j <
-                    layer._properties._mapExtents[i].templatedLayer._templates
-                      .length;
-                    j++
-                  ) {
-                    if (
-                      layer._properties._mapExtents[i].templatedLayer
-                        ._templates[j].rel === 'query'
-                    )
-                      continue;
-                    total++;
-                    layer._properties._mapExtents[i].removeAttribute(
-                      'disabled'
-                    );
-                    layer._properties._mapExtents[i].disabled = false;
-                    if (
-                      !layer._properties._mapExtents[i].templatedLayer
-                        ._templates[j].layer.isVisible
-                    ) {
-                      count++;
-                      layer._properties._mapExtents[i].setAttribute(
-                        'disabled',
-                        ''
-                      );
-                      layer._properties._mapExtents[i].disabled = true;
-                    }
-                  }
+            if (this.checked) {
+              if (type === '_templatedLayer' && mapExtents.length > 0) {
+                for (let i = 0; i < mapExtents.length; i++) {
+                  totalExtentCount++;
+                  if (mapExtents[i]._validateDisabled()) disabledExtentCount++;
                 }
-              } else {
-                total++;
-                if (!layer[type].isVisible) count++;
+              } else if (layer[type]) {
+                // not a templated layer
+                totalExtentCount++;
+                if (!layer[type].isVisible) disabledExtentCount++;
               }
             }
           }
         } else {
-          count = 1;
-          total = 1;
+          disabledExtentCount = 1;
+          totalExtentCount = 1;
         }
-
-        if (count === total && count !== 0) {
-          this.setAttribute('disabled', ''); //set a disabled attribute on the layer element
+        // if all extents are not visible / disabled, set layer to disabled
+        if (
+          disabledExtentCount === totalExtentCount &&
+          disabledExtentCount !== 0
+        ) {
+          this.setAttribute('disabled', '');
           this.disabled = true;
         } else {
-          //might be better not to disable the layer controls, might want to deselect layer even when its out of bounds
           this.removeAttribute('disabled');
           this.disabled = false;
         }
-        map.fire('validate');
+        this.toggleLayerControlDisabled();
       }
     }, 0);
   }
+
+  // disable/italicize layer control elements based on the layer-.disabled property
+  toggleLayerControlDisabled() {
+    let input = this._layerControlCheckbox,
+      label = this._layerControlLabel,
+      opacityControl = this._opacityControl,
+      opacitySlider = this._opacitySlider,
+      styleControl = this._styles;
+    if (this.disabled) {
+      input.disabled = true;
+      opacitySlider.disabled = true;
+      label.style.fontStyle = 'italic';
+      opacityControl.style.fontStyle = 'italic';
+      if (styleControl) {
+        styleControl.style.fontStyle = 'italic';
+        styleControl.querySelectorAll('input').forEach((i) => {
+          i.disabled = true;
+        });
+      }
+    } else {
+      input.disabled = false;
+      opacitySlider.disabled = false;
+      label.style.fontStyle = 'normal';
+      opacityControl.style.fontStyle = 'normal';
+      if (styleControl) {
+        styleControl.style.fontStyle = 'normal';
+        styleControl.querySelectorAll('input').forEach((i) => {
+          i.disabled = false;
+        });
+      }
+    }
+  }
+
   getOuterHTML() {
     let tempElement = this.cloneNode(true);
 
@@ -419,29 +455,23 @@ export class MapLayer extends HTMLElement {
     return outerLayer;
   }
 
-  _onLayerChange() {
-    if (this._layer._map) {
-      // can't disable observers, have to set a flag telling it where
-      // the 'event' comes from: either the api or a user click/tap
-      // may not be necessary -> this._apiToggleChecked = false;
-      this.checked = this._layer._map.hasLayer(this._layer);
-    }
-  }
   zoomTo() {
-    if (!this.extent) return;
-    let map = this.parentElement._map,
-      tL = this.extent.topLeft.pcrs,
-      bR = this.extent.bottomRight.pcrs,
-      layerBounds = L.bounds(
-        L.point(tL.horizontal, tL.vertical),
-        L.point(bR.horizontal, bR.vertical)
-      ),
-      center = map.options.crs.unproject(layerBounds.getCenter(true));
+    this.whenElemsReady().then(() => {
+      let map = this.parentElement._map,
+        extent = this.extent,
+        tL = extent.topLeft.pcrs,
+        bR = extent.bottomRight.pcrs,
+        layerBounds = L.bounds(
+          L.point(tL.horizontal, tL.vertical),
+          L.point(bR.horizontal, bR.vertical)
+        ),
+        center = map.options.crs.unproject(layerBounds.getCenter(true));
 
-    let maxZoom = this.extent.zoom.maxZoom,
-      minZoom = this.extent.zoom.minZoom;
-    map.setView(center, M.getMaxZoom(layerBounds, map, minZoom, maxZoom), {
-      animate: false
+      let maxZoom = extent.zoom.maxZoom,
+        minZoom = extent.zoom.minZoom;
+      map.setView(center, M.getMaxZoom(layerBounds, map, minZoom, maxZoom), {
+        animate: false
+      });
     });
   }
   mapml2geojson(options = {}) {
@@ -467,7 +497,7 @@ export class MapLayer extends HTMLElement {
   whenReady() {
     return new Promise((resolve, reject) => {
       let interval, failureTimer;
-      if (this._layer) {
+      if (this._layer && (!this.src || this.shadowRoot?.childNodes.length)) {
         resolve();
       } else {
         let layerElement = this;
@@ -475,10 +505,17 @@ export class MapLayer extends HTMLElement {
         failureTimer = setTimeout(layerNotDefined, 5000);
       }
       function testForLayer(layerElement) {
-        if (layerElement._layer) {
+        if (
+          layerElement._layer &&
+          (!layerElement.src || layerElement.shadowRoot?.childNodes.length)
+        ) {
           clearInterval(interval);
           clearTimeout(failureTimer);
           resolve();
+        } else if (layerElement._fetchError) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          reject('Error fetching layer content');
         }
       }
       function layerNotDefined() {
@@ -487,5 +524,17 @@ export class MapLayer extends HTMLElement {
         reject('Timeout reached waiting for layer to be ready');
       }
     });
+  }
+  // check if all child elements are ready
+  whenElemsReady() {
+    let elemsReady = [];
+    let target = this.shadowRoot || this;
+    for (let elem of [
+      ...target.querySelectorAll('map-extent'),
+      ...target.querySelectorAll('map-feature')
+    ]) {
+      elemsReady.push(elem.whenReady());
+    }
+    return Promise.allSettled(elemsReady);
   }
 }

@@ -100,38 +100,55 @@ export class MapFeature extends HTMLElement {
   }
 
   connectedCallback() {
-    // if mapFeature element is not connected to layer- or layer-'s shadowroot,
-    // or the parent layer- element has a "data-moving" attribute
-    if (
-      (this.parentNode.nodeType !== document.DOCUMENT_FRAGMENT_NODE &&
-        this.parentNode.nodeName.toLowerCase() !== 'layer-') ||
-      (this.parentNode.nodeType === document.DOCUMENT_FRAGMENT_NODE &&
-        this.parentNode.host.hasAttribute('data-moving')) ||
-      (this.parentNode.nodeName.toLowerCase() === 'layer-' &&
-        this.parentNode.hasAttribute('data-moving'))
-    ) {
-      return;
-    }
-    // set up the map-feature object properties
-    this._addFeature();
-    // use observer to monitor the changes in mapFeature's subtree
-    // (i.e. map-properties, map-featurecaption, map-coordinates)
-    this._observer = new MutationObserver((mutationList) => {
-      for (let mutation of mutationList) {
-        // the attributes changes of <map-feature> element should be handled by attributeChangedCallback()
-        if (mutation.type === 'attributes' && mutation.target === this) {
-          return;
-        }
-        // re-render feature if there is any observed change
-        this._reRender();
+    // if the features are connected to the remote mapml
+    if (this.closest('mapml-')) return;
+    this._parentEl =
+      this.parentNode.nodeName.toUpperCase() === 'LAYER-' ||
+      this.parentNode.nodeName.toUpperCase() === 'MAP-EXTENT'
+        ? this.parentNode
+        : this.parentNode.host;
+    this._parentEl.whenReady().then(() => {
+      this._layer = this._parentEl._layer;
+      delete this._parentEl.bounds;
+      if (
+        this._layer._layerEl.hasAttribute('data-moving') ||
+        this._parentEl.hasAttribute('data-moving')
+      )
+        return;
+      // if mapFeature element is not connected to layer- or layer-'s shadowroot,
+      // or the parent layer- element has a "data-moving" attribute
+      if (
+        (this.parentNode.nodeType !== document.DOCUMENT_FRAGMENT_NODE &&
+          this.parentNode.nodeName.toLowerCase() !== 'layer-') ||
+        (this.parentNode.nodeType === document.DOCUMENT_FRAGMENT_NODE &&
+          this.parentNode.host.hasAttribute('data-moving')) ||
+        (this.parentNode.nodeName.toLowerCase() === 'layer-' &&
+          this.parentNode.hasAttribute('data-moving'))
+      ) {
+        return;
       }
-    });
-    this._observer.observe(this, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeOldValue: true,
-      characterData: true
+      // set up the map-feature object properties
+      this._addFeature();
+      // use observer to monitor the changes in mapFeature's subtree
+      // (i.e. map-properties, map-featurecaption, map-coordinates)
+      this._observer = new MutationObserver((mutationList) => {
+        for (let mutation of mutationList) {
+          // the attributes changes of <map-feature> element should be handled by attributeChangedCallback()
+          if (mutation.type === 'attributes' && mutation.target === this) {
+            return;
+          }
+          // re-render feature if there is any observed change
+          this._reRender();
+          delete this._parentEl.bounds;
+        }
+      });
+      this._observer.observe(this, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeOldValue: true,
+        characterData: true
+      });
     });
   }
 
@@ -140,6 +157,7 @@ export class MapFeature extends HTMLElement {
     if (this._layer._layerEl.hasAttribute('data-moving')) return;
     this._removeFeature();
     this._observer.disconnect();
+    delete this._parentEl.bounds;
   }
 
   _reRender() {
@@ -155,7 +173,6 @@ export class MapFeature extends HTMLElement {
         .addTo(this._map);
       placeholder.replaceWith(this._featureGroup.options.group);
       // TODO: getBounds() should dynamically update the layerBounds and zoomBounds
-      this._layer._setLayerElExtent();
       delete this._getFeatureExtent;
       this._setUpEvents();
     }
@@ -178,7 +195,6 @@ export class MapFeature extends HTMLElement {
           if (mapmlvectors._features[this.zoom]) {
             this._removeInFeatureList(this.zoom);
           }
-          let container = this._layer.shadowRoot || this._layer._layerEl;
           // update zoom bounds of vector layer
           mapmlvectors.zoomBounds = M.getZoomBounds(
             this._layer._content,
@@ -196,18 +212,11 @@ export class MapFeature extends HTMLElement {
   }
 
   _addFeature() {
-    this._parentEl =
-      this.parentNode.nodeName.toUpperCase() === 'LAYER-' ||
-      this.parentNode.nodeName.toUpperCase() === 'MAP-EXTENT'
-        ? this.parentNode
-        : this.parentNode.host;
-
     this._parentEl.whenReady().then(() => {
       let parentLayer =
         this._parentEl.nodeName.toUpperCase() === 'LAYER-'
           ? this._parentEl
           : this._parentEl.parentElement || this._parentEl.parentNode.host;
-      this._layer = parentLayer._layer;
       this._map = this._layer._map;
       let mapmlvectors = this._layer._mapmlvectors;
       // "synchronize" the event handlers between map-feature and <g>
@@ -239,12 +248,6 @@ export class MapFeature extends HTMLElement {
         }
       }
 
-      // Number of features that are being displayed on the map
-      let renderedFeatureCount = Object.keys(mapmlvectors._layers).length;
-      // 0 because feature could be hidden by the min/max attr., 1 so as other features are added, _setLayerElExtent() is not run multiple times
-      if (renderedFeatureCount === 1 || renderedFeatureCount === 0) {
-        this._layer._setLayerElExtent();
-      }
       this._setUpEvents();
     });
   }

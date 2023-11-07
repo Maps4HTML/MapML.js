@@ -55,6 +55,7 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
   });
 
   test('Initial map element extent', async () => {
+    await page.waitForTimeout(500);
     const extent = await page.$eval('body > mapml-viewer', (map) => map.extent);
 
     expect(extent.projection).toEqual('CBMTILE');
@@ -177,16 +178,13 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
   });
 
   test('Paste Invalid link to map using ctrl+v', async () => {
-    await page.pause();
     await page.click('body > textarea#invalidLink');
     await page.keyboard.press('Control+a');
     await page.keyboard.press('Control+c');
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    await page.$eval('body > mapml-viewer', (viewer) =>
-      viewer.whenLayersReady()
-    );
+    await page.waitForTimeout(500);
     const layerCount = await page.$eval(
       'body > mapml-viewer',
       (map) => map.layers.length

@@ -93,11 +93,7 @@ test.describe('mapml-viewer DOM API Tests', () => {
       layerHandle
     );
     await page.evaluateHandle(
-      (layer) =>
-        layer.setAttribute(
-          'src',
-          'http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/'
-        ),
+      (layer) => layer.setAttribute('src', 'tiles/cbmt/cbmt.mapml'),
       layerHandle
     );
     await page.evaluateHandle(
@@ -131,7 +127,6 @@ test.describe('mapml-viewer DOM API Tests', () => {
   });
 
   test('Remove mapml-viewer from DOM, add it back in', async () => {
-    await page.pause();
     // check for error messages in console
     let errorLogs = [];
     page.on('pageerror', (err) => {
@@ -336,11 +331,7 @@ test.describe('mapml-viewer DOM API Tests', () => {
       layerHandle
     );
     await page.evaluateHandle(
-      (layer) =>
-        layer.setAttribute(
-          'src',
-          'http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/'
-        ),
+      (layer) => layer.setAttribute('src', 'tiles/cbmt/cbmt.mapml'),
       layerHandle
     );
     await page.evaluateHandle(

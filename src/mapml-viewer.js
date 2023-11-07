@@ -1,10 +1,11 @@
 import './leaflet.js'; // bundled with proj4, proj4leaflet, modularized
 import './mapml.js';
-import DOMTokenList from './DOMTokenList.js';
 import { MapLayer } from './layer.js';
 import { MapCaption } from './map-caption.js';
 import { MapFeature } from './map-feature.js';
 import { MapExtent } from './map-extent.js';
+import { MapInput } from './map-input.js';
+import { MapLink } from './map-link.js';
 
 export class MapViewer extends HTMLElement {
   static get observedAttributes() {
@@ -44,21 +45,21 @@ export class MapViewer extends HTMLElement {
     this.setAttribute('controlslist', value);
   }
   get width() {
-    return window.getComputedStyle(this).width.replace('px', '');
+    return +window.getComputedStyle(this).width.replace('px', '');
   }
   set width(val) {
     //img.height or img.width setters change or add the corresponding attributes
     this.setAttribute('width', val);
   }
   get height() {
-    return window.getComputedStyle(this).height.replace('px', '');
+    return +window.getComputedStyle(this).height.replace('px', '');
   }
   set height(val) {
     //img.height or img.width setters change or add the corresponding attributes
     this.setAttribute('height', val);
   }
   get lat() {
-    return this.hasAttribute('lat') ? this.getAttribute('lat') : '0';
+    return +(this.hasAttribute('lat') ? this.getAttribute('lat') : 0);
   }
   set lat(val) {
     if (val) {
@@ -66,7 +67,7 @@ export class MapViewer extends HTMLElement {
     }
   }
   get lon() {
-    return this.hasAttribute('lon') ? this.getAttribute('lon') : '0';
+    return +(this.hasAttribute('lon') ? this.getAttribute('lon') : 0);
   }
   set lon(val) {
     if (val) {
@@ -90,7 +91,7 @@ export class MapViewer extends HTMLElement {
     }
   }
   get zoom() {
-    return this.hasAttribute('zoom') ? this.getAttribute('zoom') : 0;
+    return +(this.hasAttribute('zoom') ? this.getAttribute('zoom') : 0);
   }
   set zoom(val) {
     var parsedVal = parseInt(val, 10);
@@ -145,7 +146,7 @@ export class MapViewer extends HTMLElement {
       .then(() => {
         this._initShadowRoot();
 
-        this._controlsList = new DOMTokenList(
+        this._controlsList = new M.DOMTokenList(
           this.getAttribute('controlslist'),
           this,
           'controlslist',
@@ -357,6 +358,7 @@ export class MapViewer extends HTMLElement {
             // level in the crs by changing the zoom level of the map when
             // you set the map crs.  So, we save the current view for use below
             // when all the layers' reconnections have settled.
+            // leaflet doesn't like this: https://github.com/Leaflet/Leaflet/issues/2553
             this._map.options.crs = M[newValue];
             this._map.options.projection = newValue;
             let layersReady = [];
@@ -371,9 +373,13 @@ export class MapViewer extends HTMLElement {
               // use the saved map location to ensure it is correct after
               // changing the map CRS.  Specifically affects projection
               // upgrades, e.g. https://maps4html.org/experiments/custom-projections/BNG/
+              // see leaflet bug: https://github.com/Leaflet/Leaflet/issues/2553
               this.zoomTo(lat, lon, zoom);
-              this._resetHistory();
-              this._map.announceMovement.enable();
+              if (M.options.announceMovement)
+                this._map.announceMovement.enable();
+              this.querySelectorAll('layer-').forEach((layer) => {
+                layer.dispatchEvent(new CustomEvent('map-change'));
+              });
             });
           }
         };
@@ -383,6 +389,14 @@ export class MapViewer extends HTMLElement {
             connect();
             resolve();
           }).then(() => {
+            if (this._map && this._map.options.projection !== oldValue) {
+              // this awful hack is brought to you by a leaflet bug/ feature request
+              // https://github.com/Leaflet/Leaflet/issues/2553
+              this.zoomTo(this.lat, this.lon, this.zoom + 1);
+              this.zoomTo(this.lat, this.lon, this.zoom - 1);
+              // this doesn't completely work either
+              this._resetHistory();
+            }
             if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
           });
         }
@@ -1148,7 +1162,7 @@ export class MapViewer extends HTMLElement {
     if (M[t.projection.toUpperCase()]) return t.projection.toUpperCase();
     let tileSize = [256, 512, 1024, 2048, 4096].includes(t.tilesize)
       ? t.tilesize
-      : 256;
+      : M.TILE_SIZE;
 
     M[t.projection] = new L.Proj.CRS(t.projection, t.proj4string, {
       origin: t.origin,
@@ -1344,10 +1358,11 @@ export class MapViewer extends HTMLElement {
       }
     });
   }
-  async whenLayersReady() {
+  whenLayersReady() {
     let layersReady = [];
+    // check if all the children elements (map-extent, map-feature) of all layer- are ready
     for (let layer of [...this.layers]) {
-      layersReady.push(layer.whenReady());
+      layersReady.push(layer.whenElemsReady());
     }
     return Promise.allSettled(layersReady);
   }
@@ -1389,3 +1404,5 @@ window.customElements.define('layer-', MapLayer);
 window.customElements.define('map-caption', MapCaption);
 window.customElements.define('map-feature', MapFeature);
 window.customElements.define('map-extent', MapExtent);
+window.customElements.define('map-input', MapInput);
+window.customElements.define('map-link', MapLink);

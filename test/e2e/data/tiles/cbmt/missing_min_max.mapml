@@ -9,7 +9,7 @@
     <map-meta name="extent" content="zoom=17,top-left-row=29750,top-left-column=26484,bottom-right-row=34475,bottom-right-column=32463"></map-meta>
   </map-head>
   <map-body>
-    <map-extent units="CBMTILE">
+    <map-extent units="CBMTILE" checked="checked" hidden="hidden">
       <map-meta name="extent" content="zoom=17,top-left-row=29750,top-left-column=26484,bottom-right-row=34475,bottom-right-column=32463"></map-meta>
       <map-input name="z" type="zoom" value="17" min="0" max="17"></map-input>
       <map-input name="y" type="location" units="tilematrix" axis="row"></map-input>

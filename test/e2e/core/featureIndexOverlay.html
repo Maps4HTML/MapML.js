@@ -21,7 +21,7 @@
   <layer- label="Restaurants" checked>
     <map-meta name="cs" content="gcrs" ></map-meta>
     <map-meta name="extent" content="top-left-easting=1509080.1964270622,top-left-northing=-169400.558801122,bottom-right-easting=1512094.3357886747,bottom-right-northing=-172702.5654051304" ></map-meta>
-    <map-extent units="CBMTILE">
+    <map-extent units="CBMTILE" checked>
       <map-select id="restaurants" name="cuisine">
         <map-option selected label="All cuisines" value="restaurants">restaurants</map-option>
         <map-option label="Italian">italian</map-option>
@@ -38,7 +38,7 @@
 <mapml-viewer id="map3" style="width: 500px;height: 500px;" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls controlslist="geolocation">
   <layer- label="Linked feature" checked>
     <map-meta name="projection" content="CBMTILE"></map-meta>
-      <map-extent units="CBMTILE">
+      <map-extent units="CBMTILE" checked hidden>
         <map-input name="z" type="zoom" value="17" min="0" max="17"/>
         <map-input name="y" type="location" units="tilematrix" axis="row" min="29750" max="34475"/>
         <map-input name="x" type="location" units="tilematrix" axis="column" min="26484" max="32463"/>

@@ -106,7 +106,7 @@ test.describe('Playwright Checked Attribute Tests', () => {
       await layer.evaluate((layer) => (layer.opacity = 0.4));
       let value = await layer.evaluate(
         (layer) =>
-          layer._layer._mapmlLayerItem.querySelector('input[type=range]').value
+          layer._layerControlHTML.querySelector('input[type=range]').value
       );
       expect(value).toEqual('0.4');
     });
@@ -114,7 +114,7 @@ test.describe('Playwright Checked Attribute Tests', () => {
     test('Getting appropriate opacity', async () => {
       const layer = page.getByTestId('testlayer');
       let value = await layer.evaluate((layer) => layer.opacity);
-      expect(value).toEqual('0.4');
+      expect(value).toEqual(0.4);
     });
   });
 });

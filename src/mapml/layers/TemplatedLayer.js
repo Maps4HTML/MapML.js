@@ -2,8 +2,9 @@ export var TemplatedLayer = L.Layer.extend({
   initialize: function (templates, options) {
     this._templates = templates;
     L.setOptions(this, options);
-    this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
-    this._container.style.opacity = this.options.opacity;
+    this._container = L.DomUtil.create('div', 'leaflet-layer');
+    this._extentEl = this.options.extentEl;
+    this.changeOpacity(this.options.opacity);
     L.DomUtil.addClass(this._container, 'mapml-templatedlayer-container');
 
     for (var i = 0; i < templates.length; i++) {
@@ -257,6 +258,8 @@ export var TemplatedLayer = L.Layer.extend({
     }
   },
   onAdd: function (map) {
+    // add to this.options.pane
+    this.options.pane.appendChild(this._container);
     for (var i = 0; i < this._templates.length; i++) {
       if (this._templates[i].rel !== 'query') {
         map.addLayer(this._templates[i].layer);
@@ -308,6 +311,9 @@ export var TemplatedLayer = L.Layer.extend({
 
   changeOpacity: function (opacity) {
     this._container.style.opacity = opacity;
+    this._extentEl._opacity = opacity;
+    if (this._extentEl._opacitySlider)
+      this._extentEl._opacitySlider.value = opacity;
   }
 });
 export var templatedLayer = function (templates, options) {

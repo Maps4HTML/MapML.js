@@ -1,11 +1,11 @@
 export var StaticTileLayer = L.GridLayer.extend({
   initialize: function (options) {
+    L.setOptions(this, options);
     this.zoomBounds = this._getZoomBounds(
       options.tileContainer,
       options.maxZoomBound
     );
-    L.extend(options, this.zoomBounds);
-    L.setOptions(this, options);
+    L.extend(this.options, this.zoomBounds);
     this._groups = this._groupTiles(
       this.options.tileContainer.getElementsByTagName('map-tile')
     );
@@ -119,8 +119,11 @@ export var StaticTileLayer = L.GridLayer.extend({
 
   _getZoomBounds: function (container, maxZoomBound) {
     if (!container) return null;
+    // should read zoom information from map-meta (of layer-) instead of the zoom attribute value of map-tile
     let meta = M._metaContentToObject(
-        container.getElementsByTagName('map-tiles')[0].getAttribute('zoom')
+        this.options._leafletLayer._layerEl
+          .querySelector('map-meta[name=zoom]')
+          .getAttribute('content')
       ),
       zoom = {},
       tiles = container.getElementsByTagName('map-tile');
@@ -134,14 +137,11 @@ export var StaticTileLayer = L.GridLayer.extend({
       zoom.maxNativeZoom = Math.max(zoom.maxNativeZoom, lZoom);
     }
 
-    //hard coded to only natively zoom out 2 levels, any more and too many tiles are going to be loaded in at one time
-    //lagging the users computer
-    zoom.minZoom = zoom.minNativeZoom - 2 <= 0 ? 0 : zoom.minNativeZoom - 2;
-    zoom.maxZoom = maxZoomBound;
-    if (meta.min)
-      zoom.minZoom =
-        +meta.min < zoom.minNativeZoom - 2 ? zoom.minNativeZoom - 2 : +meta.min;
-    if (meta.max) zoom.maxZoom = +meta.max;
+    // currently the min and max zoom bounds of staticTileLayer is set based on map-meta
+    // can be hard coded to only natively zoom out 2 levels, any more and too many tiles are going to be loaded in at one time
+    // it will avoid lagging the users computer, but it will also cause the bug that the initial zoom level of map is inproperly set
+    zoom.minZoom = +meta.min || 0;
+    zoom.maxZoom = +meta.max || maxZoomBound;
     return zoom;
   },
 

@@ -1,5 +1,3 @@
-import { FALLBACK_CS, FALLBACK_PROJECTION } from './Constants';
-
 export var Util = {
   // _convertAndFormatPCRS returns the converted CRS and formatted pcrsBounds in gcrs, pcrs, tcrs, and tilematrix. Used for setting extent for the map and layer (map.extent, layer.extent).
   // _convertAndFormatPCRS: L.Bounds, _map, projection -> {...}
@@ -84,6 +82,31 @@ export var Util = {
     }
     return extent;
   },
+  // extentToBounds: returns bounds in gcrs, pcrs. Used for setting bounds for the map (map.totalLayerBounds).
+  // extentToBounds: {...}, crs -> L.Bounds / L.LatlngBounds
+  extentToBounds(extent, crs) {
+    switch (crs.toUpperCase()) {
+      case 'PCRS':
+        return L.bounds(
+          L.point(extent.topLeft.pcrs.horizontal, extent.topLeft.pcrs.vertical),
+          L.point(
+            extent.bottomRight.pcrs.horizontal,
+            extent.bottomRight.pcrs.vertical
+          )
+        );
+      case 'GCRS':
+        return L.latLngBounds(
+          L.latLng(
+            extent.topLeft.gcrs.vertical,
+            extent.topLeft.gcrs.horizontal
+          ),
+          L.latLng(
+            extent.bottomRight.gcrs.vertical,
+            extent.bottomRight.gcrs.horizontal
+          )
+        );
+    }
+  },
 
   // _extractInputBounds extracts and returns Input Bounds from the provided template
   // _extractInputBounds: Object -> {zoomBounds: ..., bounds: ...}
@@ -92,9 +115,9 @@ export var Util = {
 
     //sets variables with their respective fallback values incase content is missing from the template
     let inputs = template.values,
-      projection = template.projection || FALLBACK_PROJECTION,
+      projection = template.projection || M.FALLBACK_PROJECTION,
       value = 0,
-      boundsUnit = FALLBACK_CS;
+      boundsUnit = M.FALLBACK_CS;
     let bounds = this[projection].options.crs.tilematrix.bounds(0),
       defaultMinZoom = 0,
       defaultMaxZoom = this[projection].options.resolutions.length - 1,
@@ -169,10 +192,10 @@ export var Util = {
     };
     if (
       !locInputs &&
-      template.extentPCRSFallback &&
-      template.extentPCRSFallback.bounds
+      template.boundsFallbackPCRS &&
+      template.boundsFallbackPCRS.bounds
     ) {
-      bounds = template.extentPCRSFallback.bounds;
+      bounds = template.boundsFallbackPCRS.bounds;
     } else if (locInputs) {
       bounds = this.boundsToPCRSBounds(bounds, value, projection, boundsUnit);
     } else {
@@ -206,7 +229,7 @@ export var Util = {
         case 'easting':
           return 'PCRS';
         default:
-          return FALLBACK_CS;
+          return M.FALLBACK_CS;
       }
     } catch (e) {
       return undefined;
@@ -551,11 +574,6 @@ export var Util = {
       // the layer is newly created, so have to wait until it's fully init'd
       // before setting properties.
       layer.whenReady().then(() => {
-        // TODO refactor _setLayerElExtent so that it's invoked automatically
-        // by layer.extent getter TBD.
-        if (!layer.extent) {
-          layer._layer._setLayerElExtent();
-        }
         // if the map projection isnt' changed by link traversal, it's necessary
         // to perform pan/zoom operations after the layer is ready
         if (!link.inPlace && zoomTo)
@@ -575,9 +593,10 @@ export var Util = {
       map.options.mapEl.zoom = +zoomTo.z;
     }
   },
+  // TODO: make this dynamic based on the individual features/extents
   getBounds: function (mapml) {
     if (!mapml) return null;
-    let cs = FALLBACK_CS,
+    let cs = M.FALLBACK_CS,
       projection =
         (mapml.querySelector('map-meta[name=projection]') &&
           M._metaContentToObject(
@@ -585,7 +604,7 @@ export var Util = {
               .querySelector('map-meta[name=projection]')
               .getAttribute('content')
           ).content.toUpperCase()) ||
-        FALLBACK_PROJECTION;
+        M.FALLBACK_PROJECTION;
     try {
       let meta =
         mapml.querySelector('map-meta[name=extent]') &&
@@ -649,7 +668,7 @@ export var Util = {
       return {
         minZoom: 0,
         maxZoom:
-          M[projection || FALLBACK_PROJECTION].options.resolutions.length - 1,
+          M[projection || M.FALLBACK_PROJECTION].options.resolutions.length - 1,
         minNativeZoom: nMin,
         maxNativeZoom: nMax
       };

@@ -6,7 +6,7 @@
     <map-link rel="legend" href="http://maps.geogratis.gc.ca/wms/toporama_en?SERVICE=WMS&amp;REQUEST=GetLegendGraphic&amp;LAYER=WMS-Toporama&amp;VERSION=1.1&amp;FORMAT=image/png"></map-link>
   </map-head>
   <map-body>
-    <map-extent units="CBMTILE">
+    <map-extent units="CBMTILE" checked="checked" hidden="hidden">
       <map-input name="z" type="zoom" value="19" min="0" max="19"></map-input>
       <map-input name="w" type="width"></map-input>
       <map-input name="h" type="height"></map-input>

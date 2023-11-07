@@ -13,7 +13,7 @@
         </map-style>
    </map-head>
    <map-body>
-        <map-extent units="WGS84">
+        <map-extent units="WGS84" checked="checked" hidden="hidden">
             <map-input name="zoomLevel" type="zoom" min="0" max="2" value="0"></map-input>
 
             <map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="5"></map-input>
