@@ -1,18 +1,12 @@
 /* global M */
 export class MapExtent extends HTMLElement {
   static get observedAttributes() {
-    return ['units', 'checked', 'label', 'opacity', 'hidden'];
+    return ['checked', 'label', 'opacity', 'hidden'];
   }
   get units() {
     return this.getAttribute('units');
   }
-  set units(val) {
-    // built in support for OSMTILE, CBMTILE, WGS84 and APSTILE
-    if (['OSMTILE', 'CBMTILE', 'WGS84', 'APSTILE'].includes(val)) {
-      this.setAttribute('units', val);
-    }
-    // else need to check with the mapml-viewer element if the custom projection is defined
-  }
+
   get checked() {
     return this.hasAttribute('checked');
   }
