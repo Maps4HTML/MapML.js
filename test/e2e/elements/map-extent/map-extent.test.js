@@ -3,7 +3,7 @@ import { test, expect, chromium } from '@playwright/test';
 test.describe('map-extent tests', () => {
   let page;
   let context;
-  test.beforeEach(async function () {
+  test.beforeAll(async function () {
     context = await chromium.launchPersistentContext('', { slowMo: 500 });
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
@@ -50,6 +50,10 @@ test.describe('map-extent tests', () => {
       }
     );
     expect(labelChangesToDefaultAndLayerNotHidden).toBe(true);
+    await extent.evaluate((extent) => {
+      // restore original state
+      extent.hidden = true;
+    });
   });
 
   test('hidden DOM order maintained when unhiding', async () => {
@@ -173,6 +177,6 @@ test.describe('map-extent tests', () => {
     // which has a timeout of 5 seconds
     await page.waitForTimeout(5500);
     expect(errorLogs.length).toBe(1);
-    expect(errorLogs[0]).toBe("Undefined projection:foo");
+    expect(errorLogs[0]).toBe('Undefined projection:foo');
   });
 });
