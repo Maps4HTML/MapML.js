@@ -61,8 +61,12 @@ test.describe('map-projectionchange test ', () => {
     const viewer = await page.locator('mapml-viewer');
     const layer = await page.locator('layer-');
     await page.pause();
-    await layer.evaluate((layer) => layer.opacity = 0.5);
-    expect(await layer.evaluate((layer) => {return layer.opacity;})).toBe(0.5);
+    await layer.evaluate((layer) => (layer.opacity = 0.5));
+    expect(
+      await layer.evaluate((layer) => {
+        return layer.opacity;
+      })
+    ).toBe(0.5);
     const osmtileExtent = await page.locator('map-extent[units=OSMTILE]');
     await osmtileExtent.evaluate((e) => (e.opacity = 0.4));
     const cbmtileExtent = await page.locator('map-extent[units=CBMTILE]');
@@ -71,6 +75,10 @@ test.describe('map-projectionchange test ', () => {
     await page.waitForTimeout(1000);
     expect(await osmtileExtent.evaluate((e) => e.opacity)).toBe(0.4);
     expect(await cbmtileExtent.evaluate((e) => e.opacity)).toBe(0.3);
-    expect(await layer.evaluate((layer) => {return layer.opacity;})).toBe(0.5);
+    expect(
+      await layer.evaluate((layer) => {
+        return layer.opacity;
+      })
+    ).toBe(0.5);
   });
 });
