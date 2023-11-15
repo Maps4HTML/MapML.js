@@ -50,41 +50,11 @@ export var createLayerControlExtentHTML = function () {
   svgExtentControlIcon.appendChild(extentControlPath1);
   svgExtentControlIcon.appendChild(extentControlPath2);
 
-  if (this._userInputs) {
+  let mapSelects = this.querySelectorAll('map-select');
+  if (mapSelects.length) {
     var frag = document.createDocumentFragment();
-    var templates = this._templateVars;
-    if (templates) {
-      this._selectdetails = [];
-      for (var i = 0; i < templates.length; i++) {
-        var template = templates[i];
-        for (var j = 0; j < template.values.length; j++) {
-          var mapmlInput = template.values[j],
-            id = '#' + mapmlInput.getAttribute('id');
-          // don't add it again if it is referenced > once
-          if (
-            mapmlInput.tagName.toLowerCase() === 'map-select' &&
-            !frag.querySelector(id)
-          ) {
-            // generate a <details><summary></summary><select...></details>
-            var selectdetails = L.DomUtil.create(
-                'details',
-                'mapml-layer-item-details mapml-control-layers',
-                frag
-              ),
-              selectsummary = L.DomUtil.create('summary'),
-              selectSummaryLabel = L.DomUtil.create('label');
-            selectSummaryLabel.innerText = mapmlInput.getAttribute('name');
-            selectSummaryLabel.setAttribute(
-              'for',
-              mapmlInput.getAttribute('id')
-            );
-            selectsummary.appendChild(selectSummaryLabel);
-            selectdetails.appendChild(selectsummary);
-            selectdetails.appendChild(mapmlInput.htmlselect);
-            this._selectdetails.push(selectdetails);
-          }
-        }
-      }
+    for (var i = 0; i < mapSelects.length; i++) {
+      frag.appendChild(mapSelects[i].selectdetails);
     }
     extentSettings.appendChild(frag);
   }
@@ -145,11 +115,11 @@ export var createLayerControlExtentHTML = function () {
   );
   const changeOpacity = function (e) {
     if (e && e.target && e.target.value >= 0 && e.target.value <= 1.0) {
-      this._templatedLayer.changeOpacity(e.target.value);
+      this._extentLayer.changeOpacity(e.target.value);
     }
   };
   opacity.setAttribute('value', this.opacity);
-  opacity.value = this._templatedLayer._container.style.opacity || '1.0';
+  opacity.value = this._extentLayer._container.style.opacity || '1.0';
   opacity.addEventListener('change', changeOpacity.bind(this));
 
   var extentItemNameSpan = L.DomUtil.create(
@@ -261,7 +231,7 @@ export var createLayerControlExtentHTML = function () {
             extentEl.removeAttribute('data-moving');
 
             extentEl.extentZIndex = zIndex;
-            extentEl._templatedLayer.setZIndex(zIndex);
+            extentEl._extentLayer.setZIndex(zIndex);
             zIndex++;
           }
         }

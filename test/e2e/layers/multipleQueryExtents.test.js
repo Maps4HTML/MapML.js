@@ -24,12 +24,8 @@ test.describe('Multiple Extent Query Tests', () => {
     );
     await page.waitForTimeout(1000);
     await page.click('mapml-viewer');
-    await page.waitForSelector('.leaflet-popup-content-wrapper p');
-    let numFeatures = await page.$eval(
-      '.leaflet-popup-content-wrapper p',
-      (p) => p.innerText
-    );
-    expect(numFeatures).toEqual('1/12');
+    const popupFeatureCount = page.locator('.mapml-feature-count');
+    await expect(popupFeatureCount).toHaveText('1/12', { useInnerText: true });
   });
 
   test('Turning layer off then on restores query links', async () => {
@@ -43,12 +39,8 @@ test.describe('Multiple Extent Query Tests', () => {
     await page.click("text='Multiple Query Extents'");
 
     await page.click('mapml-viewer');
-    await page.waitForSelector('.leaflet-popup-content-wrapper p');
-    const numFeatures = await page.$eval(
-      '.leaflet-popup-content-wrapper p',
-      (p) => p.innerText
-    );
-    expect(numFeatures).toEqual('1/12');
+    const popupFeatureCount = page.locator('.mapml-feature-count');
+    await expect(popupFeatureCount).toHaveText('1/12', { useInnerText: true });
   });
 
   test('Querying overlapping extents, user is able to navigate into second set of query results using popup controls', async () => {
@@ -65,11 +57,9 @@ test.describe('Multiple Extent Query Tests', () => {
       .locator('h1')
       .evaluate((node) => node.innerText);
     expect(name).toEqual('Alabama');
-    const numFeatures = await page.$eval(
-      '.leaflet-popup-content-wrapper p',
-      (p) => p.innerText
-    );
-    expect(numFeatures).toEqual('7/12');
+    const popupFeatureCount = page.locator('.mapml-feature-count');
+    await expect(popupFeatureCount).toHaveText('7/12', { useInnerText: true });
+
     feature = await page.$eval(
       '.mapml-vector-container > svg > g > g > path',
       (tile) => tile.getAttribute('d')
@@ -85,7 +75,8 @@ test.describe('Multiple Extent Query Tests', () => {
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g',
       (g) => (g.firstElementChild ? g.firstElementChild : false)
     );
-    expect(feature).toBeFalsy();
+    // a query that returns no geometry now generates a point at the click loc
+    expect(feature).toBeTruthy();
 
     const popup = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe',
@@ -93,11 +84,8 @@ test.describe('Multiple Extent Query Tests', () => {
     );
     expect(popup).toEqual('No Geometry');
 
-    const numFeatures = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p',
-      (p) => p.innerText
-    );
-    expect(numFeatures).toEqual('6/12');
+    const popupFeatureCount = page.locator('.mapml-feature-count');
+    await expect(popupFeatureCount).toHaveText('6/12', { useInnerText: true });
   });
 
   test('Popup comes up when non overlapping bounds clicked', async () => {
@@ -106,16 +94,10 @@ test.describe('Multiple Extent Query Tests', () => {
     );
     await page.waitForTimeout(1000);
     await page.locator('mapml-viewer').click({ position: { x: 250, y: 250 } });
-    await page
-      .locator(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div'
-      )
-      .waitFor();
-    const popupNum = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
-      (div) => div.childElementCount
-    );
-    expect(popupNum).toEqual(1);
+    const popups = await page
+      .locator('.leaflet-popup-pane')
+      .evaluate((popup) => popup.childElementCount);
+    expect(popups).toEqual(1);
   });
 
   test('Only features from one extent are returned for queries inside its (non overlapping) bounds', async () => {
@@ -141,11 +123,8 @@ test.describe('Multiple Extent Query Tests', () => {
     );
     expect(popup).toEqual('No Geometry');
 
-    let numFeatures = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p',
-      (p) => p.innerText
-    );
-    expect(numFeatures).toEqual('6/6');
+    const popupFeatureCount = page.locator('.mapml-feature-count');
+    await expect(popupFeatureCount).toHaveText('6/6', { useInnerText: true });
   });
 
   test('No features returned when queried outside of bounds of all extents', async () => {

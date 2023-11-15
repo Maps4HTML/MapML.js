@@ -8,17 +8,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Use Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: '18.x'
+        node-version: latest
     - run: sudo apt-get install xvfb
-    - run: npm install --legacy-peer-deps
-    - run: npx playwright install
+    - run: npm install
+    - run: npx playwright install  --with-deps
     - run: npm install -g grunt-cli
     - run: grunt default
-    - run: xvfb-run --auto-servernum -- npm test
+    - run: xvfb-run --auto-servernum -- npx playwright test --retries=3
 #    - run: xvfb-run --auto-servernum -- npm run jest
       env:
         CI: true

@@ -41,7 +41,7 @@ export var Path = L.Path.extend({
 
     this._parts = [];
     this._markup = markup;
-    this.options.zoom = markup.getAttribute('zoom') || this.options.nativeZoom;
+    this.options.zoom = markup.zoom ?? this.options.nativeZoom;
 
     this._convertMarkup();
 
@@ -75,11 +75,7 @@ export var Path = L.Path.extend({
         nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
       while (nextLayer && onTop) {
         if (nextLayer.tagName && nextLayer.tagName.toUpperCase() === 'LAYER-')
-          onTop = !(
-            nextLayer.checked &&
-            nextLayer._layer &&
-            nextLayer._layer.queryable
-          );
+          onTop = !nextLayer.queryable();
         nextLayer = nextLayer.nextElementSibling;
       }
       if (onTop && dragStart) {
@@ -346,7 +342,7 @@ export var Path = L.Path.extend({
           ind = (((cur + 1) % nodes.length) + nodes.length) % nodes.length; // this is equivalent to C/C++'s (cur + 1) % nodes.length
           if (nodes[ind].tagName) {
             let next = nodes[ind].textContent.trim().split(/\s+/);
-            c += `${next[0]} ${next[1]} `;
+            c += ` ${next[0]} ${next[1]} `;
           }
           tempDiv.innerHTML = c;
           this._coordinateToArrays(
@@ -392,7 +388,7 @@ export var Path = L.Path.extend({
       );
     }
     let noSpan = coords.textContent.replace(/(<([^>]+)>)/gi, ''),
-      pairs = noSpan.match(/(\S+\s+\S+)/gim),
+      pairs = noSpan.trim().match(/(\S+\s+\S+)/gim),
       local = [],
       bounds;
     for (let p of pairs) {

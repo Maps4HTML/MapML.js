@@ -17,21 +17,21 @@ test.describe('Custom Projection Feature & Extent Tests', () => {
     await context.close();
   });
 
-  test('map-extent Image access ._layer', async () => {
+  test('map-extent access ._extentLayer property', async () => {
     // access the map-extent._layer property
     const layer = await page.$eval(
       'mapml-viewer',
-      (map) => typeof map.getElementsByTagName('map-extent')[0]._layer
+      (map) => typeof map.getElementsByTagName('map-extent')[0]._extentLayer
     );
     expect(layer).toEqual('object');
   });
 
   test.describe('Feature', () => {
-    test('access ._layer', async () => {
+    test('access static map-feature._featureLayer', async () => {
       // access the feature._layer property
       const layer = await page.$eval(
         'mapml-viewer',
-        (map) => typeof map.getElementsByTagName('map-feature')[0]._layer
+        (map) => typeof map.getElementsByTagName('map-feature')[0]._featureLayer
       );
       expect(layer).toEqual('object');
     });

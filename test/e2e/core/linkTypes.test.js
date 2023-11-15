@@ -27,7 +27,7 @@ test.describe('Playwright Feature Links Tests', () => {
       await page.keyboard.press('Enter'); // Press enter on the feature in the top-left
       await page.waitForTimeout(1000);
       const url = await page.url();
-      expect(url).toEqual('http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/');
+      expect(url).toEqual('https://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/');
     });
     test('HTML _top target point navigates to new page', async () => {
       await page.goBack();
@@ -40,7 +40,7 @@ test.describe('Playwright Feature Links Tests', () => {
       await page.keyboard.press('Enter'); // Press enter on the top point feature in the top left
       await page.waitForTimeout(1000);
       const url = await page.url();
-      expect(url).toEqual('http://geogratis.gc.ca/mapml/en/cbmtile/fdi/');
+      expect(url).toEqual('https://geogratis.gc.ca/mapml/en/cbmtile/fdi/');
     });
     test('HTML _parent target point navigates to new page', async () => {
       await page.goBack();
@@ -55,7 +55,7 @@ test.describe('Playwright Feature Links Tests', () => {
       await page.keyboard.press('Enter'); // Press enter on the second feature in the top left
       await page.waitForTimeout(1000);
       const url = await page.url();
-      expect(url).toEqual('http://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/');
+      expect(url).toEqual('https://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/');
     });
     test('HTML _blank target projection negotiation with hash', async () => {
       await page.goBack();

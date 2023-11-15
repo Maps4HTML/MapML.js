@@ -4,7 +4,7 @@ test.describe('Playwright Remote MapML with <map-extent> Tests', () => {
   let page;
   let context;
   test.beforeAll(async function () {
-    context = await chromium.launchPersistentContext('', { slowMo: 250 });
+    context = await chromium.launchPersistentContext('');
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
@@ -16,21 +16,19 @@ test.describe('Playwright Remote MapML with <map-extent> Tests', () => {
   });
 
   test('Query remote MapML document', async () => {
+    await page.waitForTimeout(1000);
     let errorLogs = [];
     page.on('pageerror', (err) => {
       errorLogs.push(err.message);
     });
-    await page.click('div');
+    await page.click('mapml-viewer');
 
-    await page.waitForSelector(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div'
-    );
-    const popupNum = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
-      (div) => div.childElementCount
-    );
+    await page.waitForTimeout(2000);
+    const popups = await page
+      .locator('.leaflet-popup-pane')
+      .evaluate((popup) => popup.childElementCount);
+    expect(popups).toEqual(1);
     expect(errorLogs.length).toBe(0);
-    expect(popupNum).toEqual(1);
     await expect(page.locator('.mapml-zoom-link')).toBeVisible();
   });
 });

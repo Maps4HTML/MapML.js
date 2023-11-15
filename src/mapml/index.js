@@ -45,7 +45,7 @@ import {
   TemplatedTileLayer,
   templatedTileLayer
 } from './layers/TemplatedTileLayer';
-import { TemplatedLayer, templatedLayer } from './layers/TemplatedLayer';
+import { ExtentLayer, extentLayer } from './layers/ExtentLayer';
 import {
   TemplatedFeaturesLayer,
   templatedFeaturesLayer
@@ -818,13 +818,11 @@ import { DOMTokenList } from './utils/DOMTokenList';
   M.extentToBounds = Util.extentToBounds;
   M.axisToCS = Util.axisToCS;
   M._parseNumber = Util._parseNumber;
-  M._extractInputBounds = Util._extractInputBounds;
   M._splitCoordinate = Util._splitCoordinate;
   M.boundsToPCRSBounds = Util.boundsToPCRSBounds;
   M.pixelToPCRSBounds = Util.pixelToPCRSBounds;
   M._metaContentToObject = Util._metaContentToObject;
   M._coordsToArray = Util._coordsToArray;
-  M._parseStylesheetAsHTML = Util._parseStylesheetAsHTML;
   M.pointToPCRSPoint = Util.pointToPCRSPoint;
   M.pixelToPCRSPoint = Util.pixelToPCRSPoint;
   M._gcrsToTileMatrix = Util._gcrsToTileMatrix;
@@ -838,7 +836,8 @@ import { DOMTokenList } from './utils/DOMTokenList';
   M._pcrsToGcrs = Util._pcrsToGcrs;
   M.mapml2geojson = Util.mapml2geojson;
   M.getMaxZoom = Util.getMaxZoom;
-  M.getBounds = Util.getBounds;
+  M.getBoundsFromMeta = Util.getBoundsFromMeta;
+  M.getZoomBoundsFromMeta = Util.getZoomBoundsFromMeta;
   M.getZoomBounds = Util.getZoomBounds;
   M.getNativeVariables = Util.getNativeVariables;
 
@@ -865,8 +864,8 @@ import { DOMTokenList } from './utils/DOMTokenList';
   M.TemplatedFeaturesLayer = TemplatedFeaturesLayer;
   M.templatedFeaturesLayer = templatedFeaturesLayer;
 
-  M.TemplatedLayer = TemplatedLayer;
-  M.templatedLayer = templatedLayer;
+  M.ExtentLayer = ExtentLayer;
+  M.extentLayer = extentLayer;
 
   M.TemplatedTileLayer = TemplatedTileLayer;
   M.templatedTileLayer = templatedTileLayer;

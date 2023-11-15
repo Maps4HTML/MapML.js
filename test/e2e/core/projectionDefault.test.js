@@ -40,6 +40,7 @@ test.describe('Playwright Viewer Default Projection', () => {
     });
 
     test('layer renders', async () => {
+      await page.waitForTimeout(500);
       const featureSVG = await page.$eval(
         'body > mapml-viewer > layer- > map-feature',
         (feature) => feature._groupEl.firstChild.getAttribute('d')

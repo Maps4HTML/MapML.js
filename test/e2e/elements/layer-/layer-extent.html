@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>&lt;layer-&gt; test</title>
+    <meta charset="UTF-8">
+    <script type="module" src="mapml-viewer.js"></script>
+    <style>
+      html {
+        height: 100%
+      }
+
+      body {
+        height: inherit
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <mapml-viewer data-testid="viewer" style="height: 500px;width:500px;" controls zoom="2" lat="68" lon="-87" controls projection="CBMTILE">
+      <layer- data-testid="remote-layer" label="Remote content" src="dummy-cbmtile-cbmt-layer-extent.mapml" checked></layer->
+      <layer- data-testid="inline-layer" label="Local content" checked>
+        <map-extent data-testid="inline-extent" units="CBMTILE"  checked="checked">
+          <!-- the bounds and zoom bounds of the inline map-extent are different than those of the remote layer's map-extent -->
+          <map-input name="z" type="zoom"  value="17" min="3" max="17"></map-input>
+          <map-input name="y" type="location" units="tilematrix" axis="row" min="31000"  max="34000"></map-input>
+          <map-input name="x" type="location" units="tilematrix" axis="column" min="27000"  max="30000"></map-input>
+          <map-link rel="tile" tref="dummy/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}?m4h=t" >
+            <!-- previously this would have been used. Now it is ignored -->
+            <map-meta data-testid="large-zoom-bounds" name="zoom" content="min=5,max=21"></map-meta>
+            <map-meta name="extent" content="zoom=17,top-left-column=25000,top-left-row=30500,bottom-right-column=31250,bottom-right-row=35300"></map-meta>
+            <map-meta data-testid="large-extent" name="extent" content="top-left-easting=-5329325, top-left-northing=5643026, bottom-right-easting=5915489, bottom-right-northing=-5601788"></map-meta>
+            <!-- this feature has the extent of the large-extent,which includes all of the inline-extent bounds -->
+            <!-- <map-feature><map-featurecaption>test</map-featurecaption><map-geometry cs="pcrs"><map-polygon><map-coordinates>-5329325 5643026 5915489 5643026 5915489 -5601788 -5329325 -5601788 -5329325 5643026</map-coordinates></map-polygon></map-geometry></map-feature> -->
+          </map-link>
+        </map-extent>
+        
+      </layer->
+    </mapml-viewer>
+  </body>
+</html>

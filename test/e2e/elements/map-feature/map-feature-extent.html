@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <title>&lt;map-feature-extent&gt; Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../mapml-viewer.js"></script>
+    <style>
+      mapml-viewer {
+        width: 500px;
+        height: 500px;
+      }
+
+    </style>
+    <template data-testid="point1template">
+      <map-feature zoom="11" min="3" max="11">
+        <map-featurecaption>Click me!</map-featurecaption>
+        <map-geometry>
+            <map-polygon>
+              <map-coordinates>-75.8242035 45.3526278 -75.6793213 45.4572409 -75.5680847 45.4692806 -75.6092834 45.4215881 -75.5756378 45.3810901 -75.7946777 45.3120804</map-coordinates>
+            </map-polygon>
+        </map-geometry>
+        <map-properties></map-properties>
+      </map-feature>
+      <map-feature id="meta-ext1-as-feature">
+        <map-featurecaption>Extent meta-extent1 outline</map-featurecaption>
+        <map-geometry cs="pcrs">
+            <map-polygon>
+              <map-coordinates>-12044030 9001224 -12044030 6555240 -9598045 6555240 -9598045 9001224 -12044030 9001224</map-coordinates>
+            </map-polygon>
+        </map-geometry>
+        <map-properties><h2>Extent meta-extent1 outline</h2></map-properties>
+      </map-feature>
+    </template>
+  </head>
+
+  <body>
+  <mapml-viewer data-testid="viewer" zoom="10" lon="-75.6" lat="45.4" controls>
+
+    <layer- data-testid="layer1" label="Polygon" checked>
+      <map-meta name="projection" content="OSMTILE"></map-meta>
+      
+      <!-- set up a layer with some non-default extent via map-meta s-->
+      <!-- set up the "display" zoom bounds for content -->
+      <map-meta data-testid="meta-zoom1" name="zoom" content="min=4,max=10"></map-meta>
+
+
+<!--
+This is the relation of the bounds of the things below:
+        --------------
+        |            |
+        |            |
+        | meta-ext1  | 
+        |            |
+        |            |
+        --------------
+
+                        ------
+                        | f1 | 
+                        ------  
+
+The overall bounds of both of them should be the layer bounds.
+
+Further, the core zoom bounds for the layer are established by the meta-zoom1 meta
+element, above. The zoom bounds of the layer should expand to include the min/max
+zoom values of the feature f1.
+-->
+      <!-- set layer extent's bounds test that the layer extent bounds include 
+           this rectangle -->
+      <map-meta data-testid="meta-ext1" name="extent" content="top-left-easting=-12044030, top-left-northing=9001224, bottom-right-easting=-9598045, bottom-right-northing=6555240"></map-meta>
+      <!-- test that the extent bounds and zoom bounds of the layer expand 
+           to include it, shrink when it's removed -->
+      <!-- the zoom attribute contributes to extent.nativeZoom prop, and affects the 
+           zoomTo behaviour, but the min/max values reflect in the minZoom / maxZoom 
+           extent props and affects the display zoom min/max for the feature and
+           layer -->
+      <map-feature data-testid="f1" zoom="11" max="11" min="3"> 
+        <map-featurecaption>Click me!</map-featurecaption>
+        <map-geometry>
+            <map-polygon>
+              <map-coordinates>-75.8242035 45.3526278 -75.6793213 45.4572409 -75.5680847 45.4692806 -75.6092834 45.4215881 -75.5756378 45.3810901 -75.7946777 45.3120804</map-coordinates>
+            </map-polygon>
+        </map-geometry>
+        <map-properties><h2>A polygon</h2></map-properties>
+      </map-feature>
+    </layer->
+
+  </mapml-viewer>
+</body>
+
+</html>

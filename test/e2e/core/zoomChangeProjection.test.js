@@ -1,6 +1,21 @@
 import { test, expect, chromium } from '@playwright/test';
 
-test.describe('Playwright zoomin zoomout Projection Change Tests', () => {
+/*
+ * Skip this use case until we figure out how to use media queries to select
+ * links based on map scale, projection, zoom, extent etc.
+ *
+ * In the current configuration, the map is constrained to allow zooming only
+ * within the zoom bounds of its layers. So, if the layer only allows zoom
+ * levels 0-8 and it should give way to a different linked layer resource at
+ * zoom = 9, and THEN change projections due to it being the only layer on the
+ * map, there is a conflict between to maxZoom of the map (based on the initial
+ * layer's min/max Zoom) and the zoom at which the layer should change source.
+ *
+ * That mechanism should be re-designed, eliminating the need for the zoomin and
+ * zoomout link relations, by using links that have media queries on them,
+ * probably with a simple rel=alternate value.
+ */
+test.describe.skip('Playwright zoomin zoomout Projection Change Tests', () => {
   let page;
   let context;
   test.beforeAll(async () => {

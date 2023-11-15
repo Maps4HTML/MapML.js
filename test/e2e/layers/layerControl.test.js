@@ -29,7 +29,7 @@ test.describe('Playwright layerControl Tests', () => {
       await map.evaluate((map) =>
         map.querySelector('layer-').removeAttribute('hidden')
       );
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000);
       const controlsHidden = await page.$eval(
         'body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div',
         (elem) => elem.hasAttribute('hidden')

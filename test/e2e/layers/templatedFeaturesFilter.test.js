@@ -13,16 +13,12 @@ test.describe('Simple query by select values without map extent filter tests', (
     await context.close();
   });
   test('All features loaded at start', async () => {
-    const features = await page.$$(
-      '.mapml-templatedlayer-container > div > div > svg > g > g'
-    );
-    expect(features.length).toEqual(8);
+    const features = await page.locator('map-feature');
+    expect(features).toHaveCount(8);
   });
   test('User can select/filter features by category', async () => {
-    const restaurants = await page.$$(
-      '.mapml-templatedlayer-container > div > div > svg > g > g'
-    );
-    expect(restaurants.length).toEqual(8);
+    const restaurants = await page.locator('map-feature');
+    expect(restaurants).toHaveCount(8);
 
     await page.hover('.leaflet-top.leaflet-right > div');
     await page.click(
@@ -35,11 +31,7 @@ test.describe('Simple query by select values without map extent filter tests', (
       'italian'
     );
     await page.waitForTimeout(250);
-
-    const features = await page.$$(
-      'css= body > mapml-viewer >> css= div > .mapml-templatedlayer-container > div > div > svg > g > g'
-    );
-    expect(features.length).toEqual(1);
+    expect(restaurants).toHaveCount(1);
   });
   test('<map-select> <map-option> attributes are copied to layer control <option> elements', async () => {
     await page.selectOption(

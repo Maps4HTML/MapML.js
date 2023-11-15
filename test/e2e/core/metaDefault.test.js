@@ -2,8 +2,8 @@ import { test, expect, chromium } from '@playwright/test';
 
 let expectedPCRSFirstLayer = {
     topLeft: {
-      horizontal: -3263369.215138428,
-      vertical: 4046262.80585894
+      horizontal: -11940075.314370813,
+      vertical: 10941501.97685327
     },
     bottomRight: {
       horizontal: 3823752.959105924,
@@ -12,12 +12,12 @@ let expectedPCRSFirstLayer = {
   },
   expectedGCRSFirstLayer = {
     topLeft: {
-      horizontal: -125.78104358919225,
-      vertical: 56.11474703973131
+      horizontal: -164.41282251334343,
+      vertical: 26.149380076712948
     },
     bottomRight: {
-      horizontal: -5.116088318047697,
-      vertical: 28.87016583287855
+      horizontal: 70.06993143106092,
+      vertical: -11.45750001286738
     }
   };
 
@@ -51,13 +51,14 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('metaDefault.html');
+    await page.waitForTimeout(500);
   });
 
   test.afterAll(async function () {
     await context.close();
   });
 
-  test('Inline layer extent test', async () => {
+  test('Fetched layer extent test', async () => {
     const extent = await page.$eval(
       'body > mapml-viewer > layer-:nth-child(1)',
       (layer) => layer.extent
@@ -71,7 +72,7 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
     expect(extent.topLeft.gcrs).toEqual(expectedGCRSFirstLayer.topLeft);
     expect(extent.bottomRight.gcrs).toEqual(expectedGCRSFirstLayer.bottomRight);
   });
-  test('Fetched layer extent test', async () => {
+  test('Inline layer extent test', async () => {
     const extent = await page.$eval(
       'body > mapml-viewer > layer-:nth-child(2)',
       (layer) => layer.extent

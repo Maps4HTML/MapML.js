@@ -44,10 +44,14 @@ test.describe('Playwright mapMLTemplatedTile Layer Tests', () => {
       await context.close();
     });
 
+    test.beforeEach(async () => {
+      await page.waitForTimeout(250);
+    });
+
     test('SVG tiles load in on default map zoom level', async () => {
       // # of tiles = 8
       await expect(
-        page.locator('.mapml-templatedlayer-container svg')
+        page.locator('.mapml-extentlayer-container svg')
       ).toHaveCount(8);
     });
 

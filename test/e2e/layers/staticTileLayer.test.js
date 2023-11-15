@@ -45,6 +45,7 @@ test.describe('Playwright StaticTile Layer Tests', () => {
     });
 
     test('Tiles load in on default map zoom level', async () => {
+      await page.waitForTimeout(1000);
       const tiles = await page.$eval(
         '.mapml-static-tile-layer > div',
         (tileGroup) => tileGroup.getElementsByTagName('map-tile').length

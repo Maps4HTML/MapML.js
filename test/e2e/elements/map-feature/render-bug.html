@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <title>render bug test</title>
+    <meta charset="UTF-8">
+    <script type="module" src="../mapml-viewer.js"></script>
+    <style>
+      mapml-viewer {
+        width: 500px;
+        height: 500px;
+      }
+
+    </style>
+  </head>
+  <body>
+  <mapml-viewer data-testid="viewer" zoom="7" lon="16.53066406" lat="45.21669922" controls>
+    <layer- label="Polygon with map-span" checked>
+      <map-meta name="cs" content="gcrs"></map-meta>
+      <map-meta name="projection" content="OSMTILE"></map-meta>
+      <map-style>.bbox{display:none; stroke:none; fill:none}
+        .polygon{fill:yellow; stroke: orange}</map-style>
+      <!-- feature below comes from geoserver countries layer -->
+      <map-feature data-testid="span" id="countries.213" class="countries">
+        <map-geometry cs="gcrs"><map-polygon class="polygon"><map-coordinates><map-span class="bbox">15.76035238 45 16.875 45 16.875 45.24935065</map-span> 16.875 45.24935065 16.79082031 45.196875 16.53066406 45.21669922 16.45351563 45.16201172 16.36503906 45.05834961 16.29335938 45.00883789 16.23105469 45.02661133 16.15732422 45.0722168 16.02832031 45.18959961 15.96318359 45.21079102 15.88828125 45.21572266 15.82285156 45.2027832 15.78808594 45.17895508 15.76152344 45.00751953 15.76035238 45</map-coordinates></map-polygon></map-geometry>
+        <map-properties>
+          <h2>zinger</h2>
+        </map-properties>
+      </map-feature>  
+    </layer->
+    <layer- label="Same polygon, no map-span" >
+      <map-meta name="cs" content="gcrs"></map-meta>
+      <map-meta name="projection" content="OSMTILE"></map-meta>
+      <map-style>.bbox{display:none; stroke:none; fill:none}
+        .polygon{fill:yellow; stroke: orange}</map-style>
+      <map-feature data-testid="no-span" class="countries">
+        <map-geometry cs="gcrs"><map-polygon><map-coordinates>15.76035238 45 16.875 45 16.875 45.24935065 16.875 45.24935065 16.79082031 45.196875 16.53066406 45.21669922 16.45351563 45.16201172 16.36503906 45.05834961 16.29335938 45.00883789 16.23105469 45.02661133 16.15732422 45.0722168 16.02832031 45.18959961 15.96318359 45.21079102 15.88828125 45.21572266 15.82285156 45.2027832 15.78808594 45.17895508 15.76152344 45.00751953 15.76035238 45</map-coordinates></map-polygon></map-geometry>
+        <map-properties>
+          <h2>normal</h2>
+        </map-properties>
+      </map-feature>
+    </layer->
+  </mapml-viewer>
+</body>
+</html>

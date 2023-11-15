@@ -8,15 +8,24 @@ export var TemplatedTileLayer = L.TileLayer.extend({
   initialize: function (template, options) {
     // _setUpTileTemplateVars needs options.crs, not available unless we set
     // options first...
-    let inputData = M._extractInputBounds(template);
-    this.zoomBounds = inputData.zoomBounds;
-    this.extentBounds = inputData.bounds;
-    this.isVisible = true;
-    L.extend(options, this.zoomBounds);
     options.tms = template.tms;
-    delete options.opacity;
+    // it's critical to have this.options.minZoom, minNativeZoom, maxZoom, maxNativeZoom
+    // because they are used by Leaflet Map and GridLayer, but we
+    // don't need two copies of that info on our options object, so set the
+    // .zoomBounds property (which is used externally), then delete the option
+    // before unpacking the zoomBound object's properties onto this.options.minZ... etc.
+    this.zoomBounds = Object.assign({}, options.zoomBounds);
+    // unpack object to this.options.minZ... etc where minZ... are the props
+    // of the this.zoomBounds object:
+    L.extend(options, this.zoomBounds);
     L.setOptions(this, options);
+    // _setup call here relies on this.options.minZ.. etc
     this._setUpTileTemplateVars(template);
+    this._linkEl = options.linkEl;
+    this.extentBounds = this.options.extentBounds;
+    // get rid of duplicate information as it is confusing
+    delete this.options.zoomBounds;
+    delete this.options.extentBounds;
 
     this._template = template;
     this._initContainer();
@@ -28,10 +37,9 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       L.extend(options, { pane: this.options.pane })
     );
   },
-  onAdd: function () {
+  onAdd: function (map) {
     this.options.pane.appendChild(this._container);
-    this._map._addZoomLimit(this);
-    L.TileLayer.prototype.onAdd.call(this, this._map);
+    L.TileLayer.prototype.onAdd.call(this, map);
     this._handleMoveEnd();
   },
 
@@ -50,6 +58,21 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     return events;
   },
 
+  isVisible: function () {
+    let map = this._linkEl.getMapEl()._map;
+    let mapZoom = map.getZoom();
+    let mapBounds = M.pixelToPCRSBounds(
+      map.getPixelBounds(),
+      mapZoom,
+      map.options.projection
+    );
+    return (
+      mapZoom <= this.zoomBounds.maxZoom &&
+      mapZoom >= this.zoomBounds.minZoom &&
+      this.extentBounds.overlaps(mapBounds)
+    );
+  },
+
   _initContainer: function () {
     if (this._container) {
       return;
@@ -65,17 +88,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
   },
 
   _handleMoveEnd: function (e) {
-    let mapZoom = this._map.getZoom();
-    let mapBounds = M.pixelToPCRSBounds(
-      this._map.getPixelBounds(),
-      mapZoom,
-      this._map.options.projection
-    );
-    this.isVisible =
-      mapZoom <= this.options.maxZoom &&
-      mapZoom >= this.options.minZoom &&
-      this.extentBounds.overlaps(mapBounds);
-    if (!this.isVisible) return;
+    if (!this.isVisible()) return;
     this._parentOnMoveEnd();
   },
   createTile: function (coords) {
@@ -152,7 +165,62 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       });
   },
 
+  // TO DO: get rid of this function altogether; see TO DO below re: map-link
+  // shadow root
+  // _parseStylesheetAsHTML parses map-link and map-style from mapml and inserts them to the container as HTML
+  _parseStylesheetAsHTML: function (mapml, base, container) {
+    if (
+      !(container instanceof Element) ||
+      !mapml ||
+      !mapml.querySelector('map-link[rel=stylesheet],map-style')
+    )
+      return;
+
+    if (base instanceof Element) {
+      base = base.getAttribute('href')
+        ? base.getAttribute('href')
+        : document.URL;
+    } else if (!base || base === '' || base instanceof Object) {
+      return;
+    }
+
+    var ss = [];
+    var stylesheets = mapml.querySelectorAll(
+      'map-link[rel=stylesheet],map-style'
+    );
+    for (var i = 0; i < stylesheets.length; i++) {
+      if (stylesheets[i].nodeName.toUpperCase() === 'MAP-LINK') {
+        var href = stylesheets[i].hasAttribute('href')
+          ? new URL(stylesheets[i].getAttribute('href'), base).href
+          : null;
+        if (href) {
+          if (!container.querySelector("link[href='" + href + "']")) {
+            var linkElm = document.createElement('link');
+            linkElm.setAttribute('href', href);
+            linkElm.setAttribute('rel', 'stylesheet');
+            ss.push(linkElm);
+          }
+        }
+      } else {
+        // <map-style>
+        var styleElm = document.createElement('style');
+        styleElm.textContent = stylesheets[i].textContent;
+        ss.push(styleElm);
+      }
+    }
+    // insert <link> or <style> elements after the begining  of the container
+    // element, in document order as copied from original mapml document
+    // note the code below assumes hrefs have been resolved and elements
+    // re-parsed from xml and serialized as html elements ready for insertion
+    for (var s = ss.length - 1; s >= 0; s--) {
+      container.insertAdjacentElement('afterbegin', ss[s]);
+    }
+  },
+
   _createFeatures: function (markup, coords, tile) {
+    // TO DO: create a shadow root for the <map-link> that hosts this layer,
+    // populate it with map-tile, map-link and map-style elements that are
+    // fetched.
     let stylesheets = markup.querySelector(
       'map-link[rel=stylesheet],map-style'
     );
@@ -162,7 +230,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
         markup.querySelector('map-base').hasAttribute('href')
           ? new URL(markup.querySelector('map-base').getAttribute('href')).href
           : markup.URL;
-      M._parseStylesheetAsHTML(markup, base, tile);
+      this._parseStylesheetAsHTML(markup, base, tile);
     }
 
     let svg = L.SVG.create('svg'),
@@ -171,17 +239,24 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       xOffset = coords.x * tileSize,
       yOffset = coords.y * tileSize;
 
-    let tileFeatures = M.featureLayer(markup, {
+    let tileFeatures = M.featureLayer(null, {
       projection: this._map.options.projection,
-      static: false,
+      tiles: true,
       layerBounds: this.extentBounds,
       zoomBounds: this.zoomBounds,
-      interactive: false
+      interactive: false,
+      mapEl: this._linkEl.getMapEl()
     });
-
-    for (let groupID in tileFeatures._layers) {
-      for (let featureID in tileFeatures._layers[groupID]._layers) {
-        let layer = tileFeatures._layers[groupID]._layers[featureID];
+    let fallback = M.getNativeVariables(markup);
+    let features = markup.querySelectorAll('map-feature:has(> map-geometry)');
+    for (let i = 0; i < features.length; i++) {
+      let feature = tileFeatures.createGeometry(
+        features[i],
+        fallback.cs,
+        coords.z
+      );
+      for (let featureID in feature._layers) {
+        let layer = feature._layers[featureID];
         M.FeatureRenderer.prototype._initPath(layer, false);
         layer._project(this._map, L.point([xOffset, yOffset]), coords.z);
         M.FeatureRenderer.prototype._addPath(layer, g, false);
@@ -418,45 +493,13 @@ export var TemplatedTileLayer = L.TileLayer.extend({
           default:
           // unsuportted axis value
         }
-      } else if (type && type.toLowerCase() === 'zoom') {
-        //<input name="..." type="zoom" value="0" min="0" max="17">
-        zoom = {
-          name: name,
-          min: 0,
-          max: crs.resolutions.length,
-          value: crs.resolutions.length
-        };
-        if (
-          !isNaN(Number.parseInt(value, 10)) &&
-          Number.parseInt(value, 10) >= zoom.min &&
-          Number.parseInt(value, 10) <= zoom.max
-        ) {
-          zoom.value = Number.parseInt(value, 10);
-        } else {
-          zoom.value = zoom.max;
-        }
-        if (
-          !isNaN(Number.parseInt(min, 10)) &&
-          Number.parseInt(min, 10) >= zoom.min &&
-          Number.parseInt(min, 10) <= zoom.max
-        ) {
-          zoom.min = Number.parseInt(min, 10);
-        }
-        if (
-          !isNaN(Number.parseInt(max, 10)) &&
-          Number.parseInt(max, 10) >= zoom.min &&
-          Number.parseInt(max, 10) <= zoom.max
-        ) {
-          zoom.max = Number.parseInt(max, 10);
-        }
-        template.zoom = zoom;
       } else if (select) {
         /*jshint -W104 */
         const parsedselect = inputs[i].htmlselect;
         template.tile[name] = function () {
           return parsedselect.value;
         };
-      } else {
+      } else if (type === 'hidden') {
         // needs to be a const otherwise it gets overwritten
         /*jshint -W104 */
         const input = inputs[i];
@@ -485,7 +528,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       );
       template.pcrs.easting = east;
       template.pcrs.northing = north;
-    } else if (col && row && !isNaN(zoom.value)) {
+    } else if (col && row && !isNaN(template.zoom.initialValue)) {
       // convert the tile bounds at this zoom to a pcrs bounds, then
       // go through the zoom min/max and create a tile-based bounds
       // at each zoom that applies to the col/row values that constrain what tiles
@@ -498,7 +541,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
 
       template.pcrs.bounds = M.boundsToPCRSBounds(
         L.bounds(L.point([col.min, row.min]), L.point([col.max, row.max])),
-        zoom.value,
+        template.zoom.initialValue,
         this.options.crs,
         M.axisToCS('column')
       );
@@ -506,10 +549,6 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       template.tilematrix = {};
       template.tilematrix.col = col;
       template.tilematrix.row = row;
-    } else {
-      console.log(
-        'Unable to determine bounds for tile template: ' + template.template
-      );
     }
 
     if (!template.tilematrix) {
@@ -523,8 +562,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     // by first processing the extent to determine the zoom and if none, adding
     // one and second by copying that zoom into the set of template variable inputs
     // even if it is not referenced by one of the template's variable references
-    var zmin = template.zoom ? template.zoom.min : 0,
-      zmax = template.zoom ? template.zoom.max : crs.resolutions.length;
+    var zmin = this.options.minNativeZoom,
+      zmax = this.options.maxNativeZoom;
     for (var z = 0; z <= zmax; z++) {
       template.tilematrix.bounds[z] =
         z >= zmin
@@ -537,8 +576,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
   },
   _clampZoom: function (zoom) {
     let clamp = L.GridLayer.prototype._clampZoom.call(this, zoom);
-    if (this._template.step > this.zoomBounds.maxNativeZoom)
-      this._template.step = this.zoomBounds.maxNativeZoom;
+    if (this._template.step > this.options.maxNativeZoom)
+      this._template.step = this.options.maxNativeZoom;
 
     if (zoom !== clamp) {
       zoom = clamp;

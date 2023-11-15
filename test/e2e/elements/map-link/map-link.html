@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Various map-link elements representing templated layers and queries</title>
+    <meta charset="UTF-8">
+    <script type="module" src="mapml-viewer.js"></script>
+    <style>
+      html {
+        height: 100%
+      }
+
+      body {
+        height: inherit
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <mapml-viewer data-testid="viewer" style="height: 500px;width:500px;" controls zoom="1" lat="0" lon="0" >
+      <layer- data-testid="inline-tiles" label="inline content" >
+        <map-title>OpenStreetMap image tiles</map-title>
+        <map-link rel="license" href="https://www.openstreetmap.org/copyright" title="© OpenStreetMap contributors CC BY-SA"></map-link>  
+        <map-extent units="OSMTILE" checked="checked" hidden="hidden">
+          <map-input name="z" type="zoom" value="3" min="0" max="3"></map-input>
+          <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="8"></map-input>
+          <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="8"></map-input>
+          <map-link rel="tile" tref="tiles/osmtile/{z}/{x}/{y}.png"></map-link>
+        </map-extent>
+      </layer->
+      <layer- data-testid="inline-image" label="inline content" checked>
+        <map-title>Non-queryable inline WMS image Layer</map-title>
+        <!-- the extent below should have the same extent property as the extent in the inline-image-queryable layer -->
+        <!-- the bounds of the extent are established via native map-input variables -->
+        <map-extent units="OSMTILE" hidden="hidden">
+          
+          <!-- this map-meta should establish the map-link.extent.zoom.minZoom and .maxZoom for both map-links -->
+          <map-meta data-testid="inline-image-mmz1" name="zoom" content="min=3,max=11"></map-meta>
+          
+          <!-- this map-input (should) establish the min/maxNativeZoom for #link1 -->
+          <map-input data-testid="inline-image-z1" name="z" type="zoom" min="3" max="10"></map-input>
+          <map-input name="w" type="width"></map-input>
+          <map-input name="h" type="height"></map-input>
+          <map-input name="i" type="location" units="map" axis="i"></map-input>
+          <map-input name="j" type="location" units="map" axis="j"></map-input>
+          <!-- bounds of map-link #link1 should have same values as the identified inputs below -->
+          <map-input data-testid="inline-image-horizontal1" name="xmin" type="location" units="pcrs" axis="easting" position="top-left"     min="-13898086" max="-12675094"></map-input>
+          <map-input name="xmax" type="location" units="pcrs" axis="easting" position="top-right"    min="-13898086" max="-12675094"></map-input>
+          <map-input name="ymin" type="location" units="pcrs" axis="northing" position="bottom-left" min="6134530"   max="7357523"></map-input>
+          <map-input data-testid="inline-image-vertical1" name="ymax" type="location" units="pcrs" axis="northing" position="top-left"    min="6134530"   max="7357523"></map-input>
+          
+          <!-- this map-input should establish the map-link.extent.zoom.min/maxNativeZoom for #link2-->
+          <!-- previous map-meta should establish the min/maxZoom for #link2 -->
+          <!-- note that if this variable wasn't referenced by the tref on map-link #link2, 
+          it would be ignored by map-link #link2, because it is second in document order -->
+          <map-input data-testid="inline-image-z2" name="z2" type="zoom" min="2" max="12"></map-input>
+          <map-input name="w2" type="width"></map-input>
+          <map-input name="h2" type="height"></map-input>
+          <map-input name="i2" type="location" units="map" axis="i"></map-input>
+          <map-input name="j2" type="location" units="map" axis="j"></map-input>
+          <!-- bounds left up to the projection for map-link #link2 -->
+          <map-input name="xmin2" type="location" units="pcrs" axis="easting" position="top-left" ></map-input>
+          <map-input name="xmax2" type="location" units="pcrs" axis="easting" position="top-right"></map-input>
+          <map-input name="ymin2" type="location" units="pcrs" axis="northing" position="bottom-left"></map-input>
+          <map-input name="ymax2" type="location" units="pcrs" axis="northing" position="top-left"></map-input>
+          
+          <!-- this guy should have the bounds established by the 
+          #inline-image-vertical/horizontal1 inputs above, and the zoom bounds of
+          #inline-image-mmz1 with the native zoom bounds of inline-image-z1 
+          (NOT the native zoom bounds of #inline-image-z2 which is second in 
+          document order, thus ignored [unless referenced via a tref variable] -->
+          <map-link data-testid="inline-link1" rel="image" tref="images/toporama_en.jpg?service=WMS&version=1.3.0&request=GetMap&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}&layers=FBP_FuelLayer_wBurnScars&CRS=EPSG:3857&format=image/png&transparent=true"></map-link>
+
+          <!-- this guy should have the bounds of the projection, and it should
+          have zoom bounds of the map-meta #inline-image-mmz1, and the native
+          zoom bounds of #inline-image-z2 -->
+          <map-link data-testid="inline-link2" rel="image" tref="images/toporama_en.jpg?service=WMS&version=1.3.0&request=GetMap&bbox={xmin2},{ymin2},{xmax2},{ymax2}&width={w2}&height={h2}&layers=FBP_FuelLayer_wBurnScars&CRS=EPSG:3857&format=image/png&transparent=true&zoom={z2}"></map-link>
+        </map-extent>
+        
+        <map-extent  units="OSMTILE" hidden="hidden">
+          
+          <map-meta data-testid="inline-image-mm-bounds" name="extent" content="top-left-easting=-13898500, top-left-northing=7357500, bottom-right-easting=-12675500, bottom-right-northing=6134500"></map-meta>
+          <map-input name="w3" type="width"></map-input>
+          <map-input name="h3" type="height"></map-input>
+          <map-input name="i3" type="location" units="map" axis="i"></map-input>
+          <map-input name="j3" type="location" units="map" axis="j"></map-input>
+          <!-- if there were no map-meta in scope, the bounds of map-link #link3
+          should be that of the projection.  But since there is a map-meta in
+          scope, the bounds of #link3 should equal the map-meta -->
+          <map-input name="xmin3" type="location" units="pcrs" axis="easting" position="top-left" ></map-input>
+          <map-input name="xmax3" type="location" units="pcrs" axis="easting" position="top-right"></map-input>
+          <map-input name="ymin3" type="location" units="pcrs" axis="northing" position="bottom-left"></map-input>
+          <map-input name="ymax3" type="location" units="pcrs" axis="northing" position="top-left"></map-input>
+
+          <!-- this guy should have the bounds of the map-meta #inline-image-mm-bounds,
+          and the zoom bounds of the projection -->
+          <map-link data-testid="inline-link3" rel="image" tref="images/toporama_en.jpg?service=WMS&version=1.3.0&request=GetMap&bbox={xmin3},{ymin3},{xmax3},{ymax3}&width={w3}&height={h3}&layers=FBP_FuelLayer_wBurnScars&CRS=EPSG:3857&format=image/png&transparent=true"></map-link>
+        </map-extent>
+      </layer->
+      <layer- data-testid="inline-image-queryable" label="inline queryable content" checked>
+        <!-- this is a separate layer in order to test that the layer becomes
+             disabled according to bounds and zoom bounds. This was not always 
+             the case, but it is now, and it's got a test. -->
+        <map-title>Queryable inline WMS image Layer</map-title>
+        <map-extent units="OSMTILE" checked="checked" hidden="hidden">
+          <!-- setting the bounds of the links via map-meta vs map-input/min/max -->
+          <!-- should work the same -->
+          <map-meta name="extent" content="top-left-easting=-13898086, top-left-northing=7357523, bottom-right-easting=-12675094, bottom-right-northing=6134530"></map-meta>
+          <!-- set zoom bounds via map-meta vs map-input/min/max -->
+          <map-meta name="zoom" content="min=3,max=10"></map-meta>
+          <map-input name="w" type="width"></map-input>
+          <map-input name="h" type="height"></map-input>
+          <map-input name="i" type="location" units="map" axis="i"></map-input>
+          <map-input name="j" type="location" units="map" axis="j"></map-input>
+          <map-input name="xmin" type="location" units="pcrs" axis="easting" position="top-left" ></map-input>
+          <map-input name="xmax" type="location" units="pcrs" axis="easting" position="top-right"></map-input>
+          <map-input name="ymin" type="location" units="pcrs" axis="northing" position="bottom-left"></map-input>
+          <map-input name="ymax" type="location" units="pcrs" axis="northing" position="top-left"></map-input>
+
+          <map-link rel="image" tref="images/toporama_en.jpg?service=WMS&version=1.3.0&request=GetMap&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}&layers=FBP_FuelLayer_wBurnScars&CRS=EPSG:3857&format=image/png&transparent=true"></map-link>
+          <map-link rel="query" tref="images/toporama_en.jpg?service=WMS&version=1.3.0&request=GetFeatureInfo&i={i}&j={j}&query_layers=FBP_FuelLayer_wBurnScars&layers=FBP_FuelLayer_wBurnScars&info_format=text/html&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}&CRS=EPSG:3857"></map-link>
+        </map-extent>
+      </layer->
+<!--          <map-link rel="feature"></map-link>
+          <map-link rel="query"></map-link>-->
+      <layer- data-testid="remote-image" label="remote non-queryable content" src="remote-non-queryable-layer-map-link.mapml" checked></layer->
+      <layer- data-testid="remote-image-queryable" label="remote queryable content" src="remote-queryable-layer-map-link.mapml" checked></layer->
+    </mapml-viewer>
+  </body>
+</html>

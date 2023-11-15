@@ -14,6 +14,31 @@ export class MapInput extends HTMLElement {
       'step'
     ];
   }
+  // sets default values for min,max on zoom and location input
+  // this stuff should be handled by the default getters on map-input type=location or map-input type=zoom
+  //          if (
+  //            inp.hasAttribute('type') &&
+  //            inp.getAttribute('type') === 'location' &&
+  //            (!inp.hasAttribute('min') || !inp.hasAttribute('max')) &&
+  //            inp.hasAttribute('axis') &&
+  //            !['i', 'j'].includes(inp.getAttribute('axis').toLowerCase())
+  //          ) {
+  //            if (
+  //              zoomInput &&
+  //              template.includes(`{${zoomInput.getAttribute('name')}}`)
+  //            ) {
+  //              zoomInput.setAttribute('value', boundsFallback.zoom);
+  //            }
+  //            let axis = inp.getAttribute('axis'),
+  //              axisBounds = M.convertPCRSBounds(
+  //                boundsFallback.bounds,
+  //                boundsFallback.zoom,
+  //                projection,
+  //                M.axisToCS(axis)
+  //              );
+  //            inp.setAttribute('min', axisBounds.min[M.axisToXY(axis)]);
+  //            inp.setAttribute('max', axisBounds.max[M.axisToXY(axis)]);
+  //          }
 
   get name() {
     return this.getAttribute('name');
@@ -72,25 +97,30 @@ export class MapInput extends HTMLElement {
     }
   }
   get min() {
-    if (
-      this.type === 'height' ||
-      this.type === 'width' ||
-      this.type === 'hidden'
-    ) {
-      return null;
-    }
-    if (this.getAttribute('min')) {
-      return this.getAttribute('min');
-    } else if (this._layer._layerEl.querySelector('map-meta[name=zoom]')) {
-      // fallback map-meta on layer
-      return M._metaContentToObject(
-        this._layer._layerEl
-          .querySelector('map-meta[name=zoom]')
-          .getAttribute('content')
-      ).min;
-    } else {
-      // fallback map min
-      return this._layer._layerEl.extent.zoom.minZoom.toString();
+    switch (this.type) {
+      case 'zoom':
+        if (this.hasAttribute('min')) {
+          return this.getAttribute('min');
+          // min attribute can apply to: type=location, type=zoom
+          // for zoom, it should fall back via upward document search: 1) this element,
+          // 2) map-meta within the parent extent, 3) map-meta within the parent layer,
+          // or finally 4) the map projection crs min/min
+          // for location, it should fall back by searching upwards: same as for zoom
+        } else if (this.parentElement.querySelector('map-meta[name=zoom]')) {
+          // fallback map-meta on layer
+          return M._metaContentToObject(
+            this.parentElement
+              .querySelector('map-meta[name=zoom]')
+              .getAttribute('content')
+          ).min;
+        } else {
+          // fallback map min
+          return this.getLayerEl().extent?.zoom.minZoom.toString();
+        }
+        break;
+      case 'location':
+      default:
+        break;
     }
   }
   set min(val) {
@@ -99,25 +129,30 @@ export class MapInput extends HTMLElement {
     }
   }
   get max() {
-    if (
-      this.type === 'height' ||
-      this.type === 'width' ||
-      this.type === 'hidden'
-    ) {
-      return null;
-    }
-    if (this.getAttribute('max')) {
-      return this.getAttribute('max');
-    } else if (this._layer._layerEl.querySelector('map-meta[name=zoom]')) {
-      // fallback map-meta on layer
-      return M._metaContentToObject(
-        this._layer._layerEl
-          .querySelector('map-meta[name=zoom]')
-          .getAttribute('content')
-      ).max;
-    } else {
-      // fallback map max
-      return this._layer._layerEl.extent.zoom.maxZoom.toString();
+    switch (this.type) {
+      case 'zoom':
+        if (this.hasAttribute('max')) {
+          return this.getAttribute('max');
+          // max attribute can apply to: type=location, type=zoom
+          // for zoom, it should fall back via upward document search: 1) this element,
+          // 2) map-meta within the parent extent, 3) map-meta within the parent layer,
+          // or finally 4) the map projection crs min/max
+          // for location, it should fall back by searching upwards: same as for zoom
+        } else if (this.parentElement.querySelector('map-meta[name=zoom]')) {
+          // fallback map-meta on layer
+          return M._metaContentToObject(
+            this.parentElement
+              .querySelector('map-meta[name=zoom]')
+              .getAttribute('content')
+          ).max;
+        } else {
+          // fallback map max
+          return this.getLayerEl().extent?.zoom.maxZoom.toString();
+        }
+        break;
+      case 'location':
+      default:
+        break;
     }
   }
   set max(val) {
@@ -136,6 +171,11 @@ export class MapInput extends HTMLElement {
     if (val) {
       this.setAttribute('step', val);
     }
+  }
+  getLayerEl() {
+    return this.getRootNode() instanceof ShadowRoot
+      ? this.getRootNode().host
+      : this.closest('layer-');
   }
   attributeChangedCallback(name, oldValue, newValue) {
     this.whenReady()
@@ -159,8 +199,6 @@ export class MapInput extends HTMLElement {
             if (oldValue !== newValue) {
               if (oldValue !== null) {
                 this.input.value = newValue;
-              } else {
-                this.initialValue = newValue;
               }
             }
             break;
@@ -229,6 +267,7 @@ export class MapInput extends HTMLElement {
         switch (this.type) {
           case 'zoom':
             // input will store the input Class specific to the input type
+            this.initialValue = +this.getAttribute('value');
             this.input = new M.ZoomInput(
               this.name,
               this.min,

@@ -3,8 +3,11 @@ export class MapExtent extends HTMLElement {
   static get observedAttributes() {
     return ['checked', 'label', 'opacity', 'hidden'];
   }
+  /* jshint ignore:start */
+  #hasConnected;
+  /* jshint ignore:end */
   get units() {
-    return this.getAttribute('units');
+    return this.getAttribute('units') || M.FALLBACK_PROJECTION;
   }
 
   get checked() {
@@ -48,82 +51,139 @@ export class MapExtent extends HTMLElement {
       this.removeAttribute('hidden');
     }
   }
+  get extent() {
+    const getExtent = (extent) => {
+      return Object.assign(
+        M._convertAndFormatPCRS(
+          extent._extentLayer.bounds,
+          M[extent.units],
+          extent.units
+        ),
+        { zoom: extent._extentLayer.zoomBounds }
+      );
+    };
+    const getCalculatedExtent = (extent) => {
+      extent._calculateBounds();
+      return getExtent(extent);
+    };
+
+    return this._extentLayer.bounds
+      ? getExtent(this)
+      : getCalculatedExtent(this);
+  }
+  zoomTo() {
+    let extent = this.extent;
+    let map = this.getMapEl()._map,
+      xmin = extent.topLeft.pcrs.horizontal,
+      xmax = extent.bottomRight.pcrs.horizontal,
+      ymin = extent.bottomRight.pcrs.vertical,
+      ymax = extent.topLeft.pcrs.vertical,
+      bounds = L.bounds(L.point(xmin, ymin), L.point(xmax, ymax)),
+      center = map.options.crs.unproject(bounds.getCenter(true)),
+      maxZoom = extent.zoom.maxZoom,
+      minZoom = extent.zoom.minZoom;
+    map.setView(center, M.getMaxZoom(bounds, map, minZoom, maxZoom), {
+      animate: false
+    });
+  }
+  getMapEl() {
+    return this.getRootNode() instanceof ShadowRoot
+      ? this.getRootNode().host.closest('mapml-viewer,map[is=web-map]')
+      : this.closest('mapml-viewer,map[is=web-map]');
+  }
+  getLayerEl() {
+    return this.getRootNode() instanceof ShadowRoot
+      ? this.getRootNode().host
+      : this.closest('layer-');
+  }
   attributeChangedCallback(name, oldValue, newValue) {
-    this.whenReady()
-      .then(() => {
-        switch (name) {
-          case 'units':
-            if (oldValue !== newValue) {
-              // handle side effects
-            }
-            break;
-          case 'label':
-            if (oldValue !== newValue) {
-              this._layerControlHTML.querySelector(
-                '.mapml-layer-item-name'
-              ).innerHTML = newValue || M.options.locale.dfExtent;
-            }
-            break;
-          case 'checked':
-            this._handleChange();
-            this._calculateBounds();
-            this._layerControlCheckbox.checked = newValue !== null;
-            break;
-          case 'opacity':
-            if (oldValue !== newValue) {
-              this._opacity = newValue;
-              if (this._templatedLayer)
-                this._templatedLayer.changeOpacity(newValue);
-            }
-            break;
-          case 'hidden':
-            if (oldValue !== newValue) {
-              let extentsRootFieldset =
-                this.parentLayer._propertiesGroupAnatomy;
-              let position = Array.from(
-                this.parentNode.querySelectorAll('map-extent:not([hidden])')
-              ).indexOf(this);
-              if (newValue !== null) {
-                // remove from layer control (hide from user)
-                this._layerControlHTML.remove();
-              } else {
-                // insert the extent fieldset into the layer control container in
-                // the calculated position
-                if (position === 0) {
-                  extentsRootFieldset.insertAdjacentElement(
-                    'afterbegin',
-                    this._layerControlHTML
-                  );
-                } else if (position > 0) {
-                  this.parentNode
-                    .querySelectorAll('map-extent:not([hidden])')
-                    [position - 1]._layerControlHTML.insertAdjacentElement(
-                      'afterend',
+    if (this.#hasConnected /* jshint ignore:line */) {
+      switch (name) {
+        case 'units':
+          if (oldValue !== newValue) {
+            // handle side effects
+          }
+          break;
+        case 'label':
+          if (oldValue !== newValue) {
+            this._layerControlHTML.querySelector(
+              '.mapml-layer-item-name'
+            ).innerHTML = newValue || M.options.locale.dfExtent;
+          }
+          break;
+        case 'checked':
+          this.parentLayer
+            .whenReady()
+            .then(() => {
+              this._handleChange();
+              this._calculateBounds();
+              this._layerControlCheckbox.checked = newValue !== null;
+            })
+            .catch((error) => {
+              console.log(
+                'Error while waiting on parentLayer for map-extent checked callback: ' +
+                  error
+              );
+            });
+          break;
+        case 'opacity':
+          if (oldValue !== newValue) {
+            this._opacity = newValue;
+            if (this._extentLayer) this._extentLayer.changeOpacity(newValue);
+          }
+          break;
+        case 'hidden':
+          if (oldValue !== newValue) {
+            this.parentLayer
+              .whenReady()
+              .then(() => {
+                let extentsRootFieldset =
+                  this.parentLayer._propertiesGroupAnatomy;
+                let position = Array.from(
+                  this.parentNode.querySelectorAll('map-extent:not([hidden])')
+                ).indexOf(this);
+                if (newValue !== null) {
+                  // remove from layer control (hide from user)
+                  this._layerControlHTML.remove();
+                } else {
+                  // insert the extent fieldset into the layer control container in
+                  // the calculated position
+                  if (position === 0) {
+                    extentsRootFieldset.insertAdjacentElement(
+                      'afterbegin',
                       this._layerControlHTML
                     );
+                  } else if (position > 0) {
+                    this.parentNode
+                      .querySelectorAll('map-extent:not([hidden])')
+                      [position - 1]._layerControlHTML.insertAdjacentElement(
+                        'afterend',
+                        this._layerControlHTML
+                      );
+                  }
                 }
-              }
-              this._validateLayerControlContainerHidden();
-            }
-            break;
-        }
-      })
-      .catch((reason) => {
-        console.log(
-          reason,
-          `\nin mapExtent.attributeChangeCallback when changing attribute ${name}`
-        );
-      });
+                this._validateLayerControlContainerHidden();
+              })
+              .catch(() => {
+                console.log(
+                  'Error while waiting on parentLayer for map-extent hidden callback'
+                );
+              });
+          }
+          break;
+      }
+    }
   }
   constructor() {
     // Always call super first in constructor
     super();
+    this._createLayerControlExtentHTML =
+      M._createLayerControlExtentHTML.bind(this);
+    this._changeHandler = this._handleChange.bind(this);
   }
   async connectedCallback() {
     // this.parentNode.host returns the layer- element when parentNode is
     // the shadow root
-    this._createLayerControlExtentHTML =
-      M._createLayerControlExtentHTML.bind(this);
     this.parentLayer =
       this.parentNode.nodeName.toUpperCase() === 'LAYER-'
         ? this.parentNode
@@ -133,13 +193,6 @@ export class MapExtent extends HTMLElement {
       this.parentLayer.hasAttribute('data-moving')
     )
       return;
-    if (
-      this.querySelector('map-link[rel=query], map-link[rel=features]') &&
-      !this.shadowRoot
-    ) {
-      this.attachShadow({ mode: 'open' });
-    }
-    await this.parentLayer.whenReady();
     this.mapEl = this.parentLayer.closest('mapml-viewer,map[is=web-map]');
     await this.mapEl.whenProjectionDefined(this.units).catch(() => {
       throw new Error('Undefined projection:' + this.units);
@@ -150,76 +203,91 @@ export class MapExtent extends HTMLElement {
     // in this case, the microtasks triggered by the fulfillment of the removed MapMLLayer should be stopped as well
     // !this.isConnected <=> the disconnectedCallback has run before
     if (!this.isConnected) return;
-    this._layer = this.parentLayer._layer;
-    this._map = this._layer._map;
-    // reset the layer extent
-    delete this.parentLayer.bounds;
-    this._templateVars = this._initTemplateVars(
-      // read map-meta[name=extent] from shadowroot or layer-
-      // querySelector / querySelectorAll on layer- cannot get elements inside its shadowroot
-      this.parentLayer.shadowRoot
-        ? this.parentLayer.shadowRoot.querySelector(
-            'map-extent > map-meta[name=extent]'
-          ) ||
-            this.parentLayer.shadowRoot.querySelector('map-meta[name=extent]')
-        : this.parentLayer.querySelector(
-            'map-extent > map-meta[name=extent]'
-          ) || this.parentLayer.querySelector('map-meta[name=extent]'),
-      this.units,
-      this._layer._content,
-      this._layer.getBase(),
-      this.units === this._layer.options.mapprojection
-    );
-    this._changeHandler = this._handleChange.bind(this);
+    /* jshint ignore:start */
+    this.#hasConnected = true;
+    /* jshint ignore:end */
+    this._map = this.mapEl._map;
     this.parentLayer.addEventListener('map-change', this._changeHandler);
     this.mapEl.addEventListener('map-projectionchange', this._changeHandler);
     // this._opacity is used to record the current opacity value (with or without updates),
     // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
     this._opacity = this.opacity || 1.0;
-    this._templatedLayer = M.templatedLayer(this._templateVars, {
-      pane: this._layer._container,
+    this._extentLayer = M.extentLayer({
       opacity: this.opacity,
-      _leafletLayer: this._layer,
-      crs: this._layer._properties.crs,
+      crs: M[this.units],
       extentZIndex: Array.from(
         this.parentLayer.querySelectorAll('map-extent')
       ).indexOf(this),
-      // when a <map-extent> migrates from a remote mapml file and attaches to the shadow of <layer- >
-      // this._properties._mapExtents[i] refers to the <map-extent> in remote mapml
-      extentEl: this._DOMnode || this
+      extentEl: this
     });
     // this._layerControlHTML is the fieldset for the extent in the LayerControl
     this._layerControlHTML = this._createLayerControlExtentHTML();
-    if (!this.hidden)
-      this._layer.addExtentToLayerControl(this._layerControlHTML);
-    this._validateLayerControlContainerHidden();
-    if (this._templatedLayer._queries) {
-      if (!this._layer._properties._queries)
-        this._layer._properties._queries = [];
-      this._layer._properties._queries =
-        this._layer._properties._queries.concat(this._templatedLayer._queries);
-    }
     this._calculateBounds();
+    this._bindMutationObserver();
+  }
+  /*
+   * Set up a function to watch additions of child elements of map-extent
+   * and to invoke desired side  effects of those additions via
+   * _runMutationObserver
+   */
+  _bindMutationObserver() {
+    this._observer = new MutationObserver((mutationList) => {
+      for (let mutation of mutationList) {
+        // the attributes changes should be handled by attributeChangedCallback()
+        if (mutation.type === 'childList') {
+          this._runMutationObserver(mutation.addedNodes);
+        }
+      }
+    });
+    // childList observes immediate children only (not grandchildren etc)
+    this._observer.observe(this, {
+      childList: true
+    });
+  }
+  _runMutationObserver(elementsGroup) {
+    const _addMetaElement = (mapMeta) => {
+      this.whenReady().then(() => {
+        this._calculateBounds();
+        this._validateDisabled();
+      });
+    };
+    for (let i = 0; i < elementsGroup.length; ++i) {
+      let element = elementsGroup[i];
+      switch (element.nodeName) {
+        case 'MAP-META':
+          const name =
+            element.hasAttribute('name') &&
+            (element.getAttribute('name').toLowerCase() === 'zoom' ||
+              element.getAttribute('name').toLowerCase() === 'extent');
+          if (name && element.hasAttribute('content')) {
+            _addMetaElement(element);
+          }
+          break;
+        case 'MAP-LINK':
+        // might need this in future, among others
+        default:
+          break;
+      }
+    }
   }
   getLayerControlHTML() {
     return this._layerControlHTML;
   }
   _projectionMatch() {
     return (
-      this.units.toUpperCase() ===
-      this._layer.options.mapprojection.toUpperCase()
+      this.units.toUpperCase() === this._map.options.projection.toUpperCase()
     );
   }
   _validateDisabled() {
-    if (!this._templatedLayer) return;
+    if (!this._extentLayer) return;
+    let templates = this.querySelectorAll(
+      'map-link[rel=image],map-link[rel=tile],map-link[rel=features],map-link[rel=query]'
+    );
     const noTemplateVisible = () => {
-      let totalTemplateCount = this._templatedLayer._templates.length,
+      let totalTemplateCount = templates.length,
         disabledTemplateCount = 0;
-      for (let j = 0; j < this._templatedLayer._templates.length; j++) {
-        if (this._templatedLayer._templates[j].rel === 'query') {
-          continue;
-        }
-        if (!this._templatedLayer._templates[j].layer.isVisible) {
+      for (let j = 0; j < totalTemplateCount; j++) {
+        if (!templates[j]._validateDisabled()) {
           disabledTemplateCount++;
         }
       }
@@ -233,9 +301,20 @@ export class MapExtent extends HTMLElement {
       this.disabled = false;
     }
     this.toggleLayerControlDisabled();
+    this._handleChange();
     return this.disabled;
   }
-
+  getMeta(metaName) {
+    let name = metaName.toLowerCase();
+    if (name !== 'extent' && name !== 'zoom') return;
+    return this.parentLayer.src
+      ? this.querySelector(`:scope > map-meta[name=${name}]`) ||
+          this.parentLayer.shadowRoot.querySelector(
+            `:host > map-meta[name=${name}]`
+          )
+      : this.querySelector(`:scope > map-meta[name=${name}]`) ||
+          this.parentLayer.querySelector(`:scope > map-meta[name=${name}]`);
+  }
   // disable/italicize layer control elements based on the map-extent.disabled property
   toggleLayerControlDisabled() {
     let input = this._layerControlCheckbox,
@@ -275,235 +354,28 @@ export class MapExtent extends HTMLElement {
     }
   }
 
-  _initTemplateVars(metaExtent, projection, mapml, base, projectionMatch) {
-    function transcribe(element) {
-      var select = document.createElement('select');
-      var elementAttrNames = element.getAttributeNames();
-
-      for (let i = 0; i < elementAttrNames.length; i++) {
-        select.setAttribute(
-          elementAttrNames[i],
-          element.getAttribute(elementAttrNames[i])
-        );
-      }
-
-      var options = element.children;
-
-      for (let i = 0; i < options.length; i++) {
-        var option = document.createElement('option');
-        var optionAttrNames = options[i].getAttributeNames();
-
-        for (let j = 0; j < optionAttrNames.length; j++) {
-          option.setAttribute(
-            optionAttrNames[j],
-            options[i].getAttribute(optionAttrNames[j])
-          );
-        }
-
-        option.innerHTML = options[i].innerHTML;
-        select.appendChild(option);
-      }
-      return select;
-    }
-    var templateVars = [];
-    // set up the URL template and associated inputs (which yield variable values when processed)
-    var tlist = this.querySelectorAll(
-        'map-link[rel=tile],map-link[rel=image],map-link[rel=features],map-link[rel=query]'
-      ),
-      varNamesRe = new RegExp('(?:{)(.*?)(?:})', 'g'),
-      zoomInput = this.querySelector('map-input[type="zoom" i]'),
-      includesZoom = false,
-      boundsFallback = {};
-
-    boundsFallback.zoom = 0;
-    if (metaExtent) {
-      let content = M._metaContentToObject(metaExtent.getAttribute('content')),
-        cs;
-
-      boundsFallback.zoom = content.zoom || boundsFallback.zoom;
-
-      let metaKeys = Object.keys(content);
-      for (let i = 0; i < metaKeys.length; i++) {
-        if (!metaKeys[i].includes('zoom')) {
-          cs = M.axisToCS(metaKeys[i].split('-')[2]);
-          break;
-        }
-      }
-      let axes = M.csToAxes(cs);
-      boundsFallback.bounds = M.boundsToPCRSBounds(
-        L.bounds(
-          L.point(
-            +content[`top-left-${axes[0]}`],
-            +content[`top-left-${axes[1]}`]
-          ),
-          L.point(
-            +content[`bottom-right-${axes[0]}`],
-            +content[`bottom-right-${axes[1]}`]
-          )
-        ),
-        boundsFallback.zoom,
-        projection,
-        cs
-      );
-    } else {
-      // for custom projections, M[projection] may not be loaded, so uses M['OSMTILE'] as backup, this code will need to get rerun once projection is changed and M[projection] is available
-      // TODO: This is a temporary fix, _initTemplateVars (or processinitialextent) should not be called when projection of the layer and map do not match, this should be called/reinitialized once the layer projection matches with the map projection
-      let fallbackProjection = M[projection] || M.OSMTILE;
-      boundsFallback.bounds = fallbackProjection.options.crs.pcrs.bounds;
-    }
-
-    for (var i = 0; i < tlist.length; i++) {
-      var t = tlist[i],
-        template = t.getAttribute('tref');
-      t.zoomInput = zoomInput;
-      if (!template) {
-        template = M.BLANK_TT_TREF;
-        let blankInputs = mapml.querySelectorAll('map-input');
-        for (let i of blankInputs) {
-          template += `{${i.getAttribute('name')}}`;
-        }
-      }
-
-      var v,
-        title = t.hasAttribute('title')
-          ? t.getAttribute('title')
-          : 'Query this layer',
-        vcount = template.match(varNamesRe),
-        trel =
-          !t.hasAttribute('rel') ||
-          t.getAttribute('rel').toLowerCase() === 'tile'
-            ? 'tile'
-            : t.getAttribute('rel').toLowerCase(),
-        ttype = !t.hasAttribute('type')
-          ? 'image/*'
-          : t.getAttribute('type').toLowerCase(),
-        inputs = [],
-        tms = t && t.hasAttribute('tms');
-      var zoomBounds = mapml.querySelector('map-meta[name=zoom]')
-        ? M._metaContentToObject(
-            mapml.querySelector('map-meta[name=zoom]').getAttribute('content')
-          )
-        : undefined;
-      while ((v = varNamesRe.exec(template)) !== null) {
-        var varName = v[1],
-          inp = this.querySelector(
-            'map-input[name=' + varName + '],map-select[name=' + varName + ']'
-          );
-        if (inp) {
-          if (
-            inp.hasAttribute('type') &&
-            inp.getAttribute('type') === 'location' &&
-            (!inp.hasAttribute('min') || !inp.hasAttribute('max')) &&
-            inp.hasAttribute('axis') &&
-            !['i', 'j'].includes(inp.getAttribute('axis').toLowerCase())
-          ) {
-            if (
-              zoomInput &&
-              template.includes(`{${zoomInput.getAttribute('name')}}`)
-            ) {
-              zoomInput.setAttribute('value', boundsFallback.zoom);
-            }
-            let axis = inp.getAttribute('axis'),
-              axisBounds = M.convertPCRSBounds(
-                boundsFallback.bounds,
-                boundsFallback.zoom,
-                projection,
-                M.axisToCS(axis)
-              );
-            inp.setAttribute('min', axisBounds.min[M.axisToXY(axis)]);
-            inp.setAttribute('max', axisBounds.max[M.axisToXY(axis)]);
-          }
-
-          inputs.push(inp);
-          includesZoom =
-            includesZoom ||
-            (inp.hasAttribute('type') &&
-              inp.getAttribute('type').toLowerCase() === 'zoom');
-          if (inp.tagName.toLowerCase() === 'map-select') {
-            // use a throwaway div to parse the input from MapML into HTML
-            var div = document.createElement('div');
-            div.insertAdjacentHTML('afterbegin', inp.outerHTML);
-            // parse
-            inp.htmlselect = div.querySelector('map-select');
-            inp.htmlselect = transcribe(inp.htmlselect);
-
-            // this goes into the layer control, so add a listener
-            L.DomEvent.on(inp.htmlselect, 'change', this.redraw, this);
-
-            if (!this._userInputs) {
-              this._userInputs = [];
-            }
-            this._userInputs.push(inp.htmlselect);
-          }
-          // TODO: if this is an input@type=location
-          // get the TCRS min,max attribute values at the identified zoom level
-          // save this information as properties of the mapExtent,
-          // perhaps as a bounds object so that it can be easily used
-          // later by the layer control to determine when to enable
-          // disable the layer for drawing.
-        } else {
-          console.log(
-            'input with name=' +
-              varName +
-              ' not found for template variable of same name'
-          );
-          // no match found, template won't be used
-          break;
-        }
-      }
-      if (
-        (template && vcount.length === inputs.length) ||
-        template === M.BLANK_TT_TREF
-      ) {
-        if (trel === 'query') {
-          this._layer.queryable = true;
-        }
-        if (!includesZoom && zoomInput) {
-          inputs.push(zoomInput);
-        }
-        let step = zoomInput ? zoomInput.getAttribute('step') : 1;
-        if (!step || step === '0' || isNaN(step)) step = 1;
-        // template has a matching input for every variable reference {varref}
-        templateVars.push({
-          template: decodeURI(new URL(template, base)),
-          linkEl: t,
-          title: title,
-          rel: trel,
-          type: ttype,
-          values: inputs,
-          zoomBounds: zoomBounds,
-          boundsFallbackPCRS: { bounds: boundsFallback.bounds },
-          projectionMatch: projectionMatch,
-          projection: this.units || M.FALLBACK_PROJECTION,
-          tms: tms,
-          step: step
-        });
-      }
-    }
-    return templateVars;
-  }
-  redraw() {
-    this._templatedLayer.redraw();
-  }
-
   _handleChange() {
-    // if the parent layer- is checked, add _templatedLayer to map if map-extent is checked, otherwise remove it
-    if (this.checked && this.parentLayer.checked && !this.disabled) {
-      this._templatedLayer.addTo(this._layer._map);
-      this._templatedLayer.setZIndex(
+    // add _extentLayer to map if map-extent is checked, otherwise remove it
+    if (this.checked && !this.disabled) {
+      // can be added to mapmllayer layerGroup no matter layer- is checked or not
+      this._extentLayer.addTo(this.parentLayer._layer);
+      this._extentLayer.setZIndex(
         Array.from(this.parentLayer.querySelectorAll('map-extent')).indexOf(
           this
         )
       );
     } else {
-      this._map.removeLayer(this._templatedLayer);
+      this.parentLayer._layer.removeLayer(this._extentLayer);
     }
     // change the checkbox in the layer control to match map-extent.checked
     // doesn't trigger the event handler because it's not user-caused AFAICT
   }
   _validateLayerControlContainerHidden() {
     let extentsFieldset = this.parentLayer._propertiesGroupAnatomy;
-    let nodeToSearch = this.parentLayer.shadowRoot || this.parentLayer;
+    let nodeToSearch = this.parentLayer.src
+      ? this.parentLayer.shadowRoot
+      : this.parentLayer;
+    if (!extentsFieldset) return;
     if (
       nodeToSearch.querySelectorAll('map-extent:not([hidden])').length === 0
     ) {
@@ -515,74 +387,125 @@ export class MapExtent extends HTMLElement {
   disconnectedCallback() {
     // in case of projection change, the disconnectedcallback will be triggered by removing layer-._layer even before
     // map-extent.connectedcallback is finished (because it will wait for the layer- to be ready)
-    // !this._templatedLayer <=> this.connectedCallback has not yet been finished before disconnectedCallback is triggered
+    // !this._extentLayer <=> this.connectedCallback has not yet been finished before disconnectedCallback is triggered
     if (
       this.hasAttribute('data-moving') ||
       this.parentLayer.hasAttribute('data-moving') ||
-      !this._templatedLayer
+      !this._extentLayer
     )
       return;
     this._validateLayerControlContainerHidden();
     // remove layer control for map-extent from layer control DOM
+    // TODO: for the case of projection change, the layer control for map-extent has been created while _extentLayer has not yet been ready
     this._layerControlHTML.remove();
-    this._map.removeLayer(this._templatedLayer);
+    if (this.parentLayer._layer) {
+      this.parentLayer._layer.removeLayer(this._extentLayer);
+    }
     this.parentLayer.removeEventListener('map-change', this._changeHandler);
     this.mapEl.removeEventListener('map-projectionchange', this._changeHandler);
-    delete this._templatedLayer;
-    delete this.parentLayer.bounds;
+    delete this._extentLayer;
+    if (this.parentLayer._layer) delete this.parentLayer._layer.bounds;
   }
   _calculateBounds() {
-    let bounds = null,
-      zoomMax = 0,
-      zoomMin = 0,
-      maxNativeZoom = 0,
-      minNativeZoom = 0;
+    delete this._extentLayer.bounds;
+    delete this._extentLayer.zoomBounds;
+    if (this.parentLayer._layer) delete this.parentLayer._layer.bounds;
+    let zoomMax = -Infinity,
+      zoomMin = Infinity,
+      maxNativeZoom = -Infinity,
+      minNativeZoom = Infinity,
+      templates = this.querySelectorAll(
+        'map-link[rel=image],map-link[rel=tile],map-link[rel=features],map-link[rel=query]'
+      );
+
+    // initialize bounds from this.scope > map-meta
+    let bounds = this.querySelector(':scope > map-meta[name=extent][content]')
+      ? M.getBoundsFromMeta(this) // TODO rewrite this pile of doo doo
+      : undefined;
+
+    // initialize zoom bounds from this.scope > map-meta
+    let zoomBounds = this.querySelector(':scope > map-meta[name=zoom][content]')
+      ? M.getZoomBoundsFromMeta(this) // TODO rewrite this pile of doo doo
+      : undefined;
+
     // bounds should be able to be calculated unconditionally, not depend on map-extent.checked
-    for (let j = 0; j < this._templateVars.length; j++) {
-      let inputData = M._extractInputBounds(this._templateVars[j]);
-      this._templateVars[j].tempExtentBounds = inputData.bounds;
-      this._templateVars[j].extentZoomBounds = inputData.zoomBounds;
-      if (!bounds) {
-        bounds = this._templateVars[j].tempExtentBounds;
-        zoomMax = this._templateVars[j].extentZoomBounds.maxZoom;
-        zoomMin = this._templateVars[j].extentZoomBounds.minZoom;
-        maxNativeZoom = this._templateVars[j].extentZoomBounds.maxNativeZoom;
-        minNativeZoom = this._templateVars[j].extentZoomBounds.minNativeZoom;
+    for (let j = 0; j < templates.length; j++) {
+      const templateZoomBounds = templates[j].getZoomBounds(),
+        templateBounds = templates[j].getBounds();
+      let zoomMax =
+          zoomBounds && zoomBounds.hasOwnProperty('maxZoom')
+            ? zoomBounds.maxZoom
+            : -Infinity,
+        zoomMin =
+          zoomBounds && zoomBounds.hasOwnProperty('minZoom')
+            ? zoomBounds.minZoom
+            : Infinity,
+        minNativeZoom =
+          zoomBounds && zoomBounds.hasOwnProperty('minNativeZoom')
+            ? zoomBounds.minNativeZoom
+            : Infinity,
+        maxNativeZoom =
+          zoomBounds && zoomBounds.hasOwnProperty('maxNativeZoom')
+            ? zoomBounds.maxNativeZoom
+            : -Infinity;
+      if (!zoomBounds) {
+        zoomBounds = Object.assign({}, templateZoomBounds);
       } else {
-        bounds.extend(this._templateVars[j].tempExtentBounds.min);
-        bounds.extend(this._templateVars[j].tempExtentBounds.max);
-        zoomMax = Math.max(
-          zoomMax,
-          this._templateVars[j].extentZoomBounds.maxZoom
-        );
-        zoomMin = Math.min(
-          zoomMin,
-          this._templateVars[j].extentZoomBounds.minZoom
-        );
+        zoomMax = Math.max(zoomMax, templateZoomBounds.maxZoom);
+        zoomMin = Math.min(zoomMin, templateZoomBounds.minZoom);
         maxNativeZoom = Math.max(
           maxNativeZoom,
-          this._templateVars[j].extentZoomBounds.maxNativeZoom
+          templateZoomBounds.maxNativeZoom
         );
         minNativeZoom = Math.min(
           minNativeZoom,
-          this._templateVars[j].extentZoomBounds.minNativeZoom
+          templateZoomBounds.minNativeZoom
         );
+        zoomBounds.minZoom = zoomMin;
+        zoomBounds.maxZoom = zoomMax;
+        zoomBounds.minNativeZoom = minNativeZoom;
+        zoomBounds.maxNativeZoom = maxNativeZoom;
+      }
+      if (!bounds) {
+        bounds = L.bounds(templateBounds.min, templateBounds.max);
+      } else {
+        bounds.extend(templateBounds);
       }
     }
-    // cannot be named as layerBounds if we decide to keep the debugoverlay logic
-    this._templatedLayer.bounds = bounds;
-    this._templatedLayer.zoomBounds = {
-      minZoom: zoomMin,
-      maxZoom: zoomMax,
-      maxNativeZoom,
-      minNativeZoom
-    };
+    if (bounds) {
+      this._extentLayer.bounds = bounds;
+    } else {
+      this._extentLayer.bounds = L.bounds(
+        M[this.units].options.bounds.min,
+        M[this.units].options.bounds.max
+      );
+    }
+    if (!zoomBounds) zoomBounds = {};
+    if (!zoomBounds.hasOwnProperty('minZoom')) {
+      zoomBounds.minZoom = 0;
+    }
+    if (!zoomBounds.hasOwnProperty('maxZoom')) {
+      zoomBounds.maxZoom = M[this.units].options.resolutions.length - 1;
+    }
+    if (
+      !zoomBounds.hasOwnProperty('minNativeZoom') ||
+      zoomBounds.minNativeZoom === Infinity
+    ) {
+      zoomBounds.minNativeZoom = zoomBounds.minZoom;
+    }
+    if (
+      !zoomBounds.hasOwnProperty('maxNativeZoom') ||
+      zoomBounds.maxNativeZoom === -Infinity
+    ) {
+      zoomBounds.maxNativeZoom = zoomBounds.maxZoom;
+    }
+    this._extentLayer.zoomBounds = zoomBounds;
   }
 
   whenReady() {
     return new Promise((resolve, reject) => {
       let interval, failureTimer;
-      if (this._templatedLayer) {
+      if (this._extentLayer) {
         resolve();
       } else {
         let extentElement = this;
@@ -590,7 +513,7 @@ export class MapExtent extends HTMLElement {
         failureTimer = setTimeout(extentNotDefined, 10000);
       }
       function testForExtent(extentElement) {
-        if (extentElement._templatedLayer) {
+        if (extentElement._extentLayer) {
           clearInterval(interval);
           clearTimeout(failureTimer);
           resolve();
@@ -606,5 +529,16 @@ export class MapExtent extends HTMLElement {
         reject('Timeout reached waiting for extent to be ready');
       }
     });
+  }
+
+  whenLinksReady() {
+    let templates = this.querySelectorAll(
+      'map-link[rel=image],map-link[rel=tile],map-link[rel=features],map-link[rel=query]'
+    );
+    let linksReady = [];
+    for (let link of [...templates]) {
+      linksReady.push(link.whenReady());
+    }
+    return Promise.allSettled(linksReady);
   }
 }

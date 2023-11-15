@@ -34,11 +34,11 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
   });
 
   test('MapFeature interactivity tests', async () => {
-    let label = await page.$eval(
-      'body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)',
-      (g) => g.getAttribute('aria-label')
-    );
-    expect(label).toEqual("feature, role='button'");
+    await page.waitForTimeout(1000);
+    const buttonFeature = page.locator('map-feature.button');
+    await expect(buttonFeature).toHaveCount(1);
+    const buttonFeatureRendering = page.getByLabel("feature, role='button'");
+    await expect(buttonFeatureRendering).toHaveCount(1);
 
     // change <map-feature> attributes
     await page.$eval('body > map', async (map) => {
@@ -123,7 +123,7 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
       map.querySelector('.point_2').zoomTo();
       return +map.zoom;
     });
-    expect(mapZoom).toEqual(5);
+    expect(mapZoom).toEqual(3);
   });
 
   test('Get geojson representation of <map-geometry> with single geometry', async () => {
@@ -176,9 +176,9 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
     // click method test
     // <map-feature> with role="button" should have popup opened after click
     const popup = await page.$eval('body > map', (map) => {
-      let featureButton = map.querySelector('.button');
-      featureButton.click();
-      return featureButton._featureGroup.isPopupOpen();
+      let feature = map.querySelector('.button');
+      feature.click();
+      return feature._geometry.isPopupOpen();
     });
     expect(popup).toEqual(true);
 
@@ -305,6 +305,7 @@ test.describe('MapFeature Events', () => {
   });
 
   test('Custom Click event - stopPropagation', async () => {
+    await page.waitForTimeout(1000);
     // Click on polygon
     await page
       .locator(
@@ -317,6 +318,8 @@ test.describe('MapFeature Events', () => {
     );
     // expect no popup is binded
     expect(popupCount).toEqual(0);
+
+    await page.waitForTimeout(500);
 
     // custom click property displaying on div
     const propertyDiv = await page.$eval(

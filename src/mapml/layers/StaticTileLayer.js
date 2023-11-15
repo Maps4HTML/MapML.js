@@ -31,9 +31,7 @@ export var StaticTileLayer = L.GridLayer.extend({
     return events;
   },
 
-  //sets the bounds flag of the layer and calls default moveEnd if within bounds
-  //its the zoom level is between the nativeZoom and zoom then it uses the nativeZoom value to get the bound its checking
-  _handleMoveEnd: function (e) {
+  isVisible: function () {
     let mapZoom = this._map.getZoom();
     let zoomLevel = mapZoom;
     zoomLevel =
@@ -44,7 +42,7 @@ export var StaticTileLayer = L.GridLayer.extend({
       zoomLevel < this.options.minNativeZoom
         ? this.options.minNativeZoom
         : zoomLevel;
-    this.isVisible =
+    return (
       mapZoom <= this.zoomBounds.maxZoom &&
       mapZoom >= this.zoomBounds.minZoom &&
       this._bounds[zoomLevel] &&
@@ -54,8 +52,14 @@ export var StaticTileLayer = L.GridLayer.extend({
           this._map.getZoom(),
           this._map.options.projection
         )
-      );
-    if (!this.isVisible) return; //onMoveEnd still gets fired even when layer is out of bounds??, most likely need to overrride _onMoveEnd
+      )
+    );
+  },
+
+  //sets the bounds flag of the layer and calls default moveEnd if within bounds
+  //its the zoom level is between the nativeZoom and zoom then it uses the nativeZoom value to get the bound its checking
+  _handleMoveEnd: function (e) {
+    if (!this.isVisible()) return; //onMoveEnd still gets fired even when layer is out of bounds??, most likely need to overrride _onMoveEnd
     this._parentOnMoveEnd();
   },
 

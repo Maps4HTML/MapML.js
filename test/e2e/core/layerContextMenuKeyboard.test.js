@@ -47,6 +47,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
       .press('Shift+F10');
     // trigger the Zoom to layer function by hitting enter or spacebar
     await page.locator('text=Zoom To Layer (Z)').press('Enter');
+    await page.waitForTimeout(2000);
 
     lat = await page.evaluate(
       () => +document.querySelector('mapml-viewer').lat

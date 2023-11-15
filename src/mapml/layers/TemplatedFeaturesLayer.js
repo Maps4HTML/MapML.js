@@ -1,34 +1,48 @@
 export var TemplatedFeaturesLayer = L.Layer.extend({
   // this and M.ImageLayer could be merged or inherit from a common parent
   initialize: function (template, options) {
-    let inputData = M._extractInputBounds(template);
-    this.zoomBounds = inputData.zoomBounds;
-    this.extentBounds = inputData.bounds;
-    this.isVisible = true;
     this._template = template;
-    this._extentEl = options.extentEl;
     this._container = L.DomUtil.create('div', 'leaflet-layer');
-    L.extend(options, this.zoomBounds);
     L.DomUtil.addClass(this._container, 'mapml-features-container');
-    delete options.opacity;
+    this.zoomBounds = options.zoomBounds;
+    this.extentBounds = options.extentBounds;
+    // get rid of duplicate info, it can be confusing
+    delete options.zoomBounds;
+    delete options.extentBounds;
+    this._linkEl = options.linkEl;
     L.setOptions(
       this,
       L.extend(options, this._setUpFeaturesTemplateVars(template))
     );
   },
+
+  isVisible: function () {
+    let map = this._linkEl.getMapEl()._map;
+    let mapZoom = map.getZoom();
+    let mapBounds = M.pixelToPCRSBounds(
+      map.getPixelBounds(),
+      mapZoom,
+      map.options.projection
+    );
+    return (
+      mapZoom <= this.zoomBounds.maxZoom &&
+      mapZoom >= this.zoomBounds.minZoom &&
+      this.extentBounds.overlaps(mapBounds)
+    );
+  },
+
   getEvents: function () {
     var events = {
       moveend: this._onMoveEnd
     };
     return events;
   },
-  onAdd: function () {
+  onAdd: function (map) {
+    this._map = map;
     // this causes the layer (this._features) to actually render...
     this.options.pane.appendChild(this._container);
-    this._map._addZoomLimit(this);
     var opacity = this.options.opacity || 1,
-      container = this._container,
-      map = this._map;
+      container = this._container;
     if (!this._features) {
       this._features = M.featureLayer(null, {
         // pass the vector layer a renderer of its own, otherwise leaflet
@@ -42,7 +56,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
         zoomBounds: this.zoomBounds,
         opacity: opacity,
         projection: map.options.projection,
-        static: true,
+        mapEl: this._linkEl.getMapEl(),
         onEachFeature: function (properties, geometry) {
           // need to parse as HTML to preserve semantics and styles
           var c = document.createElement('div');
@@ -52,14 +66,38 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
         }
       });
     } else {
-      // if this._features exists add the layer back
-      this._map.addLayer(this._features);
+      this._features.eachLayer((layer) => layer.addTo(map));
     }
-
-    map.fire('moveend'); // TODO: replace with moveend handler for layer and not entire map
+    this._onMoveEnd();
   },
   onRemove: function () {
-    this._map.removeLayer(this._features);
+    if (this._features) this._features.eachLayer((layer) => layer.remove());
+    L.DomUtil.remove(this._container);
+  },
+  appendStyleLink: function (mapLink) {
+    if (!mapLink.link) return;
+    let positionAndNode = this._getStylePositionAndNode();
+    positionAndNode.node.insertAdjacentElement(
+      positionAndNode.position,
+      mapLink.link
+    );
+  },
+  _getStylePositionAndNode: function () {
+    return this._container.lastChild &&
+      (this._container.lastChild.nodeName.toUpperCase() === 'SVG' ||
+        this._container.lastChild.classList.contains('mapml-vector-container'))
+      ? { position: 'beforebegin', node: this._container.lastChild }
+      : this._container.lastChild
+      ? { position: 'afterend', node: this._container.lastChild }
+      : { position: 'afterbegin', node: this._container };
+  },
+  appendStyleElement: function (mapStyle) {
+    if (!mapStyle.styleElement) return;
+    let positionAndNode = this._getStylePositionAndNode();
+    positionAndNode.node.insertAdjacentElement(
+      positionAndNode.position,
+      mapStyle.styleElement
+    );
   },
   redraw: function () {
     this._onMoveEnd();
@@ -101,16 +139,6 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
       steppedZoom
     );
 
-    let mapBounds = M.pixelToPCRSBounds(
-      this._map.getPixelBounds(),
-      mapZoom,
-      this._map.options.projection
-    );
-    this.isVisible =
-      mapZoom <= this.zoomBounds.maxZoom &&
-      mapZoom >= this.zoomBounds.minZoom &&
-      this.extentBounds.overlaps(mapBounds);
-
     // should set this.isVisible properly BEFORE return, otherwise will cause layer-.validateDisabled not work properly
     let url = this._getfeaturesUrl(steppedZoom, scaleBounds);
     // No request needed if the current template url is the same as the url to request
@@ -119,12 +147,12 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     // do cleaning up for new request
     this._features.clearLayers();
     // shadow may has not yet attached to <map-extent> for the first-time rendering
-    if (this._extentEl.shadowRoot) {
-      this._extentEl.shadowRoot.innerHTML = '';
+    if (this._linkEl.shadowRoot) {
+      this._linkEl.shadowRoot.innerHTML = '';
     }
     this._removeCSS();
     //Leave the layers cleared if the layer is not visible
-    if (!this.isVisible && steppedZoom === mapZoom) {
+    if (!this.isVisible() && steppedZoom === mapZoom) {
       this._url = '';
       return;
     }
@@ -135,11 +163,12 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
         Accept: 'text/mapml;q=0.9,application/geo+json;q=0.8'
       }),
       parser = new DOMParser(),
-      features = this._features,
-      extentEl = this._extentEl,
+      featureLayer = this._features,
+      linkEl = this._linkEl,
       map = this._map,
       context = this,
       MAX_PAGES = 10,
+      // TODO: Fetching logic should migrate to map-link
       _pullFeatureFeed = function (url, limit) {
         return fetch(url, { redirect: 'follow', headers: headers })
           .then(function (response) {
@@ -157,31 +186,22 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
               ? mapml.querySelector('map-link[rel=next]').getAttribute('href')
               : null;
             url = url ? new URL(url, base).href : null;
-            // TODO if the xml parser barfed but the response is application/geo+json, use the parent addData method
-            let nativeZoom = (extentEl._nativeZoom =
-              (mapml.querySelector('map-meta[name=zoom]') &&
-                +M._metaContentToObject(
-                  mapml
-                    .querySelector('map-meta[name=zoom]')
-                    .getAttribute('content')
-                ).value) ||
-              0);
-            let nativeCS = (extentEl._nativeCS =
-              (mapml.querySelector('map-meta[name=cs]') &&
-                M._metaContentToObject(
-                  mapml
-                    .querySelector('map-meta[name=cs]')
-                    .getAttribute('content')
-                ).content) ||
-              'GCRS');
-            features.addData(mapml, nativeCS, nativeZoom);
-            // "migrate" to extent's shadow
-            // make a clone, prevent the elements from being removed from mapml file
-            // same as _attachToLayer() in MapMLLayer.js
-            for (let el of mapml.querySelector('map-body').children) {
-              extentEl.shadowRoot.append(el._DOMnode);
-              el._DOMnode._extentEl = extentEl;
+            let frag = document.createDocumentFragment();
+            let elements = mapml.querySelectorAll('map-head > *, map-body > *');
+            for (let i = 0; i < elements.length; i++) {
+              frag.appendChild(elements[i]);
             }
+            linkEl.shadowRoot.appendChild(frag);
+            let features = linkEl.shadowRoot.querySelectorAll('map-feature');
+            let featuresReady = [];
+            for (let i = 0; i < features.length; i++) {
+              featuresReady.push(features[i].whenReady());
+            }
+            Promise.allSettled(featuresReady).then(() => {
+              for (let i = 0; i < features.length; i++) {
+                features[i].addFeature(featureLayer);
+              }
+            });
             if (url && --limit) {
               return _pullFeatureFeed(url, limit);
             }
@@ -190,7 +210,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     this._url = url;
     _pullFeatureFeed(url, MAX_PAGES)
       .then(function () {
-        map.addLayer(features);
+        map.addLayer(featureLayer);
         //Fires event for feature index overlay
         map.fire('templatedfeatureslayeradd');
         M.TemplatedFeaturesLayer.prototype._updateTabIndex(context);

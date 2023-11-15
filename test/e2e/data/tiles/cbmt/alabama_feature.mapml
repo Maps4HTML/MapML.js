@@ -10,7 +10,7 @@
         <map-link rel="license" href="http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="CanVec+ © Natural Resources Canada"></map-link>
     </map-head>
     <map-body>
-        <map-feature zoom="2" class="refDiff">
+        <map-feature data-testid="pcrsgeometry" zoom="2" class="refDiff">
             <map-properties>
                 <h1>Test</h1>
             </map-properties>
@@ -21,7 +21,7 @@
             </map-geometry>
         </map-feature>
 
-        <map-feature zoom="2" class="refDiff">
+        <map-feature data-testid="tcrsgeometry" zoom="2" class="refDiff">
             <map-properties>
                 <h1>Test</h1>
             </map-properties>
@@ -31,7 +31,7 @@
                 </map-polygon>
             </map-geometry>
         </map-feature>
-        <map-feature zoom="2" class="all  _50-100">
+        <map-feature data-testid="tilematrixgeometry" zoom="2" class="all  _50-100">
             <map-properties>
                 <h1>Test Cube</h1>
             </map-properties>
@@ -41,7 +41,7 @@
                 </map-polygon>
             </map-geometry>
         </map-feature>
-        <map-feature class="all  _50-100">
+        <map-feature data-testid="defaultcsgeometry" class="all  _50-100">
             <map-properties>
                 <h1>Alabama</h1>
             </map-properties>

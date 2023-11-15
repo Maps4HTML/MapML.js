@@ -16,18 +16,19 @@ test.describe('Missing Parameters Test', () => {
   });
 
   test("Static features with missing <map-meta name='zoom'></map-meta> & <map-meta name='extent'></map-meta>", async () => {
+    await page.waitForTimeout(1000);
     const layerController = await page.$eval(
       'body > map:nth-child(1) > layer-:nth-child(1)',
       (controller) => controller.extent
     );
 
     expect(layerController.topLeft.pcrs).toEqual({
-      horizontal: -34655800,
-      vertical: 39310000
+      horizontal: -2056306.8122221958,
+      vertical: -870644.8824683931
     });
     expect(layerController.bottomRight.pcrs).toEqual({
-      horizontal: 14450964.88019643,
-      vertical: -39260823.80831429
+      horizontal: -614264.1987553611,
+      vertical: -1731574.5341126453
     });
     expect(layerController.zoom).toEqual({
       maxNativeZoom: 4,
@@ -55,12 +56,12 @@ test.describe('Missing Parameters Test', () => {
       maxNativeZoom: 3,
       minNativeZoom: 2,
       minZoom: 1,
-      maxZoom: 4,
-      nativeZoom: 2
+      maxZoom: 4
     });
   });
 
   test("Templated features with missing <map-meta name='zoom'></map-meta>", async () => {
+    await page.waitForTimeout(500);
     const layerController = await page.$eval(
       'body > map:nth-child(1) > layer-:nth-child(2)',
       (controller) => controller.extent
@@ -77,12 +78,13 @@ test.describe('Missing Parameters Test', () => {
     expect(layerController.zoom).toEqual({
       maxNativeZoom: 18,
       minNativeZoom: 2,
-      minZoom: 0,
-      maxZoom: 25
+      minZoom: 2,
+      maxZoom: 18
     });
   });
 
   test("Templated tiles with missing <map-meta name='zoom'></map-meta> & extent", async () => {
+    await page.waitForTimeout(500);
     const layerController = await page.$eval(
       'body > map:nth-child(2) > layer-',
       (controller) => controller.extent
@@ -100,7 +102,7 @@ test.describe('Missing Parameters Test', () => {
       maxNativeZoom: 2,
       minNativeZoom: 0,
       minZoom: 0,
-      maxZoom: 21
+      maxZoom: 2
     });
   });
 
@@ -122,7 +124,7 @@ test.describe('Missing Parameters Test', () => {
       maxNativeZoom: 19,
       minNativeZoom: 0,
       minZoom: 0,
-      maxZoom: 25
+      maxZoom: 19
     });
   });
 });

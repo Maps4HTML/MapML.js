@@ -108,105 +108,6 @@ export var Util = {
     }
   },
 
-  // _extractInputBounds extracts and returns Input Bounds from the provided template
-  // _extractInputBounds: Object -> {zoomBounds: ..., bounds: ...}
-  _extractInputBounds: function (template) {
-    if (!template) return undefined;
-
-    //sets variables with their respective fallback values incase content is missing from the template
-    let inputs = template.values,
-      projection = template.projection || M.FALLBACK_PROJECTION,
-      value = 0,
-      boundsUnit = M.FALLBACK_CS;
-    let bounds = this[projection].options.crs.tilematrix.bounds(0),
-      defaultMinZoom = 0,
-      defaultMaxZoom = this[projection].options.resolutions.length - 1,
-      nativeMinZoom = defaultMinZoom,
-      nativeMaxZoom = defaultMaxZoom;
-    let locInputs = false,
-      numberOfAxes = 0;
-    for (let i = 0; i < inputs.length; i++) {
-      switch (inputs[i].getAttribute('type')) {
-        case 'zoom':
-          nativeMinZoom = +(inputs[i].hasAttribute('min') &&
-          !isNaN(+inputs[i].getAttribute('min'))
-            ? inputs[i].getAttribute('min')
-            : defaultMinZoom);
-          nativeMaxZoom = +(inputs[i].hasAttribute('max') &&
-          !isNaN(+inputs[i].getAttribute('max'))
-            ? inputs[i].getAttribute('max')
-            : defaultMaxZoom);
-          value = +inputs[i].getAttribute('value');
-          break;
-        case 'location':
-          if (!inputs[i].getAttribute('max') || !inputs[i].getAttribute('min'))
-            continue;
-          let max = +inputs[i].getAttribute('max'),
-            min = +inputs[i].getAttribute('min');
-          switch (inputs[i].getAttribute('axis').toLowerCase()) {
-            case 'x':
-            case 'longitude':
-            case 'column':
-            case 'easting':
-              boundsUnit = M.axisToCS(
-                inputs[i].getAttribute('axis').toLowerCase()
-              );
-              bounds.min.x = min;
-              bounds.max.x = max;
-              numberOfAxes++;
-              break;
-            case 'y':
-            case 'latitude':
-            case 'row':
-            case 'northing':
-              boundsUnit = M.axisToCS(
-                inputs[i].getAttribute('axis').toLowerCase()
-              );
-              bounds.min.y = min;
-              bounds.max.y = max;
-              numberOfAxes++;
-              break;
-            default:
-              break;
-          }
-          break;
-        default:
-      }
-    }
-    if (numberOfAxes >= 2) {
-      locInputs = true;
-    }
-    // min/maxZoom are copied from <meta name=zoom content="min=n,max=m>, are *display* range for content
-    // min/maxNativeZoom are received from <input type=zoom min=... max=...>, describe *server* content availability
-    let zoomBounds = {
-      minZoom:
-        template.zoomBounds?.min && !isNaN(+template.zoomBounds.min)
-          ? +template.zoomBounds.min
-          : defaultMinZoom,
-      maxZoom:
-        template.zoomBounds?.max && !isNaN(+template.zoomBounds.max)
-          ? +template.zoomBounds.max
-          : defaultMaxZoom,
-      minNativeZoom: nativeMinZoom,
-      maxNativeZoom: nativeMaxZoom
-    };
-    if (
-      !locInputs &&
-      template.boundsFallbackPCRS &&
-      template.boundsFallbackPCRS.bounds
-    ) {
-      bounds = template.boundsFallbackPCRS.bounds;
-    } else if (locInputs) {
-      bounds = this.boundsToPCRSBounds(bounds, value, projection, boundsUnit);
-    } else {
-      bounds = this[projection].options.crs.pcrs.bounds;
-    }
-    return {
-      zoomBounds: zoomBounds,
-      bounds: bounds
-    };
-  },
-
   // axisToCS returns the CRS when given the axis:
   // https://maps4html.org/web-map-doc/docs/elements/input/#axis
   // axisToCS: (Axis String) -> (CRS String)
@@ -334,8 +235,9 @@ export var Util = {
   pointToPCRSPoint: function (point, zoom, projection, cs) {
     if (
       !point ||
-      (!zoom && zoom !== 0) ||
-      !Number.isFinite(+zoom) ||
+      (zoom !== undefined && !Number.isFinite(+zoom)) ||
+      (zoom === undefined &&
+        (cs === 'TILEMATRIX' || cs === 'TCRS' || cs === 'TILE')) ||
       !cs ||
       !projection
     )
@@ -381,8 +283,9 @@ export var Util = {
       !bounds ||
       !bounds.max ||
       !bounds.min ||
-      (!zoom && zoom !== 0) ||
-      !Number.isFinite(+zoom) ||
+      (zoom !== undefined && !Number.isFinite(+zoom)) ||
+      (zoom === undefined &&
+        (cs === 'TILEMATRIX' || cs === 'TCRS' || cs === 'TILE')) ||
       !projection ||
       !cs
     )
@@ -441,56 +344,6 @@ export var Util = {
       pairs.push([parseInt(coords[i - 1]), parseInt(coords[i])]);
     }
     return pairs;
-  },
-
-  // _parseStylesheetAsHTML parses map-link and map-style from mapml and inserts them to the container as HTML
-  _parseStylesheetAsHTML: function (mapml, base, container) {
-    if (
-      !(container instanceof Element) ||
-      !mapml ||
-      !mapml.querySelector('map-link[rel=stylesheet],map-style')
-    )
-      return;
-
-    if (base instanceof Element) {
-      base = base.getAttribute('href')
-        ? base.getAttribute('href')
-        : document.URL;
-    } else if (!base || base === '' || base instanceof Object) {
-      return;
-    }
-
-    var ss = [];
-    var stylesheets = mapml.querySelectorAll(
-      'map-link[rel=stylesheet],map-style'
-    );
-    for (var i = 0; i < stylesheets.length; i++) {
-      if (stylesheets[i].nodeName.toUpperCase() === 'MAP-LINK') {
-        var href = stylesheets[i].hasAttribute('href')
-          ? new URL(stylesheets[i].getAttribute('href'), base).href
-          : null;
-        if (href) {
-          if (!container.querySelector("link[href='" + href + "']")) {
-            var linkElm = document.createElement('link');
-            linkElm.setAttribute('href', href);
-            linkElm.setAttribute('rel', 'stylesheet');
-            ss.push(linkElm);
-          }
-        }
-      } else {
-        // <map-style>
-        var styleElm = document.createElement('style');
-        styleElm.textContent = stylesheets[i].textContent;
-        ss.push(styleElm);
-      }
-    }
-    // insert <link> or <style> elements after the begining  of the container
-    // element, in document order as copied from original mapml document
-    // note the code below assumes hrefs have been resolved and elements
-    // re-parsed from xml and serialized as html elements ready for insertion
-    for (var s = ss.length - 1; s >= 0; s--) {
-      container.insertAdjacentElement('afterbegin', ss[s]);
-    }
   },
 
   // _splitCoordinate splits string coordinates to an array as floating point numbers
@@ -593,26 +446,28 @@ export var Util = {
       map.options.mapEl.zoom = +zoomTo.z;
     }
   },
-  // TODO: make this dynamic based on the individual features/extents
-  getBounds: function (mapml) {
+  getBoundsFromMeta: function (mapml) {
     if (!mapml) return null;
-    let cs = M.FALLBACK_CS,
+    let cs,
+      pseudo = mapml instanceof ShadowRoot ? ':host' : ':scope',
       projection =
-        (mapml.querySelector('map-meta[name=projection]') &&
+        (mapml.querySelector(pseudo + ' > map-meta[name=projection]') &&
           M._metaContentToObject(
             mapml
-              .querySelector('map-meta[name=projection]')
+              .querySelector(pseudo + ' > map-meta[name=projection]')
               .getAttribute('content')
           ).content.toUpperCase()) ||
         M.FALLBACK_PROJECTION;
     try {
       let meta =
-        mapml.querySelector('map-meta[name=extent]') &&
+        mapml.querySelector(pseudo + ' > map-meta[name=extent]') &&
         M._metaContentToObject(
-          mapml.querySelector('map-meta[name=extent]').getAttribute('content')
+          mapml
+            .querySelector(pseudo + ' > map-meta[name=extent]')
+            .getAttribute('content')
         );
 
-      let zoom = meta.zoom || 0;
+      let zoom = meta.zoom;
 
       let metaKeys = Object.keys(meta);
       for (let i = 0; i < metaKeys.length; i++) {
@@ -621,6 +476,19 @@ export var Util = {
           break;
         }
       }
+      // this could happen if the content didn't match the grammar for map-meta[name=extent]
+      if (cs === undefined) throw new Error('cs undefined when getting bounds');
+
+      // when cs is tilematrix, tcrs or tile, zoom is required.
+      // should throw / return null instead of trying to construct a bounds
+
+      if (
+        zoom === undefined &&
+        (cs === 'TILEMATRIX' || cs === 'TCRS' || cs === 'TILE')
+      )
+        throw new Error(
+          'map-meta[name=extent] zoom= parameter not provided for tcrs,tile or tilematrix bounds'
+        );
       let axes = M.csToAxes(cs);
       return M.boundsToPCRSBounds(
         L.bounds(
@@ -643,6 +511,43 @@ export var Util = {
         cs
       );
     }
+  },
+  /**
+   * TODO Review and improve design logic with Aliyan
+   *
+   * Parses object from <map-meta name="zoom" content="...">
+   * @param {type} mapml
+   * @returns {minZoom, maxZoom, minNativeZoom, maxNativeZoom}
+   */
+  getZoomBoundsFromMeta: function (mapml) {
+    if (!mapml) return null;
+    let pseudo = mapml instanceof ShadowRoot ? ':host' : ':scope';
+
+    let meta = M._metaContentToObject(
+      mapml
+        .querySelector(pseudo + '> map-meta[name=zoom]')
+        .getAttribute('content')
+    );
+    if (meta.min && meta.max && meta.value)
+      return {
+        minZoom: +meta.min,
+        maxZoom: +meta.max,
+        minNativeZoom: +meta.value,
+        maxNativeZoom: +meta.value
+      };
+    else if (meta.min && meta.max)
+      return {
+        minZoom: +meta.min,
+        maxZoom: +meta.max
+      };
+    else if (meta.min)
+      return {
+        minZoom: +meta.min
+      };
+    else if (meta.max)
+      return {
+        maxZoom: +meta.max
+      };
   },
   getZoomBounds: function (mapml, nativeZoom) {
     if (!mapml) return null;
