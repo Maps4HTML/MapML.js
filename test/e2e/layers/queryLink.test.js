@@ -328,5 +328,49 @@ test.describe('Playwright Query Link Tests', () => {
       expect(endBottomRight.vertical).toBe(-2238133.096266195);
       expect(endZoomLevel).toBe(6);
     });
+    test("hidden layer is not queryable, hidden map-extent doesn't matter", async () => {
+      const viewer = await page.locator('mapml-viewer');
+      // query the layer when it's not hidden
+      await page.click('mapml-viewer');
+      let popupPane = await page.locator('.leaflet-popup-pane');
+      let popups = await popupPane.evaluate((pane) => pane.childElementCount);
+      // expect results
+      expect(popups).toBe(1);
+      const layer = await page.locator('layer-');
+      // dismiss the popup
+      await page.keyboard.press('Escape');
+      // hide the layer
+      await layer.evaluate((layer) => {
+        layer.hidden = true;
+      });
+      await page.waitForTimeout(500);
+      // query the layer when hidden
+      // expect no results
+      await page.click('mapml-viewer');
+      popups = await popupPane.evaluate((pane) => pane.childElementCount);
+      expect(popups).toBe(0);
+
+      // unhide the layer
+      await layer.evaluate((layer) => {
+        layer.hidden = false;
+      });
+
+      let ext = await page.locator('map-extent');
+      // hide the map-extent
+      await ext.evaluate((ext) => {
+        ext.hidden = true;
+      });
+      // query the layer when map-extent is hidden
+      // expect no results
+      await page.click('mapml-viewer');
+      popups = await popupPane.evaluate((pane) => pane.childElementCount);
+      // expect results - hidden map-extent has no effect on queryability
+      expect(popups).toBe(1);
+
+      // unhide the map-extent
+      await ext.evaluate((ext) => {
+        ext.hidden = false;
+      });
+    });
   });
 });

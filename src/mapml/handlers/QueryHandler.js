@@ -16,7 +16,12 @@ export var QueryHandler = L.Handler.extend({
     // work backwards in document order (top down)
     for (var l = layers.length - 1; l >= 0; l--) {
       var mapmlLayer = layers[l]._layer;
-      if (layers[l].checked && mapmlLayer && mapmlLayer.queryable) {
+      if (
+        layers[l].checked &&
+        mapmlLayer &&
+        mapmlLayer.queryable &&
+        !mapmlLayer._layerEl.hidden
+      ) {
         return mapmlLayer;
       }
     }
