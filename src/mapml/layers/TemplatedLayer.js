@@ -7,52 +7,6 @@ export var TemplatedLayer = L.Layer.extend({
     this.changeOpacity(this.options.opacity);
     L.DomUtil.addClass(this._container, 'mapml-templatedlayer-container');
 
-    for (var i = 0; i < templates.length; i++) {
-      if (templates[i].rel === 'tile') {
-        this.setZIndex(options.extentZIndex);
-        this._templates[i].layer = M.templatedTileLayer(
-          templates[i],
-          L.Util.extend(options, {
-            errorTileUrl:
-              'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
-            zIndex: options.extentZIndex,
-            pane: this._container
-          })
-        );
-      } else if (templates[i].rel === 'image') {
-        this.setZIndex(options.extentZIndex);
-        this._templates[i].layer = M.templatedImageLayer(
-          templates[i],
-          L.Util.extend(options, {
-            zIndex: options.extentZIndex,
-            pane: this._container
-          })
-        );
-      } else if (templates[i].rel === 'features') {
-        this.setZIndex(options.extentZIndex);
-        this._templates[i].layer = M.templatedFeaturesLayer(
-          templates[i],
-          L.Util.extend(options, {
-            zIndex: options.extentZIndex,
-            pane: this._container
-          })
-        );
-      } else if (templates[i].rel === 'query') {
-        // add template to array of queryies to be added to map and processed
-        // on click/tap events
-        this.hasSetBoundsHandler = true;
-        if (!this._queries) {
-          this._queries = [];
-        }
-        let inputData = M._extractInputBounds(templates[i]);
-        templates[i].extentBounds = inputData.bounds;
-        templates[i].zoomBounds = inputData.zoomBounds;
-        templates[i]._extentEl = this.options.extentEl;
-        this._queries.push(
-          L.extend(templates[i], this._setupQueryVars(templates[i]))
-        );
-      }
-    }
   },
   getEvents: function () {
     return {
