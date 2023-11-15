@@ -9,7 +9,7 @@ test.describe('GeoJSON API - geojson2mapml', () => {
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('geojson2mapml.html');
-    //await page.waitForTimeout(10000);
+    await page.waitForTimeout(200);
   });
 
   test.afterAll(async function () {

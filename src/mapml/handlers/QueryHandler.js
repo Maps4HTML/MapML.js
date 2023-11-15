@@ -16,7 +16,7 @@ export var QueryHandler = L.Handler.extend({
     // work backwards in document order (top down)
     for (var l = layers.length - 1; l >= 0; l--) {
       var mapmlLayer = layers[l]._layer;
-      if (layers[l].checked && mapmlLayer.queryable) {
+      if (layers[l].checked && mapmlLayer && mapmlLayer.queryable) {
         return mapmlLayer;
       }
     }
@@ -50,7 +50,7 @@ export var QueryHandler = L.Handler.extend({
   _query(e, layer) {
     var zoom = e.target.getZoom(),
       map = this._map,
-      crs = layer._extent.crs, // the crs for each extent would be the same
+      crs = layer._properties.crs, // the crs for each extent would be the same
       tileSize = map.options.crs.options.crs.tile.bounds.max.x,
       container = layer._container,
       popupOptions = {
@@ -82,9 +82,13 @@ export var QueryHandler = L.Handler.extend({
       );
     let templates = layer.getQueryTemplates(pcrsClick);
 
-    var fetchFeatures = function (template, obj, lastOne) {
+    let fetches = [];
+
+    var fetchFeatures = function (template, obj) {
       const parser = new DOMParser();
-      fetch(L.Util.template(template.template, obj), { redirect: 'follow' })
+      return fetch(L.Util.template(template.template, obj), {
+        redirect: 'follow'
+      })
         .then((response) => {
           if (response.status >= 200 && response.status < 300) {
             return response.text().then((text) => {
@@ -98,19 +102,23 @@ export var QueryHandler = L.Handler.extend({
           }
         })
         .then((response) => {
-          if (!layer._mapmlFeatures) layer._mapmlFeatures = [];
+          let features = [];
           if (response.contenttype.startsWith('text/mapml')) {
             // the mapmldoc could have <map-meta> elements that are important, perhaps
             // also, the mapmldoc can have many features
             let mapmldoc = parser.parseFromString(
-                response.text,
-                'application/xml'
-              ),
-              features = Array.prototype.slice.call(
-                mapmldoc.querySelectorAll('map-feature')
-              );
-            if (features.length)
-              layer._mapmlFeatures = layer._mapmlFeatures.concat(features);
+              response.text,
+              'application/xml'
+            );
+            features = Array.prototype.slice.call(
+              mapmldoc.querySelectorAll('map-feature')
+            );
+            // <map-meta> elements for this query
+            layer.queryMetas = Array.prototype.slice.call(
+              mapmldoc.querySelectorAll(
+                'map-meta[name=cs], map-meta[name=zoom], map-meta[name=projection]'
+              )
+            );
           } else {
             // synthesize a single feature from text or html content
             let geom =
@@ -129,15 +137,9 @@ export var QueryHandler = L.Handler.extend({
                   'text/html'
                 )
                 .querySelector('map-feature');
-            layer._mapmlFeatures.push(feature);
+            features.push(feature);
           }
-          if (lastOne) {
-            // create connection between queried <map-feature> and its parent <map-extent>
-            for (let feature of layer._mapmlFeatures) {
-              feature._extentEl = template._extentEl;
-            }
-            displayFeaturesPopup(layer._mapmlFeatures, e.latlng);
-          }
+          return { features: features, template: template };
         })
         .catch((err) => {
           console.log('Looks like there was a problem. Status: ' + err.message);
@@ -241,11 +243,28 @@ export var QueryHandler = L.Handler.extend({
       }
 
       if (template.extentBounds.contains(pcrsClick)) {
-        let lastOne = i === templates.length - 1 ? true : false;
-        fetchFeatures(template, obj, lastOne);
+        fetches.push(fetchFeatures(template, obj));
       }
     }
+    Promise.allSettled(fetches).then((results) => {
+      layer._mapmlFeatures = [];
+      // f is an array of {features[], template}
+
+      for (let f of results) {
+        if (f.status === 'fulfilled') {
+          // create connection between queried <map-feature> and its parent <map-extent>
+          for (let feature of f.value.features) {
+            feature._extentEl = f.value.template._extentEl;
+          }
+          layer._mapmlFeatures = layer._mapmlFeatures.concat(f.value.features);
+        }
+      }
+      if (layer._mapmlFeatures.length > 0)
+        displayFeaturesPopup(layer._mapmlFeatures, e.latlng);
+    });
+
     function displayFeaturesPopup(features, loc) {
+      if (features.length === 0) return;
       let f = M.featureLayer(features, {
         // pass the vector layer a renderer of its own, otherwise leaflet
         // puts everything into the overlayPane
@@ -279,7 +298,11 @@ export var QueryHandler = L.Handler.extend({
       layer.on('popupclose', function () {
         map.removeLayer(f);
       });
-      f.showPaginationFeature({ i: 0, popup: layer._popup });
+      f.showPaginationFeature({
+        i: 0,
+        popup: layer._popup,
+        meta: layer.queryMetas
+      });
     }
   }
 });

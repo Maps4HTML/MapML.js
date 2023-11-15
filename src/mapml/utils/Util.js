@@ -1,27 +1,19 @@
-import { FALLBACK_CS, FALLBACK_PROJECTION } from './Constants';
-
 export var Util = {
   // _convertAndFormatPCRS returns the converted CRS and formatted pcrsBounds in gcrs, pcrs, tcrs, and tilematrix. Used for setting extent for the map and layer (map.extent, layer.extent).
-  // _convertAndFormatPCRS: L.Bounds, _map -> {...}
-  _convertAndFormatPCRS: function (pcrsBounds, map) {
-    if (!pcrsBounds || !map) return {};
+  // _convertAndFormatPCRS: L.Bounds, _map, projection -> {...}
+  _convertAndFormatPCRS: function (pcrsBounds, crs, projection) {
+    if (!pcrsBounds || !crs) return {};
 
     let tcrsTopLeft = [],
       tcrsBottomRight = [],
       tileMatrixTopLeft = [],
       tileMatrixBottomRight = [],
-      tileSize = map.options.crs.options.crs.tile.bounds.max.y;
+      tileSize = crs.options.crs.tile.bounds.max.y;
 
-    for (let i = 0; i < map.options.crs.options.resolutions.length; i++) {
-      let scale = map.options.crs.scale(i),
-        minConverted = map.options.crs.transformation.transform(
-          pcrsBounds.min,
-          scale
-        ),
-        maxConverted = map.options.crs.transformation.transform(
-          pcrsBounds.max,
-          scale
-        );
+    for (let i = 0; i < crs.options.resolutions.length; i++) {
+      let scale = crs.scale(i),
+        minConverted = crs.transformation.transform(pcrsBounds.min, scale),
+        maxConverted = crs.transformation.transform(pcrsBounds.max, scale);
 
       tcrsTopLeft.push({
         horizontal: minConverted.x,
@@ -44,8 +36,8 @@ export var Util = {
     }
 
     //converts the gcrs, I believe it can take any number values from -inf to +inf
-    let unprojectedMin = map.options.crs.unproject(pcrsBounds.min),
-      unprojectedMax = map.options.crs.unproject(pcrsBounds.max);
+    let unprojectedMin = crs.unproject(pcrsBounds.min),
+      unprojectedMax = crs.unproject(pcrsBounds.max);
 
     let gcrs = {
       topLeft: {
@@ -71,7 +63,7 @@ export var Util = {
     };
 
     //formats all extent data
-    return {
+    let extent = {
       topLeft: {
         tcrs: tcrsTopLeft,
         tilematrix: tileMatrixTopLeft,
@@ -83,9 +75,37 @@ export var Util = {
         tilematrix: tileMatrixBottomRight,
         gcrs: gcrs.bottomRight,
         pcrs: pcrs.bottomRight
-      },
-      projection: map.options.projection
+      }
     };
+    if (projection) {
+      extent.projection = projection;
+    }
+    return extent;
+  },
+  // extentToBounds: returns bounds in gcrs, pcrs. Used for setting bounds for the map (map.totalLayerBounds).
+  // extentToBounds: {...}, crs -> L.Bounds / L.LatlngBounds
+  extentToBounds(extent, crs) {
+    switch (crs.toUpperCase()) {
+      case 'PCRS':
+        return L.bounds(
+          L.point(extent.topLeft.pcrs.horizontal, extent.topLeft.pcrs.vertical),
+          L.point(
+            extent.bottomRight.pcrs.horizontal,
+            extent.bottomRight.pcrs.vertical
+          )
+        );
+      case 'GCRS':
+        return L.latLngBounds(
+          L.latLng(
+            extent.topLeft.gcrs.vertical,
+            extent.topLeft.gcrs.horizontal
+          ),
+          L.latLng(
+            extent.bottomRight.gcrs.vertical,
+            extent.bottomRight.gcrs.horizontal
+          )
+        );
+    }
   },
 
   // _extractInputBounds extracts and returns Input Bounds from the provided template
@@ -95,9 +115,9 @@ export var Util = {
 
     //sets variables with their respective fallback values incase content is missing from the template
     let inputs = template.values,
-      projection = template.projection || FALLBACK_PROJECTION,
+      projection = template.projection || M.FALLBACK_PROJECTION,
       value = 0,
-      boundsUnit = FALLBACK_CS;
+      boundsUnit = M.FALLBACK_CS;
     let bounds = this[projection].options.crs.tilematrix.bounds(0),
       defaultMinZoom = 0,
       defaultMaxZoom = this[projection].options.resolutions.length - 1,
@@ -172,10 +192,10 @@ export var Util = {
     };
     if (
       !locInputs &&
-      template.extentPCRSFallback &&
-      template.extentPCRSFallback.bounds
+      template.boundsFallbackPCRS &&
+      template.boundsFallbackPCRS.bounds
     ) {
-      bounds = template.extentPCRSFallback.bounds;
+      bounds = template.boundsFallbackPCRS.bounds;
     } else if (locInputs) {
       bounds = this.boundsToPCRSBounds(bounds, value, projection, boundsUnit);
     } else {
@@ -209,7 +229,7 @@ export var Util = {
         case 'easting':
           return 'PCRS';
         default:
-          return FALLBACK_CS;
+          return M.FALLBACK_CS;
       }
     } catch (e) {
       return undefined;
@@ -503,7 +523,6 @@ export var Util = {
       if (['/', '.', '#'].includes(link.url[0])) link.target = '_self';
     }
     if (!justPan) {
-      let newLayer = false;
       layer = document.createElement('layer-');
       layer.setAttribute('src', link.url);
       layer.setAttribute('checked', '');
@@ -512,44 +531,26 @@ export var Util = {
           if (link.type === 'text/html') {
             window.open(link.url);
           } else {
+            postTraversalSetup();
             map.options.mapEl.appendChild(layer);
-            newLayer = true;
           }
           break;
         case '_parent':
+          postTraversalSetup();
           for (let l of map.options.mapEl.querySelectorAll('layer-'))
             if (l._layer !== leafletLayer) map.options.mapEl.removeChild(l);
           map.options.mapEl.appendChild(layer);
           map.options.mapEl.removeChild(leafletLayer._layerEl);
-          newLayer = true;
           break;
         case '_top':
           window.location.href = link.url;
           break;
         default:
+          postTraversalSetup();
           opacity = leafletLayer._layerEl.opacity;
           leafletLayer._layerEl.insertAdjacentElement('beforebegin', layer);
           map.options.mapEl.removeChild(leafletLayer._layerEl);
-          newLayer = true;
       }
-      if (!link.inPlace && newLayer)
-        L.DomEvent.on(layer, 'extentload', function focusOnLoad(e) {
-          if (
-            newLayer &&
-            ['_parent', '_self'].includes(link.target) &&
-            layer.parentElement.querySelectorAll('layer-').length === 1
-          )
-            layer.parentElement.projection = layer._layer.getProjection();
-          if (layer.extent) {
-            if (zoomTo)
-              layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
-            else layer.zoomTo();
-            L.DomEvent.off(layer, 'extentload', focusOnLoad);
-          }
-
-          if (opacity) layer.opacity = opacity;
-          map.getContainer().focus();
-        });
     } else if (zoomTo && !link.inPlace && justPan) {
       leafletLayer._map.options.mapEl.zoomTo(
         +zoomTo.lat,
@@ -557,7 +558,174 @@ export var Util = {
         +zoomTo.z
       );
       if (opacity) layer.opacity = opacity;
+      map.getContainer().focus();
     }
+
+    function postTraversalSetup() {
+      // when the projection is changed as part of the link traversal process,
+      // it's necessary to set the map viewer's lat, lon and zoom NOW, so that
+      // the promises that are created when the viewer's projection is changed
+      // can use the viewer's lat, lon and zoom properties that were in effect
+      // before the projection change i.e. in the closure for that code
+      // see mapml-viewer / map is=web-map projection attributeChangedCallback
+      // specifically required for use cases like changing projection after
+      // link traversal, e.g. BC link here https://maps4html.org/experiments/linking/features/
+      if (!link.inPlace && zoomTo) updateMapZoomTo(zoomTo);
+      // the layer is newly created, so have to wait until it's fully init'd
+      // before setting properties.
+      layer.whenReady().then(() => {
+        // if the map projection isnt' changed by link traversal, it's necessary
+        // to perform pan/zoom operations after the layer is ready
+        if (!link.inPlace && zoomTo)
+          layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
+        else if (!link.inPlace) layer.zoomTo();
+        // not sure if this is necessary
+        if (opacity) layer.opacity = opacity;
+        // this is necessary to display the FeatureIndexOverlay, I believe
+        map.getContainer().focus();
+      });
+    }
+
+    function updateMapZoomTo(zoomTo) {
+      // can't use mapEl.zoomTo(...) here, it's too slow!
+      map.options.mapEl.lat = +zoomTo.lat;
+      map.options.mapEl.lon = +zoomTo.lng;
+      map.options.mapEl.zoom = +zoomTo.z;
+    }
+  },
+  // TODO: make this dynamic based on the individual features/extents
+  getBounds: function (mapml) {
+    if (!mapml) return null;
+    let cs = M.FALLBACK_CS,
+      projection =
+        (mapml.querySelector('map-meta[name=projection]') &&
+          M._metaContentToObject(
+            mapml
+              .querySelector('map-meta[name=projection]')
+              .getAttribute('content')
+          ).content.toUpperCase()) ||
+        M.FALLBACK_PROJECTION;
+    try {
+      let meta =
+        mapml.querySelector('map-meta[name=extent]') &&
+        M._metaContentToObject(
+          mapml.querySelector('map-meta[name=extent]').getAttribute('content')
+        );
+
+      let zoom = meta.zoom || 0;
+
+      let metaKeys = Object.keys(meta);
+      for (let i = 0; i < metaKeys.length; i++) {
+        if (!metaKeys[i].includes('zoom')) {
+          cs = M.axisToCS(metaKeys[i].split('-')[2]);
+          break;
+        }
+      }
+      let axes = M.csToAxes(cs);
+      return M.boundsToPCRSBounds(
+        L.bounds(
+          L.point(+meta[`top-left-${axes[0]}`], +meta[`top-left-${axes[1]}`]),
+          L.point(
+            +meta[`bottom-right-${axes[0]}`],
+            +meta[`bottom-right-${axes[1]}`]
+          )
+        ),
+        zoom,
+        projection,
+        cs
+      );
+    } catch (error) {
+      //if error then by default set the layer to osm and bounds to the entire map view
+      return M.boundsToPCRSBounds(
+        M[projection].options.crs.tilematrix.bounds(0),
+        0,
+        projection,
+        cs
+      );
+    }
+  },
+  getZoomBounds: function (mapml, nativeZoom) {
+    if (!mapml) return null;
+    let nMin = 100,
+      nMax = 0,
+      features = mapml.querySelectorAll('map-feature'),
+      meta,
+      projection;
+    for (let i = 0; i < features.length; i++) {
+      let lZoom = +features[i].getAttribute('zoom');
+      if (!features[i].getAttribute('zoom')) lZoom = nativeZoom;
+      nMax = Math.max(nMax, lZoom);
+      nMin = Math.min(nMin, lZoom);
+    }
+    try {
+      projection = M._metaContentToObject(
+        mapml.querySelector('map-meta[name=projection]').getAttribute('content')
+      ).content;
+      meta = M._metaContentToObject(
+        mapml.querySelector('map-meta[name=zoom]').getAttribute('content')
+      );
+    } catch (error) {
+      return {
+        minZoom: 0,
+        maxZoom:
+          M[projection || M.FALLBACK_PROJECTION].options.resolutions.length - 1,
+        minNativeZoom: nMin,
+        maxNativeZoom: nMax
+      };
+    }
+    return {
+      minZoom: +meta.min,
+      maxZoom: +meta.max,
+      minNativeZoom: nMin,
+      maxNativeZoom: nMax
+    };
+  },
+  // getNativeVariables: returns an object with the native zoom and CS,
+  //                     based on the map-metas that are available within
+  //                     the layer or the fallback default values.
+  // getNativeVariables: mapml-||layer-||null||[map-feature,...] -> {zoom: _, val: _}
+  // mapml can be a mapml- element, layer- element, null, or an array of map-features
+  getNativeVariables: function (mapml) {
+    let nativeZoom, nativeCS;
+    // when mapml is an array of features provided by the query
+    if (
+      mapml.length &&
+      mapml[0].parentElement.parentElement &&
+      mapml[0].parentElement.parentElement.tagName === 'mapml-'
+    ) {
+      let mapmlEl = mapml[0].parentElement.parentElement;
+      nativeZoom =
+        (mapmlEl.querySelector &&
+          mapmlEl.querySelector('map-meta[name=zoom]') &&
+          +M._metaContentToObject(
+            mapmlEl.querySelector('map-meta[name=zoom]').getAttribute('content')
+          ).value) ||
+        0;
+      nativeCS =
+        (mapmlEl.querySelector &&
+          mapmlEl.querySelector('map-meta[name=cs]') &&
+          M._metaContentToObject(
+            mapmlEl.querySelector('map-meta[name=cs]').getAttribute('content')
+          ).content) ||
+        'GCRS';
+    } else {
+      // when mapml is null or a layer-/mapml- element
+      nativeZoom =
+        (mapml.querySelector &&
+          mapml.querySelector('map-meta[name=zoom]') &&
+          +M._metaContentToObject(
+            mapml.querySelector('map-meta[name=zoom]').getAttribute('content')
+          ).value) ||
+        0;
+      nativeCS =
+        (mapml.querySelector &&
+          mapml.querySelector('map-meta[name=cs]') &&
+          M._metaContentToObject(
+            mapml.querySelector('map-meta[name=cs]').getAttribute('content')
+          ).content) ||
+        'GCRS';
+    }
+    return { zoom: nativeZoom, cs: nativeCS };
   },
 
   // _gcrsToTileMatrix returns the [column, row] of the tiles at map center. Used for Announce movement for screen readers
@@ -585,7 +753,7 @@ export var Util = {
         M.options.locale.dfLayer +
         '" checked=""></layer->';
       mapEl.insertAdjacentHTML('beforeend', l);
-      mapEl.lastChild.addEventListener('error', function () {
+      mapEl.lastElementChild.whenReady().catch(() => {
         if (mapEl) {
           // should invoke lifecyle callbacks automatically by removing it from DOM
           mapEl.removeChild(mapEl.lastChild);

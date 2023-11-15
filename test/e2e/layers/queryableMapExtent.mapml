@@ -8,7 +8,7 @@
         <map-meta name="zoom" content="min=0,max=5"></map-meta>
     </map-head>
     <map-body>
-      <map-extent units="OSMTILE">
+      <map-extent units="OSMTILE" checked="checked" hidden="hidden">
         <map-input name="i" type="location" units="map" axis="i" ></map-input>
         <map-input name="j" type="location" units="map" axis="j" ></map-input>
         <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" ></map-input>

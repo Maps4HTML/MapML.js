@@ -1,8 +1,8 @@
-import { FALLBACK_CS, FALLBACK_PROJECTION } from '../utils/Constants';
-
 export var FeatureLayer = L.FeatureGroup.extend({
   /*
    * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.
+   *
+   * Used by MapMLLayer to create _mapmlvectors property, used to render features
    */
   initialize: function (mapml, options) {
     /*
@@ -11,6 +11,11 @@ export var FeatureLayer = L.FeatureGroup.extend({
         2. for static templated feature: null
         3. for non-templated feature: layer- (with no src) or mapml file (with src)
       */
+    // options.extent: when you use a FeatureLayer, you can either get it to calculate the
+    // .layerBounds dynamically (the default), based on adds/removes of features from the layer/
+    // or you can construct it with a bounds (via options.extent),
+    // which will then remain static for the lifetime of the layer
+
     L.setOptions(this, options);
     if (this.options.static) {
       this._container = L.DomUtil.create(
@@ -26,40 +31,36 @@ export var FeatureLayer = L.FeatureGroup.extend({
       );
       L.setOptions(this.options.renderer, { pane: this._container });
     }
-
     this._layers = {};
     if (this.options.query) {
       this._mapmlFeatures = mapml.features ? mapml.features : mapml;
       this.isVisible = true;
-      let native = this._getNativeVariables(mapml);
+      let native = M.getNativeVariables(mapml);
       this.options.nativeZoom = native.zoom;
       this.options.nativeCS = native.cs;
-    }
-    if (mapml && !this.options.query) {
-      let native = this._getNativeVariables(mapml);
-      //needed to check if the feature is static or not, since this method is used by templated also
-      if (
-        !mapml.querySelector('map-extent') &&
-        mapml.querySelector('map-feature') &&
-        this.options.static
-      ) {
-        this._features = {};
-        this._staticFeature = true;
-        this.isVisible = true; //placeholder for when this actually gets updated in the future
-        this.zoomBounds = this._getZoomBounds(mapml, native.zoom);
-        this.layerBounds = this._getLayerBounds(mapml);
-        L.extend(this.options, this.zoomBounds);
-      }
-      this.addData(mapml, native.cs, native.zoom);
-      if (this._staticFeature) {
-        this._resetFeatures();
-        this.options._leafletLayer._map._addZoomLimit(this);
+    } else {
+      if (mapml) {
+        let native = M.getNativeVariables(mapml);
+        this.addData(mapml, native.cs, native.zoom);
+      } else if (!mapml) {
+        this.isVisible = false;
+        // use this.options._leafletLayer to distinguish the featureLayer constructed for initialization and for templated features / tiles
+        if (this.options._leafletLayer) {
+          // this._staticFeature should be set to true to make sure the _getEvents works properly
+          this._features = {};
+          this._staticFeature = true;
+        }
       }
     }
   },
 
   onAdd: function (map) {
+    this._map = map;
     L.FeatureGroup.prototype.onAdd.call(this, map);
+    if (this._staticFeature) {
+      this._resetFeatures();
+      this.options._leafletLayer._map._addZoomLimit(this);
+    }
     if (this._mapmlFeatures)
       map.on('featurepagination', this.showPaginationFeature, this);
   },
@@ -72,6 +73,11 @@ export var FeatureLayer = L.FeatureGroup.extend({
     }
     L.FeatureGroup.prototype.onRemove.call(this, map);
     this._map.featureIndex.cleanIndex();
+  },
+
+  removeLayer: function (featureGroupLayer) {
+    L.FeatureGroup.prototype.removeLayer.call(this, featureGroupLayer);
+    delete this._layers[featureGroupLayer._leaflet_id];
   },
 
   getEvents: function () {
@@ -88,14 +94,26 @@ export var FeatureLayer = L.FeatureGroup.extend({
   showPaginationFeature: function (e) {
     if (this.options.query && this._mapmlFeatures[e.i]) {
       let feature = this._mapmlFeatures[e.i];
-      // remove the prev / next one <map-feature> from shadow if there is any
-      feature._extentEl.shadowRoot.firstChild?.remove();
+      if (e.type === 'featurepagination') {
+        // remove map-feature only (keep meta's) when paginating
+        feature._extentEl.shadowRoot.querySelector('map-feature')?.remove();
+      } else {
+        // empty the map-extent shadowRoot
+        // remove the prev / next one <map-feature> and <map-meta>'s from shadow if there is any
+        feature._extentEl.shadowRoot.replaceChildren();
+      }
       this.clearLayers();
       feature._featureGroup = this.addData(
         feature,
         this.options.nativeCS,
         this.options.nativeZoom
       );
+      // append all map-meta from mapml document
+      if (e.meta) {
+        for (let i = 0; i < e.meta.length; i++) {
+          feature._extentEl.shadowRoot.appendChild(e.meta[i]);
+        }
+      }
       feature._extentEl.shadowRoot.appendChild(feature);
       e.popup._navigationBar.querySelector('p').innerText =
         e.i + 1 + '/' + this.options._leafletLayer._totalFeatureCount;
@@ -116,29 +134,12 @@ export var FeatureLayer = L.FeatureGroup.extend({
     }
   },
 
-  _getNativeVariables: function (mapml) {
-    let nativeZoom =
-      (mapml.querySelector &&
-        mapml.querySelector('map-meta[name=zoom]') &&
-        +M._metaContentToObject(
-          mapml.querySelector('map-meta[name=zoom]').getAttribute('content')
-        ).value) ||
-      0;
-    let nativeCS =
-      (mapml.querySelector &&
-        mapml.querySelector('map-meta[name=cs]') &&
-        M._metaContentToObject(
-          mapml.querySelector('map-meta[name=cs]').getAttribute('content')
-        ).content) ||
-      'PCRS';
-    return { zoom: nativeZoom, cs: nativeCS };
-  },
-
   _handleMoveEnd: function () {
     let mapZoom = this._map.getZoom(),
-      withinZoom =
-        mapZoom <= this.zoomBounds.maxZoom &&
-        mapZoom >= this.zoomBounds.minZoom;
+      withinZoom = this.zoomBounds
+        ? mapZoom <= this.zoomBounds.maxZoom &&
+          mapZoom >= this.zoomBounds.minZoom
+        : false;
     this.isVisible =
       withinZoom &&
       this._layers &&
@@ -154,87 +155,48 @@ export var FeatureLayer = L.FeatureGroup.extend({
   },
 
   _handleZoomEnd: function (e) {
-    let mapZoom = this._map.getZoom();
-    if (
-      mapZoom > this.zoomBounds.maxZoom ||
-      mapZoom < this.zoomBounds.minZoom
-    ) {
-      this.clearLayers();
-      return;
-    }
-    this._resetFeatures();
-  },
-
-  //sets default if any are missing, better to only replace ones that are missing
-  _getLayerBounds: function (container) {
-    if (!container) return null;
-    let cs = FALLBACK_CS,
-      projection =
-        (container.querySelector('map-meta[name=projection]') &&
-          M._metaContentToObject(
-            container
-              .querySelector('map-meta[name=projection]')
-              .getAttribute('content')
-          ).content.toUpperCase()) ||
-        FALLBACK_PROJECTION;
-    try {
-      let meta =
-        container.querySelector('map-meta[name=extent]') &&
-        M._metaContentToObject(
-          container
-            .querySelector('map-meta[name=extent]')
-            .getAttribute('content')
-        );
-
-      let zoom = meta.zoom || 0;
-
-      let metaKeys = Object.keys(meta);
-      for (let i = 0; i < metaKeys.length; i++) {
-        if (!metaKeys[i].includes('zoom')) {
-          cs = M.axisToCS(metaKeys[i].split('-')[2]);
-          break;
-        }
-      }
-      let axes = M.csToAxes(cs);
-      return M.boundsToPCRSBounds(
-        L.bounds(
-          L.point(+meta[`top-left-${axes[0]}`], +meta[`top-left-${axes[1]}`]),
-          L.point(
-            +meta[`bottom-right-${axes[0]}`],
-            +meta[`bottom-right-${axes[1]}`]
-          )
-        ),
-        zoom,
-        projection,
-        cs
-      );
-    } catch (error) {
-      //if error then by default set the layer to osm and bounds to the entire map view
-      return M.boundsToPCRSBounds(
-        M[projection].options.crs.tilematrix.bounds(0),
-        0,
-        projection,
-        cs
-      );
+    // handle zoom end gets called twice for every zoom, this condition makes it go through once only.
+    if (this.zoomBounds) {
+      this._resetFeatures();
     }
   },
 
+  // remove or add features based on the min max attribute of the features,
+  //  and add placeholders to maintain position
   _resetFeatures: function () {
-    this.clearLayers();
     // since features are removed and re-added by zoom level, need to clean the feature index before re-adding
     if (this._map) this._map.featureIndex.cleanIndex();
     let map = this._map || this.options._leafletLayer._map;
     if (this._features) {
       for (let zoom in this._features) {
         for (let k = 0; k < this._features[zoom].length; k++) {
-          let feature = this._features[zoom][k],
-            checkRender = feature._checkRender(
+          let featureGroupLayer = this._features[zoom][k],
+            checkRender = featureGroupLayer._checkRender(
               map.getZoom(),
               this.zoomBounds.minZoom,
               this.zoomBounds.maxZoom
             );
-          if (checkRender) {
-            this.addLayer(feature);
+          if (!checkRender) {
+            let placeholder = document.createElement('span');
+            placeholder.id = featureGroupLayer._leaflet_id;
+            featureGroupLayer.defaultOptions.group.insertAdjacentElement(
+              'beforebegin',
+              placeholder
+            );
+            // removing the rendering without removing the feature from the feature list
+            this.removeLayer(featureGroupLayer);
+          } else if (
+            // checking for _map so we do not enter this code block during the connectedCallBack of the map-feature
+            !map.hasLayer(featureGroupLayer) &&
+            !featureGroupLayer._map
+          ) {
+            this.addLayer(featureGroupLayer);
+            // update the layerbounds
+            let placeholder =
+              featureGroupLayer.defaultOptions.group.parentNode.querySelector(
+                `span[id="${featureGroupLayer._leaflet_id}"]`
+              );
+            placeholder.replaceWith(featureGroupLayer.defaultOptions.group);
           }
         }
       }
@@ -255,46 +217,10 @@ export var FeatureLayer = L.FeatureGroup.extend({
     }
   },
 
-  _getZoomBounds: function (container, nativeZoom) {
-    if (!container) return null;
-    let nMin = 100,
-      nMax = 0,
-      features = container.querySelectorAll('map-feature'),
-      meta,
-      projection;
-    for (let i = 0; i < features.length; i++) {
-      let lZoom = +features[i].getAttribute('zoom');
-      if (!features[i].getAttribute('zoom')) lZoom = nativeZoom;
-      nMax = Math.max(nMax, lZoom);
-      nMin = Math.min(nMin, lZoom);
-    }
-    try {
-      projection = M._metaContentToObject(
-        container
-          .querySelector('map-meta[name=projection]')
-          .getAttribute('content')
-      ).content;
-      meta = M._metaContentToObject(
-        container.querySelector('map-meta[name=zoom]').getAttribute('content')
-      );
-    } catch (error) {
-      return {
-        minZoom: 0,
-        maxZoom:
-          M[projection || FALLBACK_PROJECTION].options.resolutions.length - 1,
-        minNativeZoom: nMin,
-        maxNativeZoom: nMax
-      };
-    }
-    return {
-      minZoom: +meta.min,
-      maxZoom: +meta.max,
-      minNativeZoom: nMin,
-      maxNativeZoom: nMax
-    };
-  },
-
   addData: function (mapml, nativeCS, nativeZoom) {
+    if (mapml) {
+      this.isVisible = true;
+    }
     var features =
         mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === 'LAYER-'
           ? mapml.getElementsByTagName('map-feature')
@@ -439,7 +365,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         'map-polygon, map-linestring, map-multilinestring, map-point, map-multipoint'
       )) {
         group.push(
-          M.feature(
+          M.path(
             geo,
             Object.assign(copyOptions, {
               nativeCS: cs,
@@ -470,7 +396,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         groupOptions.wrappers = this._getGeometryParents(
           collections.parentElement
         );
-      return M.featureGroup(group, groupOptions);
+      return M.geometry(group, groupOptions);
     }
   },
 

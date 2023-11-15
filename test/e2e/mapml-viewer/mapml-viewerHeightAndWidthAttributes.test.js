@@ -31,8 +31,8 @@ test.describe('Adding Width and Height Attribute to mapml-viewer', () => {
       'body > mapml-viewer',
       (viewer) => viewer.width
     );
-    expect(height_without_px).toEqual('700');
-    expect(width_without_px).toEqual('700');
+    expect(height_without_px).toEqual(700);
+    expect(width_without_px).toEqual(700);
   });
 
   test('Testing Validity of Width and Height Attributes', async () => {

@@ -51,7 +51,15 @@
         left: 45px; 
     }
 }
- 
+
+/* for extents that don't overlap the viewport, the  extent and it's layer
+control fieldset become disabled.  The descendant fieldsets also become 
+disabled (but they / their descendant content are not explicitly italicized by 
+the browser)' */
+.leaflet-control-layers-overlays fieldset:disabled span.mapml-layer-item-name {
+    font-style: italic;
+}
+
  /* Generic class for seamless buttons */
  .mapml-button {
   background-color: transparent;
@@ -855,7 +863,7 @@ label.mapml-layer-item-toggle {
   padding-inline-start: 0;
 }
 
-.mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-opacity {
+.mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-details {
   padding-inline-start: 1.6rem;
 }
 
@@ -909,7 +917,16 @@ label.mapml-layer-item-toggle {
   width: 450px;
   font-size: 16px;
 }
-
+@container leafletmap (max-width: 650px ) {
+    .mapml-feature-index {
+        width: 70cqw; 
+    }
+}
+@container leafletmap (max-width: 390px ) {
+    .mapml-feature-index {
+        bottom: 100px; 
+    }
+}
 .mapml-feature-index-content > span{
   width: 140px;
   white-space: nowrap;

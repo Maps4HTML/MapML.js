@@ -7,7 +7,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     this.isVisible = true;
     this._template = template;
     this._extentEl = options.extentEl;
-    this._container = L.DomUtil.create('div', 'leaflet-layer', options.pane);
+    this._container = L.DomUtil.create('div', 'leaflet-layer');
     L.extend(options, this.zoomBounds);
     L.DomUtil.addClass(this._container, 'mapml-features-container');
     delete options.opacity;
@@ -23,6 +23,8 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     return events;
   },
   onAdd: function () {
+    // this causes the layer (this._features) to actually render...
+    this.options.pane.appendChild(this._container);
     this._map._addZoomLimit(this);
     var opacity = this.options.opacity || 1,
       container = this._container,
@@ -35,6 +37,9 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
         // pass the vector layer the container for the parent into which
         // it will append its own container for rendering into
         pane: container,
+        // the bounds will be static, fixed, constant for the lifetime of the layer
+        layerBounds: this.extentBounds,
+        zoomBounds: this.zoomBounds,
         opacity: opacity,
         projection: map.options.projection,
         static: true,
@@ -46,9 +51,15 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
           geometry.bindPopup(c, { autoClose: false, minWidth: 108 });
         }
       });
+    } else {
+      // if this._features exists add the layer back
+      this._map.addLayer(this._features);
     }
 
     map.fire('moveend'); // TODO: replace with moveend handler for layer and not entire map
+  },
+  onRemove: function () {
+    this._map.removeLayer(this._features);
   },
   redraw: function () {
     this._onMoveEnd();
@@ -89,9 +100,6 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
       this._map.getCenter(),
       steppedZoom
     );
-    let url = this._getfeaturesUrl(steppedZoom, scaleBounds);
-    //No request needed if the current template url is the same as the url to request
-    if (url === this._url) return;
 
     let mapBounds = M.pixelToPCRSBounds(
       this._map.getPixelBounds(),
@@ -103,6 +111,12 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
       mapZoom >= this.zoomBounds.minZoom &&
       this.extentBounds.overlaps(mapBounds);
 
+    // should set this.isVisible properly BEFORE return, otherwise will cause layer-.validateDisabled not work properly
+    let url = this._getfeaturesUrl(steppedZoom, scaleBounds);
+    // No request needed if the current template url is the same as the url to request
+    if (url === this._url) return;
+
+    // do cleaning up for new request
     this._features.clearLayers();
     // shadow may has not yet attached to <map-extent> for the first-time rendering
     if (this._extentEl.shadowRoot) {
@@ -159,7 +173,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
                     .querySelector('map-meta[name=cs]')
                     .getAttribute('content')
                 ).content) ||
-              'PCRS');
+              'GCRS');
             features.addData(mapml, nativeCS, nativeZoom);
             // "migrate" to extent's shadow
             // make a clone, prevent the elements from being removed from mapml file
@@ -216,9 +230,6 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     ) {
       this._container.style.zIndex = this.options.zIndex;
     }
-  },
-  onRemove: function () {
-    this._map.removeLayer(this._features);
   },
   _getfeaturesUrl: function (zoom, bounds) {
     if (zoom === undefined) zoom = this._map.getZoom();

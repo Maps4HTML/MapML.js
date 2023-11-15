@@ -69,17 +69,27 @@ import { ScaleBar, scaleBar } from './control/ScaleBar';
 import { FullscreenButton, fullscreenButton } from './control/FullscreenButton';
 import { geolocationButton } from './control/GeolocationButton';
 import { Crosshair, crosshair } from './layers/Crosshair';
-import { Feature, feature } from './features/feature';
+import { Path, path } from './features/path';
 import { FeatureRenderer, featureRenderer } from './features/featureRenderer';
-import { FeatureGroup, featureGroup } from './features/featureGroup';
+import { Geometry, geometry } from './features/geometry';
 import { AnnounceMovement } from './handlers/AnnounceMovement';
 import { FeatureIndex } from './handlers/FeatureIndex';
 import { Options } from './options';
-import './keyboard';
+import './handlers/keyboard';
 import {
   featureIndexOverlay,
   FeatureIndexOverlay
 } from './layers/FeatureIndexOverlay';
+// element support
+import { createLayerControlExtentHTML } from './elementSupport/extents/createLayerControlForExtent';
+import { createLayerControlHTML } from './elementSupport/layers/createLayerControlForLayer';
+import { ZoomInput } from './elementSupport/inputs/zoomInput';
+import { HiddenInput } from './elementSupport/inputs/hiddenInput';
+import { WidthInput } from './elementSupport/inputs/widthInput';
+import { HeightInput } from './elementSupport/inputs/heightInput';
+import { LocationInput } from './elementSupport/inputs/locationInput';
+
+import { DOMTokenList } from './utils/DOMTokenList';
 
 /* global L, Node */
 (function (window, document, undefined) {
@@ -805,6 +815,7 @@ import {
   M.axisToXY = Util.axisToXY;
   M.csToAxes = Util.csToAxes;
   M._convertAndFormatPCRS = Util._convertAndFormatPCRS;
+  M.extentToBounds = Util.extentToBounds;
   M.axisToCS = Util.axisToCS;
   M._parseNumber = Util._parseNumber;
   M._extractInputBounds = Util._extractInputBounds;
@@ -827,6 +838,9 @@ import {
   M._pcrsToGcrs = Util._pcrsToGcrs;
   M.mapml2geojson = Util.mapml2geojson;
   M.getMaxZoom = Util.getMaxZoom;
+  M.getBounds = Util.getBounds;
+  M.getZoomBounds = Util.getZoomBounds;
+  M.getNativeVariables = Util.getNativeVariables;
 
   M.QueryHandler = QueryHandler;
   M.ContextMenu = ContextMenu;
@@ -889,12 +903,29 @@ import {
   M.FeatureIndexOverlay = FeatureIndexOverlay;
   M.featureIndexOverlay = featureIndexOverlay;
 
-  M.Feature = Feature;
-  M.feature = feature;
+  M.Path = Path;
+  M.path = path;
 
   M.FeatureRenderer = FeatureRenderer;
   M.featureRenderer = featureRenderer;
 
-  M.FeatureGroup = FeatureGroup;
-  M.featureGroup = featureGroup;
+  M.Geometry = Geometry;
+  M.geometry = geometry;
+
+  // element support
+  M._createLayerControlExtentHTML = createLayerControlExtentHTML;
+  M._createLayerControlHTML = createLayerControlHTML;
+  M.ZoomInput = ZoomInput;
+  M.HiddenInput = HiddenInput;
+  M.WidthInput = WidthInput;
+  M.HeightInput = HeightInput;
+  M.LocationInput = LocationInput;
+
+  // constants
+  M.TILE_SIZE = 256;
+  M.FALLBACK_PROJECTION = 'OSMTILE';
+  M.FALLBACK_CS = 'TILEMATRIX';
+  M.BLANK_TT_TREF = 'mapmltemplatedtileplaceholder';
+
+  M.DOMTokenList = DOMTokenList;
 })(window, document);

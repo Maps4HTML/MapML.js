@@ -24,13 +24,13 @@
 <body>
   <mapml-viewer style="width: 500px;height: 500px;" projection="CBMTILE" zoom="2" lat="40.59994213516742" lon="-102.62078167264747" controls>
     <layer- label="Multiple Heterogeneous Query Extents" checked>
-      <map-extent label="cbmt" units="CBMTILE">
+      <map-extent label="cbmt" units="CBMTILE" checked>
         <map-input name="z" type="zoom" value="17" min="0" max="17"></map-input>
         <map-input name="y" type="location" units="tilematrix" axis="row" min="29750" max="34475"></map-input>
         <map-input name="x" type="location" units="tilematrix" axis="column" min="26484" max="32463"></map-input>
         <map-link rel="tile" tref="tiles/cbmt/{z}/c{x}_r{y}.png" ></map-link>
       </map-extent>
-      <map-extent label="HTML query response" units="CBMTILE">
+      <map-extent label="HTML query response" units="CBMTILE" checked>
         <map-input name="i" type="location" units="map" axis="i" ></map-input>
         <map-input name="j" type="location" units="map" axis="j" ></map-input>
         <map-input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-120" max="-75" ></map-input>
@@ -41,7 +41,7 @@
         <map-input name="h" type="height" ></map-input>
         <map-link rel="query" tref="data/query/html_query_response?{i}{j}{xmin}{ymin}{xmax}{ymax}{w}{h}" ></map-link>
       </map-extent>
-      <map-extent label="MapML query response" units="CBMTILE">
+      <map-extent label="MapML query response" units="CBMTILE" checked>
         <map-input name="i" type="location" units="map" axis="i" ></map-input>
         <map-input name="j" type="location" units="map" axis="j" ></map-input>
         <map-input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-120" max="-75" ></map-input>

@@ -101,23 +101,20 @@ test.describe('Playwright Checked Attribute Tests', () => {
   test.describe('Opacity setters & getters test', () => {
     test('Setting opacity', async () => {
       await page.reload();
-      await page.$eval(
-        'body > mapml-viewer > layer-',
-        (layer) => (layer.opacity = 0.4)
-      );
-      let value = await page.$eval(
-        'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div:nth-child(2) > details > input[type=range]',
-        (input) => input.value
+      const layer = page.getByTestId('testlayer');
+      await layer.evaluate((layer) => layer.whenReady());
+      await layer.evaluate((layer) => (layer.opacity = 0.4));
+      let value = await layer.evaluate(
+        (layer) =>
+          layer._layerControlHTML.querySelector('input[type=range]').value
       );
       expect(value).toEqual('0.4');
     });
 
     test('Getting appropriate opacity', async () => {
-      let value = await page.$eval(
-        'body > mapml-viewer > layer-',
-        (layer) => layer.opacity
-      );
-      expect(value).toEqual('0.4');
+      const layer = page.getByTestId('testlayer');
+      let value = await layer.evaluate((layer) => layer.opacity);
+      expect(value).toEqual(0.4);
     });
   });
 });

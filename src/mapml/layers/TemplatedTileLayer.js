@@ -1,5 +1,3 @@
-import { BLANK_TT_TREF } from '../utils/Constants';
-
 export var TemplatedTileLayer = L.TileLayer.extend({
   // a TemplateTileLayer is similar to a L.TileLayer except its templates are
   // defined by the <map-extent><template/></map-extent>
@@ -27,13 +25,22 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     L.TileLayer.prototype.initialize.call(
       this,
       template.template,
-      L.extend(options, { pane: this._container })
+      L.extend(options, { pane: this.options.pane })
     );
   },
   onAdd: function () {
+    this.options.pane.appendChild(this._container);
     this._map._addZoomLimit(this);
     L.TileLayer.prototype.onAdd.call(this, this._map);
     this._handleMoveEnd();
+  },
+
+  onRemove: function () {
+    L.DomUtil.remove(this._container);
+    // should clean up the container
+    for (let child of this._container.children) {
+      L.DomUtil.remove(child);
+    }
   },
 
   getEvents: function () {
@@ -56,6 +63,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     L.DomUtil.addClass(this._container, 'mapml-templated-tile-container');
     this._updateZIndex();
   },
+
   _handleMoveEnd: function (e) {
     let mapZoom = this._map.getZoom();
     let mapBounds = M.pixelToPCRSBounds(
@@ -98,7 +106,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       tile.width = tileSize.x;
       tile.height = tileSize.y;
       tileGroup.appendChild(tile);
-    } else if (!this._url.includes(BLANK_TT_TREF)) {
+    } else if (!this._url.includes(M.BLANK_TT_TREF)) {
       // tiles of type="text/mapml" will have to fetch content while creating
       // the tile here, unless there can be a callback associated to the element
       // that will render the content in the alread-placed tile
@@ -166,6 +174,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     let tileFeatures = M.featureLayer(markup, {
       projection: this._map.options.projection,
       static: false,
+      layerBounds: this.extentBounds,
+      zoomBounds: this.zoomBounds,
       interactive: false
     });
 

@@ -70,7 +70,9 @@ test.describe('Playwright Map Context Menu Keyboard Tests', () => {
       errorLogs.push(err.message);
     });
     await page.goto('mapContextMenu.html');
-    await page.locator('mapml-viewer').press('Tab');
+    const viewer = await page.locator('mapml-viewer');
+    await viewer.evaluate((viewer) => viewer.whenLayersReady());
+    await viewer.press('Tab');
     await page
       .locator('[aria-label="The Man With Two Hats"]')
       .press('Shift+F10');

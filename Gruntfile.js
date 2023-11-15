@@ -25,10 +25,11 @@ module.exports = function(grunt) {
           'dist/mapml.js':        ['<%= rollup.main.dest %>'],
           'dist/web-map.js':      ['src/web-map.js'],
           'dist/mapml-viewer.js': ['src/mapml-viewer.js'],
-          'dist/DOMTokenList.js': ['src/mapml/utils/DOMTokenList.js'],
           'dist/map-caption.js':  ['src/map-caption.js'],
           'dist/map-feature.js':  ['src/map-feature.js'],
           'dist/map-extent.js':   ['src/map-extent.js'],
+          'dist/map-input.js':    ['src/map-input.js'],
+          'dist/map-link.js':    ['src/map-link.js'],
           'dist/map-area.js':     ['src/map-area.js'],
           'dist/layer.js':        ['src/layer.js'],
           'dist/leaflet.js':      ['dist/leaflet-src.js',
@@ -159,7 +160,7 @@ module.exports = function(grunt) {
           {
             expand: true,
             src: ['dist/*'],
-            dest: '../web-map-doc'
+            dest: '../web-map-doc/static'
           }
         ]
       }

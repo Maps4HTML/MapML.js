@@ -45,10 +45,9 @@ export var AnnounceMovement = L.Handler.extend({
         : mapEl.shadowRoot.querySelector('.leaflet-container');
 
       let mapZoom = mapEl._map.getZoom();
-      let location = M._gcrsToTileMatrix(mapEl);
       let standard = M.options.locale.amZoom + ' ' + mapZoom;
 
-      if (mapZoom === mapEl._map._layersMaxZoom) {
+      if (mapZoom === mapEl._map.getMaxZoom()) {
         standard = M.options.locale.amMaxZoom + ' ' + standard;
       } else if (mapZoom === mapEl._map._layersMinZoom) {
         standard = M.options.locale.amMinZoom + ' ' + standard;
@@ -75,8 +74,8 @@ export var AnnounceMovement = L.Handler.extend({
     let visible = true;
     if (this._map.totalLayerBounds) {
       visible =
-        mapZoom <= this._map._layersMaxZoom &&
-        mapZoom >= this._map._layersMinZoom &&
+        mapZoom <= this._map.getMaxZoom() &&
+        mapZoom >= this._map.getMinZoom() &&
         this._map.totalLayerBounds.overlaps(mapBounds);
     }
 
@@ -86,8 +85,6 @@ export var AnnounceMovement = L.Handler.extend({
         )
       : this.shadowRoot.querySelector('.mapml-screen-reader-output');
 
-    //GCRS to TileMatrix
-    let location = M._gcrsToTileMatrix(this);
     let standard = M.options.locale.amZoom + ' ' + mapZoom;
 
     if (!visible) {
@@ -113,7 +110,7 @@ export var AnnounceMovement = L.Handler.extend({
       let prevZoom = this._history[this._historyIndex - 1]
         ? this._history[this._historyIndex - 1].zoom
         : this._history[this._historyIndex].zoom;
-      if (mapZoom === this._map._layersMaxZoom && mapZoom !== prevZoom) {
+      if (mapZoom === this._map.getMaxZoom() && mapZoom !== prevZoom) {
         output.innerText = M.options.locale.amMaxZoom + ' ' + standard;
       } else if (mapZoom === this._map._layersMinZoom && mapZoom !== prevZoom) {
         output.innerText = M.options.locale.amMinZoom + ' ' + standard;
@@ -124,22 +121,27 @@ export var AnnounceMovement = L.Handler.extend({
     this._map.dragging._draggable.wasDragged = false;
   },
 
-  totalBounds: function () {
-    let layers = Object.keys(this._layers);
-    let bounds = L.bounds();
-
-    layers.forEach((i) => {
-      if (this._layers[i].layerBounds) {
-        if (!bounds) {
-          let point = this._layers[i].layerBounds.getCenter();
-          bounds = L.bounds(point, point);
+  totalBounds: function (e) {
+    // don't bother with non-MapMLLayer layers...
+    if (!e.layer._layerEl) return;
+    let map = this.options.mapEl;
+    map.whenLayersReady().then(() => {
+      let layers = map.querySelectorAll('layer-');
+      let bounds;
+      for (let i = 0; i < layers.length; i++) {
+        // the _layer may no longer exist if this is invoked by layerremove
+        if (layers[i]._layer) {
+          let extent = layers[i].extent;
+          if (bounds && extent) {
+            bounds.extend(M.extentToBounds(extent, 'pcrs'));
+          } else if (extent) {
+            bounds = M.extentToBounds(extent, 'pcrs');
+          }
         }
-        bounds.extend(this._layers[i].layerBounds.min);
-        bounds.extend(this._layers[i].layerBounds.max);
       }
-    });
 
-    this.totalLayerBounds = bounds;
+      this.totalLayerBounds = bounds;
+    });
   },
 
   dragged: function () {

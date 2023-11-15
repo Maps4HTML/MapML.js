@@ -10,7 +10,7 @@
 
 <body>
   <mapml-viewer zoom="2" lat="45" lon="-90" controls>
-    <layer- label="CBMT" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/" checked></layer->
+    <layer- label="CBMT" src="tiles/cbmt/cbmt.mapml" checked></layer->
     <layer- label="Static MapML with tiles" checked>
       <map-meta name="zoom" content="min=1,max=4"></map-meta>
       <map-meta name="projection" content="basic"></map-meta>
@@ -116,7 +116,7 @@
     </layer->
     <layer- label="Alabama" checked>
       <map-meta name="zoom" content="min=1,max=5"></map-meta>
-      <map-extent units="other">
+      <map-extent units="other" checked hidden>
         <map-input name="z" type="zoom" min="2" max="18" value="0"></map-input>
         <map-input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74"></map-input>
         <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46"></map-input>

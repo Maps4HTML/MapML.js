@@ -1,29 +1,29 @@
-export var FeatureGroup = L.FeatureGroup.extend({
+export var Geometry = L.FeatureGroup.extend({
   /**
    * Initialize the feature group
-   * @param {M.Feature[]} layers
+   * @param {M.Path[]} layers
    * @param {Object} options
    */
   initialize: function (layers, options) {
     if (options.wrappers && options.wrappers.length > 0)
       options = Object.assign(
-        M.Feature.prototype._convertWrappers(options.wrappers),
+        M.Path.prototype._convertWrappers(options.wrappers),
         options
       );
 
     L.LayerGroup.prototype.initialize.call(this, layers, options);
     this._featureEl = this.options.mapmlFeature;
 
+    let firstLayer = layers[Object.keys(layers)[0]];
+    if (layers.length === 1 && firstLayer.options.link)
+      this.options.link = firstLayer.options.link;
     if (
       (this.options.onEachFeature && this.options.properties) ||
       this.options.link
     ) {
       L.DomUtil.addClass(this.options.group, 'leaflet-interactive');
-      let firstLayer = layers[Object.keys(layers)[0]];
-      if (layers.length === 1 && firstLayer.options.link)
-        this.options.link = firstLayer.options.link;
       if (this.options.link) {
-        M.Feature.prototype.attachLinkHandler.call(
+        M.Path.prototype.attachLinkHandler.call(
           this,
           this.options.group,
           this.options.link,
@@ -190,7 +190,7 @@ export var FeatureGroup = L.FeatureGroup.extend({
   },
 
   /**
-   * Add a M.Feature to the M.FeatureGroup
+   * Add a M.Path to the M.Geometry
    * @param layer
    */
   addLayer: function (layer) {
@@ -253,11 +253,11 @@ export var FeatureGroup = L.FeatureGroup.extend({
 });
 
 /**
- * Returns new M.FeatureGroup
- * @param {M.Feature[]} layers - Layers belonging to feature group
+ * Returns new M.Geometry
+ * @param {M.Path[]} layers - Layers belonging to feature group
  * @param {Object} options - Options for the feature group
- * @returns {M.FeatureGroup}
+ * @returns {M.Geometry}
  */
-export var featureGroup = function (layers, options) {
-  return new FeatureGroup(layers, options);
+export var geometry = function (layers, options) {
+  return new Geometry(layers, options);
 };

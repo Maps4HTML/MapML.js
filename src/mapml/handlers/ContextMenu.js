@@ -798,7 +798,6 @@ export var ContextMenu = L.Handler.extend({
               .closest('fieldset')
               .parentNode.parentNode.parentNode.querySelector('span')
           : elem.querySelector('span');
-      if (!elem.layer.validProjection) return;
       this._layerClicked = elem;
       this._layerMenu.removeAttribute('hidden');
       this._showAtPoint(e.containerPoint, e, this._layerMenu);

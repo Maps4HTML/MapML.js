@@ -6,6 +6,7 @@ const port = 30001;
 //then loads in the index file
 app.use(express.static(path.join(__dirname, '../dist')));
 app.use(express.static(path.join(__dirname, 'e2e/core')));
+app.use(express.static(path.join(__dirname, 'e2e/elements/map-extent')));
 app.use(express.static(path.join(__dirname, 'e2e/api')));
 app.use(express.static(path.join(__dirname, 'e2e/data')));
 app.use(express.static(path.join(__dirname, 'e2e/geojson')));
@@ -59,9 +60,22 @@ app.get('/data/query/DouglasFir', (req, res, next) => {
     }
   );
 });
+app.get('/data/noMapMeta', (req, res, next) => {
+  res.sendFile(
+    __dirname + '/e2e/data/noMapMeta.mapml',
+    { headers: { 'Content-Type': 'text/mapml' } },
+    (err) => {
+      if (err) {
+        res.status(403).send('Error.');
+      }
+    }
+  );
+});
 
 app.use('/data', express.static(path.join(__dirname, 'e2e/data/tiles/cbmt')));
 app.use('/data', express.static(path.join(__dirname, 'e2e/data/tiles/wgs84')));
+app.use('/images', express.static(path.join(__dirname, 'e2e/data/images')));
+app.use('/features', express.static(path.join(__dirname, 'e2e/features')));
 app.use(
   '/data',
   express.static(path.join(__dirname, 'e2e/data/tiles/osmtile'))

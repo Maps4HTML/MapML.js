@@ -28,6 +28,7 @@ test.describe('Playwright Map Element Tests', () => {
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('mapElement.html');
+    await page.waitForTimeout(250);
   });
 
   test.afterAll(async function () {

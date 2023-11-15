@@ -45,6 +45,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     ).jsonValue();
 
     expect(menuDisplay).toEqual('block');
+    await page.keyboard.press('Escape');
   });
 
   test('Layer context menu copy layer', async () => {
@@ -65,7 +66,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     );
 
     expect(copyLayer).toEqual(
-      '<layer- label="CBMT - INLINE" checked="">\n      <map-link rel="license" title="Testing Inc."></map-link>\n      <map-extent units="CBMTILE" hidden="">\n        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>\n        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>\n        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>\n        <map-link rel="tile" tref="http://localhost:30001/data/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>\n      </map-extent>\n    </layer->'
+      '<layer- label="CBMT - INLINE" checked="">\n      <map-link rel="license" title="Testing Inc."></map-link>\n      <map-extent units="CBMTILE" checked="" hidden="">\n        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>\n        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>\n        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>\n        <map-link rel="tile" tref="http://localhost:30001/data/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>\n      </map-extent>\n    </layer->'
     );
   });
 
@@ -157,6 +158,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
   });
 
   test('Copy layer with relative src attribute', async () => {
+    await page.reload();
     await page.hover(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
     );
@@ -167,8 +169,10 @@ test.describe('Playwright Layer Context Menu Tests', () => {
 
     await page.keyboard.press('l');
     await page.click('body > textarea#messageLayer');
-    await page.keyboard.press('Control+a');
-    await page.keyboard.press('Backspace');
+    // reload is better than deleting text, because of cross-platform issue
+    // with copy-pasting text on Windows/Linux
+    //    await page.keyboard.press('Control+a');
+    //    await page.keyboard.press('Backspace');
     await page.keyboard.press('Control+v');
     const copyLayer = await page.$eval(
       'body > textarea#messageLayer',

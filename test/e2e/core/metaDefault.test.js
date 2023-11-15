@@ -46,7 +46,7 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
   let page;
   let context;
   test.beforeAll(async () => {
-    context = await chromium.launchPersistentContext('');
+    context = await chromium.launchPersistentContext('', { slowMo: 250 });
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
@@ -89,5 +89,28 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
     expect(extent.bottomRight.gcrs).toEqual(
       expectedGCRSSecondLayer.bottomRight
     );
+  });
+  test("Layer with no map-meta's is rendered on map", async () => {
+    await page.waitForTimeout(200);
+    const layer = await page.evaluateHandle(() =>
+      document.querySelector('layer-[id=defaultMeta]')
+    );
+    const layerSVG = await page.evaluate(
+      (layer) =>
+        layer._layer._container.querySelector('path').hasAttribute('d'),
+      layer
+    );
+    expect(layerSVG).toBe(true);
+  });
+  test("Fetched layer with no map-meta's is rendered on map", async () => {
+    const layer = await page.evaluateHandle(() =>
+      document.querySelector('layer-[id=defaultMetaFetched]')
+    );
+    const layerSVG = await page.evaluate(
+      (layer) =>
+        layer._layer._container.querySelector('path').hasAttribute('d'),
+      layer
+    );
+    expect(layerSVG).toBe(true);
   });
 });

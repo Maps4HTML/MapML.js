@@ -1,5 +1,5 @@
 /**
- * M.Feature is a extension of L.Path that understands mapml feature markup
+ * M.Path is a extension of L.Path that understands mapml feature markup
  * It converts the markup to the following structure (abstract enough to encompass all feature types) for example:
  *  this._outlinePath = HTMLElement;
  *  this._parts = [
@@ -18,9 +18,9 @@
  *    ...
  *  ];
  */
-export var Feature = L.Path.extend({
+export var Path = L.Path.extend({
   /**
-   * Initializes the M.Feature
+   * Initializes the M.Path
    * @param {HTMLElement} markup - The markup representation of the feature
    * @param {Object} options - The options of the feature
    */
@@ -75,11 +75,16 @@ export var Feature = L.Path.extend({
         nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
       while (nextLayer && onTop) {
         if (nextLayer.tagName && nextLayer.tagName.toUpperCase() === 'LAYER-')
-          onTop = !(nextLayer.checked && nextLayer._layer.queryable);
+          onTop = !(
+            nextLayer.checked &&
+            nextLayer._layer &&
+            nextLayer._layer.queryable
+          );
         nextLayer = nextLayer.nextElementSibling;
       }
       if (onTop && dragStart) {
-        //M._handleLink gets called twice, once in the target phase on the path element, then in the bubble phase on the g element
+        //M._handleLink gets called twice, once in the target phase on the path
+        //element, then in the bubble phase on the g element
         //Using stopPropagation leaves the mouse in the mousedown state
         if (e.eventPhase === Event.BUBBLING_PHASE) return;
         let dist = Math.sqrt(
@@ -142,17 +147,29 @@ export var Feature = L.Path.extend({
       },
       this
     );
-    L.DomEvent.on(
-      leafletLayer._map.getContainer(),
-      'mouseout mouseenter click',
-      (e) => {
-        //adds a lot of event handlers
-        if (!container.parentElement) return;
-        hovered = false;
-        this._map.getContainer().removeChild(container);
-      },
-      this
-    );
+    leafletLayer.on('add', addMouseHandler, leafletLayer);
+    function handleMouse(e) {
+      //adds a lot of event handlers
+      if (!container.parentElement) return;
+      hovered = false;
+      this._map.getContainer().removeChild(container);
+    }
+    function addMouseHandler() {
+      L.DomEvent.on(
+        this._map.getContainer(),
+        'mouseout mouseenter click',
+        handleMouse,
+        this
+      );
+    }
+    leafletLayer.on('remove', removeMouseHandler, leafletLayer);
+    function removeMouseHandler() {
+      L.DomEvent.off(this._map.getContainer(), {
+        mouseout: handleMouse,
+        mouseenter: handleMouse,
+        click: handleMouse
+      });
+    }
   },
 
   /**
@@ -457,8 +474,8 @@ export var Feature = L.Path.extend({
  *
  * @param {HTMLElement} markup - The markup of the feature
  * @param {Object} options - Options of the feature
- * @returns {M.Feature}
+ * @returns {M.Path}
  */
-export var feature = function (markup, options) {
-  return new Feature(markup, options);
+export var path = function (markup, options) {
+  return new Path(markup, options);
 };

@@ -24,7 +24,7 @@
     controls>
     <layer- label="Alabama" checked>
       <map-meta name="zoom" content="min=3,max=5"></map-meta>
-      <map-extent units="CBMTILE">
+      <map-extent units="CBMTILE" checked hidden>
         <map-input name="z" type="zoom" min="2" max="18" value="0" ></map-input>
         <map-input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" ></map-input>
         <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46" ></map-input>
@@ -42,11 +42,11 @@
       <map-tile zoom="0" row="3" col="3" src="data/cbmt/0/c3_r3.png"></map-tile>
     </layer->
   </map>
-  <map id="map2" style="width: 500px;height: 500px;" is="web-map" projection="CBMTILE" zoom="17" lat="45.4069740362364" lon="-75.70155300710053" controls>
-    <layer- label="Restaurants" checked>
+  <map id="map2" data-testid="map2" style="width: 500px;height: 500px;" is="web-map" projection="CBMTILE" zoom="17" lat="45.4069740362364" lon="-75.70155300710053" controls>
+    <layer- data-testid="restaurants" label="Restaurants" checked>
       <map-meta name="cs" content="gcrs" ></map-meta>
       <map-meta name="extent" content="top-left-easting=1509080.1964270622,top-left-northing=-169400.558801122,bottom-right-easting=1512094.3357886747,bottom-right-northing=-172702.5654051304" ></map-meta>
-      <map-extent units="CBMTILE">
+      <map-extent units="CBMTILE" checked hidden>
          <map-select id="restaurants" name="cuisine">
             <map-option selected label="All cuisines" value="restaurants">restaurants</map-option>
             <map-option label="Italian">italian</map-option>

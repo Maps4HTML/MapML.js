@@ -9,6 +9,8 @@ test.describe('Adding Opacity Attribute to the Layer- Element', () => {
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('layerOpacityAttribute.html');
+    const l = await page.locator('layer-');
+    await l.evaluate((l) => l.whenReady());
   });
   test.afterAll(async function () {
     await context.close();
@@ -19,29 +21,21 @@ test.describe('Adding Opacity Attribute to the Layer- Element', () => {
       'body > mapml-viewer > layer-',
       (layer) => layer.getAttribute('opacity')
     );
-    if (!opacity_attribute_value) {
-      return;
-    } else {
-      let layer_opacity = await page.$eval(
-        'body > mapml-viewer > layer-',
-        (layer) => layer.opacity
-      );
-      expect(layer_opacity).toEqual(opacity_attribute_value);
-    }
+    let layer_opacity = await page.$eval(
+      'body > mapml-viewer > layer-',
+      (layer) => layer.opacity
+    );
+    expect(layer_opacity).toEqual(+opacity_attribute_value);
   });
   test('Opacity Slider Value Test', async () => {
     let opacity_slider_value = await page.$eval(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > div:nth-child(2) > details > input[type=range]',
       (input) => input.value
     );
-    if (!opacity_slider_value) {
-      return;
-    } else {
-      let layer_opacity = await page.$eval(
-        'body > mapml-viewer > layer-',
-        (layer) => layer.opacity
-      );
-      expect(layer_opacity).toEqual(opacity_slider_value);
-    }
+    let layer_opacity = await page.$eval(
+      'body > mapml-viewer > layer-',
+      (layer) => layer.opacity
+    );
+    expect(layer_opacity).toEqual(+opacity_slider_value);
   });
 });

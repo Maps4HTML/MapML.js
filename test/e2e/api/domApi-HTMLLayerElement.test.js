@@ -16,10 +16,17 @@ test.describe('HTMLLayerElement DOM API Tests', () => {
     await context.close();
   });
   test('Setting HTMLLayerElement.label sets the layer name per spec', async () => {
+    const viewer = await page.locator('mapml-viewer');
+    await viewer.evaluate((viewer) => {
+      return viewer.whenLayersReady();
+    });
+    await page.waitForTimeout(200);
     let remoteWithTitleLabel = await page.evaluate(() => {
       return document.querySelector('#remote-with-title').label;
     });
-    expect(remoteWithTitleLabel).toEqual('Unforsettable in every way');
+    expect(remoteWithTitleLabel).toEqual(
+      'MapML author-controlled name - unsettable'
+    );
     let remoteWithTitleName = await page.evaluate(() => {
       let layer = document.querySelector('#remote-with-title');
       return layer._layer.getName();
@@ -41,15 +48,17 @@ test.describe('HTMLLayerElement DOM API Tests', () => {
     let localWithTitleLabel = await page.evaluate(() => {
       return document.querySelector('#local-with-title').label;
     });
-    expect(localWithTitleLabel).toEqual('No dice, buddy!');
+    expect(localWithTitleLabel).toEqual(
+      'Layer name set via local map-title element - unsettable via HTMLLayerelement.label'
+    );
     let localWithTitleName = await page.evaluate(() => {
       let layer = document.querySelector('#local-with-title');
       return layer._layer.getName();
     });
-    expect(localWithTitleName).not.toEqual(localWithTitleLabel);
+    expect(localWithTitleName).toEqual(localWithTitleLabel);
 
-    // THIS SHOULD NOT BE NECESSARY, BUT IT IS see comment below
-    await page.waitForTimeout(500);
+    //    // THIS SHOULD NOT BE NECESSARY, BUT IT IS see comment below
+    //    await page.waitForTimeout(500);
     let localNoTitleLabel = await page.evaluate(() => {
       return document.querySelector('#local-no-title').label;
     });

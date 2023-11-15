@@ -88,11 +88,7 @@ test.describe('web-map DOM API Tests', () => {
       layerHandle
     );
     await page.evaluateHandle(
-      (layer) =>
-        layer.setAttribute(
-          'src',
-          'http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/'
-        ),
+      (layer) => layer.setAttribute('src', 'tiles/cbmt/cbmt.mapml'),
       layerHandle
     );
     await page.evaluateHandle(
@@ -103,11 +99,8 @@ test.describe('web-map DOM API Tests', () => {
       (layer) => document.querySelector('map').appendChild(layer),
       layerHandle
     );
-    let layerControlHidden = await page.$eval(
-      'css=body > map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div',
-      (elem) => elem.hasAttribute('hidden')
-    );
-    expect(layerControlHidden).toEqual(false);
+    let layerControl = await page.locator('.leaflet-control-layers');
+    await expect(layerControl).toBeVisible();
 
     // set the layer's hidden attribute, the layer should be removed from the layer
     // control (but not the map), which leaves 0 layers in the layer control, which means the
@@ -116,11 +109,7 @@ test.describe('web-map DOM API Tests', () => {
       (layer) => layer.setAttribute('hidden', ''),
       layerHandle
     );
-    layerControlHidden = await page.$eval(
-      'css=body > map >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div',
-      (elem) => elem.hasAttribute('hidden')
-    );
-    expect(layerControlHidden).toEqual(true);
+    await expect(layerControl).toBeHidden();
 
     // takes a couple of seconds for the tiles to load
 
@@ -139,12 +128,18 @@ test.describe('web-map DOM API Tests', () => {
     });
     // locators avoid flaky tests, allegedly
     const viewer = await page.locator('map');
-    await viewer.evaluate(() => {});
+    await viewer.evaluate(() => {
+      let m = document.querySelector('map');
+      document.body.removeChild(m);
+      document.body.appendChild(m);
+    });
+    await viewer.evaluate((viewer) =>
+      viewer.querySelector('layer-').whenReady()
+    );
+    await page.waitForTimeout(250);
     expect(
       await viewer.evaluate(() => {
         let m = document.querySelector('map');
-        document.body.removeChild(m);
-        document.body.appendChild(m);
         let l = m.querySelector('layer-');
         return l.label;
         // the label attribute is ignored if the mapml document has a map-title
@@ -317,11 +312,7 @@ test.describe('web-map DOM API Tests', () => {
       layerHandle
     );
     await page.evaluateHandle(
-      (layer) =>
-        layer.setAttribute(
-          'src',
-          'http://geogratis.gc.ca/mapml/en/cbmtile/cbmt/'
-        ),
+      (layer) => layer.setAttribute('src', 'tiles/cbmt/cbmt.mapml'),
       layerHandle
     );
     await page.evaluateHandle(
@@ -346,10 +337,7 @@ test.describe('web-map DOM API Tests', () => {
       '.leaflet-top.leaflet-left > .leaflet-control-fullscreen',
       (div) => div.hidden
     );
-    let layerControlHidden = await page.$eval(
-      '.leaflet-top.leaflet-right > .leaflet-control-layers',
-      (div) => div.hidden
-    );
+    let layerControl = await page.locator('.leaflet-control-layers');
     let scaleHidden = await page.$eval(
       '.leaflet-bottom.leaflet-left > .mapml-control-scale',
       (div) => div.hidden
@@ -362,7 +350,7 @@ test.describe('web-map DOM API Tests', () => {
     expect(zoomHidden).toEqual(true);
     expect(reloadHidden).toEqual(true);
     expect(fullscreenHidden).toEqual(true);
-    expect(layerControlHidden).toEqual(true);
+    await expect(layerControl).toBeHidden();
     expect(scaleHidden).toEqual(true);
   });
 
@@ -1094,8 +1082,15 @@ test.describe('web-map DOM API Tests', () => {
         (viewer) => viewer.setAttribute('height', '600'),
         mapHandle
       );
+
+      // Adding custom projection
+      const custProj = await page.evaluate((viewer) => {
+        return viewer.defineCustomProjection(template);
+      }, mapHandle);
+      expect(custProj).toEqual('basic');
+
       await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('projection', 'other'),
+        (viewer) => viewer.setAttribute('projection', 'basic'),
         mapHandle
       );
       await page.evaluateHandle(
@@ -1103,11 +1098,6 @@ test.describe('web-map DOM API Tests', () => {
         mapHandle
       );
 
-      // Adding custom projection
-      const custProj = await page.evaluate((viewer) => {
-        return viewer.defineCustomProjection(template);
-      }, mapHandle);
-      expect(custProj).toEqual('basic');
       await page.evaluate((viewer) => {
         viewer.projection = 'basic';
       }, mapHandle);

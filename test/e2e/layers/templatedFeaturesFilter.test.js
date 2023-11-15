@@ -28,9 +28,8 @@ test.describe('Simple query by select values without map extent filter tests', (
     await page.click(
       'css= body > mapml-viewer >> css= div > button.mapml-layer-item-settings-control.mapml-button'
     );
-    await page.click(
-      'css= body > mapml-viewer >> css= div > details:nth-child(2).mapml-control-layers'
-    );
+    await page.getByRole('button', { name: 'Extent Settings' }).click();
+    await page.locator('summary').filter({ hasText: 'cuisine' }).click();
     await page.selectOption(
       'css= body > mapml-viewer >> css= details:nth-child(2).mapml-control-layers select',
       'italian'

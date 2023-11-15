@@ -81,13 +81,7 @@ test.describe('Locate API Test', () => {
   test('Testing API when the button is used', async () => {
     await page.reload();
     await page.click('body > mapml-viewer');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Enter');
+    await page.getByTitle('Show my location - location tracking off').click();
 
     await page.mouse.move(600, 300);
     await page.mouse.down();

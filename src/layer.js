@@ -15,7 +15,8 @@ export class MapLayer extends HTMLElement {
     }
   }
   get label() {
-    return this.hasAttribute('label') ? this.getAttribute('label') : '';
+    if (this._layer) return this._layer.getName();
+    else return this.hasAttribute('label') ? this.getAttribute('label') : '';
   }
   set label(val) {
     if (val) {
@@ -47,12 +48,28 @@ export class MapLayer extends HTMLElement {
   }
 
   get opacity() {
-    return this._layer._container.style.opacity || this._layer.options.opacity;
+    // use ?? since 0 is falsy, || would return rhs in that case
+    return +(this._opacity ?? this.getAttribute('opacity'));
   }
 
   set opacity(val) {
     if (+val > 1 || +val < 0) return;
-    this._layer.changeOpacity(val);
+    this.setAttribute('opacity', val);
+  }
+
+  get extent() {
+    // calculate the bounds of all content, return it.
+    if (!this._layer.bounds) {
+      this._layer._calculateBounds();
+    }
+    return Object.assign(
+      M._convertAndFormatPCRS(
+        this._layer.bounds,
+        this._layer._properties.crs,
+        this._layer._properties.projection
+      ),
+      { zoom: this._layer.zoomBounds }
+    );
   }
 
   constructor() {
@@ -60,26 +77,26 @@ export class MapLayer extends HTMLElement {
     super();
   }
   disconnectedCallback() {
-    //    console.log('Custom map element removed from page.');
     // if the map-layer node is removed from the dom, the layer should be
     // removed from the map and the layer control
-
-    // this is moved up here so that the layer control doesn't respond
-    // to the layer being removed with the _onLayerChange execution
-    // that is set up in _attached:
     if (this.hasAttribute('data-moving')) return;
     this._onRemove();
   }
 
   _onRemove() {
-    this._removeEvents();
-    if (this._layer._map) {
+    if (this._layer) {
+      this._layer.off();
+    }
+    // if this layer has never been connected, it will not have a _layer
+    if (this._layer && this._layer._map) {
       this._layer._map.removeLayer(this._layer);
     }
 
     if (this._layerControl && !this.hidden) {
       this._layerControl.removeLayer(this._layer);
     }
+    delete this._layer;
+    delete this._fetchError;
 
     if (this.shadowRoot) {
       this.shadowRoot.innerHTML = '';
@@ -88,51 +105,195 @@ export class MapLayer extends HTMLElement {
 
   connectedCallback() {
     if (this.hasAttribute('data-moving')) return;
-    this._onAdd();
+    this._createLayerControlHTML = M._createLayerControlHTML.bind(this);
+    // this._opacity is used to record the current opacity value (with or without updates),
+    // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
+    this._opacity = this.opacity || 1.0;
+    const doConnected = this._onAdd.bind(this);
+    this.parentElement
+      .whenReady()
+      .then(() => {
+        doConnected();
+      })
+      .catch(() => {
+        throw new Error('Map never became ready');
+      });
   }
 
   _onAdd() {
     if (this.getAttribute('src') && !this.shadowRoot) {
       this.attachShadow({ mode: 'open' });
     }
-    //creates listener that waits for createmap event, this allows for delayed builds of maps
-    //this allows a safeguard for the case where loading a custom TCRS takes longer than loading mapml-viewer.js/web-map.js
-    this.parentNode.addEventListener(
-      'createmap',
-      () => {
-        this._ready();
-        // if the map has been attached, set this layer up wrt Leaflet map
-        if (this.parentNode._map) {
-          this._attachedToMap();
+    new Promise((resolve, reject) => {
+      this.addEventListener(
+        'changestyle',
+        function (e) {
+          e.stopPropagation();
+          this.src = e.detail.src;
+        },
+        { once: true }
+      );
+      this.addEventListener(
+        'changeprojection',
+        function (e) {
+          e.stopPropagation();
+          reject(e);
+        },
+        { once: true }
+      );
+      let base = this.baseURI ? this.baseURI : document.baseURI;
+
+      const headers = new Headers();
+      headers.append('Accept', 'text/mapml');
+      if (this.src) {
+        fetch(this.src, { headers: headers })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.text();
+          })
+          .then((mapml) => {
+            let content = new DOMParser().parseFromString(mapml, 'text/xml');
+            if (
+              content.querySelector('parsererror') ||
+              !content.querySelector('mapml-')
+            ) {
+              throw new Error('Parser error');
+            }
+            if (this._layer) {
+              this._onRemove();
+            }
+            this._layer = M.mapMLLayer(
+              new URL(this.src, base).href,
+              this,
+              content,
+              {
+                mapprojection: this.parentElement.projection,
+                opacity: this.opacity
+              }
+            );
+            this._createLayerControlHTML();
+            this._attachedToMap();
+            this._validateDisabled();
+            resolve();
+          })
+          .catch((error) => {
+            this._fetchError = true;
+            console.log('Error fetching layer content' + error);
+          });
+      } else {
+        if (this._layer) {
+          this._onRemove();
         }
-        if (this._layerControl && !this.hidden) {
-          this._layerControl.addOrUpdateOverlay(this._layer, this.label);
+        this._layer = M.mapMLLayer(null, this, null, {
+          mapprojection: this.parentElement.projection,
+          opacity: this.opacity
+        });
+        this._createLayerControlHTML();
+        this._attachedToMap();
+        this._validateDisabled();
+        resolve();
+      }
+    }).catch((e) => {
+      if (e.type === 'changeprojection') {
+        this.src = e.detail.href;
+      } else {
+        console.log(e);
+        this.dispatchEvent(
+          new CustomEvent('error', { detail: { target: this } })
+        );
+      }
+    });
+  }
+  _attachedToMap() {
+    // set i to the position of this layer element in the set of layers
+    var i = 0,
+      position = 1;
+    for (var nodes = this.parentNode.children; i < nodes.length; i++) {
+      if (this.parentNode.children[i].nodeName === 'LAYER-') {
+        if (this.parentNode.children[i] === this) {
+          position = i + 1;
+        } else if (this.parentNode.children[i]._layer) {
+          this.parentNode.children[i]._layer.setZIndex(i + 1);
         }
-      },
-      { once: true }
-    ); //listener stops listening after event occurs once
-    //if map is already created then dispatch createmap event, allowing layer to be built
-    if (this.parentNode._map)
-      this.parentNode.dispatchEvent(new CustomEvent('createmap'));
+      }
+    }
+    var proj = this.parentNode.projection
+      ? this.parentNode.projection
+      : 'OSMTILE';
+    L.setOptions(this._layer, {
+      zIndex: position,
+      mapprojection: proj,
+      opacity: window.getComputedStyle(this).opacity
+    });
+    // make sure the Leaflet layer has a reference to the map
+    this._layer._map = this.parentNode._map;
+
+    if (this.checked) {
+      this._layer.addTo(this._layer._map);
+    }
+
+    this._layer.on('add remove', this._validateDisabled, this);
+    // toggle the this.disabled attribute depending on whether the layer
+    // is: same prj as map, within view/zoom of map
+    this._layer._map.on('moveend layeradd', this._validateDisabled, this);
+
+    // if controls option is enabled, insert the layer into the overlays array
+    if (this.parentNode._layerControl && !this.hidden) {
+      this._layerControl = this.parentNode._layerControl;
+      this._layerControl.addOrUpdateOverlay(this._layer, this.label);
+    }
+
+    // the mapml document associated to this layer can in theory contain many
+    // link[@rel=legend] elements with different @type or other attributes;
+    // currently only support a single link, don't care about type, lang etc.
+    // TODO: add support for full LayerLegend object, and > one link.
+    if (this._layer._legendUrl) {
+      this.legendLinks = [
+        {
+          type: 'application/octet-stream',
+          href: this._layer._legendUrl,
+          rel: 'legend',
+          lang: null,
+          hreflang: null,
+          sizes: null
+        }
+      ];
+    }
+    // re-use 'loadedmetadata' event from HTMLMediaElement inteface, applied
+    // to MapML extent as metadata
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/loadedmetadata_event
+    this.dispatchEvent(
+      new CustomEvent('loadedmetadata', { detail: { target: this } })
+    );
   }
 
-  adoptedCallback() {
-    //    console.log('Custom map element moved to new page.');
-  }
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'label':
-        this?._layer?.setName(newValue);
+        this.whenReady()
+          .then(() => {
+            this._layer.setName(newValue);
+          })
+          .catch((e) => {
+            console.log(e);
+          });
         break;
       case 'checked':
-        if (this._layer) {
-          if (typeof newValue === 'string') {
-            this.parentElement._map.addLayer(this._layer);
-          } else {
-            this.parentElement._map.removeLayer(this._layer);
-          }
-          this.dispatchEvent(new Event('change', { bubbles: true }));
-        }
+        this.whenReady()
+          .then(() => {
+            if (typeof newValue === 'string') {
+              this.parentElement._map.addLayer(this._layer);
+            } else {
+              this.parentElement._map.removeLayer(this._layer);
+            }
+            this._layerControlCheckbox.checked = this.checked;
+            this.dispatchEvent(new CustomEvent('map-change'));
+          })
+          .catch((e) => {
+            console.log(e);
+          });
         break;
       case 'hidden':
         var map = this.parentElement && this.parentElement._map;
@@ -150,138 +311,103 @@ export class MapLayer extends HTMLElement {
         break;
       case 'opacity':
         if (oldValue !== newValue && this._layer) {
-          this.opacity = newValue;
+          this._opacity = newValue;
+          this._layer.changeOpacity(newValue);
         }
         break;
       case 'src':
         if (oldValue !== newValue && this._layer) {
-          this._reload();
+          this._onRemove();
+          if (this.isConnected) {
+            this._onAdd();
+          }
           // the original inline content will not be removed
           // but has NO EFFECT and works as a fallback
         }
     }
   }
-  // re-load the layer element when the src attribute is changed
-  _reload() {
-    let oldOpacity = this.opacity;
-    // go through the same sequence as if the layer had been removed from
-    // the DOM and re-attached with a new URL source.
-    this._onRemove();
-    if (this.isConnected) {
-      this._onAdd();
-    }
-    this.opacity = oldOpacity;
-  }
-  _onLayerExtentLoad(e) {
-    // the mapml document associated to this layer can in theory contain many
-    // link[@rel=legend] elements with different @type or other attributes;
-    // currently only support a single link, don't care about type, lang etc.
-    // TODO: add support for full LayerLegend object, and > one link.
-    if (this._layer._legendUrl) {
-      this.legendLinks = [
-        {
-          type: 'application/octet-stream',
-          href: this._layer._legendUrl,
-          rel: 'legend',
-          lang: null,
-          hreflang: null,
-          sizes: null
-        }
-      ];
-    }
-    if (this._layer._title) {
-      this.label = this._layer._title;
-    }
-    // make sure local content layer has the chance to set its extent properly
-    // which is important for the layer control and the disabled property
-    if (this._layer._map) {
-      this._layer.fire('attached', this._layer);
-    }
-    // TODO ensure the controls in this._layerControl contain 'live' controls
-    // which control the layer, not potentially the previous style / src
-    if (this._layerControl) {
-      this._layerControl.addOrUpdateOverlay(this._layer, this.label);
-    }
-    if (!this._layer.error) {
-      // re-use 'loadedmetadata' event from HTMLMediaElement inteface, applied
-      // to MapML extent as metadata
-      // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/loadedmetadata_event
-      this.dispatchEvent(
-        new CustomEvent('loadedmetadata', { detail: { target: this } })
-      );
-    } else {
-      this.dispatchEvent(
-        new CustomEvent('error', { detail: { target: this } })
-      );
-    }
-  }
   _validateDisabled() {
+    // setTimeout is necessary to make the validateDisabled happen later than the moveend operations etc.,
+    // to ensure that the validated result is correct
     setTimeout(() => {
       let layer = this._layer,
         map = layer?._map;
       if (map) {
-        let count = 0,
-          total = 0,
+        // prerequisite: no inline and remote mapml elements exists at the same time
+        const mapExtents = this.shadowRoot
+          ? this.shadowRoot.querySelectorAll('map-extent')
+          : this.querySelectorAll('map-extent');
+        let disabledExtentCount = 0,
+          totalExtentCount = 0,
           layerTypes = [
             '_staticTileLayer',
             '_imageLayer',
             '_mapmlvectors',
             '_templatedLayer'
           ];
-        if (layer.validProjection) {
-          for (let j = 0; j < layerTypes.length; j++) {
-            let type = layerTypes[j];
-            if (this.checked && layer[type]) {
-              if (type === '_templatedLayer') {
-                for (let i = 0; i < layer._extent._mapExtents.length; i++) {
-                  for (
-                    let j = 0;
-                    j <
-                    layer._extent._mapExtents[i].templatedLayer._templates
-                      .length;
-                    j++
-                  ) {
-                    if (
-                      layer._extent._mapExtents[i].templatedLayer._templates[j]
-                        .rel === 'query'
-                    )
-                      continue;
-                    total++;
-                    layer._extent._mapExtents[i].removeAttribute('disabled');
-                    layer._extent._mapExtents[i].disabled = false;
-                    if (
-                      !layer._extent._mapExtents[i].templatedLayer._templates[j]
-                        .layer.isVisible
-                    ) {
-                      count++;
-                      layer._extent._mapExtents[i].setAttribute('disabled', '');
-                      layer._extent._mapExtents[i].disabled = true;
-                    }
-                  }
-                }
-              } else {
-                total++;
-                if (!layer[type].isVisible) count++;
+        for (let j = 0; j < layerTypes.length; j++) {
+          let type = layerTypes[j];
+          if (this.checked) {
+            if (type === '_templatedLayer' && mapExtents.length > 0) {
+              for (let i = 0; i < mapExtents.length; i++) {
+                totalExtentCount++;
+                if (mapExtents[i]._validateDisabled()) disabledExtentCount++;
               }
+            } else if (layer[type]) {
+              // not a templated layer
+              totalExtentCount++;
+              if (!layer[type].isVisible) disabledExtentCount++;
             }
           }
-        } else {
-          count = 1;
-          total = 1;
         }
-
-        if (count === total && count !== 0) {
-          this.setAttribute('disabled', ''); //set a disabled attribute on the layer element
+        // if all extents are not visible / disabled, set layer to disabled
+        if (
+          disabledExtentCount === totalExtentCount &&
+          disabledExtentCount !== 0
+        ) {
+          this.setAttribute('disabled', '');
           this.disabled = true;
         } else {
-          //might be better not to disable the layer controls, might want to deselect layer even when its out of bounds
           this.removeAttribute('disabled');
           this.disabled = false;
         }
-        map.fire('validate');
+        this.toggleLayerControlDisabled();
       }
     }, 0);
   }
+
+  // disable/italicize layer control elements based on the layer-.disabled property
+  toggleLayerControlDisabled() {
+    let input = this._layerControlCheckbox,
+      label = this._layerControlLabel,
+      opacityControl = this._opacityControl,
+      opacitySlider = this._opacitySlider,
+      styleControl = this._styles;
+    if (this.disabled) {
+      input.disabled = true;
+      opacitySlider.disabled = true;
+      label.style.fontStyle = 'italic';
+      opacityControl.style.fontStyle = 'italic';
+      if (styleControl) {
+        styleControl.style.fontStyle = 'italic';
+        styleControl.querySelectorAll('input').forEach((i) => {
+          i.disabled = true;
+        });
+      }
+    } else {
+      input.disabled = false;
+      opacitySlider.disabled = false;
+      label.style.fontStyle = 'normal';
+      opacityControl.style.fontStyle = 'normal';
+      if (styleControl) {
+        styleControl.style.fontStyle = 'normal';
+        styleControl.querySelectorAll('input').forEach((i) => {
+          i.disabled = false;
+        });
+      }
+    }
+  }
+
   getOuterHTML() {
     let tempElement = this.cloneNode(true);
 
@@ -324,130 +450,23 @@ export class MapLayer extends HTMLElement {
     return outerLayer;
   }
 
-  _onLayerChange() {
-    if (this._layer._map) {
-      // can't disable observers, have to set a flag telling it where
-      // the 'event' comes from: either the api or a user click/tap
-      // may not be necessary -> this._apiToggleChecked = false;
-      this.checked = this._layer._map.hasLayer(this._layer);
-    }
-  }
-  _ready() {
-    // the layer might not be attached to a map
-    // so we need a way for non-src based layers to establish what their
-    // zoom range, extent and projection are.  meta elements in content to
-    // allow the author to provide this explicitly are one way, they will
-    // be parsed from the second parameter here
-    // IE 11 did not have a value for this.baseURI for some reason
-    var base = this.baseURI ? this.baseURI : document.baseURI;
-    let opacity_value = this.hasAttribute('opacity')
-      ? this.getAttribute('opacity')
-      : '1.0';
-    this._layer = M.mapMLLayer(
-      this.src ? new URL(this.src, base).href : null,
-      this,
-      {
-        mapprojection: this.parentElement._map.options.projection,
-        opacity: opacity_value
-      }
-    );
-    this._layer.on('extentload', this._onLayerExtentLoad, this);
-    this._setUpEvents();
-  }
-  _attachedToMap() {
-    // set i to the position of this layer element in the set of layers
-    var i = 0,
-      position = 1;
-    for (var nodes = this.parentNode.children; i < nodes.length; i++) {
-      if (this.parentNode.children[i].nodeName === 'LAYER-') {
-        if (this.parentNode.children[i] === this) {
-          position = i + 1;
-        } else if (this.parentNode.children[i]._layer) {
-          this.parentNode.children[i]._layer.setZIndex(i + 1);
-        }
-      }
-    }
-    var proj = this.parentNode.projection
-      ? this.parentNode.projection
-      : 'OSMTILE';
-    L.setOptions(this._layer, {
-      zIndex: position,
-      mapprojection: proj,
-      opacity: window.getComputedStyle(this).opacity
-    });
-    // make sure the Leaflet layer has a reference to the map
-    this._layer._map = this.parentNode._map;
-    // notify the layer that it is attached to a map (layer._map)
-    this._layer.fire('attached');
-
-    if (this.checked) {
-      this._layer.addTo(this._layer._map);
-    }
-
-    // add the handler which toggles the 'checked' property based on the
-    // user checking/unchecking the layer from the layer control
-    // this must be done *after* the layer is actually added to the map
-    this._layer.on('add remove', this._onLayerChange, this);
-    this._layer.on('add remove extentload', this._validateDisabled, this);
-
-    // if controls option is enabled, insert the layer into the overlays array
-    if (this.parentNode._layerControl && !this.hidden) {
-      this._layerControl = this.parentNode._layerControl;
-      this._layerControl.addOrUpdateOverlay(this._layer, this.label);
-    }
-    // toggle the this.disabled attribute depending on whether the layer
-    // is: same prj as map, within view/zoom of map
-    this._layer._map.on('moveend', this._validateDisabled, this);
-    this._layer._map.on('checkdisabled', this._validateDisabled, this);
-    // this is necessary to get the layer control to compare the layer
-    // extents with the map extent & zoom, but it needs to be rethought TODO
-    // for one thing, layers which are checked by the author before
-    // adding to the map are displayed despite that they are not visible
-    // See issue #26
-    //        this._layer._map.fire('moveend');
-  }
-  _removeEvents() {
-    if (this._layer) {
-      this._layer.off();
-    }
-  }
-  _setUpEvents() {
-    this._layer.on(
-      'changestyle',
-      function (e) {
-        this.src = e.src;
-        this.dispatchEvent(
-          new CustomEvent('changestyle', { detail: { target: this } })
-        );
-      },
-      this
-    );
-    this._layer.on(
-      'changeprojection',
-      function (e) {
-        this.src = e.href;
-        this.dispatchEvent(
-          new CustomEvent('changeprojection', { detail: { target: this } })
-        );
-      },
-      this
-    );
-  }
   zoomTo() {
-    if (!this.extent) return;
-    let map = this._layer._map,
-      tL = this.extent.topLeft.pcrs,
-      bR = this.extent.bottomRight.pcrs,
-      layerBounds = L.bounds(
-        L.point(tL.horizontal, tL.vertical),
-        L.point(bR.horizontal, bR.vertical)
-      ),
-      center = map.options.crs.unproject(layerBounds.getCenter(true));
+    this.whenElemsReady().then(() => {
+      let map = this.parentElement._map,
+        extent = this.extent,
+        tL = extent.topLeft.pcrs,
+        bR = extent.bottomRight.pcrs,
+        layerBounds = L.bounds(
+          L.point(tL.horizontal, tL.vertical),
+          L.point(bR.horizontal, bR.vertical)
+        ),
+        center = map.options.crs.unproject(layerBounds.getCenter(true));
 
-    let maxZoom = this.extent.zoom.maxZoom,
-      minZoom = this.extent.zoom.minZoom;
-    map.setView(center, M.getMaxZoom(layerBounds, map, minZoom, maxZoom), {
-      animate: false
+      let maxZoom = extent.zoom.maxZoom,
+        minZoom = extent.zoom.minZoom;
+      map.setView(center, M.getMaxZoom(layerBounds, map, minZoom, maxZoom), {
+        animate: false
+      });
     });
   }
   mapml2geojson(options = {}) {
@@ -469,5 +488,48 @@ export class MapLayer extends HTMLElement {
           this.appendChild(feature);
         }
     }
+  }
+  whenReady() {
+    return new Promise((resolve, reject) => {
+      let interval, failureTimer;
+      if (this._layer && (!this.src || this.shadowRoot?.childNodes.length)) {
+        resolve();
+      } else {
+        let layerElement = this;
+        interval = setInterval(testForLayer, 200, layerElement);
+        failureTimer = setTimeout(layerNotDefined, 5000);
+      }
+      function testForLayer(layerElement) {
+        if (
+          layerElement._layer &&
+          (!layerElement.src || layerElement.shadowRoot?.childNodes.length)
+        ) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          resolve();
+        } else if (layerElement._fetchError) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          reject('Error fetching layer content');
+        }
+      }
+      function layerNotDefined() {
+        clearInterval(interval);
+        clearTimeout(failureTimer);
+        reject('Timeout reached waiting for layer to be ready');
+      }
+    });
+  }
+  // check if all child elements are ready
+  whenElemsReady() {
+    let elemsReady = [];
+    let target = this.shadowRoot || this;
+    for (let elem of [
+      ...target.querySelectorAll('map-extent'),
+      ...target.querySelectorAll('map-feature')
+    ]) {
+      elemsReady.push(elem.whenReady());
+    }
+    return Promise.allSettled(elemsReady);
   }
 }

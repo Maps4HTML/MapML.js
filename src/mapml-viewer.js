@@ -1,10 +1,11 @@
 import './leaflet.js'; // bundled with proj4, proj4leaflet, modularized
 import './mapml.js';
-import DOMTokenList from './DOMTokenList.js';
 import { MapLayer } from './layer.js';
 import { MapCaption } from './map-caption.js';
 import { MapFeature } from './map-feature.js';
 import { MapExtent } from './map-extent.js';
+import { MapInput } from './map-input.js';
+import { MapLink } from './map-link.js';
 
 export class MapViewer extends HTMLElement {
   static get observedAttributes() {
@@ -44,21 +45,21 @@ export class MapViewer extends HTMLElement {
     this.setAttribute('controlslist', value);
   }
   get width() {
-    return window.getComputedStyle(this).width.replace('px', '');
+    return +window.getComputedStyle(this).width.replace('px', '');
   }
   set width(val) {
     //img.height or img.width setters change or add the corresponding attributes
     this.setAttribute('width', val);
   }
   get height() {
-    return window.getComputedStyle(this).height.replace('px', '');
+    return +window.getComputedStyle(this).height.replace('px', '');
   }
   set height(val) {
     //img.height or img.width setters change or add the corresponding attributes
     this.setAttribute('height', val);
   }
   get lat() {
-    return this.hasAttribute('lat') ? this.getAttribute('lat') : '0';
+    return +(this.hasAttribute('lat') ? this.getAttribute('lat') : 0);
   }
   set lat(val) {
     if (val) {
@@ -66,7 +67,7 @@ export class MapViewer extends HTMLElement {
     }
   }
   get lon() {
-    return this.hasAttribute('lon') ? this.getAttribute('lon') : '0';
+    return +(this.hasAttribute('lon') ? this.getAttribute('lon') : 0);
   }
   set lon(val) {
     if (val) {
@@ -76,25 +77,21 @@ export class MapViewer extends HTMLElement {
   get projection() {
     return this.hasAttribute('projection')
       ? this.getAttribute('projection')
-      : '';
+      : 'OSMTILE';
   }
   set projection(val) {
-    if (val && M[val]) {
-      this.setAttribute('projection', val);
-      if (this._map && this._map.options.projection !== val) {
-        this._map.options.crs = M[val];
-        this._map.options.projection = val;
-        for (let layer of this.querySelectorAll('layer-')) {
-          layer.removeAttribute('disabled');
-          let reAttach = this.removeChild(layer);
-          this.appendChild(reAttach);
-        }
-        if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
-      } else this.dispatchEvent(new CustomEvent('createmap'));
-    } else throw new Error('Undefined Projection');
+    if (val) {
+      this.whenProjectionDefined(val)
+        .then(() => {
+          this.setAttribute('projection', val);
+        })
+        .catch(() => {
+          throw new Error('Undefined projection:' + val);
+        });
+    }
   }
   get zoom() {
-    return this.hasAttribute('zoom') ? this.getAttribute('zoom') : 0;
+    return +(this.hasAttribute('zoom') ? this.getAttribute('zoom') : 0);
   }
   set zoom(val) {
     var parsedVal = parseInt(val, 10);
@@ -113,7 +110,11 @@ export class MapViewer extends HTMLElement {
         map.getZoom(),
         map.options.projection
       );
-    let formattedExtent = M._convertAndFormatPCRS(pcrsBounds, map);
+    let formattedExtent = M._convertAndFormatPCRS(
+      pcrsBounds,
+      map.options.crs,
+      this.projection
+    );
     if (map.getMaxZoom() !== Infinity) {
       formattedExtent.zoom = {
         minZoom: map.getMinZoom(),
@@ -141,81 +142,70 @@ export class MapViewer extends HTMLElement {
     this._traversalCall = false;
   }
   connectedCallback() {
-    this._initShadowRoot();
+    this.whenProjectionDefined(this.projection)
+      .then(() => {
+        this._initShadowRoot();
 
-    this._controlsList = new DOMTokenList(
-      this.getAttribute('controlslist'),
-      this,
-      'controlslist',
-      [
-        'noreload',
-        'nofullscreen',
-        'nozoom',
-        'nolayer',
-        'noscale',
-        'geolocation'
-      ]
-    );
+        this._controlsList = new M.DOMTokenList(
+          this.getAttribute('controlslist'),
+          this,
+          'controlslist',
+          [
+            'noreload',
+            'nofullscreen',
+            'nozoom',
+            'nolayer',
+            'noscale',
+            'geolocation'
+          ]
+        );
 
-    var s = window.getComputedStyle(this),
-      wpx = s.width,
-      hpx = s.height,
-      w = this.hasAttribute('width')
-        ? this.getAttribute('width')
-        : parseInt(wpx.replace('px', '')),
-      h = this.hasAttribute('height')
-        ? this.getAttribute('height')
-        : parseInt(hpx.replace('px', ''));
-    this._changeWidth(w);
-    this._changeHeight(h);
+        var s = window.getComputedStyle(this),
+          wpx = s.width,
+          hpx = s.height,
+          w = this.hasAttribute('width')
+            ? this.getAttribute('width')
+            : parseInt(wpx.replace('px', '')),
+          h = this.hasAttribute('height')
+            ? this.getAttribute('height')
+            : parseInt(hpx.replace('px', ''));
+        this._changeWidth(w);
+        this._changeHeight(h);
 
-    // wait for createmap event before creating leaflet map
-    // this allows a safeguard for the case where loading a custom TCRS takes
-    // longer than loading mapml-viewer.js/web-map.js
-    // the REASON we need a synchronous event listener (see comment below)
-    // is because the mapml-viewer element has / can have a size of 0 up until after
-    // something that happens between this point and the event handler executing
-    // perhaps a browser rendering cycle??
-    this.addEventListener('createmap', this._createMap);
+        this._createMap();
 
-    let custom = !['CBMTILE', 'APSTILE', 'OSMTILE', 'WGS84'].includes(
-      this.projection
-    );
-    // this is worth a read, because dispatchEvent is synchronous
-    // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent
-    // In particular:
-    //   "All applicable event handlers are called and return before dispatchEvent() returns."
-    if (!custom) {
-      this.dispatchEvent(new CustomEvent('createmap'));
-    }
-    // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
-    this.setAttribute('role', 'application');
-    this._toggleStatic();
+        // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
+        this.setAttribute('role', 'application');
+        this._toggleStatic();
 
-    /*
-    1. only deletes aria-label when the last (only remaining) map caption is removed
-    2. only deletes aria-label if the aria-label was defined by the map caption element itself
-    */
+        /*
+      1. only deletes aria-label when the last (only remaining) map caption is removed
+      2. only deletes aria-label if the aria-label was defined by the map caption element itself
+      */
 
-    let mapcaption = this.querySelector('map-caption');
+        let mapcaption = this.querySelector('map-caption');
 
-    if (mapcaption !== null) {
-      setTimeout(() => {
-        let ariaupdate = this.getAttribute('aria-label');
+        if (mapcaption !== null) {
+          setTimeout(() => {
+            let ariaupdate = this.getAttribute('aria-label');
 
-        if (ariaupdate === mapcaption.innerHTML) {
-          this.mapCaptionObserver = new MutationObserver((m) => {
-            let mapcaptionupdate = this.querySelector('map-caption');
-            if (mapcaptionupdate !== mapcaption) {
-              this.removeAttribute('aria-label');
+            if (ariaupdate === mapcaption.innerHTML) {
+              this.mapCaptionObserver = new MutationObserver((m) => {
+                let mapcaptionupdate = this.querySelector('map-caption');
+                if (mapcaptionupdate !== mapcaption) {
+                  this.removeAttribute('aria-label');
+                }
+              });
+              this.mapCaptionObserver.observe(this, {
+                childList: true
+              });
             }
-          });
-          this.mapCaptionObserver.observe(this, {
-            childList: true
-          });
+          }, 0);
         }
-      }, 0);
-    }
+      })
+      .catch(() => {
+        throw new Error('Projection not defined');
+      });
   }
   _initShadowRoot() {
     if (!this.shadowRoot) {
@@ -284,13 +274,7 @@ export class MapViewer extends HTMLElement {
         mapEl: this,
         crs: M[this.projection],
         zoom: this.zoom,
-        zoomControl: false,
-        // because the M.MapMLLayer invokes _tileLayer._onMoveEnd when
-        // the mapml response is received the screen tends to flash.  I'm sure
-        // there is a better configuration than that, but at this moment
-        // I'm not sure how to approach that issue.
-        // See https://github.com/Maps4HTML/MapML-Leaflet-Client/issues/24
-        fadeAnimation: true
+        zoomControl: false
       });
       this._addToHistory();
 
@@ -361,6 +345,65 @@ export class MapViewer extends HTMLElement {
         break;
       case 'static':
         this._toggleStatic();
+        break;
+      case 'projection':
+        const reconnectLayers = () => {
+          if (this._map && this._map.options.projection !== newValue) {
+            // save map location and zoom
+            let lat = this.lat;
+            let lon = this.lon;
+            let zoom = this.zoom;
+            // saving the lat, lon and zoom is necessary because Leaflet seems
+            // to try to compensate for the change in the scales for each zoom
+            // level in the crs by changing the zoom level of the map when
+            // you set the map crs.  So, we save the current view for use below
+            // when all the layers' reconnections have settled.
+            // leaflet doesn't like this: https://github.com/Leaflet/Leaflet/issues/2553
+            this._map.options.crs = M[newValue];
+            this._map.options.projection = newValue;
+            let layersReady = [];
+            this._map.announceMovement.disable();
+            for (let layer of this.querySelectorAll('layer-')) {
+              layer.removeAttribute('disabled');
+              let reAttach = this.removeChild(layer);
+              this.appendChild(reAttach);
+              layersReady.push(reAttach.whenReady());
+            }
+            Promise.allSettled(layersReady).then(() => {
+              // use the saved map location to ensure it is correct after
+              // changing the map CRS.  Specifically affects projection
+              // upgrades, e.g. https://maps4html.org/experiments/custom-projections/BNG/
+              // see leaflet bug: https://github.com/Leaflet/Leaflet/issues/2553
+              this.zoomTo(lat, lon, zoom);
+              if (M.options.announceMovement)
+                this._map.announceMovement.enable();
+              // required to delay until map-extent.disabled is correctly set
+              // which happens as a result of layer-._validateDisabled()
+              // which happens so much we have to delay until they calls are
+              // completed
+              setTimeout(() => {
+                this.dispatchEvent(new CustomEvent('map-projectionchange'));
+              }, 0);
+            });
+          }
+        };
+        if (newValue) {
+          const connect = reconnectLayers.bind(this);
+          new Promise((resolve, reject) => {
+            connect();
+            resolve();
+          }).then(() => {
+            if (this._map && this._map.options.projection !== oldValue) {
+              // this awful hack is brought to you by a leaflet bug/ feature request
+              // https://github.com/Leaflet/Leaflet/issues/2553
+              this.zoomTo(this.lat, this.lon, this.zoom + 1);
+              this.zoomTo(this.lat, this.lon, this.zoom - 1);
+              // this doesn't completely work either
+              this._resetHistory();
+            }
+            if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
+          });
+        }
         break;
     }
   }
@@ -936,7 +979,13 @@ export class MapViewer extends HTMLElement {
     this.lon = this._map.getCenter().lng;
     this.zoom = this._map.getZoom();
   }
-
+  _resetHistory() {
+    this._history = [];
+    this._historyIndex = -1;
+    this._traversalCall = false;
+    // weird but ok
+    this._addToHistory();
+  }
   /**
    * Adds to the maps history on moveends
    * @private
@@ -1087,6 +1136,7 @@ export class MapViewer extends HTMLElement {
       this._traversalCall = 1;
       this._map.panBy([initialLocation.x - curr.x, initialLocation.y - curr.y]);
     }
+    this._map.getContainer().focus();
   }
 
   _toggleFullScreen() {
@@ -1116,7 +1166,7 @@ export class MapViewer extends HTMLElement {
     if (M[t.projection.toUpperCase()]) return t.projection.toUpperCase();
     let tileSize = [256, 512, 1024, 2048, 4096].includes(t.tilesize)
       ? t.tilesize
-      : 256;
+      : M.TILE_SIZE;
 
     M[t.projection] = new L.Proj.CRS(t.projection, t.proj4string, {
       origin: t.origin,
@@ -1288,7 +1338,61 @@ export class MapViewer extends HTMLElement {
     M[t.projection.toUpperCase()] = M[t.projection]; //adds the projection uppercase to global M
     return t.projection;
   }
-
+  whenReady() {
+    return new Promise((resolve, reject) => {
+      let interval, failureTimer;
+      if (this._map) {
+        resolve();
+      } else {
+        let viewer = this;
+        interval = setInterval(testForMap, 200, viewer);
+        failureTimer = setTimeout(mapNotDefined, 5000);
+      }
+      function testForMap(viewer) {
+        if (viewer._map) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          resolve();
+        }
+      }
+      function mapNotDefined() {
+        clearInterval(interval);
+        clearTimeout(failureTimer);
+        reject('Timeout reached waiting for map to be ready');
+      }
+    });
+  }
+  whenLayersReady() {
+    let layersReady = [];
+    // check if all the children elements (map-extent, map-feature) of all layer- are ready
+    for (let layer of [...this.layers]) {
+      layersReady.push(layer.whenElemsReady());
+    }
+    return Promise.allSettled(layersReady);
+  }
+  whenProjectionDefined(projection) {
+    return new Promise((resolve, reject) => {
+      let interval, failureTimer;
+      if (M[projection]) {
+        resolve();
+      } else {
+        interval = setInterval(testForProjection, 200, projection);
+        failureTimer = setTimeout(projectionNotDefined, 5000);
+      }
+      function testForProjection(p) {
+        if (M[p]) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          resolve();
+        }
+      }
+      function projectionNotDefined() {
+        clearInterval(interval);
+        clearTimeout(failureTimer);
+        reject('Timeout reached waiting for projection to be defined');
+      }
+    });
+  }
   geojson2mapml(json, options = {}) {
     if (options.projection === undefined) {
       options.projection = this.projection;
@@ -1304,3 +1408,5 @@ window.customElements.define('layer-', MapLayer);
 window.customElements.define('map-caption', MapCaption);
 window.customElements.define('map-feature', MapFeature);
 window.customElements.define('map-extent', MapExtent);
+window.customElements.define('map-input', MapInput);
+window.customElements.define('map-link', MapLink);

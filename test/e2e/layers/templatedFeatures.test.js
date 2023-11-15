@@ -96,7 +96,7 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
       expect(startTopLeft.vertical).toBe(-169068.77063754946);
       expect(startBottomRight.horizontal).toBe(1512570.5867411792);
       expect(startBottomRight.vertical).toBe(-173037.52857506275);
-      expect(startZoomLevel).toBe('16');
+      expect(startZoomLevel).toBe(16);
       await page.evaluate(
         `document.querySelector('#map2 > layer- > map-extent').shadowRoot.querySelector('map-feature').zoomTo()`
       );
@@ -113,7 +113,7 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
       expect(endTopLeft.vertical).toBe(-171660.43571670353);
       expect(endBottomRight.horizontal).toBe(1509696.5445347577);
       expect(endBottomRight.vertical).toBe(-171693.50869952142);
-      expect(endZoomLevel).toBe('25');
+      expect(endZoomLevel).toBe(25);
     });
   });
 
@@ -141,6 +141,26 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
         (tile) => tile.getAttribute('d')
       );
       expect(feature).toEqual('M307 456L599 467L612 629L381 599z');
+    });
+
+    test('templated features disabled when panned out of bounds', async () => {
+      await page.reload();
+      await page.getByTestId('map2').evaluate((map) => {
+        map.zoomTo(45.428, -75.346, 14);
+      });
+
+      await page.waitForTimeout(500);
+
+      let layerAndLayerCheckboxDisabled = await page
+        .getByTestId('restaurants')
+        .evaluate((layer) => {
+          return (
+            layer.disabled === true &&
+            layer._layerControlCheckbox.disabled === true
+          );
+        });
+
+      expect(layerAndLayerCheckboxDisabled).toBe(true);
     });
   });
 });
