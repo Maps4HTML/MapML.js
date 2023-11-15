@@ -377,9 +377,13 @@ export class MapViewer extends HTMLElement {
               this.zoomTo(lat, lon, zoom);
               if (M.options.announceMovement)
                 this._map.announceMovement.enable();
-              this.querySelectorAll('layer-').forEach((layer) => {
-                layer.dispatchEvent(new CustomEvent('map-change'));
-              });
+              // required to delay until map-extent.disabled is correctly set
+              // which happens as a result of layer-._validateDisabled()
+              // which happens so much we have to delay until they calls are
+              // completed
+              setTimeout(() => {
+                this.dispatchEvent(new CustomEvent('map-projectionchange'));
+              }, 0);
             });
           }
         };

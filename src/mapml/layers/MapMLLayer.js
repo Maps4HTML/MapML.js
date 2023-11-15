@@ -43,17 +43,6 @@ export var MapMLLayer = L.Layer.extend({
     // OR use the extent of the content provided
 
     this._initialize(local ? layerEl : mapml);
-
-    // a default extent can't be correctly set without the map to provide
-    // its bounds , projection, zoom range etc, so if that stuff's not
-    // established by metadata in the content, we should use map properties
-    // to set the extent, but the map won't be available until the <layer>
-    // element is attached to the <map> element, wait for that to happen.
-    // weirdness.  options is actually undefined here, despite the hardcoded
-    // options above. If you use this.options, you see the options defined
-    // above.  Not going to change this, but failing to understand ATM.
-    // may revisit some time.
-    this.validProjection = true;
   },
   setZIndex: function (zIndex) {
     this.options.zIndex = zIndex;
@@ -98,11 +87,6 @@ export var MapMLLayer = L.Layer.extend({
   },
 
   onAdd: function (map) {
-    // probably don't need it except for layer context menu usage
-    if (this._properties && !this._validProjection(map)) {
-      this.validProjection = false;
-      return;
-    }
     this._map = map;
     if (this._mapmlvectors) map.addLayer(this._mapmlvectors);
 
@@ -216,26 +200,6 @@ export var MapMLLayer = L.Layer.extend({
       this.bounds = bounds;
       this.zoomBounds = zoomBounds;
     }
-  },
-
-  _validProjection: function (map) {
-    const mapExtents = this._layerEl.querySelectorAll('map-extent');
-    let noLayer = false;
-    if (this._properties && mapExtents.length > 0) {
-      for (let i = 0; i < mapExtents.length; i++) {
-        if (mapExtents[i]._templateVars) {
-          for (let template of mapExtents[i]._templateVars)
-            if (
-              !template.projectionMatch &&
-              template.projection !== map.options.projection
-            ) {
-              noLayer = true; // if there's a single template where projections don't match, set noLayer to true
-              break;
-            }
-        }
-      }
-    }
-    return !(noLayer || this.getProjection() !== map.options.projection);
   },
 
   addTo: function (map) {

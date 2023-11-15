@@ -108,7 +108,7 @@ export class MapLayer extends HTMLElement {
     this._createLayerControlHTML = M._createLayerControlHTML.bind(this);
     // this._opacity is used to record the current opacity value (with or without updates),
     // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
-    this._opacity = +(this.getAttribute('opacity') || 1.0);
+    this._opacity = this.opacity || 1.0;
     const doConnected = this._onAdd.bind(this);
     this.parentElement
       .whenReady()
@@ -345,25 +345,20 @@ export class MapLayer extends HTMLElement {
             '_mapmlvectors',
             '_templatedLayer'
           ];
-        if (layer.validProjection) {
-          for (let j = 0; j < layerTypes.length; j++) {
-            let type = layerTypes[j];
-            if (this.checked) {
-              if (type === '_templatedLayer' && mapExtents.length > 0) {
-                for (let i = 0; i < mapExtents.length; i++) {
-                  totalExtentCount++;
-                  if (mapExtents[i]._validateDisabled()) disabledExtentCount++;
-                }
-              } else if (layer[type]) {
-                // not a templated layer
+        for (let j = 0; j < layerTypes.length; j++) {
+          let type = layerTypes[j];
+          if (this.checked) {
+            if (type === '_templatedLayer' && mapExtents.length > 0) {
+              for (let i = 0; i < mapExtents.length; i++) {
                 totalExtentCount++;
-                if (!layer[type].isVisible) disabledExtentCount++;
+                if (mapExtents[i]._validateDisabled()) disabledExtentCount++;
               }
+            } else if (layer[type]) {
+              // not a templated layer
+              totalExtentCount++;
+              if (!layer[type].isVisible) disabledExtentCount++;
             }
           }
-        } else {
-          disabledExtentCount = 1;
-          totalExtentCount = 1;
         }
         // if all extents are not visible / disabled, set layer to disabled
         if (

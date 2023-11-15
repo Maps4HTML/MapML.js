@@ -140,6 +140,10 @@ export class MapExtent extends HTMLElement {
       this.attachShadow({ mode: 'open' });
     }
     await this.parentLayer.whenReady();
+    this.mapEl = this.parentLayer.closest('mapml-viewer,map[is=web-map]');
+    await this.mapEl.whenProjectionDefined(this.units).catch(() => {
+      throw new Error('Undefined projection:' + this.units);
+    });
     // when projection is changed, the parent layer-._layer is created (so whenReady is fulfilled) but then removed,
     // then the map-extent disconnectedCallback will be triggered by layer-._onRemove() (clear the shadowRoot)
     // even before connectedCallback is finished
@@ -168,9 +172,10 @@ export class MapExtent extends HTMLElement {
     );
     this._changeHandler = this._handleChange.bind(this);
     this.parentLayer.addEventListener('map-change', this._changeHandler);
+    this.mapEl.addEventListener('map-projectionchange', this._changeHandler);
     // this._opacity is used to record the current opacity value (with or without updates),
     // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
-    this._opacity = +(this.getAttribute('opacity') || 1.0);
+    this._opacity = this.opacity || 1.0;
     this._templatedLayer = M.templatedLayer(this._templateVars, {
       pane: this._layer._container,
       opacity: this.opacity,
@@ -522,6 +527,7 @@ export class MapExtent extends HTMLElement {
     this._layerControlHTML.remove();
     this._map.removeLayer(this._templatedLayer);
     this.parentLayer.removeEventListener('map-change', this._changeHandler);
+    this.mapEl.removeEventListener('map-projectionchange', this._changeHandler);
     delete this._templatedLayer;
     delete this.parentLayer.bounds;
   }

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>map-projectionchange event</title>
+    <!-- the layer in this map should continue to be visible when you change
+    the viewer projection from OSMTILE to CBMTILE.  -->
+    <script type="module" src="/mapml-viewer.js"></script>
+  </head>
+  <body>
+  <mapml-viewer zoom="2" lon="-75.703611" lat="45.411105" width="500" height="500" controls projection="OSMTILE">
+    <layer- label="Projection changer"  checked>
+      <map-extent label="National Geographic" units="OSMTILE" checked >
+        <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
+        <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+        <map-input name="TileRow" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+        <map-link rel="tile" tref="https://server.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/WMTS/tile/1.0.0/NatGeo_World_Map/default/default028mm/{TileMatrix}/{TileRow}/{TileCol}.jpg"></map-link>
+      </map-extent>
+      <map-extent label="Canada Base Map - Transportation" units="CBMTILE" checked >
+        <map-input name="z" type="zoom" min="0" max="18"></map-input>
+        <map-input name="y" type="location" units="tilematrix" axis="row"></map-input>
+        <map-input name="x" type="location" units="tilematrix" axis="column"></map-input>
+        <map-link rel="tile" tref="/tiles/cbmt/{z}/c{x}_r{y}.png" ></map-link>
+      </map-extent>    
+    </layer->
+  </mapml-viewer>
+  <script>
+    function changeProjection() {
+      const prj = document.body.querySelector('mapml-viewer').projection;
+      if (document.body.querySelector('mapml-viewer').projection === "OSMTILE") {
+        document.body.querySelector('mapml-viewer').projection = "CBMTILE";
+      } else {
+        document.body.querySelector('mapml-viewer').projection = "OSMTILE";
+      }
+    }
+  </script>
+</body>
+</html>
