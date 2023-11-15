@@ -13,11 +13,7 @@ export var Crosshair = L.Layer.extend({
     map.isFocused = false;
     this._isQueryable = false;
 
-    map.on(
-      'layerchange layeradd layerremove overlayremove',
-      this._toggleEvents,
-      this
-    );
+    map.on('layeradd layerremove overlayremove', this._toggleEvents, this);
     map.on('popupopen', this._isMapFocused, this);
     L.DomEvent.on(
       map._container,
@@ -30,10 +26,7 @@ export var Crosshair = L.Layer.extend({
   },
 
   onRemove: function (map) {
-    map.off(
-      'layerchange layeradd layerremove overlayremove',
-      this._toggleEvents
-    );
+    map.off('layeradd layerremove overlayremove', this._toggleEvents);
     map.off('popupopen', this._isMapFocused);
     L.DomEvent.off(
       map._container,

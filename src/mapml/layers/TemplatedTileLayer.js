@@ -85,7 +85,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     L.DomUtil.addClass(tileGroup, 'leaflet-tile');
 
     this._template.linkEl.dispatchEvent(
-      new CustomEvent('tileloadstart', {
+      new CustomEvent('map-tileloadstart', {
         detail: {
           x: coords.x,
           y: coords.y,

@@ -126,7 +126,7 @@ export class MapLayer extends HTMLElement {
     }
     new Promise((resolve, reject) => {
       this.addEventListener(
-        'changestyle',
+        'map-changestyle',
         function (e) {
           e.stopPropagation();
           this.src = e.detail.src;
@@ -200,9 +200,6 @@ export class MapLayer extends HTMLElement {
         this.src = e.detail.href;
       } else {
         console.log(e);
-        this.dispatchEvent(
-          new CustomEvent('error', { detail: { target: this } })
-        );
       }
     });
   }

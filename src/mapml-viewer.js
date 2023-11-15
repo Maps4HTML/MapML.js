@@ -612,19 +612,6 @@ export class MapViewer extends HTMLElement {
   _setUpEvents() {
     this.addEventListener('drop', this._dropHandler, false);
     this.addEventListener('dragover', this._dragoverHandler, false);
-    this.addEventListener(
-      'change',
-      function (e) {
-        if (e.target.tagName === 'LAYER-') {
-          this.dispatchEvent(
-            new CustomEvent('layerchange', {
-              details: { target: this, originalEvent: e }
-            })
-          );
-        }
-      },
-      false
-    );
 
     this.parentElement.addEventListener('keyup', function (e) {
       if (
@@ -684,22 +671,6 @@ export class MapViewer extends HTMLElement {
       function () {
         this.dispatchEvent(
           new CustomEvent('load', { detail: { target: this } })
-        );
-      },
-      this
-    );
-    this._map.on(
-      'preclick',
-      function (e) {
-        this.dispatchEvent(
-          new CustomEvent('map-preclick', {
-            detail: {
-              lat: e.latlng.lat,
-              lon: e.latlng.lng,
-              x: e.containerPoint.x,
-              y: e.containerPoint.y
-            }
-          })
         );
       },
       this
