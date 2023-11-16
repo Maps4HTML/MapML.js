@@ -119,7 +119,7 @@ export var MapMLLayer = L.Layer.extend({
       '_staticTileLayer',
       '_imageLayer',
       '_mapmlvectors',
-      '_templatedLayer'
+      '_extentLayer'
     ];
     const mapExtents = this._layerEl.querySelectorAll('map-extent').length
       ? this._layerEl.querySelectorAll('map-extent')
@@ -127,14 +127,14 @@ export var MapMLLayer = L.Layer.extend({
       ? this._layerEl.shadowRoot.querySelectorAll('map-extent')
       : [];
     layerTypes.forEach((type) => {
-      if (type === '_templatedLayer' && mapExtents.length) {
+      if (type === '_extentLayer' && mapExtents.length) {
         let zoomMax = zoomBounds.maxZoom,
           zoomMin = zoomBounds.minZoom,
           maxNativeZoom = zoomBounds.maxNativeZoom,
           minNativeZoom = zoomBounds.minNativeZoom;
         for (let i = 0; i < mapExtents.length; i++) {
-          if (mapExtents[i]._templatedLayer.bounds) {
-            let templatedLayer = mapExtents[i]._templatedLayer;
+          if (mapExtents[i]._extentLayer.bounds) {
+            let templatedLayer = mapExtents[i]._extentLayer;
             if (!bounds) {
               bounds = templatedLayer.bounds;
               zoomBounds = templatedLayer.zoomBounds;
@@ -692,11 +692,11 @@ export var MapMLLayer = L.Layer.extend({
       // if the popup is for a static / templated feature, the "zoom to here" link can be attached once the popup opens
       attachZoomLink.call(popup);
     } else {
-      // getting access to the first map-extent to get access to _templatedLayer to use it's (possibly) generic _previousFeature + _nextFeature methods.
+      // getting access to the first map-extent to get access to _extentLayer to use it's (possibly) generic _previousFeature + _nextFeature methods.
       const mapExtent =
         popup._source._layerEl.querySelector('map-extent') ||
         popup._source._layerEl.shadowRoot.querySelector('map-extent');
-      layer = mapExtent._templatedLayer;
+      layer = mapExtent._extentLayer;
       // if the popup is for a query, the "zoom to here" link should be re-attached every time new pagination features are displayed
       map.on('attachZoomLink', attachZoomLink, popup);
     }

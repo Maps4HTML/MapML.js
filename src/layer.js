@@ -343,12 +343,12 @@ export class MapLayer extends HTMLElement {
             '_staticTileLayer',
             '_imageLayer',
             '_mapmlvectors',
-            '_templatedLayer'
+            '_extentLayer'
           ];
         for (let j = 0; j < layerTypes.length; j++) {
           let type = layerTypes[j];
           if (this.checked) {
-            if (type === '_templatedLayer' && mapExtents.length > 0) {
+            if (type === '_extentLayer' && mapExtents.length > 0) {
               for (let i = 0; i < mapExtents.length; i++) {
                 totalExtentCount++;
                 if (mapExtents[i]._validateDisabled()) disabledExtentCount++;

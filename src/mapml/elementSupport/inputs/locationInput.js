@@ -94,7 +94,7 @@ export class LocationInput {
       // TODO: change return value as needed based on usage by map-input
       // https://github.com/Leaflet/Leaflet/blob/6994baf25f267db1c8b720c28a61e0700d0aa0e8/src/layer/tile/GridLayer.js#L652
       const center = this.layer._map.getCenter();
-      const templatedTileLayer = this.layer._templatedLayer._templates[0].layer;
+      const templatedTileLayer = this.layer._extentLayer._templates[0].layer;
       const pixelBounds = templatedTileLayer._getTiledPixelBounds(center);
       const tileRange = templatedTileLayer._pxBoundsToTileRange(pixelBounds);
       let obj = [];

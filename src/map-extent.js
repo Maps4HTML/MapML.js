@@ -4,6 +4,7 @@ export class MapExtent extends HTMLElement {
     return ['checked', 'label', 'opacity', 'hidden'];
   }
   get units() {
+    // this should fallback to something??
     return this.getAttribute('units');
   }
 
@@ -72,8 +73,8 @@ export class MapExtent extends HTMLElement {
           case 'opacity':
             if (oldValue !== newValue) {
               this._opacity = newValue;
-              if (this._templatedLayer)
-                this._templatedLayer.changeOpacity(newValue);
+              if (this._extentLayer)
+                this._extentLayer.changeOpacity(newValue);
             }
             break;
           case 'hidden':
@@ -176,7 +177,7 @@ export class MapExtent extends HTMLElement {
     // this._opacity is used to record the current opacity value (with or without updates),
     // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
     this._opacity = this.opacity || 1.0;
-    this._templatedLayer = M.templatedLayer(this._templateVars, {
+    this._extentLayer = M.templatedLayer(this._templateVars, {
       pane: this._layer._container,
       opacity: this.opacity,
       _leafletLayer: this._layer,
@@ -193,11 +194,11 @@ export class MapExtent extends HTMLElement {
     if (!this.hidden)
       this._layer.addExtentToLayerControl(this._layerControlHTML);
     this._validateLayerControlContainerHidden();
-    if (this._templatedLayer._queries) {
+    if (this._extentLayer._queries) {
       if (!this._layer._properties._queries)
         this._layer._properties._queries = [];
       this._layer._properties._queries =
-        this._layer._properties._queries.concat(this._templatedLayer._queries);
+        this._layer._properties._queries.concat(this._extentLayer._queries);
     }
     this._calculateBounds();
   }
@@ -211,15 +212,15 @@ export class MapExtent extends HTMLElement {
     );
   }
   _validateDisabled() {
-    if (!this._templatedLayer) return;
+    if (!this._extentLayer) return;
     const noTemplateVisible = () => {
-      let totalTemplateCount = this._templatedLayer._templates.length,
+      let totalTemplateCount = this._extentLayer._templates.length,
         disabledTemplateCount = 0;
-      for (let j = 0; j < this._templatedLayer._templates.length; j++) {
-        if (this._templatedLayer._templates[j].rel === 'query') {
+      for (let j = 0; j < this._extentLayer._templates.length; j++) {
+        if (this._extentLayer._templates[j].rel === 'query') {
           continue;
         }
-        if (!this._templatedLayer._templates[j].layer.isVisible) {
+        if (!this._extentLayer._templates[j].layer.isVisible) {
           disabledTemplateCount++;
         }
       }
@@ -235,7 +236,16 @@ export class MapExtent extends HTMLElement {
     this.toggleLayerControlDisabled();
     return this.disabled;
   }
-
+  getMetaExtent() {
+    return this.parentLayer.shadowRoot
+        ? this.parentLayer.shadowRoot.querySelector(
+            'map-extent > map-meta[name=extent]'
+          ) ||
+            this.parentLayer.shadowRoot.querySelector('map-meta[name=extent]')
+        : this.parentLayer.querySelector(
+            'map-extent > map-meta[name=extent]'
+          ) || this.parentLayer.querySelector('map-meta[name=extent]');
+  }
   // disable/italicize layer control elements based on the map-extent.disabled property
   toggleLayerControlDisabled() {
     let input = this._layerControlCheckbox,
@@ -276,20 +286,20 @@ export class MapExtent extends HTMLElement {
   }
 
   redraw() {
-    this._templatedLayer.redraw();
+    this._extentLayer.redraw();
   }
 
   _handleChange() {
-    // if the parent layer- is checked, add _templatedLayer to map if map-extent is checked, otherwise remove it
+    // if the parent layer- is checked, add _extentLayer to map if map-extent is checked, otherwise remove it
     if (this.checked && this.parentLayer.checked && !this.disabled) {
-      this._templatedLayer.addTo(this._layer._map);
-      this._templatedLayer.setZIndex(
+      this._extentLayer.addTo(this._layer._map);
+      this._extentLayer.setZIndex(
         Array.from(this.parentLayer.querySelectorAll('map-extent')).indexOf(
           this
         )
       );
     } else {
-      this._map.removeLayer(this._templatedLayer);
+      this._map.removeLayer(this._extentLayer);
     }
     // change the checkbox in the layer control to match map-extent.checked
     // doesn't trigger the event handler because it's not user-caused AFAICT
@@ -308,20 +318,20 @@ export class MapExtent extends HTMLElement {
   disconnectedCallback() {
     // in case of projection change, the disconnectedcallback will be triggered by removing layer-._layer even before
     // map-extent.connectedcallback is finished (because it will wait for the layer- to be ready)
-    // !this._templatedLayer <=> this.connectedCallback has not yet been finished before disconnectedCallback is triggered
+    // !this._extentLayer <=> this.connectedCallback has not yet been finished before disconnectedCallback is triggered
     if (
       this.hasAttribute('data-moving') ||
       this.parentLayer.hasAttribute('data-moving') ||
-      !this._templatedLayer
+      !this._extentLayer
     )
       return;
     this._validateLayerControlContainerHidden();
     // remove layer control for map-extent from layer control DOM
     this._layerControlHTML.remove();
-    this._map.removeLayer(this._templatedLayer);
+    this._map.removeLayer(this._extentLayer);
     this.parentLayer.removeEventListener('map-change', this._changeHandler);
     this.mapEl.removeEventListener('map-projectionchange', this._changeHandler);
-    delete this._templatedLayer;
+    delete this._extentLayer;
     delete this.parentLayer.bounds;
   }
   _calculateBounds() {
@@ -363,8 +373,8 @@ export class MapExtent extends HTMLElement {
       }
     }
     // cannot be named as layerBounds if we decide to keep the debugoverlay logic
-    this._templatedLayer.bounds = bounds;
-    this._templatedLayer.zoomBounds = {
+    this._extentLayer.bounds = bounds;
+    this._extentLayer.zoomBounds = {
       minZoom: zoomMin,
       maxZoom: zoomMax,
       maxNativeZoom,
@@ -375,7 +385,7 @@ export class MapExtent extends HTMLElement {
   whenReady() {
     return new Promise((resolve, reject) => {
       let interval, failureTimer;
-      if (this._templatedLayer) {
+      if (this._extentLayer) {
         resolve();
       } else {
         let extentElement = this;
@@ -383,7 +393,7 @@ export class MapExtent extends HTMLElement {
         failureTimer = setTimeout(extentNotDefined, 10000);
       }
       function testForExtent(extentElement) {
-        if (extentElement._templatedLayer) {
+        if (extentElement._extentLayer) {
           clearInterval(interval);
           clearTimeout(failureTimer);
           resolve();
