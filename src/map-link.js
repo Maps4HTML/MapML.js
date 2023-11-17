@@ -113,6 +113,7 @@ export class MapLink extends HTMLElement {
     // fold to lowercase
     switch (name) {
       case 'type':
+        // rel = tile, features, etc. TBD when it is used
 //        ttype = !t.hasAttribute('type')
 //          ? 'image/*'
 //          : t.getAttribute('type').toLowerCase(),
@@ -123,6 +124,7 @@ export class MapLink extends HTMLElement {
         }
         break;
       case 'rel':
+        // mandatory attribute, no default value
         if (oldValue !== newValue) {
           // handle side effects
         }
@@ -133,26 +135,33 @@ export class MapLink extends HTMLElement {
 //        }
 //        break;
       case 'href':
+        // rel = license, legend, stylesheet, self, style, self style, style self, zoomin, zoomout
         if (oldValue !== newValue) {
           // handle side effects
         }
         break;
       case 'hreflang':
+        // rel = *all*
+        // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#hreflang
+        // idea is that we can have multiple map-links with different hreflang, and map-extent chooses a map-link that matches with user's lang. Not a priority. - create an use-case issue?
         if (oldValue !== newValue) {
           // handle side effects
         }
         break;
       case 'tref':
+        // rel = tile, image, features, query
         if (oldValue !== newValue) {
           // handle side effects
         }
         break;
       case 'tms':
+        // rel = tile
         if (oldValue !== newValue) {
           // handle side effects
         }
         break;
       case 'projection':
+        // rel = alternate
         if (oldValue !== newValue) {
           // handle side effects
         }
