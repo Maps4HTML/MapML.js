@@ -296,7 +296,7 @@ export class MapLink extends HTMLElement {
       inputs = [];
     while ((v = varNamesRe.exec(template)) !== null) {
       let varName = v[1],
-        inp = this.parentExtent.querySelector(
+        inp = this.parentElement.querySelector(
           'map-input[name=' + varName + '],map-select[name=' + varName + ']'
         );
       if (inp) {
@@ -342,9 +342,7 @@ export class MapLink extends HTMLElement {
       if (!step || step === '0' || isNaN(step)) step = 1;
       // template has a matching input for every variable reference {varref}
       this._templateVars = {
-        template: decodeURI(
-          new URL(template, this.parentElement._layer.getBase())
-        ),
+        template: decodeURI(new URL(template, this.getBase())),
         linkEl: this,
         rel: this.rel,
         type: this.type,
@@ -356,6 +354,22 @@ export class MapLink extends HTMLElement {
         step: step
       };
     }
+  }
+  getBase() {
+    let layer = this.getRootNode().host;
+    return new URL(
+      this.getRootNode().querySelector('map-base') &&
+      this.getRootNode() instanceof ShadowRoot
+        ? this.getRootNode().querySelector('map-base').getAttribute('href')
+        : /* local content? */ !(this.getRootNode() instanceof ShadowRoot)
+        ? /* use the baseURI algorithm which takes into account any <base> */
+          this.getRootNode().querySelector('map-base')?.getAttribute('href') ||
+          this.baseURI
+        : /* else use the resolved <layer- src="..."> value */ new URL(
+            layer.src,
+            layer.baseURI
+          ).href
+    ).href;
   }
   getBounds() {
     let boundsFallback = {};
@@ -401,12 +415,12 @@ export class MapLink extends HTMLElement {
     return boundsFallback;
   }
   /**
-    * Return BOTH min/max(Display)Zoom AND min/maxNativeZoom which
-    * are options that can be passed to L.GridLayer...
-    * https://leafletjs.com/reference.html#gridlayer-minzoom
-    * 
-    * @param {Object} zoomInput - is an element reference to a map-input[type=zoom]
-    * @returns {Object} - returns {minZoom: n,maxZoom: n,minNativeZoom: n,maxNativeZoom: n}
+   * Return BOTH min/max(Display)Zoom AND min/maxNativeZoom which
+   * are options that can be passed to L.GridLayer...
+   * https://leafletjs.com/reference.html#gridlayer-minzoom
+   *
+   * @param {Object} zoomInput - is an element reference to a map-input[type=zoom]
+   * @returns {Object} - returns {minZoom: n,maxZoom: n,minNativeZoom: n,maxNativeZoom: n}
    */
   getZoomBounds(zoomInput) {
     // native variables should ONLY come from map-input min/max attributes
@@ -417,7 +431,7 @@ export class MapLink extends HTMLElement {
     // you fetch tiles at larger scales (i.e. many many small tiles) and render
     // them at smaller scale (i.e. little postage stamps), which can freez your
     // browser and bury a tile cache in requests, getting you banned/blocked
-    // 
+    //
     // minZoom = map-meta name=zoom min || input type=zoom min || projection minZoom
     // minNativeZoom = input type=zoom min || minZoom
     // maxZoom = map-meta name=zoom max || input type=zoom max || projection maxZoom

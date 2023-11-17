@@ -552,8 +552,7 @@ export var MapMLLayer = L.Layer.extend({
         }
         let shadowRoot = layer._layerEl.shadowRoot;
         // get the map-meta[name=projection/cs/extent/zoom] from map-head of remote mapml, attach them to the shadowroot
-        let headMeta =
-          mapml.children[0].children[0].querySelectorAll('map-meta[name]');
+        let headMeta = mapml.children[0].children[0].querySelectorAll('*');
         // get the elements inside map-body of remote mapml
         let bodyElements = mapml.children[0].children[1].children;
         let elements = [...headMeta, ...bodyElements];
