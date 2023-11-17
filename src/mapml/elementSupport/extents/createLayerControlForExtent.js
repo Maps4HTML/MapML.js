@@ -53,7 +53,7 @@ export var createLayerControlExtentHTML = function () {
   let mapSelects = this.querySelectorAll('map-select');
   if (mapSelects.length) {
     var frag = document.createDocumentFragment();
-    for (var i=0;i< mapSelects.length;i++){
+    for (var i = 0; i < mapSelects.length; i++) {
       frag.appendChild(mapSelects[i].createLayerControlForSelect());
     }
     extentSettings.appendChild(frag);

@@ -36,24 +36,24 @@ export class MapSelect extends HTMLElement {
   connectedCallback() {
     // origin of this block was in _initTemplateVars from map-extent, which was
     // originally part of MapMLLayer...
-    // 
-//          if (inp.tagName.toLowerCase() === 'map-select') {
-//            // use a throwaway div to parse the input from MapML into HTML
-//            var div = document.createElement('div');
-//            div.insertAdjacentHTML('afterbegin', inp.outerHTML);
-//            // parse
-//            inp.htmlselect = div.querySelector('map-select');
-//            inp.htmlselect = transcribe(inp.htmlselect);
-//
-//            // this goes into the layer control, so add a listener
-//            L.DomEvent.on(inp.htmlselect, 'change', this.redraw, this);
-//
-//            this refers to map-extent in the original
-//            if (!this._userInputs) {
-//              this._userInputs = [];
-//            }
-//            this._userInputs.push(inp.htmlselect);
-//          }
+    //
+    //          if (inp.tagName.toLowerCase() === 'map-select') {
+    //            // use a throwaway div to parse the input from MapML into HTML
+    //            var div = document.createElement('div');
+    //            div.insertAdjacentHTML('afterbegin', inp.outerHTML);
+    //            // parse
+    //            inp.htmlselect = div.querySelector('map-select');
+    //            inp.htmlselect = transcribe(inp.htmlselect);
+    //
+    //            // this goes into the layer control, so add a listener
+    //            L.DomEvent.on(inp.htmlselect, 'change', this.redraw, this);
+    //
+    //            this refers to map-extent in the original
+    //            if (!this._userInputs) {
+    //              this._userInputs = [];
+    //            }
+    //            this._userInputs.push(inp.htmlselect);
+    //          }
   }
   disconnectedCallback() {}
   createLayerControlForSelect() {

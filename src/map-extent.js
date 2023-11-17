@@ -73,8 +73,7 @@ export class MapExtent extends HTMLElement {
           case 'opacity':
             if (oldValue !== newValue) {
               this._opacity = newValue;
-              if (this._extentLayer)
-                this._extentLayer.changeOpacity(newValue);
+              if (this._extentLayer) this._extentLayer.changeOpacity(newValue);
             }
             break;
           case 'hidden':
@@ -155,29 +154,13 @@ export class MapExtent extends HTMLElement {
     this._map = this._layer._map;
     // reset the layer extent
     delete this.parentLayer.bounds;
-    this._templateVars = this._initTemplateVars(
-      // read map-meta[name=extent] from shadowroot or layer-
-      // querySelector / querySelectorAll on layer- cannot get elements inside its shadowroot
-      this.parentLayer.shadowRoot
-        ? this.parentLayer.shadowRoot.querySelector(
-            'map-extent > map-meta[name=extent]'
-          ) ||
-            this.parentLayer.shadowRoot.querySelector('map-meta[name=extent]')
-        : this.parentLayer.querySelector(
-            'map-extent > map-meta[name=extent]'
-          ) || this.parentLayer.querySelector('map-meta[name=extent]'),
-      this.units,
-      this._layer._content,
-      this._layer.getBase(),
-      this.units === this._layer.options.mapprojection
-    );
     this._changeHandler = this._handleChange.bind(this);
     this.parentLayer.addEventListener('map-change', this._changeHandler);
     this.mapEl.addEventListener('map-projectionchange', this._changeHandler);
     // this._opacity is used to record the current opacity value (with or without updates),
     // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
     this._opacity = this.opacity || 1.0;
-    this._extentLayer = M.templatedLayer(this._templateVars, {
+    this._extentLayer = M.templatedLayer(null, {
       pane: this._layer._container,
       opacity: this.opacity,
       _leafletLayer: this._layer,
@@ -236,15 +219,14 @@ export class MapExtent extends HTMLElement {
     this.toggleLayerControlDisabled();
     return this.disabled;
   }
-  getMetaExtent() {
+  getMeta(metaName) {
+    let name = metaName.toLowerCase();
+    if (name !== 'extent' && name !== 'zoom') return;
     return this.parentLayer.shadowRoot
-        ? this.parentLayer.shadowRoot.querySelector(
-            'map-extent > map-meta[name=extent]'
-          ) ||
-            this.parentLayer.shadowRoot.querySelector('map-meta[name=extent]')
-        : this.parentLayer.querySelector(
-            'map-extent > map-meta[name=extent]'
-          ) || this.parentLayer.querySelector('map-meta[name=extent]');
+      ? this.querySelector(`map-meta[name=${name}]`) ||
+          this.parentLayer.shadowRoot.querySelector(`map-meta[name=${name}]`)
+      : this.querySelector(`map-meta[name=${name}]`) ||
+          this.parentLayer.querySelector(`map-meta[name=${name}]`);
   }
   // disable/italicize layer control elements based on the map-extent.disabled property
   toggleLayerControlDisabled() {

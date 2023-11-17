@@ -6,7 +6,6 @@ export var TemplatedLayer = L.Layer.extend({
     this._extentEl = this.options.extentEl;
     this.changeOpacity(this.options.opacity);
     L.DomUtil.addClass(this._container, 'mapml-templatedlayer-container');
-
   },
   getEvents: function () {
     return {

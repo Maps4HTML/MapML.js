@@ -14,31 +14,31 @@ export class MapInput extends HTMLElement {
       'step'
     ];
   }
-// sets default values for min,max on zoom and location input
-// this stuff should be handled by the default getters on map-input type=location or map-input type=zoom
-//          if (
-//            inp.hasAttribute('type') &&
-//            inp.getAttribute('type') === 'location' &&
-//            (!inp.hasAttribute('min') || !inp.hasAttribute('max')) &&
-//            inp.hasAttribute('axis') &&
-//            !['i', 'j'].includes(inp.getAttribute('axis').toLowerCase())
-//          ) {
-//            if (
-//              zoomInput &&
-//              template.includes(`{${zoomInput.getAttribute('name')}}`)
-//            ) {
-//              zoomInput.setAttribute('value', boundsFallback.zoom);
-//            }
-//            let axis = inp.getAttribute('axis'),
-//              axisBounds = M.convertPCRSBounds(
-//                boundsFallback.bounds,
-//                boundsFallback.zoom,
-//                projection,
-//                M.axisToCS(axis)
-//              );
-//            inp.setAttribute('min', axisBounds.min[M.axisToXY(axis)]);
-//            inp.setAttribute('max', axisBounds.max[M.axisToXY(axis)]);
-//          }
+  // sets default values for min,max on zoom and location input
+  // this stuff should be handled by the default getters on map-input type=location or map-input type=zoom
+  //          if (
+  //            inp.hasAttribute('type') &&
+  //            inp.getAttribute('type') === 'location' &&
+  //            (!inp.hasAttribute('min') || !inp.hasAttribute('max')) &&
+  //            inp.hasAttribute('axis') &&
+  //            !['i', 'j'].includes(inp.getAttribute('axis').toLowerCase())
+  //          ) {
+  //            if (
+  //              zoomInput &&
+  //              template.includes(`{${zoomInput.getAttribute('name')}}`)
+  //            ) {
+  //              zoomInput.setAttribute('value', boundsFallback.zoom);
+  //            }
+  //            let axis = inp.getAttribute('axis'),
+  //              axisBounds = M.convertPCRSBounds(
+  //                boundsFallback.bounds,
+  //                boundsFallback.zoom,
+  //                projection,
+  //                M.axisToCS(axis)
+  //              );
+  //            inp.setAttribute('min', axisBounds.min[M.axisToXY(axis)]);
+  //            inp.setAttribute('max', axisBounds.max[M.axisToXY(axis)]);
+  //          }
 
   get name() {
     return this.getAttribute('name');
