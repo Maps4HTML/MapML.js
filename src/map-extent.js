@@ -160,11 +160,11 @@ export class MapExtent extends HTMLElement {
     // this._opacity is used to record the current opacity value (with or without updates),
     // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
     this._opacity = this.opacity || 1.0;
-    this._extentLayer = M.templatedLayer(null, {
+    this._extentLayer = M.templatedLayer({
       pane: this._layer._container,
       opacity: this.opacity,
       _leafletLayer: this._layer,
-      crs: this._layer._properties.crs,
+      crs: M[this.units],
       extentZIndex: Array.from(
         this.parentLayer.querySelectorAll('map-extent')
       ).indexOf(this),
@@ -177,12 +177,6 @@ export class MapExtent extends HTMLElement {
     if (!this.hidden)
       this._layer.addExtentToLayerControl(this._layerControlHTML);
     this._validateLayerControlContainerHidden();
-    if (this._extentLayer._queries) {
-      if (!this._layer._properties._queries)
-        this._layer._properties._queries = [];
-      this._layer._properties._queries =
-        this._layer._properties._queries.concat(this._extentLayer._queries);
-    }
     this._calculateBounds();
   }
   getLayerControlHTML() {
@@ -196,14 +190,17 @@ export class MapExtent extends HTMLElement {
   }
   _validateDisabled() {
     if (!this._extentLayer) return;
+    let templates = this.querySelectorAll(
+      'map-link[rel=image],map-link[rel=tile],map-link[rel=features],map-link[rel=query]'
+    );
     const noTemplateVisible = () => {
-      let totalTemplateCount = this._extentLayer._templates.length,
+      let totalTemplateCount = templates.length,
         disabledTemplateCount = 0;
-      for (let j = 0; j < this._extentLayer._templates.length; j++) {
-        if (this._extentLayer._templates[j].rel === 'query') {
+      for (let j = 0; j < totalTemplateCount; j++) {
+        if (templates[j].rel === 'query') {
           continue;
         }
-        if (!this._extentLayer._templates[j].layer.isVisible) {
+        if (!templates[j]._templatedLayer.isVisible) {
           disabledTemplateCount++;
         }
       }
@@ -265,10 +262,6 @@ export class MapExtent extends HTMLElement {
         });
       }
     }
-  }
-
-  redraw() {
-    this._extentLayer.redraw();
   }
 
   _handleChange() {

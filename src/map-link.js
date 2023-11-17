@@ -226,6 +226,7 @@ export class MapLink extends HTMLElement {
         : this.parentNode.host;
     if (!this.tref || !this.parentExtent) return;
     await this.parentExtent.whenReady();
+    this.mapEl = this.parentExtent.mapEl;
     // parse tref for variable names
     // find sibling map-input with that name, link to them via js reference
     // resolve the tref against the appropriate base URL so as to be absolute
@@ -233,18 +234,18 @@ export class MapLink extends HTMLElement {
     // create the layer type appropriate to the rel value, so long as the
     // parsing has gone well
     this.zIndex = Array.from(
-      this.parentExtent.querySelectorAll('map-link')
+      this.parentExtent.querySelectorAll(
+        'map-link[rel=image],map-link[rel=tile],map-link[rel=features]'
+      )
     ).indexOf(this);
     if (this.rel === 'tile') {
-      this._templatedLayer = M.templatedTileLayer(
-        this._templateVars,
-        L.Util.extend(options, {
-          errorTileUrl:
-            'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
-          zIndex: this.zIndex,
-          pane: this.parentExtent._tempatedLayer._container
-        })
-      );
+      this._templatedLayer = M.templatedTileLayer(this._templateVars, {
+        crs: M[this.parentExtent.units],
+        errorTileUrl:
+          'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
+        zIndex: this.zIndex,
+        pane: this.parentExtent._extentLayer.getContainer()
+      });
     } else if (this.rel === 'image') {
       this._templatedLayer = M.templatedImageLayer(
         this._templateVars,
@@ -271,13 +272,138 @@ export class MapLink extends HTMLElement {
       let inputData = M._extractInputBounds(this);
       this.extentBounds = inputData.bounds;
       this.zoomBounds = inputData.zoomBounds;
-      this._extentEl = this.parentExtent;
-      this._queries.push(
+      if (!this.parentExtent._layer._properties._queries)
+        this.parentExtent._layer._properties._queries = [];
+      this.parentExtent._layer._properties._queries.push(
         // need to refactor the _setupQueryVars args / migrate it to map-link?
-        L.extend(this, this.parentExtent._extentLayer._setupQueryVars(this))
+        L.extend(this._templateVars, this._setupQueryVars(this._templateVars))
       );
     }
   }
+  _setupQueryVars(template) {
+    // process the inputs associated to template and create an object named
+    // query with member properties as follows:
+    // {width: 'widthvarname',
+    //  height: 'heightvarname',
+    //  left: 'leftvarname',
+    //  right: 'rightvarname',
+    //  top: 'topvarname',
+    //  bottom: 'bottomvarname'
+    //  i: 'ivarname'
+    //  j: 'jvarname'}
+    //  x: 'xvarname' x being the tcrs x axis
+    //  y: 'yvarname' y being the tcrs y axis
+    //  z: 'zvarname' zoom
+    //  title: link title
+
+    var queryVarNames = { query: {} },
+      inputs = template.values;
+
+    for (var i = 0; i < template.values.length; i++) {
+      var type = inputs[i].getAttribute('type'),
+        units = inputs[i].getAttribute('units'),
+        axis = inputs[i].getAttribute('axis'),
+        name = inputs[i].getAttribute('name'),
+        position = inputs[i].getAttribute('position'),
+        rel = inputs[i].getAttribute('rel'),
+        select = inputs[i].tagName.toLowerCase() === 'map-select';
+      if (type === 'width') {
+        queryVarNames.query.width = name;
+      } else if (type === 'height') {
+        queryVarNames.query.height = name;
+      } else if (type === 'location') {
+        switch (axis) {
+          case 'x':
+          case 'y':
+          case 'column':
+          case 'row':
+            queryVarNames.query[axis] = name;
+            break;
+          case 'longitude':
+          case 'easting':
+            if (position) {
+              if (position.match(/.*?-left/i)) {
+                if (rel === 'pixel') {
+                  queryVarNames.query.pixelleft = name;
+                } else if (rel === 'tile') {
+                  queryVarNames.query.tileleft = name;
+                } else {
+                  queryVarNames.query.mapleft = name;
+                }
+              } else if (position.match(/.*?-right/i)) {
+                if (rel === 'pixel') {
+                  queryVarNames.query.pixelright = name;
+                } else if (rel === 'tile') {
+                  queryVarNames.query.tileright = name;
+                } else {
+                  queryVarNames.query.mapright = name;
+                }
+              }
+            } else {
+              queryVarNames.query[axis] = name;
+            }
+            break;
+          case 'latitude':
+          case 'northing':
+            if (position) {
+              if (position.match(/top-.*?/i)) {
+                if (rel === 'pixel') {
+                  queryVarNames.query.pixeltop = name;
+                } else if (rel === 'tile') {
+                  queryVarNames.query.tiletop = name;
+                } else {
+                  queryVarNames.query.maptop = name;
+                }
+              } else if (position.match(/bottom-.*?/i)) {
+                if (rel === 'pixel') {
+                  queryVarNames.query.pixelbottom = name;
+                } else if (rel === 'tile') {
+                  queryVarNames.query.tilebottom = name;
+                } else {
+                  queryVarNames.query.mapbottom = name;
+                }
+              }
+            } else {
+              queryVarNames.query[axis] = name;
+            }
+            break;
+          case 'i':
+            if (units === 'tile') {
+              queryVarNames.query.tilei = name;
+            } else {
+              queryVarNames.query.mapi = name;
+            }
+            break;
+          case 'j':
+            if (units === 'tile') {
+              queryVarNames.query.tilej = name;
+            } else {
+              queryVarNames.query.mapj = name;
+            }
+            break;
+          default:
+          // unsuportted axis value
+        }
+      } else if (type === 'zoom') {
+        //<input name="..." type="zoom" value="0" min="0" max="17">
+        queryVarNames.query.zoom = name;
+      } else if (select) {
+        /*jshint -W104 */
+        const parsedselect = inputs[i].htmlselect;
+        queryVarNames.query[name] = function () {
+          return parsedselect.value;
+        };
+      } else {
+        /*jshint -W104 */
+        const input = inputs[i];
+        queryVarNames.query[name] = function () {
+          return input.getAttribute('value');
+        };
+      }
+    }
+    return queryVarNames;
+  }
+  _validateDisabled() {}
   disconnectedCallback() {}
   // there's a new function in map-extent.getMeta('extent'|'zoom') which was created
   // to be used to pass its return value in here as metaExtent...

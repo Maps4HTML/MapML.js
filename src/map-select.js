@@ -34,6 +34,7 @@ export class MapSelect extends HTMLElement {
     super();
   }
   connectedCallback() {
+    // TODO make the layer redraw after map-select change event
     // origin of this block was in _initTemplateVars from map-extent, which was
     // originally part of MapMLLayer...
     //
