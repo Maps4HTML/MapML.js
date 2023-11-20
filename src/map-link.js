@@ -240,6 +240,8 @@ export class MapLink extends HTMLElement {
     ).indexOf(this);
     if (this.rel === 'tile') {
       this._templatedLayer = M.templatedTileLayer(this._templateVars, {
+        zoomBounds: this.getZoomBounds(),
+        extentBounds: this.getBounds(),
         crs: M[this.parentExtent.units],
         errorTileUrl:
           'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
@@ -403,7 +405,6 @@ export class MapLink extends HTMLElement {
     }
     return queryVarNames;
   }
-  _validateDisabled() {}
   disconnectedCallback() {}
   // there's a new function in map-extent.getMeta('extent'|'zoom') which was created
   // to be used to pass its return value in here as metaExtent...
@@ -473,13 +474,90 @@ export class MapLink extends HTMLElement {
         rel: this.rel,
         type: this.type,
         values: inputs,
-        zoomBounds: this.getZoomBounds(linkedZoomInput),
-        boundsFallbackPCRS: { bounds: this.getBounds().bounds },
+        zoomBounds: this._getZoomBounds(linkedZoomInput),
+        boundsFallbackPCRS: this.getFallbackBounds(),
         projection: this.parentElement.units || M.FALLBACK_PROJECTION,
         tms: this.tms,
         step: step
       };
     }
+  }
+  getZoomBounds() {
+    return this._templateVars.zoomBounds;
+  }
+  getBounds() {
+    let template = this._templateVars;
+    //sets variables with their respective fallback values incase content is missing from the template
+    let inputs = template.values,
+      projection = template.projection || M.FALLBACK_PROJECTION,
+      value = 0,
+      boundsUnit = M.FALLBACK_CS;
+    let bounds = M[template.projection].options.crs.tilematrix.bounds(0),
+      defaultMinZoom = 0,
+      defaultMaxZoom = M[template.projection].options.resolutions.length - 1,
+      nativeMinZoom = defaultMinZoom,
+      nativeMaxZoom = defaultMaxZoom;
+    let locInputs = false,
+      numberOfAxes = 0;
+    for (let i = 0; i < inputs.length; i++) {
+      switch (inputs[i].getAttribute('type')) {
+        case 'zoom':
+          nativeMinZoom = +(inputs[i].hasAttribute('min') &&
+          !isNaN(+inputs[i].getAttribute('min'))
+            ? inputs[i].getAttribute('min')
+            : defaultMinZoom);
+          nativeMaxZoom = +(inputs[i].hasAttribute('max') &&
+          !isNaN(+inputs[i].getAttribute('max'))
+            ? inputs[i].getAttribute('max')
+            : defaultMaxZoom);
+          value = +inputs[i].getAttribute('value');
+          break;
+        case 'location':
+          if (!inputs[i].getAttribute('max') || !inputs[i].getAttribute('min'))
+            continue;
+          let max = +inputs[i].getAttribute('max'),
+            min = +inputs[i].getAttribute('min');
+          switch (inputs[i].getAttribute('axis').toLowerCase()) {
+            case 'x':
+            case 'longitude':
+            case 'column':
+            case 'easting':
+              boundsUnit = M.axisToCS(
+                inputs[i].getAttribute('axis').toLowerCase()
+              );
+              bounds.min.x = min;
+              bounds.max.x = max;
+              numberOfAxes++;
+              break;
+            case 'y':
+            case 'latitude':
+            case 'row':
+            case 'northing':
+              boundsUnit = M.axisToCS(
+                inputs[i].getAttribute('axis').toLowerCase()
+              );
+              bounds.min.y = min;
+              bounds.max.y = max;
+              numberOfAxes++;
+              break;
+            default:
+              break;
+          }
+          break;
+        default:
+      }
+    }
+    if (numberOfAxes >= 2) {
+      locInputs = true;
+    }
+    if (!locInputs && template.boundsFallbackPCRS) {
+      bounds = template.boundsFallbackPCRS;
+    } else if (locInputs) {
+      bounds = M.boundsToPCRSBounds(bounds, value, projection, boundsUnit);
+    } else {
+      bounds = M[template.projection].options.crs.pcrs.bounds;
+    }
+    return bounds;
   }
   getBase() {
     let layer = this.getRootNode().host;
@@ -497,16 +575,16 @@ export class MapLink extends HTMLElement {
           ).href
     ).href;
   }
-  getBounds() {
-    let boundsFallback = {};
+  getFallbackBounds() {
+    let bounds;
 
-    boundsFallback.zoom = 0;
+    let zoom = 0;
     let metaExtent = this.parentElement.getMeta('extent');
     if (metaExtent) {
       let content = M._metaContentToObject(metaExtent.getAttribute('content')),
         cs;
 
-      boundsFallback.zoom = content.zoom || boundsFallback.zoom;
+      zoom = content.zoom || zoom;
 
       let metaKeys = Object.keys(content);
       for (let i = 0; i < metaKeys.length; i++) {
@@ -516,7 +594,7 @@ export class MapLink extends HTMLElement {
         }
       }
       let axes = M.csToAxes(cs);
-      boundsFallback.bounds = M.boundsToPCRSBounds(
+      bounds = M.boundsToPCRSBounds(
         L.bounds(
           L.point(
             +content[`top-left-${axes[0]}`],
@@ -527,7 +605,7 @@ export class MapLink extends HTMLElement {
             +content[`bottom-right-${axes[1]}`]
           )
         ),
-        boundsFallback.zoom,
+        zoom,
         projection,
         cs
       );
@@ -536,9 +614,9 @@ export class MapLink extends HTMLElement {
       // TODO: This is a temporary fix, _initTemplateVars (or processinitialextent) should not be called when projection of the layer and map do not match, this should be called/reinitialized once the layer projection matches with the map projection
       let fallbackProjection =
         M[this.parentElement.units || M.FALLBACK_PROJECTION];
-      boundsFallback.bounds = fallbackProjection.options.crs.pcrs.bounds;
+      bounds = fallbackProjection.options.crs.pcrs.bounds;
     }
-    return boundsFallback;
+    return bounds;
   }
   /**
    * Return BOTH min/max(Display)Zoom AND min/maxNativeZoom which
@@ -548,7 +626,7 @@ export class MapLink extends HTMLElement {
    * @param {Object} zoomInput - is an element reference to a map-input[type=zoom]
    * @returns {Object} - returns {minZoom: n,maxZoom: n,minNativeZoom: n,maxNativeZoom: n}
    */
-  getZoomBounds(zoomInput) {
+  _getZoomBounds(zoomInput) {
     // native variables should ONLY come from map-input min/max attributes
     // BUT they should fall back to map-meta or projection values for min/max (display) zoom
     // display zoom variables should be EQUAL to native unless specified differently
@@ -589,6 +667,9 @@ export class MapLink extends HTMLElement {
 
     return zoomBounds;
   }
+  _validateDisabled() {
+    return this._templatedLayer.isVisible;
+  }
 
   // Resolve the templated URL with info from the sibling map-input's
   resolve() {
@@ -614,5 +695,51 @@ export class MapLink extends HTMLElement {
         // TODO.
       }
     }
+  }
+  whenReady() {
+    return new Promise((resolve, reject) => {
+      let interval, failureTimer;
+      switch (this.rel.toLowerCase()) {
+        // for some cases, require a dependency check
+        case 'tile':
+        case 'image':
+        case 'features':
+          if (this._templatedLayer) {
+            resolve();
+          }
+          interval = setInterval(testForContentLink, 300, this);
+          failureTimer = setTimeout(linkNotDefined, 10000);
+          break;
+        case 'query':
+        case 'style':
+        case 'self':
+        case 'style self':
+        case 'self style':
+        case 'zoomin':
+        case 'zoomout':
+        case 'legend':
+        case 'stylesheet':
+        case 'alternate':
+        case 'license':
+          resolve();
+          break;
+      }
+      function testForContentLink(linkElement) {
+        if (linkElement._linkLayer) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          resolve();
+        } else if (!linkElement.isConnected) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          reject('map-link was disconnected while waiting to be ready');
+        }
+      }
+      function linkNotDefined() {
+        clearInterval(interval);
+        clearTimeout(failureTimer);
+        reject('Timeout reached waiting for link to be ready');
+      }
+    });
   }
 }

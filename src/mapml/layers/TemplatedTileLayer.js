@@ -8,15 +8,13 @@ export var TemplatedTileLayer = L.TileLayer.extend({
   initialize: function (template, options) {
     // _setUpTileTemplateVars needs options.crs, not available unless we set
     // options first...
-    let inputData = M._extractInputBounds(template);
-    this.zoomBounds = inputData.zoomBounds;
-    this.extentBounds = inputData.bounds;
     this.isVisible = true;
-    L.extend(options, this.zoomBounds);
     options.tms = template.tms;
     delete options.opacity;
     L.setOptions(this, options);
     this._setUpTileTemplateVars(template);
+    this.zoomBounds = this.options.zoomBounds;
+    this.extentBounds = this.options.extentBounds;
 
     this._template = template;
     this._initContainer();

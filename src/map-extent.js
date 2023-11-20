@@ -193,28 +193,34 @@ export class MapExtent extends HTMLElement {
     let templates = this.querySelectorAll(
       'map-link[rel=image],map-link[rel=tile],map-link[rel=features],map-link[rel=query]'
     );
-    const noTemplateVisible = () => {
-      let totalTemplateCount = templates.length,
-        disabledTemplateCount = 0;
-      for (let j = 0; j < totalTemplateCount; j++) {
-        if (templates[j].rel === 'query') {
-          continue;
-        }
-        if (!templates[j]._templatedLayer.isVisible) {
-          disabledTemplateCount++;
-        }
-      }
-      return disabledTemplateCount === totalTemplateCount;
-    };
-    if (!this._projectionMatch() || noTemplateVisible()) {
-      this.setAttribute('disabled', '');
-      this.disabled = true;
-    } else {
-      this.removeAttribute('disabled');
-      this.disabled = false;
+    let linksReady = [];
+    for (let link of [...templates]) {
+      linksReady.push(link.whenReady());
     }
-    this.toggleLayerControlDisabled();
-    return this.disabled;
+    Promise.allSettled(linksReady).then(() => {
+      const noTemplateVisible = () => {
+        let totalTemplateCount = templates.length,
+          disabledTemplateCount = 0;
+        for (let j = 0; j < totalTemplateCount; j++) {
+          if (templates[j].rel === 'query') {
+            continue;
+          }
+          if (!templates[j]._validateDisabled()) {
+            disabledTemplateCount++;
+          }
+        }
+        return disabledTemplateCount === totalTemplateCount;
+      };
+      if (!this._projectionMatch() || noTemplateVisible()) {
+        this.setAttribute('disabled', '');
+        this.disabled = true;
+      } else {
+        this.removeAttribute('disabled');
+        this.disabled = false;
+      }
+      this.toggleLayerControlDisabled();
+      return this.disabled;
+    });
   }
   getMeta(metaName) {
     let name = metaName.toLowerCase();
@@ -314,36 +320,31 @@ export class MapExtent extends HTMLElement {
       zoomMax = 0,
       zoomMin = 0,
       maxNativeZoom = 0,
-      minNativeZoom = 0;
+      minNativeZoom = 0,
+      templates = this.querySelectorAll(
+        'map-link[rel=image],map-link[rel=tile],map-link[rel=features],map-link[rel=query]'
+      );
+
     // bounds should be able to be calculated unconditionally, not depend on map-extent.checked
-    for (let j = 0; j < this._templateVars.length; j++) {
-      let inputData = M._extractInputBounds(this._templateVars[j]);
-      this._templateVars[j].tempExtentBounds = inputData.bounds;
-      this._templateVars[j].extentZoomBounds = inputData.zoomBounds;
+    for (let j = 0; j < templates.length; j++) {
       if (!bounds) {
-        bounds = this._templateVars[j].tempExtentBounds;
-        zoomMax = this._templateVars[j].extentZoomBounds.maxZoom;
-        zoomMin = this._templateVars[j].extentZoomBounds.minZoom;
-        maxNativeZoom = this._templateVars[j].extentZoomBounds.maxNativeZoom;
-        minNativeZoom = this._templateVars[j].extentZoomBounds.minNativeZoom;
+        bounds = templates[j].getBounds();
+        zoomMax = templates[j].getZoomBounds().maxZoom;
+        zoomMin = templates[j].getZoomBounds().minZoom;
+        maxNativeZoom = templates[j].getZoomBounds().maxNativeZoom;
+        minNativeZoom = templates[j].getZoomBounds().minNativeZoom;
       } else {
-        bounds.extend(this._templateVars[j].tempExtentBounds.min);
-        bounds.extend(this._templateVars[j].tempExtentBounds.max);
-        zoomMax = Math.max(
-          zoomMax,
-          this._templateVars[j].extentZoomBounds.maxZoom
-        );
-        zoomMin = Math.min(
-          zoomMin,
-          this._templateVars[j].extentZoomBounds.minZoom
-        );
+        bounds.extend(templates[j].getBounds().min);
+        bounds.extend(templates[j].getBounds().max);
+        zoomMax = Math.max(zoomMax, templates[j].getZoomBounds().maxZoom);
+        zoomMin = Math.min(zoomMin, templates[j].getZoomBounds().minZoom);
         maxNativeZoom = Math.max(
           maxNativeZoom,
-          this._templateVars[j].extentZoomBounds.maxNativeZoom
+          templates[j].getZoomBounds().maxNativeZoom
         );
         minNativeZoom = Math.min(
           minNativeZoom,
-          this._templateVars[j].extentZoomBounds.minNativeZoom
+          templates[j].getZoomBounds().minNativeZoom
         );
       }
     }
