@@ -14,7 +14,7 @@ export class MapLink extends HTMLElement {
     ];
   }
   get type() {
-    return this.getAttribute('type');
+    return this.getAttribute('type') || 'image/*';
   }
   set type(val) {
     // improve this
@@ -247,7 +247,7 @@ export class MapLink extends HTMLElement {
           'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
         zIndex: this.zIndex,
         pane: this.parentExtent._extentLayer.getContainer()
-      });
+      }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'image') {
       this._templatedLayer = M.templatedImageLayer(
         this._templateVars,
@@ -255,7 +255,7 @@ export class MapLink extends HTMLElement {
           zIndex: this.zIndex,
           pane: this.parentExtent._tempatedLayer._container
         })
-      );
+      ).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'features') {
       this._templatedLayer = M.templatedFeaturesLayer(
         this._templateVars,
@@ -263,7 +263,7 @@ export class MapLink extends HTMLElement {
           zIndex: this.zIndex,
           pane: this.parentExtent._tempatedLayer._container
         })
-      );
+      ).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'query') {
       // add template to array of queryies to be added to map and processed
       // on click/tap events

@@ -1,9 +1,13 @@
 export var TemplatedLayer = L.LayerGroup.extend({
   initialize: function (options) {
-    L.setOptions(this, options);
+    // TODO: should invoke prototype.initialize to trigger the leaflet initialization for proper setup
+    //       otherwise the initialize we provide will override the init that leaflet provides
+    //       but we still need to create the container and the pane by ourselves
+    L.LayerGroup.prototype.initialize.call(this, null, options);
     this._container = L.DomUtil.create('div', 'leaflet-layer');
     this._extentEl = this.options.extentEl;
     this.changeOpacity(this.options.opacity);
+    // TODO: need renaming ex. mapml-extentLayer-container
     L.DomUtil.addClass(this._container, 'mapml-templatedlayer-container');
   },
   getEvents: function () {
@@ -41,13 +45,8 @@ export var TemplatedLayer = L.LayerGroup.extend({
       this._container.style.zIndex = this.options.zIndex;
     }
   },
-  onRemove: function (map) {
+  onRemove: function () {
     L.DomUtil.remove(this._container);
-    for (var i = 0; i < this._templates.length; i++) {
-      if (this._templates[i].rel !== 'query') {
-        map.removeLayer(this._templates[i].layer);
-      }
-    }
   },
 
   _previousFeature: function (e) {

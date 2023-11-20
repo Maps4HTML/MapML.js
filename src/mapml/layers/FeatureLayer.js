@@ -31,6 +31,8 @@ export var FeatureLayer = L.FeatureGroup.extend({
       );
       L.setOptions(this.options.renderer, { pane: this._container });
     }
+    // TODO: check this._layers should be an array or an object
+    //       leaflet initializes this._layers as an empty array
     this._layers = {};
     if (this.options.query) {
       this._mapmlFeatures = mapml.features ? mapml.features : mapml;
