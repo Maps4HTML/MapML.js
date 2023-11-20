@@ -227,12 +227,7 @@ export class MapLink extends HTMLElement {
     if (!this.tref || !this.parentExtent) return;
     await this.parentExtent.whenReady();
     this.mapEl = this.parentExtent.mapEl;
-    // parse tref for variable names
-    // find sibling map-input with that name, link to them via js reference
-    // resolve the tref against the appropriate base URL so as to be absolute
-    // do the above via call to _initTemplateVars or rename thereof
-    // create the layer type appropriate to the rel value, so long as the
-    // parsing has gone well
+    // create the layer type appropriate to the rel value
     this.zIndex = Array.from(
       this.parentExtent.querySelectorAll(
         'map-link[rel=image],map-link[rel=tile],map-link[rel=features]'
@@ -249,21 +244,19 @@ export class MapLink extends HTMLElement {
         pane: this.parentExtent._extentLayer.getContainer()
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'image') {
-      this._templatedLayer = M.templatedImageLayer(
-        this._templateVars,
-        L.Util.extend(options, {
-          zIndex: this.zIndex,
-          pane: this.parentExtent._tempatedLayer._container
-        })
-      ).addTo(this.parentExtent._extentLayer);
+      this._templatedLayer = M.templatedImageLayer(this._templateVars, {
+        zoomBounds: this.getZoomBounds(),
+        extentBounds: this.getBounds(),
+        zIndex: this.zIndex,
+        pane: this.parentExtent._extentLayer.getContainer()
+      }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'features') {
-      this._templatedLayer = M.templatedFeaturesLayer(
-        this._templateVars,
-        L.Util.extend(options, {
-          zIndex: this.zIndex,
-          pane: this.parentExtent._tempatedLayer._container
-        })
-      ).addTo(this.parentExtent._extentLayer);
+      this._templatedLayer = M.templatedFeaturesLayer(this._templateVars, {
+        zoomBounds: this.getZoomBounds(),
+        extentBounds: this.getBounds(),
+        zIndex: this.zIndex,
+        pane: this.parentExtent._extentLayer.getContainer()
+      }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'query') {
       // add template to array of queryies to be added to map and processed
       // on click/tap events
@@ -476,6 +469,7 @@ export class MapLink extends HTMLElement {
         values: inputs,
         zoomBounds: this._getZoomBounds(linkedZoomInput),
         boundsFallbackPCRS: this.getFallbackBounds(),
+        // TODO: make map-extent.units fall back automatically
         projection: this.parentElement.units || M.FALLBACK_PROJECTION,
         tms: this.tms,
         step: step
@@ -485,9 +479,11 @@ export class MapLink extends HTMLElement {
   getZoomBounds() {
     return this._templateVars.zoomBounds;
   }
+  /**
+   * TODO: review getBounds for sanity, also getFallbackBounds, perhaps integrate
+   */
   getBounds() {
     let template = this._templateVars;
-    //sets variables with their respective fallback values incase content is missing from the template
     let inputs = template.values,
       projection = template.projection || M.FALLBACK_PROJECTION,
       value = 0,
@@ -610,8 +606,8 @@ export class MapLink extends HTMLElement {
         cs
       );
     } else {
-      // for custom projections, M[projection] may not be loaded, so uses M['OSMTILE'] as backup, this code will need to get rerun once projection is changed and M[projection] is available
-      // TODO: This is a temporary fix, _initTemplateVars (or processinitialextent) should not be called when projection of the layer and map do not match, this should be called/reinitialized once the layer projection matches with the map projection
+      // TODO review.  Should this.parentElement.units automatically fall back
+      // i.e. to OSMTILE if not specified?  Probably, but it does not currently.
       let fallbackProjection =
         M[this.parentElement.units || M.FALLBACK_PROJECTION];
       bounds = fallbackProjection.options.crs.pcrs.bounds;
