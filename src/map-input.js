@@ -184,8 +184,6 @@ export class MapInput extends HTMLElement {
             if (oldValue !== newValue) {
               if (oldValue !== null) {
                 this.input.value = newValue;
-              } else {
-                this.initialValue = newValue;
               }
             }
             break;
@@ -254,6 +252,7 @@ export class MapInput extends HTMLElement {
         switch (this.type) {
           case 'zoom':
             // input will store the input Class specific to the input type
+            this.initialValue = +this.getAttribute('value');
             this.input = new M.ZoomInput(
               this.name,
               this.min,

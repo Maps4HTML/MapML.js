@@ -226,6 +226,7 @@ export class MapLink extends HTMLElement {
         : this.parentNode.host;
     if (!this.tref || !this.parentExtent) return;
     await this.parentExtent.whenReady();
+    await this._templateVars.inputsReady;
     this.mapEl = this.parentExtent.mapEl;
     // create the layer type appropriate to the rel value
     this.zIndex = Array.from(
@@ -412,7 +413,8 @@ export class MapLink extends HTMLElement {
 
     var v,
       vcount = template.match(varNamesRe),
-      inputs = [];
+      inputs = [],
+      inputsReady = [];
     while ((v = varNamesRe.exec(template)) !== null) {
       let varName = v[1],
         inp = this.parentElement.querySelector(
@@ -421,6 +423,7 @@ export class MapLink extends HTMLElement {
       if (inp) {
         // this "associates" the input to this  map-link
         inputs.push(inp);
+        inputsReady.push(inp.whenReady());
 
         // I think this means that regardless of whether the tref includes
         // a reference to the zoom input, it gets associated to the link
@@ -466,6 +469,8 @@ export class MapLink extends HTMLElement {
         rel: this.rel,
         type: this.type,
         values: inputs,
+        inputsReady: Promise.allSettled(inputsReady),
+        zoom: linkedZoomInput,
         zoomBounds: this._getZoomBounds(linkedZoomInput),
         boundsFallbackPCRS: this.getFallbackBounds(),
         // TODO: make map-extent.units fall back automatically

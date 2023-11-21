@@ -419,45 +419,13 @@ export var TemplatedTileLayer = L.TileLayer.extend({
           default:
           // unsuportted axis value
         }
-      } else if (type && type.toLowerCase() === 'zoom') {
-        //<input name="..." type="zoom" value="0" min="0" max="17">
-        zoom = {
-          name: name,
-          min: 0,
-          max: crs.resolutions.length,
-          value: crs.resolutions.length
-        };
-        if (
-          !isNaN(Number.parseInt(value, 10)) &&
-          Number.parseInt(value, 10) >= zoom.min &&
-          Number.parseInt(value, 10) <= zoom.max
-        ) {
-          zoom.value = Number.parseInt(value, 10);
-        } else {
-          zoom.value = zoom.max;
-        }
-        if (
-          !isNaN(Number.parseInt(min, 10)) &&
-          Number.parseInt(min, 10) >= zoom.min &&
-          Number.parseInt(min, 10) <= zoom.max
-        ) {
-          zoom.min = Number.parseInt(min, 10);
-        }
-        if (
-          !isNaN(Number.parseInt(max, 10)) &&
-          Number.parseInt(max, 10) >= zoom.min &&
-          Number.parseInt(max, 10) <= zoom.max
-        ) {
-          zoom.max = Number.parseInt(max, 10);
-        }
-        template.zoom = zoom;
       } else if (select) {
         /*jshint -W104 */
         const parsedselect = inputs[i].htmlselect;
         template.tile[name] = function () {
           return parsedselect.value;
         };
-      } else {
+      } else if (type === 'hidden') {
         // needs to be a const otherwise it gets overwritten
         /*jshint -W104 */
         const input = inputs[i];
@@ -486,7 +454,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       );
       template.pcrs.easting = east;
       template.pcrs.northing = north;
-    } else if (col && row && !isNaN(zoom.value)) {
+    } else if (col && row && !isNaN(template.zoom.initialValue)) {
       // convert the tile bounds at this zoom to a pcrs bounds, then
       // go through the zoom min/max and create a tile-based bounds
       // at each zoom that applies to the col/row values that constrain what tiles
@@ -499,7 +467,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
 
       template.pcrs.bounds = M.boundsToPCRSBounds(
         L.bounds(L.point([col.min, row.min]), L.point([col.max, row.max])),
-        zoom.value,
+        template.zoom.initialValue,
         this.options.crs,
         M.axisToCS('column')
       );
@@ -507,10 +475,6 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       template.tilematrix = {};
       template.tilematrix.col = col;
       template.tilematrix.row = row;
-    } else {
-      console.log(
-        'Unable to determine bounds for tile template: ' + template.template
-      );
     }
 
     if (!template.tilematrix) {
@@ -524,8 +488,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     // by first processing the extent to determine the zoom and if none, adding
     // one and second by copying that zoom into the set of template variable inputs
     // even if it is not referenced by one of the template's variable references
-    var zmin = template.zoom ? template.zoom.min : 0,
-      zmax = template.zoom ? template.zoom.max : crs.resolutions.length;
+    var zmin = template.zoomBounds.minNativeZoom,
+      zmax = template.zoomBounds.maxNativeZoom;
     for (var z = 0; z <= zmax; z++) {
       template.tilematrix.bounds[z] =
         z >= zmin
