@@ -193,34 +193,29 @@ export class MapExtent extends HTMLElement {
     let templates = this.querySelectorAll(
       'map-link[rel=image],map-link[rel=tile],map-link[rel=features],map-link[rel=query]'
     );
-    let linksReady = [];
-    for (let link of [...templates]) {
-      linksReady.push(link.whenReady());
-    }
-    Promise.allSettled(linksReady).then(() => {
-      const noTemplateVisible = () => {
-        let totalTemplateCount = templates.length,
-          disabledTemplateCount = 0;
-        for (let j = 0; j < totalTemplateCount; j++) {
-          if (templates[j].rel === 'query') {
-            continue;
-          }
-          if (!templates[j]._validateDisabled()) {
-            disabledTemplateCount++;
-          }
+    const noTemplateVisible = () => {
+      let totalTemplateCount = templates.length,
+        disabledTemplateCount = 0;
+      for (let j = 0; j < totalTemplateCount; j++) {
+        if (templates[j].rel === 'query') {
+          continue;
         }
-        return disabledTemplateCount === totalTemplateCount;
-      };
-      if (!this._projectionMatch() || noTemplateVisible()) {
-        this.setAttribute('disabled', '');
-        this.disabled = true;
-      } else {
-        this.removeAttribute('disabled');
-        this.disabled = false;
+        if (!templates[j]._validateDisabled()) {
+          disabledTemplateCount++;
+        }
       }
-      this.toggleLayerControlDisabled();
-      return this.disabled;
-    });
+      return disabledTemplateCount === totalTemplateCount;
+    };
+    if (!this._projectionMatch() || noTemplateVisible()) {
+      this.setAttribute('disabled', '');
+      this.disabled = true;
+    } else {
+      this.removeAttribute('disabled');
+      this.disabled = false;
+    }
+    this.toggleLayerControlDisabled();
+    this._handleChange();
+    return this.disabled;
   }
   getMeta(metaName) {
     let name = metaName.toLowerCase();
@@ -308,6 +303,7 @@ export class MapExtent extends HTMLElement {
       return;
     this._validateLayerControlContainerHidden();
     // remove layer control for map-extent from layer control DOM
+    // TODO: for the case of projection change, the layer control for map-extent has been created while _extentLayer has not yet been ready
     this._layerControlHTML.remove();
     this._map.removeLayer(this._extentLayer);
     this.parentLayer.removeEventListener('map-change', this._changeHandler);
@@ -385,5 +381,16 @@ export class MapExtent extends HTMLElement {
         reject('Timeout reached waiting for extent to be ready');
       }
     });
+  }
+
+  whenLinksReady() {
+    let templates = this.querySelectorAll(
+      'map-link[rel=image],map-link[rel=tile],map-link[rel=features],map-link[rel=query]'
+    );
+    let linksReady = [];
+    for (let link of [...templates]) {
+      linksReady.push(link.whenReady());
+    }
+    return Promise.allSettled(linksReady);
   }
 }

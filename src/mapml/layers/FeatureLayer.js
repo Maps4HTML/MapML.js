@@ -16,7 +16,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
     // or you can construct it with a bounds (via options.extent),
     // which will then remain static for the lifetime of the layer
 
-    L.setOptions(this, options);
+    L.FeatureGroup.prototype.initialize.call(this, null, options);
     if (this.options.static) {
       this._container = L.DomUtil.create(
         'div',
@@ -31,12 +31,8 @@ export var FeatureLayer = L.FeatureGroup.extend({
       );
       L.setOptions(this.options.renderer, { pane: this._container });
     }
-    // TODO: check this._layers should be an array or an object
-    //       leaflet initializes this._layers as an empty array
-    this._layers = {};
     if (this.options.query) {
       this._mapmlFeatures = mapml.features ? mapml.features : mapml;
-      this.isVisible = true;
       let native = M.getNativeVariables(mapml);
       this.options.nativeZoom = native.zoom;
       this.options.nativeCS = native.cs;
@@ -45,7 +41,6 @@ export var FeatureLayer = L.FeatureGroup.extend({
         let native = M.getNativeVariables(mapml);
         this.addData(mapml, native.cs, native.zoom);
       } else if (!mapml) {
-        this.isVisible = false;
         // use this.options._leafletLayer to distinguish the featureLayer constructed for initialization and for templated features / tiles
         if (this.options._leafletLayer) {
           // this._staticFeature should be set to true to make sure the _getEvents works properly
@@ -53,6 +48,37 @@ export var FeatureLayer = L.FeatureGroup.extend({
           this._staticFeature = true;
         }
       }
+    }
+  },
+
+  isVisible: function () {
+    // if query, isVisible is unconditionally true
+    if (this.options.query) return true;
+    // if the featureLayer is for static features, i.e. it is the mapmlvector layer,
+    // if it is empty, isVisible = false
+    // this._staticFeature: flag to determine if the featureLayer is used by static features only
+    // this._features: check if the current static featureLayer is empty
+    // (Object.keys(this._features).length === 0 => this._features is an empty object)
+    else if (this._staticFeature && Object.keys(this._features).length === 0) {
+      return false;
+    } else {
+      let mapZoom = this._map.getZoom(),
+        withinZoom = this.zoomBounds
+          ? mapZoom <= this.zoomBounds.maxZoom &&
+            mapZoom >= this.zoomBounds.minZoom
+          : false;
+      return (
+        withinZoom &&
+        this._layers &&
+        this.layerBounds &&
+        this.layerBounds.overlaps(
+          M.pixelToPCRSBounds(
+            this._map.getPixelBounds(),
+            mapZoom,
+            this._map.options.projection
+          )
+        )
+      );
     }
   },
 
@@ -137,22 +163,6 @@ export var FeatureLayer = L.FeatureGroup.extend({
   },
 
   _handleMoveEnd: function () {
-    let mapZoom = this._map.getZoom(),
-      withinZoom = this.zoomBounds
-        ? mapZoom <= this.zoomBounds.maxZoom &&
-          mapZoom >= this.zoomBounds.minZoom
-        : false;
-    this.isVisible =
-      withinZoom &&
-      this._layers &&
-      this.layerBounds &&
-      this.layerBounds.overlaps(
-        M.pixelToPCRSBounds(
-          this._map.getPixelBounds(),
-          mapZoom,
-          this._map.options.projection
-        )
-      );
     this._removeCSS();
   },
 
@@ -220,9 +230,6 @@ export var FeatureLayer = L.FeatureGroup.extend({
   },
 
   addData: function (mapml, nativeCS, nativeZoom) {
-    if (mapml) {
-      this.isVisible = true;
-    }
     var features =
         mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === 'LAYER-'
           ? mapml.getElementsByTagName('map-feature')

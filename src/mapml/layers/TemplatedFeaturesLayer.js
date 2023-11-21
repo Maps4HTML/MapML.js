@@ -1,21 +1,32 @@
 export var TemplatedFeaturesLayer = L.Layer.extend({
   // this and M.ImageLayer could be merged or inherit from a common parent
   initialize: function (template, options) {
-    let inputData = M._extractInputBounds(template);
-    this.zoomBounds = inputData.zoomBounds;
-    this.extentBounds = inputData.bounds;
-    this.isVisible = true;
     this._template = template;
-    this._extentEl = options.extentEl;
     this._container = L.DomUtil.create('div', 'leaflet-layer');
-    L.extend(options, this.zoomBounds);
     L.DomUtil.addClass(this._container, 'mapml-features-container');
-    delete options.opacity;
+    this.zoomBounds = options.zoomBounds;
+    this.extentBounds = options.extentBounds;
+    this._extentEl = options.extentEl;
     L.setOptions(
       this,
       L.extend(options, this._setUpFeaturesTemplateVars(template))
     );
   },
+
+  isVisible: function () {
+    let mapZoom = this._map.getZoom();
+    let mapBounds = M.pixelToPCRSBounds(
+      this._map.getPixelBounds(),
+      mapZoom,
+      this._map.options.projection
+    );
+    return (
+      mapZoom <= this.zoomBounds.maxZoom &&
+      mapZoom >= this.zoomBounds.minZoom &&
+      this.extentBounds.overlaps(mapBounds)
+    );
+  },
+
   getEvents: function () {
     var events = {
       moveend: this._onMoveEnd
@@ -80,7 +91,6 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     let current = history[history.length - 1];
     let previous = history[history.length - 2] ?? current;
     let step = this._template.step;
-    let mapZoom = this._map.getZoom();
     let steppedZoom = mapZoom;
     //If zooming out from one step interval into a lower one or panning, set the stepped zoom
     if (
@@ -101,16 +111,6 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
       steppedZoom
     );
 
-    let mapBounds = M.pixelToPCRSBounds(
-      this._map.getPixelBounds(),
-      mapZoom,
-      this._map.options.projection
-    );
-    this.isVisible =
-      mapZoom <= this.zoomBounds.maxZoom &&
-      mapZoom >= this.zoomBounds.minZoom &&
-      this.extentBounds.overlaps(mapBounds);
-
     // should set this.isVisible properly BEFORE return, otherwise will cause layer-.validateDisabled not work properly
     let url = this._getfeaturesUrl(steppedZoom, scaleBounds);
     // No request needed if the current template url is the same as the url to request
@@ -124,7 +124,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     }
     this._removeCSS();
     //Leave the layers cleared if the layer is not visible
-    if (!this.isVisible && steppedZoom === mapZoom) {
+    if (!this.isVisible() && steppedZoom === mapZoom) {
       this._url = '';
       return;
     }

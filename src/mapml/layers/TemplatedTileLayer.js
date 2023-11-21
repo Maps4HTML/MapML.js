@@ -8,7 +8,6 @@ export var TemplatedTileLayer = L.TileLayer.extend({
   initialize: function (template, options) {
     // _setUpTileTemplateVars needs options.crs, not available unless we set
     // options first...
-    this.isVisible = true;
     options.tms = template.tms;
     delete options.opacity;
     L.setOptions(this, options);
@@ -48,6 +47,20 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     return events;
   },
 
+  isVisible: function () {
+    let mapZoom = this._map.getZoom();
+    let mapBounds = M.pixelToPCRSBounds(
+      this._map.getPixelBounds(),
+      mapZoom,
+      this._map.options.projection
+    );
+    return (
+      mapZoom <= this.options.maxZoom &&
+      mapZoom >= this.options.minZoom &&
+      this.extentBounds.overlaps(mapBounds)
+    );
+  },
+
   _initContainer: function () {
     if (this._container) {
       return;
@@ -63,17 +76,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
   },
 
   _handleMoveEnd: function (e) {
-    let mapZoom = this._map.getZoom();
-    let mapBounds = M.pixelToPCRSBounds(
-      this._map.getPixelBounds(),
-      mapZoom,
-      this._map.options.projection
-    );
-    this.isVisible =
-      mapZoom <= this.options.maxZoom &&
-      mapZoom >= this.options.minZoom &&
-      this.extentBounds.overlaps(mapBounds);
-    if (!this.isVisible) return;
+    if (!this.isVisible()) return;
     this._parentOnMoveEnd();
   },
   createTile: function (coords) {

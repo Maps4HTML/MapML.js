@@ -89,11 +89,6 @@ export var MapMLLayer = L.Layer.extend({
   onAdd: function (map) {
     this._map = map;
     if (this._mapmlvectors) map.addLayer(this._mapmlvectors);
-
-    if (!this._imageLayer) {
-      this._imageLayer = L.layerGroup();
-    }
-    map.addLayer(this._imageLayer);
     // the layer._imageContainer property contains an element in which
     // content will be maintained
 
@@ -115,12 +110,7 @@ export var MapMLLayer = L.Layer.extend({
         maxNativeZoom: 0,
         minNativeZoom: 0
       };
-    let layerTypes = [
-      '_staticTileLayer',
-      '_imageLayer',
-      '_mapmlvectors',
-      '_extentLayer'
-    ];
+    let layerTypes = ['_staticTileLayer', '_mapmlvectors', '_extentLayer'];
     const mapExtents = this._layerEl.querySelectorAll('map-extent').length
       ? this._layerEl.querySelectorAll('map-extent')
       : this._layerEl.shadowRoot
@@ -159,16 +149,6 @@ export var MapMLLayer = L.Layer.extend({
           }
         }
       } else if (type === '_staticTileLayer' && this._staticTileLayer) {
-        if (this[type].layerBounds) {
-          if (!bounds) {
-            bounds = this[type].layerBounds;
-            zoomBounds = this[type].zoomBounds;
-          } else {
-            bounds.extend(this[type].layerBounds.min);
-            bounds.extend(this[type].layerBounds.max);
-          }
-        }
-      } else if (type === '_imageLayer' && this._imageLayer) {
         if (this[type].layerBounds) {
           if (!bounds) {
             bounds = this[type].layerBounds;
@@ -271,7 +251,6 @@ export var MapMLLayer = L.Layer.extend({
     L.DomUtil.remove(this._container);
     if (this._staticTileLayer) map.removeLayer(this._staticTileLayer);
     if (this._mapmlvectors) map.removeLayer(this._mapmlvectors);
-    if (this._imageLayer) map.removeLayer(this._imageLayer);
     map.off('popupopen', this._attachSkipButtons);
   },
   getAttribution: function () {

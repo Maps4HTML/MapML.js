@@ -264,9 +264,8 @@ export class MapLink extends HTMLElement {
       if (!this._queries) {
         this._queries = [];
       }
-      let inputData = M._extractInputBounds(this);
-      this.extentBounds = inputData.bounds;
-      this.zoomBounds = inputData.zoomBounds;
+      this.extentBounds = this.getBounds(this);
+      this.zoomBounds = this.getZoomBounds();
       if (!this.parentExtent._layer._properties._queries)
         this.parentExtent._layer._properties._queries = [];
       this.parentExtent._layer._properties._queries.push(
@@ -664,7 +663,7 @@ export class MapLink extends HTMLElement {
     return zoomBounds;
   }
   _validateDisabled() {
-    return this._templatedLayer.isVisible;
+    return this._templatedLayer.isVisible();
   }
 
   // Resolve the templated URL with info from the sibling map-input's

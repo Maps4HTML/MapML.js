@@ -818,7 +818,6 @@ import { DOMTokenList } from './utils/DOMTokenList';
   M.extentToBounds = Util.extentToBounds;
   M.axisToCS = Util.axisToCS;
   M._parseNumber = Util._parseNumber;
-  M._extractInputBounds = Util._extractInputBounds;
   M._splitCoordinate = Util._splitCoordinate;
   M.boundsToPCRSBounds = Util.boundsToPCRSBounds;
   M.pixelToPCRSBounds = Util.pixelToPCRSBounds;

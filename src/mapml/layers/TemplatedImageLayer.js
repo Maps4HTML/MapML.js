@@ -3,12 +3,8 @@ export var TemplatedImageLayer = L.Layer.extend({
     this._template = template;
     this._container = L.DomUtil.create('div', 'leaflet-layer');
     L.DomUtil.addClass(this._container, 'mapml-image-container');
-    let inputData = M._extractInputBounds(template);
-    this.zoomBounds = inputData.zoomBounds;
-    this.extentBounds = inputData.bounds;
-    this.isVisible = true;
-    delete options.opacity;
-    L.extend(options, this.zoomBounds);
+    this.zoomBounds = options.zoomBounds;
+    this.extentBounds = options.extentBounds;
     L.setOptions(
       this,
       L.extend(options, this._setUpExtentTemplateVars(template))
@@ -21,16 +17,29 @@ export var TemplatedImageLayer = L.Layer.extend({
     };
     return events;
   },
-  onAdd: function () {
+  onAdd: function (map) {
+    // TODO: set this._map by ourselves
     this.options.pane.appendChild(this._container);
-    this._map._addZoomLimit(this); //used to set the zoom limit of the map
+    map._addZoomLimit(this); //used to set the zoom limit of the map
     this.setZIndex(this.options.zIndex);
     this._onAdd();
   },
   redraw: function () {
     this._onMoveEnd();
   },
-
+  isVisible: function () {
+    let mapZoom = this._map.getZoom();
+    let mapBounds = M.pixelToPCRSBounds(
+      this._map.getPixelBounds(),
+      mapZoom,
+      this._map.options.projection
+    );
+    return (
+      mapZoom <= this.zoomBounds.maxZoom &&
+      mapZoom >= this.zoomBounds.minZoom &&
+      this.extentBounds.overlaps(mapBounds)
+    );
+  },
   _clearLayer: function () {
     let containerImages = this._container.querySelectorAll('img');
     for (let i = 0; i < containerImages.length; i++) {
@@ -125,15 +134,6 @@ export var TemplatedImageLayer = L.Layer.extend({
       // Zooming from one step decrement into a higher one
       // OR panning when mapZoom % step === 0
     } else {
-      let mapBounds = M.pixelToPCRSBounds(
-        this._map.getPixelBounds(),
-        mapZoom,
-        this._map.options.projection
-      );
-      this.isVisible =
-        mapZoom <= this.zoomBounds.maxZoom &&
-        mapZoom >= this.zoomBounds.minZoom &&
-        this.extentBounds.overlaps(mapBounds);
       if (!this.isVisible) {
         this._clearLayer();
         return;
