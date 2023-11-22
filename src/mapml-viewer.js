@@ -1408,7 +1408,7 @@ window.customElements.define('mapml-viewer', MapViewer);
 window.customElements.define('layer-', MapLayer);
 window.customElements.define('map-caption', MapCaption);
 window.customElements.define('map-feature', MapFeature);
+window.customElements.define('map-extent', MapExtent);
 window.customElements.define('map-input', MapInput);
 window.customElements.define('map-select', MapSelect);
-window.customElements.define('map-extent', MapExtent);
 window.customElements.define('map-link', MapLink);
