@@ -5,6 +5,7 @@ import { MapCaption } from './map-caption.js';
 import { MapFeature } from './map-feature.js';
 import { MapExtent } from './map-extent.js';
 import { MapInput } from './map-input.js';
+import { MapSelect } from './map-select.js';
 import { MapLink } from './map-link.js';
 
 export class MapViewer extends HTMLElement {
@@ -1407,6 +1408,7 @@ window.customElements.define('mapml-viewer', MapViewer);
 window.customElements.define('layer-', MapLayer);
 window.customElements.define('map-caption', MapCaption);
 window.customElements.define('map-feature', MapFeature);
-window.customElements.define('map-extent', MapExtent);
 window.customElements.define('map-input', MapInput);
+window.customElements.define('map-select', MapSelect);
+window.customElements.define('map-extent', MapExtent);
 window.customElements.define('map-link', MapLink);

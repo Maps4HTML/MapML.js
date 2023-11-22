@@ -38,74 +38,43 @@ export class MapSelect extends HTMLElement {
     // origin of this block was in _initTemplateVars from map-extent, which was
     // originally part of MapMLLayer...
     //
-    //          if (inp.tagName.toLowerCase() === 'map-select') {
-    //            // use a throwaway div to parse the input from MapML into HTML
-    //            var div = document.createElement('div');
-    //            div.insertAdjacentHTML('afterbegin', inp.outerHTML);
-    //            // parse
-    //            inp.htmlselect = div.querySelector('map-select');
-    //            inp.htmlselect = transcribe(inp.htmlselect);
-    //
-    //            // this goes into the layer control, so add a listener
-    //            L.DomEvent.on(inp.htmlselect, 'change', this.redraw, this);
-    //
-    //            this refers to map-extent in the original
-    //            if (!this._userInputs) {
-    //              this._userInputs = [];
-    //            }
-    //            this._userInputs.push(inp.htmlselect);
-    //          }
+    // use a throwaway div to parse the input from MapML into HTML
+    this._createLayerControlForSelect();
   }
   disconnectedCallback() {}
-  createLayerControlForSelect() {
+  _createLayerControlForSelect() {
     // cut-pasted from createLayerControlForExtent. TODO Re-write appropriately
-    var templates = this._templateVars;
-    if (templates) {
-      this._selectdetails = [];
-      for (var i = 0; i < templates.length; i++) {
-        var template = templates[i];
-        for (var j = 0; j < template.values.length; j++) {
-          var mapmlInput = template.values[j],
-            id = '#' + mapmlInput.getAttribute('id');
-          // don't add it again if it is referenced > once
-          if (
-            mapmlInput.tagName.toLowerCase() === 'map-select' &&
-            !frag.querySelector(id)
-          ) {
-            // generate a <details><summary></summary><select...></details>
-            var selectdetails = L.DomUtil.create(
-                'details',
-                'mapml-layer-item-details mapml-control-layers',
-                frag
-              ),
-              selectsummary = L.DomUtil.create('summary'),
-              selectSummaryLabel = L.DomUtil.create('label');
-            selectSummaryLabel.innerText = mapmlInput.getAttribute('name');
-            selectSummaryLabel.setAttribute(
-              'for',
-              mapmlInput.getAttribute('id')
-            );
-            selectsummary.appendChild(selectSummaryLabel);
-            selectdetails.appendChild(selectsummary);
-            selectdetails.appendChild(mapmlInput.htmlselect);
-            this._selectdetails.push(selectdetails);
-          }
-        }
-      }
-    }
+    // don't add it again if it is referenced > once
+    // generate a <details><summary></summary><select...></details>
+    this.htmlselect = this.transcribe();
+    var selectdetails = L.DomUtil.create(
+        'details',
+        'mapml-layer-item-details mapml-control-layers'
+      ),
+      selectsummary = L.DomUtil.create('summary'),
+      selectSummaryLabel = L.DomUtil.create('label');
+    selectSummaryLabel.innerText = this.getAttribute('name');
+    selectSummaryLabel.setAttribute('for', this.getAttribute('id'));
+    selectsummary.appendChild(selectSummaryLabel);
+    selectdetails.appendChild(selectsummary);
+    selectdetails.appendChild(this.htmlselect);
+    this.selectdetails = selectdetails;
+    // this goes into the layer control, so add a listener to trigger map
+    // or layer redraw with newly selected value
+    // this.htmlselect.addEventListener('change', null);
   }
-  transcribe(element) {
+  transcribe() {
     var select = document.createElement('select');
-    var elementAttrNames = element.getAttributeNames();
+    var elementAttrNames = this.getAttributeNames();
 
     for (let i = 0; i < elementAttrNames.length; i++) {
       select.setAttribute(
         elementAttrNames[i],
-        element.getAttribute(elementAttrNames[i])
+        this.getAttribute(elementAttrNames[i])
       );
     }
 
-    var options = element.children;
+    var options = this.children;
 
     for (let i = 0; i < options.length; i++) {
       var option = document.createElement('option');
@@ -123,5 +92,32 @@ export class MapSelect extends HTMLElement {
     }
     return select;
   }
+  whenReady() {
+    return new Promise((resolve, reject) => {
+      let interval, failureTimer;
+      if (this.selectdetails) {
+        resolve();
+      } else {
+        let selectElement = this;
+        interval = setInterval(testForSelect, 300, selectElement);
+        failureTimer = setTimeout(selectNotDefined, 10000);
+      }
+      function testForSelect(selectElement) {
+        if (selectElement.selectdetails) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          resolve();
+        } else if (!selectElement.isConnected) {
+          clearInterval(interval);
+          clearTimeout(failureTimer);
+          reject('map-select was disconnected while waiting to be ready');
+        }
+      }
+      function selectNotDefined() {
+        clearInterval(interval);
+        clearTimeout(failureTimer);
+        reject('Timeout reached waiting for map-select to be ready');
+      }
+    });
+  }
 }
-window.customElements.define('map-select', MapSelect);
