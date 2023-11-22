@@ -15,14 +15,8 @@ export var QueryHandler = L.Handler.extend({
     var layers = this.options.mapEl.layers;
     // work backwards in document order (top down)
     for (var l = layers.length - 1; l >= 0; l--) {
-      var mapmlLayer = layers[l]._layer;
-      if (
-        layers[l].checked &&
-        mapmlLayer &&
-        mapmlLayer.queryable &&
-        !mapmlLayer._layerEl.hidden
-      ) {
-        return mapmlLayer;
+      if (layers[l].queryable()) {
+        return layers[l]._layer;
       }
     }
   },
@@ -259,7 +253,7 @@ export var QueryHandler = L.Handler.extend({
         if (f.status === 'fulfilled') {
           // create connection between queried <map-feature> and its parent <map-extent>
           for (let feature of f.value.features) {
-            feature._extentEl = f.value.template._extentEl;
+            feature._linkEl = f.value.template.linkEl;
           }
           layer._mapmlFeatures = layer._mapmlFeatures.concat(f.value.features);
         }

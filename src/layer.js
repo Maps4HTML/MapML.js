@@ -408,7 +408,15 @@ export class MapLayer extends HTMLElement {
       }
     }
   }
-
+  queryable() {
+    let content = this.shadowRoot ? this.shadowRoot : this;
+    return (
+      content.querySelector('map-extent > map-link[rel=query]') &&
+      this.checked &&
+      this._layer &&
+      !this.hidden
+    );
+  }
   getOuterHTML() {
     let tempElement = this.cloneNode(true);
 

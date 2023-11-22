@@ -133,12 +133,6 @@ export class MapExtent extends HTMLElement {
       this.parentLayer.hasAttribute('data-moving')
     )
       return;
-    if (
-      this.querySelector('map-link[rel=query], map-link[rel=features]') &&
-      !this.shadowRoot
-    ) {
-      this.attachShadow({ mode: 'open' });
-    }
     await this.parentLayer.whenReady();
     this.mapEl = this.parentLayer.closest('mapml-viewer,map[is=web-map]');
     await this.mapEl.whenProjectionDefined(this.units).catch(() => {

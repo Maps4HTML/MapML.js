@@ -124,11 +124,11 @@ export var FeatureLayer = L.FeatureGroup.extend({
       let feature = this._mapmlFeatures[e.i];
       if (e.type === 'featurepagination') {
         // remove map-feature only (keep meta's) when paginating
-        feature._extentEl.shadowRoot.querySelector('map-feature')?.remove();
+        feature._linkEl.shadowRoot.querySelector('map-feature')?.remove();
       } else {
         // empty the map-extent shadowRoot
         // remove the prev / next one <map-feature> and <map-meta>'s from shadow if there is any
-        feature._extentEl.shadowRoot.replaceChildren();
+        feature._linkEl.shadowRoot.replaceChildren();
       }
       this.clearLayers();
       feature._featureGroup = this.addData(
@@ -139,10 +139,10 @@ export var FeatureLayer = L.FeatureGroup.extend({
       // append all map-meta from mapml document
       if (e.meta) {
         for (let i = 0; i < e.meta.length; i++) {
-          feature._extentEl.shadowRoot.appendChild(e.meta[i]);
+          feature._linkEl.shadowRoot.appendChild(e.meta[i]);
         }
       }
-      feature._extentEl.shadowRoot.appendChild(feature);
+      feature._linkEl.shadowRoot.appendChild(feature);
       e.popup._navigationBar.querySelector('p').innerText =
         e.i + 1 + '/' + this.options._leafletLayer._totalFeatureCount;
       e.popup._content
@@ -157,7 +157,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         function (e) {
           this.shadowRoot.innerHTML = '';
         },
-        feature._extentEl
+        feature._linkEl
       );
     }
   },

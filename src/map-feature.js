@@ -221,7 +221,7 @@ export class MapFeature extends HTMLElement {
       let mapmlvectors = this._layer._mapmlvectors;
       // "synchronize" the event handlers between map-feature and <g>
       if (!this.querySelector('map-geometry')) return;
-      if (!this._extentEl) {
+      if (!this._linkEl) {
         let native = this._getNativeZoomAndCS(this._layer._content);
         this._featureGroup = mapmlvectors.addData(this, native.cs, native.zoom);
         if (parentLayer.checked) {
@@ -229,7 +229,7 @@ export class MapFeature extends HTMLElement {
         }
         mapmlvectors._layers[this._featureGroup._leaflet_id] =
           this._featureGroup;
-        if (mapmlvectors._staticFeature && !this._extentEl) {
+        if (mapmlvectors._staticFeature && !this._linkEl) {
           // update zoom bounds of vector layer
           mapmlvectors.zoomBounds = M.getZoomBounds(
             this._layer._content,

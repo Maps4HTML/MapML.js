@@ -606,43 +606,25 @@ export var MapMLLayer = L.Layer.extend({
     return this._properties.projection;
   },
   getQueryTemplates: function (pcrsClick) {
-    const mapExtents = this._layerEl.querySelectorAll('map-extent').length
-      ? this._layerEl.querySelectorAll('map-extent')
-      : this._layerEl.shadowRoot.querySelectorAll('map-extent');
-    if (this._properties && this._properties._queries) {
+    const queryLinks = this._layerEl.querySelectorAll(
+      'map-extent[checked] map-link[rel=query]'
+    ).length
+      ? this._layerEl.querySelectorAll(
+          'map-extent[checked] map-link[rel=query]'
+        )
+      : this._layerEl.shadowRoot.querySelectorAll(
+          'map-extent[checked] map-link[rel=query]'
+        ).length
+      ? this._layerEl.shadowRoot.querySelectorAll(
+          'map-extent[checked] map-link[rel=query]'
+        )
+      : null;
+    if (queryLinks) {
       var templates = [];
-      // only return queries that are in bounds
-      if (
-        this._layerEl.checked &&
-        !this._layerEl.hidden &&
-        this._layerEl._layerControlHTML
-      ) {
-        let layerAndExtents = this._layerEl._layerControlHTML.querySelectorAll(
-          '.mapml-layer-item-name'
-        );
-        for (let i = 0; i < layerAndExtents.length; i++) {
-          if (layerAndExtents[i].extent || mapExtents.length === 1) {
-            // the layer won't have an .extent property, this is kind of a hack
-            let extent = layerAndExtents[i].extent || mapExtents[0];
-            for (let j = 0; j < extent._templateVars.length; j++) {
-              if (extent.checked) {
-                let template = extent._templateVars[j];
-                // for each template in the extent, see if it corresponds to one in the this._properties._queries array
-                for (let k = 0; k < this._properties._queries.length; k++) {
-                  let queryTemplate = this._properties._queries[k];
-                  if (
-                    template === queryTemplate &&
-                    queryTemplate.extentBounds.contains(pcrsClick)
-                  ) {
-                    templates.push(queryTemplate);
-                  }
-                }
-              }
-            }
-          }
-        }
-        return templates;
+      for (let i = 0; i < queryLinks.length; i++) {
+        templates.push(queryLinks[i]._templateVars);
       }
+      return templates;
     }
   },
   _attachSkipButtons: function (e) {

@@ -75,11 +75,7 @@ export var Path = L.Path.extend({
         nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
       while (nextLayer && onTop) {
         if (nextLayer.tagName && nextLayer.tagName.toUpperCase() === 'LAYER-')
-          onTop = !(
-            nextLayer.checked &&
-            nextLayer._layer &&
-            nextLayer._layer.queryable
-          );
+          onTop = !nextLayer.queryable();
         nextLayer = nextLayer.nextElementSibling;
       }
       if (onTop && dragStart) {

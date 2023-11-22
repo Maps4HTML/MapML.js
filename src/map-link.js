@@ -130,7 +130,6 @@ export class MapLink extends HTMLElement {
         if (oldValue !== newValue) {
           // handle side effects
           if (newValue === 'query') {
-            this.parentExtent.parentLayer._layer.queryable = true;
           }
         }
         break;
@@ -262,20 +261,15 @@ export class MapLink extends HTMLElement {
         linkEl: this
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'query') {
+      this.attachShadow({ mode: 'open' });
       // add template to array of queryies to be added to map and processed
       // on click/tap events
       this.hasSetBoundsHandler = true;
       if (!this._queries) {
         this._queries = [];
       }
-      this.extentBounds = this.getBounds();
-      this.zoomBounds = this.getZoomBounds();
-      if (!this.parentExtent._layer._properties._queries)
-        this.parentExtent._layer._properties._queries = [];
-      this.parentExtent._layer._properties._queries.push(
-        // need to refactor the _setupQueryVars args / migrate it to map-link?
-        L.extend(this._templateVars, this._setupQueryVars(this._templateVars))
-      );
+      L.extend(this._templateVars, this._setupQueryVars(this._templateVars));
+      L.extend(this._templateVars, { extentBounds: this.getBounds() });
     }
   }
   _setupQueryVars(template) {
