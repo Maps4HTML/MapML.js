@@ -9,10 +9,12 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     // _setUpTileTemplateVars needs options.crs, not available unless we set
     // options first...
     options.tms = template.tms;
-    delete options.opacity;
     L.setOptions(this, options);
     this._setUpTileTemplateVars(template);
     this.zoomBounds = this.options.zoomBounds;
+    // it's critical to have this.options.minZoom, minNativeZoom, maxZoom, maxNativeZoom
+    // which we accomplish here.  Used by Leaflet Map and GridLayer.
+    L.extend(options, this.zoomBounds);
     this.extentBounds = this.options.extentBounds;
 
     this._template = template;
