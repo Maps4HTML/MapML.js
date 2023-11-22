@@ -252,11 +252,14 @@ export class MapLink extends HTMLElement {
         pane: this.parentExtent._extentLayer.getContainer()
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'features') {
+      // map-feature retrieved by link will be stored in shadowRoot owned by link
+      this.attachShadow({ mode: 'open' });
       this._templatedLayer = M.templatedFeaturesLayer(this._templateVars, {
         zoomBounds: this.getZoomBounds(),
         extentBounds: this.getBounds(),
         zIndex: this.zIndex,
-        pane: this.parentExtent._extentLayer.getContainer()
+        pane: this.parentExtent._extentLayer.getContainer(),
+        linkEl: this
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'query') {
       // add template to array of queryies to be added to map and processed
@@ -265,7 +268,7 @@ export class MapLink extends HTMLElement {
       if (!this._queries) {
         this._queries = [];
       }
-      this.extentBounds = this.getBounds(this);
+      this.extentBounds = this.getBounds();
       this.zoomBounds = this.getZoomBounds();
       if (!this.parentExtent._layer._properties._queries)
         this.parentExtent._layer._properties._queries = [];
@@ -472,7 +475,9 @@ export class MapLink extends HTMLElement {
         inputsReady: Promise.allSettled(inputsReady),
         zoom: linkedZoomInput,
         zoomBounds: this._getZoomBounds(linkedZoomInput),
-        boundsFallbackPCRS: this.getFallbackBounds(),
+        boundsFallbackPCRS: this.getFallbackBounds(
+          this.parentElement.units || M.FALLBACK_PROJECTION
+        ),
         // TODO: make map-extent.units fall back automatically
         projection: this.parentElement.units || M.FALLBACK_PROJECTION,
         tms: this.tms,
@@ -575,7 +580,7 @@ export class MapLink extends HTMLElement {
           ).href
     ).href;
   }
-  getFallbackBounds() {
+  getFallbackBounds(projection) {
     let bounds;
 
     let zoom = 0;

@@ -25,6 +25,11 @@ export var TemplatedLayer = L.LayerGroup.extend({
     // add to this.options.pane
     this.options.pane.appendChild(this._container);
   },
+  redraw: function () {
+    this.eachLayer(function (layer) {
+      layer.redraw();
+    });
+  },
   //addTo: function(map) {
   //for(let i = 0; i < this._templates.length; i++){
   //    this._templates[0].layer.addTo(map);

@@ -5,8 +5,9 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     this._container = L.DomUtil.create('div', 'leaflet-layer');
     L.DomUtil.addClass(this._container, 'mapml-features-container');
     this.zoomBounds = options.zoomBounds;
+    L.extend(options, this.zoomBounds);
     this.extentBounds = options.extentBounds;
-    this._extentEl = options.extentEl;
+    this._linkEl = options.linkEl;
     L.setOptions(
       this,
       L.extend(options, this._setUpFeaturesTemplateVars(template))
@@ -91,6 +92,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     let current = history[history.length - 1];
     let previous = history[history.length - 2] ?? current;
     let step = this._template.step;
+    let mapZoom = this._map.getZoom();
     let steppedZoom = mapZoom;
     //If zooming out from one step interval into a lower one or panning, set the stepped zoom
     if (
@@ -119,8 +121,8 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     // do cleaning up for new request
     this._features.clearLayers();
     // shadow may has not yet attached to <map-extent> for the first-time rendering
-    if (this._extentEl.shadowRoot) {
-      this._extentEl.shadowRoot.innerHTML = '';
+    if (this._linkEl.shadowRoot) {
+      this._linkEl.shadowRoot.innerHTML = '';
     }
     this._removeCSS();
     //Leave the layers cleared if the layer is not visible
@@ -136,7 +138,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
       }),
       parser = new DOMParser(),
       features = this._features,
-      extentEl = this._extentEl,
+      linkEl = this._linkEl,
       map = this._map,
       context = this,
       MAX_PAGES = 10,
@@ -158,7 +160,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
               : null;
             url = url ? new URL(url, base).href : null;
             // TODO if the xml parser barfed but the response is application/geo+json, use the parent addData method
-            let nativeZoom = (extentEl._nativeZoom =
+            let nativeZoom = (linkEl._nativeZoom =
               (mapml.querySelector('map-meta[name=zoom]') &&
                 +M._metaContentToObject(
                   mapml
@@ -166,7 +168,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
                     .getAttribute('content')
                 ).value) ||
               0);
-            let nativeCS = (extentEl._nativeCS =
+            let nativeCS = (linkEl._nativeCS =
               (mapml.querySelector('map-meta[name=cs]') &&
                 M._metaContentToObject(
                   mapml
@@ -179,8 +181,8 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
             // make a clone, prevent the elements from being removed from mapml file
             // same as _attachToLayer() in MapMLLayer.js
             for (let el of mapml.querySelector('map-body').children) {
-              extentEl.shadowRoot.append(el._DOMnode);
-              el._DOMnode._extentEl = extentEl;
+              linkEl.shadowRoot.append(el._DOMnode);
+              el._DOMnode._linkEl = linkEl;
             }
             if (url && --limit) {
               return _pullFeatureFeed(url, limit);

@@ -34,6 +34,7 @@ export class MapSelect extends HTMLElement {
     super();
   }
   connectedCallback() {
+    this._extentEl = this.parentElement;
     // TODO make the layer redraw after map-select change event
     // origin of this block was in _initTemplateVars from map-extent, which was
     // originally part of MapMLLayer...
@@ -61,7 +62,10 @@ export class MapSelect extends HTMLElement {
     this.selectdetails = selectdetails;
     // this goes into the layer control, so add a listener to trigger map
     // or layer redraw with newly selected value
-    // this.htmlselect.addEventListener('change', null);
+    const drawLayers = function () {
+      this.parentElement._extentLayer.redraw();
+    }.bind(this);
+    this.htmlselect.addEventListener('change', drawLayers);
   }
   transcribe() {
     var select = document.createElement('select');

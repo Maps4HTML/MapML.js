@@ -104,11 +104,11 @@ export class MapFeature extends HTMLElement {
     if (this.closest('mapml-')) return;
     this._parentEl =
       this.parentNode.nodeName.toUpperCase() === 'LAYER-' ||
-      this.parentNode.nodeName.toUpperCase() === 'MAP-EXTENT'
+      this.parentNode.nodeName.toUpperCase() === 'MAP-LINK'
         ? this.parentNode
         : this.parentNode.host;
     this._parentEl.whenReady().then(() => {
-      this._layer = this._parentEl._layer;
+      this._layer = this._parentEl._layer || this._parentEl.parentExtent._layer;
       delete this._parentEl.bounds;
       if (
         this._layer._layerEl.hasAttribute('data-moving') ||
@@ -282,11 +282,12 @@ export class MapFeature extends HTMLElement {
     //          referred to [map-meta, ...] if it is query
     //          referred to null otherwise (i.e. <layer- > has fetched <map-extent> in shadow, the <map-feature> attaches to <map-extent>'s shadow)
     let nativeZoom, nativeCS;
-    if (this._extentEl) {
+    if (this._linkEl) {
       // feature attaches to extent's shadow
-      if (this._extentEl.querySelector('map-link[rel=query]')) {
+      let metaZoom, metaCS;
+      if (this._linkEl.rel === 'query') {
+        // TODO migrate remote content into shadow root of linkEl...
         // for query, fallback zoom is the current map zoom level that the query is returned
-        let metaZoom, metaCS;
         if (content) {
           metaZoom = M._metaContentToObject(
             Array.prototype.filter
@@ -305,10 +306,22 @@ export class MapFeature extends HTMLElement {
         }
         nativeZoom = metaZoom || this._map.getZoom();
         nativeCS = metaCS || 'gcrs';
-      } else if (this._extentEl.querySelector('map-link[rel=features]')) {
+      } else if (this._linkEl.rel === 'features') {
         // for templated feature, read fallback from the fetched mapml's map-meta[name=zoom / cs]
-        nativeZoom = this._extentEl._nativeZoom;
-        nativeCS = this._extentEl._nativeCS;
+        nativeZoom = this._map.getZoom();
+        nativeCS = 'gcrs';
+        if (content) {
+          metaZoom = M._metaContentToObject(
+            content
+              .querySelector('map-meta[name=zoom]')
+              ?.getAttribute('content')
+          );
+          metaCS = M._metaContentToObject(
+            content.querySelector('map-meta[name=cs]')?.getAttribute('content')
+          ).content;
+        }
+        nativeZoom = metaZoom || this._map.getZoom();
+        nativeCS = metaCS || 'gcrs';
       }
       return { zoom: nativeZoom, cs: nativeCS };
     } else {
