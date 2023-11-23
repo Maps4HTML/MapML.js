@@ -22,6 +22,7 @@ export var TemplatedLayer = L.LayerGroup.extend({
     return this._container;
   },
   onAdd: function (map) {
+    L.LayerGroup.prototype.onAdd.call(this, this._map);
     // add to this.options.pane
     this.options.pane.appendChild(this._container);
   },
@@ -51,6 +52,7 @@ export var TemplatedLayer = L.LayerGroup.extend({
     }
   },
   onRemove: function () {
+    L.LayerGroup.prototype.onRemove.call(this, this._map);
     L.DomUtil.remove(this._container);
   },
 

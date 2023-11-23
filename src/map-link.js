@@ -560,7 +560,8 @@ export class MapLink extends HTMLElement {
   }
   getBase() {
     let layer = this.getRootNode().host;
-    return new URL(
+    //
+    let relativeURL =
       this.getRootNode().querySelector('map-base') &&
       this.getRootNode() instanceof ShadowRoot
         ? this.getRootNode().querySelector('map-base').getAttribute('href')
@@ -571,8 +572,14 @@ export class MapLink extends HTMLElement {
         : /* else use the resolved <layer- src="..."> value */ new URL(
             layer.src,
             layer.baseURI
-          ).href
-    ).href;
+          ).href;
+
+    // when remote content, use layer.src as base else use baseURI of map-link
+    let baseURL =
+      this.getRootNode() instanceof ShadowRoot
+        ? new URL(layer.src, layer.baseURI).href
+        : this.baseURI;
+    return new URL(relativeURL, baseURL).href;
   }
   getFallbackBounds(projection) {
     let bounds;

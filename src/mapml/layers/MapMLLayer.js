@@ -614,7 +614,9 @@ export var MapMLLayer = L.Layer.extend({
     if (queryLinks) {
       var templates = [];
       for (let i = 0; i < queryLinks.length; i++) {
-        templates.push(queryLinks[i]._templateVars);
+        if (queryLinks[i]._templateVars.extentBounds.contains(pcrsClick)) {
+          templates.push(queryLinks[i]._templateVars);
+        }
       }
       return templates;
     }
