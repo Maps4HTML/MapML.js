@@ -25,12 +25,6 @@ export var MapMLLayer = L.Layer.extend({
     this._container = L.DomUtil.create('div', 'leaflet-layer');
     this.changeOpacity(this.options.opacity);
     L.DomUtil.addClass(this._container, 'mapml-layer');
-    this._imageContainer = L.DomUtil.create(
-      'div',
-      'leaflet-layer',
-      this._container
-    );
-    L.DomUtil.addClass(this._imageContainer, 'mapml-image-container');
 
     // this layer 'owns' a mapmlTileLayer, which is a subclass of L.GridLayer
     // it 'passes' what tiles to load via the content of this._mapmlTileContainer
@@ -89,8 +83,6 @@ export var MapMLLayer = L.Layer.extend({
   onAdd: function (map) {
     this._map = map;
     if (this._mapmlvectors) map.addLayer(this._mapmlvectors);
-    // the layer._imageContainer property contains an element in which
-    // content will be maintained
 
     //only add the layer if there are tiles to be rendered
     if (this._staticTileLayer) {
