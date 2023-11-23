@@ -109,6 +109,12 @@ export class MapLink extends HTMLElement {
       this.setAttribute('projection', val);
     }
   }
+  getMapEl() {
+    return this.parentElement.mapEl;
+  }
+  getLayerEl() {
+    if (this.parentExtent) return this.parentExtent.parentLayer;
+  }
 
   attributeChangedCallback(name, oldValue, newValue) {
     //['type','rel','href','hreflang','tref','tms','projection'];
@@ -226,7 +232,7 @@ export class MapLink extends HTMLElement {
     if (!this.tref || !this.parentExtent) return;
     await this.parentExtent.whenReady();
     await this._templateVars.inputsReady;
-    this.mapEl = this.parentExtent.mapEl;
+    this.mapEl = this.getMapEl();
     // create the layer type appropriate to the rel value
     this.zIndex = Array.from(
       this.parentExtent.querySelectorAll(
@@ -241,14 +247,16 @@ export class MapLink extends HTMLElement {
         errorTileUrl:
           'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
         zIndex: this.zIndex,
-        pane: this.parentExtent._extentLayer.getContainer()
+        pane: this.parentExtent._extentLayer.getContainer(),
+        linkEl: this
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'image') {
       this._templatedLayer = M.templatedImageLayer(this._templateVars, {
         zoomBounds: this.getZoomBounds(),
         extentBounds: this.getBounds(),
         zIndex: this.zIndex,
-        pane: this.parentExtent._extentLayer.getContainer()
+        pane: this.parentExtent._extentLayer.getContainer(),
+        linkEl: this
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'features') {
       // map-feature retrieved by link will be stored in shadowRoot owned by link
@@ -265,9 +273,6 @@ export class MapLink extends HTMLElement {
       // add template to array of queryies to be added to map and processed
       // on click/tap events
       this.hasSetBoundsHandler = true;
-      if (!this._queries) {
-        this._queries = [];
-      }
       L.extend(this._templateVars, this._setupQueryVars(this._templateVars));
       L.extend(this._templateVars, { extentBounds: this.getBounds() });
     }

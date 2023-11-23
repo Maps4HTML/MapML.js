@@ -341,38 +341,47 @@ export class MapLayer extends HTMLElement {
         for (let i = 0; i < mapExtents.length; i++) {
           extentLinksReady.push(mapExtents[i].whenLinksReady());
         }
-        Promise.allSettled(extentLinksReady).then(() => {
-          let disabledExtentCount = 0,
-            totalExtentCount = 0,
-            layerTypes = ['_staticTileLayer', '_mapmlvectors', '_extentLayer'];
-          for (let j = 0; j < layerTypes.length; j++) {
-            let type = layerTypes[j];
-            if (this.checked) {
-              if (type === '_extentLayer' && mapExtents.length > 0) {
-                for (let i = 0; i < mapExtents.length; i++) {
+        Promise.allSettled(extentLinksReady)
+          .then(() => {
+            let disabledExtentCount = 0,
+              totalExtentCount = 0,
+              layerTypes = [
+                '_staticTileLayer',
+                '_mapmlvectors',
+                '_extentLayer'
+              ];
+            for (let j = 0; j < layerTypes.length; j++) {
+              let type = layerTypes[j];
+              if (this.checked) {
+                if (type === '_extentLayer' && mapExtents.length > 0) {
+                  for (let i = 0; i < mapExtents.length; i++) {
+                    totalExtentCount++;
+                    if (mapExtents[i]._validateDisabled())
+                      disabledExtentCount++;
+                  }
+                } else if (layer[type]) {
+                  // not a templated layer
                   totalExtentCount++;
-                  if (mapExtents[i]._validateDisabled()) disabledExtentCount++;
+                  if (!layer[type].isVisible()) disabledExtentCount++;
                 }
-              } else if (layer[type]) {
-                // not a templated layer
-                totalExtentCount++;
-                if (!layer[type].isVisible()) disabledExtentCount++;
               }
             }
-          }
-          // if all extents are not visible / disabled, set layer to disabled
-          if (
-            disabledExtentCount === totalExtentCount &&
-            disabledExtentCount !== 0
-          ) {
-            this.setAttribute('disabled', '');
-            this.disabled = true;
-          } else {
-            this.removeAttribute('disabled');
-            this.disabled = false;
-          }
-          this.toggleLayerControlDisabled();
-        });
+            // if all extents are not visible / disabled, set layer to disabled
+            if (
+              disabledExtentCount === totalExtentCount &&
+              disabledExtentCount !== 0
+            ) {
+              this.setAttribute('disabled', '');
+              this.disabled = true;
+            } else {
+              this.removeAttribute('disabled');
+              this.disabled = false;
+            }
+            this.toggleLayerControlDisabled();
+          })
+          .catch((e) => {
+            console.log(e);
+          });
       }
     }, 0);
   }

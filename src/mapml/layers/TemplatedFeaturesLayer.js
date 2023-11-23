@@ -15,11 +15,12 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
   },
 
   isVisible: function () {
-    let mapZoom = this._map.getZoom();
+    let map = this._linkEl.getMapEl()._map;
+    let mapZoom = map.getZoom();
     let mapBounds = M.pixelToPCRSBounds(
-      this._map.getPixelBounds(),
+      map.getPixelBounds(),
       mapZoom,
-      this._map.options.projection
+      map.options.projection
     );
     return (
       mapZoom <= this.zoomBounds.maxZoom &&
@@ -34,13 +35,13 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     };
     return events;
   },
-  onAdd: function () {
+  onAdd: function (map) {
+    this._map = map;
     // this causes the layer (this._features) to actually render...
     this.options.pane.appendChild(this._container);
     this._map._addZoomLimit(this);
     var opacity = this.options.opacity || 1,
-      container = this._container,
-      map = this._map;
+      container = this._container;
     if (!this._features) {
       this._features = M.featureLayer(null, {
         // pass the vector layer a renderer of its own, otherwise leaflet
@@ -55,6 +56,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
         opacity: opacity,
         projection: map.options.projection,
         static: true,
+        mapEl: this._linkEl.getMapEl(),
         onEachFeature: function (properties, geometry) {
           // need to parse as HTML to preserve semantics and styles
           var c = document.createElement('div');

@@ -52,6 +52,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
   },
 
   isVisible: function () {
+    let map = this.options.mapEl._map;
     // if query, isVisible is unconditionally true
     if (this.options.query) return true;
     // if the featureLayer is for static features, i.e. it is the mapmlvector layer,
@@ -62,7 +63,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
     else if (this._staticFeature && Object.keys(this._features).length === 0) {
       return false;
     } else {
-      let mapZoom = this._map.getZoom(),
+      let mapZoom = map.getZoom(),
         withinZoom = this.zoomBounds
           ? mapZoom <= this.zoomBounds.maxZoom &&
             mapZoom >= this.zoomBounds.minZoom
@@ -73,9 +74,9 @@ export var FeatureLayer = L.FeatureGroup.extend({
         this.layerBounds &&
         this.layerBounds.overlaps(
           M.pixelToPCRSBounds(
-            this._map.getPixelBounds(),
+            map.getPixelBounds(),
             mapZoom,
-            this._map.options.projection
+            map.options.projection
           )
         )
       );

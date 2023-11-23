@@ -3,6 +3,7 @@ export var TemplatedImageLayer = L.Layer.extend({
     this._template = template;
     this._container = L.DomUtil.create('div', 'leaflet-layer');
     L.DomUtil.addClass(this._container, 'mapml-image-container');
+    this._linkEl = options.linkEl;
     this.zoomBounds = options.zoomBounds;
     this.extentBounds = options.extentBounds;
     L.setOptions(
@@ -18,6 +19,7 @@ export var TemplatedImageLayer = L.Layer.extend({
     return events;
   },
   onAdd: function (map) {
+    this._map = map;
     // TODO: set this._map by ourselves
     this.options.pane.appendChild(this._container);
     map._addZoomLimit(this); //used to set the zoom limit of the map
@@ -28,11 +30,12 @@ export var TemplatedImageLayer = L.Layer.extend({
     this._onMoveEnd();
   },
   isVisible: function () {
-    let mapZoom = this._map.getZoom();
+    let map = this._linkEl.getMapEl()._map;
+    let mapZoom = map.getZoom();
     let mapBounds = M.pixelToPCRSBounds(
-      this._map.getPixelBounds(),
+      map.getPixelBounds(),
       mapZoom,
-      this._map.options.projection
+      map.options.projection
     );
     return (
       mapZoom <= this.zoomBounds.maxZoom &&

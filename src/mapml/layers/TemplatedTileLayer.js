@@ -15,6 +15,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     // it's critical to have this.options.minZoom, minNativeZoom, maxZoom, maxNativeZoom
     // which we accomplish here.  Used by Leaflet Map and GridLayer.
     L.extend(options, this.zoomBounds);
+    this._linkEl = options.linkEl;
     this.extentBounds = this.options.extentBounds;
 
     this._template = template;
@@ -27,10 +28,10 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       L.extend(options, { pane: this.options.pane })
     );
   },
-  onAdd: function () {
+  onAdd: function (map) {
     this.options.pane.appendChild(this._container);
     this._map._addZoomLimit(this);
-    L.TileLayer.prototype.onAdd.call(this, this._map);
+    L.TileLayer.prototype.onAdd.call(this, map);
     this._handleMoveEnd();
   },
 
@@ -50,15 +51,16 @@ export var TemplatedTileLayer = L.TileLayer.extend({
   },
 
   isVisible: function () {
-    let mapZoom = this._map.getZoom();
+    let map = this._linkEl.getMapEl()._map;
+    let mapZoom = map.getZoom();
     let mapBounds = M.pixelToPCRSBounds(
-      this._map.getPixelBounds(),
+      map.getPixelBounds(),
       mapZoom,
-      this._map.options.projection
+      map.options.projection
     );
     return (
-      mapZoom <= this.options.maxZoom &&
-      mapZoom >= this.options.minZoom &&
+      mapZoom <= this.zoomBounds.maxZoom &&
+      mapZoom >= this.zoomBounds.minZoom &&
       this.extentBounds.overlaps(mapBounds)
     );
   },
@@ -179,7 +181,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       static: false,
       layerBounds: this.extentBounds,
       zoomBounds: this.zoomBounds,
-      interactive: false
+      interactive: false,
+      mapEl: this._linkEl.getMapEl()
     });
 
     for (let groupID in tileFeatures._layers) {

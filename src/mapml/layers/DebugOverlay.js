@@ -250,10 +250,10 @@ export var DebugVectors = L.LayerGroup.extend({
           // tagged with the layer it came from
           let boundsTestTag =
             layers[i].extentBounds &&
-            layers[i].options.extentEl.parentLayer.hasAttribute('data-testid')
-              ? layers[i].options.extentEl.parentLayer.getAttribute(
-                  'data-testid'
-                )
+            layers[i].options.linkEl.getLayerEl().hasAttribute('data-testid')
+              ? layers[i].options.linkEl
+                  .getLayerEl()
+                  .getAttribute('data-testid')
               : layers[i].layerBounds &&
                 layers[i].options._leafletLayer._layerEl.hasAttribute(
                   'data-testid'
