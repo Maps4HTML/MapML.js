@@ -4,8 +4,7 @@ export class MapExtent extends HTMLElement {
     return ['checked', 'label', 'opacity', 'hidden'];
   }
   get units() {
-    // this should fallback to something??
-    return this.getAttribute('units');
+    return this.getAttribute('units') || M.FALLBACK_PROJECTION;
   }
 
   get checked() {

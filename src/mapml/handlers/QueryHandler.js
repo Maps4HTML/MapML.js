@@ -279,7 +279,7 @@ export var QueryHandler = L.Handler.extend({
         _leafletLayer: layer,
         query: true,
         static: true,
-        mapEl: this.options.mapEl
+        mapEl: layer.options.mapEl
       });
       f.addTo(map);
 

@@ -474,11 +474,7 @@ export class MapLink extends HTMLElement {
         inputsReady: Promise.allSettled(inputsReady),
         zoom: linkedZoomInput,
         zoomBounds: this._getZoomBounds(linkedZoomInput),
-        boundsFallbackPCRS: this.getFallbackBounds(
-          this.parentElement.units || M.FALLBACK_PROJECTION
-        ),
-        // TODO: make map-extent.units fall back automatically
-        projection: this.parentElement.units || M.FALLBACK_PROJECTION,
+        projection: this.parentElement.units,
         tms: this.tms,
         step: step
       };
@@ -493,12 +489,12 @@ export class MapLink extends HTMLElement {
   getBounds() {
     let template = this._templateVars;
     let inputs = template.values,
-      projection = template.projection || M.FALLBACK_PROJECTION,
+      projection = this.parentElement.units,
       value = 0,
       boundsUnit = M.FALLBACK_CS;
-    let bounds = M[template.projection].options.crs.tilematrix.bounds(0),
+    let bounds = M[projection].options.crs.tilematrix.bounds(0),
       defaultMinZoom = 0,
-      defaultMaxZoom = M[template.projection].options.resolutions.length - 1,
+      defaultMaxZoom = M[projection].options.resolutions.length - 1,
       nativeMinZoom = defaultMinZoom,
       nativeMaxZoom = defaultMaxZoom;
     let locInputs = false,
@@ -554,12 +550,12 @@ export class MapLink extends HTMLElement {
     if (numberOfAxes >= 2) {
       locInputs = true;
     }
-    if (!locInputs && template.boundsFallbackPCRS) {
-      bounds = template.boundsFallbackPCRS;
+    if (!locInputs) {
+      bounds = this.getFallbackBounds(projection);
     } else if (locInputs) {
       bounds = M.boundsToPCRSBounds(bounds, value, projection, boundsUnit);
     } else {
-      bounds = M[template.projection].options.crs.pcrs.bounds;
+      bounds = M[projection].options.crs.pcrs.bounds;
     }
     return bounds;
   }
@@ -621,11 +617,8 @@ export class MapLink extends HTMLElement {
         cs
       );
     } else {
-      // TODO review.  Should this.parentElement.units automatically fall back
-      // i.e. to OSMTILE if not specified?  Probably, but it does not currently.
-      let fallbackProjection =
-        M[this.parentElement.units || M.FALLBACK_PROJECTION];
-      bounds = fallbackProjection.options.crs.pcrs.bounds;
+      let crs = M[this.parentElement.units];
+      bounds = crs.options.crs.pcrs.bounds;
     }
     return bounds;
   }
