@@ -286,8 +286,14 @@ export var createLayerControlHTML = function () {
   itemSettingControlButton.appendChild(settingsButtonNameIcon);
   settingsButtonNameIcon.appendChild(svgSettingsControlIcon);
 
-  if (this._layer._styles) {
-    layerItemSettings.appendChild(this._layer._styles);
+  let mapml = this.shadowRoot ? this.shadowRoot : this;
+  var styleLinks = mapml.querySelectorAll(
+    'map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]'
+  );
+  let styles;
+  if (styleLinks) {
+    styles = this.getAlternateStyles(styleLinks);
+    layerItemSettings.appendChild(this.getAlternateStyles(styleLinks));
   }
 
   this._layerControlCheckbox = input;
@@ -297,7 +303,7 @@ export var createLayerControlHTML = function () {
   this._layerControlHTML = fieldset;
   this._layerItemSettingsHTML = layerItemSettings;
   this._propertiesGroupAnatomy = extentsFieldset;
-  this._styles = this._layer._styles;
+  this._styles = styles;
   extentsFieldset.setAttribute('aria-label', 'Sublayers');
   extentsFieldset.setAttribute('hidden', '');
   layerItemSettings.appendChild(extentsFieldset);

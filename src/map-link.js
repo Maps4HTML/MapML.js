@@ -110,10 +110,14 @@ export class MapLink extends HTMLElement {
     }
   }
   getMapEl() {
-    return this.parentElement.mapEl;
+    return this.getRootNode() instanceof ShadowRoot
+      ? this.getRootNode().host
+      : this.closest('mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    if (this.parentExtent) return this.parentExtent.parentLayer;
+    return this.getRootNode() instanceof ShadowRoot
+      ? this.getRootNode().host
+      : this.closest('layer-');
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -270,9 +274,6 @@ export class MapLink extends HTMLElement {
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'query') {
       this.attachShadow({ mode: 'open' });
-      // add template to array of queryies to be added to map and processed
-      // on click/tap events
-      this.hasSetBoundsHandler = true;
       L.extend(this._templateVars, this._setupQueryVars(this._templateVars));
       L.extend(this._templateVars, { extentBounds: this.getBounds() });
     }
@@ -672,6 +673,49 @@ export class MapLink extends HTMLElement {
   _validateDisabled() {
     return this._templatedLayer.isVisible();
   }
+  _createSelfOrStyleLink() {
+    let layerEl = this.getLayerEl();
+    const changeStyle = function (e) {
+      L.DomEvent.stop(e);
+      layerEl.dispatchEvent(
+        new CustomEvent('changestyle', {
+          detail: {
+            src: e.target.getAttribute('data-href')
+          }
+        })
+      );
+    };
+
+    let styleOption = document.createElement('div'),
+      styleOptionInput = styleOption.appendChild(
+        document.createElement('input')
+      );
+    styleOptionInput.setAttribute('type', 'radio');
+    styleOptionInput.setAttribute('id', 'rad-' + L.stamp(styleOptionInput));
+    styleOptionInput.setAttribute(
+      'name',
+      // grouping radio buttons based on parent layer's style <detail>
+      'styles-' + L.stamp(stylesControl)
+    );
+    styleOptionInput.setAttribute('value', this.getAttribute('title'));
+    styleOptionInput.setAttribute(
+      'data-href',
+      new URL(this.href, this.getBase()).href
+    );
+    var styleOptionLabel = styleOption.appendChild(
+      document.createElement('label')
+    );
+    styleOptionLabel.setAttribute('for', 'rad-' + L.stamp(styleOptionInput));
+    styleOptionLabel.innerText = this.title;
+    if (this.rel === 'style self' || this.rel === 'self style') {
+      styleOptionInput.checked = true;
+    }
+    this._styleOption = styleOption;
+    L.DomEvent.on(styleOptionInput, 'click', changeStyle, layer);
+  }
+  getLayerControlOption() {
+    return this._styleOption;
+  }
 
   // Resolve the templated URL with info from the sibling map-input's
   resolve() {
@@ -700,23 +744,23 @@ export class MapLink extends HTMLElement {
   }
   whenReady() {
     return new Promise((resolve, reject) => {
-      let interval, failureTimer;
+      let interval, failureTimer, ready;
       switch (this.rel.toLowerCase()) {
         // for some cases, require a dependency check
         case 'tile':
         case 'image':
         case 'features':
-          if (this._templatedLayer) {
-            resolve();
-          }
-          interval = setInterval(testForContentLink, 300, this);
-          failureTimer = setTimeout(linkNotDefined, 10000);
+          ready = '_templatedLayer';
           break;
-        case 'query':
         case 'style':
         case 'self':
         case 'style self':
         case 'self style':
+          ready = '_styleOption';
+          break;
+        case 'query':
+          ready = 'shadowRoot';
+          break;
         case 'zoomin':
         case 'zoomout':
         case 'legend':
@@ -725,9 +769,17 @@ export class MapLink extends HTMLElement {
         case 'license':
           resolve();
           break;
+        default:
+          resolve();
+          break;
       }
-      function testForContentLink(linkElement) {
-        if (linkElement._linkLayer) {
+      if (this[ready]) {
+        resolve();
+      }
+      interval = setInterval(testForLinkReady, 300, this);
+      failureTimer = setTimeout(linkNotDefined, 10000);
+      function testForLinkReady(linkElement) {
+        if (linkElement[ready]) {
           clearInterval(interval);
           clearTimeout(failureTimer);
           resolve();

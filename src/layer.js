@@ -181,10 +181,6 @@ export class MapLayer extends HTMLElement {
                 opacity: this.opacity
               }
             );
-            this._createLayerControlHTML();
-            this._attachedToMap();
-            this._validateDisabled();
-            resolve();
           })
           .catch((error) => {
             this._fetchError = true;
@@ -198,21 +194,36 @@ export class MapLayer extends HTMLElement {
           mapprojection: this.parentElement.projection,
           opacity: this.opacity
         });
+      }
+      return this.shadowRoot;
+    })
+      .then((shadowRoot) => {
+        let node = shadowRoot ? shadowRoot : this;
+        let links = node.querySelectorAll(
+          'map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]'
+        );
+        let linksReady = [];
+        for (let link of links) {
+          linksReady.push(link.whenReady());
+        }
+        return Promise.allSettled(linksReady);
+      })
+      .then(() => {
         this._createLayerControlHTML();
         this._attachedToMap();
         this._validateDisabled();
         resolve();
-      }
-    }).catch((e) => {
-      if (e.type === 'changeprojection') {
-        this.src = e.detail.href;
-      } else {
-        console.log(e);
-        this.dispatchEvent(
-          new CustomEvent('error', { detail: { target: this } })
-        );
-      }
-    });
+      })
+      .catch((e) => {
+        if (e.type === 'changeprojection') {
+          this.src = e.detail.href;
+        } else {
+          console.log(e);
+          this.dispatchEvent(
+            new CustomEvent('error', { detail: { target: this } })
+          );
+        }
+      });
   }
   _attachedToMap() {
     // set i to the position of this layer element in the set of layers
@@ -433,6 +444,23 @@ export class MapLayer extends HTMLElement {
       this._layer &&
       !this.hidden
     );
+  }
+  getAlternateStyles(styleLinks) {
+    if (styleLinks.length > 1) {
+      var stylesControl = document.createElement('details'),
+        stylesControlSummary = document.createElement('summary');
+      stylesControlSummary.innerText = 'Style';
+      stylesControl.appendChild(stylesControlSummary);
+
+      for (var j = 0; j < styleLinks.length; j++) {
+        stylesControl.appendChild(styleLinks[j].getLayerControlOption());
+        L.DomUtil.addClass(
+          stylesControl,
+          'mapml-layer-item-style mapml-control-layers'
+        );
+      }
+      return stylesControl;
+    }
   }
   getOuterHTML() {
     let tempElement = this.cloneNode(true);

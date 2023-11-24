@@ -274,7 +274,6 @@ export var MapMLLayer = L.Layer.extend({
       determineLayerProjection();
       // requires that layer._properties.projection be set
       if (selectMatchingAlternateProjection()) return;
-      layer._styles = getAlternateStyles();
       parseLicenseAndLegend();
       setLayerTitle();
       setZoomInOrOutLinks();
@@ -432,74 +431,6 @@ export var MapMLLayer = L.Layer.extend({
             maxZoomBound: layer._properties.crs.options.resolutions.length - 1,
             tileSize: layer._properties.crs.options.crs.tile.bounds.max.x
           });
-        }
-      }
-      function getAlternateStyles() {
-        var styleLinks = mapml.querySelectorAll(
-          'map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]'
-        );
-        if (styleLinks.length > 1) {
-          var stylesControl = document.createElement('details'),
-            stylesControlSummary = document.createElement('summary');
-          stylesControlSummary.innerText = 'Style';
-          stylesControl.appendChild(stylesControlSummary);
-
-          var changeStyle = function (e) {
-            L.DomEvent.stop(e);
-            layer._layerEl.dispatchEvent(
-              new CustomEvent('changestyle', {
-                detail: {
-                  src: e.target.getAttribute('data-href')
-                }
-              })
-            );
-          };
-
-          for (var j = 0; j < styleLinks.length; j++) {
-            var styleOption = document.createElement('div'),
-              styleOptionInput = styleOption.appendChild(
-                document.createElement('input')
-              );
-            styleOptionInput.setAttribute('type', 'radio');
-            styleOptionInput.setAttribute(
-              'id',
-              'rad-' + L.stamp(styleOptionInput)
-            );
-            styleOptionInput.setAttribute(
-              'name',
-              // grouping radio buttons based on parent layer's style <detail>
-              'styles-' + L.stamp(stylesControl)
-            );
-            styleOptionInput.setAttribute(
-              'value',
-              styleLinks[j].getAttribute('title')
-            );
-            styleOptionInput.setAttribute(
-              'data-href',
-              new URL(styleLinks[j].getAttribute('href'), base).href
-            );
-            var styleOptionLabel = styleOption.appendChild(
-              document.createElement('label')
-            );
-            styleOptionLabel.setAttribute(
-              'for',
-              'rad-' + L.stamp(styleOptionInput)
-            );
-            styleOptionLabel.innerText = styleLinks[j].getAttribute('title');
-            if (
-              styleLinks[j].getAttribute('rel') === 'style self' ||
-              styleLinks[j].getAttribute('rel') === 'self style'
-            ) {
-              styleOptionInput.checked = true;
-            }
-            stylesControl.appendChild(styleOption);
-            L.DomUtil.addClass(
-              stylesControl,
-              'mapml-layer-item-style mapml-control-layers'
-            );
-            L.DomEvent.on(styleOptionInput, 'click', changeStyle, layer);
-          }
-          return stylesControl;
         }
       }
       function setLayerTitle() {
