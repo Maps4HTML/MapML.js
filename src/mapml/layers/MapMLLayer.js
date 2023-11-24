@@ -92,6 +92,7 @@ export var MapMLLayer = L.Layer.extend({
     this.setZIndex(this.options.zIndex);
     this.getPane().appendChild(this._container);
     map.on('popupopen', this._attachSkipButtons, this);
+    this._validateLayerZoom({ zoom: map.getZoom() });
   },
 
   _calculateBounds: function () {
@@ -174,14 +175,10 @@ export var MapMLLayer = L.Layer.extend({
     }
   },
 
-  addTo: function (map) {
-    map.addLayer(this);
-    return this;
-  },
   getEvents: function () {
-    return { zoomanim: this._onZoomAnim };
+    return { zoomanim: this._validateLayerZoom };
   },
-  _onZoomAnim: function (e) {
+  _validateLayerZoom: function (e) {
     // this callback will be invoked AFTER <layer- > has been removed
     // but due to the characteristic of JavaScript, the context (this pointer) can still be used
     // the easiest way to solve this:
@@ -218,24 +215,21 @@ export var MapMLLayer = L.Layer.extend({
         }
       }
     }
-    var canZoom =
-      (toZoom < min && this._properties.zoomout) ||
-      (toZoom > max && this._properties.zoomin);
+    let targetURL;
     if (!(min <= toZoom && toZoom <= max)) {
       if (this._properties.zoomin && toZoom > max) {
-        // this._href is the 'original' url from which this layer came
-        // since we are following a zoom link we will be getting a new
-        // layer almost, resetting child content as appropriate
-        this._href = this._properties.zoomin;
-        this._layerEl.src = this._properties.zoomin;
-        // this.href is the "public" property. When a dynamic layer is
-        // accessed, this value changes with every new extent received
-        this.href = this._properties.zoomin;
-        this._layerEl.src = this._properties.zoomin;
+        targetURL = this._properties.zoomin;
       } else if (this._properties.zoomout && toZoom < min) {
-        this._href = this._properties.zoomout;
-        this.href = this._properties.zoomout;
-        this._layerEl.src = this._properties.zoomout;
+        targetURL = this._properties.zoomout;
+      }
+      if (targetURL) {
+        this._layerEl.dispatchEvent(
+          new CustomEvent('zoomchangesrc', {
+            detail: {
+              href: targetURL
+            }
+          })
+        );
       }
     }
   },

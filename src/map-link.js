@@ -473,7 +473,6 @@ export class MapLink extends HTMLElement {
         values: inputs,
         inputsReady: Promise.allSettled(inputsReady),
         zoom: linkedZoomInput,
-        zoomBounds: this._getZoomBounds(linkedZoomInput),
         projection: this.parentElement.units,
         tms: this.tms,
         step: step
@@ -481,7 +480,7 @@ export class MapLink extends HTMLElement {
     }
   }
   getZoomBounds() {
-    return this._templateVars.zoomBounds;
+    return this._getZoomBounds(this._templateVars.zoom);
   }
   /**
    * TODO: review getBounds for sanity, also getFallbackBounds, perhaps integrate
@@ -663,8 +662,7 @@ export class MapLink extends HTMLElement {
       metaMax ||
       (zoomInput
         ? +zoomInput.getAttribute('max')
-        : M[this.parentElement.units || M.FALLBACK_PROJECTION].options
-            .resolutions.length - 1);
+        : M[this.parentElement.units].options.resolutions.length - 1);
     zoomBounds.maxNativeZoom = zoomInput
       ? +zoomInput.getAttribute('max')
       : zoomBounds.maxZoom;

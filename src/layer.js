@@ -134,6 +134,14 @@ export class MapLayer extends HTMLElement {
         { once: true }
       );
       this.addEventListener(
+        'zoomchangesrc',
+        function (e) {
+          e.stopPropagation();
+          this.src = e.detail.href;
+        },
+        { once: true }
+      );
+      this.addEventListener(
         'changeprojection',
         function (e) {
           e.stopPropagation();

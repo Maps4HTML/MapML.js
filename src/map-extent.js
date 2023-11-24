@@ -316,25 +316,20 @@ export class MapExtent extends HTMLElement {
 
     // bounds should be able to be calculated unconditionally, not depend on map-extent.checked
     for (let j = 0; j < templates.length; j++) {
+      let zoomBounds = templates[j].getZoomBounds();
       if (!bounds) {
         bounds = templates[j].getBounds();
-        zoomMax = templates[j].getZoomBounds().maxZoom;
-        zoomMin = templates[j].getZoomBounds().minZoom;
-        maxNativeZoom = templates[j].getZoomBounds().maxNativeZoom;
-        minNativeZoom = templates[j].getZoomBounds().minNativeZoom;
+        zoomMax = zoomBounds.maxZoom;
+        zoomMin = zoomBounds.minZoom;
+        maxNativeZoom = zoomBounds.maxNativeZoom;
+        minNativeZoom = zoomBounds.minNativeZoom;
       } else {
         bounds.extend(templates[j].getBounds().min);
         bounds.extend(templates[j].getBounds().max);
-        zoomMax = Math.max(zoomMax, templates[j].getZoomBounds().maxZoom);
-        zoomMin = Math.min(zoomMin, templates[j].getZoomBounds().minZoom);
-        maxNativeZoom = Math.max(
-          maxNativeZoom,
-          templates[j].getZoomBounds().maxNativeZoom
-        );
-        minNativeZoom = Math.min(
-          minNativeZoom,
-          templates[j].getZoomBounds().minNativeZoom
-        );
+        zoomMax = Math.max(zoomMax, zoomBounds.maxZoom);
+        zoomMin = Math.min(zoomMin, zoomBounds.minZoom);
+        maxNativeZoom = Math.max(maxNativeZoom, zoomBounds.maxNativeZoom);
+        minNativeZoom = Math.min(minNativeZoom, zoomBounds.minNativeZoom);
       }
     }
     // cannot be named as layerBounds if we decide to keep the debugoverlay logic

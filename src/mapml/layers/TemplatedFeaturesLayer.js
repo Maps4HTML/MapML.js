@@ -5,6 +5,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     this._container = L.DomUtil.create('div', 'leaflet-layer');
     L.DomUtil.addClass(this._container, 'mapml-features-container');
     this.zoomBounds = options.zoomBounds;
+    delete options.zoomBounds;
     L.extend(options, this.zoomBounds);
     this.extentBounds = options.extentBounds;
     this._linkEl = options.linkEl;

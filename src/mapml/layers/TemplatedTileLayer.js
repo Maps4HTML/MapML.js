@@ -10,11 +10,19 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     // options first...
     options.tms = template.tms;
     L.setOptions(this, options);
-    this._setUpTileTemplateVars(template);
-    this.zoomBounds = this.options.zoomBounds;
     // it's critical to have this.options.minZoom, minNativeZoom, maxZoom, maxNativeZoom
-    // which we accomplish here.  Used by Leaflet Map and GridLayer.
-    L.extend(options, this.zoomBounds);
+    // because they are used by Leaflet Map and GridLayer, but we
+    // don't need two copies of that info on our options object, so set the
+    // .zoomBounds property (which is used externally), then delete the option
+    // before unpacking the zoomBound object's properties onto this.options.minZ... etc.
+    let zoomBounds = options.zoomBounds;
+    this.zoomBounds = zoomBounds;
+    delete options.zoomBounds;
+    // unpack object to this.options.minZ... etc where minZ... are the props
+    // of the this.zoomBounds object:
+    L.extend(this.options, this.zoomBounds);
+    // _setup call here relies on this.options.minZ.. etc
+    this._setUpTileTemplateVars(template);
     this._linkEl = options.linkEl;
     this.extentBounds = this.options.extentBounds;
 
@@ -493,8 +501,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     // by first processing the extent to determine the zoom and if none, adding
     // one and second by copying that zoom into the set of template variable inputs
     // even if it is not referenced by one of the template's variable references
-    var zmin = template.zoomBounds.minNativeZoom,
-      zmax = template.zoomBounds.maxNativeZoom;
+    var zmin = this.options.minNativeZoom,
+      zmax = this.options.maxNativeZoom;
     for (var z = 0; z <= zmax; z++) {
       template.tilematrix.bounds[z] =
         z >= zmin
@@ -507,8 +515,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
   },
   _clampZoom: function (zoom) {
     let clamp = L.GridLayer.prototype._clampZoom.call(this, zoom);
-    if (this._template.step > this.zoomBounds.maxNativeZoom)
-      this._template.step = this.zoomBounds.maxNativeZoom;
+    if (this._template.step > this.options.maxNativeZoom)
+      this._template.step = this.options.maxNativeZoom;
 
     if (zoom !== clamp) {
       zoom = clamp;

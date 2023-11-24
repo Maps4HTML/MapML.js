@@ -5,6 +5,8 @@ export var TemplatedImageLayer = L.Layer.extend({
     L.DomUtil.addClass(this._container, 'mapml-image-container');
     this._linkEl = options.linkEl;
     this.zoomBounds = options.zoomBounds;
+    delete options.zoomBounds;
+    L.extend(options, this.zoomBounds);
     this.extentBounds = options.extentBounds;
     L.setOptions(
       this,

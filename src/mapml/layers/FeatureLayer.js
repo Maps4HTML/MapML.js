@@ -88,7 +88,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
     L.FeatureGroup.prototype.onAdd.call(this, map);
     if (this._staticFeature) {
       this._resetFeatures();
-      this.options._leafletLayer._map._addZoomLimit(this);
+      map._addZoomLimit(this);
     }
     if (this._mapmlFeatures)
       map.on('featurepagination', this.showPaginationFeature, this);
