@@ -1,4 +1,4 @@
-export var createLayerControlHTML = function () {
+export var createLayerControlHTML = async function () {
   var fieldset = L.DomUtil.create('fieldset', 'mapml-layer-item'),
     input = L.DomUtil.create('input'),
     layerItemName = L.DomUtil.create('span', 'mapml-layer-item-name'),
@@ -293,7 +293,9 @@ export var createLayerControlHTML = function () {
   let styles;
   if (styleLinks) {
     styles = this.getAlternateStyles(styleLinks);
-    layerItemSettings.appendChild(this.getAlternateStyles(styleLinks));
+    if (styles) {
+      layerItemSettings.appendChild(style);
+    }
   }
 
   this._layerControlCheckbox = input;
@@ -307,10 +309,15 @@ export var createLayerControlHTML = function () {
   extentsFieldset.setAttribute('aria-label', 'Sublayers');
   extentsFieldset.setAttribute('hidden', '');
   let mapExtents = mapml.querySelectorAll('map-extent:not([hidden])');
+  let mapExtentLayerControls = [];
   for (let i = 0; i < mapExtents.length; i++) {
-    extentsFieldset.appendChild(mapExtents[i].getLayerControlHTML());
+    mapExtentLayerControls.push(mapExtents[i].whenReady());
     // if any map-extent is not hidden, the parent fieldset should not be hidden
     extentsFieldset.removeAttribute('hidden');
+  }
+  await Promise.all(mapExtentLayerControls);
+  for (let i = 0; i < mapExtents.length; i++) {
+    extentsFieldset.appendChild(mapExtents[i].getLayerControlHTML());
   }
   layerItemSettings.appendChild(extentsFieldset);
   return this._layerControlHTML;
