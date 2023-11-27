@@ -144,7 +144,7 @@ export class MapExtent extends HTMLElement {
     // !this.isConnected <=> the disconnectedCallback has run before
     if (!this.isConnected) return;
     this._layer = this.parentLayer._layer;
-    this._map = this._layer._map;
+    this._map = this.mapEl._map;
     // reset the layer extent
     delete this.parentLayer.bounds;
     this._changeHandler = this._handleChange.bind(this);
@@ -167,9 +167,6 @@ export class MapExtent extends HTMLElement {
     });
     // this._layerControlHTML is the fieldset for the extent in the LayerControl
     this._layerControlHTML = this._createLayerControlExtentHTML();
-    if (!this.hidden)
-      this._layer.addExtentToLayerControl(this._layerControlHTML);
-    this._validateLayerControlContainerHidden();
     this._calculateBounds();
   }
   getLayerControlHTML() {
@@ -261,7 +258,7 @@ export class MapExtent extends HTMLElement {
   _handleChange() {
     // if the parent layer- is checked, add _extentLayer to map if map-extent is checked, otherwise remove it
     if (this.checked && this.parentLayer.checked && !this.disabled) {
-      this._extentLayer.addTo(this._layer._map);
+      this._extentLayer.addTo(this._map);
       this._extentLayer.setZIndex(
         Array.from(this.parentLayer.querySelectorAll('map-extent')).indexOf(
           this

@@ -306,6 +306,12 @@ export var createLayerControlHTML = function () {
   this._styles = styles;
   extentsFieldset.setAttribute('aria-label', 'Sublayers');
   extentsFieldset.setAttribute('hidden', '');
+  let mapExtents = mapml.querySelectorAll('map-extent:not([hidden])');
+  for (let i = 0; i < mapExtents.length; i++) {
+    extentsFieldset.appendChild(mapExtents[i].getLayerControlHTML());
+    // if any map-extent is not hidden, the parent fieldset should not be hidden
+    extentsFieldset.removeAttribute('hidden');
+  }
   layerItemSettings.appendChild(extentsFieldset);
   return this._layerControlHTML;
 };

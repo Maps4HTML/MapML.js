@@ -546,7 +546,11 @@ export class MapLayer extends HTMLElement {
   whenReady() {
     return new Promise((resolve, reject) => {
       let interval, failureTimer;
-      if (this._layer && (!this.src || this.shadowRoot?.childNodes.length)) {
+      if (
+        this._layer &&
+        this._layerControlHTML &&
+        (!this.src || this.shadowRoot?.childNodes.length)
+      ) {
         resolve();
       } else {
         let layerElement = this;
@@ -556,6 +560,7 @@ export class MapLayer extends HTMLElement {
       function testForLayer(layerElement) {
         if (
           layerElement._layer &&
+          layerElement._layerControlHTML &&
           (!layerElement.src || layerElement.shadowRoot?.childNodes.length)
         ) {
           clearInterval(interval);

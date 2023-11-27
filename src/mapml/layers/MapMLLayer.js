@@ -252,11 +252,6 @@ export var MapMLLayer = L.Layer.extend({
       this._href
     ).href;
   },
-  addExtentToLayerControl: function (contents) {
-    this._layerEl._propertiesGroupAnatomy.appendChild(contents);
-    // remove hidden attribute, if it exists
-    this._layerEl._propertiesGroupAnatomy.removeAttribute('hidden');
-  },
   _initialize: function (content) {
     if (!this._href && !content) {
       return;
