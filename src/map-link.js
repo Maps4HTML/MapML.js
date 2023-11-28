@@ -57,7 +57,11 @@ export class MapLink extends HTMLElement {
   //    }
   //  }
   get href() {
-    return this.getAttribute('href');
+    if (this.hasAttribute('href')) {
+      return new URL(this.getAttribute('href'), this.getBase()).href;
+    } else if (this.hasAttribute('tref')) {
+      return this.resolve();
+    }
   }
   set href(val) {
     // improve this
@@ -204,7 +208,7 @@ export class MapLink extends HTMLElement {
         break;
       case 'zoomin':
       case 'zoomout':
-        this._createZoominOrZoomoutLink();
+        //        this._createZoominOrZoomoutLink();
         break;
       case 'legend':
         this._createLegendLink();

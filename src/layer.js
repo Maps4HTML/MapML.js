@@ -191,9 +191,17 @@ export class MapLayer extends HTMLElement {
             }
             Promise.all(linksReady).then(() => {
               this._createLayerControlHTML();
-              this._attachedToMap();
-              this._validateDisabled();
-              resolve();
+
+              let node = this.shadowRoot;
+              let extentsReady = [];
+              for (let extent of node.querySelectorAll('map-extent')) {
+                extentsReady.push(extent.whenReady());
+              }
+              Promise.allSettled(extentsReady).then(() => {
+                this._attachedToMap();
+                this._validateDisabled();
+                resolve();
+              });
             });
           })
           .catch((error) => {
@@ -208,19 +216,24 @@ export class MapLayer extends HTMLElement {
           mapprojection: this.parentElement.projection,
           opacity: this.opacity
         });
-        let node = this.shadowRoot ? this.shadowRoot : this;
-        let links = node.querySelectorAll(
-          'map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]'
-        );
         let linksReady = [];
-        for (let link of links) {
+        for (let link of this.querySelectorAll(
+          'map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]'
+        )) {
           linksReady.push(link.whenReady());
         }
         Promise.all(linksReady).then(() => {
           this._createLayerControlHTML();
-          this._attachedToMap();
-          this._validateDisabled();
-          resolve();
+
+          let extentsReady = [];
+          for (let extent of this.querySelectorAll('map-extent')) {
+            extentsReady.push(extent.whenReady());
+          }
+          Promise.allSettled(extentsReady).then(() => {
+            this._attachedToMap();
+            this._validateDisabled();
+            resolve();
+          });
         });
       }
     }).catch((e) => {

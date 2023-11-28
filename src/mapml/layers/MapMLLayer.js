@@ -179,48 +179,23 @@ export var MapMLLayer = L.Layer.extend({
     return { zoomanim: this._validateLayerZoom };
   },
   _validateLayerZoom: function (e) {
-    // this callback will be invoked AFTER <layer- > has been removed
-    // but due to the characteristic of JavaScript, the context (this pointer) can still be used
-    // the easiest way to solve this:
-    if (!this._map) {
-      return;
-    }
     // get the min and max zooms from all extents
-    const layerEl = this._layerEl,
-      // prerequisite: no inline and remote mapml elements exists at the same time
-      mapExtents = layerEl.shadowRoot
-        ? layerEl.shadowRoot.querySelectorAll('map-extent')
-        : layerEl.querySelectorAll('map-extent');
-    var toZoom = e.zoom,
-      zoom =
-        mapExtents.length > 0
-          ? mapExtents[0].querySelector('map-input[type=zoom]')
-          : null,
-      min =
-        zoom && zoom.hasAttribute('min')
-          ? parseInt(zoom.getAttribute('min'))
-          : this._map.getMinZoom(),
-      max =
-        zoom && zoom.hasAttribute('max')
-          ? parseInt(zoom.getAttribute('max'))
-          : this._map.getMaxZoom();
-    if (zoom) {
-      for (let i = 1; i < mapExtents.length; i++) {
-        zoom = mapExtents[i].querySelector('map-input[type=zoom]');
-        if (zoom && zoom.hasAttribute('min')) {
-          min = Math.min(parseInt(zoom.getAttribute('min')), min);
-        }
-        if (zoom && zoom.hasAttribute('max')) {
-          max = Math.max(parseInt(zoom.getAttribute('max')), max);
-        }
-      }
-    }
+    const layerEl = this._layerEl;
+    let toZoom = e.zoom;
+    let min = layerEl.extent.zoom.minZoom;
+    let max = layerEl.extent.zoom.maxZoom;
+    let inLink = layerEl.shadowRoot
+        ? layerEl.shadowRoot.querySelector('map-link[rel=zoomin]')
+        : layerEl.querySelector('map-link[rel=zoomin]'),
+      outLink = layerEl.shadowRoot
+        ? layerEl.shadowRoot.querySelector('map-link[rel=zoomout]')
+        : layerEl.querySelector('map-link[rel=zoomout]');
     let targetURL;
     if (!(min <= toZoom && toZoom <= max)) {
-      if (this._properties.zoomin && toZoom > max) {
-        targetURL = this._properties.zoomin;
-      } else if (this._properties.zoomout && toZoom < min) {
-        targetURL = this._properties.zoomout;
+      if (inLink && toZoom > max) {
+        targetURL = inLink.href;
+      } else if (outLink && toZoom < min) {
+        targetURL = outLink.href;
       }
       if (targetURL) {
         this._layerEl.dispatchEvent(
@@ -271,7 +246,6 @@ export var MapMLLayer = L.Layer.extend({
       if (selectMatchingAlternateProjection()) return;
       parseLicenseAndLegend();
       setLayerTitle();
-      setZoomInOrOutLinks();
       // crs is only set if the layer has the same projection as the map
       if (layer._properties.crs) processTiles();
       processFeatures();
@@ -353,22 +327,6 @@ export var MapMLLayer = L.Layer.extend({
           }
         } catch (error) {}
         return false;
-      }
-      function setZoomInOrOutLinks() {
-        var zoomin = mapml.querySelector('map-link[rel=zoomin]'),
-          zoomout = mapml.querySelector('map-link[rel=zoomout]');
-        if (zoomin) {
-          layer._properties.zoomin = new URL(
-            zoomin.getAttribute('href'),
-            base
-          ).href;
-        }
-        if (zoomout) {
-          layer._properties.zoomout = new URL(
-            zoomout.getAttribute('href'),
-            base
-          ).href;
-        }
       }
       function processFeatures() {
         let native = M.getNativeVariables(layer._content);
@@ -457,22 +415,6 @@ export var MapMLLayer = L.Layer.extend({
             // which makes the this._content (mapml file) changed and thus affects the later generation process of this._mapmlvectors
             let node = el.cloneNode(true);
             el._DOMnode = node;
-            // resolve relative url
-            if (node.nodeName === 'map-link') {
-              let url = node.getAttribute('href') || node.getAttribute('tref');
-              // if relative
-              if (
-                url &&
-                (url.indexOf('http://') === 0 || url.indexOf('https://') === 0)
-              ) {
-                let resolvedURL = baseURL + url;
-                if (node.hasAttribute('href')) {
-                  node.setAttribute('href', resolvedURL);
-                } else {
-                  node.setAttribute('tref', resolvedURL);
-                }
-              }
-            }
             shadowRoot.appendChild(node);
           }
         }
