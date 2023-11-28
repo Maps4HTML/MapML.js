@@ -111,7 +111,7 @@ export class MapLink extends HTMLElement {
   }
   getMapEl() {
     return this.getRootNode() instanceof ShadowRoot
-      ? this.getRootNode().host
+      ? this.getRootNode().host.closest('mapml-viewer,map[is=web-map]')
       : this.closest('mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {

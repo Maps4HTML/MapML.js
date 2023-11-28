@@ -181,6 +181,20 @@ export class MapLayer extends HTMLElement {
                 opacity: this.opacity
               }
             );
+            let node = this.shadowRoot ? this.shadowRoot : this;
+            let links = node.querySelectorAll(
+              'map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]'
+            );
+            let linksReady = [];
+            for (let link of links) {
+              linksReady.push(link.whenReady());
+            }
+            Promise.all(linksReady).then(() => {
+              this._createLayerControlHTML();
+              this._attachedToMap();
+              this._validateDisabled();
+              resolve();
+            });
           })
           .catch((error) => {
             this._fetchError = true;
@@ -194,11 +208,7 @@ export class MapLayer extends HTMLElement {
           mapprojection: this.parentElement.projection,
           opacity: this.opacity
         });
-      }
-      return this.shadowRoot;
-    })
-      .then((shadowRoot) => {
-        let node = shadowRoot ? shadowRoot : this;
+        let node = this.shadowRoot ? this.shadowRoot : this;
         let links = node.querySelectorAll(
           'map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]'
         );
@@ -206,24 +216,23 @@ export class MapLayer extends HTMLElement {
         for (let link of links) {
           linksReady.push(link.whenReady());
         }
-        return Promise.allSettled(linksReady);
-      })
-      .then(() => {
-        this._createLayerControlHTML();
-        this._attachedToMap();
-        this._validateDisabled();
-        resolve();
-      })
-      .catch((e) => {
-        if (e.type === 'changeprojection') {
-          this.src = e.detail.href;
-        } else {
-          console.log(e);
-          this.dispatchEvent(
-            new CustomEvent('error', { detail: { target: this } })
-          );
-        }
-      });
+        Promise.all(linksReady).then(() => {
+          this._createLayerControlHTML();
+          this._attachedToMap();
+          this._validateDisabled();
+          resolve();
+        });
+      }
+    }).catch((e) => {
+      if (e.type === 'changeprojection') {
+        this.src = e.detail.href;
+      } else {
+        console.log(e);
+        this.dispatchEvent(
+          new CustomEvent('error', { detail: { target: this } })
+        );
+      }
+    });
   }
   _attachedToMap() {
     // set i to the position of this layer element in the set of layers
