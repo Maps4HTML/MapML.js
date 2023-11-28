@@ -195,7 +195,7 @@ export class MapLayer extends HTMLElement {
           opacity: this.opacity
         });
       }
-      resolve(this.shadowRoot);
+      return this.shadowRoot;
     })
       .then((shadowRoot) => {
         let node = shadowRoot ? shadowRoot : this;
@@ -212,6 +212,7 @@ export class MapLayer extends HTMLElement {
         this._createLayerControlHTML();
         this._attachedToMap();
         this._validateDisabled();
+        resolve();
       })
       .catch((e) => {
         if (e.type === 'changeprojection') {

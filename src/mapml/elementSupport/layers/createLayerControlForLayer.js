@@ -294,7 +294,7 @@ export var createLayerControlHTML = async function () {
   if (styleLinks) {
     styles = this.getAlternateStyles(styleLinks);
     if (styles) {
-      layerItemSettings.appendChild(style);
+      layerItemSettings.appendChild(styles);
     }
   }
 

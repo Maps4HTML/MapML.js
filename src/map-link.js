@@ -216,7 +216,7 @@ export class MapLink extends HTMLElement {
         this._createAlternateLink(); // add media attribute
         break;
       case 'license':
-        this._createLicenseLink();
+        // this._createLicenseLink();
         break;
     }
     // create the type of templated leaflet layer appropriate to the rel value
@@ -695,7 +695,7 @@ export class MapLink extends HTMLElement {
     styleOptionInput.setAttribute(
       'name',
       // grouping radio buttons based on parent layer's style <detail>
-      'styles-' + L.stamp(stylesControl)
+      'styles-' + L.stamp(styleOption)
     );
     styleOptionInput.setAttribute('value', this.getAttribute('title'));
     styleOptionInput.setAttribute(
@@ -711,7 +711,7 @@ export class MapLink extends HTMLElement {
       styleOptionInput.checked = true;
     }
     this._styleOption = styleOption;
-    L.DomEvent.on(styleOptionInput, 'click', changeStyle, layer);
+    styleOptionInput.addEventListener('click', changeStyle);
   }
   getLayerControlOption() {
     return this._styleOption;
