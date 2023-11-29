@@ -65,9 +65,18 @@ export class MapExtent extends HTMLElement {
             }
             break;
           case 'checked':
-            this._handleChange();
-            this._calculateBounds();
-            this._layerControlCheckbox.checked = newValue !== null;
+            this.parentLayer
+              .whenReady()
+              .then(() => {
+                this._handleChange();
+                this._calculateBounds();
+                this._layerControlCheckbox.checked = newValue !== null;
+              })
+              .catch(() => {
+                console.log(
+                  'Error while waiting on parentLayer for map-extent checked callback'
+                );
+              });
             break;
           case 'opacity':
             if (oldValue !== newValue) {
@@ -77,32 +86,41 @@ export class MapExtent extends HTMLElement {
             break;
           case 'hidden':
             if (oldValue !== newValue) {
-              let extentsRootFieldset =
-                this.parentLayer._propertiesGroupAnatomy;
-              let position = Array.from(
-                this.parentNode.querySelectorAll('map-extent:not([hidden])')
-              ).indexOf(this);
-              if (newValue !== null) {
-                // remove from layer control (hide from user)
-                this._layerControlHTML.remove();
-              } else {
-                // insert the extent fieldset into the layer control container in
-                // the calculated position
-                if (position === 0) {
-                  extentsRootFieldset.insertAdjacentElement(
-                    'afterbegin',
-                    this._layerControlHTML
+              this.parentLayer
+                .whenReady()
+                .then(() => {
+                  let extentsRootFieldset =
+                    this.parentLayer._propertiesGroupAnatomy;
+                  let position = Array.from(
+                    this.parentNode.querySelectorAll('map-extent:not([hidden])')
+                  ).indexOf(this);
+                  if (newValue !== null) {
+                    // remove from layer control (hide from user)
+                    this._layerControlHTML.remove();
+                  } else {
+                    // insert the extent fieldset into the layer control container in
+                    // the calculated position
+                    if (position === 0) {
+                      extentsRootFieldset.insertAdjacentElement(
+                        'afterbegin',
+                        this._layerControlHTML
+                      );
+                    } else if (position > 0) {
+                      this.parentNode
+                        .querySelectorAll('map-extent:not([hidden])')
+                        [position - 1]._layerControlHTML.insertAdjacentElement(
+                          'afterend',
+                          this._layerControlHTML
+                        );
+                    }
+                  }
+                  this._validateLayerControlContainerHidden();
+                })
+                .catch(() => {
+                  console.log(
+                    'Error while waiting on parentLayer for map-extent hidden callback'
                   );
-                } else if (position > 0) {
-                  this.parentNode
-                    .querySelectorAll('map-extent:not([hidden])')
-                    [position - 1]._layerControlHTML.insertAdjacentElement(
-                      'afterend',
-                      this._layerControlHTML
-                    );
-                }
-              }
-              this._validateLayerControlContainerHidden();
+                });
             }
             break;
         }
@@ -132,7 +150,6 @@ export class MapExtent extends HTMLElement {
       this.parentLayer.hasAttribute('data-moving')
     )
       return;
-    await this.parentLayer.whenReady();
     this.mapEl = this.parentLayer.closest('mapml-viewer,map[is=web-map]');
     await this.mapEl.whenProjectionDefined(this.units).catch(() => {
       throw new Error('Undefined projection:' + this.units);
@@ -143,7 +160,6 @@ export class MapExtent extends HTMLElement {
     // in this case, the microtasks triggered by the fulfillment of the removed MapMLLayer should be stopped as well
     // !this.isConnected <=> the disconnectedCallback has run before
     if (!this.isConnected) return;
-    this._layer = this.parentLayer._layer;
     this._map = this.mapEl._map;
     // reset the layer extent
     delete this.parentLayer.bounds;
@@ -154,16 +170,14 @@ export class MapExtent extends HTMLElement {
     // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
     this._opacity = this.opacity || 1.0;
     this._extentLayer = M.templatedLayer({
-      pane: this._layer._container,
       opacity: this.opacity,
-      _leafletLayer: this._layer,
       crs: M[this.units],
       extentZIndex: Array.from(
         this.parentLayer.querySelectorAll('map-extent')
       ).indexOf(this),
       // when a <map-extent> migrates from a remote mapml file and attaches to the shadow of <layer- >
       // this._properties._mapExtents[i] refers to the <map-extent> in remote mapml
-      extentEl: this._DOMnode || this
+      extentEl: this
     });
     // this._layerControlHTML is the fieldset for the extent in the LayerControl
     this._layerControlHTML = this._createLayerControlExtentHTML();
@@ -174,8 +188,7 @@ export class MapExtent extends HTMLElement {
   }
   _projectionMatch() {
     return (
-      this.units.toUpperCase() ===
-      this._layer.options.mapprojection.toUpperCase()
+      this.units.toUpperCase() === this._map.options.projection.toUpperCase()
     );
   }
   _validateDisabled() {

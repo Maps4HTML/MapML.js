@@ -250,7 +250,6 @@ export var MapMLLayer = L.Layer.extend({
       if (layer._properties.crs) processTiles();
       processFeatures();
       M._parseStylesheetAsHTML(mapml, base, layer._container);
-      copyRemoteContentToShadowRoot();
       // update controls if needed based on mapml-viewer controls/controlslist attribute
       if (layer._layerEl.parentElement) {
         // if layer does not have a parent Element, do not need to set Controls
@@ -299,7 +298,7 @@ export var MapMLLayer = L.Layer.extend({
         let selectedAlternate =
           layer._properties.projection !== layer.options.mapprojection &&
           mapml.querySelector(
-            'map-head map-link[rel=alternate][projection=' +
+            'map-link[rel=alternate][projection=' +
               layer.options.mapprojection +
               '][href]'
           );

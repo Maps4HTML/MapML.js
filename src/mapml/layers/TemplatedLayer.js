@@ -24,7 +24,8 @@ export var TemplatedLayer = L.LayerGroup.extend({
   onAdd: function (map) {
     L.LayerGroup.prototype.onAdd.call(this, map);
     // add to this.options.pane
-    this.options.pane.appendChild(this._container);
+    let pane = this.options.extentEl.parentLayer._layer._container;
+    pane.appendChild(this._container);
   },
   redraw: function () {
     this.eachLayer(function (layer) {

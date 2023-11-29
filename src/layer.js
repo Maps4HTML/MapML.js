@@ -169,39 +169,30 @@ export class MapLayer extends HTMLElement {
             ) {
               throw new Error('Parser error');
             }
-            if (this._layer) {
-              this._onRemove();
+            this.copyRemoteContentToShadowRoot(content.querySelector('mapml-'));
+            let elements = this.shadowRoot.querySelectorAll('*');
+            let elementsReady = [];
+            for (let i = 0; i < elements.length; i++) {
+              if (elements[i].whenReady)
+                elementsReady.push(elements[i].whenReady());
             }
-            this._layer = M.mapMLLayer(
-              new URL(this.src, base).href,
-              this,
-              content,
-              {
-                mapprojection: this.parentElement.projection,
-                opacity: this.opacity
+            Promise.allSettled(elementsReady).then(() => {
+              if (this._layer) {
+                this._onRemove();
               }
-            );
-            let node = this.shadowRoot ? this.shadowRoot : this;
-            let links = node.querySelectorAll(
-              'map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]'
-            );
-            let linksReady = [];
-            for (let link of links) {
-              linksReady.push(link.whenReady());
-            }
-            Promise.all(linksReady).then(() => {
+              this._layer = M.mapMLLayer(
+                new URL(this.src, base).href,
+                this,
+                this.shadowRoot,
+                {
+                  mapprojection: this.parentElement.projection,
+                  opacity: this.opacity
+                }
+              );
               this._createLayerControlHTML();
-
-              let node = this.shadowRoot;
-              let extentsReady = [];
-              for (let extent of node.querySelectorAll('map-extent')) {
-                extentsReady.push(extent.whenReady());
-              }
-              Promise.allSettled(extentsReady).then(() => {
-                this._attachedToMap();
-                this._validateDisabled();
-                resolve();
-              });
+              this._attachedToMap();
+              this._validateDisabled();
+              resolve();
             });
           })
           .catch((error) => {
@@ -209,31 +200,24 @@ export class MapLayer extends HTMLElement {
             console.log('Error fetching layer content' + error);
           });
       } else {
-        if (this._layer) {
-          this._onRemove();
+        let elements = this.querySelectorAll('*');
+        let elementsReady = [];
+        for (let i = 0; i < elements.length; i++) {
+          if (elements[i].whenReady)
+            elementsReady.push(elements[i].whenReady());
         }
-        this._layer = M.mapMLLayer(null, this, null, {
-          mapprojection: this.parentElement.projection,
-          opacity: this.opacity
-        });
-        let linksReady = [];
-        for (let link of this.querySelectorAll(
-          'map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]'
-        )) {
-          linksReady.push(link.whenReady());
-        }
-        Promise.all(linksReady).then(() => {
-          this._createLayerControlHTML();
-
-          let extentsReady = [];
-          for (let extent of this.querySelectorAll('map-extent')) {
-            extentsReady.push(extent.whenReady());
+        Promise.allSettled(elementsReady).then(() => {
+          if (this._layer) {
+            this._onRemove();
           }
-          Promise.allSettled(extentsReady).then(() => {
-            this._attachedToMap();
-            this._validateDisabled();
-            resolve();
+          this._layer = M.mapMLLayer(null, this, null, {
+            mapprojection: this.parentElement.projection,
+            opacity: this.opacity
           });
+          this._createLayerControlHTML();
+          this._attachedToMap();
+          this._validateDisabled();
+          resolve();
         });
       }
     }).catch((e) => {
@@ -246,6 +230,18 @@ export class MapLayer extends HTMLElement {
         );
       }
     });
+  }
+  copyRemoteContentToShadowRoot(mapml) {
+    let shadowRoot = this.shadowRoot;
+    // get the map-meta[name=projection/cs/extent/zoom] from map-head of remote mapml, attach them to the shadowroot
+    let head = mapml.querySelector('map-head');
+    while (head.firstChild) {
+      shadowRoot.appendChild(head.firstChild);
+    }
+    let body = mapml.querySelector('map-body');
+    while (body.firstChild) {
+      shadowRoot.appendChild(body.firstChild);
+    }
   }
   _attachedToMap() {
     // set i to the position of this layer element in the set of layers

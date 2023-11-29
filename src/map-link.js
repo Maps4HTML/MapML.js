@@ -217,7 +217,7 @@ export class MapLink extends HTMLElement {
         this._createStylesheetLink();
         break;
       case 'alternate':
-        this._createAlternateLink(); // add media attribute
+        // this._createAlternateLink(); // add media attribute
         break;
       case 'license':
         // this._createLicenseLink();
