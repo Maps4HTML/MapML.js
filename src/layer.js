@@ -59,17 +59,19 @@ export class MapLayer extends HTMLElement {
 
   get extent() {
     // calculate the bounds of all content, return it.
-    if (!this._layer.bounds) {
+    if (this._layer && !this._layer.bounds) {
       this._layer._calculateBounds();
     }
-    return Object.assign(
-      M._convertAndFormatPCRS(
-        this._layer.bounds,
-        M[this.getProjection()],
-        this.getProjection()
-      ),
-      { zoom: this._layer.zoomBounds }
-    );
+    return this._layer
+      ? Object.assign(
+          M._convertAndFormatPCRS(
+            this._layer.bounds,
+            M[this.getProjection()],
+            this.getProjection()
+          ),
+          { zoom: this._layer.zoomBounds }
+        )
+      : null;
   }
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
@@ -143,23 +145,26 @@ export class MapLayer extends HTMLElement {
   }
 
   _onRemove() {
-    if (this._layer) {
-      this._layer.off();
-    }
-    // if this layer has never been connected, it will not have a _layer
-    if (this._layer && this._layer._map) {
-      this._layer._map.removeLayer(this._layer);
-    }
-
-    if (this._layerControl && !this.hidden) {
-      this._layerControl.removeLayer(this._layer);
-    }
+    let l = this._layer,
+      lc = this._layerControl;
     delete this._layer;
-    delete this._fetchError;
-
+    delete this._layerControl;
     if (this.shadowRoot) {
       this.shadowRoot.innerHTML = '';
     }
+
+    if (l) {
+      l.off();
+    }
+    // if this layer has never been connected, it will not have a _layer
+    if (l && l._map) {
+      l._map.removeLayer(l);
+    }
+
+    if (lc && !this.hidden) {
+      lc.removeLayer(l);
+    }
+    delete this._fetchError;
   }
 
   connectedCallback() {

@@ -349,51 +349,49 @@ export class MapViewer extends HTMLElement {
         break;
       case 'projection':
         const reconnectLayers = () => {
-          if (this._map && this._map.options.projection !== newValue) {
-            // save map location and zoom
-            let lat = this.lat;
-            let lon = this.lon;
-            let zoom = this.zoom;
-            // saving the lat, lon and zoom is necessary because Leaflet seems
-            // to try to compensate for the change in the scales for each zoom
-            // level in the crs by changing the zoom level of the map when
-            // you set the map crs.  So, we save the current view for use below
-            // when all the layers' reconnections have settled.
-            // leaflet doesn't like this: https://github.com/Leaflet/Leaflet/issues/2553
-            this._map.options.crs = M[newValue];
-            this._map.options.projection = newValue;
-            let layersReady = [];
-            this._map.announceMovement.disable();
-            for (let layer of this.querySelectorAll('layer-')) {
-              layer.removeAttribute('disabled');
-              let reAttach = this.removeChild(layer);
-              this.appendChild(reAttach);
-              layersReady.push(reAttach.whenReady());
-            }
-            Promise.allSettled(layersReady).then(() => {
-              // use the saved map location to ensure it is correct after
-              // changing the map CRS.  Specifically affects projection
-              // upgrades, e.g. https://maps4html.org/experiments/custom-projections/BNG/
-              // see leaflet bug: https://github.com/Leaflet/Leaflet/issues/2553
-              this.zoomTo(lat, lon, zoom);
-              if (M.options.announceMovement)
-                this._map.announceMovement.enable();
-              // required to delay until map-extent.disabled is correctly set
-              // which happens as a result of layer-._validateDisabled()
-              // which happens so much we have to delay until they calls are
-              // completed
-              setTimeout(() => {
-                this.dispatchEvent(new CustomEvent('map-projectionchange'));
-              }, 0);
-            });
+          // save map location and zoom
+          let lat = this.lat;
+          let lon = this.lon;
+          let zoom = this.zoom;
+          // saving the lat, lon and zoom is necessary because Leaflet seems
+          // to try to compensate for the change in the scales for each zoom
+          // level in the crs by changing the zoom level of the map when
+          // you set the map crs.  So, we save the current view for use below
+          // when all the layers' reconnections have settled.
+          // leaflet doesn't like this: https://github.com/Leaflet/Leaflet/issues/2553
+          this._map.options.crs = M[newValue];
+          this._map.options.projection = newValue;
+          let layersReady = [];
+          this._map.announceMovement.disable();
+          for (let layer of this.querySelectorAll('layer-')) {
+            layer.removeAttribute('disabled');
+            let reAttach = this.removeChild(layer);
+            this.appendChild(reAttach);
+            layersReady.push(reAttach.whenReady());
           }
+          return Promise.allSettled(layersReady).then(() => {
+            // use the saved map location to ensure it is correct after
+            // changing the map CRS.  Specifically affects projection
+            // upgrades, e.g. https://maps4html.org/experiments/custom-projections/BNG/
+            // see leaflet bug: https://github.com/Leaflet/Leaflet/issues/2553
+            this.zoomTo(lat, lon, zoom);
+            if (M.options.announceMovement) this._map.announceMovement.enable();
+            // required to delay until map-extent.disabled is correctly set
+            // which happens as a result of layer-._validateDisabled()
+            // which happens so much we have to delay until they calls are
+            // completed
+            setTimeout(() => {
+              this.dispatchEvent(new CustomEvent('map-projectionchange'));
+            }, 0);
+          });
         };
-        if (newValue) {
+        if (
+          newValue &&
+          this._map &&
+          this._map.options.projection !== newValue
+        ) {
           const connect = reconnectLayers.bind(this);
-          new Promise((resolve, reject) => {
-            connect();
-            resolve();
-          }).then(() => {
+          connect().then(() => {
             if (this._map && this._map.options.projection !== oldValue) {
               // this awful hack is brought to you by a leaflet bug/ feature request
               // https://github.com/Leaflet/Leaflet/issues/2553
@@ -836,7 +834,6 @@ export class MapViewer extends HTMLElement {
     this._map.on(
       'movestart',
       function () {
-        this._updateMapCenter();
         this.dispatchEvent(
           new CustomEvent('movestart', { detail: { target: this } })
         );
@@ -846,7 +843,6 @@ export class MapViewer extends HTMLElement {
     this._map.on(
       'move',
       function () {
-        this._updateMapCenter();
         this.dispatchEvent(
           new CustomEvent('move', { detail: { target: this } })
         );
@@ -867,7 +863,6 @@ export class MapViewer extends HTMLElement {
     this._map.on(
       'zoomstart',
       function () {
-        this._updateMapCenter();
         this.dispatchEvent(
           new CustomEvent('zoomstart', { detail: { target: this } })
         );
@@ -877,7 +872,6 @@ export class MapViewer extends HTMLElement {
     this._map.on(
       'zoom',
       function () {
-        this._updateMapCenter();
         this.dispatchEvent(
           new CustomEvent('zoom', { detail: { target: this } })
         );
@@ -887,10 +881,10 @@ export class MapViewer extends HTMLElement {
     this._map.on(
       'zoomend',
       function () {
-        this._updateMapCenter();
-        this.dispatchEvent(
-          new CustomEvent('zoomend', { detail: { target: this } })
-        );
+      this._updateMapCenter();
+      this.dispatchEvent(
+        new CustomEvent('zoomend', { detail: { target: this } })
+      );
       },
       this
     );

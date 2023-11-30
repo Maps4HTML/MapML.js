@@ -321,31 +321,6 @@ export var MapMLLayer = L.Layer.extend({
           layer._title = mapml.getAttribute('label').trim();
         }
       }
-      function copyRemoteContentToShadowRoot() {
-        // only run when content is loaded from network, puts features etc
-        // into layer shadow root
-        if (local) {
-          return;
-        }
-        let shadowRoot = layer._layerEl.shadowRoot;
-        // get the map-meta[name=projection/cs/extent/zoom] from map-head of remote mapml, attach them to the shadowroot
-        let headMeta = mapml.children[0].children[0].querySelectorAll('*');
-        // get the elements inside map-body of remote mapml
-        let bodyElements = mapml.children[0].children[1].children;
-        let elements = [...headMeta, ...bodyElements];
-        if (elements) {
-          let baseURL = mapml.children[0].children[0]
-            .querySelector('map-base')
-            ?.getAttribute('href');
-          for (let el of elements) {
-            // if not clone, the elements will be **REMOVED** from mapml file and re-attached to the layer's shadow root
-            // which makes the this._content (mapml file) changed and thus affects the later generation process of this._mapmlvectors
-            let node = el.cloneNode(true);
-            el._DOMnode = node;
-            shadowRoot.appendChild(node);
-          }
-        }
-      }
       function parseLicenseAndLegend() {
         var licenseLink = mapml.querySelector('map-link[rel=license]'),
           licenseTitle,
