@@ -49,7 +49,7 @@ export var QueryHandler = L.Handler.extend({
   _query(e, layer) {
     var zoom = e.target.getZoom(),
       map = this._map,
-      crs = layer._properties.crs, // the crs for each extent would be the same
+      crs = M[layer.options.projection], // the crs for each extent would be the same
       tileSize = map.options.crs.options.crs.tile.bounds.max.x,
       container = layer._container,
       popupOptions = {

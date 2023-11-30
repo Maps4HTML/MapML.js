@@ -133,16 +133,16 @@ export class MapInput extends HTMLElement {
     }
     if (this.getAttribute('max')) {
       return this.getAttribute('max');
-    } else if (this._layer._layerEl.querySelector('map-meta[name=zoom]')) {
+    } else if (this.getLayerEl().querySelector('map-meta[name=zoom]')) {
       // fallback map-meta on layer
       return M._metaContentToObject(
-        this._layer._layerEl
+        this.getLayerEl()
           .querySelector('map-meta[name=zoom]')
           .getAttribute('content')
       ).max;
     } else {
       // fallback map max
-      return this._layer._layerEl.extent.zoom.maxZoom.toString();
+      return this.getLayerEl().extent.zoom.maxZoom.toString();
     }
   }
   set max(val) {
@@ -161,6 +161,11 @@ export class MapInput extends HTMLElement {
     if (val) {
       this.setAttribute('step', val);
     }
+  }
+  getLayerEl() {
+    return this.getRootNode() instanceof ShadowRoot
+      ? this.getRootNode().host
+      : this.closest('layer-');
   }
   attributeChangedCallback(name, oldValue, newValue) {
     this.whenReady()

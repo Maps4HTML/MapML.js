@@ -175,8 +175,6 @@ export class MapExtent extends HTMLElement {
       extentZIndex: Array.from(
         this.parentLayer.querySelectorAll('map-extent')
       ).indexOf(this),
-      // when a <map-extent> migrates from a remote mapml file and attaches to the shadow of <layer- >
-      // this._properties._mapExtents[i] refers to the <map-extent> in remote mapml
       extentEl: this
     });
     // this._layerControlHTML is the fieldset for the extent in the LayerControl

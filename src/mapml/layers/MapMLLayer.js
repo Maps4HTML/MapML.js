@@ -239,15 +239,10 @@ export var MapMLLayer = L.Layer.extend({
     _processContent.call(this, content, this._href ? false : true);
     function _processContent(mapml, local) {
       var base = layer.getBase();
-      layer._properties = {};
-      // sets layer._properties.projection
-      determineLayerProjection();
-      // requires that layer._properties.projection be set
-      if (selectMatchingAlternateProjection()) return;
       parseLicenseAndLegend();
       setLayerTitle();
       // crs is only set if the layer has the same projection as the map
-      if (layer._properties.crs) processTiles();
+      if (M[layer.options.projection]) processTiles();
       processFeatures();
       M._parseStylesheetAsHTML(mapml, base, layer._container);
       // update controls if needed based on mapml-viewer controls/controlslist attribute
@@ -256,77 +251,9 @@ export var MapMLLayer = L.Layer.extend({
         layer._layerEl.parentElement._toggleControls();
       }
       // local functions
-      // sets layer._properties.projection.  Supposed to replace / simplify
-      // the dependencies on convoluted getProjection() interface, but doesn't quite
-      // succeed, yet.
-      function determineLayerProjection() {
-        let projection = layer.options.mapprojection;
-        if (mapml.querySelector('map-meta[name=projection][content]')) {
-          projection =
-            M._metaContentToObject(
-              mapml
-                .querySelector('map-meta[name=projection]')
-                .getAttribute('content')
-            ).content || projection;
-        } else if (mapml.querySelector('map-extent[units]')) {
-          const getProjectionFrom = (extents) => {
-            let extentProj = extents[0].attributes.units.value;
-            let isMatch = true;
-            for (let i = 0; i < extents.length; i++) {
-              if (extentProj !== extents[i].attributes.units.value) {
-                isMatch = false;
-              }
-            }
-            return isMatch ? extentProj : null;
-          };
-          projection =
-            getProjectionFrom(
-              Array.from(mapml.querySelectorAll('map-extent[units]'))
-            ) || projection;
-        } else {
-          console.log(
-            `A projection was not assigned to the '${layer._layerEl.label}' Layer. Please specify a projection for that layer using a map-meta element. See more here - https://maps4html.org/web-map-doc/docs/elements/meta/`
-          );
-        }
-        layer._properties.projection = projection;
-        layer._properties.crs = M[layer._properties.projection];
-      }
       // determine if, where there's no match of the current layer's projection
       // and that of the map, if there is a linked alternate text/mapml
       // resource that matches the map's projection
-      function selectMatchingAlternateProjection() {
-        let selectedAlternate =
-          layer._properties.projection !== layer.options.mapprojection &&
-          mapml.querySelector(
-            'map-link[rel=alternate][projection=' +
-              layer.options.mapprojection +
-              '][href]'
-          );
-        try {
-          if (selectedAlternate) {
-            let url = new URL(selectedAlternate.getAttribute('href'), base)
-              .href;
-            layer._layerEl.dispatchEvent(
-              new CustomEvent('changeprojection', {
-                detail: {
-                  href: url
-                }
-              })
-            );
-            return true;
-            //if this is the only layer, but the projection doesn't match,
-            // set the map's projection to that of the layer
-          } else if (
-            layer._properties.projection !== layer.options.mapprojection &&
-            layer._layerEl.parentElement.layers.length === 1
-          ) {
-            layer._layerEl.parentElement.projection =
-              layer._properties.projection;
-            return true;
-          }
-        } catch (error) {}
-        return false;
-      }
       function processFeatures() {
         let native = M.getNativeVariables(layer._content);
         layer._mapmlvectors = M.featureLayer(null, {
@@ -337,7 +264,7 @@ export var MapMLLayer = L.Layer.extend({
           // it will append its own container for rendering into
           pane: layer._container,
           opacity: layer.options.opacity,
-          projection: layer._properties.projection,
+          projection: layer.options.projection,
           // by NOT passing options.extent, we are asking the FeatureLayer
           // to dynamically update its .layerBounds property as features are
           // added or removed from it
@@ -377,11 +304,12 @@ export var MapMLLayer = L.Layer.extend({
           layer._staticTileLayer = M.staticTileLayer({
             pane: layer._container,
             _leafletLayer: layer,
-            projection: layer._properties.projection,
+            projection: layer.options.projection,
             className: 'mapml-static-tile-layer',
             tileContainer: layer._mapmlTileContainer,
-            maxZoomBound: layer._properties.crs.options.resolutions.length - 1,
-            tileSize: layer._properties.crs.options.crs.tile.bounds.max.x
+            maxZoomBound:
+              M[layer.options.projection].crs.options.resolutions.length - 1,
+            tileSize: M[layer.options.projection].options.crs.tile.bounds.max.x
           });
         }
       }
@@ -451,13 +379,6 @@ export var MapMLLayer = L.Layer.extend({
         }
       }
     }
-  },
-  // new getProjection, maybe simpler, but doesn't work...
-  getProjection: function () {
-    if (!this._properties) {
-      return;
-    }
-    return this._properties.projection;
   },
   getQueryTemplates: function (pcrsClick) {
     const queryLinks = this._layerEl.querySelectorAll(

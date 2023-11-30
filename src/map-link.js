@@ -211,13 +211,13 @@ export class MapLink extends HTMLElement {
         //        this._createZoominOrZoomoutLink();
         break;
       case 'legend':
-        this._createLegendLink();
+        //this._createLegendLink();
         break;
       case 'stylesheet':
         this._createStylesheetLink();
         break;
       case 'alternate':
-        // this._createAlternateLink(); // add media attribute
+        //this._createAlternateLink(); // add media attribute
         break;
       case 'license':
         // this._createLicenseLink();
@@ -228,6 +228,29 @@ export class MapLink extends HTMLElement {
     // this._tempatedTileLayer = M.templatedTile(pane: this.extentElement._leafletLayer._container)
     // add to viewer._map dependant on map-extent.checked, layer-.checked
     // what else?
+  }
+  _createAlternateLink() {
+    let selectedAlternate =
+      this.getLayerEl().getProjection() !== this.getMapEl().projection &&
+      this.projection === this.getMapEl().projection &&
+      this.href;
+    if (selectedAlternate) {
+      let url = new URL(this.href, this.getBase()).href;
+      this.getLayerEl().dispatchEvent(
+        new CustomEvent('changeprojection', {
+          detail: {
+            href: url
+          }
+        })
+      );
+      //if this is the only layer, but the projection doesn't match,
+      // set the map's projection to that of the layer
+    } else if (
+      this.getLayerEl().getProjection() !== this.getMapEl().projection &&
+      this.getMapEl().layers.length === 1
+    ) {
+      this.getMapEl().projection = this.getLayerEl().getProjection();
+    }
   }
 
   async _createTemplatedLink() {

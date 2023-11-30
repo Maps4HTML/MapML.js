@@ -73,16 +73,10 @@
   </head>
   <body>
     
-    <mapml-viewer projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation">
-      <layer- data-testid="osm-layer" label="OpenStreetMap" checked >
-<map-extent data-testid="osm-extent" units="OSMTILE" label="foo" checked="checked" >
-  <map-meta name="zoom" content="min=3,max=7"></map-meta>
-      <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
-      <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
-      <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
-      <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
-    </map-extent>
-      </layer->
+<mapml-viewer projection="CBMTILE" zoom="4" lat="60.290276586020646" lon="-95.1034243914119" controls="" role="application" class="">
+    <layer- label="CBMT" src="../cbmtile-cbmt.mapml" checked="" hidden=""></layer->
+
+      <layer- src="../msi-tiles-osmtile.mapml" label="test" checked=""></layer->
     </mapml-viewer>
   </body>
 </html>
