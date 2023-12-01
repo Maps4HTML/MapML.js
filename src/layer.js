@@ -120,8 +120,14 @@ export class MapLayer extends HTMLElement {
         }
         break;
       case 'src':
-        if (oldValue && oldValue !== newValue) {
+        // in lifecycle, attributeChangedCallback is called before connectedCallback
+        // connectedCallback is called no matter what you do in here
+        // need to skip these "side effects" of src change on initial load,
+        // only execute side effects when transitioning from local to  remote
+        // content
+        if ((oldValue && oldValue !== newValue) || this.children.length) {
           if (this.isConnected) {
+            this.innerHTML = '';
             this.removeAttribute('disabled');
             let map = this.parentElement;
             let placeholder = document.createElement('span');
@@ -146,9 +152,13 @@ export class MapLayer extends HTMLElement {
 
   _onRemove() {
     let l = this._layer,
-      lc = this._layerControl;
+      lc = this._layerControl,
+      lchtml = this._layerControlHTML;
+    // remove properties of layer involved in whenReady() logic
     delete this._layer;
     delete this._layerControl;
+    delete this._layerControlHTML;
+    delete this._fetchError;
     if (this.shadowRoot) {
       this.shadowRoot.innerHTML = '';
     }
@@ -164,7 +174,6 @@ export class MapLayer extends HTMLElement {
     if (lc && !this.hidden) {
       lc.removeLayer(l);
     }
-    delete this._fetchError;
   }
 
   connectedCallback() {
@@ -224,14 +233,10 @@ export class MapLayer extends HTMLElement {
             ) {
               throw new Error('Parser error');
             }
-            let alternate = this.selectMatchingAlternateProjection(
+            // may throw:
+            this.selectAlternateOrChangeProjection(
               content.querySelector('mapml-')
             );
-            if (alternate) {
-              throw new Error('changeprojection', {
-                cause: { href: alternate }
-              });
-            }
             this.copyRemoteContentToShadowRoot(content.querySelector('mapml-'));
           })
           .then(() => {
@@ -264,6 +269,9 @@ export class MapLayer extends HTMLElement {
             reject(error);
           });
       } else {
+        // may throw:
+        this.selectAlternateOrChangeProjection(this);
+
         let elements = this.querySelectorAll('*');
         let elementsReady = [];
         for (let i = 0; i < elements.length; i++) {
@@ -271,9 +279,6 @@ export class MapLayer extends HTMLElement {
             elementsReady.push(elements[i].whenReady());
         }
         Promise.allSettled(elementsReady).then(() => {
-          if (this._layer) {
-            this._onRemove();
-          }
           this._layer = M.mapMLLayer(null, this, null, {
             projection: this.getProjection(),
             opacity: this.opacity
@@ -286,8 +291,15 @@ export class MapLayer extends HTMLElement {
       }
     }).catch((e) => {
       if (e.message === 'changeprojection') {
-        console.log('Changing layer src to: ' + e.cause.href);
-        this.src = e.cause.href;
+        if (e.cause.href) {
+          console.log('Changing layer src to: ' + e.cause.href);
+          this.src = e.cause.href;
+        } else if (e.cause.mapprojection) {
+          console.log(
+            'Changing map projection to match layer: ' + e.cause.mapprojection
+          );
+          this.parentElement.projection = e.cause.mapprojection;
+        }
       } else {
         console.log(e);
         this.dispatchEvent(
@@ -321,7 +333,7 @@ export class MapLayer extends HTMLElement {
     return new URL(relativeURL, baseURL).href;
   }
 
-  selectMatchingAlternateProjection(mapml) {
+  selectAlternateOrChangeProjection(mapml) {
     let selectedAlternate =
       this.getProjection(mapml) !== this.parentElement.projection &&
       mapml.querySelector(
@@ -333,9 +345,19 @@ export class MapLayer extends HTMLElement {
     if (selectedAlternate) {
       let url = new URL(selectedAlternate.getAttribute('href'), this.getBase())
         .href;
-      return url;
+      throw new Error('changeprojection', {
+        cause: { href: url }
+      });
     }
-    return false;
+    let contentProjection = this.getProjection(mapml);
+    if (
+      contentProjection !== this.parentElement.projection &&
+      this.parentElement.layers.length === 1
+    ) {
+      throw new Error('changeprojection', {
+        cause: { mapprojection: contentProjection }
+      });
+    }
   }
 
   copyRemoteContentToShadowRoot(mapml) {
