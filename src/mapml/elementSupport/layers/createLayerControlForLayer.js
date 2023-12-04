@@ -286,7 +286,7 @@ export var createLayerControlHTML = async function () {
   itemSettingControlButton.appendChild(settingsButtonNameIcon);
   settingsButtonNameIcon.appendChild(svgSettingsControlIcon);
 
-  let mapml = this.shadowRoot ? this.shadowRoot : this;
+  let mapml = this.src ? this.shadowRoot : this;
   var styleLinks = mapml.querySelectorAll(
     'map-link[rel=style],map-link[rel="self style"],map-link[rel="style self"]'
   );

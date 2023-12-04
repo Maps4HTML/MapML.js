@@ -184,10 +184,10 @@ export var MapMLLayer = L.Layer.extend({
     let toZoom = e.zoom;
     let min = layerEl.extent.zoom.minZoom;
     let max = layerEl.extent.zoom.maxZoom;
-    let inLink = layerEl.shadowRoot
+    let inLink = layerEl.src
         ? layerEl.shadowRoot.querySelector('map-link[rel=zoomin]')
         : layerEl.querySelector('map-link[rel=zoomin]'),
-      outLink = layerEl.shadowRoot
+      outLink = layerEl.src
         ? layerEl.shadowRoot.querySelector('map-link[rel=zoomout]')
         : layerEl.querySelector('map-link[rel=zoomout]');
     let targetURL;

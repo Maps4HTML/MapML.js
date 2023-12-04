@@ -5,6 +5,9 @@ export class MapLayer extends HTMLElement {
   static get observedAttributes() {
     return ['src', 'label', 'checked', 'hidden', 'opacity'];
   }
+  /* jshint ignore:start */
+  #hasConnected;
+  /* jshint ignore:end */
   get src() {
     return this.hasAttribute('src') ? this.getAttribute('src') : '';
   }
@@ -74,74 +77,55 @@ export class MapLayer extends HTMLElement {
       : null;
   }
   attributeChangedCallback(name, oldValue, newValue) {
-    switch (name) {
-      case 'label':
-        this.whenReady()
-          .then(() => {
-            this._layer.setName(newValue);
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-        break;
-      case 'checked':
-        this.whenReady()
-          .then(() => {
-            if (typeof newValue === 'string') {
-              this.parentElement._map.addLayer(this._layer);
-            } else {
-              this.parentElement._map.removeLayer(this._layer);
-            }
-            this._layerControlCheckbox.checked = this.checked;
-            this.dispatchEvent(new CustomEvent('map-change'));
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-        break;
-      case 'hidden':
-        var map = this.parentElement && this.parentElement._map;
-        if (map && this.parentElement.controls) {
+    if (this.#hasConnected /* jshint ignore:line */) {
+      switch (name) {
+        case 'label':
+          this._layer.setName(newValue);
+          break;
+        case 'checked':
           if (typeof newValue === 'string') {
-            if (this._layer) {
-              this.parentElement._layerControl.removeLayer(this._layer);
-            }
+            this.parentElement._map.addLayer(this._layer);
           } else {
-            this._layerControl = this.parentElement._layerControl;
-            this._layerControl.addOrUpdateOverlay(this._layer, this.label);
-            this._validateDisabled();
+            this.parentElement._map.removeLayer(this._layer);
           }
-        }
-        break;
-      case 'opacity':
-        if (oldValue !== newValue && this._layer) {
-          this._opacity = newValue;
-          this._layer.changeOpacity(newValue);
-        }
-        break;
-      case 'src':
-        // in lifecycle, attributeChangedCallback is called before connectedCallback
-        // connectedCallback is called no matter what you do in here
-        // need to skip these "side effects" of src change on initial load,
-        // only execute side effects when transitioning from local to  remote
-        // content
-        if ((oldValue && oldValue !== newValue) || this.children.length) {
-          if (this.isConnected) {
-            this.innerHTML = '';
-            this.removeAttribute('disabled');
-            let map = this.parentElement;
-            let placeholder = document.createElement('span');
-            this.insertAdjacentElement('beforebegin', placeholder);
-            map.removeChild(this);
-            placeholder.replaceWith(this);
+          this._layerControlCheckbox.checked = this.checked;
+          this.dispatchEvent(new CustomEvent('map-change'));
+          break;
+        case 'hidden':
+          var map = this.parentElement && this.parentElement._map;
+          if (map && this.parentElement.controls) {
+            if (typeof newValue === 'string') {
+              this.parentElement._layerControl.removeLayer(this._layer);
+            } else {
+              this._layerControl.addOrUpdateOverlay(this._layer, this.label);
+              this._validateDisabled();
+            }
           }
-        }
+          break;
+        case 'opacity':
+          if (oldValue !== newValue && this._layer) {
+            this._opacity = newValue;
+            this._layer.changeOpacity(newValue);
+          }
+          break;
+        case 'src':
+          if (oldValue !== newValue) {
+            this._onRemove();
+            if (this.isConnected) {
+              this._onAdd();
+            }
+          }
+      }
     }
   }
 
   constructor() {
     // Always call super first in constructor
     super();
+    // this._opacity is used to record the current opacity value (with or without updates),
+    // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
+    this._opacity = this.opacity || 1.0;
+    this.attachShadow({ mode: 'open' });
   }
   disconnectedCallback() {
     // if the map-layer node is removed from the dom, the layer should be
@@ -159,9 +143,7 @@ export class MapLayer extends HTMLElement {
     delete this._layerControl;
     delete this._layerControlHTML;
     delete this._fetchError;
-    if (this.shadowRoot) {
-      this.shadowRoot.innerHTML = '';
-    }
+    this.shadowRoot.innerHTML = '';
 
     if (l) {
       l.off();
@@ -178,25 +160,24 @@ export class MapLayer extends HTMLElement {
 
   connectedCallback() {
     if (this.hasAttribute('data-moving')) return;
+    /* jshint ignore:start */
+    this.#hasConnected = true;
+    /* jshint ignore:end */
     this._createLayerControlHTML = M._createLayerControlHTML.bind(this);
-    // this._opacity is used to record the current opacity value (with or without updates),
-    // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
-    this._opacity = this.opacity || 1.0;
     const doConnected = this._onAdd.bind(this);
+    const doRemove = this._onRemove.bind(this);
     this.parentElement
       .whenReady()
       .then(() => {
+        doRemove();
         doConnected();
       })
-      .catch(() => {
-        throw new Error('Map never became ready');
+      .catch((error) => {
+        throw new Error('Map never became ready: ' + error);
       });
   }
 
   _onAdd() {
-    if (this.getAttribute('src') && !this.shadowRoot) {
-      this.attachShadow({ mode: 'open' });
-    }
     new Promise((resolve, reject) => {
       this.addEventListener(
         'changestyle',
@@ -233,13 +214,7 @@ export class MapLayer extends HTMLElement {
             ) {
               throw new Error('Parser error');
             }
-            // may throw:
-            this.selectAlternateOrChangeProjection(
-              content.querySelector('mapml-')
-            );
             this.copyRemoteContentToShadowRoot(content.querySelector('mapml-'));
-          })
-          .then(() => {
             let elements = this.shadowRoot.querySelectorAll('*');
             let elementsReady = [];
             for (let i = 0; i < elements.length; i++) {
@@ -247,6 +222,10 @@ export class MapLayer extends HTMLElement {
                 elementsReady.push(elements[i].whenReady());
             }
             return Promise.allSettled(elementsReady);
+          })
+          .then(() => {
+            // may throw:
+            this.selectAlternateOrChangeProjection();
           })
           .then(() => {
             this._layer = M.mapMLLayer(
@@ -264,30 +243,42 @@ export class MapLayer extends HTMLElement {
             resolve();
           })
           .catch((error) => {
-            this._fetchError = true;
-            console.log('Error fetching layer content: ' + error);
+            if (error.message === 'changeprojection') {
+              console.log('Changing projection');
+            } else {
+              this._fetchError = true;
+              console.log('Error fetching layer content: ' + error);
+            }
             reject(error);
           });
       } else {
-        // may throw:
-        this.selectAlternateOrChangeProjection(this);
-
         let elements = this.querySelectorAll('*');
         let elementsReady = [];
         for (let i = 0; i < elements.length; i++) {
           if (elements[i].whenReady)
             elementsReady.push(elements[i].whenReady());
         }
-        Promise.allSettled(elementsReady).then(() => {
-          this._layer = M.mapMLLayer(null, this, null, {
-            projection: this.getProjection(),
-            opacity: this.opacity
+        Promise.allSettled(elementsReady)
+          .then(() => {
+            // may throw:
+            this.selectAlternateOrChangeProjection();
+          })
+          .then(() => {
+            this._layer = M.mapMLLayer(null, this, null, {
+              projection: this.getProjection(),
+              opacity: this.opacity
+            });
+            this._createLayerControlHTML();
+            this._attachedToMap();
+            this._validateDisabled();
+            resolve();
+          })
+          .catch((error) => {
+            if (error.message === 'changeprojection') {
+              console.log('Changing projection');
+            }
+            reject(error);
           });
-          this._createLayerControlHTML();
-          this._attachedToMap();
-          this._validateDisabled();
-          resolve();
-        });
       }
     }).catch((e) => {
       if (e.message === 'changeprojection') {
@@ -309,33 +300,10 @@ export class MapLayer extends HTMLElement {
     });
   }
 
-  getBase() {
-    let layer = this.getRootNode().host;
-    //
-    let relativeURL =
-      this.getRootNode().querySelector('map-base') &&
-      this.getRootNode() instanceof ShadowRoot
-        ? this.getRootNode().querySelector('map-base').getAttribute('href')
-        : /* local content? */ !(this.getRootNode() instanceof ShadowRoot)
-        ? /* use the baseURI algorithm which takes into account any <base> */
-          this.getRootNode().querySelector('map-base')?.getAttribute('href') ||
-          this.baseURI
-        : /* else use the resolved <layer- src="..."> value */ new URL(
-            layer.src,
-            layer.baseURI
-          ).href;
-
-    // when remote content, use layer.src as base else use baseURI of map-link
-    let baseURL =
-      this.getRootNode() instanceof ShadowRoot
-        ? new URL(layer.src, layer.baseURI).href
-        : this.baseURI;
-    return new URL(relativeURL, baseURL).href;
-  }
-
-  selectAlternateOrChangeProjection(mapml) {
+  selectAlternateOrChangeProjection() {
+    let mapml = this.src ? this.shadowRoot : this;
     let selectedAlternate =
-      this.getProjection(mapml) !== this.parentElement.projection &&
+      this.getProjection() !== this.parentElement.projection &&
       mapml.querySelector(
         'map-link[rel=alternate][projection=' +
           this.parentElement.projection +
@@ -343,13 +311,15 @@ export class MapLayer extends HTMLElement {
       );
 
     if (selectedAlternate) {
-      let url = new URL(selectedAlternate.getAttribute('href'), this.getBase())
-        .href;
+      let url = new URL(
+        selectedAlternate.getAttribute('href'),
+        selectedAlternate.getBase()
+      ).href;
       throw new Error('changeprojection', {
         cause: { href: url }
       });
     }
-    let contentProjection = this.getProjection(mapml);
+    let contentProjection = this.getProjection();
     if (
       contentProjection !== this.parentElement.projection &&
       this.parentElement.layers.length === 1
@@ -370,10 +340,13 @@ export class MapLayer extends HTMLElement {
     }
     shadowRoot.appendChild(frag);
   }
-  getProjection(content) {
-    let mapml = content || this;
+  /**
+   * For "local" content, getProjection will use content of "this"
+   * For "remote" content, you need to pass the shadowRoot to search through
+   */
+  getProjection() {
+    let mapml = this.src ? this.shadowRoot : this;
     let projection = this.parentElement.projection;
-    mapml = mapml.shadowRoot ? mapml.shadowRoot : mapml;
     if (mapml.querySelector('map-meta[name=projection][content]')) {
       projection =
         M._metaContentToObject(
@@ -474,7 +447,7 @@ export class MapLayer extends HTMLElement {
         map = layer?._map;
       if (map) {
         // prerequisite: no inline and remote mapml elements exists at the same time
-        const mapExtents = this.shadowRoot
+        const mapExtents = this.src
           ? this.shadowRoot.querySelectorAll('map-extent')
           : this.querySelectorAll('map-extent');
         let extentLinksReady = [];
@@ -558,7 +531,7 @@ export class MapLayer extends HTMLElement {
     }
   }
   queryable() {
-    let content = this.shadowRoot ? this.shadowRoot : this;
+    let content = this.src ? this.shadowRoot : this;
     return (
       content.querySelector('map-extent[checked] > map-link[rel=query]') &&
       this.checked &&
@@ -703,7 +676,7 @@ export class MapLayer extends HTMLElement {
   // check if all child elements are ready
   whenElemsReady() {
     let elemsReady = [];
-    let target = this.shadowRoot || this;
+    let target = this.src ? this.shadowRoot : this;
     for (let elem of [
       ...target.querySelectorAll('map-extent'),
       ...target.querySelectorAll('map-feature')

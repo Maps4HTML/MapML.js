@@ -881,10 +881,10 @@ export class MapViewer extends HTMLElement {
     this._map.on(
       'zoomend',
       function () {
-      this._updateMapCenter();
-      this.dispatchEvent(
-        new CustomEvent('zoomend', { detail: { target: this } })
-      );
+        this._updateMapCenter();
+        this.dispatchEvent(
+          new CustomEvent('zoomend', { detail: { target: this } })
+        );
       },
       this
     );

@@ -217,7 +217,7 @@ export class MapLink extends HTMLElement {
         this._createStylesheetLink();
         break;
       case 'alternate':
-        //this._createAlternateLink(); // add media attribute
+        this._createAlternateLink(); // add media attribute
         break;
       case 'license':
         // this._createLicenseLink();
@@ -229,28 +229,8 @@ export class MapLink extends HTMLElement {
     // add to viewer._map dependant on map-extent.checked, layer-.checked
     // what else?
   }
-  _createAlternateLink() {
-    let selectedAlternate =
-      this.getLayerEl().getProjection() !== this.getMapEl().projection &&
-      this.projection === this.getMapEl().projection &&
-      this.href;
-    if (selectedAlternate) {
-      let url = new URL(this.href, this.getBase()).href;
-      this.getLayerEl().dispatchEvent(
-        new CustomEvent('changeprojection', {
-          detail: {
-            href: url
-          }
-        })
-      );
-      //if this is the only layer, but the projection doesn't match,
-      // set the map's projection to that of the layer
-    } else if (
-      this.getLayerEl().getProjection() !== this.getMapEl().projection &&
-      this.getMapEl().layers.length === 1
-    ) {
-      this.getMapEl().projection = this.getLayerEl().getProjection();
-    }
+  _createAlternateLink(mapml) {
+    if (this.href && this.projection) this._alternate = true;
   }
 
   async _createTemplatedLink() {
@@ -261,8 +241,13 @@ export class MapLink extends HTMLElement {
         ? this.parentNode
         : this.parentNode.host;
     if (!this.tref || !this.parentExtent) return;
-    await this.parentExtent.whenReady();
-    await this._templateVars.inputsReady;
+    try {
+      await this.parentExtent.whenReady();
+      await this._templateVars.inputsReady;
+    } catch (error) {
+      console.log('Error while creating templated link: ' + error);
+      return;
+    }
     this.mapEl = this.getMapEl();
     // create the layer type appropriate to the rel value
     this.zIndex = Array.from(
@@ -788,11 +773,13 @@ export class MapLink extends HTMLElement {
         case 'query':
           ready = 'shadowRoot';
           break;
+        case 'alternate':
+          ready = '_alternate';
+          break;
         case 'zoomin':
         case 'zoomout':
         case 'legend':
         case 'stylesheet':
-        case 'alternate':
         case 'license':
           resolve();
           break;

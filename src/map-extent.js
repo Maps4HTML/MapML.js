@@ -221,7 +221,7 @@ export class MapExtent extends HTMLElement {
   getMeta(metaName) {
     let name = metaName.toLowerCase();
     if (name !== 'extent' && name !== 'zoom') return;
-    return this.parentLayer.shadowRoot
+    return this.parentLayer.src
       ? this.querySelector(`map-meta[name=${name}]`) ||
           this.parentLayer.shadowRoot.querySelector(`map-meta[name=${name}]`)
       : this.querySelector(`map-meta[name=${name}]`) ||
@@ -283,7 +283,10 @@ export class MapExtent extends HTMLElement {
   }
   _validateLayerControlContainerHidden() {
     let extentsFieldset = this.parentLayer._propertiesGroupAnatomy;
-    let nodeToSearch = this.parentLayer.shadowRoot || this.parentLayer;
+    let nodeToSearch = this.parentLayer.src
+      ? this.parentLayer.shadowRoot
+      : this.parentLayer;
+    if (!extentsFieldset) return;
     if (
       nodeToSearch.querySelectorAll('map-extent:not([hidden])').length === 0
     ) {
