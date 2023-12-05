@@ -6,6 +6,7 @@ export class MapLink extends HTMLElement {
       'type',
       'rel',
       //      'title',
+      'media',
       'href',
       'hreflang',
       'tref',
@@ -95,6 +96,12 @@ export class MapLink extends HTMLElement {
       this.setAttribute('tref', val);
     }
   }
+  get media() {
+    return this.getAttribute('media');
+  }
+  set media(val) {
+    this.setAttribute('media', val);
+  }
   get tms() {
     return this.hasAttribute('tms');
   }
@@ -172,6 +179,8 @@ export class MapLink extends HTMLElement {
           // create or reset the _templateVars property
           this._initTemplateVars();
         }
+        break;
+      case 'media':
         break;
       case 'tms':
         // rel = tile
@@ -497,102 +506,86 @@ export class MapLink extends HTMLElement {
   }
   /**
    * TODO: review getBounds for sanity, also getFallbackBounds, perhaps integrate
-   */
+   * there is no other kind of bounds but native....
+   *  each rectangle must be established and valid and converted to PCRS coordinates...
+    // "native" bounds = input type=location min max || map-extent/map-meta name=extent min,max || layer-/map-meta name=extent min,max || layer projection min/max
+ */
   getBounds() {
     let template = this._templateVars;
     let inputs = template.values,
       projection = this.parentElement.units,
-      value = 0,
-      boundsUnit = M.FALLBACK_CS;
+      boundsUnit = {};
+    boundsUnit.name = M.FALLBACK_CS;
     let bounds = M[projection].options.crs.tilematrix.bounds(0),
-      defaultMinZoom = 0,
-      defaultMaxZoom = M[projection].options.resolutions.length - 1,
-      nativeMinZoom = defaultMinZoom,
-      nativeMaxZoom = defaultMaxZoom;
-    let locInputs = false,
-      numberOfAxes = 0;
+      locInputs = false,
+      numberOfAxes = 0,
+      horizontalAxis = false,
+      verticalAxis = false;
     for (let i = 0; i < inputs.length; i++) {
-      switch (inputs[i].getAttribute('type')) {
-        case 'zoom':
-          nativeMinZoom = +(inputs[i].hasAttribute('min') &&
-          !isNaN(+inputs[i].getAttribute('min'))
-            ? inputs[i].getAttribute('min')
-            : defaultMinZoom);
-          nativeMaxZoom = +(inputs[i].hasAttribute('max') &&
-          !isNaN(+inputs[i].getAttribute('max'))
-            ? inputs[i].getAttribute('max')
-            : defaultMaxZoom);
-          value = +inputs[i].getAttribute('value');
-          break;
-        case 'location':
-          if (!inputs[i].getAttribute('max') || !inputs[i].getAttribute('min'))
-            continue;
-          let max = +inputs[i].getAttribute('max'),
-            min = +inputs[i].getAttribute('min');
-          switch (inputs[i].getAttribute('axis').toLowerCase()) {
-            case 'x':
-            case 'longitude':
-            case 'column':
-            case 'easting':
-              boundsUnit = M.axisToCS(
-                inputs[i].getAttribute('axis').toLowerCase()
-              );
-              bounds.min.x = min;
-              bounds.max.x = max;
-              numberOfAxes++;
-              break;
-            case 'y':
-            case 'latitude':
-            case 'row':
-            case 'northing':
-              boundsUnit = M.axisToCS(
-                inputs[i].getAttribute('axis').toLowerCase()
-              );
-              bounds.min.y = min;
-              bounds.max.y = max;
-              numberOfAxes++;
-              break;
-            default:
-              break;
-          }
-          break;
-        default:
+      if (inputs[i].getAttribute('type') === 'location') {
+        if (!inputs[i].getAttribute('max') || !inputs[i].getAttribute('min'))
+          continue;
+        let max = +inputs[i].getAttribute('max'),
+          min = +inputs[i].getAttribute('min');
+        switch (inputs[i].getAttribute('axis').toLowerCase()) {
+          case 'x':
+          case 'longitude':
+          case 'column':
+          case 'easting':
+            boundsUnit.name = M.axisToCS(
+              inputs[i].getAttribute('axis').toLowerCase()
+            );
+            bounds.min.x = min;
+            bounds.max.x = max;
+            boundsUnit.horizontalAxis = inputs[i]
+              .getAttribute('axis')
+              .toLowerCase();
+            break;
+          case 'y':
+          case 'latitude':
+          case 'row':
+          case 'northing':
+            boundsUnit.name = M.axisToCS(
+              inputs[i].getAttribute('axis').toLowerCase()
+            );
+            bounds.min.y = min;
+            bounds.max.y = max;
+            boundsUnit.verticalAxis = inputs[i]
+              .getAttribute('axis')
+              .toLowerCase();
+            break;
+          default:
+            break;
+        }
       }
     }
-    if (numberOfAxes >= 2) {
+    if (
+      boundsUnit.horizontalAxis &&
+      boundsUnit.verticalAxis &&
+      ((boundsUnit.horizontalAxis === 'x' && boundsUnit.verticalAxis === 'y') ||
+        (boundsUnit.horizontalAxis === 'longitude' &&
+          boundsUnit.verticalAxis === 'latitude') ||
+        (boundsUnit.horizontalAxis === 'column' &&
+          boundsUnit.verticalAxis === 'row') ||
+        (boundsUnit.horizontalAxis === 'easting' &&
+          boundsUnit.verticalAxis === 'northing'))
+    ) {
       locInputs = true;
     }
-    if (!locInputs) {
+    if (locInputs) {
+      let zoomValue = this._templateVars.zoom?.hasAttribute('value')
+        ? +this._templateVars.zoom.getAttribute('value')
+        : 0;
+      bounds = M.boundsToPCRSBounds(
+        bounds,
+        zoomValue,
+        projection,
+        boundsUnit.name
+      );
+    } else if (!locInputs) {
       bounds = this.getFallbackBounds(projection);
-    } else if (locInputs) {
-      bounds = M.boundsToPCRSBounds(bounds, value, projection, boundsUnit);
-    } else {
-      bounds = M[projection].options.crs.pcrs.bounds;
     }
     return bounds;
-  }
-  getBase() {
-    let layer = this.getRootNode().host;
-    //
-    let relativeURL =
-      this.getRootNode().querySelector('map-base') &&
-      this.getRootNode() instanceof ShadowRoot
-        ? this.getRootNode().querySelector('map-base').getAttribute('href')
-        : /* local content? */ !(this.getRootNode() instanceof ShadowRoot)
-        ? /* use the baseURI algorithm which takes into account any <base> */
-          this.getRootNode().querySelector('map-base')?.getAttribute('href') ||
-          this.baseURI
-        : /* else use the resolved <layer- src="..."> value */ new URL(
-            layer.src,
-            layer.baseURI
-          ).href;
-
-    // when remote content, use layer.src as base else use baseURI of map-link
-    let baseURL =
-      this.getRootNode() instanceof ShadowRoot
-        ? new URL(layer.src, layer.baseURI).href
-        : this.baseURI;
-    return new URL(relativeURL, baseURL).href;
   }
   getFallbackBounds(projection) {
     let bounds;
@@ -629,10 +622,33 @@ export class MapLink extends HTMLElement {
         cs
       );
     } else {
-      let crs = M[this.parentElement.units];
+      let crs = M[projection];
       bounds = crs.options.crs.pcrs.bounds;
     }
     return bounds;
+  }
+  getBase() {
+    let layer = this.getRootNode().host;
+    //
+    let relativeURL =
+      this.getRootNode().querySelector('map-base') &&
+      this.getRootNode() instanceof ShadowRoot
+        ? this.getRootNode().querySelector('map-base').getAttribute('href')
+        : /* local content? */ !(this.getRootNode() instanceof ShadowRoot)
+        ? /* use the baseURI algorithm which takes into account any <base> */
+          this.getRootNode().querySelector('map-base')?.getAttribute('href') ||
+          this.baseURI
+        : /* else use the resolved <layer- src="..."> value */ new URL(
+            layer.src,
+            layer.baseURI
+          ).href;
+
+    // when remote content, use layer.src as base else use baseURI of map-link
+    let baseURL =
+      this.getRootNode() instanceof ShadowRoot
+        ? new URL(layer.src, layer.baseURI).href
+        : this.baseURI;
+    return new URL(relativeURL, baseURL).href;
   }
   /**
    * Return BOTH min/max(Display)Zoom AND min/maxNativeZoom which

@@ -267,6 +267,8 @@ export class MapViewer extends HTMLElement {
     if (!this._map) {
       this._map = L.map(this._container, {
         center: new L.LatLng(this.lat, this.lon),
+        minZoom: 0,
+        maxZoom: M[this.projection].options.resolutions.length - 1,
         projection: this.projection,
         query: true,
         contextMenu: true,

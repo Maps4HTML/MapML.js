@@ -226,6 +226,9 @@ export class MapLayer extends HTMLElement {
           .then(() => {
             // may throw:
             this.selectAlternateOrChangeProjection();
+          }).then(() => {
+            // may throw
+            this.checkForPreferredContent();
           })
           .then(() => {
             this._layer = M.mapMLLayer(

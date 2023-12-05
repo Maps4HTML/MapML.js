@@ -3,6 +3,9 @@ export class MapExtent extends HTMLElement {
   static get observedAttributes() {
     return ['checked', 'label', 'opacity', 'hidden'];
   }
+  /* jshint ignore:start */
+  #hasConnected;
+  /* jshint ignore:end */
   get units() {
     return this.getAttribute('units') || M.FALLBACK_PROJECTION;
   }
@@ -49,98 +52,93 @@ export class MapExtent extends HTMLElement {
     }
   }
   attributeChangedCallback(name, oldValue, newValue) {
-    this.whenReady()
-      .then(() => {
-        switch (name) {
-          case 'units':
-            if (oldValue !== newValue) {
-              // handle side effects
-            }
-            break;
-          case 'label':
-            if (oldValue !== newValue) {
-              this._layerControlHTML.querySelector(
-                '.mapml-layer-item-name'
-              ).innerHTML = newValue || M.options.locale.dfExtent;
-            }
-            break;
-          case 'checked':
+    if (this.#hasConnected /* jshint ignore:line */) {
+      switch (name) {
+        case 'units':
+          if (oldValue !== newValue) {
+            // handle side effects
+          }
+          break;
+        case 'label':
+          if (oldValue !== newValue) {
+            this._layerControlHTML.querySelector(
+              '.mapml-layer-item-name'
+            ).innerHTML = newValue || M.options.locale.dfExtent;
+          }
+          break;
+        case 'checked':
+          this.parentLayer
+            .whenReady()
+            .then(() => {
+              this._handleChange();
+              this._calculateBounds();
+              this._layerControlCheckbox.checked = newValue !== null;
+            })
+            .catch((error) => {
+              console.log(
+                'Error while waiting on parentLayer for map-extent checked callback: ' +
+                  error
+              );
+            });
+          break;
+        case 'opacity':
+          if (oldValue !== newValue) {
+            this._opacity = newValue;
+            if (this._extentLayer) this._extentLayer.changeOpacity(newValue);
+          }
+          break;
+        case 'hidden':
+          if (oldValue !== newValue) {
             this.parentLayer
               .whenReady()
               .then(() => {
-                this._handleChange();
-                this._calculateBounds();
-                this._layerControlCheckbox.checked = newValue !== null;
+                let extentsRootFieldset =
+                  this.parentLayer._propertiesGroupAnatomy;
+                let position = Array.from(
+                  this.parentNode.querySelectorAll('map-extent:not([hidden])')
+                ).indexOf(this);
+                if (newValue !== null) {
+                  // remove from layer control (hide from user)
+                  this._layerControlHTML.remove();
+                } else {
+                  // insert the extent fieldset into the layer control container in
+                  // the calculated position
+                  if (position === 0) {
+                    extentsRootFieldset.insertAdjacentElement(
+                      'afterbegin',
+                      this._layerControlHTML
+                    );
+                  } else if (position > 0) {
+                    this.parentNode
+                      .querySelectorAll('map-extent:not([hidden])')
+                      [position - 1]._layerControlHTML.insertAdjacentElement(
+                        'afterend',
+                        this._layerControlHTML
+                      );
+                  }
+                }
+                this._validateLayerControlContainerHidden();
               })
               .catch(() => {
                 console.log(
-                  'Error while waiting on parentLayer for map-extent checked callback'
+                  'Error while waiting on parentLayer for map-extent hidden callback'
                 );
               });
-            break;
-          case 'opacity':
-            if (oldValue !== newValue) {
-              this._opacity = newValue;
-              if (this._extentLayer) this._extentLayer.changeOpacity(newValue);
-            }
-            break;
-          case 'hidden':
-            if (oldValue !== newValue) {
-              this.parentLayer
-                .whenReady()
-                .then(() => {
-                  let extentsRootFieldset =
-                    this.parentLayer._propertiesGroupAnatomy;
-                  let position = Array.from(
-                    this.parentNode.querySelectorAll('map-extent:not([hidden])')
-                  ).indexOf(this);
-                  if (newValue !== null) {
-                    // remove from layer control (hide from user)
-                    this._layerControlHTML.remove();
-                  } else {
-                    // insert the extent fieldset into the layer control container in
-                    // the calculated position
-                    if (position === 0) {
-                      extentsRootFieldset.insertAdjacentElement(
-                        'afterbegin',
-                        this._layerControlHTML
-                      );
-                    } else if (position > 0) {
-                      this.parentNode
-                        .querySelectorAll('map-extent:not([hidden])')
-                        [position - 1]._layerControlHTML.insertAdjacentElement(
-                          'afterend',
-                          this._layerControlHTML
-                        );
-                    }
-                  }
-                  this._validateLayerControlContainerHidden();
-                })
-                .catch(() => {
-                  console.log(
-                    'Error while waiting on parentLayer for map-extent hidden callback'
-                  );
-                });
-            }
-            break;
-        }
-      })
-      .catch((reason) => {
-        console.log(
-          reason,
-          `\nin mapExtent.attributeChangeCallback when changing attribute ${name}`
-        );
-      });
+          }
+          break;
+      }
+    }
   }
   constructor() {
     // Always call super first in constructor
     super();
+    this._createLayerControlExtentHTML =
+      M._createLayerControlExtentHTML.bind(this);
+    this._changeHandler = this._handleChange.bind(this);
   }
   async connectedCallback() {
     // this.parentNode.host returns the layer- element when parentNode is
     // the shadow root
-    this._createLayerControlExtentHTML =
-      M._createLayerControlExtentHTML.bind(this);
     this.parentLayer =
       this.parentNode.nodeName.toUpperCase() === 'LAYER-'
         ? this.parentNode
@@ -160,10 +158,12 @@ export class MapExtent extends HTMLElement {
     // in this case, the microtasks triggered by the fulfillment of the removed MapMLLayer should be stopped as well
     // !this.isConnected <=> the disconnectedCallback has run before
     if (!this.isConnected) return;
+    /* jshint ignore:start */
+    this.#hasConnected = true;
+    /* jshint ignore:end */
     this._map = this.mapEl._map;
     // reset the layer extent
     delete this.parentLayer.bounds;
-    this._changeHandler = this._handleChange.bind(this);
     this.parentLayer.addEventListener('map-change', this._changeHandler);
     this.mapEl.addEventListener('map-projectionchange', this._changeHandler);
     // this._opacity is used to record the current opacity value (with or without updates),

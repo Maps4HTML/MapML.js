@@ -9,7 +9,6 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     // _setUpTileTemplateVars needs options.crs, not available unless we set
     // options first...
     options.tms = template.tms;
-    L.setOptions(this, options);
     // it's critical to have this.options.minZoom, minNativeZoom, maxZoom, maxNativeZoom
     // because they are used by Leaflet Map and GridLayer, but we
     // don't need two copies of that info on our options object, so set the
@@ -20,7 +19,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     delete options.zoomBounds;
     // unpack object to this.options.minZ... etc where minZ... are the props
     // of the this.zoomBounds object:
-    L.extend(this.options, this.zoomBounds);
+    L.extend(options, this.zoomBounds);
+    L.setOptions(this, options);
     // _setup call here relies on this.options.minZ.. etc
     this._setUpTileTemplateVars(template);
     this._linkEl = options.linkEl;
