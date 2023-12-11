@@ -14,6 +14,9 @@ export class MapLink extends HTMLElement {
       'projection'
     ];
   }
+  /* jshint ignore:start */
+  #hasConnected;
+  /* jshint ignore:end */
   get type() {
     return this.getAttribute('type') || 'image/*';
   }
@@ -97,7 +100,10 @@ export class MapLink extends HTMLElement {
     }
   }
   get media() {
-    return this.getAttribute('media');
+    // return the content of media attribute as an object
+    // maybe memoizing the object to avoid repeated formatting
+    // the Util function may need to be renamed?
+    return M._metaContentToObject(this.getAttribute('media'));
   }
   set media(val) {
     this.setAttribute('media', val);
@@ -134,66 +140,68 @@ export class MapLink extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     //['type','rel','href','hreflang','tref','tms','projection'];
     // fold to lowercase
-    switch (name) {
-      case 'type':
-        // rel = tile, features, etc. TBD when it is used
-        //        ttype = !t.hasAttribute('type')
-        //          ? 'image/*'
-        //          : t.getAttribute('type').toLowerCase(),
+    if (this.#hasConnected /* jshint ignore:line */) {
+      switch (name) {
+        case 'type':
+          // rel = tile, features, etc. TBD when it is used
+          //        ttype = !t.hasAttribute('type')
+          //          ? 'image/*'
+          //          : t.getAttribute('type').toLowerCase(),
 
-        if (oldValue !== newValue) {
-          // default value image/*
-          // handle side effects
-        }
-        break;
-      case 'rel':
-        // mandatory attribute, no default value
-        if (oldValue !== newValue) {
-          // handle side effects
-          if (newValue === 'query') {
+          if (oldValue !== newValue) {
+            // default value image/*
+            // handle side effects
           }
-        }
-        break;
-      //      case 'title':
-      //        if (oldValue !== newValue) {
-      //          // handle side effects
-      //        }
-      //        break;
-      case 'href':
-        // rel = license, legend, stylesheet, self, style, self style, style self, zoomin, zoomout
-        if (oldValue !== newValue) {
-          // handle side effects
-        }
-        break;
-      case 'hreflang':
-        // rel = *all*
-        // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#hreflang
-        // idea is that we can have multiple map-links with different hreflang, and map-extent chooses a map-link that matches with user's lang. Not a priority. - create an use-case issue?
-        if (oldValue !== newValue) {
-          // handle side effects
-        }
-        break;
-      case 'tref':
-        // rel = tile, image, features, query
-        if (oldValue !== newValue) {
-          // create or reset the _templateVars property
-          this._initTemplateVars();
-        }
-        break;
-      case 'media':
-        break;
-      case 'tms':
-        // rel = tile
-        if (oldValue !== newValue) {
-          // handle side effects
-        }
-        break;
-      case 'projection':
-        // rel = alternate
-        if (oldValue !== newValue) {
-          // handle side effects
-        }
-        break;
+          break;
+        case 'rel':
+          // mandatory attribute, no default value
+          if (oldValue !== newValue) {
+            // handle side effects
+            if (newValue === 'query') {
+            }
+          }
+          break;
+        //      case 'title':
+        //        if (oldValue !== newValue) {
+        //          // handle side effects
+        //        }
+        //        break;
+        case 'href':
+          // rel = license, legend, stylesheet, self, style, self style, style self, zoomin, zoomout
+          if (oldValue !== newValue) {
+            // handle side effects
+          }
+          break;
+        case 'hreflang':
+          // rel = *all*
+          // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#hreflang
+          // idea is that we can have multiple map-links with different hreflang, and map-extent chooses a map-link that matches with user's lang. Not a priority. - create an use-case issue?
+          if (oldValue !== newValue) {
+            // handle side effects
+          }
+          break;
+        case 'tref':
+          // rel = tile, image, features, query
+          if (oldValue !== newValue) {
+            // create or reset the _templateVars property
+            this._initTemplateVars();
+          }
+          break;
+        case 'media':
+          break;
+        case 'tms':
+          // rel = tile
+          if (oldValue !== newValue) {
+            // handle side effects
+          }
+          break;
+        case 'projection':
+          // rel = alternate
+          if (oldValue !== newValue) {
+            // handle side effects
+          }
+          break;
+      }
     }
   }
   constructor() {
@@ -201,12 +209,14 @@ export class MapLink extends HTMLElement {
     super();
   }
   connectedCallback() {
+    this.#hasConnected = true; /* jshint ignore:line */
     switch (this.rel.toLowerCase()) {
       // for some cases, require a dependency check
       case 'tile':
       case 'image':
       case 'features':
       case 'query':
+        this._initTemplateVars();
         this._createTemplatedLink();
         break;
       case 'style':
@@ -708,7 +718,8 @@ export class MapLink extends HTMLElement {
       layerEl.dispatchEvent(
         new CustomEvent('changestyle', {
           detail: {
-            src: e.target.getAttribute('data-href')
+            src: e.target.getAttribute('data-href'),
+            preference: this.media['prefers-map-content']
           }
         })
       );
@@ -739,7 +750,7 @@ export class MapLink extends HTMLElement {
       styleOptionInput.checked = true;
     }
     this._styleOption = styleOption;
-    styleOptionInput.addEventListener('click', changeStyle);
+    styleOptionInput.addEventListener('click', changeStyle.bind(this));
   }
   getLayerControlOption() {
     return this._styleOption;

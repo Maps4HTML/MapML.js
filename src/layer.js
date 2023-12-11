@@ -125,6 +125,7 @@ export class MapLayer extends HTMLElement {
     // this._opacity is used to record the current opacity value (with or without updates),
     // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
     this._opacity = this.opacity || 1.0;
+    this._renderingMapContent = M.options.contentPreference;
     this.attachShadow({ mode: 'open' });
   }
   disconnectedCallback() {
@@ -183,7 +184,11 @@ export class MapLayer extends HTMLElement {
         'changestyle',
         function (e) {
           e.stopPropagation();
-          this.src = e.detail.src;
+          // if user changes the style in layer control
+          if (e.detail) {
+            this._renderingMapContent = e.detail._renderingMapContent;
+            this.src = e.detail.src;
+          } 
         },
         { once: true }
       );
@@ -212,8 +217,14 @@ export class MapLayer extends HTMLElement {
               content.querySelector('parsererror') ||
               !content.querySelector('mapml-')
             ) {
+              // cut short whenReady with the _fetchError property
+              this._fetchError = true;
+              console.log('Error fetching layer content');
               throw new Error('Parser error');
             }
+            return content;
+          })
+          .then((content) => {
             this.copyRemoteContentToShadowRoot(content.querySelector('mapml-'));
             let elements = this.shadowRoot.querySelectorAll('*');
             let elementsReady = [];
@@ -226,8 +237,6 @@ export class MapLayer extends HTMLElement {
           .then(() => {
             // may throw:
             this.selectAlternateOrChangeProjection();
-          }).then(() => {
-            // may throw
             this.checkForPreferredContent();
           })
           .then(() => {
@@ -246,12 +255,6 @@ export class MapLayer extends HTMLElement {
             resolve();
           })
           .catch((error) => {
-            if (error.message === 'changeprojection') {
-              console.log('Changing projection');
-            } else {
-              this._fetchError = true;
-              console.log('Error fetching layer content: ' + error);
-            }
             reject(error);
           });
       } else {
@@ -265,6 +268,7 @@ export class MapLayer extends HTMLElement {
           .then(() => {
             // may throw:
             this.selectAlternateOrChangeProjection();
+            this.checkForPreferredContent();
           })
           .then(() => {
             this._layer = M.mapMLLayer(null, this, null, {
@@ -277,9 +281,6 @@ export class MapLayer extends HTMLElement {
             resolve();
           })
           .catch((error) => {
-            if (error.message === 'changeprojection') {
-              console.log('Changing projection');
-            }
             reject(error);
           });
       }
@@ -293,6 +294,13 @@ export class MapLayer extends HTMLElement {
             'Changing map projection to match layer: ' + e.cause.mapprojection
           );
           this.parentElement.projection = e.cause.mapprojection;
+        }
+      } else if (e.message === 'findmatchingpreferredcontent') {
+        if (e.cause.href) {
+          console.log(
+            'Changing layer to matching preferred content at: ' + e.cause.href
+          );
+          this.src = e.cause.href;
         }
       } else {
         console.log(e);
@@ -329,6 +337,23 @@ export class MapLayer extends HTMLElement {
     ) {
       throw new Error('changeprojection', {
         cause: { mapprojection: contentProjection }
+      });
+    }
+  }
+
+  checkForPreferredContent() {
+    let mapml = this.src ? this.shadowRoot : this;
+    let availablePreferMapContents = mapml.querySelector(
+      `map-link[rel="style"][media="prefers-map-content=${this._renderingMapContent}"][href]`
+    );
+    if (availablePreferMapContents) {
+      // resolve href
+      let url = new URL(
+        availablePreferMapContents.getAttribute('href'),
+        availablePreferMapContents.getBase()
+      ).href;
+      throw new Error('findmatchingpreferredcontent', {
+        cause: { href: url }
       });
     }
   }
