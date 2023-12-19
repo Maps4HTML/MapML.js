@@ -56,7 +56,6 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
         zoomBounds: this.zoomBounds,
         opacity: opacity,
         projection: map.options.projection,
-        static: true,
         mapEl: this._linkEl.getMapEl(),
         onEachFeature: function (properties, geometry) {
           // need to parse as HTML to preserve semantics and styles

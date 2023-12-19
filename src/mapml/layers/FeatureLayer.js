@@ -21,7 +21,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
     // this._staticFeature is ONLY true when not used by TemplatedFeaturesLayer
     // this.options.query true when created by QueryHandler.js
 
-    if (this.options.static) {
+    if (!this.options.tiles) {
       // not a tiled vector layer
       this._container = null;
       if (this.options.query) {
@@ -61,18 +61,12 @@ export var FeatureLayer = L.FeatureGroup.extend({
     }
     if (this.options.query) {
       this._mapmlFeatures = mapml.features ? mapml.features : mapml;
-    } else {
-      if (mapml) {
-        // tileFeatures
-        let native = M.getNativeVariables(mapml);
-        this.addData(mapml, native.cs, native.zoom);
-      } else if (!mapml) {
-        // use this.options._leafletLayer to distinguish the featureLayer constructed for initialization and for templated features / tiles
-        if (this.options._leafletLayer) {
-          // this._staticFeature should be set to true to make sure the _getEvents works properly
-          this._features = {};
-          this._staticFeature = true;
-        }
+    } else if (!mapml) {
+      // use this.options._leafletLayer to distinguish the featureLayer constructed for initialization and for templated features / tiles
+      if (this.options._leafletLayer) {
+        // this._staticFeature should be set to true to make sure the _getEvents works properly
+        this._features = {};
+        this._staticFeature = true;
       }
     }
   },

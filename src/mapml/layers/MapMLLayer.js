@@ -228,7 +228,6 @@ export var MapMLLayer = L.LayerGroup.extend({
           native: native,
           // each owned child layer gets a reference to the root layer
           _leafletLayer: layer,
-          static: true,
           mapEl: layer._layerEl.parentElement,
           onEachFeature: function (properties, geometry) {
             // need to parse as HTML to preserve semantics and styles

@@ -184,18 +184,24 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       xOffset = coords.x * tileSize,
       yOffset = coords.y * tileSize;
 
-    let tileFeatures = M.featureLayer(markup, {
+    let tileFeatures = M.featureLayer(null, {
       projection: this._map.options.projection,
-      static: false,
+      tiles: true,
       layerBounds: this.extentBounds,
       zoomBounds: this.zoomBounds,
       interactive: false,
       mapEl: this._linkEl.getMapEl()
     });
-
-    for (let groupID in tileFeatures._layers) {
-      for (let featureID in tileFeatures._layers[groupID]._layers) {
-        let layer = tileFeatures._layers[groupID]._layers[featureID];
+    let fallback = M.getNativeVariables(markup);
+    let features = markup.querySelectorAll('map-feature');
+    for (let i = 0; i < features.length; i++) {
+      let feature = tileFeatures.addData(
+        features[i],
+        fallback.cs,
+        fallback.zoom
+      );
+      for (let featureID in feature._layers) {
+        let layer = feature._layers[featureID];
         M.FeatureRenderer.prototype._initPath(layer, false);
         layer._project(this._map, L.point([xOffset, yOffset]), coords.z);
         M.FeatureRenderer.prototype._addPath(layer, g, false);

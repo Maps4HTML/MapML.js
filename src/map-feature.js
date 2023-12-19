@@ -240,7 +240,9 @@ export class MapFeature extends HTMLElement {
         fallbackZoom
       );
       // todo: dynamically update layer bounds of vector layer
-      layerToAddTo.layerBounds = M.getBounds(content);
+      layerToAddTo.layerBounds = layerToAddTo.layerBounds
+        ? layerToAddTo.layerBounds.extend(M.extentToBounds(this.extent, 'pcrs'))
+        : M.extentToBounds(this.extent, 'pcrs');
       // update map's zoom limit
       // the mapmlvectors.options should be updated with the new zoomBounds,
       // to ensure the _addZoomLimit function call can read updated zoom info
