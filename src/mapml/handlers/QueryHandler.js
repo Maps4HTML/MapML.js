@@ -251,7 +251,7 @@ export var QueryHandler = L.Handler.extend({
 
       for (let f of results) {
         if (f.status === 'fulfilled') {
-          // create connection between queried <map-feature> and its parent <map-extent>
+          // create connection between queried <map-feature> and its parent <map-link>
           for (let feature of f.value.features) {
             feature._linkEl = f.value.template.linkEl;
           }
@@ -281,7 +281,8 @@ export var QueryHandler = L.Handler.extend({
         static: true,
         mapEl: layer.options.mapEl
       });
-      f.addTo(map);
+
+      f.addTo(layer);
 
       let div = L.DomUtil.create('div', 'mapml-popup-content'),
         c = L.DomUtil.create('iframe');
@@ -296,7 +297,7 @@ export var QueryHandler = L.Handler.extend({
       layer._totalFeatureCount = features.length;
       layer.bindPopup(div, popupOptions).openPopup(loc);
       layer.on('popupclose', function () {
-        map.removeLayer(f);
+        layer.removeLayer(f);
       });
       f.showPaginationFeature({
         i: 0,

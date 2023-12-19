@@ -267,16 +267,17 @@ export class MapExtent extends HTMLElement {
   }
 
   _handleChange() {
-    // if the parent layer- is checked, add _extentLayer to map if map-extent is checked, otherwise remove it
-    if (this.checked && this.parentLayer.checked && !this.disabled) {
-      this._extentLayer.addTo(this._map);
+    // add _extentLayer to map if map-extent is checked, otherwise remove it
+    if (this.checked && !this.disabled) {
+      // can be added to mapmllayer layerGroup no matter layer- is checked or not
+      this._extentLayer.addTo(this.parentLayer._layer);
       this._extentLayer.setZIndex(
         Array.from(this.parentLayer.querySelectorAll('map-extent')).indexOf(
           this
         )
       );
     } else {
-      this._map.removeLayer(this._extentLayer);
+      this.parentLayer._layer.removeLayer(this._extentLayer);
     }
     // change the checkbox in the layer control to match map-extent.checked
     // doesn't trigger the event handler because it's not user-caused AFAICT
@@ -309,7 +310,9 @@ export class MapExtent extends HTMLElement {
     // remove layer control for map-extent from layer control DOM
     // TODO: for the case of projection change, the layer control for map-extent has been created while _extentLayer has not yet been ready
     this._layerControlHTML.remove();
-    this._map.removeLayer(this._extentLayer);
+    if (this.parentLayer._layer) {
+      this.parentLayer._layer.removeLayer(this._extentLayer);
+    }
     this.parentLayer.removeEventListener('map-change', this._changeHandler);
     this.mapEl.removeEventListener('map-projectionchange', this._changeHandler);
     delete this._extentLayer;

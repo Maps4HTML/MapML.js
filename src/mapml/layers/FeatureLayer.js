@@ -17,27 +17,53 @@ export var FeatureLayer = L.FeatureGroup.extend({
     // which will then remain static for the lifetime of the layer
 
     L.FeatureGroup.prototype.initialize.call(this, null, options);
+    // this.options.static is false ONLY for tiled vector features
+    // this._staticFeature is ONLY true when not used by TemplatedFeaturesLayer
+    // this.options.query true when created by QueryHandler.js
+
     if (this.options.static) {
-      this._container = L.DomUtil.create(
-        'div',
-        'leaflet-layer',
-        this.options.pane
-      );
-      // must have leaflet-pane class because of new/changed rule in leaflet.css
-      // info: https://github.com/Leaflet/Leaflet/pull/4597
-      L.DomUtil.addClass(
-        this._container,
-        'leaflet-pane mapml-vector-container'
-      );
+      // not a tiled vector layer
+      this._container = null;
+      if (this.options.query) {
+        this._container = L.DomUtil.create(
+          'div',
+          'leaflet-layer',
+          this.options.pane
+        );
+        // must have leaflet-pane class because of new/changed rule in leaflet.css
+        // info: https://github.com/Leaflet/Leaflet/pull/4597
+        L.DomUtil.addClass(
+          this._container,
+          'leaflet-pane mapml-vector-container'
+        );
+      } else if (this.options._leafletLayer) {
+        this._container = L.DomUtil.create(
+          'div',
+          'leaflet-layer',
+          this.options.pane
+        );
+        L.DomUtil.addClass(
+          this._container,
+          'leaflet-pane mapml-vector-container'
+        );
+        // static mapmlvector should always at the top
+        //        this._container.style.zIndex = 1000;
+      } else {
+        // if the current featureLayer is a sublayer of templatedFeatureLayer,
+        // append <svg> directly to the templated feature container (passed in as options.pane)
+        this._container = this.options.pane;
+        L.DomUtil.addClass(
+          this._container,
+          'leaflet-pane mapml-vector-container'
+        );
+      }
       L.setOptions(this.options.renderer, { pane: this._container });
     }
     if (this.options.query) {
       this._mapmlFeatures = mapml.features ? mapml.features : mapml;
-      let native = M.getNativeVariables(mapml);
-      this.options.nativeZoom = native.zoom;
-      this.options.nativeCS = native.cs;
     } else {
       if (mapml) {
+        // tileFeatures
         let native = M.getNativeVariables(mapml);
         this.addData(mapml, native.cs, native.zoom);
       } else if (!mapml) {
@@ -104,11 +130,20 @@ export var FeatureLayer = L.FeatureGroup.extend({
     this._map.featureIndex.cleanIndex();
   },
 
-  removeLayer: function (featureGroupLayer) {
-    L.FeatureGroup.prototype.removeLayer.call(this, featureGroupLayer);
-    delete this._layers[featureGroupLayer._leaflet_id];
+  removeLayer: function (featureToRemove) {
+    L.FeatureGroup.prototype.removeLayer.call(this, featureToRemove);
+    delete this._layers[featureToRemove._leaflet_id];
   },
-
+  _removeFromFeaturesList: function (layer) {
+    for (let zoom in this._features)
+      for (let i = 0; i < this._features[zoom].length; ++i) {
+        let feature = this._features[zoom][i];
+        if (feature._leaflet_id === layer._leaflet_id) {
+          this._features[zoom].splice(i, 1);
+          break;
+        }
+      }
+  },
   getEvents: function () {
     if (this._staticFeature) {
       return {
@@ -132,11 +167,6 @@ export var FeatureLayer = L.FeatureGroup.extend({
         feature._linkEl.shadowRoot.replaceChildren();
       }
       this.clearLayers();
-      feature._featureGroup = this.addData(
-        feature,
-        this.options.nativeCS,
-        this.options.nativeZoom
-      );
       // append all map-meta from mapml document
       if (e.meta) {
         for (let i = 0; i < e.meta.length; i++) {
@@ -144,6 +174,9 @@ export var FeatureLayer = L.FeatureGroup.extend({
         }
       }
       feature._linkEl.shadowRoot.appendChild(feature);
+      let fallbackZoom = feature._getFallbackZoom();
+      let fallbackCS = feature._getFallbackCS();
+      feature._geometry = this.addData(feature, fallbackCS, fallbackZoom);
       e.popup._navigationBar.querySelector('p').innerText =
         e.i + 1 + '/' + this.options._leafletLayer._totalFeatureCount;
       e.popup._content
@@ -230,102 +263,61 @@ export var FeatureLayer = L.FeatureGroup.extend({
     }
   },
 
-  addData: function (mapml, nativeCS, nativeZoom) {
-    var features =
-        mapml.nodeType === Node.DOCUMENT_NODE || mapml.nodeName === 'LAYER-'
-          ? mapml.getElementsByTagName('map-feature')
-          : null,
-      i,
-      len,
-      feature;
-
-    var linkedStylesheets =
-      mapml.nodeType === Node.DOCUMENT_NODE
-        ? mapml.querySelector('map-link[rel=stylesheet],map-style')
-        : null;
-    if (linkedStylesheets) {
-      var base =
-        mapml.querySelector('map-base') &&
-        mapml.querySelector('map-base').hasAttribute('href')
-          ? new URL(mapml.querySelector('map-base').getAttribute('href')).href
-          : mapml.URL;
-      M._parseStylesheetAsHTML(mapml, base, this._container);
-    }
-    if (features) {
-      for (i = 0, len = features.length; i < len; i++) {
-        // Only add this if geometry is set and not null
-        feature = features[i];
-        var geometriesExist =
-          feature.getElementsByTagName('map-geometry').length &&
-          feature.getElementsByTagName('map-coordinates').length;
-        if (geometriesExist) {
-          if (mapml.nodeType === Node.DOCUMENT_NODE) {
-            // if the <map-feature> element has migrated from mapml file,
-            // the featureGroup object should bind with the **CLONED** map-feature element in DOM instead of the feature in mapml
-            if (!feature._DOMnode) feature._DOMnode = feature.cloneNode(true);
-            feature._DOMnode._featureGroup = this.addData(
-              feature._DOMnode,
-              nativeCS,
-              nativeZoom
-            );
-          } else {
-            feature._featureGroup = this.addData(feature, nativeCS, nativeZoom);
-          }
-        }
-      }
-      return this; //if templated this runs
-    }
-
+  addData: function (feature, fallbackCS, fallbackZoom) {
     //if its a mapml with no more links this runs
     var options = this.options;
 
-    if (options.filter && !options.filter(mapml)) {
+    if (options.filter && !options.filter(feature)) {
       return;
     }
 
-    if (mapml.classList.length) {
-      options.className = mapml.classList.value;
+    if (feature.classList.length) {
+      options.className = feature.classList.value;
     }
-    let zoom = mapml.getAttribute('zoom') || nativeZoom,
-      title = mapml.querySelector('map-featurecaption');
+    let zoom = feature.getAttribute('zoom') || fallbackZoom,
+      title = feature.querySelector('map-featurecaption');
     title = title ? title.innerHTML : 'Feature';
 
-    if (mapml.querySelector('map-properties')) {
+    if (feature.querySelector('map-properties')) {
       options.properties = document.createElement('div');
       options.properties.classList.add('mapml-popup-content');
       options.properties.insertAdjacentHTML(
         'afterbegin',
-        mapml.querySelector('map-properties').innerHTML
+        feature.querySelector('map-properties').innerHTML
       );
     }
 
-    let layer = this.geometryToLayer(mapml, options, nativeCS, +zoom, title);
-    if (layer) {
+    let geometry = this.geometryToLayer(
+      feature,
+      options,
+      fallbackCS,
+      +zoom,
+      title
+    );
+    if (geometry) {
       // if the layer is being used as a query handler output, it will have
       // a color option set.  Otherwise, copy classes from the feature
-      if (!layer.options.color && mapml.hasAttribute('class')) {
-        layer.options.className = mapml.getAttribute('class');
+      if (!geometry.options.color && feature.hasAttribute('class')) {
+        geometry.options.className = feature.getAttribute('class');
       }
-      layer.defaultOptions = layer.options;
-      this.resetStyle(layer);
+      geometry.defaultOptions = geometry.options;
+      this.resetStyle(geometry);
 
       if (options.onEachFeature) {
-        layer.bindTooltip(title, { interactive: true, sticky: true });
+        geometry.bindTooltip(title, { interactive: true, sticky: true });
       }
       if (this._staticFeature) {
-        let featureZoom = mapml.getAttribute('zoom') || nativeZoom;
+        let featureZoom = feature.getAttribute('zoom') || fallbackZoom;
         if (featureZoom in this._features) {
-          this._features[featureZoom].push(layer);
+          this._features[featureZoom].push(geometry);
         } else {
-          this._features[featureZoom] = [layer];
+          this._features[featureZoom] = [geometry];
         }
-      } else {
-        this.addLayer(layer);
       }
-      if (mapml.tagName.toUpperCase() === 'MAP-FEATURE') {
-        mapml._groupEl = layer.options.group;
+      if (feature.tagName.toUpperCase() === 'MAP-FEATURE') {
+        feature._groupEl = geometry.options.group;
       }
-      return layer;
+      return geometry;
     }
   },
 

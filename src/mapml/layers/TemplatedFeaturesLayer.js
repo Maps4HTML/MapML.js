@@ -66,15 +66,12 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
           geometry.bindPopup(c, { autoClose: false, minWidth: 108 });
         }
       });
-    } else {
-      // if this._features exists add the layer back
-      this._map.addLayer(this._features);
     }
 
     map.fire('moveend'); // TODO: replace with moveend handler for layer and not entire map
   },
   onRemove: function () {
-    this._map.removeLayer(this._features);
+    L.DomUtil.remove(this._container);
   },
   redraw: function () {
     this._onMoveEnd();
@@ -140,11 +137,12 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
         Accept: 'text/mapml;q=0.9,application/geo+json;q=0.8'
       }),
       parser = new DOMParser(),
-      features = this._features,
+      featureLayer = this._features,
       linkEl = this._linkEl,
       map = this._map,
       context = this,
       MAX_PAGES = 10,
+      // TODO: Fetching logic should migrate to map-link
       _pullFeatureFeed = function (url, limit) {
         return fetch(url, { redirect: 'follow', headers: headers })
           .then(function (response) {
@@ -162,31 +160,22 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
               ? mapml.querySelector('map-link[rel=next]').getAttribute('href')
               : null;
             url = url ? new URL(url, base).href : null;
-            // TODO if the xml parser barfed but the response is application/geo+json, use the parent addData method
-            let nativeZoom = (linkEl._nativeZoom =
-              (mapml.querySelector('map-meta[name=zoom]') &&
-                +M._metaContentToObject(
-                  mapml
-                    .querySelector('map-meta[name=zoom]')
-                    .getAttribute('content')
-                ).value) ||
-              0);
-            let nativeCS = (linkEl._nativeCS =
-              (mapml.querySelector('map-meta[name=cs]') &&
-                M._metaContentToObject(
-                  mapml
-                    .querySelector('map-meta[name=cs]')
-                    .getAttribute('content')
-                ).content) ||
-              'GCRS');
-            features.addData(mapml, nativeCS, nativeZoom);
-            // "migrate" to extent's shadow
-            // make a clone, prevent the elements from being removed from mapml file
-            // same as _attachToLayer() in MapMLLayer.js
-            for (let el of mapml.querySelector('map-body').children) {
-              linkEl.shadowRoot.append(el._DOMnode);
-              el._DOMnode._linkEl = linkEl;
+            let frag = document.createDocumentFragment();
+            let elements = mapml.querySelectorAll('map-head > *, map-body > *');
+            for (let i = 0; i < elements.length; i++) {
+              frag.appendChild(elements[i]);
             }
+            linkEl.shadowRoot.appendChild(frag);
+            let features = linkEl.shadowRoot.querySelectorAll('map-feature');
+            let featuresReady = [];
+            for (let i = 0; i < features.length; i++) {
+              featuresReady.push(features[i].whenReady());
+            }
+            Promise.allSettled(featuresReady).then(() => {
+              for (let i = 0; i < features.length; i++) {
+                features[i].addFeature(featureLayer);
+              }
+            });
             if (url && --limit) {
               return _pullFeatureFeed(url, limit);
             }
@@ -195,7 +184,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     this._url = url;
     _pullFeatureFeed(url, MAX_PAGES)
       .then(function () {
-        map.addLayer(features);
+        map.addLayer(featureLayer);
         //Fires event for feature index overlay
         map.fire('templatedfeatureslayeradd');
         M.TemplatedFeaturesLayer.prototype._updateTabIndex(context);

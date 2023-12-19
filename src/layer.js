@@ -136,6 +136,9 @@ export class MapLayer extends HTMLElement {
   }
 
   _onRemove() {
+    if (this._observer) {
+      this._observer.disconnect();
+    }
     let l = this._layer,
       lc = this._layerControl,
       lchtml = this._layerControlHTML;
@@ -188,7 +191,7 @@ export class MapLayer extends HTMLElement {
           if (e.detail) {
             this._renderingMapContent = e.detail._renderingMapContent;
             this.src = e.detail.src;
-          } 
+          }
         },
         { once: true }
       );
@@ -240,18 +243,24 @@ export class MapLayer extends HTMLElement {
             this.checkForPreferredContent();
           })
           .then(() => {
-            this._layer = M.mapMLLayer(
-              new URL(this.src, base).href,
-              this,
-              this.shadowRoot,
-              {
-                projection: this.getProjection(),
-                opacity: this.opacity
-              }
-            );
+            this._layer = M.mapMLLayer(new URL(this.src, base).href, this, {
+              projection: this.getProjection(),
+              opacity: this.opacity
+            });
             this._createLayerControlHTML();
             this._attachedToMap();
+            // initializing map-features
+            this._runMutationObserver(this.shadowRoot.children);
+            this._bindMutationObserver();
             this._validateDisabled();
+            // re-use 'loadedmetadata' event from HTMLMediaElement inteface, applied
+            // to MapML extent as metadata
+            // Should always be fired at the end of initialization process
+            // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/loadedmetadata_event
+            // https://maps4html.org/web-map-doc/docs/api/layer-api#events
+            this.dispatchEvent(
+              new CustomEvent('loadedmetadata', { detail: { target: this } })
+            );
             resolve();
           })
           .catch((error) => {
@@ -271,13 +280,23 @@ export class MapLayer extends HTMLElement {
             this.checkForPreferredContent();
           })
           .then(() => {
-            this._layer = M.mapMLLayer(null, this, null, {
+            this._layer = M.mapMLLayer(null, this, {
               projection: this.getProjection(),
               opacity: this.opacity
             });
             this._createLayerControlHTML();
             this._attachedToMap();
+            this._runMutationObserver(this.children);
+            this._bindMutationObserver();
             this._validateDisabled();
+            // re-use 'loadedmetadata' event from HTMLMediaElement inteface, applied
+            // to MapML extent as metadata
+            // Should always be fired at the end of initialization process
+            // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/loadedmetadata_event
+            // https://maps4html.org/web-map-doc/docs/api/layer-api#events
+            this.dispatchEvent(
+              new CustomEvent('loadedmetadata', { detail: { target: this } })
+            );
             resolve();
           })
           .catch((error) => {
@@ -404,6 +423,52 @@ export class MapLayer extends HTMLElement {
     }
     return projection;
   }
+  /*
+   * Runs the effects of the mutation observer, which is to add map-features' and
+   * map-extents' leaflet layer implementations to the appropriate container in
+   * the layer-._layer: either as a sub-layer directly in the L.LayerGroup
+   * (MapMLLayer._layer) or as a sub-layer in the MapMLLayer._mapmlvectors
+   * L.FeatureGroup
+   */
+  _runMutationObserver(elementsGroup) {
+    const _addFeatureToMapMLVectors = (feature) => {
+      this.whenReady().then(() => {
+        feature.addFeature(this._layer._mapmlvectors);
+      });
+    };
+    for (let i = 0; i < elementsGroup.length; ++i) {
+      let element = elementsGroup[i];
+      switch (element.nodeName) {
+        case 'MAP-FEATURE':
+          _addFeatureToMapMLVectors(element);
+          break;
+        case 'MAP-EXTENT':
+        // if extent is checked, ...
+        // TODO: Static Tiles
+        default:
+          break;
+      }
+    }
+  }
+  /*
+   * Set up a function to watch additions of child elements of layer- or
+   * layer-.shadowRoot and to invoke desired side  effects of those additions
+   * via _runMutationObserver
+   */
+  _bindMutationObserver() {
+    // mutation observer
+    this._observer = new MutationObserver((mutationList) => {
+      for (let mutation of mutationList) {
+        // the attributes changes should be handled by attributeChangedCallback()
+        if (mutation.type === 'childList') {
+          this._runMutationObserver(mutation.addedNodes);
+        }
+      }
+    });
+    this._observer.observe(this.src ? this.shadowRoot : this, {
+      childList: true
+    });
+  }
   _attachedToMap() {
     // set i to the position of this layer element in the set of layers
     var i = 0,
@@ -459,12 +524,6 @@ export class MapLayer extends HTMLElement {
         }
       ];
     }
-    // re-use 'loadedmetadata' event from HTMLMediaElement inteface, applied
-    // to MapML extent as metadata
-    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/loadedmetadata_event
-    this.dispatchEvent(
-      new CustomEvent('loadedmetadata', { detail: { target: this } })
-    );
   }
 
   _validateDisabled() {
@@ -474,6 +533,7 @@ export class MapLayer extends HTMLElement {
       let layer = this._layer,
         map = layer?._map;
       if (map) {
+        this._validateLayerZoom({ zoom: map.getZoom() });
         // prerequisite: no inline and remote mapml elements exists at the same time
         const mapExtents = this.src
           ? this.shadowRoot.querySelectorAll('map-extent')
@@ -526,7 +586,35 @@ export class MapLayer extends HTMLElement {
       }
     }, 0);
   }
-
+  _validateLayerZoom(e) {
+    // get the min and max zooms from all extents
+    let toZoom = e.zoom;
+    let min = this.extent.zoom.minZoom;
+    let max = this.extent.zoom.maxZoom;
+    let inLink = this.src
+        ? this.shadowRoot.querySelector('map-link[rel=zoomin]')
+        : this.querySelector('map-link[rel=zoomin]'),
+      outLink = this.src
+        ? this.shadowRoot.querySelector('map-link[rel=zoomout]')
+        : this.querySelector('map-link[rel=zoomout]');
+    let targetURL;
+    if (!(min <= toZoom && toZoom <= max)) {
+      if (inLink && toZoom > max) {
+        targetURL = inLink.href;
+      } else if (outLink && toZoom < min) {
+        targetURL = outLink.href;
+      }
+      if (targetURL) {
+        this.dispatchEvent(
+          new CustomEvent('zoomchangesrc', {
+            detail: {
+              href: targetURL
+            }
+          })
+        );
+      }
+    }
+  }
   // disable/italicize layer control elements based on the layer-.disabled property
   toggleLayerControlDisabled() {
     let input = this._layerControlCheckbox,

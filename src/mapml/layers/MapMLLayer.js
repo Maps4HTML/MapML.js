@@ -1,4 +1,4 @@
-export var MapMLLayer = L.Layer.extend({
+export var MapMLLayer = L.LayerGroup.extend({
   // zIndex has to be set, for the case where the layer is added to the
   // map before the layercontrol is used to control it (where autoZindex is used)
   // e.g. in the raw MapML-Leaflet-Client index.html page.
@@ -9,18 +9,15 @@ export var MapMLLayer = L.Layer.extend({
     opacity: '1.0'
   },
   // initialize is executed before the layer is added to a map
-  initialize: function (href, layerEl, mapml, options) {
+  initialize: function (href, layerEl, options) {
     // in the custom element, the attribute is actually 'src'
     // the _href version is the URL received from layer-@src
+    L.LayerGroup.prototype.initialize.call(this, null, options);
     if (href) {
       this._href = href;
     }
-    let local;
     this._layerEl = layerEl;
-    local = layerEl.querySelector('map-feature,map-tile,map-extent')
-      ? true
-      : false;
-    this._content = local ? layerEl : mapml;
+    this._content = layerEl.src ? layerEl.shadowRoot : layerEl;
     L.setOptions(this, options);
     this._container = L.DomUtil.create('div', 'leaflet-layer');
     this.changeOpacity(this.options.opacity);
@@ -36,7 +33,7 @@ export var MapMLLayer = L.Layer.extend({
     // hit the service to determine what its extent might be
     // OR use the extent of the content provided
 
-    this._initialize(local ? layerEl : mapml);
+    this._initialize(this._content);
   },
   setZIndex: function (zIndex) {
     this.options.zIndex = zIndex;
@@ -81,18 +78,15 @@ export var MapMLLayer = L.Layer.extend({
   },
 
   onAdd: function (map) {
-    this._map = map;
-    if (this._mapmlvectors) map.addLayer(this._mapmlvectors);
+    L.LayerGroup.prototype.onAdd.call(this, map);
+    this.getPane().appendChild(this._container);
 
     //only add the layer if there are tiles to be rendered
     if (this._staticTileLayer) {
-      map.addLayer(this._staticTileLayer);
+      this.addLayer(this._staticTileLayer);
     }
-
     this.setZIndex(this.options.zIndex);
-    this.getPane().appendChild(this._container);
     map.on('popupopen', this._attachSkipButtons, this);
-    this._validateLayerZoom({ zoom: map.getZoom() });
   },
 
   _calculateBounds: function () {
@@ -175,43 +169,9 @@ export var MapMLLayer = L.Layer.extend({
     }
   },
 
-  getEvents: function () {
-    return { zoomanim: this._validateLayerZoom };
-  },
-  _validateLayerZoom: function (e) {
-    // get the min and max zooms from all extents
-    const layerEl = this._layerEl;
-    let toZoom = e.zoom;
-    let min = layerEl.extent.zoom.minZoom;
-    let max = layerEl.extent.zoom.maxZoom;
-    let inLink = layerEl.src
-        ? layerEl.shadowRoot.querySelector('map-link[rel=zoomin]')
-        : layerEl.querySelector('map-link[rel=zoomin]'),
-      outLink = layerEl.src
-        ? layerEl.shadowRoot.querySelector('map-link[rel=zoomout]')
-        : layerEl.querySelector('map-link[rel=zoomout]');
-    let targetURL;
-    if (!(min <= toZoom && toZoom <= max)) {
-      if (inLink && toZoom > max) {
-        targetURL = inLink.href;
-      } else if (outLink && toZoom < min) {
-        targetURL = outLink.href;
-      }
-      if (targetURL) {
-        this._layerEl.dispatchEvent(
-          new CustomEvent('zoomchangesrc', {
-            detail: {
-              href: targetURL
-            }
-          })
-        );
-      }
-    }
-  },
   onRemove: function (map) {
+    L.LayerGroup.prototype.onRemove.call(this, map);
     L.DomUtil.remove(this._container);
-    if (this._staticTileLayer) map.removeLayer(this._staticTileLayer);
-    if (this._mapmlvectors) map.removeLayer(this._mapmlvectors);
     map.off('popupopen', this._attachSkipButtons);
   },
   getAttribution: function () {
@@ -227,16 +187,13 @@ export var MapMLLayer = L.Layer.extend({
       this._href
     ).href;
   },
-  _initialize: function (content) {
-    if (!this._href && !content) {
-      return;
-    }
+  _initialize: function () {
     var layer = this;
     // the this._href (comes from layer@src) should take precedence over
     // content of the <layer> element, but if no this._href / src is provided
     // but there *is* child content of the <layer> element (which is copied/
     // referred to by this._content), we should use that content.
-    _processContent.call(this, content, this._href ? false : true);
+    _processContent.call(this, this._content, this._layerEl.src ? false : true);
     function _processContent(mapml, local) {
       var base = layer.getBase();
       parseLicenseAndLegend();
@@ -282,7 +239,7 @@ export var MapMLLayer = L.Layer.extend({
               geometry.bindPopup(c, { autoClose: false, minWidth: 165 });
             }
           }
-        });
+        }).addTo(layer);
       }
       function processTiles() {
         if (mapml.querySelector('map-tile')) {
@@ -585,7 +542,7 @@ export var MapMLLayer = L.Layer.extend({
         map.closePopup(popup);
         setTimeout(() => {
           L.DomEvent.stop(focusEvent);
-          map._container.focus();
+          map.getContainer.focus();
         }, 0);
       }
     }
@@ -598,42 +555,38 @@ export var MapMLLayer = L.Layer.extend({
         content.querySelector('a.mapml-zoom-link').remove();
       }
       if (!featureEl.querySelector('map-geometry')) return;
-      featureEl.whenReady().then(() => {
-        let tL = featureEl.extent.topLeft.gcrs,
-          bR = featureEl.extent.bottomRight.gcrs,
-          center = L.latLngBounds(
-            L.latLng(tL.horizontal, tL.vertical),
-            L.latLng(bR.horizontal, bR.vertical)
-          ).getCenter(true);
-        let zoomLink = document.createElement('a');
-        zoomLink.href = `#${featureEl.getMaxZoom()},${center.lng},${
-          center.lat
-        }`;
-        zoomLink.innerHTML = `${M.options.locale.popupZoom}`;
-        zoomLink.className = 'mapml-zoom-link';
-        zoomLink.onclick = zoomLink.onkeydown = function (e) {
-          if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
-          e.preventDefault();
-          featureEl.zoomTo();
-          featureEl._map.closePopup();
-          featureEl._map.getContainer().focus();
-        };
-        // we found that the popupopen event is fired as many times as there
-        // are layers on the map (<layer-> elements / MapMLLayers that is).
-        // In each case the target layer is always this layer, so we can't
-        // detect and conditionally add the zoomLink if the target is not this.
-        // so, like Ahmad, we are taking a 'delete everyting each time'
-        // approach (see _attachSkipButtons for this approach taken with
-        // feature navigation buttons); obviously he dealt with this leaflet bug
-        // this way some time ago, and we can't figure out how to get around it
-        // apart from this slightly non-optimal method. Revisit sometime!
-        let link = content.querySelector('.mapml-zoom-link');
-        if (link) link.remove();
-        content.insertBefore(
-          zoomLink,
-          content.querySelector('hr.mapml-popup-divider')
-        );
-      });
+      let tL = featureEl.extent.topLeft.gcrs,
+        bR = featureEl.extent.bottomRight.gcrs,
+        center = L.latLngBounds(
+          L.latLng(tL.horizontal, tL.vertical),
+          L.latLng(bR.horizontal, bR.vertical)
+        ).getCenter(true);
+      let zoomLink = document.createElement('a');
+      zoomLink.href = `#${featureEl.getMaxZoom()},${center.lng},${center.lat}`;
+      zoomLink.innerHTML = `${M.options.locale.popupZoom}`;
+      zoomLink.className = 'mapml-zoom-link';
+      zoomLink.onclick = zoomLink.onkeydown = function (e) {
+        if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
+        e.preventDefault();
+        featureEl.zoomTo();
+        map.closePopup();
+        map.getContainer().focus();
+      };
+      // we found that the popupopen event is fired as many times as there
+      // are layers on the map (<layer-> elements / MapMLLayers that is).
+      // In each case the target layer is always this layer, so we can't
+      // detect and conditionally add the zoomLink if the target is not this.
+      // so, like Ahmad, we are taking a 'delete everyting each time'
+      // approach (see _attachSkipButtons for this approach taken with
+      // feature navigation buttons); obviously he dealt with this leaflet bug
+      // this way some time ago, and we can't figure out how to get around it
+      // apart from this slightly non-optimal method. Revisit sometime!
+      let link = content.querySelector('.mapml-zoom-link');
+      if (link) link.remove();
+      content.insertBefore(
+        zoomLink,
+        content.querySelector('hr.mapml-popup-divider')
+      );
     }
 
     // if popup closes then the focusFeature handler can be removed
@@ -649,7 +602,7 @@ export var MapMLLayer = L.Layer.extend({
     }
   }
 });
-export var mapMLLayer = function (url, node, mapml, options) {
+export var mapMLLayer = function (url, node, options) {
   if (!url && !node) return null;
-  return new MapMLLayer(url, node, mapml, options);
+  return new MapMLLayer(url, node, options);
 };
