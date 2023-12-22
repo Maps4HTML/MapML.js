@@ -255,7 +255,7 @@ export var DebugVectors = L.LayerGroup.extend({
                   .getLayerEl()
                   .getAttribute('data-testid')
               : layers[i].layerBounds &&
-                layers[i].options._leafletLayer._layerEl.hasAttribute(
+                layers[i].options?._leafletLayer?._layerEl.hasAttribute(
                   'data-testid'
                 )
               ? layers[i].options._leafletLayer._layerEl.getAttribute(
