@@ -222,7 +222,7 @@ export class MapLayer extends HTMLElement {
             ) {
               // cut short whenReady with the _fetchError property
               this._fetchError = true;
-              console.log('Error fetching layer content');
+              console.log('Error fetching layer content:\n\n' + mapml + '\n');
               throw new Error('Parser error');
             }
             return content;
@@ -445,6 +445,8 @@ export class MapLayer extends HTMLElement {
         case 'MAP-EXTENT':
         // if extent is checked, ...
         // TODO: Static Tiles
+        case 'MAP-META':
+        // name=projection, name=zoom, name=extent
         default:
           break;
       }
@@ -715,7 +717,7 @@ export class MapLayer extends HTMLElement {
   }
 
   zoomTo() {
-    this.whenElemsReady().then(() => {
+    this.whenReady().then(() => {
       let map = this.parentElement._map,
         extent = this.extent,
         tL = extent.topLeft.pcrs,

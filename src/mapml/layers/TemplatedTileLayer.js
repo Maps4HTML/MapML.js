@@ -195,7 +195,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     let fallback = M.getNativeVariables(markup);
     let features = markup.querySelectorAll('map-feature');
     for (let i = 0; i < features.length; i++) {
-      let feature = tileFeatures.addData(
+      let feature = tileFeatures.renderToLeaflet(
         features[i],
         fallback.cs,
         fallback.zoom

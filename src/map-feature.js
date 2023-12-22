@@ -7,7 +7,26 @@ export class MapFeature extends HTMLElement {
   #hasConnected;
   /* jshint ignore:end */
   get zoom() {
-    return +(this.hasAttribute('zoom') ? this.getAttribute('zoom') : 0);
+    // for templated or queried features ** native zoom is only used for zoomTo() **
+    let meta = M._metaContentToObject(this.getMeta('zoom'));
+    let projectionMaxZoom =
+      this.getMapEl()._map.options.crs.options.resolutions.length - 1;
+    if (this._parentEl.nodeName === 'MAP-LINK') {
+      // nativeZoom = zoom attribute || sd.map-meta zoom 'value' || map-link maxNativeZoom
+      return +(this.hasAttribute('zoom')
+        ? this.getAttribute('zoom')
+        : meta.value
+        ? meta.value
+        : this._parentEl.getZoomBounds().maxNativeZoom);
+    } else {
+      // for "static" features
+      // nativeZoom zoom attribute || map-meta zoom || projection maxZoom
+      return +(this.hasAttribute('zoom')
+        ? this.getAttribute('zoom')
+        : meta.value
+        ? meta.value
+        : projectionMaxZoom);
+    }
   }
 
   set zoom(val) {
@@ -18,10 +37,25 @@ export class MapFeature extends HTMLElement {
   }
 
   get min() {
-    // fallback: the minimum zoom bound of layer- element
-    return +(this.hasAttribute('min')
-      ? this.getAttribute('min')
-      : this.getLayerEl().extent.zoom.minZoom);
+    // for templated or queried features ** native zoom is only used for zoomTo() **
+    let meta = M._metaContentToObject(this.getMeta('zoom'));
+    let projectionMinZoom = 0;
+    if (this._parentEl.nodeName === 'MAP-LINK') {
+      // minZoom = min attribute || sd.map-meta min zoom || map-link minZoom
+      return +(this.hasAttribute('min')
+        ? this.getAttribute('min')
+        : meta.min
+        ? meta.min
+        : this._parentEl.getZoomBounds().minZoom);
+    } else {
+      // for "static" features
+      // minZoom = min attribute || map-meta zoom || projection minZoom
+      return +(this.hasAttribute('min')
+        ? this.getAttribute('min')
+        : meta.min
+        ? meta.min
+        : projectionMinZoom);
+    }
   }
 
   set min(val) {
@@ -40,10 +74,26 @@ export class MapFeature extends HTMLElement {
   }
 
   get max() {
-    // fallback: the maximum zoom bound of layer- element
-    return +(this.hasAttribute('max')
-      ? this.getAttribute('max')
-      : this.getLayerEl().extent.zoom.maxZoom);
+    // for templated or queried features ** native zoom is only used for zoomTo() **
+    let meta = M._metaContentToObject(this.getMeta('zoom'));
+    let projectionMaxZoom =
+      this.getMapEl()._map.options.crs.options.resolutions.length - 1;
+    if (this._parentEl.nodeName === 'MAP-LINK') {
+      // maxZoom = max attribute || sd.map-meta max zoom || map-link maxZoom
+      return +(this.hasAttribute('max')
+        ? this.getAttribute('max')
+        : meta.max
+        ? meta.max
+        : this._parentEl.getZoomBounds().maxZoom);
+    } else {
+      // for "static" features
+      // maxZoom = max attribute || map-meta zoom max || projection maxZoom
+      return +(this.hasAttribute('max')
+        ? this.getAttribute('max')
+        : meta.max
+        ? meta.max
+        : projectionMaxZoom);
+    }
   }
 
   set max(val) {
@@ -163,9 +213,15 @@ export class MapFeature extends HTMLElement {
   }
 
   disconnectedCallback() {
-    if (!this.getLayerEl()?.hasAttribute('data-moving')) return;
-    this.removeFeature(this._featureLayer);
+    if (
+      this._parentEl.hasAttribute('data-moving') ||
+      this._parentEl.parentElement?.hasAttribute('data-moving')
+    )
+      return;
     this._observer.disconnect();
+    if (this._featureLayer) {
+      this.removeFeature(this._featureLayer);
+    }
   }
 
   reRender(layerToRenderOn) {
@@ -182,7 +238,7 @@ export class MapFeature extends HTMLElement {
       layerToRenderOn.removeLayer(this._geometry);
       // Garbage collection needed
       this._geometry = layerToRenderOn
-        .addData(this, fallbackCS, fallbackZoom) // side effect: this._groupEl set
+        .renderToLeaflet(this, fallbackCS, fallbackZoom) // side effect: this._groupEl set
         .addTo(layerToRenderOn);
       placeholder.replaceWith(this._geometry.options.group);
       layerToRenderOn._resetFeatures();
@@ -201,20 +257,10 @@ export class MapFeature extends HTMLElement {
     //      if (layerToRemoveFrom._features[this.zoom]) {
     //        this._removeInFeatureList(this.zoom);
     //      }
-    //
-    //      TODO: update layerToRemoveFrom.removeLayer(...) to update its own
-    //      zoomBounds
-    //      // update zoom bounds of vector layer
-    //      layerToRemoveFrom.zoomBounds = M.getZoomBounds(
-    //        this._layer._content,
-    //        this._getNativeZoomAndCS(this._layer._content).zoom
-    //      );
-    //    }
     if (layerToRemoveFrom._staticFeature) {
       layerToRemoveFrom._removeFromFeaturesList(this._geometry);
     }
     layerToRemoveFrom.options.properties = null;
-    layerToRemoveFrom.removeLayer(this._geometry);
     delete this._geometry;
     // ensure that feature extent can be re-calculated everytime that map-feature element is updated / re-added
     if (this._getFeatureExtent) delete this._getFeatureExtent;
@@ -228,31 +274,12 @@ export class MapFeature extends HTMLElement {
     let fallbackZoom = this._getFallbackZoom();
     let fallbackCS = this._getFallbackCS();
     let content = parentLayer.src ? parentLayer.shadowRoot : parentLayer;
-    this._geometry = layerToAddTo
-      .addData(this, fallbackCS, fallbackZoom) // side effect: extends `this` with this._groupEl, points to svg g element that renders to map SD
-      .addTo(layerToAddTo);
-    layerToAddTo._layers[this._geometry._leaflet_id] = this._geometry;
-    if (layerToAddTo._staticFeature && this._parentEl.nodeName !== 'MAP-LINK') {
-      // update zoom bounds of vector layer
-      layerToAddTo.zoomBounds = M.getZoomBounds(
-        content,
-        // this._getNativeZoomAndCS().zoom
-        fallbackZoom
-      );
-      // todo: dynamically update layer bounds of vector layer
-      layerToAddTo.layerBounds = layerToAddTo.layerBounds
-        ? layerToAddTo.layerBounds.extend(M.extentToBounds(this.extent, 'pcrs'))
-        : M.extentToBounds(this.extent, 'pcrs');
-      // update map's zoom limit
-      // the mapmlvectors.options should be updated with the new zoomBounds,
-      // to ensure the _addZoomLimit function call can read updated zoom info
-      // and update map zoom limit properly
-      L.extend(layerToAddTo.options, layerToAddTo.zoomBounds);
-      // this._map._addZoomLimit(mapmlvectors);
-      // TODO: can be set as a handler of featureLayer
-      layerToAddTo._resetFeatures();
-    }
-
+    this._geometry = layerToAddTo.renderToLeaflet(
+      this,
+      fallbackCS,
+      fallbackZoom
+    ); // side effect: extends `this` with this._groupEl, points to svg g element that renders to map SD
+    layerToAddTo.addLayer(this._geometry);
     this._setUpEvents();
   }
 
@@ -280,7 +307,7 @@ export class MapFeature extends HTMLElement {
     });
   }
 
-  // native zoom: used by FeatureLayer.addData(...),
+  // native zoom: used by FeatureLayer.renderToLeaflet(...),
   //              the fallback zoom for map-feature if its zoom attribute is not specified
   //              for query and templated features, fallback zoom is the current map zoom level
   //              for static features, fallback zoom is map-meta[name="zoom"] value in layer- || the current map zoom level
@@ -301,7 +328,7 @@ export class MapFeature extends HTMLElement {
     }
   }
 
-  // native cs: used by FeatureLayer.geometryToLayer(...),
+  // native cs: used by FeatureLayer._geometryToLayer(...),
   //            the fallback cs for map-geometry if its cs attribute is not specified
   _getFallbackCS() {
     let csMeta;
@@ -391,7 +418,8 @@ export class MapFeature extends HTMLElement {
             pcrsBound,
             map.options.crs,
             map.options.projection
-          )
+          ),
+          { zoom: this._getZoomBounds() }
         );
         // memoize calculated result
         extentCache = result;
@@ -406,7 +434,7 @@ export class MapFeature extends HTMLElement {
         .replace(/<[^>]+>/g, '')
         .replace(/\s+/g, ' ')
         .split(/[<>\ ]/g);
-      switch (shape.tagName) {
+      switch (shape.tagName.toUpperCase()) {
         case 'MAP-POINT':
           bboxExtent = M._updateExtent(bboxExtent, +data[0], +data[1]);
           break;
@@ -424,7 +452,15 @@ export class MapFeature extends HTMLElement {
       return bboxExtent;
     }
   }
-
+  _getZoomBounds() {
+    // ** native zoom is only used for zoomTo() **
+    return {
+      minZoom: this.min,
+      maxZoom: this.max,
+      minNativeZoom: this.zoom,
+      maxNativeZoom: this.zoom
+    };
+  }
   getMaxZoom() {
     let tL = this.extent.topLeft.pcrs,
       bR = this.extent.bottomRight.pcrs,
@@ -463,7 +499,23 @@ export class MapFeature extends HTMLElement {
     // should check whether the extent after zooming falls into the templated extent bound
     return newZoom;
   }
-
+  getMeta(metaName) {
+    let name = metaName.toLowerCase();
+    if (name !== 'cs' && name !== 'zoom' && name !== 'projection') return;
+    let sdMeta = this._parentEl.shadowRoot.querySelector(
+      `map-meta[name=${name}][content]`
+    );
+    if (this._parentEl.nodeName === 'MAP-LINK') {
+      // sd.map-meta || map-extent meta || layer meta
+      return sdMeta || this._parentEl.parentElement.getMeta(metaName);
+    } else {
+      return this._parentEl.src
+        ? this._parentEl.shadowRoot.querySelector(
+            `map-meta[name=${name}][content]`
+          )
+        : this._parentEl.querySelector(`map-meta[name=${name}][content]`);
+    }
+  }
   // internal support for returning a GeoJSON representation of <map-feature> geometry
   // The options object can contain the following:
   //      propertyFunction   - function(<map-properties>), A function that maps the features' <map-properties> element to a GeoJSON "properties" member.

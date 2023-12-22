@@ -102,6 +102,12 @@ export var QueryHandler = L.Handler.extend({
         })
         .then((response) => {
           let features = [];
+          let geom =
+            "<map-geometry cs='gcrs'><map-point><map-coordinates>" +
+            e.latlng.lng +
+            ' ' +
+            e.latlng.lat +
+            '</map-coordinates></map-point></map-geometry>';
           if (response.contenttype.startsWith('text/mapml')) {
             // the mapmldoc could have <map-meta> elements that are important, perhaps
             // also, the mapmldoc can have many features
@@ -109,6 +115,16 @@ export var QueryHandler = L.Handler.extend({
               response.text,
               'application/xml'
             );
+            let geometrylessFeatures = mapmldoc.querySelectorAll(
+              'map-feature:not(:has(map-geometry))'
+            );
+            if (geometrylessFeatures.length) {
+              let g = parser.parseFromString(geom, 'application/xml');
+              for (let i = 0; i < geometrylessFeatures.length; i++) {
+                let f = geometrylessFeatures[i];
+                f.appendChild(g.firstElementChild.cloneNode(true));
+              }
+            }
             features = Array.prototype.slice.call(
               mapmldoc.querySelectorAll('map-feature')
             );
@@ -119,24 +135,50 @@ export var QueryHandler = L.Handler.extend({
               )
             );
           } else {
-            // synthesize a single feature from text or html content
-            let geom =
-                "<map-geometry cs='gcrs'><map-point><map-coordinates>" +
-                e.latlng.lng +
-                ' ' +
-                e.latlng.lat +
-                '</map-coordinates></map-point></map-geometry>',
-              feature = parser
-                .parseFromString(
-                  '<map-feature><map-properties>' +
-                    response.text +
-                    '</map-properties>' +
-                    geom +
-                    '</map-feature>',
-                  'text/html'
-                )
-                .querySelector('map-feature');
-            features.push(feature);
+            try {
+              let featureDocument = parser.parseFromString(
+                response.text,
+                'application/xml'
+              );
+              let featureCollection =
+                featureDocument.querySelectorAll('map-feature');
+              if (
+                featureDocument.querySelector('parsererror') ||
+                featureCollection.length === 0
+              ) {
+                throw new Error('parsererror');
+              }
+              let g = parser.parseFromString(geom, 'application/xml');
+              for (let feature of featureCollection) {
+                if (!feature.querySelector('map-geometry')) {
+                  feature.appendChild(g.firstElementChild.cloneNode(true));
+                }
+                features.push(feature);
+              }
+            } catch (err) {
+              // try the html parser; script elements are marked as non-functional
+              // by that api, which hopefully works!
+              let html = parser.parseFromString(response.text, 'text/html');
+
+              // synthesize a single feature from text or html content
+              let featureDoc = parser.parseFromString(
+                '<map-feature><map-properties>' +
+                  '</map-properties>' +
+                  geom +
+                  '</map-feature>',
+                'text/html'
+              );
+              if (html.body.querySelector('*')) {
+                featureDoc
+                  .querySelector('map-properties')
+                  .appendChild(html.querySelector('html'));
+              } else {
+                featureDoc
+                  .querySelector('map-properties')
+                  .append(response.text);
+              }
+              features.push(featureDoc.querySelector('map-feature'));
+            }
           }
           return { features: features, template: template };
         })

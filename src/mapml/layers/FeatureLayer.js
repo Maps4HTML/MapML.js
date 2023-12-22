@@ -113,7 +113,30 @@ export var FeatureLayer = L.FeatureGroup.extend({
     if (this._mapmlFeatures)
       map.on('featurepagination', this.showPaginationFeature, this);
   },
+  addLayer: function (layerToAdd) {
+    L.FeatureGroup.prototype.addLayer.call(this, layerToAdd);
 
+    this.layerBounds = this.layerBounds
+      ? this.layerBounds.extend(layerToAdd.layerBounds)
+      : layerToAdd.layerBounds;
+
+    if (this.zoomBounds) {
+      if (layerToAdd.zoomBounds.minZoom < this.zoomBounds.minZoom)
+        this.zoomBounds.minZoom = layerToAdd.zoomBounds.minZoom;
+      if (layerToAdd.zoomBounds.maxZoom > this.zoomBounds.maxZoom)
+        this.zoomBounds.maxZoom = layerToAdd.zoomBounds.maxZoom;
+    } else {
+      this.zoomBounds = layerToAdd.zoomBounds;
+    }
+    // the mapmlvectors.options should be updated with the new zoomBounds,
+    // to ensure the _addZoomLimit function call can read updated zoom info
+    // and update map zoom limit properly
+    L.extend(this.options, this.zoomBounds);
+    if (this._staticFeature) {
+      this._resetFeatures();
+    }
+    return this;
+  },
   onRemove: function (map) {
     if (this._mapmlFeatures) {
       map.off('featurepagination', this.showPaginationFeature, this);
@@ -126,7 +149,34 @@ export var FeatureLayer = L.FeatureGroup.extend({
 
   removeLayer: function (featureToRemove) {
     L.FeatureGroup.prototype.removeLayer.call(this, featureToRemove);
+    delete this.layerBounds;
+    delete this.zoomBounds;
     delete this._layers[featureToRemove._leaflet_id];
+    // iterate through all remaining layers
+    let layerBounds,
+      zoomBounds = {};
+    let layerIds = Object.keys(this._layers);
+    for (let id of layerIds) {
+      let layer = this._layers[id];
+      if (layerBounds) {
+        layerBounds.extend(layer.layerBounds);
+      } else {
+        layerBounds = layer.layerBounds;
+      }
+      if (zoomBounds) {
+        if (layer.zoomBounds.minZoom < zoomBounds.minZoom)
+          zoomBounds.minZoom = layer.zoomBounds.minZoom;
+        if (layer.zoomBounds.maxZoom > zoomBounds.maxZoom)
+          zoomBounds.maxZoom = layer.zoomBounds.maxZoom;
+      } else {
+        zoomBounds.minZoom = layer.zoomBounds.minZoom;
+        zoomBounds.maxZoom = layer.zoomBounds.maxZoom;
+      }
+    }
+    this.layerBounds = layerBounds;
+    this.zoomBounds = zoomBounds;
+    L.extend(this.options, this.zoomBounds);
+    return this;
   },
   _removeFromFeaturesList: function (layer) {
     for (let zoom in this._features)
@@ -168,9 +218,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         }
       }
       feature._linkEl.shadowRoot.appendChild(feature);
-      let fallbackZoom = feature._getFallbackZoom();
-      let fallbackCS = feature._getFallbackCS();
-      feature._geometry = this.addData(feature, fallbackCS, fallbackZoom);
+      feature.addFeature(this);
       e.popup._navigationBar.querySelector('p').innerText =
         e.i + 1 + '/' + this.options._leafletLayer._totalFeatureCount;
       e.popup._content
@@ -200,9 +248,14 @@ export var FeatureLayer = L.FeatureGroup.extend({
       this._resetFeatures();
     }
   },
-
-  // remove or add features based on the min max attribute of the features,
-  //  and add placeholders to maintain position
+  /*
+   * _resetFeatures prunes the features currently in the _features hashmap (created
+   * by us).  _features categorizes features by zoom, and is used to remove or add
+   * features from the map based on the map-feature min/max attribute.  It also
+   * maintains the _map.featureIndex property, which is used to control the tab
+   * order for interactive (static) features currently rendered on the map.
+   * @private
+   *  */
   _resetFeatures: function () {
     // since features are removed and re-added by zoom level, need to clean the feature index before re-adding
     if (this._map) this._map.featureIndex.cleanIndex();
@@ -257,9 +310,23 @@ export var FeatureLayer = L.FeatureGroup.extend({
     }
   },
 
-  addData: function (feature, fallbackCS, fallbackZoom) {
-    //if its a mapml with no more links this runs
-    var options = this.options;
+  /**
+   * Render a <map-feature> as a Leaflet layer that can be added to a map or
+   * LayerGroup as required.  Kind of a "factory" method.
+   *
+   * Uses this.options, so if you need to, you can construct an M.featureLayer
+   * with options set as required
+   *
+   * @param <map-feature> feature
+   * @param {String} fallbackCS - "gcrs" | "pcrs"
+   * @param {Integer} fallbackZoom - the zoom level to use for "zoomTo()" if the
+   * feature geometry doesn't have a zoom attribute
+   *
+   * @returns M.Geometry, which is an L.FeatureGroup
+   * @public
+   */
+  renderToLeaflet: function (feature, fallbackCS, fallbackZoom) {
+    let options = this.options;
 
     if (options.filter && !options.filter(feature)) {
       return;
@@ -280,14 +347,16 @@ export var FeatureLayer = L.FeatureGroup.extend({
         feature.querySelector('map-properties').innerHTML
       );
     }
-
-    let geometry = this.geometryToLayer(
-      feature,
-      options,
-      fallbackCS,
-      +zoom,
-      title
-    );
+    let cs =
+      feature.getElementsByTagName('map-geometry')[0]?.getAttribute('cs') ||
+      fallbackCS;
+    // options.layerBounds and options.zoomBounds are set by TemplatedTileLayer._createFeatures
+    // each geometry needs bounds so that it can be a good community member of this._layers
+    if (this._staticFeature || this.options.query) {
+      options.layerBounds = M.extentToBounds(feature.extent, 'PCRS');
+      options.zoomBounds = feature.extent.zoom;
+    }
+    let geometry = this._geometryToLayer(feature, options, cs, +zoom, title);
     if (geometry) {
       // if the layer is being used as a query handler output, it will have
       // a color option set.  Otherwise, copy classes from the feature
@@ -346,12 +415,8 @@ export var FeatureLayer = L.FeatureGroup.extend({
       this._container.removeChild(toDelete[i]);
     }
   },
-  geometryToLayer: function (mapml, vectorOptions, nativeCS, zoom, title) {
-    let geometry =
-        mapml.tagName.toUpperCase() === 'MAP-FEATURE'
-          ? mapml.getElementsByTagName('map-geometry')[0]
-          : mapml,
-      cs = geometry?.getAttribute('cs') || nativeCS,
+  _geometryToLayer: function (feature, vectorOptions, cs, zoom, title) {
+    let geometry = feature.getElementsByTagName('map-geometry')[0],
       group = [],
       groupOptions = {},
       svgGroup = L.SVG.create('g'),
@@ -367,7 +432,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
               nativeCS: cs,
               nativeZoom: zoom,
               projection: this.options.projection,
-              featureID: mapml.id,
+              featureID: feature.id,
               group: svgGroup,
               wrappers: this._getGeometryParents(geo.parentElement),
               featureLayer: this,
@@ -378,12 +443,14 @@ export var FeatureLayer = L.FeatureGroup.extend({
       }
       let groupOptions = {
           group: svgGroup,
-          mapmlFeature: mapml,
-          featureID: mapml.id,
+          mapmlFeature: feature,
+          featureID: feature.id,
           accessibleTitle: title,
           onEachFeature: vectorOptions.onEachFeature,
           properties: vectorOptions.properties,
-          _leafletLayer: this.options._leafletLayer
+          _leafletLayer: this.options._leafletLayer,
+          layerBounds: vectorOptions.layerBounds,
+          zoomBounds: vectorOptions.zoomBounds
         },
         collections =
           geometry.querySelector('map-multipolygon') ||

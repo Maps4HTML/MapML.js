@@ -14,6 +14,9 @@ export var Geometry = L.FeatureGroup.extend({
     L.LayerGroup.prototype.initialize.call(this, layers, options);
     this._featureEl = this.options.mapmlFeature;
 
+    this.layerBounds = options.layerBounds;
+    this.zoomBounds = options.zoomBounds;
+
     let firstLayer = layers[Object.keys(layers)[0]];
     if (layers.length === 1 && firstLayer.options.link)
       this.options.link = firstLayer.options.link;
