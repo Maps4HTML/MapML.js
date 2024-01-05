@@ -373,6 +373,7 @@ test.describe('web-map DOM API Tests', () => {
       '.leaflet-top.leaflet-left > .leaflet-control-fullscreen',
       (div) => div.hidden
     );
+    await page.waitForTimeout(300);
     let layerControlHidden = await page.$eval(
       '.leaflet-top.leaflet-right > .leaflet-control-layers',
       (div) => div.hidden
