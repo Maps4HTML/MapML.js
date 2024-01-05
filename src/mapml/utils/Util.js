@@ -16,22 +16,22 @@ export var Util = {
         maxConverted = crs.transformation.transform(pcrsBounds.max, scale);
 
       tcrsTopLeft.push({
-        horizontal: minConverted.x,
-        vertical: maxConverted.y
+        horizontal: Math.trunc(minConverted.x),
+        vertical: Math.trunc(maxConverted.y)
       });
       tcrsBottomRight.push({
-        horizontal: maxConverted.x,
-        vertical: minConverted.y
+        horizontal: Math.trunc(maxConverted.x),
+        vertical: Math.trunc(minConverted.y)
       });
 
       //converts the tcrs values from earlier to tilematrix
       tileMatrixTopLeft.push({
-        horizontal: tcrsTopLeft[i].horizontal / tileSize,
-        vertical: tcrsTopLeft[i].vertical / tileSize
+        horizontal: Math.trunc(tcrsTopLeft[i].horizontal / tileSize),
+        vertical: Math.trunc(tcrsTopLeft[i].vertical / tileSize)
       });
       tileMatrixBottomRight.push({
-        horizontal: tcrsBottomRight[i].horizontal / tileSize,
-        vertical: tcrsBottomRight[i].vertical / tileSize
+        horizontal: Math.trunc(tcrsBottomRight[i].horizontal / tileSize),
+        vertical: Math.trunc(tcrsBottomRight[i].vertical / tileSize)
       });
     }
 
