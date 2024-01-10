@@ -156,6 +156,16 @@ module.exports = function(grunt) {
           }
         ]
       },
+      geoserver: {
+        files: [
+          {
+            expand: true,
+            cwd: 'dist',
+            src: ['*.js','*.map','*.css'],
+            dest: '../geoserver/src/extension/mapml/src/main/resources/viewer/widget'
+          }
+        ]
+      },
       docs: {
         files: [
           {
@@ -176,6 +186,10 @@ module.exports = function(grunt) {
       extension: {
         options: {force: true},
         src: ['../mapml-extension/src/dist']
+      },
+      geoserver: {
+        options: {force: true},
+        src: ['../geoserver/src/extension/mapml/src/main/resources/viewer/widget/*.js','../geoserver/src/extension/mapml/src/main/resources/viewer/widget/*.map','../geoserver/src/extension/mapml/src/main/resources/viewer/widget/*.css']
       },
       docs: {
         options: {force: true},
@@ -219,6 +233,7 @@ module.exports = function(grunt) {
                                  'uglify', 'cssmin','clean:tidyup']);
   grunt.registerTask('experiments',['clean:experiments','default','copy:experiments']);
   grunt.registerTask('extension',['clean:extension','default','copy:extension']);
+  grunt.registerTask('geoserver',['clean:geoserver','default','copy:geoserver']);
   grunt.registerTask('docs', ['clean:docs','default','copy:docs']);
   grunt.registerTask('sync', ['default','experiments','extension','docs']);
 

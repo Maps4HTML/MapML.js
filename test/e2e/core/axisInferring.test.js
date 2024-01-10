@@ -15,17 +15,17 @@ test.describe('UI Drag&Drop Test', () => {
     await context.close();
   });
 
-/**
- * 
- * The point of "axisInferring.test.js" is to validate that the extent's cs
- * is correctly inferred from the axis names in the <map-meta name="extent" 
- * content="..."> content attribute.
- * 
- * Semantics: the extent of the layers should include the extent of the map-meta
- * -specified extent PLUS the contents of the layer (a map-feature in all cases).
- * 
- * The test expectations were actually measured from the loaded html.
- */
+  /**
+   *
+   * The point of "axisInferring.test.js" is to validate that the extent's cs
+   * is correctly inferred from the axis names in the <map-meta name="extent"
+   * content="..."> content attribute.
+   *
+   * Semantics: the extent of the layers should include the extent of the map-meta
+   * -specified extent PLUS the contents of the layer (a map-feature in all cases).
+   *
+   * The test expectations were actually measured from the loaded html.
+   */
   test('TileMatrix inferring', async () => {
     const layerExtent = await page.$eval(
       'body > map > layer-:nth-child(1)',
