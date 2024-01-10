@@ -235,8 +235,9 @@ export var Util = {
   pointToPCRSPoint: function (point, zoom, projection, cs) {
     if (
       !point ||
-      (!zoom && zoom !== 0) ||
-      !Number.isFinite(+zoom) ||
+      (zoom !== undefined && !Number.isFinite(+zoom)) ||
+      (zoom === undefined &&
+        (cs === 'TILEMATRIX' || cs === 'TCRS' || cs === 'TILE')) ||
       !cs ||
       !projection
     )
@@ -282,8 +283,9 @@ export var Util = {
       !bounds ||
       !bounds.max ||
       !bounds.min ||
-      (!zoom && zoom !== 0) ||
-      !Number.isFinite(+zoom) ||
+      (zoom !== undefined && !Number.isFinite(+zoom)) ||
+      (zoom === undefined &&
+        (cs === 'TILEMATRIX' || cs === 'TCRS' || cs === 'TILE')) ||
       !projection ||
       !cs
     )
@@ -494,10 +496,9 @@ export var Util = {
       map.options.mapEl.zoom = +zoomTo.z;
     }
   },
-  // TODO: make this dynamic based on the individual features/extents
-  getBounds: function (mapml) {
+  getBoundsFromMeta: function (mapml) {
     if (!mapml) return null;
-    let cs = M.FALLBACK_CS,
+    let cs,
       projection =
         (mapml.querySelector('map-meta[name=projection]') &&
           M._metaContentToObject(
@@ -513,7 +514,7 @@ export var Util = {
           mapml.querySelector('map-meta[name=extent]').getAttribute('content')
         );
 
-      let zoom = meta.zoom || 0;
+      let zoom = meta.zoom;
 
       let metaKeys = Object.keys(meta);
       for (let i = 0; i < metaKeys.length; i++) {
@@ -522,6 +523,19 @@ export var Util = {
           break;
         }
       }
+      // this could happen if the content didn't match the grammar for map-meta[name=extent]
+      if (cs === undefined) throw new Error('cs undefined when getting bounds');
+
+      // when cs is tilematrix, tcrs or tile, zoom is required.
+      // should throw / return null instead of trying to construct a bounds
+
+      if (
+        zoom === undefined &&
+        (cs === 'TILEMATRIX' || cs === 'TCRS' || cs === 'TILE')
+      )
+        throw new Error(
+          'map-meta[name=extent] zoom= parameter not provided for tcrs,tile or tilematrix bounds'
+        );
       let axes = M.csToAxes(cs);
       return M.boundsToPCRSBounds(
         L.bounds(

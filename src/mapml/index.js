@@ -837,7 +837,7 @@ import { DOMTokenList } from './utils/DOMTokenList';
   M._pcrsToGcrs = Util._pcrsToGcrs;
   M.mapml2geojson = Util.mapml2geojson;
   M.getMaxZoom = Util.getMaxZoom;
-  M.getBounds = Util.getBounds;
+  M.getBoundsFromMeta = Util.getBoundsFromMeta;
   M.getZoomBounds = Util.getZoomBounds;
   M.getNativeVariables = Util.getNativeVariables;
 

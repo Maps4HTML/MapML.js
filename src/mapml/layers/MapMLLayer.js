@@ -103,6 +103,13 @@ export var MapMLLayer = L.LayerGroup.extend({
       : this._layerEl.shadowRoot
       ? this._layerEl.shadowRoot.querySelectorAll('map-extent')
       : [];
+    bounds =
+      this._layerEl.src &&
+      this._layerEl.shadowRoot.querySelector('map-meta[name=extent][content]')
+        ? M.getBoundsFromMeta(this._layerEl.shadowRoot)
+        : this._layerEl.querySelector('map-meta[name=extent][content]')
+        ? M.getBoundsFromMeta(this._layerEl)
+        : undefined;
     layerTypes.forEach((type) => {
       if (type === '_extentLayer' && mapExtents.length) {
         let zoomMax = zoomBounds.maxZoom,
@@ -116,8 +123,7 @@ export var MapMLLayer = L.LayerGroup.extend({
               bounds = templatedLayer.bounds;
               zoomBounds = templatedLayer.zoomBounds;
             } else {
-              bounds.extend(templatedLayer.bounds.min);
-              bounds.extend(templatedLayer.bounds.max);
+              bounds.extend(templatedLayer.bounds);
               zoomMax = Math.max(zoomMax, templatedLayer.zoomBounds.maxZoom);
               zoomMin = Math.min(zoomMin, templatedLayer.zoomBounds.minZoom);
               maxNativeZoom = Math.max(
@@ -141,8 +147,7 @@ export var MapMLLayer = L.LayerGroup.extend({
             bounds = this[type].layerBounds;
             zoomBounds = this[type].zoomBounds;
           } else {
-            bounds.extend(this[type].layerBounds.min);
-            bounds.extend(this[type].layerBounds.max);
+            bounds.extend(this[type].layerBounds);
           }
         }
       } else if (
@@ -156,8 +161,7 @@ export var MapMLLayer = L.LayerGroup.extend({
             bounds = this[type].layerBounds;
             zoomBounds = this[type].zoomBounds;
           } else {
-            bounds.extend(this[type].layerBounds.min);
-            bounds.extend(this[type].layerBounds.max);
+            bounds.extend(this[type].layerBounds);
           }
         }
       }

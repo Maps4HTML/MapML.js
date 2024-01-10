@@ -370,7 +370,9 @@ export class MapFeature extends HTMLElement {
           geometry = this.querySelector('map-geometry'),
           cs = geometry.getAttribute('cs') || this._getFallbackCS(),
           // zoom level that the feature rendered at
-          zoom = this.zoom || this._getFallbackZoom(),
+          zoom = +(this.hasAttribute('zoom')
+            ? this.getAttribute('zoom')
+            : this._getFallbackZoom()),
           shapes = geometry.querySelectorAll(
             'map-point, map-linestring, map-polygon, map-multipoint, map-multilinestring'
           ),
