@@ -113,7 +113,7 @@ test.describe('map-extent tests', () => {
       return extent._layerControlCheckbox.checked;
     });
     let visibleOnMap = await extent.evaluate((extent) => {
-      return extent._templatedLayer._container.isConnected;
+      return extent._extentLayer._container.isConnected;
     });
     let checkedProperty = await extent.evaluate((extent) => {
       return extent.checked;
@@ -132,7 +132,7 @@ test.describe('map-extent tests', () => {
       return extent._layerControlCheckbox.checked;
     });
     visibleOnMap = await extent.evaluate((extent) => {
-      return extent._templatedLayer._container.isConnected;
+      return extent._extentLayer._container.isConnected;
     });
     checkedProperty = await extent.evaluate((extent) => {
       return extent.checked;
@@ -147,7 +147,7 @@ test.describe('map-extent tests', () => {
       return extent._layerControlCheckbox.checked;
     });
     visibleOnMap = await extent2.evaluate((extent) => {
-      return extent._templatedLayer._container.isConnected;
+      return extent._extentLayer._container.isConnected;
     });
     checkedProperty = await extent2.evaluate((extent) => {
       return extent.checked;
