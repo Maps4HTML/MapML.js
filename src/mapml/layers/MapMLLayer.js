@@ -124,6 +124,7 @@ export var MapMLLayer = L.LayerGroup.extend({
               zoomBounds = templatedLayer.zoomBounds;
             } else {
               bounds.extend(templatedLayer.bounds);
+              // Extend layer zoombounds
               zoomMax = Math.max(zoomMax, templatedLayer.zoomBounds.maxZoom);
               zoomMin = Math.min(zoomMin, templatedLayer.zoomBounds.minZoom);
               maxNativeZoom = Math.max(
@@ -142,12 +143,31 @@ export var MapMLLayer = L.LayerGroup.extend({
           }
         }
       } else if (type === '_staticTileLayer' && this._staticTileLayer) {
+        let zoomMax = zoomBounds.maxZoom,
+          zoomMin = zoomBounds.minZoom,
+          maxNativeZoom = zoomBounds.maxNativeZoom,
+          minNativeZoom = zoomBounds.minNativeZoom;
         if (this[type].layerBounds) {
           if (!bounds) {
             bounds = this[type].layerBounds;
             zoomBounds = this[type].zoomBounds;
           } else {
             bounds.extend(this[type].layerBounds);
+            // Extend layer zoombounds
+            zoomMax = Math.max(zoomMax, this[type].zoomBounds.maxZoom);
+            zoomMin = Math.min(zoomMin, this[type].zoomBounds.minZoom);
+            maxNativeZoom = Math.max(
+              maxNativeZoom,
+              this[type].zoomBounds.maxNativeZoom
+            );
+            minNativeZoom = Math.min(
+              minNativeZoom,
+              this[type].zoomBounds.minNativeZoom
+            );
+            zoomBounds.minZoom = zoomMin;
+            zoomBounds.maxZoom = zoomMax;
+            zoomBounds.minNativeZoom = minNativeZoom;
+            zoomBounds.maxNativeZoom = maxNativeZoom;
           }
         }
       } else if (
@@ -156,12 +176,31 @@ export var MapMLLayer = L.LayerGroup.extend({
         this._mapmlvectors &&
         Object.keys(this[type]._layers).length !== 0
       ) {
+        let zoomMax = zoomBounds.maxZoom,
+          zoomMin = zoomBounds.minZoom,
+          maxNativeZoom = zoomBounds.maxNativeZoom,
+          minNativeZoom = zoomBounds.minNativeZoom;
         if (this[type].layerBounds) {
           if (!bounds) {
             bounds = this[type].layerBounds;
             zoomBounds = this[type].zoomBounds;
           } else {
             bounds.extend(this[type].layerBounds);
+            // Extend layer zoombounds
+            zoomMax = Math.max(zoomMax, this[type].zoomBounds.maxZoom);
+            zoomMin = Math.min(zoomMin, this[type].zoomBounds.minZoom);
+            maxNativeZoom = Math.max(
+              maxNativeZoom,
+              this[type].zoomBounds.maxNativeZoom
+            );
+            minNativeZoom = Math.min(
+              minNativeZoom,
+              this[type].zoomBounds.minNativeZoom
+            );
+            zoomBounds.minZoom = zoomMin;
+            zoomBounds.maxZoom = zoomMax;
+            zoomBounds.minNativeZoom = minNativeZoom;
+            zoomBounds.maxNativeZoom = maxNativeZoom;
           }
         }
       }

@@ -153,8 +153,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
     delete this.zoomBounds;
     delete this._layers[featureToRemove._leaflet_id];
     // iterate through all remaining layers
-    let layerBounds,
-      zoomBounds = {};
+    let layerBounds, zoomBounds;
     let layerIds = Object.keys(this._layers);
     for (let id of layerIds) {
       let layer = this._layers[id];
@@ -169,6 +168,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         if (layer.zoomBounds.maxZoom > zoomBounds.maxZoom)
           zoomBounds.maxZoom = layer.zoomBounds.maxZoom;
       } else {
+        zoomBounds = {};
         zoomBounds.minZoom = layer.zoomBounds.minZoom;
         zoomBounds.maxZoom = layer.zoomBounds.maxZoom;
       }
