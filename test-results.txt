@@ -1,0 +1,3368 @@
+ 1) core\drag.test.js:19:7 › UI Drag&Drop Test › Drag and drop of invalid HTML page ─────────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 3
+    Received: 1
+
+      30 |     await page.hover('.leaflet-top.leaflet-right');
+      31 |     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
+    > 32 |     expect(vars.length).toBe(3);
+         |                         ^
+      33 |   });
+      34 |
+      35 |   test('Drag and drop of layers', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\drag.test.js:32:25
+
+  2) core\drag.test.js:35:7 › UI Drag&Drop Test › Drag and drop of layers ────────────────────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 3
+    Received: 2
+
+      48 |     await page.hover('.leaflet-top.leaflet-right');
+      49 |     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
+    > 50 |     expect(vars.length).toBe(3);
+         |                         ^
+      51 |   });
+      52 |
+      53 |   test('Moving layer down one in control overlay', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\drag.test.js:50:25
+
+  3) core\drag.test.js:53:7 › UI Drag&Drop Test › Moving layer down one in control overlay ───
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "us population density"
+    Received string:    "canada base map - transportation (cbmt)"
+
+      82 |     );
+      83 |
+    > 84 |     expect(controlText.toLowerCase()).toContain(domLayer.toLowerCase());
+         |                                       ^
+      85 |     expect(layerIndex).toEqual('2');
+      86 |     expect(controlText).toBe('Canada Base Map - Transportation (CBMT)');
+      87 |   });
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\drag.test.js:84:39
+
+  4) core\drag.test.js:89:7 › UI Drag&Drop Test › Moving layer up one in control overlay ─────
+
+    Error: page.$eval: Error: failed to find element matching selector ".leaflet-overlay-pane .mapml-static-tile-layer"
+
+      109 |       (span) => span.innerText
+      110 |     );
+    > 111 |     const layerIndex = await page.$eval(
+          |                                   ^
+      112 |       '.leaflet-overlay-pane .mapml-static-tile-layer',
+      113 |       (div) => div.parentElement.style.zIndex
+      114 |     );
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\drag.test.js:111:35
+
+  5) core\dragDrop.test.js:19:7 › Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer › Drag and drop of valid mapml URL
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 2
+    Received: 1
+
+      29 |     await page.hover('.leaflet-top.leaflet-right');
+      30 |     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
+    > 31 |     expect(vars.length).toBe(2);
+         |                         ^
+      32 |   });
+      33 |
+      34 |   test('Drag and drop of valid geoJSON', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\dragDrop.test.js:31:25
+
+  6) core\dragDrop.test.js:34:7 › Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer › Drag and drop of valid geoJSON
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 3
+    Received: 1
+
+      44 |     await page.hover('.leaflet-top.leaflet-right');
+      45 |     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
+    > 46 |     expect(vars.length).toBe(3);
+         |                         ^
+      47 |   });
+      48 |
+      49 |   test('Drag and drop of valid layer-', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\dragDrop.test.js:46:25
+
+  7) core\dragDrop.test.js:49:7 › Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer › Drag and drop of valid layer-
+
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 4
+    Received: 2
+
+      59 |     await page.hover('.leaflet-top.leaflet-right');
+      60 |     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
+    > 61 |     expect(vars.length).toBe(4);
+         |                         ^
+      62 |   });
+      63 |
+      64 |   test('Drag and drop of Invalid text', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\dragDrop.test.js:61:25
+
+  8) core\dragDrop.test.js:64:7 › Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer › Drag and drop of Invalid text
+
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 4
+    Received: 1
+
+      71 |     await page.hover('.leaflet-top.leaflet-right');
+      72 |     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
+    > 73 |     expect(vars.length).toBe(4);
+         |                         ^
+      74 |   });
+      75 | });
+      76 |
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\dragDrop.test.js:73:25
+
+  9) core\featureIndexOverlayFocus.test.js:144:7 › Feature Index Overlay Focus tests › Feature index overlay and reticle show after following a link
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      149 |       '#map3 .mapml-feature-index-box'
+      150 |     );
+    > 151 |     expect(await afterFollowingLinkReticle.isHidden()).toBe(false);
+          |                                                        ^
+      152 |
+      153 |     const afterFollowingLinkOutput = page.locator(
+      154 |       '#map3 output.mapml-feature-index'
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\featureIndexOverlayFocus.test.js:151:56
+
+   11) core\layerContextMenu.test.js:73:7 › Playwright Layer Context Menu Tests › Map zooms in to layer 2
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: 11
+    Received: 1
+
+      89 |     );
+      90 |
+    > 91 |     expect(mapZoom).toEqual(11);
+         |                     ^
+      92 |     expect(mapLocation).toEqual({
+      93 |       max: { x: 43380, y: 43130 },
+      94 |       min: { x: 42380, y: 42630 }
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\layerContextMenu.test.js:91:21
+
+  12) core\layerContextMenu.test.js:98:7 › Playwright Layer Context Menu Tests › Map zooms out to layer 3
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.click: Page closed
+    =========================== logs ===========================
+    waiting for locator('div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(3) > div:nth-child(1) > label > span')
+    ============================================================
+
+      106 |       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
+      107 |     );
+    > 108 |     await page.click(
+          |                ^
+      109 |       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(3) > div:nth-child(1) > label > span',
+      110 |       { button: 'right', force: true }
+      111 |     );
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\layerContextMenu.test.js:108:16
+
+  13) core\layerContextMenu.test.js:129:7 › Playwright Layer Context Menu Tests › Map zooms out to layer 4
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.click: Page closed
+    =========================== logs ===========================
+    waiting for locator('div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(4) > div:nth-child(1) > label > span')
+    ============================================================
+
+      137 |       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
+      138 |     );
+    > 139 |     await page.click(
+          |                ^
+      140 |       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(4) > div:nth-child(1) > label > span',
+      141 |       { button: 'right', force: true }
+      142 |     );
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\layerContextMenu.test.js:139:16
+
+  14) core\layerContextMenu.test.js:160:7 › Playwright Layer Context Menu Tests › Copy layer with relative src attribute
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.click: Page closed
+    =========================== logs ===========================
+    waiting for locator('div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(5) > div:nth-child(1) > label > span')
+    ============================================================
+
+      163 |       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
+      164 |     );
+    > 165 |     await page.click(
+          |                ^
+      166 |       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(5) > div:nth-child(1) > label > span',
+      167 |       { button: 'right' }
+      168 |     );
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\layerContextMenu.test.js:165:16
+
+  15) core\layerContextMenuKeyboard.test.js:18:7 › Playwright Layer Context Menu Tests › Enter activates layer context menu item
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 78.35553458202789
+    Received: 47
+
+      60 |
+      61 |     // expect something to do with center and zoom level of map
+    > 62 |     await expect(lat).toBe(78.35553458202789);
+         |                       ^
+      63 |     await expect(lon).toBe(-151.71482148855017);
+      64 |     await expect(zoom).toBe(0);
+      65 |   });
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\layerContextMenuKeyboard.test.js:62:23
+
+  16) core\layerContextMenuKeyboard.test.js:66:7 › Playwright Layer Context Menu Tests › Space bar activates layer context menu item
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "CBMT - INLINE"
+    Received: ""
+
+       99 |     });
+      100 |
+    > 101 |     expect(result).toBe('CBMT - INLINE');
+          |                    ^
+      102 |   });
+      103 |   test('Tab can be used to move between layer context menu items', async () => {
+      104 |     await page.locator('mapml-viewer').press('Tab');
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\layerContextMenuKeyboard.test.js:101:20
+
+  17) core\mapContextMenu.test.js:134:7 › Playwright Map Context Menu Tests › Context menu, back item
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+    -   "maxZoom": 25,
+    +   "maxZoom": 3,
+        "minZoom": 0,
+      }
+
+      141 |
+      142 |     expect(extent.projection).toEqual('CBMTILE');
+    > 143 |     expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+          |                         ^
+      144 |     expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
+      145 |     expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+      146 |     expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\mapContextMenu.test.js:143:25
+
+  18) core\mapContextMenu.test.js:149:7 › Playwright Map Context Menu Tests › Context menu, back and reload item at initial location disabled
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: false
+    Received: true
+
+      163 |
+      164 |     expect(backBtn).toEqual(true);
+    > 165 |     expect(fwdBtn).toEqual(false);
+          |                    ^
+      166 |     expect(reloadBtn).toEqual(true);
+      167 |   });
+      168 |   test('Context menu, forward item', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\mapContextMenu.test.js:165:20
+
+  19) core\mapContextMenu.test.js:168:7 › Playwright Map Context Menu Tests › Context menu, forward item
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.click: Target closed
+    =========================== logs ===========================
+    waiting for locator('div > div.mapml-contextmenu > button:nth-child(2)')
+      locator resolved to 6 elements. Proceeding with the first one: <button disabled type="button" class="mapml-contextmenu-…>…</button>
+    attempting click action
+      waiting for element to be visible, enabled and stable
+        element is not enabled - waiting...
+    ============================================================
+
+      168 |   test('Context menu, forward item', async () => {
+      169 |     await page.click('body > map', { button: 'right' });
+    > 170 |     await page.click('div > div.mapml-contextmenu > button:nth-child(2)');
+          |                ^
+      171 |     await page.waitForTimeout(1000);
+      172 |     const extent = await page.$eval('body > map', (map) => map.extent);
+      173 |
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\mapContextMenu.test.js:170:16
+
+  20) core\mapContextMenu.test.js:180:7 › Playwright Map Context Menu Tests › Context menu, forward item at most recent location disabled
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: false
+    Received: true
+
+      193 |     );
+      194 |
+    > 195 |     expect(backBtn).toEqual(false);
+          |                     ^
+      196 |     expect(fwdBtn).toEqual(true);
+      197 |     expect(reloadBtn).toEqual(false);
+      198 |   });
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\mapContextMenu.test.js:195:21
+
+  21) core\mapContextMenu.test.js:201:9 › Playwright Map Context Menu Tests › Context Menu, Toggle Controls  › Context menu, toggle controls off
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: false
+    Received: true
+
+      219 |       expect(reloadHidden).toEqual(false);
+      220 |       expect(fullscreenHidden).toEqual(false);
+    > 221 |       expect(layerControlHidden).toEqual(false);
+          |                                  ^
+      222 |
+      223 |       await page.click('body > map', { button: 'right' });
+      224 |       await page.click('div > div.mapml-contextmenu > button:nth-of-type(7)');
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\mapContextMenu.test.js:221:34
+
+  22) core\mapContextMenu.test.js:248:9 › Playwright Map Context Menu Tests › Context Menu, Toggle Controls  › Context menu, toggle controls on
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: true
+    Received: false
+
+      263 |         (div) => div.hidden
+      264 |       );
+    > 265 |       expect(zoomHidden).toEqual(true);
+          |                          ^
+      266 |       expect(reloadHidden).toEqual(true);
+      267 |       expect(fullscreenHidden).toEqual(true);
+      268 |       expect(layerControlHidden).toEqual(true);
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\mapContextMenu.test.js:265:26
+
+  23) core\mapElement.test.js:38:7 › Playwright Map Element Tests › Initial map element extent
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+    -   "maxZoom": 25,
+    +   "maxZoom": 3,
+        "minZoom": 0,
+      }
+
+      40 |
+      41 |     await expect(extent.projection).toEqual('CBMTILE');
+    > 42 |     await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+         |                               ^
+      43 |     await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
+      44 |     await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+      45 |     await expect(extent.topLeft.tilematrix[0]).toEqual(
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\mapElement.test.js:42:31
+
+  24) core\mapElement.test.js:50:7 › Playwright Map Element Tests › Panned and zoomed initial map's extent
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+    -   "maxZoom": 25,
+    +   "maxZoom": 3,
+        "minZoom": 0,
+      }
+
+      53 |     const extent = await page.$eval('body > map', (map) => map.extent);
+      54 |
+    > 55 |     await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+         |                               ^
+      56 |     await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
+      57 |     await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
+      58 |     await expect(extent.topLeft.tilematrix[0]).toEqual(
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\mapElement.test.js:55:31
+
+  25) core\mapElement.test.js:64:7 › Playwright Map Element Tests › Reload button takes you back to initial state
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.click: Target closed
+    =========================== logs ===========================
+    waiting for locator('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.mapml-reload-button.leaflet-bar.leaflet-control > button')
+      locator resolved to 2 elements. Proceeding with the first one: <button type="button" title="Reload" aria-label="Reload"…>…</button>
+    attempting click action
+      waiting for element to be visible, enabled and stable
+        element is not enabled - waiting...
+    ============================================================
+
+      63 |
+      64 |   test('Reload button takes you back to initial state', async () => {
+    > 65 |     await page.click(
+         |                ^
+      66 |       'div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.mapml-reload-button.leaflet-bar.leaflet-control > button'
+      67 |     );
+      68 |     await page.waitForTimeout(1000);
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\mapElement.test.js:65:16
+
+  26) core\mapFeature.test.js:95:7 › Playwright MapFeature Custom Element Tests › Get extent of <map-point> with zoom attribute = 2
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 187
+    + Received  + 193
+
+    @@ -8,218 +8,218 @@
+            "horizontal": 3351671.8482770324,
+            "vertical": -4954880.196427062,
+          },
+          "tcrs": Array [
+            Object {
+    -         "horizontal": 990.6896551724137,
+    -         "vertical": 1153.7931034482758,
+    +         "horizontal": 990,
+    +         "vertical": 1153,
+            },
+            Object {
+    -         "horizontal": 1689.9999999999998,
+    -         "vertical": 1968.2352941176468,
+    +         "horizontal": 1689,
+    +         "vertical": 1968,
+            },
+            Object {
+              "horizontal": 2873,
+              "vertical": 3346,
+            },
+            Object {
+    -         "horizontal": 4788.333333333333,
+    -         "vertical": 5576.666666666667,
+    +         "horizontal": 4788,
+    +         "vertical": 5576,
+            },
+            Object {
+    -         "horizontal": 8208.571428571428,
+    +         "horizontal": 8208,
+              "vertical": 9560,
+            },
+            Object {
+              "horizontal": 14365,
+              "vertical": 16730,
+            },
+            Object {
+    -         "horizontal": 23941.666666666668,
+    -         "vertical": 27883.333333333332,
+    +         "horizontal": 23941,
+    +         "vertical": 27883,
+            },
+            Object {
+    -         "horizontal": 41042.857142857145,
+    +         "horizontal": 41042,
+              "vertical": 47800,
+            },
+            Object {
+    -         "horizontal": 71824.99999999999,
+    -         "vertical": 83649.99999999999,
+    +         "horizontal": 71824,
+    +         "vertical": 83649,
+            },
+            Object {
+    -         "horizontal": 119708.33333333333,
+    -         "vertical": 139416.66666666666,
+    +         "horizontal": 119708,
+    +         "vertical": 139416,
+            },
+            Object {
+    -         "horizontal": 205214.2857142857,
+    +         "horizontal": 205214,
+              "vertical": 239000,
+            },
+            Object {
+    -         "horizontal": 342023.8095238095,
+    -         "vertical": 398333.3333333333,
+    +         "horizontal": 342023,
+    +         "vertical": 398333,
+            },
+            Object {
+    -         "horizontal": 574599.9999999999,
+    -         "vertical": 669199.9999999999,
+    +         "horizontal": 574599,
+    +         "vertical": 669199,
+            },
+            Object {
+    -         "horizontal": 990689.6551724137,
+    -         "vertical": 1153793.1034482757,
+    +         "horizontal": 990689,
+    +         "vertical": 1153793,
+            },
+            Object {
+    -         "horizontal": 1689999.9999999998,
+    -         "vertical": 1968235.294117647,
+    +         "horizontal": 1689999,
+    +         "vertical": 1968235,
+            },
+            Object {
+    -         "horizontal": 2872999.9999999995,
+    -         "vertical": 3345999.9999999995,
+    +         "horizontal": 2872999,
+    +         "vertical": 3345999,
+            },
+            Object {
+    -         "horizontal": 4788333.333333333,
+    -         "vertical": 5576666.666666666,
+    +         "horizontal": 4788333,
+    +         "vertical": 5576666,
+            },
+            Object {
+    -         "horizontal": 8208571.428571428,
+    +         "horizontal": 8208571,
+              "vertical": 9560000,
+            },
+            Object {
+              "horizontal": 14365000,
+    -         "vertical": 16729999.999999998,
+    +         "vertical": 16729999,
+            },
+            Object {
+    -         "horizontal": 23941666.666666664,
+    -         "vertical": 27883333.333333332,
+    +         "horizontal": 23941666,
+    +         "vertical": 27883333,
+            },
+            Object {
+    -         "horizontal": 41042857.14285714,
+    +         "horizontal": 41042857,
+              "vertical": 47800000,
+            },
+            Object {
+              "horizontal": 71825000,
+              "vertical": 83650000,
+            },
+            Object {
+    -         "horizontal": 119708333.33333334,
+    -         "vertical": 139416666.6666667,
+    +         "horizontal": 119708333,
+    +         "vertical": 139416666,
+            },
+            Object {
+    -         "horizontal": 205214285.71428573,
+    +         "horizontal": 205214285,
+              "vertical": 239000000,
+            },
+            Object {
+    -         "horizontal": 342023809.5238095,
+    -         "vertical": 398333333.3333333,
+    +         "horizontal": 342023809,
+    +         "vertical": 398333333,
+            },
+            Object {
+              "horizontal": 574600000,
+              "vertical": 669200000,
+            },
+          ],
+          "tilematrix": Array [
+            Object {
+    -         "horizontal": 3.869881465517241,
+    -         "vertical": 4.507004310344827,
+    +         "horizontal": 3,
+    +         "vertical": 4,
+            },
+            Object {
+    -         "horizontal": 6.601562499999999,
+    -         "vertical": 7.688419117647058,
+    +         "horizontal": 6,
+    +         "vertical": 7,
+            },
+            Object {
+    -         "horizontal": 11.22265625,
+    -         "vertical": 13.0703125,
+    +         "horizontal": 11,
+    +         "vertical": 13,
+            },
+            Object {
+    -         "horizontal": 18.704427083333332,
+    -         "vertical": 21.783854166666668,
+    +         "horizontal": 18,
+    +         "vertical": 21,
+            },
+            Object {
+    -         "horizontal": 32.06473214285714,
+    -         "vertical": 37.34375,
+    +         "horizontal": 32,
+    +         "vertical": 37,
+            },
+            Object {
+    -         "horizontal": 56.11328125,
+    -         "vertical": 65.3515625,
+    +         "horizontal": 56,
+    +         "vertical": 65,
+            },
+            Object {
+    -         "horizontal": 93.52213541666667,
+    -         "vertical": 108.91927083333333,
+    +         "horizontal": 93,
+    +         "vertical": 108,
+            },
+            Object {
+    -         "horizontal": 160.32366071428572,
+    -         "vertical": 186.71875,
+    +         "horizontal": 160,
+    +         "vertical": 186,
+            },
+            Object {
+    -         "horizontal": 280.56640624999994,
+    -         "vertical": 326.75781249999994,
+    +         "horizontal": 280,
+    +         "vertical": 326,
+            },
+            Object {
+    -         "horizontal": 467.6106770833333,
+    -         "vertical": 544.5963541666666,
+    +         "horizontal": 467,
+    +         "vertical": 544,
+            },
+            Object {
+    -         "horizontal": 801.6183035714286,
+    -         "vertical": 933.59375,
+    +         "horizontal": 801,
+    +         "vertical": 933,
+            },
+            Object {
+    -         "horizontal": 1336.030505952381,
+    -         "vertical": 1555.9895833333333,
+    +         "horizontal": 1336,
+    +         "vertical": 1555,
+            },
+            Object {
+    -         "horizontal": 2244.5312499999995,
+    -         "vertical": 2614.0624999999995,
+    +         "horizontal": 2244,
+    +         "vertical": 2614,
+            },
+            Object {
+    -         "horizontal": 3869.881465517241,
+    -         "vertical": 4507.004310344827,
+    +         "horizontal": 3869,
+    +         "vertical": 4507,
+            },
+            Object {
+    -         "horizontal": 6601.562499999999,
+    -         "vertical": 7688.419117647059,
+    +         "horizontal": 6601,
+    +         "vertical": 7688,
+            },
+            Object {
+    -         "horizontal": 11222.656249999998,
+    -         "vertical": 13070.312499999998,
+    +         "horizontal": 11222,
+    +         "vertical": 13070,
+            },
+            Object {
+    -         "horizontal": 18704.427083333332,
+    -         "vertical": 21783.854166666664,
+    +         "horizontal": 18704,
+    +         "vertical": 21783,
+            },
+            Object {
+    -         "horizontal": 32064.73214285714,
+    -         "vertical": 37343.75,
+    +         "horizontal": 32064,
+    +         "vertical": 37343,
+            },
+            Object {
+    -         "horizontal": 56113.28125,
+    -         "vertical": 65351.56249999999,
+    +         "horizontal": 56113,
+    +         "vertical": 65351,
+            },
+            Object {
+    -         "horizontal": 93522.13541666666,
+    -         "vertical": 108919.27083333333,
+    +         "horizontal": 93522,
+    +         "vertical": 108919,
+            },
+            Object {
+    -         "horizontal": 160323.6607142857,
+    -         "vertical": 186718.75,
+    +         "horizontal": 160323,
+    +         "vertical": 186718,
+            },
+            Object {
+    -         "horizontal": 280566.40625,
+    -         "vertical": 326757.8125,
+    +         "horizontal": 280566,
+    +         "vertical": 326757,
+            },
+            Object {
+    -         "horizontal": 467610.6770833334,
+    -         "vertical": 544596.3541666667,
+    +         "horizontal": 467610,
+    +         "vertical": 544596,
+            },
+            Object {
+    -         "horizontal": 801618.3035714286,
+    -         "vertical": 933593.75,
+    +         "horizontal": 801618,
+    +         "vertical": 933593,
+            },
+            Object {
+    -         "horizontal": 1336030.5059523808,
+    -         "vertical": 1555989.5833333333,
+    +         "horizontal": 1336030,
+    +         "vertical": 1555989,
+            },
+            Object {
+    -         "horizontal": 2244531.25,
+    -         "vertical": 2614062.5,
+    +         "horizontal": 2244531,
+    +         "vertical": 2614062,
+            },
+          ],
+        },
+        "projection": "CBMTILE",
+        "topLeft": Object {
+    @@ -231,217 +231,223 @@
+            "horizontal": -35001.59173651785,
+            "vertical": -1568206.756413512,
+          },
+          "tcrs": Array [
+            Object {
+    -         "horizontal": 902.4137931034481,
+    -         "vertical": 1065.5172413793102,
+    +         "horizontal": 902,
+    +         "vertical": 1065,
+            },
+            Object {
+    -         "horizontal": 1539.411764705882,
+    -         "vertical": 1817.647058823529,
+    +         "horizontal": 1539,
+    +         "vertical": 1817,
+            },
+            Object {
+              "horizontal": 2617,
+              "vertical": 3090,
+            },
+            Object {
+    -         "horizontal": 4361.666666666666,
+    +         "horizontal": 4361,
+              "vertical": 5150,
+            },
+            Object {
+    -         "horizontal": 7477.142857142856,
+    -         "vertical": 8828.571428571428,
+    +         "horizontal": 7477,
+    +         "vertical": 8828,
+            },
+            Object {
+    -         "horizontal": 13084.999999999998,
+    -         "vertical": 15449.999999999998,
+    +         "horizontal": 13084,
+    +         "vertical": 15449,
+            },
+            Object {
+    -         "horizontal": 21808.333333333332,
+    -         "vertical": 25749.999999999996,
+    +         "horizontal": 21808,
+    +         "vertical": 25749,
+            },
+            Object {
+    -         "horizontal": 37385.71428571428,
+    -         "vertical": 44142.857142857145,
+    +         "horizontal": 37385,
+    +         "vertical": 44142,
+            },
+            Object {
+    -         "horizontal": 65424.999999999985,
+    -         "vertical": 77249.99999999999,
+    +         "horizontal": 65424,
+    +         "vertical": 77249,
+            },
+            Object {
+    -         "horizontal": 109041.66666666666,
+    -         "vertical": 128749.99999999999,
+    +         "horizontal": 109041,
+    +         "vertical": 128749,
+            },
+            Object {
+    -         "horizontal": 186928.57142857142,
+    -         "vertical": 220714.28571428568,
+    +         "horizontal": 186928,
+    +         "vertical": 220714,
+            },
+            Object {
+    -         "horizontal": 311547.619047619,
+    -         "vertical": 367857.1428571428,
+    +         "horizontal": 311547,
+    +         "vertical": 367857,
+            },
+            Object {
+    -         "horizontal": 523399.9999999999,
+    -         "vertical": 617999.9999999999,
+    +         "horizontal": 523399,
+    +         "vertical": 617999,
+            },
+            Object {
+    -         "horizontal": 902413.7931034481,
+    -         "vertical": 1065517.2413793101,
+    +         "horizontal": 902413,
+    +         "vertical": 1065517,
+            },
+            Object {
+    -         "horizontal": 1539411.7647058822,
+    -         "vertical": 1817647.0588235292,
+    +         "horizontal": 1539411,
+    +         "vertical": 1817647,
+            },
+            Object {
+    -         "horizontal": 2616999.9999999995,
+    -         "vertical": 3089999.9999999995,
+    +         "horizontal": 2616999,
+    +         "vertical": 3089999,
+            },
+            Object {
+    -         "horizontal": 4361666.666666666,
+    -         "vertical": 5149999.999999999,
+    +         "horizontal": 4361666,
+    +         "vertical": 5149999,
+            },
+            Object {
+    -         "horizontal": 7477142.857142856,
+    -         "vertical": 8828571.428571427,
+    +         "horizontal": 7477142,
+    +         "vertical": 8828571,
+            },
+            Object {
+    -         "horizontal": 13084999.999999998,
+    -         "vertical": 15449999.999999998,
+    +         "horizontal": 13084999,
+    +         "vertical": 15449999,
+            },
+            Object {
+    -         "horizontal": 21808333.33333333,
+    -         "vertical": 25749999.999999996,
+    +         "horizontal": 21808333,
+    +         "vertical": 25749999,
+            },
+            Object {
+    -         "horizontal": 37385714.28571428,
+    -         "vertical": 44142857.142857134,
+    +         "horizontal": 37385714,
+    +         "vertical": 44142857,
+            },
+            Object {
+    -         "horizontal": 65424999.99999999,
+    +         "horizontal": 65424999,
+              "vertical": 77250000,
+            },
+            Object {
+    -         "horizontal": 109041666.66666666,
+    +         "horizontal": 109041666,
+              "vertical": 128750000,
+            },
+            Object {
+    -         "horizontal": 186928571.4285714,
+    -         "vertical": 220714285.7142857,
+    +         "horizontal": 186928571,
+    +         "vertical": 220714285,
+            },
+            Object {
+    -         "horizontal": 311547619.04761904,
+    -         "vertical": 367857142.8571428,
+    +         "horizontal": 311547619,
+    +         "vertical": 367857142,
+            },
+            Object {
+    -         "horizontal": 523399999.99999994,
+    +         "horizontal": 523399999,
+              "vertical": 618000000,
+            },
+          ],
+          "tilematrix": Array [
+            Object {
+    -         "horizontal": 3.5250538793103443,
+    -         "vertical": 4.162176724137931,
+    +         "horizontal": 3,
+    +         "vertical": 4,
+            },
+            Object {
+    -         "horizontal": 6.0133272058823515,
+    -         "vertical": 7.10018382352941,
+    +         "horizontal": 6,
+    +         "vertical": 7,
+            },
+            Object {
+    -         "horizontal": 10.22265625,
+    -         "vertical": 12.0703125,
+    +         "horizontal": 10,
+    +         "vertical": 12,
+            },
+            Object {
+    -         "horizontal": 17.037760416666664,
+    -         "vertical": 20.1171875,
+    +         "horizontal": 17,
+    +         "vertical": 20,
+            },
+            Object {
+    -         "horizontal": 29.20758928571428,
+    -         "vertical": 34.48660714285714,
+    +         "horizontal": 29,
+    +         "vertical": 34,
+            },
+            Object {
+    -         "horizontal": 51.11328124999999,
+    -         "vertical": 60.35156249999999,
+    +         "horizontal": 51,
+    +         "vertical": 60,
+            },
+            Object {
+    -         "horizontal": 85.18880208333333,
+    -         "vertical": 100.58593749999999,
+    +         "horizontal": 85,
+    +         "vertical": 100,
+            },
+            Object {
+    -         "horizontal": 146.03794642857142,
+    -         "vertical": 172.43303571428572,
+    +         "horizontal": 146,
+    +         "vertical": 172,
+            },
+            Object {
+    -         "horizontal": 255.56640624999994,
+    -         "vertical": 301.75781249999994,
+    +         "horizontal": 255,
+    +         "vertical": 301,
+            },
+            Object {
+    -         "horizontal": 425.94401041666663,
+    -         "vertical": 502.92968749999994,
+    +         "horizontal": 425,
+    +         "vertical": 502,
+            },
+            Object {
+    -         "horizontal": 730.1897321428571,
+    -         "vertical": 862.1651785714284,
+    +         "horizontal": 730,
+    +         "vertical": 862,
+            },
+            Object {
+    -         "horizontal": 1216.9828869047617,
+    -         "vertical": 1436.941964285714,
+    +         "horizontal": 1216,
+    +         "vertical": 1436,
+            },
+            Object {
+    -         "horizontal": 2044.5312499999995,
+    -         "vertical": 2414.0624999999995,
+    +         "horizontal": 2044,
+    +         "vertical": 2414,
+            },
+            Object {
+    -         "horizontal": 3525.053879310344,
+    -         "vertical": 4162.17672413793,
+    +         "horizontal": 3525,
+    +         "vertical": 4162,
+            },
+            Object {
+    -         "horizontal": 6013.327205882352,
+    -         "vertical": 7100.183823529411,
+    +         "horizontal": 6013,
+    +         "vertical": 7100,
+            },
+            Object {
+    -         "horizontal": 10222.656249999998,
+    -         "vertical": 12070.312499999998,
+    +         "horizontal": 10222,
+    +         "vertical": 12070,
+            },
+            Object {
+    -         "horizontal": 17037.760416666664,
+    -         "vertical": 20117.187499999996,
+    +         "horizontal": 17037,
+    +         "vertical": 20117,
+            },
+            Object {
+    -         "horizontal": 29207.589285714283,
+    -         "vertical": 34486.60714285714,
+    +         "horizontal": 29207,
+    +         "vertical": 34486,
+            },
+            Object {
+    -         "horizontal": 51113.28124999999,
+    -         "vertical": 60351.56249999999,
+    +         "horizontal": 51113,
+    +         "vertical": 60351,
+            },
+            Object {
+    -         "horizontal": 85188.80208333331,
+    -         "vertical": 100585.93749999999,
+    +         "horizontal": 85188,
+    +         "vertical": 100585,
+            },
+            Object {
+    -         "horizontal": 146037.94642857142,
+    -         "vertical": 172433.03571428568,
+    +         "horizontal": 146037,
+    +         "vertical": 172433,
+            },
+            Object {
+    -         "horizontal": 255566.40624999997,
+    -         "vertical": 301757.8125,
+    +         "horizontal": 255566,
+    +         "vertical": 301757,
+            },
+            Object {
+    -         "horizontal": 425944.0104166666,
+    -         "vertical": 502929.6875,
+    +         "horizontal": 425944,
+    +         "vertical": 502929,
+            },
+            Object {
+    -         "horizontal": 730189.732142857,
+    -         "vertical": 862165.1785714285,
+    +         "horizontal": 730189,
+    +         "vertical": 862165,
+            },
+            Object {
+    -         "horizontal": 1216982.886904762,
+    -         "vertical": 1436941.964285714,
+    +         "horizontal": 1216982,
+    +         "vertical": 1436941,
+            },
+            Object {
+    -         "horizontal": 2044531.2499999998,
+    -         "vertical": 2414062.5,
+    +         "horizontal": 2044531,
+    +         "vertical": 2414062,
+            },
+          ],
+    +   },
+    +   "zoom": Object {
+    +     "maxNativeZoom": 2,
+    +     "maxZoom": 25,
+    +     "minNativeZoom": 2,
+    +     "minZoom": 0,
+        },
+      }
+
+      100 |       (map) => map.querySelector('.point_1').extent
+      101 |     );
+    > 102 |     expect(extent).toEqual(data.pointExtentwithZoom);
+          |                    ^
+      103 |   });
+      104 |
+      105 |   test('Zoom to <map-point> with zoom attribute = 2', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\mapFeature.test.js:102:20
+
+  27) core\mapFeature.test.js:113:7 › Playwright MapFeature Custom Element Tests › Get extent of <map-point> with no zoom attribute
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 208
+    + Received  + 214
+
+    @@ -8,218 +8,218 @@
+            "horizontal": 1658343.59495385,
+            "vertical": -3261551.9431038797,
+          },
+          "tcrs": Array [
+            Object {
+    -         "horizontal": 946.551944827586,
+    -         "vertical": 1109.655393103448,
+    +         "horizontal": 946,
+    +         "vertical": 1109,
+            },
+            Object {
+    -         "horizontal": 1614.7062588235287,
+    -         "vertical": 1892.9415529411758,
+    +         "horizontal": 1614,
+    +         "vertical": 1892,
+            },
+            Object {
+    -         "horizontal": 2745.0006399999993,
+    -         "vertical": 3218.0006399999997,
+    +         "horizontal": 2745,
+    +         "vertical": 3218,
+            },
+            Object {
+    -         "horizontal": 4575.001066666666,
+    -         "vertical": 5363.334399999999,
+    +         "horizontal": 4575,
+    +         "vertical": 5363,
+            },
+            Object {
+    -         "horizontal": 7842.858971428569,
+    -         "vertical": 9194.28754285714,
+    +         "horizontal": 7842,
+    +         "vertical": 9194,
+            },
+            Object {
+    -         "horizontal": 13725.003199999997,
+    -         "vertical": 16090.003199999997,
+    +         "horizontal": 13725,
+    +         "vertical": 16090,
+            },
+            Object {
+    -         "horizontal": 22875.005333333327,
+    -         "vertical": 26816.671999999995,
+    +         "horizontal": 22875,
+    +         "vertical": 26816,
+            },
+            Object {
+    -         "horizontal": 39214.29485714285,
+    -         "vertical": 45971.437714285705,
+    +         "horizontal": 39214,
+    +         "vertical": 45971,
+            },
+            Object {
+    -         "horizontal": 68625.01599999997,
+    -         "vertical": 80450.01599999997,
+    +         "horizontal": 68625,
+    +         "vertical": 80450,
+            },
+            Object {
+    -         "horizontal": 114375.02666666664,
+    -         "vertical": 134083.35999999996,
+    +         "horizontal": 114375,
+    +         "vertical": 134083,
+            },
+            Object {
+    -         "horizontal": 196071.47428571424,
+    -         "vertical": 229857.1885714285,
+    +         "horizontal": 196071,
+    +         "vertical": 229857,
+            },
+            Object {
+    -         "horizontal": 326785.7904761904,
+    -         "vertical": 383095.3142857142,
+    +         "horizontal": 326785,
+    +         "vertical": 383095,
+            },
+            Object {
+    -         "horizontal": 549000.1279999998,
+    -         "vertical": 643600.1279999998,
+    +         "horizontal": 549000,
+    +         "vertical": 643600,
+            },
+            Object {
+    -         "horizontal": 946551.9448275858,
+    -         "vertical": 1109655.393103448,
+    +         "horizontal": 946551,
+    +         "vertical": 1109655,
+            },
+            Object {
+    -         "horizontal": 1614706.258823529,
+    -         "vertical": 1892941.5529411759,
+    +         "horizontal": 1614706,
+    +         "vertical": 1892941,
+            },
+            Object {
+    -         "horizontal": 2745000.639999999,
+    -         "vertical": 3218000.639999999,
+    +         "horizontal": 2745000,
+    +         "vertical": 3218000,
+            },
+            Object {
+    -         "horizontal": 4575001.0666666655,
+    -         "vertical": 5363334.3999999985,
+    +         "horizontal": 4575001,
+    +         "vertical": 5363334,
+            },
+            Object {
+    -         "horizontal": 7842858.971428569,
+    -         "vertical": 9194287.54285714,
+    +         "horizontal": 7842858,
+    +         "vertical": 9194287,
+            },
+            Object {
+    -         "horizontal": 13725003.199999996,
+    -         "vertical": 16090003.199999996,
+    +         "horizontal": 13725003,
+    +         "vertical": 16090003,
+            },
+            Object {
+    -         "horizontal": 22875005.333333325,
+    -         "vertical": 26816671.999999993,
+    +         "horizontal": 22875005,
+    +         "vertical": 26816671,
+            },
+            Object {
+    -         "horizontal": 39214294.85714284,
+    -         "vertical": 45971437.7142857,
+    +         "horizontal": 39214294,
+    +         "vertical": 45971437,
+            },
+            Object {
+    -         "horizontal": 68625015.99999999,
+    -         "vertical": 80450015.99999999,
+    +         "horizontal": 68625015,
+    +         "vertical": 80450015,
+            },
+            Object {
+    -         "horizontal": 114375026.66666664,
+    -         "vertical": 134083359.99999997,
+    +         "horizontal": 114375026,
+    +         "vertical": 134083359,
+            },
+            Object {
+    -         "horizontal": 196071474.28571424,
+    -         "vertical": 229857188.57142854,
+    +         "horizontal": 196071474,
+    +         "vertical": 229857188,
+            },
+            Object {
+    -         "horizontal": 326785790.4761904,
+    -         "vertical": 383095314.2857142,
+    +         "horizontal": 326785790,
+    +         "vertical": 383095314,
+            },
+            Object {
+    -         "horizontal": 549000127.9999999,
+    -         "vertical": 643600127.9999999,
+    +         "horizontal": 549000127,
+    +         "vertical": 643600127,
+            },
+          ],
+          "tilematrix": Array [
+            Object {
+    -         "horizontal": 3.697468534482758,
+    -         "vertical": 4.334591379310344,
+    +         "horizontal": 3,
+    +         "vertical": 4,
+            },
+            Object {
+    -         "horizontal": 6.307446323529409,
+    -         "vertical": 7.394302941176468,
+    +         "horizontal": 6,
+    +         "vertical": 7,
+            },
+            Object {
+    -         "horizontal": 10.722658749999997,
+    -         "vertical": 12.570314999999999,
+    +         "horizontal": 10,
+    +         "vertical": 12,
+            },
+            Object {
+    -         "horizontal": 17.871097916666663,
+    -         "vertical": 20.950524999999995,
+    +         "horizontal": 17,
+    +         "vertical": 20,
+            },
+            Object {
+    -         "horizontal": 30.636167857142848,
+    -         "vertical": 35.915185714285705,
+    +         "horizontal": 30,
+    +         "vertical": 35,
+            },
+            Object {
+    -         "horizontal": 53.61329374999999,
+    -         "vertical": 62.85157499999999,
+    +         "horizontal": 53,
+    +         "vertical": 62,
+            },
+            Object {
+    -         "horizontal": 89.35548958333331,
+    -         "vertical": 104.75262499999998,
+    +         "horizontal": 89,
+    +         "vertical": 104,
+            },
+            Object {
+    -         "horizontal": 153.18083928571426,
+    -         "vertical": 179.57592857142853,
+    +         "horizontal": 153,
+    +         "vertical": 179,
+            },
+            Object {
+    -         "horizontal": 268.0664687499999,
+    -         "vertical": 314.2578749999999,
+    +         "horizontal": 268,
+    +         "vertical": 314,
+            },
+            Object {
+    -         "horizontal": 446.7774479166666,
+    -         "vertical": 523.7631249999998,
+    +         "horizontal": 446,
+    +         "vertical": 523,
+            },
+            Object {
+    -         "horizontal": 765.9041964285713,
+    -         "vertical": 897.8796428571426,
+    +         "horizontal": 765,
+    +         "vertical": 897,
+            },
+            Object {
+    -         "horizontal": 1276.5069940476187,
+    -         "vertical": 1496.466071428571,
+    +         "horizontal": 1276,
+    +         "vertical": 1496,
+            },
+            Object {
+    -         "horizontal": 2144.531749999999,
+    -         "vertical": 2514.062999999999,
+    +         "horizontal": 2144,
+    +         "vertical": 2514,
+            },
+            Object {
+    -         "horizontal": 3697.468534482757,
+    -         "vertical": 4334.591379310344,
+    +         "horizontal": 3697,
+    +         "vertical": 4334,
+            },
+            Object {
+    -         "horizontal": 6307.44632352941,
+    -         "vertical": 7394.302941176468,
+    +         "horizontal": 6307,
+    +         "vertical": 7394,
+            },
+            Object {
+    -         "horizontal": 10722.658749999997,
+    -         "vertical": 12570.314999999997,
+    +         "horizontal": 10722,
+    +         "vertical": 12570,
+            },
+            Object {
+    -         "horizontal": 17871.097916666662,
+    -         "vertical": 20950.524999999994,
+    +         "horizontal": 17871,
+    +         "vertical": 20950,
+            },
+            Object {
+    -         "horizontal": 30636.16785714285,
+    -         "vertical": 35915.185714285704,
+    +         "horizontal": 30636,
+    +         "vertical": 35915,
+            },
+            Object {
+    -         "horizontal": 53613.29374999998,
+    -         "vertical": 62851.57499999998,
+    +         "horizontal": 53613,
+    +         "vertical": 62851,
+            },
+            Object {
+    -         "horizontal": 89355.4895833333,
+    -         "vertical": 104752.62499999997,
+    +         "horizontal": 89355,
+    +         "vertical": 104752,
+            },
+            Object {
+    -         "horizontal": 153180.83928571423,
+    -         "vertical": 179575.92857142852,
+    +         "horizontal": 153180,
+    +         "vertical": 179575,
+            },
+            Object {
+    -         "horizontal": 268066.46874999994,
+    -         "vertical": 314257.87499999994,
+    +         "horizontal": 268066,
+    +         "vertical": 314257,
+            },
+            Object {
+    -         "horizontal": 446777.44791666657,
+    -         "vertical": 523763.1249999999,
+    +         "horizontal": 446777,
+    +         "vertical": 523763,
+            },
+            Object {
+    -         "horizontal": 765904.1964285712,
+    -         "vertical": 897879.6428571427,
+    +         "horizontal": 765904,
+    +         "vertical": 897879,
+            },
+            Object {
+    -         "horizontal": 1276506.9940476187,
+    -         "vertical": 1496466.0714285711,
+    +         "horizontal": 1276506,
+    +         "vertical": 1496466,
+            },
+            Object {
+    -         "horizontal": 2144531.7499999995,
+    -         "vertical": 2514062.9999999995,
+    +         "horizontal": 2144531,
+    +         "vertical": 2514062,
+            },
+          ],
+        },
+        "projection": "CBMTILE",
+        "topLeft": Object {
+    @@ -231,217 +231,223 @@
+            "horizontal": 1658326.6615866497,
+            "vertical": -3261535.0097366795,
+          },
+          "tcrs": Array [
+            Object {
+    -         "horizontal": 946.5515034482756,
+    -         "vertical": 1109.6549517241376,
+    +         "horizontal": 946,
+    +         "vertical": 1109,
+            },
+            Object {
+    -         "horizontal": 1614.7055058823523,
+    -         "vertical": 1892.9407999999994,
+    +         "horizontal": 1614,
+    +         "vertical": 1892,
+            },
+            Object {
+    -         "horizontal": 2744.9993599999993,
+    -         "vertical": 3217.9993599999993,
+    +         "horizontal": 2744,
+    +         "vertical": 3217,
+            },
+            Object {
+    -         "horizontal": 4574.998933333332,
+    -         "vertical": 5363.332266666665,
+    +         "horizontal": 4574,
+    +         "vertical": 5363,
+            },
+            Object {
+    -         "horizontal": 7842.855314285712,
+    -         "vertical": 9194.283885714283,
+    +         "horizontal": 7842,
+    +         "vertical": 9194,
+            },
+            Object {
+    -         "horizontal": 13724.996799999997,
+    -         "vertical": 16089.996799999997,
+    +         "horizontal": 13724,
+    +         "vertical": 16089,
+            },
+            Object {
+    -         "horizontal": 22874.994666666662,
+    -         "vertical": 26816.661333333326,
+    +         "horizontal": 22874,
+    +         "vertical": 26816,
+            },
+            Object {
+    -         "horizontal": 39214.27657142856,
+    -         "vertical": 45971.41942857142,
+    +         "horizontal": 39214,
+    +         "vertical": 45971,
+            },
+            Object {
+    -         "horizontal": 68624.98399999997,
+    -         "vertical": 80449.98399999997,
+    +         "horizontal": 68624,
+    +         "vertical": 80449,
+            },
+            Object {
+    -         "horizontal": 114374.9733333333,
+    -         "vertical": 134083.30666666664,
+    +         "horizontal": 114374,
+    +         "vertical": 134083,
+            },
+            Object {
+    -         "horizontal": 196071.3828571428,
+    -         "vertical": 229857.0971428571,
+    +         "horizontal": 196071,
+    +         "vertical": 229857,
+            },
+            Object {
+    -         "horizontal": 326785.638095238,
+    -         "vertical": 383095.1619047618,
+    +         "horizontal": 326785,
+    +         "vertical": 383095,
+            },
+            Object {
+    -         "horizontal": 548999.8719999997,
+    -         "vertical": 643599.8719999997,
+    +         "horizontal": 548999,
+    +         "vertical": 643599,
+            },
+            Object {
+    -         "horizontal": 946551.5034482755,
+    -         "vertical": 1109654.9517241376,
+    +         "horizontal": 946551,
+    +         "vertical": 1109654,
+            },
+            Object {
+    -         "horizontal": 1614705.5058823524,
+    -         "vertical": 1892940.7999999993,
+    +         "horizontal": 1614705,
+    +         "vertical": 1892940,
+            },
+            Object {
+    -         "horizontal": 2744999.359999999,
+    -         "vertical": 3217999.359999999,
+    +         "horizontal": 2744999,
+    +         "vertical": 3217999,
+            },
+            Object {
+    -         "horizontal": 4574998.933333332,
+    -         "vertical": 5363332.266666665,
+    +         "horizontal": 4574998,
+    +         "vertical": 5363332,
+            },
+            Object {
+    -         "horizontal": 7842855.314285712,
+    -         "vertical": 9194283.885714283,
+    +         "horizontal": 7842855,
+    +         "vertical": 9194283,
+            },
+            Object {
+    -         "horizontal": 13724996.799999995,
+    -         "vertical": 16089996.799999995,
+    +         "horizontal": 13724996,
+    +         "vertical": 16089996,
+            },
+            Object {
+    -         "horizontal": 22874994.66666666,
+    -         "vertical": 26816661.333333325,
+    +         "horizontal": 22874994,
+    +         "vertical": 26816661,
+            },
+            Object {
+    -         "horizontal": 39214276.57142856,
+    -         "vertical": 45971419.42857142,
+    +         "horizontal": 39214276,
+    +         "vertical": 45971419,
+            },
+            Object {
+    -         "horizontal": 68624983.99999999,
+    -         "vertical": 80449983.99999999,
+    +         "horizontal": 68624983,
+    +         "vertical": 80449983,
+            },
+            Object {
+    -         "horizontal": 114374973.33333331,
+    -         "vertical": 134083306.66666664,
+    +         "horizontal": 114374973,
+    +         "vertical": 134083306,
+            },
+            Object {
+    -         "horizontal": 196071382.8571428,
+    -         "vertical": 229857097.1428571,
+    +         "horizontal": 196071382,
+    +         "vertical": 229857097,
+            },
+            Object {
+    -         "horizontal": 326785638.09523803,
+    -         "vertical": 383095161.9047618,
+    +         "horizontal": 326785638,
+    +         "vertical": 383095161,
+            },
+            Object {
+    -         "horizontal": 548999871.9999999,
+    -         "vertical": 643599871.9999999,
+    +         "horizontal": 548999871,
+    +         "vertical": 643599871,
+            },
+          ],
+          "tilematrix": Array [
+            Object {
+    -         "horizontal": 3.6974668103448267,
+    -         "vertical": 4.334589655172413,
+    +         "horizontal": 3,
+    +         "vertical": 4,
+            },
+            Object {
+    -         "horizontal": 6.307443382352939,
+    -         "vertical": 7.394299999999998,
+    +         "horizontal": 6,
+    +         "vertical": 7,
+            },
+            Object {
+    -         "horizontal": 10.722653749999997,
+    -         "vertical": 12.570309999999997,
+    +         "horizontal": 10,
+    +         "vertical": 12,
+            },
+            Object {
+    -         "horizontal": 17.87108958333333,
+    -         "vertical": 20.950516666666662,
+    +         "horizontal": 17,
+    +         "vertical": 20,
+            },
+            Object {
+    -         "horizontal": 30.63615357142856,
+    -         "vertical": 35.91517142857142,
+    +         "horizontal": 30,
+    +         "vertical": 35,
+            },
+            Object {
+    -         "horizontal": 53.61326874999999,
+    -         "vertical": 62.85154999999999,
+    +         "horizontal": 53,
+    +         "vertical": 62,
+            },
+            Object {
+    -         "horizontal": 89.35544791666665,
+    -         "vertical": 104.7525833333333,
+    +         "horizontal": 89,
+    +         "vertical": 104,
+            },
+            Object {
+    -         "horizontal": 153.18076785714283,
+    -         "vertical": 179.5758571428571,
+    +         "horizontal": 153,
+    +         "vertical": 179,
+            },
+            Object {
+    -         "horizontal": 268.0663437499999,
+    -         "vertical": 314.2577499999999,
+    +         "horizontal": 268,
+    +         "vertical": 314,
+            },
+            Object {
+    -         "horizontal": 446.7772395833332,
+    -         "vertical": 523.7629166666666,
+    +         "horizontal": 446,
+    +         "vertical": 523,
+            },
+            Object {
+    -         "horizontal": 765.9038392857141,
+    -         "vertical": 897.8792857142855,
+    +         "horizontal": 765,
+    +         "vertical": 897,
+            },
+            Object {
+    -         "horizontal": 1276.5063988095235,
+    -         "vertical": 1496.4654761904758,
+    +         "horizontal": 1276,
+    +         "vertical": 1496,
+            },
+            Object {
+    -         "horizontal": 2144.530749999999,
+    -         "vertical": 2514.061999999999,
+    +         "horizontal": 2144,
+    +         "vertical": 2514,
+            },
+            Object {
+    -         "horizontal": 3697.466810344826,
+    -         "vertical": 4334.589655172413,
+    +         "horizontal": 3697,
+    +         "vertical": 4334,
+            },
+            Object {
+    -         "horizontal": 6307.443382352939,
+    -         "vertical": 7394.299999999997,
+    +         "horizontal": 6307,
+    +         "vertical": 7394,
+            },
+            Object {
+    -         "horizontal": 10722.653749999996,
+    -         "vertical": 12570.309999999996,
+    +         "horizontal": 10722,
+    +         "vertical": 12570,
+            },
+            Object {
+    -         "horizontal": 17871.089583333327,
+    -         "vertical": 20950.51666666666,
+    +         "horizontal": 17871,
+    +         "vertical": 20950,
+            },
+            Object {
+    -         "horizontal": 30636.153571428564,
+    -         "vertical": 35915.17142857142,
+    +         "horizontal": 30636,
+    +         "vertical": 35915,
+            },
+            Object {
+    -         "horizontal": 53613.26874999998,
+    -         "vertical": 62851.54999999998,
+    +         "horizontal": 53613,
+    +         "vertical": 62851,
+            },
+            Object {
+    -         "horizontal": 89355.44791666664,
+    -         "vertical": 104752.5833333333,
+    +         "horizontal": 89355,
+    +         "vertical": 104752,
+            },
+            Object {
+    -         "horizontal": 153180.7678571428,
+    -         "vertical": 179575.8571428571,
+    +         "horizontal": 153180,
+    +         "vertical": 179575,
+            },
+            Object {
+    -         "horizontal": 268066.34374999994,
+    -         "vertical": 314257.74999999994,
+    +         "horizontal": 268066,
+    +         "vertical": 314257,
+            },
+            Object {
+    -         "horizontal": 446777.23958333326,
+    -         "vertical": 523762.91666666657,
+    +         "horizontal": 446777,
+    +         "vertical": 523762,
+            },
+            Object {
+    -         "horizontal": 765903.8392857141,
+    -         "vertical": 897879.2857142856,
+    +         "horizontal": 765903,
+    +         "vertical": 897879,
+            },
+            Object {
+    -         "horizontal": 1276506.3988095236,
+    -         "vertical": 1496465.4761904757,
+    +         "horizontal": 1276506,
+    +         "vertical": 1496465,
+            },
+            Object {
+    -         "horizontal": 2144530.7499999995,
+    -         "vertical": 2514061.9999999995,
+    +         "horizontal": 2144530,
+    +         "vertical": 2514061,
+            },
+          ],
+    +   },
+    +   "zoom": Object {
+    +     "maxNativeZoom": 25,
+    +     "maxZoom": 25,
+    +     "minNativeZoom": 25,
+    +     "minZoom": 0,
+        },
+      }
+
+      116 |       (map) => map.querySelector('.point_2').extent
+      117 |     );
+    > 118 |     expect(extent).toEqual(data.pointExtentNoZoom);
+          |                    ^
+      119 |   });
+      120 |
+      121 |   test('Zoom to <map-point> with no zoom attribute', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\mapFeature.test.js:118:20
+
+  28) core\mapFeature.test.js:121:7 › Playwright MapFeature Custom Element Tests › Zoom to <map-point> with no zoom attribute
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: 5
+    Received: 25
+
+      124 |       return +map.zoom;
+      125 |     });
+    > 126 |     expect(mapZoom).toEqual(5);
+          |                     ^
+      127 |   });
+      128 |
+      129 |   test('Get geojson representation of <map-geometry> with single geometry', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\mapFeature.test.js:126:21
+
+  29) core\mapFeature.test.js:175:7 › Playwright MapFeature Custom Element Tests › Default click method test
+
+    Error: page.$eval: TypeError: Cannot read properties of undefined (reading 'isPopupOpen')
+
+        at eval (eval at evaluate (:208:30), <anonymous>:4:42)
+        at UtilityScript.evaluate (<anonymous>:210:17)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\eval at evaluate (:208:30), <anonymous>:4:42)
+        at UtilityScript.evaluate (C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\<anonymous>:210:17)
+        at UtilityScript.<anonymous> (C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\<anonymous>:1:44)
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\mapFeature.test.js:178:30
+
+  30) core\metaDefault.test.js:60:7 › Playwright Missing Min Max Attribute, Meta Default Tests › Inline layer extent test
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 2
+    + Received  + 2
+
+      Object {
+    -   "horizontal": -3263369.215138428,
+    -   "vertical": 4046262.80585894,
+    +   "horizontal": -11940075.314370813,
+    +   "vertical": 10941501.97685327,
+      }
+
+      67 |     expect(extent.hasOwnProperty('bottomRight')).toBeTruthy();
+      68 |     expect(extent.hasOwnProperty('projection')).toBeTruthy();
+    > 69 |     expect(extent.topLeft.pcrs).toEqual(expectedPCRSFirstLayer.topLeft);
+         |                                 ^
+      70 |     expect(extent.bottomRight.pcrs).toEqual(expectedPCRSFirstLayer.bottomRight);
+      71 |     expect(extent.topLeft.gcrs).toEqual(expectedGCRSFirstLayer.topLeft);
+      72 |     expect(extent.bottomRight.gcrs).toEqual(expectedGCRSFirstLayer.bottomRight);
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\metaDefault.test.js:69:33
+
+  31) core\missingMetaParameters.test.js:18:7 › Missing Parameters Test › Static features with missing <map-meta name='zoom'></map-meta> & <map-meta name='extent'></map-meta>
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 2
+    + Received  + 2
+
+      Object {
+    -   "horizontal": -34655800,
+    -   "vertical": 39310000,
+    +   "horizontal": -423497381.5764965,
+    +   "vertical": 2171501.481669627,
+      }
+
+      22 |     );
+      23 |
+    > 24 |     expect(layerController.topLeft.pcrs).toEqual({
+         |                                          ^
+      25 |       horizontal: -34655800,
+      26 |       vertical: 39310000
+      27 |     });
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\missingMetaParameters.test.js:24:42
+
+  32) core\missingMetaParameters.test.js:40:7 › Missing Parameters Test › Static tiles with missing <map-meta name='zoom'></map-meta>
+
+    TypeError: Cannot read properties of null (reading 'topLeft')
+
+      44 |     );
+      45 |
+    > 46 |     expect(layerController.topLeft.pcrs).toEqual({
+         |                            ^
+      47 |       horizontal: -4175739.0398780815,
+      48 |       vertical: 5443265.599864535
+      49 |     });
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\missingMetaParameters.test.js:46:28
+
+  33) core\missingMetaParameters.test.js:63:7 › Missing Parameters Test › Templated features with missing <map-meta name='zoom'></map-meta>
+
+    TypeError: Cannot read properties of null (reading 'topLeft')
+
+      67 |     );
+      68 |
+    > 69 |     expect(layerController.topLeft.pcrs).toEqual({
+         |                            ^
+      70 |       horizontal: 1501645.2210838948,
+      71 |       vertical: -66110.70639331453
+      72 |     });
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\missingMetaParameters.test.js:69:28
+
+  34) core\missingMetaParameters.test.js:85:7 › Missing Parameters Test › Templated tiles with missing <map-meta name='zoom'></map-meta> & extent
+
+    TypeError: Cannot read properties of null (reading 'topLeft')
+
+      89 |     );
+      90 |
+    > 91 |     expect(layerController.topLeft.pcrs).toEqual({
+         |                            ^
+      92 |       horizontal: -180,
+      93 |       vertical: 90
+      94 |     });
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\missingMetaParameters.test.js:91:28
+
+  35) core\missingMetaParameters.test.js:107:7 › Missing Parameters Test › Templated image with missing <map-meta name='zoom'></map-meta>
+
+    TypeError: Cannot read properties of null (reading 'topLeft')
+
+      111 |     );
+      112 |
+    > 113 |     expect(layerController.topLeft.pcrs).toEqual({
+          |                            ^
+      114 |       horizontal: 28448056,
+      115 |       vertical: 42672085
+      116 |     });
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\missingMetaParameters.test.js:113:28
+
+  36) core\styleParsing.test.js:36:7 › Style Parsed and Implemented Test › CSS from a retrieved MapML file added inorder inside templated-layer container
+
+    Error: page.$eval: Error: failed to find element matching selector "css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link"
+
+      35 |
+      36 |   test('CSS from a retrieved MapML file added inorder inside templated-layer container', async () => {
+    > 37 |     const firstStyle = await page.$eval(
+         |                                   ^
+      38 |       'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link',
+      39 |       (styleE) => styleE.outerHTML
+      40 |     );
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\styleParsing.test.js:37:35
+
+  37) core\styleParsing.test.js:58:7 › Style Parsed and Implemented Test › CSS from a retrieved MapML File added to templated-layer container
+
+    Error: expect(received).toBeTruthy()
+
+    Received: null
+
+      63 |       'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link:nth-child(2)'
+      64 |     );
+    > 65 |     await expect(foundStyleLinkOne).toBeTruthy();
+         |                                     ^
+      66 |     await expect(foundStyleLinkTwo).toBeTruthy();
+      67 |   });
+      68 |
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\styleParsing.test.js:65:37
+
+  38) core\touchDevice.test.js:21:7 › Playwright touch device tests › Tap/Long press to show layer control
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: true
+    Received: false
+
+      49 |         el._isExpanded
+      50 |     );
+    > 51 |     expect(className).toEqual(true);
+         |                       ^
+      52 |
+      53 |     // expect the layer context menu not show after the long press
+      54 |     const aHandle = await page.evaluateHandle(() =>
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\touchDevice.test.js:51:23
+
+  39) core\zoomChangeProjection.test.js:35:7 › Playwright zoomin zoomout Projection Change Tests › zoomout link changes projections
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.click: Target closed
+    =========================== logs ===========================
+    waiting for locator('div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out')
+      locator resolved to <a href="#" role="button" title="Zoom out" aria-dis…>…</a>
+    attempting click action
+      waiting for element to be visible, enabled and stable
+        element is not enabled - waiting...
+    ============================================================
+
+      34 |
+      35 |   test('zoomout link changes projections', async () => {
+    > 36 |     await page.click(
+         |                ^
+      37 |       'div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out'
+      38 |     );
+      39 |     await page.waitForTimeout(1000);
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\core\zoomChangeProjection.test.js:36:16
+
+  40) geojson\geojson2mapml.test.js:112:7 › GeoJSON API - geojson2mapml › Feature ────────────
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: "<layer- label=\"Milk River\" checked=\"\"><map-meta name=\"extent\" content=\"top-left-longitude=-112.0866667, top-left-latitude=49.15, bottom-right-longitude=-112.0866667,bottom-right-latitude=49.15\"></map-meta><map-meta name=\"projection\" content=\"OSMTILE\"></map-meta><map-meta name=\"cs\" content=\"gcrs\"></map-meta><map-feature><map-featurecaption>Milk River</map-featurecaption><map-geometry><map-multipoint><map-coordinates>-112.0866667 49.15 </map-coordinates></map-multipoint></map-geometry><map-properties><table><thead><tr><th role=\"columnheader\" scope=\"col\">Property name</th><th role=\"columnheader\" scope=\"col\">Property value</th></tr></thead><tbody><tr><th scope=\"row\">id</th><td itemprop=\"id\">7d615dd1d05511d892e2080020a0f4c9</td></tr><tr><th scope=\"row\">label_fr</th><td itemprop=\"label_fr\">Milk River</td></tr><tr><th scope=\"row\">label_en</th><td itemprop=\"label_en\">Milk River</td></tr><tr><th scope=\"row\">label_ab</th><td itemprop=\"label_ab\">Milk River</td></tr><tr><th scope=\"row\">type_fr</th><td itemprop=\"type_fr\">TOWN-Ville</td></tr><tr><th scope=\"row\">type_en</th><td itemprop=\"type_en\">TOWN-Town</td></tr></tbody></table></map-properties></map-feature></layer->"
+    Received: "<layer- label=\"Milk River\" checked=\"\" disabled=\"\"><map-meta name=\"extent\" content=\"top-left-longitude=-112.0866667, top-left-latitude=49.15, bottom-right-longitude=-112.0866667,bottom-right-latitude=49.15\"></map-meta><map-meta name=\"projection\" content=\"OSMTILE\"></map-meta><map-meta name=\"cs\" content=\"gcrs\"></map-meta><map-feature><map-featurecaption>Milk River</map-featurecaption><map-geometry><map-multipoint><map-coordinates>-112.0866667 49.15 </map-coordinates></map-multipoint></map-geometry><map-properties><table><thead><tr><th role=\"columnheader\" scope=\"col\">Property name</th><th role=\"columnheader\" scope=\"col\">Property value</th></tr></thead><tbody><tr><th scope=\"row\">id</th><td itemprop=\"id\">7d615dd1d05511d892e2080020a0f4c9</td></tr><tr><th scope=\"row\">label_fr</th><td itemprop=\"label_fr\">Milk River</td></tr><tr><th scope=\"row\">label_en</th><td itemprop=\"label_en\">Milk River</td></tr><tr><th scope=\"row\">label_ab</th><td itemprop=\"label_ab\">Milk River</td></tr><tr><th scope=\"row\">type_fr</th><td itemprop=\"type_fr\">TOWN-Ville</td></tr><tr><th scope=\"row\">type_en</th><td itemprop=\"type_en\">TOWN-Town</td></tr></tbody></table></map-properties></map-feature></layer->"
+
+      116 |       (node) => node.outerHTML
+      117 |     );
+    > 118 |     expect(out).toEqual(exp);
+          |                 ^
+      119 |   });
+      120 | });
+      121 |
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\geojson\geojson2mapml.test.js:118:17
+
+  41) layers\clientTemplatedTileLayer.test.js:18:7 › Playwright Client Tile Tests › Custom Tiles Loaded In, Accurate Coordinates
+
+    Error: page.$eval: Error: failed to find element matching selector "xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div:nth-child(1) > p"
+
+      17 |
+      18 |   test('Custom Tiles Loaded In, Accurate Coordinates', async () => {
+    > 19 |     const one = await page.$eval(
+         |                            ^
+      20 |       'xpath=//html/body/mapml-viewer >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div:nth-child(1) > p',
+      21 |       (tile) => tile.textContent
+      22 |     );
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\clientTemplatedTileLayer.test.js:19:28
+
+  42) layers\CustomProjectionLayers.test.js:20:7 › Custom Projection Feature & Extent Tests › map-extent Image access ._layer
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: "object"
+    Received: "undefined"
+
+      24 |       (map) => typeof map.getElementsByTagName('map-extent')[0]._layer
+      25 |     );
+    > 26 |     expect(layer).toEqual('object');
+         |                   ^
+      27 |   });
+      28 |
+      29 |   test.describe('Feature', () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\CustomProjectionLayers.test.js:26:19
+
+  43) layers\CustomProjectionLayers.test.js:30:9 › Custom Projection Feature & Extent Tests › Feature › access ._layer
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: "object"
+    Received: "undefined"
+
+      34 |         (map) => typeof map.getElementsByTagName('map-feature')[0]._layer
+      35 |       );
+    > 36 |       expect(layer).toEqual('object');
+         |                     ^
+      37 |     });
+      38 |
+      39 |     test('feature method - ZoomTo()', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\CustomProjectionLayers.test.js:36:21
+
+  44) layers\general\isVisible.js:13:9 › Playwright featureLayer (Static Features) Layer Tests › isVisible Property Tests for featureLayer › isVisible property false when zoomed out of bounds (zooming in)
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: true
+    Received: false
+
+      22 |       );
+      23 |
+    > 24 |       expect(layerLabelItalic).toEqual(true);
+         |                                ^
+      25 |     });
+      26 |     test('isVisible property false when zoomed out of bounds (zooming out)', async () => {
+      27 |       for (let i = 0; i < zoomOut + zoomIn - 1; i++) {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\general\isVisible.js:24:32
+
+  45) layers\general\isVisible.js:26:9 › Playwright featureLayer (Static Features) Layer Tests › isVisible Property Tests for featureLayer › isVisible property false when zoomed out of bounds (zooming out)
+
+    Test timeout of 30000ms exceeded.
+
+  46) layers\general\zoomLimit.js:17:9 › Playwright featureLayer (Static Features) Layer Tests › Map Zoom Limit Tests for featureLayer › Limit map zooming (zooming in)
+
+    Error: expect(received).toMatch(expected)
+
+    Expected substring: "disabled"
+    Received string:    "leaflet-control-zoom-in"
+
+      25 |       );
+      26 |
+    > 27 |       expect(zoomButton).toMatch('disabled');
+         |                          ^
+      28 |     });
+      29 |
+      30 |     test('Allow zooming before reaching limit (zooming in)', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\general\zoomLimit.js:27:26
+
+  47) layers\general\zoomLimit.js:41:9 › Playwright featureLayer (Static Features) Layer Tests › Map Zoom Limit Tests for featureLayer › Limit map zooming (zooming out)
+
+    Test timeout of 30000ms exceeded.
+
+  48) layers\general\extentProperty.js:31:9 › Playwright featureLayer (Static Features) Layer Tests › <Layer>.extent Property Tests for featureLayer › 2nd <layer->.extent test
+
+    TypeError: Cannot read properties of null (reading 'hasOwnProperty')
+
+      34 |         (layer) => layer.extent
+      35 |       );
+    > 36 |       expect(extent.hasOwnProperty('zoom')).toBeTruthy();
+         |                     ^
+      37 |       expect(extent.hasOwnProperty('topLeft')).toBeTruthy();
+      38 |       expect(extent.hasOwnProperty('bottomRight')).toBeTruthy();
+      39 |       expect(extent.hasOwnProperty('projection')).toBeTruthy();
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\general\extentProperty.js:36:21
+
+  49) layers\featureLayer.test.js:81:9 › Playwright featureLayer (Static Features) Layer Tests › Retrieved Static Features Tests › valid <layer>.extent
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 3
+
+      Object {
+    -   "maxNativeZoom": 0,
+    -   "maxZoom": 2,
+    +   "maxNativeZoom": 25,
+    +   "maxZoom": 25,
+        "minNativeZoom": 0,
+    -   "minZoom": 2,
+    +   "minZoom": 0,
+      }
+
+      100 |         vertical: -60.79110984572508
+      101 |       });
+    > 102 |       expect(layerExtent.zoom).toEqual({
+          |                                ^
+      103 |         maxNativeZoom: 0,
+      104 |         minNativeZoom: 0,
+      105 |         maxZoom: 2,
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\featureLayer.test.js:102:32
+
+  50) layers\multipleExtents.test.js:14:7 › Adding and Removing Multiple Extents › Layer's multiple extents display on map and in layer control
+
+    Error: page.$eval: Error: failed to find element matching selector "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(4) > div > div"
+
+      13 |
+      14 |   test("Layer's multiple extents display on map and in layer control", async () => {
+    > 15 |     const cbmtExtent = await page.$eval(
+         |                                   ^
+      16 |       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div:nth-child(4) > div > div',
+      17 |       (div) => div.childElementCount
+      18 |     );
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\multipleExtents.test.js:15:35
+
+  51) layers\multipleExtents.test.js:34:7 › Adding and Removing Multiple Extents › Changing extent opacity, removing and adding extent effects expected changes to map container layer content
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: 2
+    Received: 1
+
+      63 |       (div) => div.className
+      64 |     );
+    > 65 |     expect(startExtentCount).toEqual(2);
+         |                              ^
+      66 |     expect(alabama).toEqual('leaflet-layer mapml-templatedlayer-container');
+      67 |
+      68 |     // restore the cbmt extent
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\multipleExtents.test.js:65:30
+
+  52) layers\multipleExtents.test.js:116:7 › Adding and Removing Multiple Extents › Changing extent opacity, removing and adding extent effects expected changes to only that specific content
+
+    Test timeout of 30000ms exceeded.
+
+  53) layers\multipleExtents.test.js:180:7 › Adding and Removing Multiple Extents › Extents retain their state when turning layer off and on
+
+    Test timeout of 30000ms exceeded.
+
+  54) layers\multipleExtents.test.js:244:7 › Multiple Extents Bounds Tests › Only Extent Bounds show in debug mode
+
+    Error: Timed out 5000ms waiting for expect(locator).toHaveCount(expected)
+
+    Locator: locator('.mapml-debug-vectors')
+    Expected: 4
+    Received: 8
+    Call log:
+      - expect.toHaveCount with timeout 5000ms
+      - waiting for locator('.mapml-debug-vectors')
+      -   locator resolved to 8 elements
+      -   unexpected value "8"
+      -   locator resolved to 8 elements
+      -   unexpected value "8"
+      -   locator resolved to 8 elements
+      -   unexpected value "8"
+      -   locator resolved to 8 elements
+      -   unexpected value "8"
+      -   locator resolved to 8 elements
+      -   unexpected value "8"
+      -   locator resolved to 8 elements
+      -   unexpected value "8"
+      -   locator resolved to 8 elements
+      -   unexpected value "8"
+      -   locator resolved to 8 elements
+      -   unexpected value "8"
+      -   locator resolved to 8 elements
+      -   unexpected value "8"
+
+
+      252 |     // the bounds expected to show include the "projection center", and 3 bounds
+      253 |     // one for each map-link
+    > 254 |     await expect(page.locator('.mapml-debug-vectors')).toHaveCount(4);
+          |                                                        ^
+      255 |     await expect(
+      256 |       page.locator('.mapml-debug-vectors.projection-centre ')
+      257 |     ).toHaveCount(1);
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\multipleExtents.test.js:254:56
+
+  55) layers\multipleExtents.test.js:266:7 › Multiple Extents Bounds Tests › When unchecked, extent bounds removed from debug layer
+
+    Error: Timed out 5000ms waiting for expect(locator).toHaveCount(expected)
+
+    Locator: locator('.mapml-debug-vectors')
+    Expected: 3
+    Received: 0
+    Call log:
+      - expect.toHaveCount with timeout 5000ms
+      - waiting for locator('.mapml-debug-vectors')
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+
+
+      280 |     await page.$eval('body > mapml-viewer', (map) => map.toggleDebug());
+      281 |
+    > 282 |     await expect(page.locator('.mapml-debug-vectors')).toHaveCount(3);
+          |                                                        ^
+      283 |     await expect(
+      284 |       page.locator('.mapml-debug-vectors.projection-centre ')
+      285 |     ).toHaveCount(1);
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\multipleExtents.test.js:282:56
+
+  56) layers\multipleExtents.test.js:294:7 › Multiple Extents Bounds Tests › Checking an extent adds its bounds, unchecking an extent removes its bounds
+
+    Test timeout of 30000ms exceeded.
+
+  57) layers\multipleExtents.test.js:347:7 › Multiple Extents Bounds Tests › Extent is individually disabled in layer control when out of bounds
+
+    Error: Timed out 5000ms waiting for expect(locator).toHaveCSS(expected)
+
+    Locator: getByText('alabama_feature')
+    Expected string: "normal"
+    Received string: "italic"
+    Call log:
+      - expect.toHaveCSS with timeout 5000ms
+      - waiting for getByText('alabama_feature')
+      -   locator resolved to <span class="mapml-layer-item-name" id="mapml-extent-i…>alabama_feature</span>
+      -   unexpected value "italic"
+      -   locator resolved to <span class="mapml-layer-item-name" id="mapml-extent-i…>alabama_feature</span>
+      -   unexpected value "italic"
+      -   locator resolved to <span class="mapml-layer-item-name" id="mapml-extent-i…>alabama_feature</span>
+      -   unexpected value "italic"
+      -   locator resolved to <span class="mapml-layer-item-name" id="mapml-extent-i…>alabama_feature</span>
+      -   unexpected value "italic"
+      -   locator resolved to <span class="mapml-layer-item-name" id="mapml-extent-i…>alabama_feature</span>
+      -   unexpected value "italic"
+      -   locator resolved to <span class="mapml-layer-item-name" id="mapml-extent-i…>alabama_feature</span>
+      -   unexpected value "italic"
+      -   locator resolved to <span class="mapml-layer-item-name" id="mapml-extent-i…>alabama_feature</span>
+      -   unexpected value "italic"
+      -   locator resolved to <span class="mapml-layer-item-name" id="mapml-extent-i…>alabama_feature</span>
+      -   unexpected value "italic"
+      -   locator resolved to <span class="mapml-layer-item-name" id="mapml-extent-i…>alabama_feature</span>
+      -   unexpected value "italic"
+
+
+      352 |     const alabamaExtentItem = page.getByText('alabama_feature');
+      353 |     await expect(alabamaExtentItem).toHaveCount(1);
+    > 354 |     await expect(alabamaExtentItem).toHaveCSS('font-style', 'normal');
+          |                                     ^
+      355 |
+      356 |     const alabamaMapExtent = page.locator('map-extent[label=alabama_feature]');
+      357 |     await expect(alabamaMapExtent).toHaveCount(1);
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\multipleExtents.test.js:354:37
+
+  58) layers\multipleExtents.test.js:484:7 › Multiple Extents Reordering and ZIndices Tests › Ensure Same Order When Extent and Layer Checked Off/On
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: 1
+    Received: 2
+
+      518 |       (divs) => divs.length
+      519 |     );
+    > 520 |     expect(cbmt).toEqual(1);
+          |                  ^
+      521 |
+      522 |     await page.click("text='Multiple Extents'");
+      523 |     layersCount = await page.$eval(
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\multipleExtents.test.js:520:18
+
+  59) layers\multipleExtents.test.js:559:7 › Multiple Extents Reordering and ZIndices Tests › Move Extent Back Up in the Layer Control
+
+    TypeError: Cannot read properties of null (reading 'x')
+
+      564 |     let controlBBox = await control.boundingBox();
+      565 |     await page.mouse.move(
+    > 566 |       controlBBox.x + controlBBox.width / 2,
+          |                   ^
+      567 |       controlBBox.y + controlBBox.height / 2
+      568 |     );
+      569 |     await page.mouse.down();
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\multipleExtents.test.js:566:19
+
+  60) layers\multipleHeterogeneousQueryExtents.test.js:18:7 › Multiple Extent Queries with heterogeneous response content types › Query multiple overlapping extents which return heterogeneous document types (text/mapml, text/html)
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "This is an HTML document response for a MapML query."
+    Received: "<!DOCTYPE html> <html lang=\"en\"> <head> <title>Multiple Heterogeneous Query Extents Test Data file</title> <meta charset=\"UTF-8\"> </head> <body> This is an HTML document response for a MapML query. </body> </html>"
+
+      31 |       (iframe) => iframe.contentWindow.document.querySelector('body').innerText
+      32 |     );
+    > 33 |     expect(content).toBe(
+         |                     ^
+      34 |       'This is an HTML document response for a MapML query.'
+      35 |     );
+      36 |   });
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\multipleHeterogeneousQueryExtents.test.js:33:21
+
+  61) layers\multipleHeterogeneousQueryExtents.test.js:37:7 › Multiple Extent Queries with heterogeneous response content types › Re-order queryable extents, verify response order changes accordingly
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.waitForSelector: Page closed
+    =========================== logs ===========================
+    waiting for locator('div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p') to be visible
+    ============================================================
+
+       95 |
+       96 |     await page.click('div');
+    >  97 |     await page.waitForSelector(
+          |                ^
+       98 |       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p'
+       99 |     );
+      100 |     let numFeatures = await page.$eval(
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\multipleHeterogeneousQueryExtents.test.js:97:16
+
+  62) layers\multipleHeterogeneousQueryExtents.test.js:127:7 › Multiple Extent Queries with heterogeneous response content types › Enusre extents that are unchecked or removed are not included in query results
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: "mapml query response"
+    Received: "html query response"
+
+      136 |       (span) => span.innerText.toLowerCase()
+      137 |     );
+    > 138 |     expect(secondExtentInLayerControl).toEqual('mapml query response');
+          |                                        ^
+      139 |     let thirdExtentInLayerControl = await page.$eval(
+      140 |       'fieldset.mapml-layer-grouped-extents > fieldset:nth-child(3) span',
+      141 |       (span) => span.innerText.toLowerCase()
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\multipleHeterogeneousQueryExtents.test.js:138:40
+
+  63) layers\multipleQueryExtents.test.js:82:7 › Multiple Extent Query Tests › Navigate back from second query result set to end of first query result set by clicking '< / Previous'
+
+    Error: expect(received).toBeFalsy()
+
+    Received: "ref: <Node>"
+
+      86 |       (g) => (g.firstElementChild ? g.firstElementChild : false)
+      87 |     );
+    > 88 |     expect(feature).toBeFalsy();
+         |                     ^
+      89 |
+      90 |     const popup = await page.$eval(
+      91 |       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe',
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\multipleQueryExtents.test.js:88:21
+
+  64) layers\queryLink.test.js:103:9 › Playwright Query Link Tests › Queried Feature Tests › First feature added + popup content updated
+
+    Error: page.$eval: Error: failed to find element matching selector "div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path"
+
+      109 |         'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div'
+      110 |       );
+    > 111 |       const feature = await page.$eval(
+          |                                  ^
+      112 |         'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div:nth-child(5) > svg > g > g > path',
+      113 |         (tile) => tile.getAttribute('d')
+      114 |       );
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\queryLink.test.js:111:34
+
+  65) layers\queryLink.test.js:141:9 › Playwright Query Link Tests › Queried Feature Tests › Next feature added + popup content updated
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.click: Page closed
+    =========================== logs ===========================
+    waiting for locator('div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)')
+    ============================================================
+
+      140 |
+      141 |     test('Next feature added + popup content updated ', async () => {
+    > 142 |       await page.click(
+          |                  ^
+      143 |         'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)'
+      144 |       );
+      145 |       const feature = await page.$eval(
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\queryLink.test.js:142:18
+
+  66) layers\queryLink.test.js:175:9 › Playwright Query Link Tests › Queried Feature Tests › Previous feature added + popup content updated
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.click: Page closed
+    =========================== logs ===========================
+    waiting for locator('div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(2)')
+    ============================================================
+
+      174 |
+      175 |     test('Previous feature added + popup content updated ', async () => {
+    > 176 |       await page.click(
+          |                  ^
+      177 |         'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(2)'
+      178 |       );
+      179 |       const feature = await page.$eval(
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\queryLink.test.js:176:18
+
+  67) layers\queryLink.test.js:209:9 › Playwright Query Link Tests › Queried Feature Tests › PCRS feature added + popup content updated
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.click: Page closed
+    =========================== logs ===========================
+    waiting for locator('div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)')
+    ============================================================
+
+      209 |     test('PCRS feature added + popup content updated ', async () => {
+      210 |       for (let i = 0; i < 2; i++)
+    > 211 |         await page.click(
+          |                    ^
+      212 |           'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)'
+      213 |         );
+      214 |       const feature = await page.$eval(
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\queryLink.test.js:211:20
+
+  68) layers\queryLink.test.js:227:9 › Playwright Query Link Tests › Queried Feature Tests › TCRS feature added + popup content updated
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.click: Page closed
+    =========================== logs ===========================
+    waiting for locator('div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)')
+    ============================================================
+
+      226 |
+      227 |     test('TCRS feature added + popup content updated ', async () => {
+    > 228 |       await page.click(
+          |                  ^
+      229 |         'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)'
+      230 |       );
+      231 |       const feature = await page.$eval(
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\queryLink.test.js:228:18
+
+  69) layers\queryLink.test.js:244:9 › Playwright Query Link Tests › Queried Feature Tests › Tilematrix feature added + popup content updated
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.click: Page closed
+    =========================== logs ===========================
+    waiting for locator('div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)')
+    ============================================================
+
+      243 |
+      244 |     test('Tilematrix feature added + popup content updated ', async () => {
+    > 245 |       await page.click(
+          |                  ^
+      246 |         'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)'
+      247 |       );
+      248 |       const feature = await page.$eval(
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\queryLink.test.js:245:18
+
+  70) layers\queryLink.test.js:260:9 › Playwright Query Link Tests › Queried Feature Tests › Synthesized point, valid location
+
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.click: Page closed
+    =========================== logs ===========================
+    waiting for locator('div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)')
+    ============================================================
+
+      259 |     });
+      260 |     test('Synthesized point, valid location ', async () => {
+    > 261 |       await page.click(
+          |                  ^
+      262 |         'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)'
+      263 |       );
+      264 |       const feature = await page.$eval(
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\queryLink.test.js:261:18
+
+  71) layers\queryLink.test.js:282:9 › Playwright Query Link Tests › Queried Feature Tests › 'Zoom to here' link test
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.waitForSelector: Page closed
+    =========================== logs ===========================
+    waiting for locator('div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div') to be visible
+    ============================================================
+
+      300 |
+      301 |       await page.click('div');
+    > 302 |       await page.waitForSelector(
+          |                  ^
+      303 |         'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div'
+      304 |       );
+      305 |       await page.keyboard.press('Tab');
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\queryLink.test.js:302:18
+
+  72) layers\queryLink.test.js:331:9 › Playwright Query Link Tests › Queried Feature Tests › hidden layer is not queryable, hidden map-extent doesn't matter
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 0
+
+      336 |       let popups = await popupPane.evaluate((pane) => pane.childElementCount);
+      337 |       // expect results
+    > 338 |       expect(popups).toBe(1);
+          |                      ^
+      339 |       const layer = await page.locator('layer-');
+      340 |       // dismiss the popup
+      341 |       await page.keyboard.press('Escape');
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\queryLink.test.js:338:22
+
+  73) layers\general\isVisible.js:13:9 › Playwright StaticTile Layer Tests › isVisible Property Tests for staticTileLayer › isVisible property false when zoomed out of bounds (zooming in)
+
+    Test timeout of 30000ms exceeded.
+
+  74) layers\general\isVisible.js:26:9 › Playwright StaticTile Layer Tests › isVisible Property Tests for staticTileLayer › isVisible property false when zoomed out of bounds (zooming out)
+
+    Test timeout of 30000ms exceeded.
+
+  75) layers\general\zoomLimit.js:17:9 › Playwright StaticTile Layer Tests › Map Zoom Limit Tests for staticTileLayer › Limit map zooming (zooming in)
+
+    Error: expect(received).toMatch(expected)
+
+    Expected substring: "disabled"
+    Received string:    "leaflet-control-zoom-in"
+
+      25 |       );
+      26 |
+    > 27 |       expect(zoomButton).toMatch('disabled');
+         |                          ^
+      28 |     });
+      29 |
+      30 |     test('Allow zooming before reaching limit (zooming in)', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\general\zoomLimit.js:27:26
+
+  76) layers\general\zoomLimit.js:41:9 › Playwright StaticTile Layer Tests › Map Zoom Limit Tests for staticTileLayer › Limit map zooming (zooming out)
+
+    Test timeout of 30000ms exceeded.
+
+  77) layers\general\extentProperty.js:17:9 › Playwright StaticTile Layer Tests › <Layer>.extent Property Tests for staticTileLayer › <layer->.extent test
+
+    TypeError: Cannot read properties of null (reading 'hasOwnProperty')
+
+      20 |         (layer) => layer.extent
+      21 |       );
+    > 22 |       expect(extent.hasOwnProperty('zoom')).toBeTruthy();
+         |                     ^
+      23 |       expect(extent.hasOwnProperty('topLeft')).toBeTruthy();
+      24 |       expect(extent.hasOwnProperty('bottomRight')).toBeTruthy();
+      25 |       expect(extent.hasOwnProperty('projection')).toBeTruthy();
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\general\extentProperty.js:22:21
+
+  78) layers\general\extentProperty.js:31:9 › Playwright StaticTile Layer Tests › <Layer>.extent Property Tests for staticTileLayer › 2nd <layer->.extent test
+
+    TypeError: Cannot read properties of null (reading 'hasOwnProperty')
+
+      34 |         (layer) => layer.extent
+      35 |       );
+    > 36 |       expect(extent.hasOwnProperty('zoom')).toBeTruthy();
+         |                     ^
+      37 |       expect(extent.hasOwnProperty('topLeft')).toBeTruthy();
+      38 |       expect(extent.hasOwnProperty('bottomRight')).toBeTruthy();
+      39 |       expect(extent.hasOwnProperty('projection')).toBeTruthy();
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\general\extentProperty.js:36:21
+
+  79) layers\staticTileLayer.test.js:47:9 › Playwright StaticTile Layer Tests › General Tests  › Tiles load in on default map zoom level
+
+    Error: page.$eval: Error: failed to find element matching selector ".mapml-static-tile-layer > div"
+
+      46 |
+      47 |     test('Tiles load in on default map zoom level', async () => {
+    > 48 |       const tiles = await page.$eval(
+         |                                ^
+      49 |         '.mapml-static-tile-layer > div',
+      50 |         (tileGroup) => tileGroup.getElementsByTagName('map-tile').length
+      51 |       );
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\staticTileLayer.test.js:48:32
+
+  80) layers\step\request.js:48:9 › Templated features layer with step › Request Tests › On add requests zoom level 0
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "-8030725.916518498-9758400.22013378111151604.1148082329423929.8111929520"
+    Received string:    ""
+
+      56 |       await page.reload();
+      57 |       await page.waitForTimeout(500);
+    > 58 |       expect(url).toContain(u1);
+         |                   ^
+      59 |     });
+      60 |
+      61 |     test('At zoom level 1, zooming in to 2', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\step\request.js:58:19
+
+  81) layers\step\request.js:61:9 › Templated features layer with step › Request Tests › At zoom level 1, zooming in to 2
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: 0
+    Received: 1
+
+      16 |   await page.keyboard.press('Equal');
+      17 |   await page.waitForTimeout(1000);
+    > 18 |   expect(requests).toEqual(requestCount);
+         |                    ^
+      19 |   if (url !== '') expect(u).toContain(url);
+      20 | }
+      21 |
+
+        at zoomIn (C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\step\request.js:18:20)
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\step\request.js:64:7
+
+  82) layers\step\request.js:67:9 › Templated features layer with step › Request Tests › At zoom level 2, zooming in to 3
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: 1
+    Received: 0
+
+      16 |   await page.keyboard.press('Equal');
+      17 |   await page.waitForTimeout(1000);
+    > 18 |   expect(requests).toEqual(requestCount);
+         |                    ^
+      19 |   if (url !== '') expect(u).toContain(url);
+      20 | }
+      21 |
+
+        at zoomIn (C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\step\request.js:18:20)
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\step\request.js:68:7
+
+  83) layers\step\request.js:88:9 › Templated features layer with step › Request Tests › Panning makes new request as needed
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "-437169.06273812056-1766644.65328931063531588.8747777492202113.28422656663"
+    Received string:    ""
+
+      100 |       }
+      101 |
+    > 102 |       expect(u).toContain(panU);
+          |                 ^
+      103 |     });
+      104 |   });
+      105 | };
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\step\request.js:102:17
+
+  84) layers\general\isVisible.js:13:9 › Playwright templatedFeatures Layer Tests › isVisible Property Tests for templatedFeatures › isVisible property false when zoomed out of bounds (zooming in)
+
+    Test timeout of 30000ms exceeded.
+
+  85) layers\general\isVisible.js:26:9 › Playwright templatedFeatures Layer Tests › isVisible Property Tests for templatedFeatures › isVisible property false when zoomed out of bounds (zooming out)
+
+    Test timeout of 30000ms exceeded.
+
+  86) layers\general\extentProperty.js:17:9 › Playwright templatedFeatures Layer Tests › <Layer>.extent Property Tests for templatedFeatures › <layer->.extent test
+
+    TypeError: Cannot read properties of null (reading 'hasOwnProperty')
+
+      20 |         (layer) => layer.extent
+      21 |       );
+    > 22 |       expect(extent.hasOwnProperty('zoom')).toBeTruthy();
+         |                     ^
+      23 |       expect(extent.hasOwnProperty('topLeft')).toBeTruthy();
+      24 |       expect(extent.hasOwnProperty('bottomRight')).toBeTruthy();
+      25 |       expect(extent.hasOwnProperty('projection')).toBeTruthy();
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\general\extentProperty.js:22:21
+
+  87) layers\general\extentProperty.js:31:9 › Playwright templatedFeatures Layer Tests › <Layer>.extent Property Tests for templatedFeatures › 2nd <layer->.extent test
+
+    TypeError: Cannot read properties of null (reading 'hasOwnProperty')
+
+      34 |         (layer) => layer.extent
+      35 |       );
+    > 36 |       expect(extent.hasOwnProperty('zoom')).toBeTruthy();
+         |                     ^
+      37 |       expect(extent.hasOwnProperty('topLeft')).toBeTruthy();
+      38 |       expect(extent.hasOwnProperty('bottomRight')).toBeTruthy();
+      39 |       expect(extent.hasOwnProperty('projection')).toBeTruthy();
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\general\extentProperty.js:36:21
+
+  88) layers\templatedFeatures.test.js:48:9 › Playwright templatedFeatures Layer Tests › Templated Features in shadowRoot › Templated features attaches to MapExtent's shadow root
+
+    Error: page.evaluate: TypeError: Cannot read properties of null (reading 'querySelectorAll')
+
+        at eval (eval at evaluate (:208:30), <anonymous>:1:65)
+        at eval (<anonymous>)
+        at UtilityScript.evaluate (<anonymous>:208:30)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\eval at evaluate (:208:30), <anonymous>:1:65)
+        at UtilityScript.evaluate (C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\<anonymous>:208:30)
+        at UtilityScript.<anonymous> (C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\<anonymous>:1:44)
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\templatedFeatures.test.js:52:35
+
+  89) layers\templatedFeatures.test.js:61:9 › Playwright templatedFeatures Layer Tests › Templated Features Zoom To Extent Tests › Zoom to layer applies meta extent
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1508601.8288036585
+    Received: 1509616.5079163536
+
+      77 |         `document.querySelector('#map2').extent.bottomRight.pcrs`
+      78 |       );
+    > 79 |       expect(endTopLeft.horizontal).toBe(1508601.8288036585);
+         |                                     ^
+      80 |       expect(endTopLeft.vertical).toBe(-169068.77063754946);
+      81 |       expect(endBottomRight.horizontal).toBe(1512570.5867411792);
+      82 |       expect(endBottomRight.vertical).toBe(-173037.52857506275);
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\templatedFeatures.test.js:79:37
+
+  90) layers\templatedFeatures.test.js:85:9 › Playwright templatedFeatures Layer Tests › Templated Features Zoom To Extent Tests › Templated features zoomTo method test
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1508601.8288036585
+    Received: 1509616.5079163536
+
+      93 |         `document.querySelector('#map2').zoom`
+      94 |       );
+    > 95 |       expect(startTopLeft.horizontal).toBe(1508601.8288036585);
+         |                                       ^
+      96 |       expect(startTopLeft.vertical).toBe(-169068.77063754946);
+      97 |       expect(startBottomRight.horizontal).toBe(1512570.5867411792);
+      98 |       expect(startBottomRight.vertical).toBe(-173037.52857506275);
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\templatedFeatures.test.js:95:39
+
+  91) layers\templatedFeatures.test.js:121:9 › Playwright templatedFeatures Layer Tests › Retreived Features Loading Tests › Loading in tilematrix feature
+
+    Error: page.$eval: Error: failed to find element matching selector "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(3) > path.leaflet-interactive"
+
+      121 |     test('Loading in tilematrix feature', async () => {
+      122 |       await page.waitForTimeout(200);
+    > 123 |       const feature = await page.$eval(
+          |                                  ^
+      124 |         'xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(3) > path.leaflet-interactive',
+      125 |         (tile) => tile.getAttribute('d')
+      126 |       );
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\templatedFeatures.test.js:123:34
+
+  92) layers\templatedFeatures.test.js:130:9 › Playwright templatedFeatures Layer Tests › Retreived Features Loading Tests › Loading in pcrs feature
+
+    Error: page.$eval: Error: failed to find element matching selector "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(1) > path.leaflet-interactive"
+
+      129 |
+      130 |     test('Loading in pcrs feature', async () => {
+    > 131 |       const feature = await page.$eval(
+          |                                  ^
+      132 |         'xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(1) > path.leaflet-interactive',
+      133 |         (tile) => tile.getAttribute('d')
+      134 |       );
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\templatedFeatures.test.js:131:34
+
+  93) layers\templatedFeatures.test.js:138:9 › Playwright templatedFeatures Layer Tests › Retreived Features Loading Tests › Loading in tcrs feature
+
+    Error: page.$eval: Error: failed to find element matching selector "xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(2) > path.leaflet-interactive"
+
+      137 |
+      138 |     test('Loading in tcrs feature', async () => {
+    > 139 |       const feature = await page.$eval(
+          |                                  ^
+      140 |         'xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(2) > path.leaflet-interactive',
+      141 |         (tile) => tile.getAttribute('d')
+      142 |       );
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\templatedFeatures.test.js:139:34
+
+  94) layers\templatedFeatures.test.js:146:9 › Playwright templatedFeatures Layer Tests › Retreived Features Loading Tests › templated features disabled when panned out of bounds
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      161 |         });
+      162 |
+    > 163 |       expect(layerAndLayerCheckboxDisabled).toBe(true);
+          |                                             ^
+      164 |     });
+      165 |   });
+      166 | });
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\templatedFeatures.test.js:163:45
+
+  95) layers\templatedFeaturesFilter.test.js:15:7 › Simple query by select values without map extent filter tests › All features loaded at start
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: 8
+    Received: 0
+
+      17 |       '.mapml-templatedlayer-container > div > div > svg > g > g'
+      18 |     );
+    > 19 |     expect(features.length).toEqual(8);
+         |                             ^
+      20 |   });
+      21 |   test('User can select/filter features by category', async () => {
+      22 |     const restaurants = await page.$$(
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\templatedFeaturesFilter.test.js:19:29
+
+  96) layers\templatedFeaturesFilter.test.js:21:7 › Simple query by select values without map extent filter tests › User can select/filter features by category
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: 8
+    Received: 0
+
+      23 |       '.mapml-templatedlayer-container > div > div > svg > g > g'
+      24 |     );
+    > 25 |     expect(restaurants.length).toEqual(8);
+         |                                ^
+      26 |
+      27 |     await page.hover('.leaflet-top.leaflet-right > div');
+      28 |     await page.click(
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\templatedFeaturesFilter.test.js:25:32
+
+  97) layers\templatedFeaturesFilter.test.js:44:7 › Simple query by select values without map extent filter tests › <map-select> <map-option> attributes are copied to layer control <option> elements
+
+    Test timeout of 30000ms exceeded.
+
+  98) layers\general\isVisible.js:13:9 › Playwright templatedImage Layer Tests › isVisible Property Tests for templatedImageLayer › isVisible property false when zoomed out of bounds (zooming in)
+
+    Test timeout of 30000ms exceeded.
+
+  99) layers\general\isVisible.js:26:9 › Playwright templatedImage Layer Tests › isVisible Property Tests for templatedImageLayer › isVisible property false when zoomed out of bounds (zooming out)
+
+    Test timeout of 30000ms exceeded.
+
+  100) layers\general\extentProperty.js:17:9 › Playwright templatedImage Layer Tests › <Layer>.extent Property Tests for templatedImageLayer › <layer->.extent test
+
+    TypeError: Cannot read properties of null (reading 'hasOwnProperty')
+
+      20 |         (layer) => layer.extent
+      21 |       );
+    > 22 |       expect(extent.hasOwnProperty('zoom')).toBeTruthy();
+         |                     ^
+      23 |       expect(extent.hasOwnProperty('topLeft')).toBeTruthy();
+      24 |       expect(extent.hasOwnProperty('bottomRight')).toBeTruthy();
+      25 |       expect(extent.hasOwnProperty('projection')).toBeTruthy();
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\general\extentProperty.js:22:21
+
+  101) layers\general\extentProperty.js:31:9 › Playwright templatedImage Layer Tests › <Layer>.extent Property Tests for templatedImageLayer › 2nd <layer->.extent test
+
+    TypeError: Cannot read properties of null (reading 'hasOwnProperty')
+
+      34 |         (layer) => layer.extent
+      35 |       );
+    > 36 |       expect(extent.hasOwnProperty('zoom')).toBeTruthy();
+         |                     ^
+      37 |       expect(extent.hasOwnProperty('topLeft')).toBeTruthy();
+      38 |       expect(extent.hasOwnProperty('bottomRight')).toBeTruthy();
+      39 |       expect(extent.hasOwnProperty('projection')).toBeTruthy();
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\general\extentProperty.js:36:21
+
+  102) layers\general\isVisible.js:13:9 › Playwright mapMLTemplatedTile Layer Tests › isVisible Property Tests for templatedTileLayer › isVisible property false when zoomed out of bounds (zooming in)
+
+    Test timeout of 30000ms exceeded.
+
+  103) layers\general\isVisible.js:26:9 › Playwright mapMLTemplatedTile Layer Tests › isVisible Property Tests for templatedTileLayer › isVisible property false when zoomed out of bounds (zooming out)
+
+    Test timeout of 30000ms exceeded.
+
+  104) layers\general\extentProperty.js:17:9 › Playwright mapMLTemplatedTile Layer Tests › <Layer>.extent Property Tests for templatedTileLayer › <layer->.extent test
+
+    TypeError: Cannot read properties of null (reading 'hasOwnProperty')
+
+      20 |         (layer) => layer.extent
+      21 |       );
+    > 22 |       expect(extent.hasOwnProperty('zoom')).toBeTruthy();
+         |                     ^
+      23 |       expect(extent.hasOwnProperty('topLeft')).toBeTruthy();
+      24 |       expect(extent.hasOwnProperty('bottomRight')).toBeTruthy();
+      25 |       expect(extent.hasOwnProperty('projection')).toBeTruthy();
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\general\extentProperty.js:22:21
+
+  105) layers\general\extentProperty.js:31:9 › Playwright mapMLTemplatedTile Layer Tests › <Layer>.extent Property Tests for templatedTileLayer › 2nd <layer->.extent test
+
+    TypeError: Cannot read properties of null (reading 'hasOwnProperty')
+
+      34 |         (layer) => layer.extent
+      35 |       );
+    > 36 |       expect(extent.hasOwnProperty('zoom')).toBeTruthy();
+         |                     ^
+      37 |       expect(extent.hasOwnProperty('topLeft')).toBeTruthy();
+      38 |       expect(extent.hasOwnProperty('bottomRight')).toBeTruthy();
+      39 |       expect(extent.hasOwnProperty('projection')).toBeTruthy();
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\general\extentProperty.js:36:21
+
+  106) layers\templatedTileLayer.test.js:54:9 › Playwright mapMLTemplatedTile Layer Tests › General Tests  › Templated tile layer works without <map-input> for zoom level
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: 3
+    Received: 2
+
+      61 |         (el) => el.children.length
+      62 |       );
+    > 63 |       expect(layerCount).toEqual(3);
+         |                          ^
+      64 |     });
+      65 |   });
+      66 | });
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\layers\templatedTileLayer.test.js:63:26
+
+  107) mapml-viewer\customTCRS.test.js:19:7 › Playwright Custom TCRS Tests › Simple Custom TCRS, tiles load, mismatched layer disabled
+
+    Error: Timed out 5000ms waiting for expect(locator).toHaveCount(expected)
+
+    Locator: locator('mapml-viewer:nth-child(1) map-tile.leaflet-tile-loaded')
+    Expected: 2
+    Received: 0
+    Call log:
+      - expect.toHaveCount with timeout 5000ms
+      - waiting for locator('mapml-viewer:nth-child(1) map-tile.leaflet-tile-loaded')
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+      -   locator resolved to 0 elements
+      -   unexpected value "0"
+
+
+      31 |     await expect(
+      32 |       page.locator('mapml-viewer:nth-child(1) map-tile.leaflet-tile-loaded')
+    > 33 |     ).toHaveCount(2);
+         |       ^
+      34 |     expect(misMatchedLayerDisabled).toEqual(true);
+      35 |     expect(matchedLayerEnabled).toEqual(false);
+      36 |   });
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\mapml-viewer\customTCRS.test.js:33:7
+
+  108) mapml-viewer\customTCRS.test.js:44:7 › Playwright Custom TCRS Tests › Complex Custom TCRS, static features loaded, templated features loaded
+
+    Error: page.$eval: Error: failed to find element matching selector "xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(1) > path.leaflet-interactive"
+
+      53 |     );
+      54 |
+    > 55 |     const featureOne = await page.$eval(
+         |                                   ^
+      56 |       'xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(1) > path.leaflet-interactive',
+      57 |       (tile) => tile.getAttribute('d')
+      58 |     );
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\mapml-viewer\customTCRS.test.js:55:35
+
+  109) mapml-viewer\mapml-viewer.test.js:57:7 › Playwright mapml-viewer Element Tests › Initial map element extent
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 2
+    + Received  + 2
+
+      Object {
+    -   "horizontal": 2.57421875,
+    -   "vertical": 2.8515625,
+    +   "horizontal": 2,
+    +   "vertical": 2,
+      }
+
+      63 |     expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
+      64 |     expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+    > 65 |     expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
+         |                                          ^
+      66 |     expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
+      67 |   });
+      68 |   test("Panned and zoomed initial map's extent", async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\mapml-viewer\mapml-viewer.test.js:65:42
+
+  110) mapml-viewer\mapml-viewer.test.js:68:7 › Playwright mapml-viewer Element Tests › Panned and zoomed initial map's extent
+
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 2
+    + Received  + 2
+
+      Object {
+    -   "horizontal": 3.0134698275862073,
+    -   "vertical": 2.944773706896552,
+    +   "horizontal": 3,
+    +   "vertical": 2,
+      }
+
+      74 |     expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
+      75 |     expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
+    > 76 |     expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
+         |                                          ^
+      77 |     expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
+      78 |   });
+      79 |
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\mapml-viewer\mapml-viewer.test.js:76:42
+
+  111) mapml-viewer\mapml-viewer.test.js:180:7 › Playwright mapml-viewer Element Tests › Paste Invalid link to map using ctrl+v
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: 3
+    Received: 4
+
+      190 |       (map) => map.layers.length
+      191 |     );
+    > 192 |     expect(layerCount).toEqual(3);
+          |                        ^
+      193 |   });
+      194 |
+      195 |   test('Press spacebar when focus is on map', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\mapml-viewer\mapml-viewer.test.js:192:24
+
+  112) mapml-viewer\viewerContextMenu.test.js:147:7 › Playwright mapml-viewer Context Menu (and api) Tests › Context menu, back item
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 2
+    + Received  + 2
+
+      Object {
+    -   "horizontal": 2.57421875,
+    -   "vertical": 2.8515625,
+    +   "horizontal": 2,
+    +   "vertical": 2,
+      }
+
+      157 |     expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
+      158 |     expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+    > 159 |     expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
+          |                                          ^
+      160 |     expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
+      161 |   });
+      162 |   test('Context menu, back and reload item at initial location disabled', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\mapml-viewer\viewerContextMenu.test.js:159:42
+
+  113) mapml-viewer\viewerContextMenu.test.js:162:7 › Playwright mapml-viewer Context Menu (and api) Tests › Context menu, back and reload item at initial location disabled
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: false
+    Received: true
+
+      176 |
+      177 |     expect(backBtn).toEqual(true);
+    > 178 |     expect(fwdBtn).toEqual(false);
+          |                    ^
+      179 |     expect(reloadBtn).toEqual(true);
+      180 |   });
+      181 |   test('Context menu, forward item', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\mapml-viewer\viewerContextMenu.test.js:178:20
+
+  114) mapml-viewer\viewerContextMenu.test.js:181:7 › Playwright mapml-viewer Context Menu (and api) Tests › Context menu, forward item
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.click: Target closed
+    =========================== logs ===========================
+    waiting for locator('div > div.mapml-contextmenu > button:nth-child(2)')
+      locator resolved to 3 elements. Proceeding with the first one: <button disabled type="button" class="mapml-contextmenu-…>…</button>
+    attempting click action
+      waiting for element to be visible, enabled and stable
+        element is not enabled - waiting...
+    ============================================================
+
+      181 |   test('Context menu, forward item', async () => {
+      182 |     await page.click('body > mapml-viewer', { button: 'right' });
+    > 183 |     await page.click('div > div.mapml-contextmenu > button:nth-child(2)');
+          |                ^
+      184 |     await page.waitForTimeout(1000);
+      185 |     const extent = await page.$eval('body > mapml-viewer', (map) => map.extent);
+      186 |
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\mapml-viewer\viewerContextMenu.test.js:183:16
+
+  115) mapml-viewer\viewerContextMenu.test.js:193:7 › Playwright mapml-viewer Context Menu (and api) Tests › Context menu, forward item at most recent location disabled
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: false
+    Received: true
+
+      206 |     );
+      207 |
+    > 208 |     expect(backBtn).toEqual(false);
+          |                     ^
+      209 |     expect(fwdBtn).toEqual(true);
+      210 |     expect(reloadBtn).toEqual(false);
+      211 |   });
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\mapml-viewer\viewerContextMenu.test.js:208:21
+
+  116) mapml-viewer\viewerContextMenu.test.js:214:9 › Playwright mapml-viewer Context Menu (and api) Tests › Context Menu, Toggle Controls  › Context menu, toggle controls off
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: false
+    Received: true
+
+      232 |       expect(reloadHidden).toEqual(false);
+      233 |       expect(fullscreenHidden).toEqual(false);
+    > 234 |       expect(layerControlHidden).toEqual(false);
+          |                                  ^
+      235 |
+      236 |       await page.click('body > mapml-viewer', { button: 'right' });
+      237 |       await page.click('div > div.mapml-contextmenu > button:nth-of-type(7)');
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\mapml-viewer\viewerContextMenu.test.js:234:34
+
+  117) mapml-viewer\viewerContextMenu.test.js:261:9 › Playwright mapml-viewer Context Menu (and api) Tests › Context Menu, Toggle Controls  › Context menu, toggle controls on
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: true
+    Received: false
+
+      276 |         (div) => div.hidden
+      277 |       );
+    > 278 |       expect(zoomHidden).toEqual(true);
+          |                          ^
+      279 |       expect(reloadHidden).toEqual(true);
+      280 |       expect(fullscreenHidden).toEqual(true);
+      281 |       expect(layerControlHidden).toEqual(true);
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\mapml-viewer\viewerContextMenu.test.js:278:26
+
+  118) web-map\map.test.js:62:7 › Playwright web-map Element Tests › Paste Invalid link to map using ctrl+v
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: 3
+    Received: 4
+
+      72 |       (map) => map.layers.length
+      73 |     );
+    > 74 |     expect(layerCount).toEqual(3);
+         |                        ^
+      75 |   });
+      76 |
+      77 |   test('Press spacebar when focus is on map', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\web-map\map.test.js:74:24
+
+  119) web-map\mapScale.test.js:18:7 › Announce movement test › Output values are correct during zoom in
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: "1.7 centimeters to 300 kilometers"
+    Received: "1.7 centimeters to 500 kilometers"
+
+      36 |       (output) => output.innerHTML
+      37 |     );
+    > 38 |     expect(movedUpAgain).toEqual('1.7 centimeters to 300 kilometers');
+         |                          ^
+      39 |   });
+      40 |
+      41 |   test('Output values are correct during zoom out', async () => {
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\web-map\mapScale.test.js:38:26
+
+  120) web-map\mapScale.test.js:41:7 › Announce movement test › Output values are correct during zoom out
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: "1.7 centimeters to 500 kilometers"
+    Received: "2 centimeters to 1000 kilometers"
+
+      48 |       (output) => output.innerHTML
+      49 |     );
+    > 50 |     expect(movedUp).toEqual('1.7 centimeters to 500 kilometers');
+         |                     ^
+      51 |
+      52 |     await page.keyboard.press('Enter');
+      53 |     await page.waitForTimeout(1000);
+
+        at C:\Users\prush\Documents\GitHub\Web-Map-Custom-Element\test\e2e\web-map\mapScale.test.js:50:21
+
+  Slow test file: layers\general\isVisible.js (4.6m)
+  Slow test file: layers\queryLink.test.js (3.7m)
+  Slow test file: layers\multipleExtents.test.js (2.0m)
+  Slow test file: core\layerContextMenu.test.js (1.5m)
+  Slow test file: layers\general\zoomLimit.js (1.3m)
+  Consider splitting slow test files to speed up parallel execution
+  120 failed
+    core\drag.test.js:19:7 › UI Drag&Drop Test › Drag and drop of invalid HTML page ──────────
+    core\drag.test.js:35:7 › UI Drag&Drop Test › Drag and drop of layers ─────────────────────
+    core\drag.test.js:53:7 › UI Drag&Drop Test › Moving layer down one in control overlay ────
+    core\drag.test.js:89:7 › UI Drag&Drop Test › Moving layer up one in control overlay ──────
+    core\dragDrop.test.js:19:7 › Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer › Drag and drop of valid mapml URL
+    core\dragDrop.test.js:34:7 › Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer › Drag and drop of valid geoJSON
+
+    core\dragDrop.test.js:49:7 › Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer › Drag and drop of valid layer-
+    core\dragDrop.test.js:64:7 › Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer › Drag and drop of Invalid text
+    core\featureIndexOverlayFocus.test.js:144:7 › Feature Index Overlay Focus tests › Feature index overlay and reticle show after following a link
+    core\kbdAttribution.test.js:18:7 › Keyboard shortcut attribution test › Keyboard shortcuts attribution opens up dialog
+    core\layerContextMenu.test.js:73:7 › Playwright Layer Context Menu Tests › Map zooms in to layer 2
+    core\layerContextMenu.test.js:98:7 › Playwright Layer Context Menu Tests › Map zooms out to layer 3
+    core\layerContextMenu.test.js:129:7 › Playwright Layer Context Menu Tests › Map zooms out to layer 4
+    core\layerContextMenu.test.js:160:7 › Playwright Layer Context Menu Tests › Copy layer with relative src attribute
+    core\layerContextMenuKeyboard.test.js:18:7 › Playwright Layer Context Menu Tests › Enter activates layer context menu item
+
+    core\layerContextMenuKeyboard.test.js:66:7 › Playwright Layer Context Menu Tests › Space bar activates layer context menu item
+    core\mapContextMenu.test.js:134:7 › Playwright Map Context Menu Tests › Context menu, back item
+    core\mapContextMenu.test.js:149:7 › Playwright Map Context Menu Tests › Context menu, back and reload item at initial location disabled
+    core\mapContextMenu.test.js:168:7 › Playwright Map Context Menu Tests › Context menu, forward item
+    core\mapContextMenu.test.js:180:7 › Playwright Map Context Menu Tests › Context menu, forward item at most recent location disabled
+    core\mapContextMenu.test.js:201:9 › Playwright Map Context Menu Tests › Context Menu, Toggle Controls  › Context menu, toggle controls off
+    core\mapContextMenu.test.js:248:9 › Playwright Map Context Menu Tests › Context Menu, Toggle Controls  › Context menu, toggle controls on
+    core\mapElement.test.js:38:7 › Playwright Map Element Tests › Initial map element extent ─
+    core\mapElement.test.js:50:7 › Playwright Map Element Tests › Panned and zoomed initial map's extent
+    core\mapElement.test.js:64:7 › Playwright Map Element Tests › Reload button takes you back to initial state
+    core\mapFeature.test.js:95:7 › Playwright MapFeature Custom Element Tests › Get extent of <map-point> with zoom attribute = 2
+    core\mapFeature.test.js:113:7 › Playwright MapFeature Custom Element Tests › Get extent of <map-point> with no zoom attribute
+    core\mapFeature.test.js:121:7 › Playwright MapFeature Custom Element Tests › Zoom to <map-point> with no zoom attribute
+    core\mapFeature.test.js:175:7 › Playwright MapFeature Custom Element Tests › Default click method test
+    core\metaDefault.test.js:60:7 › Playwright Missing Min Max Attribute, Meta Default Tests › Inline layer extent test
+    core\missingMetaParameters.test.js:18:7 › Missing Parameters Test › Static features with missing <map-meta name='zoom'></map-meta> & <map-meta name='extent'></map-meta>
+    core\missingMetaParameters.test.js:40:7 › Missing Parameters Test › Static tiles with missing <map-meta name='zoom'></map-meta>
+    core\missingMetaParameters.test.js:63:7 › Missing Parameters Test › Templated features with missing <map-meta name='zoom'></map-meta>
+    core\missingMetaParameters.test.js:85:7 › Missing Parameters Test › Templated tiles with missing <map-meta name='zoom'></map-meta> & extent
+    core\missingMetaParameters.test.js:107:7 › Missing Parameters Test › Templated image with missing <map-meta name='zoom'></map-meta>
+    core\styleParsing.test.js:36:7 › Style Parsed and Implemented Test › CSS from a retrieved MapML file added inorder inside templated-layer container
+    core\styleParsing.test.js:58:7 › Style Parsed and Implemented Test › CSS from a retrieved MapML File added to templated-layer container
+    core\touchDevice.test.js:21:7 › Playwright touch device tests › Tap/Long press to show layer control
+    core\zoomChangeProjection.test.js:35:7 › Playwright zoomin zoomout Projection Change Tests › zoomout link changes projections
+    geojson\geojson2mapml.test.js:112:7 › GeoJSON API - geojson2mapml › Feature ──────────────
+    layers\clientTemplatedTileLayer.test.js:18:7 › Playwright Client Tile Tests › Custom Tiles Loaded In, Accurate Coordinates
+
+    layers\CustomProjectionLayers.test.js:20:7 › Custom Projection Feature & Extent Tests › map-extent Image access ._layer
+    layers\CustomProjectionLayers.test.js:30:9 › Custom Projection Feature & Extent Tests › Feature › access ._layer
+    layers\general\isVisible.js:13:9 › Playwright featureLayer (Static Features) Layer Tests › isVisible Property Tests for featureLayer › isVisible property false when zoomed out of bounds (zooming in)
+    layers\general\isVisible.js:26:9 › Playwright featureLayer (Static Features) Layer Tests › isVisible Property Tests for featureLayer › isVisible property false when zoomed out of bounds (zooming out)
+    layers\general\zoomLimit.js:17:9 › Playwright featureLayer (Static Features) Layer Tests › Map Zoom Limit Tests for featureLayer › Limit map zooming (zooming in)
+    layers\general\zoomLimit.js:41:9 › Playwright featureLayer (Static Features) Layer Tests › Map Zoom Limit Tests for featureLayer › Limit map zooming (zooming out)
+    layers\general\extentProperty.js:31:9 › Playwright featureLayer (Static Features) Layer Tests › <Layer>.extent Property Tests for featureLayer › 2nd <layer->.extent test
+    layers\featureLayer.test.js:81:9 › Playwright featureLayer (Static Features) Layer Tests › Retrieved Static Features Tests › valid <layer>.extent
+    layers\multipleExtents.test.js:14:7 › Adding and Removing Multiple Extents › Layer's multiple extents display on map and in layer control
+    layers\multipleExtents.test.js:34:7 › Adding and Removing Multiple Extents › Changing extent opacity, removing and adding extent effects expected changes to map container layer content
+    layers\multipleExtents.test.js:116:7 › Adding and Removing Multiple Extents › Changing extent opacity, removing and adding extent effects expected changes to only that specific content
+    layers\multipleExtents.test.js:180:7 › Adding and Removing Multiple Extents › Extents retain their state when turning layer off and on
+    layers\multipleExtents.test.js:244:7 › Multiple Extents Bounds Tests › Only Extent Bounds show in debug mode
+    layers\multipleExtents.test.js:266:7 › Multiple Extents Bounds Tests › When unchecked, extent bounds removed from debug layer
+    layers\multipleExtents.test.js:294:7 › Multiple Extents Bounds Tests › Checking an extent adds its bounds, unchecking an extent removes its bounds
+    layers\multipleExtents.test.js:347:7 › Multiple Extents Bounds Tests › Extent is individually disabled in layer control when out of bounds
+    layers\multipleExtents.test.js:484:7 › Multiple Extents Reordering and ZIndices Tests › Ensure Same Order When Extent and Layer Checked Off/On
+    layers\multipleExtents.test.js:559:7 › Multiple Extents Reordering and ZIndices Tests › Move Extent Back Up in the Layer Control
+    layers\multipleHeterogeneousQueryExtents.test.js:18:7 › Multiple Extent Queries with heterogeneous response content types › Query multiple overlapping extents which return heterogeneous document types (text/mapml, text/html)
+    layers\multipleHeterogeneousQueryExtents.test.js:37:7 › Multiple Extent Queries with heterogeneous response content types › Re-order queryable extents, verify response order changes accordingly
+    layers\multipleHeterogeneousQueryExtents.test.js:127:7 › Multiple Extent Queries with heterogeneous response content types › Enusre extents that are unchecked or removed are not included in query results
+    layers\multipleQueryExtents.test.js:82:7 › Multiple Extent Query Tests › Navigate back from second query result set to end of first query result set by clicking '< / Previous'
+    layers\queryLink.test.js:103:9 › Playwright Query Link Tests › Queried Feature Tests › First feature added + popup content updated
+    layers\queryLink.test.js:141:9 › Playwright Query Link Tests › Queried Feature Tests › Next feature added + popup content updated
+    layers\queryLink.test.js:175:9 › Playwright Query Link Tests › Queried Feature Tests › Previous feature added + popup content updated
+    layers\queryLink.test.js:209:9 › Playwright Query Link Tests › Queried Feature Tests › PCRS feature added + popup content updated
+    layers\queryLink.test.js:227:9 › Playwright Query Link Tests › Queried Feature Tests › TCRS feature added + popup content updated
+    layers\queryLink.test.js:244:9 › Playwright Query Link Tests › Queried Feature Tests › Tilematrix feature added + popup content updated
+    layers\queryLink.test.js:260:9 › Playwright Query Link Tests › Queried Feature Tests › Synthesized point, valid location
+    layers\queryLink.test.js:282:9 › Playwright Query Link Tests › Queried Feature Tests › 'Zoom to here' link test
+    layers\queryLink.test.js:331:9 › Playwright Query Link Tests › Queried Feature Tests › hidden layer is not queryable, hidden map-extent doesn't matter
+    layers\general\isVisible.js:13:9 › Playwright StaticTile Layer Tests › isVisible Property Tests for staticTileLayer › isVisible property false when zoomed out of bounds (zooming in)
+    layers\general\isVisible.js:26:9 › Playwright StaticTile Layer Tests › isVisible Property Tests for staticTileLayer › isVisible property false when zoomed out of bounds (zooming out)
+    layers\general\zoomLimit.js:17:9 › Playwright StaticTile Layer Tests › Map Zoom Limit Tests for staticTileLayer › Limit map zooming (zooming in)
+    layers\general\zoomLimit.js:41:9 › Playwright StaticTile Layer Tests › Map Zoom Limit Tests for staticTileLayer › Limit map zooming (zooming out)
+    layers\general\extentProperty.js:17:9 › Playwright StaticTile Layer Tests › <Layer>.extent Property Tests for staticTileLayer › <layer->.extent test
+    layers\general\extentProperty.js:31:9 › Playwright StaticTile Layer Tests › <Layer>.extent Property Tests for staticTileLayer › 2nd <layer->.extent test
+    layers\staticTileLayer.test.js:47:9 › Playwright StaticTile Layer Tests › General Tests  › Tiles load in on default map zoom level
+    layers\step\request.js:48:9 › Templated features layer with step › Request Tests › On add requests zoom level 0
+    layers\step\request.js:61:9 › Templated features layer with step › Request Tests › At zoom level 1, zooming in to 2
+    layers\step\request.js:67:9 › Templated features layer with step › Request Tests › At zoom level 2, zooming in to 3
+    layers\step\request.js:88:9 › Templated features layer with step › Request Tests › Panning makes new request as needed
+    layers\general\isVisible.js:13:9 › Playwright templatedFeatures Layer Tests › isVisible Property Tests for templatedFeatures › isVisible property false when zoomed out of bounds (zooming in)
+    layers\general\isVisible.js:26:9 › Playwright templatedFeatures Layer Tests › isVisible Property Tests for templatedFeatures › isVisible property false when zoomed out of bounds (zooming out)
+    layers\general\extentProperty.js:17:9 › Playwright templatedFeatures Layer Tests › <Layer>.extent Property Tests for templatedFeatures › <layer->.extent test
+    layers\general\extentProperty.js:31:9 › Playwright templatedFeatures Layer Tests › <Layer>.extent Property Tests for templatedFeatures › 2nd <layer->.extent test
+    layers\templatedFeatures.test.js:48:9 › Playwright templatedFeatures Layer Tests › Templated Features in shadowRoot › Templated features attaches to MapExtent's shadow root
+    layers\templatedFeatures.test.js:61:9 › Playwright templatedFeatures Layer Tests › Templated Features Zoom To Extent Tests › Zoom to layer applies meta extent
+    layers\templatedFeatures.test.js:85:9 › Playwright templatedFeatures Layer Tests › Templated Features Zoom To Extent Tests › Templated features zoomTo method test
+    layers\templatedFeatures.test.js:121:9 › Playwright templatedFeatures Layer Tests › Retreived Features Loading Tests › Loading in tilematrix feature
+    layers\templatedFeatures.test.js:130:9 › Playwright templatedFeatures Layer Tests › Retreived Features Loading Tests › Loading in pcrs feature
+    layers\templatedFeatures.test.js:138:9 › Playwright templatedFeatures Layer Tests › Retreived Features Loading Tests › Loading in tcrs feature
+    layers\templatedFeatures.test.js:146:9 › Playwright templatedFeatures Layer Tests › Retreived Features Loading Tests › templated features disabled when panned out of bounds
+    layers\templatedFeaturesFilter.test.js:15:7 › Simple query by select values without map extent filter tests › All features loaded at start
+    layers\templatedFeaturesFilter.test.js:21:7 › Simple query by select values without map extent filter tests › User can select/filter features by category
+    layers\templatedFeaturesFilter.test.js:44:7 › Simple query by select values without map extent filter tests › <map-select> <map-option> attributes are copied to layer control <option> elements
+    layers\general\isVisible.js:13:9 › Playwright templatedImage Layer Tests › isVisible Property Tests for templatedImageLayer › isVisible property false when zoomed out of bounds (zooming in)
+    layers\general\isVisible.js:26:9 › Playwright templatedImage Layer Tests › isVisible Property Tests for templatedImageLayer › isVisible property false when zoomed out of bounds (zooming out)
+    layers\general\extentProperty.js:17:9 › Playwright templatedImage Layer Tests › <Layer>.extent Property Tests for templatedImageLayer › <layer->.extent test
+    layers\general\extentProperty.js:31:9 › Playwright templatedImage Layer Tests › <Layer>.extent Property Tests for templatedImageLayer › 2nd <layer->.extent test
+    layers\general\isVisible.js:13:9 › Playwright mapMLTemplatedTile Layer Tests › isVisible Property Tests for templatedTileLayer › isVisible property false when zoomed out of bounds (zooming in)
+    layers\general\isVisible.js:26:9 › Playwright mapMLTemplatedTile Layer Tests › isVisible Property Tests for templatedTileLayer › isVisible property false when zoomed out of bounds (zooming out)
+    layers\general\extentProperty.js:17:9 › Playwright mapMLTemplatedTile Layer Tests › <Layer>.extent Property Tests for templatedTileLayer › <layer->.extent test
+    layers\general\extentProperty.js:31:9 › Playwright mapMLTemplatedTile Layer Tests › <Layer>.extent Property Tests for templatedTileLayer › 2nd <layer->.extent test
+    layers\templatedTileLayer.test.js:54:9 › Playwright mapMLTemplatedTile Layer Tests › General Tests  › Templated tile layer works without <map-input> for zoom level
+    mapml-viewer\customTCRS.test.js:19:7 › Playwright Custom TCRS Tests › Simple Custom TCRS, tiles load, mismatched layer disabled
+    mapml-viewer\customTCRS.test.js:44:7 › Playwright Custom TCRS Tests › Complex Custom TCRS, static features loaded, templated features loaded
+    mapml-viewer\mapml-viewer.test.js:57:7 › Playwright mapml-viewer Element Tests › Initial map element extent
+    mapml-viewer\mapml-viewer.test.js:68:7 › Playwright mapml-viewer Element Tests › Panned and zoomed initial map's extent
+    mapml-viewer\mapml-viewer.test.js:180:7 › Playwright mapml-viewer Element Tests › Paste Invalid link to map using ctrl+v
+    mapml-viewer\viewerContextMenu.test.js:147:7 › Playwright mapml-viewer Context Menu (and api) Tests › Context menu, back item
+    mapml-viewer\viewerContextMenu.test.js:162:7 › Playwright mapml-viewer Context Menu (and api) Tests › Context menu, back and reload item at initial location disabled
+    mapml-viewer\viewerContextMenu.test.js:181:7 › Playwright mapml-viewer Context Menu (and api) Tests › Context menu, forward item
+    mapml-viewer\viewerContextMenu.test.js:193:7 › Playwright mapml-viewer Context Menu (and api) Tests › Context menu, forward item at most recent location disabled
+    mapml-viewer\viewerContextMenu.test.js:214:9 › Playwright mapml-viewer Context Menu (and api) Tests › Context Menu, Toggle Controls  › Context menu, toggle controls off
+    mapml-viewer\viewerContextMenu.test.js:261:9 › Playwright mapml-viewer Context Menu (and api) Tests › Context Menu, Toggle Controls  › Context menu, toggle controls on
+    web-map\map.test.js:62:7 › Playwright web-map Element Tests › Paste Invalid link to map using ctrl+v
+    web-map\mapScale.test.js:18:7 › Announce movement test › Output values are correct during zoom in
+    web-map\mapScale.test.js:41:7 › Announce movement test › Output values are correct during zoom out
+  1 skipped
+  345 passed (5.9m)
+
