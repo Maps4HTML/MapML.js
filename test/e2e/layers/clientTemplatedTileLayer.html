@@ -38,7 +38,7 @@
   </mapml-viewer>
   <script>
     let layer = document.querySelector("body > mapml-viewer > layer- > map-extent > map-link");
-    layer.addEventListener("tileloadstart", (e) => {
+    layer.addEventListener("map-tileloadstart", (e) => {
       let cust = document.createElement("P");
       cust.textContent = `${e.detail.x}${e.detail.y}${e.detail.zoom}`;
       e.detail.appendTile(cust);

@@ -39,12 +39,12 @@ test.describe('Locate API Test', () => {
     expect(locateAPI_lng).toEqual('-73.568');
   });
 
-  test('Testing maplocationfound event', async () => {
+  test('Testing map-locationfound event', async () => {
     const latlng = await page.evaluate(() => {
       const viewer = document.querySelector('body > mapml-viewer');
       return new Promise((resolve) => {
         viewer.addEventListener(
-          'maplocationfound',
+          'map-locationfound',
           (e) => {
             resolve(e.detail.latlng);
           },
@@ -57,18 +57,18 @@ test.describe('Locate API Test', () => {
     expect(latlng.lng).toEqual(-73.56766530667056);
   });
 
-  test('Testing locationerror event', async () => {
+  test('Testing map-locationerror event', async () => {
     const error = await page.evaluate(() => {
       const viewer = document.querySelector('body > mapml-viewer');
       return new Promise((resolve) => {
         viewer.addEventListener(
-          'locationerror',
+          'map-locationerror',
           (e) => {
             resolve(e.detail.error);
           },
           { once: true }
         );
-        const errorEvent = new CustomEvent('locationerror', {
+        const errorEvent = new CustomEvent('map-locationerror', {
           detail: { error: 'Your location could not be determined.' }
         });
         viewer.dispatchEvent(errorEvent);

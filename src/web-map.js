@@ -657,19 +657,6 @@ export class WebMap extends HTMLMapElement {
   _setUpEvents() {
     this.addEventListener('drop', this._dropHandler, false);
     this.addEventListener('dragover', this._dragoverHandler, false);
-    this.addEventListener(
-      'change',
-      function (e) {
-        if (e.target.tagName === 'LAYER-') {
-          this.dispatchEvent(
-            new CustomEvent('layerchange', {
-              details: { target: this, originalEvent: e }
-            })
-          );
-        }
-      },
-      false
-    );
 
     let mapEl = this;
     this.parentElement.addEventListener('keyup', function (e) {
@@ -710,7 +697,7 @@ export class WebMap extends HTMLMapElement {
       'locationfound',
       function (e) {
         this.dispatchEvent(
-          new CustomEvent('maplocationfound', {
+          new CustomEvent('map-locationfound', {
             detail: { latlng: e.latlng, accuracy: e.accuracy }
           })
         );
@@ -721,7 +708,7 @@ export class WebMap extends HTMLMapElement {
       'locationerror',
       function (e) {
         this.dispatchEvent(
-          new CustomEvent('locationerror', { detail: { error: e.message } })
+          new CustomEvent('map-locationerror', { detail: { error: e.message } })
         );
       },
       this
@@ -731,22 +718,6 @@ export class WebMap extends HTMLMapElement {
       function () {
         this.dispatchEvent(
           new CustomEvent('load', { detail: { target: this } })
-        );
-      },
-      this
-    );
-    this._map.on(
-      'preclick',
-      function (e) {
-        this.dispatchEvent(
-          new CustomEvent('preclick', {
-            detail: {
-              lat: e.latlng.lat,
-              lon: e.latlng.lng,
-              x: e.containerPoint.x,
-              y: e.containerPoint.y
-            }
-          })
         );
       },
       this
@@ -884,7 +855,7 @@ export class WebMap extends HTMLMapElement {
       function () {
         this._updateMapCenter();
         this.dispatchEvent(
-          new CustomEvent('movestart', { detail: { target: this } })
+          new CustomEvent('map-movestart', { detail: { target: this } })
         );
       },
       this
@@ -894,7 +865,7 @@ export class WebMap extends HTMLMapElement {
       function () {
         this._updateMapCenter();
         this.dispatchEvent(
-          new CustomEvent('move', { detail: { target: this } })
+          new CustomEvent('map-move', { detail: { target: this } })
         );
       },
       this
@@ -915,7 +886,7 @@ export class WebMap extends HTMLMapElement {
       function () {
         this._updateMapCenter();
         this.dispatchEvent(
-          new CustomEvent('zoomstart', { detail: { target: this } })
+          new CustomEvent('map-zoomstart', { detail: { target: this } })
         );
       },
       this
@@ -925,7 +896,7 @@ export class WebMap extends HTMLMapElement {
       function () {
         this._updateMapCenter();
         this.dispatchEvent(
-          new CustomEvent('zoom', { detail: { target: this } })
+          new CustomEvent('map-zoom', { detail: { target: this } })
         );
       },
       this
@@ -935,7 +906,7 @@ export class WebMap extends HTMLMapElement {
       function () {
         this._updateMapCenter();
         this.dispatchEvent(
-          new CustomEvent('zoomend', { detail: { target: this } })
+          new CustomEvent('map-zoomend', { detail: { target: this } })
         );
       },
       this

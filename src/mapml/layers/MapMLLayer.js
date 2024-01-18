@@ -481,7 +481,7 @@ export var MapMLLayer = L.Layer.extend({
           var changeStyle = function (e) {
             L.DomEvent.stop(e);
             layer._layerEl.dispatchEvent(
-              new CustomEvent('changestyle', {
+              new CustomEvent('map-changestyle', {
                 detail: {
                   src: e.target.getAttribute('data-href')
                 }
