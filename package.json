@@ -53,7 +53,7 @@
     "jest": "^26.6.3",
     "jest-circus": "^26.6.3",
     "jest-environment-node": "^26.6.1",
-    "jest-playwright-preset": "^1.7.0",
+    "jest-playwright-preset": "^4.0.0",
     "leaflet": "^1.9.4",
     "leaflet.locatecontrol": "^0.79.0",
     "path": "^0.12.7",
