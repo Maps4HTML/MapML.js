@@ -17,6 +17,7 @@ test.describe('UI Drag&Drop Test', () => {
   });
 
   test('Drag and drop of invalid HTML page', async () => {
+    await page.waitForTimeout(500);
     const dataTransfer = await page.evaluateHandle(() =>
       new DataTransfer().setData('text/uri-list', 'http://example.com')
     );
@@ -33,6 +34,7 @@ test.describe('UI Drag&Drop Test', () => {
   });
 
   test('Drag and drop of layers', async () => {
+    await page.waitForTimeout(500);
     await page.hover('.leaflet-top.leaflet-right');
     let control = await page.$(
       '.leaflet-control-layers-overlays > fieldset:nth-child(1)'
@@ -45,12 +47,14 @@ test.describe('UI Drag&Drop Test', () => {
     await page.mouse.down();
     await page.mouse.move(50, 50);
     await page.mouse.up();
+    await page.waitForTimeout(500);
     await page.hover('.leaflet-top.leaflet-right');
     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
     expect(vars.length).toBe(3);
   });
 
   test('Moving layer down one in control overlay', async () => {
+    await page.waitForTimeout(500);
     await page.hover('.leaflet-top.leaflet-right');
     let control = await page.$(
       '.leaflet-control-layers-overlays > fieldset:nth-child(1)'
@@ -67,6 +71,7 @@ test.describe('UI Drag&Drop Test', () => {
     );
     await page.mouse.up();
     await page.hover('.leaflet-top.leaflet-right');
+    await page.waitForTimeout(500);
 
     const controlText = await page.$eval(
       '.leaflet-control-layers-overlays > fieldset:nth-child(2) > div:nth-child(1) > label > span',
@@ -87,6 +92,7 @@ test.describe('UI Drag&Drop Test', () => {
   });
 
   test('Moving layer up one in control overlay', async () => {
+    await page.waitForTimeout(500);
     await page.hover('.leaflet-top.leaflet-right');
     let control = await page.$(
       '.leaflet-control-layers-overlays > fieldset:nth-child(2)'
@@ -102,6 +108,7 @@ test.describe('UI Drag&Drop Test', () => {
       controlBBox.y + controlBBox.height / 2 - 48
     );
     await page.mouse.up();
+    await page.waitForTimeout(500);
     await page.hover('.leaflet-top.leaflet-right');
 
     const controlText = await page.$eval(

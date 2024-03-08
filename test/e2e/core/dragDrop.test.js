@@ -26,6 +26,9 @@ test.describe('Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer', ()
       return dt;
     });
     await page.dispatchEvent('mapml-viewer', 'drop', { dataTransfer });
+    // we used to add the layer, then fetch. Now we fetch, then add the layer.
+    // so, we need to be a bit patient up front
+    await page.waitForTimeout(500);
     await page.hover('.leaflet-top.leaflet-right');
     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
     expect(vars.length).toBe(2);
@@ -41,6 +44,7 @@ test.describe('Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer', ()
       return dt;
     });
     await page.dispatchEvent('mapml-viewer', 'drop', { dataTransfer });
+    await page.waitForTimeout(500);
     await page.hover('.leaflet-top.leaflet-right');
     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
     expect(vars.length).toBe(3);
@@ -56,6 +60,7 @@ test.describe('Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer', ()
       return dt;
     });
     await page.dispatchEvent('mapml-viewer', 'drop', { dataTransfer });
+    await page.waitForTimeout(500);
     await page.hover('.leaflet-top.leaflet-right');
     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
     expect(vars.length).toBe(4);
@@ -68,6 +73,7 @@ test.describe('Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer', ()
       return dt;
     });
     await page.dispatchEvent('mapml-viewer', 'drop', { dataTransfer });
+    await page.waitForTimeout(500);
     await page.hover('.leaflet-top.leaflet-right');
     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
     expect(vars.length).toBe(4);

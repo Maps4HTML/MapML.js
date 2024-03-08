@@ -1,0 +1,75 @@
+<mapml-  xmlns="http://www.w3.org/1999/xhtml">
+<map-head>
+  <map-title>Non-Queryable remote WMS image Layer</map-title>
+</map-head>
+<map-body>
+        <!-- the extent below should have the same extent property as the extent in the remote-image-queryable layer -->
+        <!-- the bounds of the extent are established via native map-input variables -->
+        <map-extent units="OSMTILE" hidden="hidden">
+          
+          <!-- this map-meta should establish the map-link.extent.zoom.minZoom and .maxZoom for both map-links -->
+          <map-meta data-testid="remote-image-mmz1" name="zoom" content="min=3,max=11"></map-meta>
+          
+          <!-- this map-input (should) establish the min/maxNativeZoom for #link1 -->
+          <map-input data-testid="remote-image-z1" name="z" type="zoom" min="3" max="10"></map-input>
+          <map-input name="w" type="width"></map-input>
+          <map-input name="h" type="height"></map-input>
+          <map-input name="i" type="location" units="map" axis="i"></map-input>
+          <map-input name="j" type="location" units="map" axis="j"></map-input>
+          <!-- bounds of map-link #link1 should have same values as the identified inputs below -->
+          <map-input data-testid="remote-image-horizontal1" name="xmin" type="location" units="pcrs" axis="easting" position="top-left"     min="-13898086" max="-12675094"></map-input>
+          <map-input name="xmax" type="location" units="pcrs" axis="easting" position="top-right"    min="-13898086" max="-12675094"></map-input>
+          <map-input name="ymin" type="location" units="pcrs" axis="northing" position="bottom-left" min="6134530"   max="7357523"></map-input>
+          <map-input data-testid="remote-image-vertical1" name="ymax" type="location" units="pcrs" axis="northing" position="top-left"    min="6134530"   max="7357523"></map-input>
+          
+          <!-- this map-input should establish the map-link.extent.zoom.min/maxNativeZoom for #link2-->
+          <!-- previous map-meta should establish the min/maxZoom for #link2 -->
+          <!-- note that if this variable wasn't referenced by the tref on map-link #link2, 
+          it would be ignored by map-link #link2, because it is second in document order -->
+          <map-input data-testid="remote-image-z2" name="z2" type="zoom" min="2" max="12"></map-input>
+          <map-input name="w2" type="width"></map-input>
+          <map-input name="h2" type="height"></map-input>
+          <map-input name="i2" type="location" units="map" axis="i"></map-input>
+          <map-input name="j2" type="location" units="map" axis="j"></map-input>
+          <!-- bounds left up to the projection for map-link #link2 -->
+          <map-input name="xmin2" type="location" units="pcrs" axis="easting" position="top-left" ></map-input>
+          <map-input name="xmax2" type="location" units="pcrs" axis="easting" position="top-right"></map-input>
+          <map-input name="ymin2" type="location" units="pcrs" axis="northing" position="bottom-left"></map-input>
+          <map-input name="ymax2" type="location" units="pcrs" axis="northing" position="top-left"></map-input>
+          
+          <!-- this guy should have the bounds established by the 
+          #remote-image-vertical/horizontal1 inputs above, and the zoom bounds of
+          #remote-image-mmz1 with the native zoom bounds of remote-image-z1 
+          (NOT the native zoom bounds of #remote-image-z2 which is second in 
+          document order, thus ignored [unless referenced via a tref variable] -->
+          <map-link data-testid="remote-link1" rel="image" tref="images/toporama_en.jpg?service=WMS&amp;version=1.3.0&amp;request=GetMap&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;width={w}&amp;height={h}&amp;layers=FBP_FuelLayer_wBurnScars&amp;CRS=EPSG:3857&amp;format=image/png&amp;transparent=true"></map-link>
+
+          <!-- this guy should have the bounds of the projection, and it should
+          have zoom bounds of the map-meta #remote-image-mmz1, and the native
+          zoom bounds of #remote-image-z2 -->
+          <map-link data-testid="remote-link2" rel="image" tref="images/toporama_en.jpg?service=WMS&amp;version=1.3.0&amp;request=GetMap&amp;bbox={xmin2},{ymin2},{xmax2},{ymax2}&amp;width={w2}&amp;height={h2}&amp;layers=FBP_FuelLayer_wBurnScars&amp;CRS=EPSG:3857&amp;format=image/png&amp;transparent=true&amp;zoom={z2}"></map-link>
+        </map-extent>
+        
+        <map-extent  units="OSMTILE" hidden="hidden">
+          
+          <map-meta data-testid="remote-image-mm-bounds" name="extent" content="top-left-easting=-13898500, top-left-northing=7357500, bottom-right-easting=-12675500, bottom-right-northing=6134500"></map-meta>
+          <map-input name="w3" type="width"></map-input>
+          <map-input name="h3" type="height"></map-input>
+          <map-input name="i3" type="location" units="map" axis="i"></map-input>
+          <map-input name="j3" type="location" units="map" axis="j"></map-input>
+          <!-- if there were no map-meta in scope, the bounds of map-link #link3
+          should be that of the projection.  But since there is a map-meta in
+          scope, the bounds of #link3 should equal the map-meta -->
+          <map-input name="xmin3" type="location" units="pcrs" axis="easting" position="top-left" ></map-input>
+          <map-input name="xmax3" type="location" units="pcrs" axis="easting" position="top-right"></map-input>
+          <map-input name="ymin3" type="location" units="pcrs" axis="northing" position="bottom-left"></map-input>
+          <map-input name="ymax3" type="location" units="pcrs" axis="northing" position="top-left"></map-input>
+
+          <!-- this guy should have the bounds of the map-meta #remote-image-mm-bounds,
+          and the zoom bounds of the projection -->
+          <map-link data-testid="remote-link3" rel="image" tref="images/toporama_en.jpg?service=WMS&amp;version=1.3.0&amp;request=GetMap&amp;bbox={xmin3},{ymin3},{xmax3},{ymax3}&amp;width={w3}&amp;height={h3}&amp;layers=FBP_FuelLayer_wBurnScars&amp;CRS=EPSG:3857&amp;format=image/png&amp;transparent=true"></map-link>
+        </map-extent>
+
+</map-body>
+
+</mapml->

@@ -40,6 +40,14 @@
         <map-link rel='tile' tref='/data/cbmt/{zoomLevel}/c{col}_r{row}.png'></map-link>
       </map-extent>
   </template>
+  <template data-testid="template2">
+      <map-extent data-testid="ext5" label="Non-default bounds" units="CBMTILE" checked>
+        <map-input name="zoomLevel" type="zoom" value="3" min="1" max="3"></map-input>
+        <map-input name="row" type="location" axis="row" units="tilematrix" min="19" max="20"></map-input>
+        <map-input name="col" type="location" axis="column" units="tilematrix" min="17" max="18"></map-input>
+        <map-link rel='tile' tref='/data/cbmt/{zoomLevel}/c{col}_r{row}.png'></map-link>
+      </map-extent>
+  </template>
 </head>
 
 <body>

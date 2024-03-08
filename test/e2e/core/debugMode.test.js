@@ -15,9 +15,13 @@ test.describe('Playwright Map Element Tests', () => {
     await context.close();
   });
 
-  test('Debug elements added to map', async () => {
+  test.beforeEach(async () => {
+    await page.reload();
+    await page.waitForTimeout(500);
     await page.$eval('body > mapml-viewer', (map) => map.toggleDebug());
+  });
 
+  test('Debug elements added to map', async () => {
     const panel = await page.$eval(
       'div > table.mapml-debug > tbody.mapml-debug-panel',
       (panelElem) => panelElem.childElementCount
@@ -42,15 +46,9 @@ test.describe('Playwright Map Element Tests', () => {
     await expect(
       page.locator('.mapml-debug-vectors.cbmt-inline-layer')
     ).toHaveCount(1);
-  });
-
-  test('Large debug layer extent created', async () => {
     await expect(
       page.locator('.mapml-debug-vectors.cbmt-large-layer')
     ).toHaveCount(1);
-  });
-
-  test('Debug layer extent beyond ((0,0), (5,5))  created', async () => {
     await expect(
       page.locator('.mapml-debug-vectors.cbmt-beyond-layer')
     ).toHaveCount(1);
@@ -91,7 +89,7 @@ test.describe('Playwright Map Element Tests', () => {
     expect(gcrs).toEqual('gcrs: lon: -92.152897, lat: 47.114275');
   });
 
-  test('Layer disabled attribute update when controls are toggled off', async () => {
+  test('Layer disabled attribute update when debug is toggled off', async () => {
     await page.$eval('body > mapml-viewer', (map) => map.toggleDebug());
 
     await page.$eval('body > mapml-viewer', (map) => map.zoomTo(-51, 170, 0));
@@ -107,6 +105,11 @@ test.describe('Playwright Map Element Tests', () => {
   });
 
   test('Debug mode correctly re-enabled after disabling', async () => {
+    await page.$eval('body > mapml-viewer', (map) => map.toggleDebug());
+
+    await page.$eval('body > mapml-viewer', (map) => map.zoomTo(-51, 170, 0));
+
+    await page.waitForTimeout(1000);
     await page.$eval('body > mapml-viewer', (map) => map.back());
     await page.$eval('body > mapml-viewer', (map) => map.toggleDebug());
 
@@ -130,7 +133,7 @@ test.describe('Playwright Map Element Tests', () => {
     expect(grid).toEqual(1);
   });
 
-  test('Layer deselected', async () => {
+  test('Layer deselected then selected again', async () => {
     await page.hover('.leaflet-top.leaflet-right');
     await page.click(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span'
@@ -139,9 +142,6 @@ test.describe('Playwright Map Element Tests', () => {
       page.locator('.mapml-debug-vectors.cbmt-inline-layer')
     ).toHaveCount(0);
     await expect(page.locator('.mapml-debug-vectors')).toHaveCount(3); // only 4 if you have the mapml-extension installed, announceZoom option enabled
-  });
-
-  test('Layer reselected', async () => {
     await page.hover('.leaflet-top.leaflet-right');
     await page.click(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span'

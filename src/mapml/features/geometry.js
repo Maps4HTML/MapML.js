@@ -14,6 +14,9 @@ export var Geometry = L.FeatureGroup.extend({
     L.LayerGroup.prototype.initialize.call(this, layers, options);
     this._featureEl = this.options.mapmlFeature;
 
+    this.layerBounds = options.layerBounds;
+    this.zoomBounds = options.zoomBounds;
+
     let firstLayer = layers[Object.keys(layers)[0]];
     if (layers.length === 1 && firstLayer.options.link)
       this.options.link = firstLayer.options.link;
@@ -78,17 +81,15 @@ export var Geometry = L.FeatureGroup.extend({
    * Check whether the feature group should be rendered at current map zoom level
    * @param {Number} zoom - current map zoom
    * @param {Object} vectorMinZoom - the minimum zoom bound of vector layer
-   * @param {Object} vectorMinZoom - the maximum zoom bound of vector layer
+   * @param {Object} vectorMaxZoom - the maximum zoom bound of vector layer
    * @returns {Boolean}
    * @private
    */
   _checkRender: function (zoom, vectorMinZoom, vectorMaxZoom) {
-    let minZoom = this._featureEl.getAttribute('min'),
-      maxZoom = this._featureEl.getAttribute('max');
+    let minZoom = this._featureEl.min,
+      maxZoom = this._featureEl.max;
     // if the current map zoom falls below/above the zoom bounds of the vector layer
     if (zoom > vectorMaxZoom || zoom < vectorMinZoom) return false;
-    // if no min and max attribute present
-    if (minZoom === null && maxZoom === null) return true;
     // if the current map zoom falls below/above the [min, max] range
     if (
       (minZoom !== null && zoom < +minZoom) ||

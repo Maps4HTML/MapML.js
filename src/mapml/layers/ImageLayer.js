@@ -25,7 +25,7 @@ export var ImageLayer = L.ImageOverlay.extend({
 
     return events;
   },
-  onAdd: function () {
+  onAdd: function (map) {
     this.on({
       load: this._onImageLoad
     });

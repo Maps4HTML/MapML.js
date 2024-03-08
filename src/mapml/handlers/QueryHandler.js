@@ -15,14 +15,8 @@ export var QueryHandler = L.Handler.extend({
     var layers = this.options.mapEl.layers;
     // work backwards in document order (top down)
     for (var l = layers.length - 1; l >= 0; l--) {
-      var mapmlLayer = layers[l]._layer;
-      if (
-        layers[l].checked &&
-        mapmlLayer &&
-        mapmlLayer.queryable &&
-        !mapmlLayer._layerEl.hidden
-      ) {
-        return mapmlLayer;
+      if (layers[l].queryable()) {
+        return layers[l]._layer;
       }
     }
   },
@@ -55,7 +49,7 @@ export var QueryHandler = L.Handler.extend({
   _query(e, layer) {
     var zoom = e.target.getZoom(),
       map = this._map,
-      crs = layer._properties.crs, // the crs for each extent would be the same
+      crs = M[layer.options.projection], // the crs for each extent would be the same
       tileSize = map.options.crs.options.crs.tile.bounds.max.x,
       container = layer._container,
       popupOptions = {
@@ -85,7 +79,7 @@ export var QueryHandler = L.Handler.extend({
         point,
         scale
       );
-    let templates = layer.getQueryTemplates(pcrsClick);
+    let templates = layer.getQueryTemplates(pcrsClick, zoom);
 
     let fetches = [];
 
@@ -108,6 +102,12 @@ export var QueryHandler = L.Handler.extend({
         })
         .then((response) => {
           let features = [];
+          let geom =
+            "<map-geometry cs='gcrs'><map-point><map-coordinates>" +
+            e.latlng.lng +
+            ' ' +
+            e.latlng.lat +
+            '</map-coordinates></map-point></map-geometry>';
           if (response.contenttype.startsWith('text/mapml')) {
             // the mapmldoc could have <map-meta> elements that are important, perhaps
             // also, the mapmldoc can have many features
@@ -115,6 +115,16 @@ export var QueryHandler = L.Handler.extend({
               response.text,
               'application/xml'
             );
+            let geometrylessFeatures = mapmldoc.querySelectorAll(
+              'map-feature:not(:has(map-geometry))'
+            );
+            if (geometrylessFeatures.length) {
+              let g = parser.parseFromString(geom, 'application/xml');
+              for (let i = 0; i < geometrylessFeatures.length; i++) {
+                let f = geometrylessFeatures[i];
+                f.appendChild(g.firstElementChild.cloneNode(true));
+              }
+            }
             features = Array.prototype.slice.call(
               mapmldoc.querySelectorAll('map-feature')
             );
@@ -125,24 +135,50 @@ export var QueryHandler = L.Handler.extend({
               )
             );
           } else {
-            // synthesize a single feature from text or html content
-            let geom =
-                "<map-geometry cs='gcrs'><map-point><map-coordinates>" +
-                e.latlng.lng +
-                ' ' +
-                e.latlng.lat +
-                '</map-coordinates></map-point></map-geometry>',
-              feature = parser
-                .parseFromString(
-                  '<map-feature><map-properties>' +
-                    response.text +
-                    '</map-properties>' +
-                    geom +
-                    '</map-feature>',
-                  'text/html'
-                )
-                .querySelector('map-feature');
-            features.push(feature);
+            try {
+              let featureDocument = parser.parseFromString(
+                response.text,
+                'application/xml'
+              );
+              let featureCollection =
+                featureDocument.querySelectorAll('map-feature');
+              if (
+                featureDocument.querySelector('parsererror') ||
+                featureCollection.length === 0
+              ) {
+                throw new Error('parsererror');
+              }
+              let g = parser.parseFromString(geom, 'application/xml');
+              for (let feature of featureCollection) {
+                if (!feature.querySelector('map-geometry')) {
+                  feature.appendChild(g.firstElementChild.cloneNode(true));
+                }
+                features.push(feature);
+              }
+            } catch (err) {
+              // try the html parser; script elements are marked as non-functional
+              // by that api, which hopefully works!
+              let html = parser.parseFromString(response.text, 'text/html');
+
+              // synthesize a single feature from text or html content
+              let featureDoc = parser.parseFromString(
+                '<map-feature><map-properties>' +
+                  '</map-properties>' +
+                  geom +
+                  '</map-feature>',
+                'text/html'
+              );
+              if (html.body) {
+                featureDoc
+                  .querySelector('map-properties')
+                  .appendChild(html.querySelector('html'));
+              } else {
+                featureDoc
+                  .querySelector('map-properties')
+                  .append(response.text);
+              }
+              features.push(featureDoc.querySelector('map-feature'));
+            }
           }
           return { features: features, template: template };
         })
@@ -246,10 +282,7 @@ export var QueryHandler = L.Handler.extend({
           obj[v] = template.query[v];
         }
       }
-
-      if (template.extentBounds.contains(pcrsClick)) {
-        fetches.push(fetchFeatures(template, obj));
-      }
+      fetches.push(fetchFeatures(template, obj));
     }
     Promise.allSettled(fetches).then((results) => {
       layer._mapmlFeatures = [];
@@ -257,9 +290,9 @@ export var QueryHandler = L.Handler.extend({
 
       for (let f of results) {
         if (f.status === 'fulfilled') {
-          // create connection between queried <map-feature> and its parent <map-extent>
+          // create connection between queried <map-feature> and its parent <map-link>
           for (let feature of f.value.features) {
-            feature._extentEl = f.value.template._extentEl;
+            feature._linkEl = f.value.template.linkEl;
           }
           layer._mapmlFeatures = layer._mapmlFeatures.concat(f.value.features);
         }
@@ -284,9 +317,10 @@ export var QueryHandler = L.Handler.extend({
         projection: map.options.projection,
         _leafletLayer: layer,
         query: true,
-        static: true
+        mapEl: layer.options.mapEl
       });
-      f.addTo(map);
+
+      f.addTo(layer);
 
       let div = L.DomUtil.create('div', 'mapml-popup-content'),
         c = L.DomUtil.create('iframe');
@@ -301,7 +335,7 @@ export var QueryHandler = L.Handler.extend({
       layer._totalFeatureCount = features.length;
       layer.bindPopup(div, popupOptions).openPopup(loc);
       layer.on('popupclose', function () {
-        map.removeLayer(f);
+        layer.removeLayer(f);
       });
       f.showPaginationFeature({
         i: 0,

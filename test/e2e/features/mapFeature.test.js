@@ -47,7 +47,10 @@ test.describe('Playwright map-feature tests', () => {
       'lon',
       -75.6978309903406
     );
-    await expect(page.getByTestId('viewer')).toHaveJSProperty('zoom', 24);
+    // we expect the zoomTo() link to use the map-feature.getZoomToZoom() api
+    // which respects the layer's map-meta zoom information, which has a min=14
+    // in this case
+    await expect(page.getByTestId('viewer')).toHaveJSProperty('zoom', 14);
     // click the first point on the map
     await page.getByRole('button', { name: 'Point 1' }).click();
     // expect the popup for Point 1 to have specific content

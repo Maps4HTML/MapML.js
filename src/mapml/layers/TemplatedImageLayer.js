@@ -3,12 +3,12 @@ export var TemplatedImageLayer = L.Layer.extend({
     this._template = template;
     this._container = L.DomUtil.create('div', 'leaflet-layer');
     L.DomUtil.addClass(this._container, 'mapml-image-container');
-    let inputData = M._extractInputBounds(template);
-    this.zoomBounds = inputData.zoomBounds;
-    this.extentBounds = inputData.bounds;
-    this.isVisible = true;
-    delete options.opacity;
-    L.extend(options, this.zoomBounds);
+    this._linkEl = options.linkEl;
+    this.zoomBounds = options.zoomBounds;
+    this.extentBounds = options.extentBounds;
+    // get rid of unused duplicate information that can be confusing
+    delete options.zoomBounds;
+    delete options.extentBounds;
     L.setOptions(
       this,
       L.extend(options, this._setUpExtentTemplateVars(template))
@@ -21,16 +21,30 @@ export var TemplatedImageLayer = L.Layer.extend({
     };
     return events;
   },
-  onAdd: function () {
+  onAdd: function (map) {
+    this._map = map;
+    // TODO: set this._map by ourselves
     this.options.pane.appendChild(this._container);
-    this._map._addZoomLimit(this); //used to set the zoom limit of the map
     this.setZIndex(this.options.zIndex);
     this._onAdd();
   },
   redraw: function () {
     this._onMoveEnd();
   },
-
+  isVisible: function () {
+    let map = this._linkEl.getMapEl()._map;
+    let mapZoom = map.getZoom();
+    let mapBounds = M.pixelToPCRSBounds(
+      map.getPixelBounds(),
+      mapZoom,
+      map.options.projection
+    );
+    return (
+      mapZoom <= this.zoomBounds.maxZoom &&
+      mapZoom >= this.zoomBounds.minZoom &&
+      this.extentBounds.overlaps(mapBounds)
+    );
+  },
   _clearLayer: function () {
     let containerImages = this._container.querySelectorAll('img');
     for (let i = 0; i < containerImages.length; i++) {
@@ -57,6 +71,7 @@ export var TemplatedImageLayer = L.Layer.extend({
   _scaleImage: function (bounds, zoom) {
     let obj = this;
     setTimeout(function () {
+      if (!obj._map) return;
       let step = obj._template.step;
       let steppedZoom = Math.floor(zoom / step) * step;
       let scale = obj._map.getZoomScale(zoom, steppedZoom);
@@ -125,15 +140,6 @@ export var TemplatedImageLayer = L.Layer.extend({
       // Zooming from one step decrement into a higher one
       // OR panning when mapZoom % step === 0
     } else {
-      let mapBounds = M.pixelToPCRSBounds(
-        this._map.getPixelBounds(),
-        mapZoom,
-        this._map.options.projection
-      );
-      this.isVisible =
-        mapZoom <= this.zoomBounds.maxZoom &&
-        mapZoom >= this.zoomBounds.minZoom &&
-        this.extentBounds.overlaps(mapBounds);
       if (!this.isVisible) {
         this._clearLayer();
         return;
@@ -162,7 +168,6 @@ export var TemplatedImageLayer = L.Layer.extend({
   onRemove: function (map) {
     L.DomUtil.remove(this._container);
     this._clearLayer();
-    map._removeZoomLimit(this);
   },
   getImageUrl: function (pixelBounds, zoom) {
     var obj = {};

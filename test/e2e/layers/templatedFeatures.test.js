@@ -46,11 +46,12 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
 
   test.describe('Templated Features in shadowRoot', () => {
     test("Templated features attaches to MapExtent's shadow root", async () => {
+      await page.waitForTimeout(500);
       const shadow = await page.evaluate(
-        `document.querySelector('#map2 > layer- > map-extent').shadowRoot`
+        `document.querySelector('#map2 > layer- > map-extent > map-link').shadowRoot`
       );
       const features = await page.evaluate(
-        `document.querySelector('#map2 > layer- > map-extent').shadowRoot.querySelectorAll('map-feature').length`
+        `document.querySelector('#map2 > layer- > map-extent > map-link').shadowRoot.querySelectorAll('map-feature').length`
       );
       expect(shadow).toBeTruthy();
       expect(features).toBe(8);
@@ -59,6 +60,7 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
 
   test.describe('Templated Features Zoom To Extent Tests', () => {
     test('Zoom to layer applies meta extent', async () => {
+      await page.waitForTimeout(500);
       const startTopLeft = await page.evaluate(
         `document.querySelector('#map2').extent.topLeft.pcrs`
       );
@@ -98,8 +100,9 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
       expect(startBottomRight.vertical).toBe(-173037.52857506275);
       expect(startZoomLevel).toBe(16);
       await page.evaluate(
-        `document.querySelector('#map2 > layer- > map-extent').shadowRoot.querySelector('map-feature').zoomTo()`
+        `document.querySelector('#map2 > layer- > map-extent > map-link').shadowRoot.querySelector('map-feature').zoomTo()`
       );
+      await page.waitForTimeout(1000);
       const endTopLeft = await page.evaluate(
         `document.querySelector('#map2').extent.topLeft.pcrs`
       );
@@ -109,38 +112,41 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
       const endZoomLevel = await page.evaluate(
         `document.querySelector('#map2').zoom`
       );
-      expect(endTopLeft.horizontal).toBe(1509663.4715519473);
-      expect(endTopLeft.vertical).toBe(-171660.43571670353);
-      expect(endBottomRight.horizontal).toBe(1509696.5445347577);
-      expect(endBottomRight.vertical).toBe(-171693.50869952142);
-      expect(endZoomLevel).toBe(25);
+      expect(endTopLeft.horizontal).toBe(1509600.685801372);
+      expect(endTopLeft.vertical).toBe(-171597.66319532692);
+      expect(endBottomRight.horizontal).toBe(1509759.436118871);
+      expect(endBottomRight.vertical).toBe(-171756.41351282597);
+      // 2024-01-23 updated map-feature.zoom getter to respect map-meta max before
+      // max zoom of parent extent (removed parent extent from consideration, use
+      // map zoom when feature connects to dom as zoom instead
+      expect(endZoomLevel).toBe(22);
     });
   });
 
   test.describe('Retreived Features Loading Tests', () => {
-    test('Loading in tilematrix feature', async () => {
+    test('Loading in tilematrix cs feature', async () => {
       await page.waitForTimeout(200);
-      const feature = await page.$eval(
-        'xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(3) > path.leaflet-interactive',
-        (tile) => tile.getAttribute('d')
+      const feature = await page.getByTestId('tilematrixgeometry');
+      const pathCoordinates = await feature.evaluate((f) =>
+        f._groupEl.querySelector('path').getAttribute('d')
       );
-      expect(feature).toEqual('M382 -28L809 -28L809 399L382 399z');
+      expect(pathCoordinates).toEqual('M382 -28L809 -28L809 399L382 399z');
     });
 
     test('Loading in pcrs feature', async () => {
-      const feature = await page.$eval(
-        'xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(1) > path.leaflet-interactive',
-        (tile) => tile.getAttribute('d')
+      const feature = await page.getByTestId('pcrsgeometry');
+      const pathCoordinates = await feature.evaluate((f) =>
+        f._groupEl.querySelector('path').getAttribute('d')
       );
-      expect(feature).toEqual('M88 681L21 78L-436 201L-346 561z');
+      expect(pathCoordinates).toEqual('M88 681L21 78L-436 201L-346 561z');
     });
 
     test('Loading in tcrs feature', async () => {
-      const feature = await page.$eval(
-        'xpath=//html/body/map/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(1) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(2) > path.leaflet-interactive',
-        (tile) => tile.getAttribute('d')
+      const feature = await page.getByTestId('tcrsgeometry');
+      const pathCoordinates = await feature.evaluate((f) =>
+        f._groupEl.querySelector('path').getAttribute('d')
       );
-      expect(feature).toEqual('M307 456L599 467L612 629L381 599z');
+      expect(pathCoordinates).toEqual('M307 456L599 467L612 629L381 599z');
     });
 
     test('templated features disabled when panned out of bounds', async () => {

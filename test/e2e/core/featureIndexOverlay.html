@@ -31,7 +31,7 @@
         <map-option label="Mexican">mexican</map-option>
         <map-option label="Indian">indian</map-option>
       </map-select>
-      <map-link tref="restaurants/{cuisine}.mapml" rel="features"/>
+      <map-link tref="restaurants/{cuisine}.mapml" rel="features"></map-link>
     </map-extent>
   </layer->
 </mapml-viewer>
@@ -39,10 +39,10 @@
   <layer- label="Linked feature" checked>
     <map-meta name="projection" content="CBMTILE"></map-meta>
       <map-extent units="CBMTILE" checked hidden>
-        <map-input name="z" type="zoom" value="17" min="0" max="17"/>
-        <map-input name="y" type="location" units="tilematrix" axis="row" min="29750" max="34475"/>
-        <map-input name="x" type="location" units="tilematrix" axis="column" min="26484" max="32463"/>
-        <map-link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}?m4h=t"/>
+        <map-input name="z" type="zoom" value="17" min="0" max="17"></map-input>
+        <map-input name="y" type="location" units="tilematrix" axis="row" min="29750" max="34475"></map-input>
+        <map-input name="x" type="location" units="tilematrix" axis="column" min="26484" max="32463"></map-input>
+        <map-link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}?m4h=t"></map-link>
       </map-extent>
       <map-feature id="linkedfeature">
         <map-featurecaption>Test link</map-featurecaption>

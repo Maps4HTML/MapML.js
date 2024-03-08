@@ -20,7 +20,7 @@
 </head>
 
 <body>
-  <map is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
+  <map data-testid="map1" is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
 
     <layer- label="Arizona" checked>
       <map-meta name="projection" content="CBMTILE"></map-meta>
@@ -39,7 +39,7 @@
           stroke: blue
         }
       </map-style>
-      <map-link id="forth" rel="stylesheet" type="text/css" href="forth.css"></map-link>
+      <map-link id="fourth" rel="stylesheet" type="text/css" href="fourth.css"></map-link>
       <map-feature zoom="2" class="refDiff">
         <map-properties>
           <h1>Arizona</h1>
@@ -100,7 +100,7 @@
       </map-extent>
     </layer->
   </map>
-  <map is="web-map" projection="WGS84" zoom="0" lat="0" lon="0" controls>
+  <map data-testid="map2" is="web-map" projection="WGS84" zoom="0" lat="0" lon="0" controls>
 
     <layer- label="Inline Countries" checked>
       <map-link rel="stylesheet" href="styleParsing.css"></map-link>

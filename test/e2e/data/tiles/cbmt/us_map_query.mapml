@@ -5,7 +5,7 @@
     <map-meta charset="utf-8"></map-meta>
     <map-meta name="projection" content="CBMTILE"></map-meta>
     <map-meta name="cs" content="pcrs"></map-meta>
-    <map-meta name="zoom" content="min=2,max=2,value=0"></map-meta>
+    <map-meta name="zoom" content="min=2,max=6"></map-meta>
       <map-meta name="extent"
         content="zoom=0,top-left-column=0,top-left-row=0,bottom-right-column=5,bottom-right-row=5"></map-meta>
     <map-link rel="license" href="https://leafletjs.com/examples/choropleth/" title=" CC-BY-SA Vladimir Agafonkin"></map-link>

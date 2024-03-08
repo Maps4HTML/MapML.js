@@ -5,7 +5,9 @@ import { MapCaption } from './map-caption.js';
 import { MapFeature } from './map-feature.js';
 import { MapExtent } from './map-extent.js';
 import { MapInput } from './map-input.js';
+import { MapSelect } from './map-select.js';
 import { MapLink } from './map-link.js';
+import { MapStyle } from './map-style.js';
 
 export class MapViewer extends HTMLElement {
   static get observedAttributes() {
@@ -115,12 +117,22 @@ export class MapViewer extends HTMLElement {
       map.options.crs,
       this.projection
     );
-    if (map.getMaxZoom() !== Infinity) {
-      formattedExtent.zoom = {
-        minZoom: map.getMinZoom(),
-        maxZoom: map.getMaxZoom()
-      };
+    // get min/max zoom from layers at this moment
+    let minZoom = Infinity,
+      maxZoom = -Infinity;
+    for (let i = 0; i < this.layers.length; i++) {
+      if (this.layers[i].extent) {
+        if (this.layers[i].extent.zoom.minZoom < minZoom)
+          minZoom = this.layers[i].extent.zoom.minZoom;
+        if (this.layers[i].extent.zoom.maxZoom > maxZoom)
+          maxZoom = this.layers[i].extent.zoom.maxZoom;
+      }
     }
+
+    formattedExtent.zoom = {
+      minZoom: minZoom !== Infinity ? minZoom : map.getMinZoom(),
+      maxZoom: maxZoom !== -Infinity ? maxZoom : map.getMaxZoom()
+    };
     return formattedExtent;
   }
   get static() {
@@ -266,6 +278,8 @@ export class MapViewer extends HTMLElement {
     if (!this._map) {
       this._map = L.map(this._container, {
         center: new L.LatLng(this.lat, this.lon),
+        minZoom: 0,
+        maxZoom: M[this.projection].options.resolutions.length - 1,
         projection: this.projection,
         query: true,
         contextMenu: true,
@@ -289,6 +303,7 @@ export class MapViewer extends HTMLElement {
     }
   }
   disconnectedCallback() {
+    this._removeEvents();
     while (this.shadowRoot.firstChild) {
       this.shadowRoot.removeChild(this.shadowRoot.firstChild);
     }
@@ -348,56 +363,50 @@ export class MapViewer extends HTMLElement {
         break;
       case 'projection':
         const reconnectLayers = () => {
-          if (this._map && this._map.options.projection !== newValue) {
-            // save map location and zoom
-            let lat = this.lat;
-            let lon = this.lon;
-            let zoom = this.zoom;
-            // saving the lat, lon and zoom is necessary because Leaflet seems
-            // to try to compensate for the change in the scales for each zoom
-            // level in the crs by changing the zoom level of the map when
-            // you set the map crs.  So, we save the current view for use below
-            // when all the layers' reconnections have settled.
-            // leaflet doesn't like this: https://github.com/Leaflet/Leaflet/issues/2553
-            this._map.options.crs = M[newValue];
-            this._map.options.projection = newValue;
-            let layersReady = [];
-            this._map.announceMovement.disable();
-            for (let layer of this.querySelectorAll('layer-')) {
-              layer.removeAttribute('disabled');
-              let reAttach = this.removeChild(layer);
-              this.appendChild(reAttach);
-              layersReady.push(reAttach.whenReady());
-            }
-            Promise.allSettled(layersReady).then(() => {
-              // use the saved map location to ensure it is correct after
-              // changing the map CRS.  Specifically affects projection
-              // upgrades, e.g. https://maps4html.org/experiments/custom-projections/BNG/
-              // see leaflet bug: https://github.com/Leaflet/Leaflet/issues/2553
-              this.zoomTo(lat, lon, zoom);
-              if (M.options.announceMovement)
-                this._map.announceMovement.enable();
-              // required to delay until map-extent.disabled is correctly set
-              // which happens as a result of layer-._validateDisabled()
-              // which happens so much we have to delay until they calls are
-              // completed
-              setTimeout(() => {
-                this.dispatchEvent(new CustomEvent('map-projectionchange'));
-              }, 0);
-            });
+          // save map location and zoom
+          let lat = this.lat;
+          let lon = this.lon;
+          let zoom = this.zoom;
+          // saving the lat, lon and zoom is necessary because Leaflet seems
+          // to try to compensate for the change in the scales for each zoom
+          // level in the crs by changing the zoom level of the map when
+          // you set the map crs.  So, we save the current view for use below
+          // when all the layers' reconnections have settled.
+          // leaflet doesn't like this: https://github.com/Leaflet/Leaflet/issues/2553
+          this._map.options.crs = M[newValue];
+          this._map.options.projection = newValue;
+          let layersReady = [];
+          this._map.announceMovement.disable();
+          for (let layer of this.querySelectorAll('layer-')) {
+            layer.removeAttribute('disabled');
+            let reAttach = this.removeChild(layer);
+            this.appendChild(reAttach);
+            layersReady.push(reAttach.whenReady());
           }
+          return Promise.allSettled(layersReady).then(() => {
+            // use the saved map location to ensure it is correct after
+            // changing the map CRS.  Specifically affects projection
+            // upgrades, e.g. https://maps4html.org/experiments/custom-projections/BNG/
+            // see leaflet bug: https://github.com/Leaflet/Leaflet/issues/2553
+            this.zoomTo(lat, lon, zoom);
+            if (M.options.announceMovement) this._map.announceMovement.enable();
+            // required to delay until map-extent.disabled is correctly set
+            // which happens as a result of layer-._validateDisabled()
+            // which happens so much we have to delay until they calls are
+            // completed
+            setTimeout(() => {
+              this.dispatchEvent(new CustomEvent('map-projectionchange'));
+            }, 0);
+          });
         };
-        if (newValue) {
+        if (
+          newValue &&
+          this._map &&
+          this._map.options.projection !== newValue
+        ) {
           const connect = reconnectLayers.bind(this);
-          new Promise((resolve, reject) => {
-            connect();
-            resolve();
-          }).then(() => {
+          connect().then(() => {
             if (this._map && this._map.options.projection !== oldValue) {
-              // this awful hack is brought to you by a leaflet bug/ feature request
-              // https://github.com/Leaflet/Leaflet/issues/2553
-              this.zoomTo(this.lat, this.lon, this.zoom + 1);
-              this.zoomTo(this.lat, this.lon, this.zoom - 1);
               // this doesn't completely work either
               this._resetHistory();
             }
@@ -835,7 +844,6 @@ export class MapViewer extends HTMLElement {
     this._map.on(
       'movestart',
       function () {
-        this._updateMapCenter();
         this.dispatchEvent(
           new CustomEvent('movestart', { detail: { target: this } })
         );
@@ -845,7 +853,6 @@ export class MapViewer extends HTMLElement {
     this._map.on(
       'move',
       function () {
-        this._updateMapCenter();
         this.dispatchEvent(
           new CustomEvent('move', { detail: { target: this } })
         );
@@ -866,7 +873,6 @@ export class MapViewer extends HTMLElement {
     this._map.on(
       'zoomstart',
       function () {
-        this._updateMapCenter();
         this.dispatchEvent(
           new CustomEvent('zoomstart', { detail: { target: this } })
         );
@@ -876,7 +882,6 @@ export class MapViewer extends HTMLElement {
     this._map.on(
       'zoom',
       function () {
-        this._updateMapCenter();
         this.dispatchEvent(
           new CustomEvent('zoom', { detail: { target: this } })
         );
@@ -893,6 +898,19 @@ export class MapViewer extends HTMLElement {
       },
       this
     );
+    const setMapMinAndMaxZoom = ((e) => {
+      this.whenLayersReady().then(() => {
+        if (e && e.layer._layerEl) {
+          this._map.setMaxZoom(this.extent.zoom.maxZoom);
+          this._map.setMinZoom(this.extent.zoom.minZoom);
+        }
+      });
+    }).bind(this);
+    this.whenLayersReady().then(() => {
+      this._map.setMaxZoom(this.extent.zoom.maxZoom);
+      this._map.setMinZoom(this.extent.zoom.minZoom);
+      this._map.on('layeradd layerremove', setMapMinAndMaxZoom, this);
+    });
     this.addEventListener('fullscreenchange', function (event) {
       if (document.fullscreenElement === null) {
         // full-screen mode has been exited
@@ -1366,7 +1384,7 @@ export class MapViewer extends HTMLElement {
     let layersReady = [];
     // check if all the children elements (map-extent, map-feature) of all layer- are ready
     for (let layer of [...this.layers]) {
-      layersReady.push(layer.whenElemsReady());
+      layersReady.push(layer.whenReady());
     }
     return Promise.allSettled(layersReady);
   }
@@ -1409,4 +1427,6 @@ window.customElements.define('map-caption', MapCaption);
 window.customElements.define('map-feature', MapFeature);
 window.customElements.define('map-extent', MapExtent);
 window.customElements.define('map-input', MapInput);
+window.customElements.define('map-select', MapSelect);
 window.customElements.define('map-link', MapLink);
+window.customElements.define('map-style', MapStyle);

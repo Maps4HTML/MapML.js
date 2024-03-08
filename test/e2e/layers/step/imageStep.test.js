@@ -33,7 +33,7 @@ test.describe('Templated image layer with step', () => {
     });
 
     let selector =
-      '.leaflet-layer.mapml-templatedlayer-container > div > img:last-child';
+      '.leaflet-layer.mapml-extentlayer-container > div > img:last-child';
     test('Scale layer on add', async () => {
       await page.reload();
       await page.waitForTimeout(500);
@@ -79,7 +79,7 @@ test.describe('Templated image layer with step', () => {
             document
               .querySelector('body > mapml-viewer')
               .shadowRoot.querySelector(
-                '.leaflet-layer.mapml-templatedlayer-container > div > img'
+                '.leaflet-layer.mapml-extentlayer-container > div > img'
               ).style.transform === 'translate3d(0px, 0px, 0px)',
           {},
           { timeout: 1000 }

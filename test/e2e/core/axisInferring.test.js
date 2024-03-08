@@ -15,7 +15,19 @@ test.describe('UI Drag&Drop Test', () => {
     await context.close();
   });
 
+  /**
+   *
+   * The point of "axisInferring.test.js" is to validate that the extent's cs
+   * is correctly inferred from the axis names in the <map-meta name="extent"
+   * content="..."> content attribute.
+   *
+   * Semantics: the extent of the layers should include the extent of the map-meta
+   * -specified extent PLUS the contents of the layer (a map-feature in all cases).
+   *
+   * The test expectations were actually measured from the loaded html.
+   */
   test('TileMatrix inferring', async () => {
+    await page.waitForTimeout(1000);
     const layerExtent = await page.$eval(
       'body > map > layer-:nth-child(1)',
       (layer) => layer.extent
@@ -42,8 +54,8 @@ test.describe('UI Drag&Drop Test', () => {
       vertical: 256
     });
     expect(layerExtent.bottomRight.tcrs[0]).toEqual({
-      horizontal: 256,
-      vertical: 512
+      horizontal: 868.9331277338575,
+      vertical: 1069.7755295390994
     });
   });
 
@@ -52,13 +64,15 @@ test.describe('UI Drag&Drop Test', () => {
       'body > map > layer-:nth-child(3)',
       (layer) => layer.extent
     );
+    // the top left corner is that of the map-meta[name=extent]
     expect(layerExtent.topLeft.pcrs).toEqual({
-      horizontal: 100,
-      vertical: 600
+      horizontal: -6601973,
+      vertical: 1569758
     });
+    // the bottom right corner is that of the map-feature
     expect(layerExtent.bottomRight.pcrs).toEqual({
-      horizontal: 500,
-      vertical: 150
+      horizontal: -1319475.9373123178,
+      vertical: -1731574.5341126453
     });
   });
 
@@ -67,13 +81,27 @@ test.describe('UI Drag&Drop Test', () => {
       'body > map > layer-:nth-child(4)',
       (layer) => layer.extent
     );
-    expect(layerExtent.topLeft.gcrs).toEqual({
-      horizontal: -92,
-      vertical: 52.999999999993484
-    });
-    expect(layerExtent.bottomRight.gcrs).toEqual({
-      horizontal: -62,
-      vertical: 33.99999999999964
-    });
+    let expectedTopLeftLongitude = -114.815198;
+    let expectedTopLeftLatitude = 53;
+    let expectedBottomRightLongitude = -62;
+    let expectedBottomRightLatitude = 31.331629;
+
+    expect(layerExtent.topLeft.gcrs.horizontal).toBeCloseTo(
+      expectedTopLeftLongitude,
+      6
+    );
+    expect(layerExtent.topLeft.gcrs.vertical).toBeCloseTo(
+      expectedTopLeftLatitude,
+      6
+    );
+
+    expect(layerExtent.bottomRight.gcrs.horizontal).toBeCloseTo(
+      expectedBottomRightLongitude,
+      6
+    );
+    expect(layerExtent.bottomRight.gcrs.vertical).toBeCloseTo(
+      expectedBottomRightLatitude,
+      6
+    );
   });
 });

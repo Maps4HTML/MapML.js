@@ -12,6 +12,10 @@ test.describe('Style Parsed and Implemented Test', () => {
     await page.waitForTimeout(250);
   });
 
+  test.beforeEach(async () => {
+    await page.waitForTimeout(250);
+  });
+
   test.afterAll(async function () {
     await context.close();
   });
@@ -29,17 +33,20 @@ test.describe('Style Parsed and Implemented Test', () => {
       styleContent.indexOf('.third')
     );
     await expect(styleContent.indexOf('.third')).toBeLessThan(
-      styleContent.indexOf('forth')
+      styleContent.indexOf('fourth')
     );
   });
 
   test('CSS from a retrieved MapML file added inorder inside templated-layer container', async () => {
     const firstStyle = await page.$eval(
-      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link',
+      // this div                                                                                                                                                         *
+      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-extentlayer-container > .mapml-features-container.mapml-vector-container > link:nth-child(1)',
+      // no longer exists, (the svg is now the child of the first div)
+      // but the link isn't created either, and it should be
       (styleE) => styleE.outerHTML
     );
     const secondStyle = await page.$eval(
-      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link:nth-child(2)',
+      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-extentlayer-container > .mapml-features-container.mapml-vector-container > link:nth-child(2)',
       (styleL) => styleL.outerHTML
     );
     await expect(firstStyle).toMatch('canvec_cantopo');
@@ -47,20 +54,22 @@ test.describe('Style Parsed and Implemented Test', () => {
   });
 
   test('CSS within html page added to overlay-pane container', async () => {
-    const foundStyleLink = await page.$('#first');
-    const foundStyleTag = await page.$(
-      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > style:nth-child(2)'
+    const map1 = await page.getByTestId('map1');
+    const foundStyleLinks = await map1.locator('#first');
+    const foundStyleTags = await map1.locator(
+      '.mapml-layer:nth-child(1) > style'
     );
-    await expect(foundStyleTag).toBeTruthy();
-    await expect(foundStyleLink).toBeTruthy();
+    // expect the map-link#first to have been reflected as a <link> into the shadow root
+    expect(foundStyleLinks).toHaveCount(2);
+    expect(foundStyleTags).toHaveCount(2);
   });
 
   test('CSS from a retrieved MapML File added to templated-layer container', async () => {
     const foundStyleLinkOne = await page.$(
-      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link'
+      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-extentlayer-container > .mapml-features-container.mapml-vector-container > link'
     );
     const foundStyleLinkTwo = await page.$(
-      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > link:nth-child(2)'
+      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-extentlayer-container > .mapml-features-container.mapml-vector-container > link:nth-child(2)'
     );
     await expect(foundStyleLinkOne).toBeTruthy();
     await expect(foundStyleLinkTwo).toBeTruthy();
@@ -69,15 +78,15 @@ test.describe('Style Parsed and Implemented Test', () => {
   //testing done on 2nd map in the page
   test('CSS from a retrieved MapML file added inorder inside svg within templated-tile-container', async () => {
     const firstStyle = await page.$eval(
-      'xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div > style:nth-child(1)',
+      'xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-extentlayer-container .mapml-tile-group > style:nth-child(1)',
       (styleE) => styleE.innerHTML
     );
     const secondStyle = await page.$eval(
-      'xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div > style:nth-child(2)',
+      'xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-extentlayer-container .mapml-tile-group > style:nth-child(2)',
       (styleE) => styleE.innerHTML
     );
     const foundStyleLink = await page.$(
-      'xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-templatedlayer-container > div > div > div > link'
+      'xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-extentlayer-container .mapml-tile-group > link'
     );
     await expect(firstStyle).toMatch('refStyleOne');
     await expect(secondStyle).toMatch('refStyleTwo');

@@ -37,12 +37,11 @@
         <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="6" ></map-input>
         <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" ></map-input>
         <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="6" ></map-input>
-        <map-link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" />
-      </map-extent>
+        <map-link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>
     </layer->
     <layer- data-testid="single-extent" label="One hidden Extent" checked>
       <map-extent units="CBMTILE" checked hidden>
-        <map-input name="z" type="zoom" value="11" min="4" max="4" ></map-input>
+        <map-meta name="zoom" content="min=2,max=4"></map-meta>
         <map-input name="w" type="width" ></map-input>
         <map-input name="h" type="height" ></map-input>
         <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" min="-3236466" max="5041548"></map-input>

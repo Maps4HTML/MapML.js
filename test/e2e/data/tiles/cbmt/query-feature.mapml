@@ -1,0 +1,18 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+    <map-head>
+        <map-title>A Feature, Returned by a Query</map-title>
+        <map-meta name="projection" content="CBMTILE"></map-meta>
+    </map-head>
+    <map-body>
+        <map-feature data-testid="pcrsgeometry" zoom="1">
+            <map-properties>
+                <h1>Test</h1>
+            </map-properties>
+            <map-geometry cs="pcrs">
+                <map-polygon>
+                    <map-coordinates>-2826361 3009094 3788235 3009094 3788235 -3605502 -2826361 -3605502 -2826361 3009094</map-coordinates>
+                </map-polygon>
+            </map-geometry>
+        </map-feature>
+    </map-body>
+</mapml->

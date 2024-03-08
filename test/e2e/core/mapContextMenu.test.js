@@ -47,7 +47,7 @@ test.describe('Playwright Map Context Menu Tests', () => {
   });
 
   test('Context menu dismissed by Escape key', async () => {
-    await page.click('body > map');
+    await page.getByTestId('firstmap').click();
     await page.keyboard.press('Shift+F10');
     const contextMenu = page
       .locator('css= body > map >> css= div > div.mapml-contextmenu')
@@ -57,7 +57,7 @@ test.describe('Playwright Map Context Menu Tests', () => {
     expect(await contextMenu.isHidden()).toBeTruthy();
   });
   test('Context menu focus on keyboard shortcut', async () => {
-    await page.click('body > map');
+    await page.getByTestId('firstmap').click();
     await page.keyboard.press('Shift+F10');
     const aHandle = await page.evaluateHandle(() =>
       document.querySelector('.mapml-web-map')
@@ -124,7 +124,7 @@ test.describe('Playwright Map Context Menu Tests', () => {
   });
 
   test('Context menu displaying on map', async () => {
-    await page.click('body > map', { button: 'right' });
+    await page.getByTestId('firstmap').click({ button: 'right' });
     const contextMenu = await page.$eval(
       'div > div.mapml-contextmenu',
       (menu) => window.getComputedStyle(menu).getPropertyValue('display')
@@ -132,69 +132,100 @@ test.describe('Playwright Map Context Menu Tests', () => {
     expect(contextMenu).toEqual('block');
   });
   test('Context menu, back item', async () => {
-    await page.$eval('body > map', (map) => map.zoomTo(81, -63, 1));
+    const map = await page.getByTestId('firstmap');
+    await map.evaluate((map) => map.zoomTo(81, -63, 1));
     await page.waitForTimeout(1000);
-    await page.click('body > map', { button: 'right' });
+    await page.getByTestId('firstmap').click({ button: 'right' });
     await page.click('div > div.mapml-contextmenu > button:nth-child(1)');
     await page.waitForTimeout(1000);
-    const extent = await page.$eval('body > map', (map) => map.extent);
 
-    expect(extent.projection).toEqual('CBMTILE');
-    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
-    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
-    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
+    expect(await map.evaluate((map) => map.extent.projection)).toEqual(
+      'CBMTILE'
+    );
+    expect(await map.evaluate((map) => map.extent.zoom.minZoom)).toEqual(0);
+    expect(await map.evaluate((map) => map.extent.zoom.maxZoom)).toEqual(3);
+    expect(await map.evaluate((map) => map.extent.topLeft.pcrs)).toEqual(
+      expectedPCRS[0]
+    );
+    expect(await map.evaluate((map) => map.extent.topLeft.gcrs)).toEqual(
+      expectedGCRS[0]
+    );
+    expect(
+      await map.evaluate((map) => map.extent.topLeft.tilematrix[0])
+    ).toEqual(expectedFirstTileMatrix[0]);
+    expect(await map.evaluate((map) => map.extent.topLeft.tcrs[0])).toEqual(
+      expectedFirstTCRS[0]
+    );
   });
   test('Context menu, back and reload item at initial location disabled', async () => {
-    await page.click('body > map', { button: 'right' });
-    const backBtn = await page.$eval(
-      'div > div.mapml-contextmenu > button:nth-child(1)',
-      (btn) => btn.disabled
-    );
-    const fwdBtn = await page.$eval(
-      'div > div.mapml-contextmenu > button:nth-child(2)',
-      (btn) => btn.disabled
-    );
-    const reloadBtn = await page.$eval(
-      'div > div.mapml-contextmenu > button:nth-child(3)',
-      (btn) => btn.disabled
-    );
+    await page.reload();
+    const map = await page.getByTestId('firstmap');
+    await page.getByTestId('firstmap').click({ button: 'right' });
+    await page.waitForTimeout(300);
+    const backBtnDisabled = await map
+      .getByRole('button', { name: 'Back (Alt+Left Arrow)' })
+      .evaluate((btn) => btn.disabled);
 
-    expect(backBtn).toEqual(true);
-    expect(fwdBtn).toEqual(false);
-    expect(reloadBtn).toEqual(true);
+    const fwdBtnDisabled = await map
+      .getByRole('button', { name: 'Forward (Alt+Right Arrow)' })
+      .evaluate((btn) => btn.disabled);
+
+    const reloadBtnDisabled = await map
+      .getByRole('button', { name: 'Reload (Ctrl+R)' })
+      .evaluate((btn) => btn.disabled);
+    expect(backBtnDisabled).toEqual(true);
+    expect(fwdBtnDisabled).toEqual(true);
+    expect(reloadBtnDisabled).toEqual(true);
   });
   test('Context menu, forward item', async () => {
-    await page.click('body > map', { button: 'right' });
-    await page.click('div > div.mapml-contextmenu > button:nth-child(2)');
-    await page.waitForTimeout(1000);
-    const extent = await page.$eval('body > map', (map) => map.extent);
+    const map = await page.getByTestId('firstmap');
+    await map.evaluate((map) => map.zoomTo(81, -63, 1));
+    await map.click({ button: 'right' });
+    await page.waitForTimeout(300);
+    // select back from the context menu
+    await map.getByRole('button', { name: 'Back (Alt+Left Arrow)' }).click();
+    await page.waitForTimeout(300);
+    // select forward from the context menu
+    await map.click({ button: 'right' });
+    await page.waitForTimeout(300);
+    await map
+      .getByRole('button', { name: 'Forward (Alt+Right Arrow)' })
+      .click();
+    await page.waitForTimeout(300);
 
-    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
-    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
-    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
+    expect(await map.evaluate((map) => map.extent.zoom.minZoom)).toEqual(0);
+    expect(await map.evaluate((map) => map.extent.zoom.maxZoom)).toEqual(3);
+    expect(await map.evaluate((map) => map.extent.topLeft.pcrs)).toEqual(
+      expectedPCRS[1]
+    );
+    expect(await map.evaluate((map) => map.extent.topLeft.gcrs)).toEqual(
+      expectedGCRS[1]
+    );
+    expect(
+      await map.evaluate((map) => map.extent.topLeft.tilematrix[0])
+    ).toEqual(expectedFirstTileMatrix[1]);
+    expect(await map.evaluate((map) => map.extent.topLeft.tcrs[0])).toEqual(
+      expectedFirstTCRS[1]
+    );
   });
   test('Context menu, forward item at most recent location disabled', async () => {
-    await page.click('body > map', { button: 'right' });
-    const backBtn = await page.$eval(
-      'div > div.mapml-contextmenu > button:nth-child(1)',
-      (btn) => btn.disabled
-    );
-    const fwdBtn = await page.$eval(
-      'div > div.mapml-contextmenu > button:nth-child(2)',
-      (btn) => btn.disabled
-    );
-    const reloadBtn = await page.$eval(
-      'div > div.mapml-contextmenu > button:nth-child(3)',
-      (btn) => btn.disabled
-    );
+    const map = await page.getByTestId('firstmap');
+    await page.getByTestId('firstmap').click({ button: 'right' });
+    await page.waitForTimeout(300);
+    const backBtnDisabled = await map
+      .getByRole('button', { name: 'Back (Alt+Left Arrow)' })
+      .evaluate((btn) => btn.disabled);
 
-    expect(backBtn).toEqual(false);
-    expect(fwdBtn).toEqual(true);
-    expect(reloadBtn).toEqual(false);
+    const fwdBtnDisabled = await map
+      .getByRole('button', { name: 'Forward (Alt+Right Arrow)' })
+      .evaluate((btn) => btn.disabled);
+
+    const reloadBtnDisabled = await map
+      .getByRole('button', { name: 'Reload (Ctrl+R)' })
+      .evaluate((btn) => btn.disabled);
+    expect(backBtnDisabled).toEqual(false);
+    expect(fwdBtnDisabled).toEqual(true);
+    expect(reloadBtnDisabled).toEqual(false);
   });
 
   test.describe('Context Menu, Toggle Controls ', () => {
@@ -645,38 +676,41 @@ test.describe('Playwright Map Context Menu Tests', () => {
   });
 
   test('Context menu, All buttons enabled when fwd and back history present', async () => {
-    await page.click('body > map');
-    await page.$eval('body > map', (map) => map.zoomTo(81, -63, 3));
+    const map = await page.getByTestId('firstmap');
+    await map.evaluate((map) => map.zoomTo(81, -63, 3));
     await page.waitForTimeout(1000);
-    await page.$eval('body > map', (map) => map.zoomTo(81, -63, 5));
+    await map.evaluate((map) => map.zoomTo(81, -63, 5));
     await page.waitForTimeout(1000);
-    await page.click('body > map', { button: 'right' });
-    await page.click('div > div.mapml-contextmenu > button:nth-child(1)');
-    await page.click('body > map', { button: 'right' });
-    const backBtn = await page.$eval(
-      'div > div.mapml-contextmenu > button:nth-child(1)',
-      (btn) => btn.disabled
-    );
-    const fwdBtn = await page.$eval(
-      'div > div.mapml-contextmenu > button:nth-child(2)',
-      (btn) => btn.disabled
-    );
-    const reloadBtn = await page.$eval(
-      'div > div.mapml-contextmenu > button:nth-child(3)',
-      (btn) => btn.disabled
-    );
+    await map.click({ button: 'right' });
+    await page.waitForTimeout(300);
+    await map.getByRole('button', { name: 'Back (Alt+Left Arrow)' }).click();
+    await map.click({ button: 'right' });
+    const backBtnDisabled = await map
+      .getByRole('button', { name: 'Back (Alt+Left Arrow)' })
+      .evaluate((btn) => btn.disabled);
 
-    expect(backBtn).toEqual(false);
-    expect(fwdBtn).toEqual(false);
-    expect(reloadBtn).toEqual(false);
+    const fwdBtnDisabled = await map
+      .getByRole('button', { name: 'Forward (Alt+Right Arrow)' })
+      .evaluate((btn) => btn.disabled);
+
+    const reloadBtnDisabled = await map
+      .getByRole('button', { name: 'Reload (Ctrl+R)' })
+      .evaluate((btn) => btn.disabled);
+
+    expect(backBtnDisabled).toEqual(false);
+    expect(fwdBtnDisabled).toEqual(false);
+    expect(reloadBtnDisabled).toEqual(false);
   });
 
   test('Layer Context menu, Pressing enter on contextmenu focuses on checkbox element', async () => {
-    await page.click('body > map');
+    const map = await page.getByTestId('firstmap');
+    await map.click();
     for (let i = 0; i < 5; i++) {
       await page.keyboard.press('Tab');
+      await page.waitForTimeout(100);
     }
     await page.keyboard.press('Enter');
+    await page.waitForTimeout(300);
     const aHandle = await page.evaluateHandle(() =>
       document.querySelector('.mapml-web-map')
     );

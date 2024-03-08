@@ -26,7 +26,7 @@ let expectedPCRS = {
   };
 
 test.describe('Playwright templatedImage Layer Tests', () => {
-  isVisible.test('templatedImageLayer.html', 2, 1);
+  isVisible.test('templatedImageLayer.html', 2, 2);
   zoomLimit.test('templatedImageLayer.html', 1, 0);
   extentProperty.test('templatedImageLayer.html', expectedPCRS, expectedGCRS);
 
@@ -74,7 +74,7 @@ test.describe('Playwright templatedImage Layer Tests', () => {
     await page.keyboard.press('ArrowDown');
     await page.waitForLoadState('networkidle');
     const images = await page.locator(
-      '.mapml-templatedlayer-container > .mapml-image-container > .leaflet-image-loaded'
+      '.mapml-extentlayer-container > .mapml-image-container > .leaflet-image-loaded'
     );
     await expect(images).toHaveCount(1);
   });

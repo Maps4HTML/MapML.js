@@ -79,6 +79,7 @@ test.describe('Playwright featureLayer (Static Features) Layer Tests', () => {
     });
 
     test('valid <layer>.extent', async () => {
+      // this is the us_pop_density.mapml layer
       const layerExtent = await page.$eval(
         'body > map > layer-:nth-child(3)',
         (layer) => layer.extent
@@ -99,8 +100,14 @@ test.describe('Playwright featureLayer (Static Features) Layer Tests', () => {
         horizontal: 79.6961805581841,
         vertical: -60.79110984572508
       });
+      // corrected logic for MapMLLayer._calculateBounds min/maxNativeZoom
+      // there are a bunch of features loaded at map zoom=2. Two have default
+      // (no) zoom attribute, all the others have zoom=0. So, the minNativeZoom
+      // should be 0, while the maxNativeZoom should be 2.
+      // there is a <map-meta name="zoom" content="min=2,max=2,value=0"></map-meta>
+      // so the min/maxZoom should be 2.
       expect(layerExtent.zoom).toEqual({
-        maxNativeZoom: 0,
+        maxNativeZoom: 2,
         minNativeZoom: 0,
         maxZoom: 2,
         minZoom: 2
@@ -123,16 +130,18 @@ test.describe('Playwright featureLayer (Static Features) Layer Tests', () => {
       await context.close();
     });
     test('Feature without properties renders & is not interactable', async () => {
-      const feature = await page.$eval('layer-#inline', (layer) =>
-        layer._layer._container.querySelector('path').getAttribute('d')
+      await page.waitForTimeout(2000);
+      const featureRendering = await page
+        .locator('layer-#inline > map-feature')
+        .evaluate((f) => f._groupEl.firstChild.getAttribute('d'));
+      await expect(featureRendering).toEqual(
+        'M74 -173L330 -173L330 83L74 83L74 -173z'
       );
-      const classList = await page.$eval('layer-#inline', (layer) =>
-        layer._layer._container
-          .querySelector('svg')
-          .firstChild.firstChild.getAttribute('class')
-      );
-      expect(feature).toEqual('M74 -173L330 -173L330 83L74 83L74 -173z');
-      expect(classList).toBeFalsy();
+
+      const classList = await page
+        .locator('layer-#inline > map-feature')
+        .evaluate((f) => f._groupEl.firstChild.getAttribute('class'));
+      await expect(classList).toBeFalsy();
     });
   });
 });

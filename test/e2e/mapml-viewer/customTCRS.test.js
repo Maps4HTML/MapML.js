@@ -42,33 +42,29 @@ test.describe('Playwright Custom TCRS Tests', () => {
     expect(message).toEqual('passing');
   });
   test('Complex Custom TCRS, static features loaded, templated features loaded', async () => {
-    const staticFeatures = await page.$eval(
-      'body > mapml-viewer:nth-child(3)',
-      (map) => map.querySelectorAll('layer-')[0].hasAttribute('disabled')
-    );
+    const staticFeaturesLayerDisabled = await page
+      .getByTestId('map2')
+      .evaluate((map) =>
+        map.querySelectorAll('layer-')[0].hasAttribute('disabled')
+      );
+    const templatedFeaturesLayerDisabled = await page
+      .getByTestId('map2')
+      .evaluate((map) =>
+        map.querySelectorAll('layer-')[1].hasAttribute('disabled')
+      );
 
-    const templatedFeatures = await page.$eval(
-      'body > mapml-viewer:nth-child(3)',
-      (map) => map.querySelectorAll('layer-')[1].hasAttribute('disabled')
-    );
-
-    const featureOne = await page.$eval(
-      'xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(1) > path.leaflet-interactive',
-      (tile) => tile.getAttribute('d')
-    );
-    const featureTwo = await page.$eval(
-      'xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(2) > path.leaflet-interactive',
-      (tile) => tile.getAttribute('d')
-    );
-
-    const featureThree = await page.$eval(
-      'xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(3) > path.leaflet-interactive',
-      (tile) => tile.getAttribute('d')
-    );
-    const featureFour = await page.$eval(
-      'xpath=//html/body/mapml-viewer[2] >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-templatedlayer-container > div > div > svg > g > g:nth-child(4) > path.leaflet-interactive',
-      (tile) => tile.getAttribute('d')
-    );
+    const featureOne = await page
+      .getByTestId('pcrsgeometry')
+      .evaluate((f) => f._groupEl.firstElementChild.getAttribute('d'));
+    const featureTwo = await page
+      .getByTestId('tcrsgeometry')
+      .evaluate((f) => f._groupEl.firstElementChild.getAttribute('d'));
+    const featureThree = await page
+      .getByTestId('tilematrixgeometry')
+      .evaluate((f) => f._groupEl.firstElementChild.getAttribute('d'));
+    const featureFour = await page
+      .getByTestId('defaultcsgeometry')
+      .evaluate((f) => f._groupEl.firstElementChild.getAttribute('d'));
 
     expect(featureOne).toEqual('M88 681L21 78L-436 201L-346 561z');
     expect(featureTwo).toEqual('M307 456L599 467L612 629L381 599z');
@@ -78,7 +74,7 @@ test.describe('Playwright Custom TCRS Tests', () => {
       'M150 429L171 426L175 438L181 457L183 461L185 463L185 465L187 465L185 468L185 470L184 472L186 477L186 481L188 485L182 486L154 490L154 492L157 494L157 497L158 498L156 501L154 501L151 499L150 495L149 495L148 498L148 501L144 501L141 477L141 448L141 431L139 430L150 429z'
     );
 
-    expect(staticFeatures).toEqual(false);
-    expect(templatedFeatures).toEqual(false);
+    expect(staticFeaturesLayerDisabled).toEqual(true);
+    expect(templatedFeaturesLayerDisabled).toEqual(false);
   });
 });

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>&lt;layer-&gt; test</title>
+    <meta charset="UTF-8">
+    <script type="module" src="mapml-viewer.js"></script>
+    <style>
+      html {
+        height: 100%
+      }
+
+      body {
+        height: inherit
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <template data-testid="inline-content">
+      <map-extent units="CBMTILE"  checked="checked">
+        <!-- the bounds of the inline map-extent are different than those of the remote layer's map-extent -->
+        <map-input name="z" type="zoom"  value="17" min="3" max="17"></map-input>
+        <map-input name="y" type="location" units="tilematrix" axis="row" min="31000"  max="34000"></map-input>
+        <map-input name="x" type="location" units="tilematrix" axis="column" min="27000"  max="30000"></map-input>
+        <map-link rel="tile" tref="dummy/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}?m4h=t" ></map-link>
+      </map-extent>
+    </template>
+  </head>
+  <body>
+    <mapml-viewer data-testid="viewer" style="height: 500px;width:500px;" controls zoom="2" lat="68" lon="-87" controls projection="CBMTILE">
+      <layer- data-testid="test-layer" label="Remote content" src="dummy-cbmtile-cbmt.mapml" checked></layer->
+    </mapml-viewer>
+  </body>
+</html>

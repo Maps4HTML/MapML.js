@@ -11,23 +11,18 @@ test.describe('Multiple Extent Queries with heterogeneous response content types
     });
     page = await context.newPage();
     await page.goto('multipleHeterogeneousQueryExtents.html');
+    await page.waitForTimeout(1000);
   });
   test.afterAll(async function () {
     await context.close();
   });
   test('Query multiple overlapping extents which return heterogeneous document types (text/mapml, text/html)', async () => {
     await page.click('mapml-viewer');
-    await page.waitForSelector(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p'
-    );
-    let numFeatures = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p',
-      (p) => p.innerText
-    );
-    expect(numFeatures).toEqual('1/7');
+    const popupContainer = page.locator('.mapml-popup-content > iframe');
+    const popupFeatureCount = page.locator('.mapml-feature-count');
+    await expect(popupFeatureCount).toHaveText('1/7', { useInnerText: true });
 
-    let content = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe',
+    let content = await popupContainer.evaluate(
       (iframe) => iframe.contentWindow.document.querySelector('body').innerText
     );
     expect(content).toBe(
@@ -93,31 +88,20 @@ test.describe('Multiple Extent Queries with heterogeneous response content types
     );
     expect(thirdExtentInLayerControl).toEqual('html query response');
 
-    await page.click('div');
-    await page.waitForSelector(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p'
-    );
-    let numFeatures = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p',
-      (p) => p.innerText
-    );
-    expect(numFeatures).toEqual('1/7');
+    await page.click('mapml-viewer');
+    const popupContainer = page.locator('.mapml-popup-content > iframe');
+    const popupFeatureCount = page.locator('.mapml-feature-count');
+    await expect(popupFeatureCount).toHaveText('1/7', { useInnerText: true });
 
-    let content = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe',
+    let content = await popupContainer.evaluate(
       (iframe) => iframe.contentWindow.document.querySelector('body').innerText
     );
     expect(content).toBe('Alabama');
     for (let i = 0; i < 6; i++) {
-      await page.click(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)'
-      );
-      await page.waitForSelector(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe'
-      );
+      await page.getByTitle('Next Feature').click();
+      await page.waitForTimeout(250);
     }
-    content = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe',
+    content = content = await popupContainer.evaluate(
       (iframe) => iframe.contentWindow.document.querySelector('body').innerText
     );
     expect(content).toBe(
@@ -153,9 +137,9 @@ test.describe('Multiple Extent Queries with heterogeneous response content types
     expect(layersCount).toEqual(0);
 
     // query the page, nothing should happen
-    await page.click('div');
+    await page.click('mapml-viewer');
     let popupContent = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
+      '.leaflet-popup-pane',
       (pane) => pane.childElementCount
     );
     expect(popupContent).toEqual(0);
@@ -171,18 +155,14 @@ test.describe('Multiple Extent Queries with heterogeneous response content types
     expect(layersCount).toEqual(1);
 
     // query the page, should display popup, create popup content
-    await page.click('div');
+    await page.click('mapml-viewer');
     popupContent = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane',
       (pane) => pane.childElementCount
     );
     expect(popupContent).toEqual(1);
-    let numFeatures = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p',
-      (p) => p.innerText
-    );
-    // the mapml response has 6 features, the html response is tallied as 1 feature
-    expect(numFeatures).toEqual('1/7');
+    let popupFeatureCount = page.locator('.mapml-feature-count');
+    await expect(popupFeatureCount).toHaveText('1/7', { useInnerText: true });
 
     // show the layer control
     await page.hover('.leaflet-top.leaflet-right');
@@ -193,14 +173,9 @@ test.describe('Multiple Extent Queries with heterogeneous response content types
 
     // query the page, should create popup content
     await page.click('mapml-viewer');
-    await page.waitForSelector(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p'
-    );
-    numFeatures = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p',
-      (p) => p.innerText
-    );
-    expect(numFeatures).toEqual('1/6');
+    popupFeatureCount = page.locator('.mapml-feature-count');
+    await expect(popupFeatureCount).toHaveText('1/6', { useInnerText: true });
+
     // show the layer control
     await page.hover('.leaflet-top.leaflet-right');
     // layer settings for top layer are already displayed
@@ -213,14 +188,8 @@ test.describe('Multiple Extent Queries with heterogeneous response content types
 
     // query the page, should create popup content
     await page.click('mapml-viewer');
-    await page.waitForSelector(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p'
-    );
-    numFeatures = await page.$eval(
-      'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > p',
-      (p) => p.innerText
-    );
+    popupFeatureCount = page.locator('.mapml-feature-count');
     // the mapml response has 6 features, the html response is tallied as 1 feature
-    expect(numFeatures).toEqual('1/6');
+    await expect(popupFeatureCount).toHaveText('1/6', { useInnerText: true });
   });
 });

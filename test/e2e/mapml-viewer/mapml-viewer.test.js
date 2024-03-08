@@ -184,7 +184,7 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
     const layerCount = await page.$eval(
       'body > mapml-viewer',
       (map) => map.layers.length

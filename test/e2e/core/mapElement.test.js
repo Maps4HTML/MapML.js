@@ -36,29 +36,48 @@ test.describe('Playwright Map Element Tests', () => {
   });
 
   test('Initial map element extent', async () => {
-    const extent = await page.$eval('body > map', (map) => map.extent);
-
-    await expect(extent.projection).toEqual('CBMTILE');
-    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
-    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
-    await expect(extent.topLeft.tilematrix[0]).toEqual(
-      expectedFirstTileMatrix[0]
+    await page.waitForTimeout(1000);
+    const map = await page.getByTestId('firstmap');
+    expect(await map.evaluate((map) => map.extent.projection)).toEqual(
+      'CBMTILE'
     );
-    await expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
+    expect(await map.evaluate((map) => map.extent.zoom.minZoom)).toEqual(0);
+    expect(await map.evaluate((map) => map.extent.zoom.maxZoom)).toEqual(3);
+    expect(await map.evaluate((map) => map.extent.topLeft.pcrs)).toEqual(
+      expectedPCRS[0]
+    );
+    expect(await map.evaluate((map) => map.extent.topLeft.gcrs)).toEqual(
+      expectedGCRS[0]
+    );
+    expect(
+      await map.evaluate((map) => map.extent.topLeft.tilematrix[0])
+    ).toEqual(expectedFirstTileMatrix[0]);
+    expect(await map.evaluate((map) => map.extent.topLeft.tcrs[0])).toEqual(
+      expectedFirstTCRS[0]
+    );
   });
   test("Panned and zoomed initial map's extent", async () => {
-    await page.$eval('body > map', (map) => map.zoomTo(81, -63, 1));
+    const map = await page.getByTestId('firstmap');
+    await map.evaluate((map) => map.zoomTo(81, -63, 1));
     await page.waitForTimeout(1000);
-    const extent = await page.$eval('body > map', (map) => map.extent);
 
-    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
-    await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
-    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
-    await expect(extent.topLeft.tilematrix[0]).toEqual(
-      expectedFirstTileMatrix[1]
+    expect(await map.evaluate((map) => map.extent.projection)).toEqual(
+      'CBMTILE'
     );
-    await expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
+    expect(await map.evaluate((map) => map.extent.zoom.minZoom)).toEqual(0);
+    expect(await map.evaluate((map) => map.extent.zoom.maxZoom)).toEqual(3);
+    expect(await map.evaluate((map) => map.extent.topLeft.pcrs)).toEqual(
+      expectedPCRS[1]
+    );
+    expect(await map.evaluate((map) => map.extent.topLeft.gcrs)).toEqual(
+      expectedGCRS[1]
+    );
+    expect(
+      await map.evaluate((map) => map.extent.topLeft.tilematrix[0])
+    ).toEqual(expectedFirstTileMatrix[1]);
+    expect(await map.evaluate((map) => map.extent.topLeft.tcrs[0])).toEqual(
+      expectedFirstTCRS[1]
+    );
   });
 
   test('Reload button takes you back to initial state', async () => {
@@ -72,7 +91,7 @@ test.describe('Playwright Map Element Tests', () => {
 
     await expect(history.length).toEqual(1);
     await expect(extent.projection).toEqual('CBMTILE');
-    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 3 });
     await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
     await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
     await expect(extent.topLeft.tilematrix[0]).toEqual(

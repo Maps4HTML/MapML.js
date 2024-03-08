@@ -19,6 +19,7 @@ test.describe('Playwright touch device tests', () => {
   });
 
   test('Tap/Long press to show layer control', async () => {
+    await page.pause();
     const layerControl = await page.locator(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
     );
@@ -38,10 +39,13 @@ test.describe('Playwright touch device tests', () => {
     expect(opacity).toEqual('false');
 
     // long press
-    await page.tap('body > mapml-viewer');
+    const viewer = await page.locator('mapml-viewer');
+    await viewer.tap({ position: { x: 150, y: 150 } });
+    await layerControl.tap();
     await layerControl.dispatchEvent('touchstart');
     await page.waitForTimeout(2000);
     await layerControl.dispatchEvent('touchend');
+    await page.waitForTimeout(2000);
 
     className = await layerControl.evaluate(
       (el) =>

@@ -16,12 +16,17 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     await context.close();
   });
 
+  test.beforeEach(async () => {
+    await page.waitForTimeout(250);
+  });
   test('Layer context menu shows when layer is clicked', async () => {
     await page.hover(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
     );
     await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span',
+      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div \n\
+      > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > \n\
+      div:nth-child(1) > label > span',
       { button: 'right' }
     );
 
@@ -53,7 +58,9 @@ test.describe('Playwright Layer Context Menu Tests', () => {
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
     );
     await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span',
+      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div \n\
+      > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > \n\
+      div:nth-child(1) > label > span',
       { button: 'right' }
     );
 
@@ -75,20 +82,20 @@ test.describe('Playwright Layer Context Menu Tests', () => {
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
     );
     await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > div:nth-child(1) > label > span',
+      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div \n\
+      > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > \n\
+      div:nth-child(1) > label > span',
       { button: 'right', force: true }
     );
     await page.keyboard.press('z');
     await page.waitForTimeout(1000);
-    const mapLocation = await page.$eval('body > mapml-viewer', (text) =>
-      text._map.getPixelBounds()
-    );
-
-    const mapZoom = await page.$eval('body > mapml-viewer', (text) =>
-      text._map.getZoom()
-    );
-
+    const mapZoom = await page
+      .locator('mapml-viewer')
+      .evaluate((viewer) => viewer.zoom);
     expect(mapZoom).toEqual(11);
+    const mapLocation = await page
+      .locator('mapml-viewer')
+      .evaluate((viewer) => viewer._map.getPixelBounds());
     expect(mapLocation).toEqual({
       max: { x: 43380, y: 43130 },
       min: { x: 42380, y: 42630 }
@@ -96,30 +103,26 @@ test.describe('Playwright Layer Context Menu Tests', () => {
   });
 
   test('Map zooms out to layer 3', async () => {
-    for (let i = 0; i < 5; i++) {
-      await page.click(
-        'div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in'
-      );
-      await page.waitForTimeout(200);
-    }
     await page.hover(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
     );
     await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(3) > div:nth-child(1) > label > span',
+      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > \n\
+      div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(3) \n\
+      > div:nth-child(1) > label > span',
       { button: 'right', force: true }
     );
     await page.keyboard.press('z');
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(3000);
     const mapLocation = await page.$eval('body > mapml-viewer', (text) =>
       text._map.getPixelBounds()
     );
 
-    const mapZoom = await page.$eval('body > mapml-viewer', (text) =>
-      text._map.getZoom()
-    );
-
+    const mapZoom = await page
+      .locator('mapml-viewer')
+      .evaluate((viewer) => viewer.zoom);
     expect(mapZoom).toEqual(11);
+
     expect(mapLocation).toEqual({
       max: { x: 43380, y: 43557 },
       min: { x: 42380, y: 43057 }
@@ -127,29 +130,24 @@ test.describe('Playwright Layer Context Menu Tests', () => {
   });
 
   test('Map zooms out to layer 4', async () => {
-    for (let i = 0; i < 5; i++) {
-      await page.click(
-        'div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in'
-      );
-      await page.waitForTimeout(200);
-    }
     await page.hover(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
     );
     await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(4) > div:nth-child(1) > label > span',
+      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > \n\
+      div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(4) \n\
+      > div:nth-child(1) > label > span',
       { button: 'right', force: true }
     );
     await page.keyboard.press('z');
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(3000);
     const mapLocation = await page.$eval('body > mapml-viewer', (text) =>
       text._map.getPixelBounds()
     );
 
-    const mapZoom = await page.$eval('body > mapml-viewer', (text) =>
-      text._map.getZoom()
-    );
-
+    const mapZoom = await page
+      .locator('mapml-viewer')
+      .evaluate((viewer) => viewer.zoom);
     expect(mapZoom).toEqual(5);
     expect(mapLocation).toEqual({
       max: { x: 8334, y: 8084 },
@@ -163,7 +161,9 @@ test.describe('Playwright Layer Context Menu Tests', () => {
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
     );
     await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(5) > div:nth-child(1) > label > span',
+      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > \n\
+      div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(5) \n\
+      > div:nth-child(1) > label > span',
       { button: 'right' }
     );
 
@@ -174,6 +174,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     //    await page.keyboard.press('Control+a');
     //    await page.keyboard.press('Backspace');
     await page.keyboard.press('Control+v');
+    await page.waitForTimeout(1000);
     const copyLayer = await page.$eval(
       'body > textarea#messageLayer',
       (text) => text.value
