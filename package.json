@@ -59,6 +59,8 @@
   },
   "files": [
     "dist",
-    "*.md"
+    "LICENSE.md",
+    "README.md",
+    "CONTRIBUTING.md"
   ]
 }
