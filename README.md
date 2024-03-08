@@ -1,4 +1,4 @@
-![Continuous Testing](https://github.com/Maps4HTML/Web-Map-Custom-Element/actions/workflows/ci-testing.yml/badge.svg)
+![Continuous Testing](badge.svg)
 
 # &lt;mapml-viewer>
 
