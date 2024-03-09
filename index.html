@@ -75,60 +75,14 @@
     
     <mapml-viewer projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation">
       <layer- data-testid="osm-layer" label="OpenStreetMap" checked >
-<map-extent data-testid="osm-extent" units="OSMTILE" label="foo" checked="checked" >
-      <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
-      <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
-      <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
-      <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
-    </map-extent>
+        <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
+        <map-extent units="OSMTILE" checked="checked" hidden="hidden">
+          <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
+          <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+          <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+          <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
+        </map-extent>
       </layer->
-<!--      <layer- data-testid="rest-layer" id="restaurant" label="Mexican restaurants" src="../shared/restaurants/mexican.mapml" checked>-->
-<!--        <map-meta name="cs" content="gcrs" ></map-meta>
-        <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
-        <map-feature zoom="18" id="restaurant_polygon.2" class="restaurant_polygon">
-          <map-featurecaption>Banditos</map-featurecaption>
-            <map-geometry>
-              <map-point>
-                  <map-coordinates>-75.689609 45.405803</map-coordinates>
-              </map-point>
-            </map-geometry>
-            <map-properties>
-                <table>
-                    <thead>
-                        <tr>
-                            <th role="columnheader" scope="col">Property name</th>
-                            <th role="columnheader" scope="col">Property value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">addr_house</th>
-                            <td itemprop="addr_house">683</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">addr_stree</th>
-                            <td itemprop="addr_stree">Bank Street</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">amenity</th>
-                            <td itemprop="amenity">restaurant</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">building</th>
-                            <td itemprop="building">commercial</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">name</th>
-                            <td itemprop="name">Banditos</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">cuisine</th>
-                            <td itemprop="cuisine">mexican</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </map-properties>
-        </map-feature>-->
       </layer->
     </mapml-viewer>
   </body>
