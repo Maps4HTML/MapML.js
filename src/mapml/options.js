@@ -18,6 +18,8 @@ export var Options = {
     cmViewSource: 'View Map Source',
     lmZoomToLayer: 'Zoom To Layer',
     lmCopyLayer: 'Copy Layer',
+    lmZoomToExtent: 'Zoom To Sub-layer',
+    lmCopyExtent: 'Copy Sub-layer',
     lcOpacity: 'Opacity',
     btnAttribution: 'Map data attribution',
     btnZoomIn: 'Zoom in',

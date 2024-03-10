@@ -71,6 +71,85 @@ test.describe('Using arrow keys to navigate context menu', () => {
     expect(hide).toEqual(true);
   });
 
+  test('Testing Extent layer contextmenu', async () => {
+    await page.pause()
+    await page.waitForTimeout(500);
+    await page.click('body > mapml-viewer');
+    await page.waitForTimeout(500);
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    // opening layer control
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(500);
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    // expanding layer to reveal extents
+    await page.keyboard.press('Enter');
+    // tabbing to extent layer
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+
+    await page.keyboard.press('Shift+F10');
+
+    let activeElement = await page.evaluate(
+      () => document.activeElement.shadowRoot.activeElement.innerHTML
+    );
+    expect(activeElement).toEqual('Zoom To Sub-layer (<kbd>Z</kbd>)');
+    await page.keyboard.press('Tab');
+    activeElement = await page.evaluate(
+      () => document.activeElement.shadowRoot.activeElement.innerHTML
+    );
+    expect(activeElement).toEqual('Copy Sub-layer (<kbd>L</kbd>)');
+    await page.keyboard.press('ArrowUp');
+    activeElement = await page.evaluate(
+      () => document.activeElement.shadowRoot.activeElement.innerHTML
+    );
+    expect(activeElement).toEqual('Zoom To Sub-layer (<kbd>Z</kbd>)');
+
+    await page.keyboard.press('Escape');
+    let hide = await page.$eval(
+      'body > mapml-viewer',
+      (viewer) => viewer._map.contextMenu._extentLayerMenu.hidden
+    );
+    expect(hide).toEqual(true);
+
+    await page.keyboard.press('Shift+F10');
+
+    await page.click('body > mapml-viewer');
+    hide = await page.$eval(
+      'body > mapml-viewer',
+      (viewer) => viewer._map.contextMenu._extentLayerMenu.hidden
+    );
+    expect(hide).toEqual(true);
+
+    // Ensuring the extent is still being revealed after layercontrol was closed and reopened
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    // opening layer control
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Shift+F10');
+    activeElement = await page.evaluate(
+      () => document.activeElement.shadowRoot.activeElement.innerHTML
+    );
+    expect(activeElement).toEqual('Zoom To Sub-layer (<kbd>Z</kbd>)');
+  });
+
   test('(partial) Up and Down Arrow keys to navigate the contextmenu', async () => {
     await page.click('body > mapml-viewer', { button: 'right' });
     await page.keyboard.press('ArrowDown');

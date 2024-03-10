@@ -148,12 +148,12 @@ export var ContextMenu = L.Handler.extend({
     this._extentLayerItems = [
       {
         // 0
-        text: 'Zoom to Sub Layer' + ' (<kbd>Z</kbd>)',
+        text: M.options.locale.lmZoomToExtent + ' (<kbd>Z</kbd>)',
         callback: this._zoomToMapExtent
       },
       {
         // 1
-        text: 'Copy Sub Layer' + ' (<kbd>L</kbd>)',
+        text: M.options.locale.lmCopyExtent + ' (<kbd>L</kbd>)',
         callback: this._copyMapExtent
       }
     ];
@@ -256,7 +256,7 @@ export var ContextMenu = L.Handler.extend({
 
     this._extentLayerMenu = L.DomUtil.create(
       'div',
-      'mapml-contextmenu mapml-layer-menu',
+      'mapml-contextmenu mapml-extent-menu',
       map.getContainer()
     );
     this._extentLayerMenu.setAttribute('hidden', '');
@@ -418,7 +418,7 @@ export var ContextMenu = L.Handler.extend({
     let context =
         e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
       extentElem = context._layerClicked.extent;
-    context._copyData(extentElem.outerHTML);
+    context._copyData(extentElem.getOuterHTML());
   },
 
   _goForward: function (e) {
