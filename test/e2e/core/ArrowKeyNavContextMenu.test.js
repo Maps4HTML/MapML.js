@@ -72,7 +72,6 @@ test.describe('Using arrow keys to navigate context menu', () => {
   });
 
   test('Testing Extent layer contextmenu', async () => {
-    await page.pause()
     await page.waitForTimeout(500);
     await page.click('body > mapml-viewer');
     await page.waitForTimeout(500);

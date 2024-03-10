@@ -117,6 +117,17 @@ export var LayerControl = L.Control.Layers.extend({
 
   //overrides collapse and conditionally collapses the panel
   collapse: function (e) {
+    // if layer control is not expanded, return
+    if (!this._container.className.includes('expanded')) {
+      return;
+    }
+    // return if layer contextmenu is still open
+    if (
+      !this._map.contextMenu._extentLayerMenu.hidden ||
+      !this._map.contextMenu._layerMenu.hidden
+    ) {
+      return;
+    }
     if (
       e.target.tagName === 'SELECT' ||
       (e.relatedTarget &&

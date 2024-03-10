@@ -146,7 +146,7 @@ export class MapExtent extends HTMLElement {
         case 'label':
           if (oldValue !== newValue) {
             this._layerControlHTML.querySelector(
-              '.mapml-layer-item-name'
+              '.mapml-extent-item-name'
             ).innerHTML = newValue || M.options.locale.dfExtent;
           }
           break;

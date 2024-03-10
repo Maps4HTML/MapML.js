@@ -246,7 +246,6 @@ test.describe('Playwright Layer Context Menu Tests', () => {
   });
 
   test('Map zooms to extent layer', async () => {
-    await page.pause();
     await page.hover(
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
     );
