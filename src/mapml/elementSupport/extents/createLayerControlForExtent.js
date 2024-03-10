@@ -124,7 +124,7 @@ export var createLayerControlExtentHTML = function () {
 
   var extentItemNameSpan = L.DomUtil.create(
     'span',
-    'mapml-layer-item-name',
+    'mapml-extent-item-name',
     extentLabel
   );
   input.type = 'checkbox';

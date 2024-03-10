@@ -125,10 +125,13 @@ export var ContextMenu = L.Handler.extend({
     // should be public as they are used in tests
     this.defExtCS = M.options.defaultExtCoor;
     this.defLocCS = M.options.defaultLocCoor;
+
+    // Used for layer and map-extent contextmenu
     const LYRZOOMTO = 0,
       LYRCOPY = 1;
     this._menuItems.LYRZOOMTO = LYRZOOMTO;
     this._menuItems.LYRCOPY = LYRCOPY;
+
     this._layerItems = [
       {
         // 0
@@ -139,6 +142,19 @@ export var ContextMenu = L.Handler.extend({
         // 1
         text: M.options.locale.lmCopyLayer + ' (<kbd>L</kbd>)',
         callback: this._copyLayer
+      }
+    ];
+
+    this._extentLayerItems = [
+      {
+        // 0
+        text: 'Zoom to Sub Layer' + ' (<kbd>Z</kbd>)',
+        callback: this._zoomToMapExtent
+      },
+      {
+        // 1
+        text: 'Copy Sub Layer' + ' (<kbd>L</kbd>)',
+        callback: this._copyMapExtent
       }
     ];
     this._mapMenuVisible = false;
@@ -238,6 +254,15 @@ export var ContextMenu = L.Handler.extend({
     this._createItem(this._layerMenu, this._layerItems[LYRZOOMTO]);
     this._createItem(this._layerMenu, this._layerItems[LYRCOPY]);
 
+    this._extentLayerMenu = L.DomUtil.create(
+      'div',
+      'mapml-contextmenu mapml-layer-menu',
+      map.getContainer()
+    );
+    this._extentLayerMenu.setAttribute('hidden', '');
+    this._createItem(this._extentLayerMenu, this._extentLayerItems[LYRZOOMTO]);
+    this._createItem(this._extentLayerMenu, this._extentLayerItems[LYRCOPY]);
+
     L.DomEvent.on(this._container, 'click', L.DomEvent.stop)
       .on(this._container, 'mousedown', L.DomEvent.stop)
       .on(this._container, 'dblclick', L.DomEvent.stop)
@@ -245,7 +270,11 @@ export var ContextMenu = L.Handler.extend({
       .on(this._layerMenu, 'click', L.DomEvent.stop)
       .on(this._layerMenu, 'mousedown', L.DomEvent.stop)
       .on(this._layerMenu, 'dblclick', L.DomEvent.stop)
-      .on(this._layerMenu, 'contextmenu', L.DomEvent.stop);
+      .on(this._layerMenu, 'contextmenu', L.DomEvent.stop)
+      .on(this._extentLayerMenu, 'click', L.DomEvent.stop)
+      .on(this._extentLayerMenu, 'mousedown', L.DomEvent.stop)
+      .on(this._extentLayerMenu, 'dblclick', L.DomEvent.stop)
+      .on(this._extentLayerMenu, 'contextmenu', L.DomEvent.stop);
 
     this.t = document.createElement('template');
     this.t.innerHTML = `<map-feature zoom="">
@@ -377,6 +406,19 @@ export var ContextMenu = L.Handler.extend({
         e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
       layerElem = context._layerClicked.layer._layerEl;
     context._copyData(layerElem.getOuterHTML());
+  },
+
+  _zoomToMapExtent: function (e) {
+    let context =
+      e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu;
+    context._layerClicked.extent.zoomTo();
+  },
+
+  _copyMapExtent: function (e) {
+    let context =
+        e instanceof KeyboardEvent ? this._map.contextMenu : this.contextMenu,
+      extentElem = context._layerClicked.extent;
+    context._copyData(extentElem.outerHTML);
   },
 
   _goForward: function (e) {
@@ -790,18 +832,23 @@ export var ContextMenu = L.Handler.extend({
     if (this._mapMenuVisible) this._hide();
     this._clickEvent = e;
     let elem = e.originalEvent.target;
+    // Opening contextmenu for layercontrol
     if (elem.closest('fieldset')) {
       elem = elem.closest('fieldset');
-      elem =
-        elem.className === 'mapml-layer-extent'
-          ? elem
-              .closest('fieldset')
-              .parentNode.parentNode.parentNode.querySelector('span')
-          : elem.querySelector('span');
+      // layer layercontrol
+      if (elem.className === 'mapml-layer-item') {
+        elem = elem.querySelector('span');
+        this._layerMenu.removeAttribute('hidden');
+        this._showAtPoint(e.containerPoint, e, this._layerMenu);
+        // map-extent layercontrol
+      } else if (elem.className === 'mapml-layer-extent') {
+        elem = elem.querySelector('span');
+        this._extentLayerMenu.removeAttribute('hidden');
+        this._showAtPoint(e.containerPoint, e, this._extentLayerMenu);
+      }
       this._layerClicked = elem;
-      this._layerMenu.removeAttribute('hidden');
-      this._showAtPoint(e.containerPoint, e, this._layerMenu);
     } else if (
+      // map contextmenu
       elem.classList.contains('leaflet-container') ||
       elem.classList.contains('mapml-debug-extent') ||
       elem.tagName === 'path'
@@ -826,6 +873,7 @@ export var ContextMenu = L.Handler.extend({
       this._showAtPoint(pt, e, this._container);
       this._updateCS();
     }
+    // Once contextmenu is opened, focus the first item
     if (e.originalEvent.button === 0 || e.originalEvent.button === -1) {
       this._keyboardEvent = true;
       if (this._layerClicked.className.includes('mapml-layer-item')) {
@@ -833,6 +881,12 @@ export var ContextMenu = L.Handler.extend({
         this._elementInFocus = activeEl.shadowRoot.activeElement;
         this._layerMenuTabs = 1;
         this._layerMenu.firstChild.focus();
+        //
+      } else if (this._layerClicked.className.includes('mapml-extent-item')) {
+        let activeEl = document.activeElement;
+        this._elementInFocus = activeEl.shadowRoot.activeElement;
+        this._extentLayerMenuTabs = 1;
+        this._extentLayerMenu.firstChild.focus();
       } else {
         this._container.querySelectorAll('button:not([disabled])')[0].focus();
       }
@@ -868,6 +922,7 @@ export var ContextMenu = L.Handler.extend({
       this._container.setAttribute('hidden', '');
       this._copySubMenu.setAttribute('hidden', '');
       this._layerMenu.setAttribute('hidden', '');
+      this._extentLayerMenu.setAttribute('hidden', '');
       this._map.fire('contextmenu.hide', { contextmenu: this });
       setTimeout(() => this._map._container.focus(), 0);
       this.activeIndex = 0;
@@ -932,11 +987,13 @@ export var ContextMenu = L.Handler.extend({
     return size;
   },
 
-  // once tab is clicked on the layer menu, change the focus back to the layer control
+  // once Esc is clicked on the layer/extent contextMenu, change the focus back to the layer control
   _focusOnLayerControl: function () {
     this._mapMenuVisible = false;
     delete this._layerMenuTabs;
+    delete this._extentLayerMenuTabs;
     this._layerMenu.setAttribute('hidden', '');
+    this._extentLayerMenu.setAttribute('hidden', '');
     if (this._elementInFocus) {
       this._elementInFocus.focus();
     } else {
@@ -1043,6 +1100,15 @@ export var ContextMenu = L.Handler.extend({
         this._layerMenu.children[this._menuItems.LYRCOPY].focus();
       } else if (!this._layerMenu.hasAttribute('hidden')) {
         this._layerMenu.children[this._menuItems.LYRZOOMTO].focus();
+      } else if (
+        !this._extentLayerMenu.hasAttribute('hidden') &&
+        document.activeElement.shadowRoot.activeElement.innerHTML ===
+          this._extentLayerMenu.children[this._menuItems.LYRZOOMTO].innerHTML
+      ) {
+        //"zoom to extent" on layermenu
+        this._extentLayerMenu.children[this._menuItems.LYRCOPY].focus();
+      } else if (!this._extentLayerMenu.hasAttribute('hidden')) {
+        this._extentLayerMenu.children[this._menuItems.LYRZOOMTO].focus();
       } else {
         if (this.activeIndex > 0) {
           let prevIndex = this.activeIndex - 1;
@@ -1085,6 +1151,14 @@ export var ContextMenu = L.Handler.extend({
         this._layerMenu.children[this._menuItems.LYRCOPY].focus();
       } else if (!this._layerMenu.hasAttribute('hidden')) {
         this._layerMenu.children[this._menuItems.LYRZOOMTO].focus();
+      } else if (
+        !this._extentLayerMenu.hasAttribute('hidden') &&
+        document.activeElement.shadowRoot.activeElement.innerHTML ===
+          this._extentLayerMenu.children[this._menuItems.LYRZOOMTO].innerHTML
+      ) {
+        this._extentLayerMenu.children[this._menuItems.LYRCOPY].focus();
+      } else if (!this._extentLayerMenu.hasAttribute('hidden')) {
+        this._extentLayerMenu.children[this._menuItems.LYRZOOMTO].focus();
       } else {
         if (this.activeIndex < this._items.length - 1) {
           //edge case at index 0
@@ -1152,7 +1226,7 @@ export var ContextMenu = L.Handler.extend({
         }
       }
     } else if (e.code === 'Escape') {
-      if (this._layerMenuTabs) {
+      if (this._layerMenuTabs || this._extentLayerMenuTabs) {
         L.DomEvent.stop(e);
         this._focusOnLayerControl();
         return;
@@ -1226,8 +1300,11 @@ export var ContextMenu = L.Handler.extend({
         this._copyMapML(e);
         break;
       case 'KeyL':
-        if (this._layerClicked.className.includes('mapml-layer-item'))
+        if (this._layerClicked.className.includes('mapml-layer-item')) {
           this._copyLayer(e);
+        } else if (this._layerClicked.className.includes('mapml-extent-item')) {
+          this._copyMapExtent(e);
+        }
         break;
       case 'KeyF':
         this._toggleFullScreen(e);
@@ -1244,6 +1321,8 @@ export var ContextMenu = L.Handler.extend({
       case 'KeyZ':
         if (this._layerClicked.className.includes('mapml-layer-item')) {
           this._zoomToLayer(e);
+        } else if (this._layerClicked.className.includes('mapml-extent-item')) {
+          this._zoomToMapExtent(e);
         }
         break;
     }
