@@ -23,7 +23,8 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
       await page.evaluateHandle(() =>
         document.getElementById('query').removeAttribute('checked')
       );
-      await page.click('body');
+      const body = page.locator('body');
+      await body.click();
       await page.keyboard.press('Tab'); // focus map
 
       await page.keyboard.press('Tab'); // focus feature
@@ -301,7 +302,8 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
 
     test('Focus Controls focuses the first <button> child in control div', async () => {
       await page.waitForTimeout(1000);
-      await page.click('body > mapml-viewer');
+      const viewer = page.locator('mapml-viewer');
+      await viewer.click();
       await page.keyboard.press('Tab');
       await page.keyboard.press('Tab');
       await page.keyboard.press('Tab');
@@ -328,7 +330,8 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
     });
 
     test('Zoom link zooms to the zoom level = zoom attribute', async () => {
-      await page.click('body');
+      const body = page.locator('body');
+      await body.click();
       await page.keyboard.press('Tab'); // focus map
       await page.keyboard.press('Tab'); // focus feature
       await page.keyboard.press('Enter'); // display popup with link in it
@@ -344,14 +347,15 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
     });
 
     test('Zoom link zooms to the maximum zoom level that can show the feature completely when zoom attribute does not present', async () => {
-      await page.click('body');
+      const body = page.locator('body');
+      await body.click();
       await page.keyboard.press('Tab'); // focus map
       await page.keyboard.press('Tab'); // focus feature
       await page.keyboard.press('Tab');
       await page.keyboard.press('Tab');
       await page.keyboard.press('Enter'); // zoom out
       await page.waitForTimeout(200);
-      await page.click('body');
+      await body.click();
       await page.keyboard.press('Tab'); // focus map
       await page.keyboard.press('Tab');
       await page.keyboard.press('ArrowLeft'); // focus targeted feature
