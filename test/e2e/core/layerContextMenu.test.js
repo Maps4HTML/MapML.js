@@ -10,26 +10,20 @@ test.describe('Playwright Layer Context Menu Tests', () => {
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('layerContextMenu.html');
+    await page.waitForTimeout(250);
   });
 
   test.afterAll(async function () {
     await context.close();
   });
 
-  test.beforeEach(async () => {
-    await page.waitForTimeout(250);
-  });
   test('Layer context menu shows when layer is clicked', async () => {
-    await page.hover(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
-    );
-    await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div \n\
-      > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > \n\
-      div:nth-child(1) > label > span',
-      { button: 'right' }
-    );
+    const layerControl = page.locator('.leaflet-control-layers');
+    await layerControl.hover();
+    const cbmtLayer = await page.getByText('CBMT - INLINE');
+    cbmtLayer.click({ button: 'right' });
 
+    await page.waitForTimeout(200);
     const aHandle = await page.evaluateHandle(() =>
       document.querySelector('mapml-viewer')
     );
@@ -54,39 +48,34 @@ test.describe('Playwright Layer Context Menu Tests', () => {
   });
 
   test('Layer context menu copy layer', async () => {
-    await page.hover(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
-    );
-    await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div \n\
-      > section > div.leaflet-control-layers-overlays > fieldset:nth-child(1) > \n\
-      div:nth-child(1) > label > span',
-      { button: 'right' }
-    );
-
+    const layerControl = page.locator('.leaflet-control-layers');
+    await layerControl.hover();
+    const cbmtLayer = await page.getByText('CBMT - INLINE');
+    await cbmtLayer.click({ button: 'right' });
     await page.keyboard.press('l');
-    await page.click('body > textarea#messageLayer');
+    const mesageLayerArea = page.getByTestId('messageLayer');
+    await mesageLayerArea.focus();
     await page.keyboard.press('Control+v');
-    const copyLayer = await page.$eval(
-      'body > textarea#messageLayer',
-      (text) => text.value
-    );
-
+    const copyLayer = await mesageLayerArea.evaluate((text) => text.value);
     expect(copyLayer).toEqual(
-      '<layer- label="CBMT - INLINE" checked="">\n      <map-link rel="license" title="Testing Inc."></map-link>\n      <map-extent units="CBMTILE" checked="">\n        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>\n        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>\n        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>\n        <map-link rel="tile" tref="http://localhost:30001/data/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>\n      </map-extent>\n    </layer->'
+      `<layer- label="CBMT - INLINE" checked="">
+      <map-link rel="license" title="Testing Inc."></map-link>
+      <map-extent units="CBMTILE" checked="">
+        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
+        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>
+        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>
+        <map-link rel="tile" tref="http://localhost:30001/data/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>
+      </map-extent>
+    </layer->`
     );
   });
 
   test('Map zooms in to layer 2', async () => {
-    await page.hover(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
-    );
-    await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div \n\
-      > section > div.leaflet-control-layers-overlays > fieldset:nth-child(2) > \n\
-      div:nth-child(1) > label > span',
-      { button: 'right', force: true }
-    );
+    const layerControl = page.locator('.leaflet-control-layers');
+    await layerControl.hover();
+    const layer2 = page.getByText('Layer 2');
+    await layer2.click({ button: 'right', force: true });
+
     await page.keyboard.press('z');
     await page.waitForTimeout(1000);
     const mapZoom = await page
@@ -103,15 +92,11 @@ test.describe('Playwright Layer Context Menu Tests', () => {
   });
 
   test('Map zooms out to layer 3', async () => {
-    await page.hover(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
-    );
-    await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > \n\
-      div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(3) \n\
-      > div:nth-child(1) > label > span',
-      { button: 'right', force: true }
-    );
+    const layerControl = page.locator('.leaflet-control-layers');
+    await layerControl.hover();
+    const layer3 = page.getByText('Layer 3');
+    await layer3.click({ button: 'right', force: true });
+
     await page.keyboard.press('z');
     await page.waitForTimeout(3000);
     const mapLocation = await page.$eval('body > mapml-viewer', (text) =>
@@ -130,15 +115,11 @@ test.describe('Playwright Layer Context Menu Tests', () => {
   });
 
   test('Map zooms out to layer 4', async () => {
-    await page.hover(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
-    );
-    await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > \n\
-      div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(4) \n\
-      > div:nth-child(1) > label > span',
-      { button: 'right', force: true }
-    );
+    const layerControl = page.locator('.leaflet-control-layers');
+    await layerControl.hover();
+    const layer4 = page.getByText('Layer 4');
+    await layer4.click({ button: 'right', force: true });
+
     await page.keyboard.press('z');
     await page.waitForTimeout(3000);
     const mapLocation = await page.$eval('body > mapml-viewer', (text) =>
@@ -157,28 +138,21 @@ test.describe('Playwright Layer Context Menu Tests', () => {
 
   test('Copy layer with relative src attribute', async () => {
     await page.reload();
-    await page.hover(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
-    );
-    await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > \n\
-      div > section > div.leaflet-control-layers-overlays > fieldset:nth-child(5) \n\
-      > div:nth-child(1) > label > span',
-      { button: 'right' }
-    );
+    const layerControl = page.locator('.leaflet-control-layers');
+    await layerControl.hover();
+    const pseudotsuga = await layerControl.getByText('Genus Pseudotsuga');
+    await pseudotsuga.click({ button: 'right' });
 
     await page.keyboard.press('l');
-    await page.click('body > textarea#messageLayer');
+    const mesageLayerArea = page.getByTestId('messageLayer');
+    await mesageLayerArea.focus();
     // reload is better than deleting text, because of cross-platform issue
     // with copy-pasting text on Windows/Linux
     //    await page.keyboard.press('Control+a');
     //    await page.keyboard.press('Backspace');
     await page.keyboard.press('Control+v');
     await page.waitForTimeout(1000);
-    const copyLayer = await page.$eval(
-      'body > textarea#messageLayer',
-      (text) => text.value
-    );
+    const copyLayer = await mesageLayerArea.evaluate((text) => text.value);
 
     expect(copyLayer).toEqual(
       '<layer- src="http://localhost:30001/data/query/DouglasFir" label="Natural Resources Canada - Douglas Fir (Genus Pseudotsuga) 250m resolution"></layer->'
@@ -186,9 +160,8 @@ test.describe('Playwright Layer Context Menu Tests', () => {
   });
 
   test('Map Extent context menu shows when extent layer is right clicked', async () => {
-    await page.hover(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
-    );
+    const layerControl = page.locator('.leaflet-control-layers');
+    await layerControl.hover();
     await page
       .getByRole('group', { name: 'CBMT - INLINE' })
       .getByTitle('Layer Settings')
@@ -232,13 +205,11 @@ test.describe('Playwright Layer Context Menu Tests', () => {
       });
 
     await page.keyboard.press('l');
-    await page.click('body > textarea#messageLayer');
+    const mesageLayerArea = page.getByTestId('messageLayer');
+    await mesageLayerArea.focus();
     await page.keyboard.press('Control+a');
     await page.keyboard.press('Control+v');
-    const copyLayer = await page.$eval(
-      'body > textarea#messageLayer',
-      (text) => text.value
-    );
+    const copyLayer = await mesageLayerArea.evaluate((text) => text.value);
 
     expect(copyLayer).toEqual(
       '<map-extent units="CBMTILE" checked="">\n        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>\n        <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>\n        <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>\n        <map-link rel="tile" tref="http://localhost:30001/data/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>\n      </map-extent>'
@@ -246,9 +217,8 @@ test.describe('Playwright Layer Context Menu Tests', () => {
   });
 
   test('Map zooms to extent layer', async () => {
-    await page.hover(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
-    );
+    const layerControl = page.locator('.leaflet-control-layers');
+    await layerControl.hover();
     await page
       .getByRole('group', { name: 'Sub-layer' })
       .locator('label')
