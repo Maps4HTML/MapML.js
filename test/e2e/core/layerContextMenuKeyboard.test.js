@@ -35,9 +35,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     await page.locator('[aria-label="Zoom in"]').press('Tab');
     await page.locator('[aria-label="Zoom out"]').press('Tab');
     await page.locator('[aria-label="Reload"]').press('Tab');
-    // no fullscreen button on this page
-    // features are next tab stop
-    await page.locator('a[role="button"]').nth(2).press('Tab');
+
     // layer control is next tab stop, opened by hover or Enter key
     await page.locator('a[role="button"]').nth(3).press('Enter');
     // Shift+F10 generates contextmenu event
