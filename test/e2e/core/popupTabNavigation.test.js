@@ -29,91 +29,52 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
 
       await page.keyboard.press('Tab'); // focus feature
       await page.keyboard.press('Enter'); // display popup with link in it
-      const h = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      const viewer = page.locator('mapml-viewer');
+      let f = await viewer.evaluate(
+        (viewer) => viewer.shadowRoot.activeElement.className
       );
-      const nh = await page.evaluateHandle((doc) => doc.shadowRoot, h);
-      const rh = await page.evaluateHandle((root) => root.activeElement, nh);
-      const f = await (
-        await page.evaluateHandle((elem) => elem.className, rh)
-      ).jsonValue();
       expect(f).toEqual('mapml-popup-content');
 
       await page.keyboard.press('Tab'); // focus link
-      const h2 = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      let f2 = await viewer.evaluate(
+        (viewer) => viewer.shadowRoot.activeElement.tagName
       );
-      const nh2 = await page.evaluateHandle((doc) => doc.shadowRoot, h2);
-      const rh2 = await page.evaluateHandle((root) => root.activeElement, nh2);
-      const f2 = await (
-        await page.evaluateHandle((elem) => elem.tagName, rh2)
-      ).jsonValue();
       expect(f2.toUpperCase()).toEqual('A');
 
       await page.keyboard.press('Tab'); // focus on "zoom to here" link
-      const h3 = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      let f3 = await viewer.evaluate(
+        (viewer) => viewer.shadowRoot.activeElement.tagName
       );
-      const nh3 = await page.evaluateHandle((doc) => doc.shadowRoot, h3);
-      const rh3 = await page.evaluateHandle((root) => root.activeElement, nh3);
-      const f3 = await (
-        await page.evaluateHandle((elem) => elem.tagName, rh3)
-      ).jsonValue();
       expect(f3.toUpperCase()).toEqual('A');
 
       await page.keyboard.press('Tab'); // focus on |< affordance
-      const h4 = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      let f4 = await viewer.evaluate(
+        (viewer) => viewer.shadowRoot.activeElement.title
       );
-      const nh4 = await page.evaluateHandle((doc) => doc.shadowRoot, h4);
-      const rh4 = await page.evaluateHandle((root) => root.activeElement, nh4);
-      const f4 = await (
-        await page.evaluateHandle((elem) => elem.title, rh4)
-      ).jsonValue();
       expect(f4).toEqual('Focus Map');
 
       await page.keyboard.press('Tab'); // focus on < affordance
-      const h5 = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      let f5 = await viewer.evaluate(
+        (viewer) => viewer.shadowRoot.activeElement.title
       );
-      const nh5 = await page.evaluateHandle((doc) => doc.shadowRoot, h5);
-      const rh5 = await page.evaluateHandle((root) => root.activeElement, nh5);
-      const f5 = await (
-        await page.evaluateHandle((elem) => elem.title, rh5)
-      ).jsonValue();
       expect(f5).toEqual('Previous Feature');
 
       await page.keyboard.press('Tab'); // focus on > affordance
-      const h6 = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      let f6 = await viewer.evaluate(
+        (viewer) => viewer.shadowRoot.activeElement.title
       );
-      const nh6 = await page.evaluateHandle((doc) => doc.shadowRoot, h6);
-      const rh6 = await page.evaluateHandle((root) => root.activeElement, nh6);
-      const f6 = await (
-        await page.evaluateHandle((elem) => elem.title, rh6)
-      ).jsonValue();
       expect(f6).toEqual('Next Feature');
 
       await page.keyboard.press('Tab'); // focus on >| affordance
-      const h7 = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      let f7 = await viewer.evaluate(
+        (viewer) => viewer.shadowRoot.activeElement.title
       );
-      const nh7 = await page.evaluateHandle((doc) => doc.shadowRoot, h7);
-      const rh7 = await page.evaluateHandle((root) => root.activeElement, nh7);
-      const f7 = await (
-        await page.evaluateHandle((elem) => elem.title, rh7)
-      ).jsonValue();
       expect(f7).toEqual('Focus Controls');
 
       await page.keyboard.press('Tab'); // focus on X dismiss popup affordance
-      const h8 = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      let f8 = await viewer.evaluate(
+        (viewer) => viewer.shadowRoot.activeElement.className
       );
-      const nh8 = await page.evaluateHandle((doc) => doc.shadowRoot, h8);
-      const rh8 = await page.evaluateHandle((root) => root.activeElement, nh8);
-      const f8 = await (
-        await page.evaluateHandle((elem) => elem.className, rh8)
-      ).jsonValue();
       expect(f8).toEqual('leaflet-popup-close-button');
     });
 
