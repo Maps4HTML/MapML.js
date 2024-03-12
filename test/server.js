@@ -7,6 +7,7 @@ const port = 30001;
 app.use(express.static(path.join(__dirname, '../dist')));
 app.use(express.static(path.join(__dirname, 'e2e/core')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-extent')));
+app.use(express.static(path.join(__dirname, 'e2e/elements/mapml-viewer')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-feature')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-link')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/layer-')));
