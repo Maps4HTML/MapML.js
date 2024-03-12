@@ -16,8 +16,8 @@ test.describe('Using arrow keys to navigate context menu', () => {
 
   test('Testing layer contextmenu', async () => {
     await page.waitForTimeout(500);
-    await page.click('body > mapml-viewer');
-    await page.waitForTimeout(500);
+    await page.locator('mapml-viewer').focus();
+    await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
 
     await page.keyboard.press('Tab');
@@ -62,18 +62,17 @@ test.describe('Using arrow keys to navigate context menu', () => {
     );
     expect(activeElement).toEqual('Copy Layer (<kbd>L</kbd>)');
 
-    await page.click('body > mapml-viewer');
+    await page.locator('mapml-viewer').click();
 
-    let hide = await page.$eval(
-      'body > mapml-viewer',
-      (viewer) => viewer._map.contextMenu._layerMenu.hidden
-    );
-    expect(hide).toEqual(true);
+    let hidden = await page
+      .locator('mapml-viewer')
+      .evaluate((viewer) => viewer._map.contextMenu._layerMenu.hidden);
+    expect(hidden).toEqual(true);
   });
 
   test('Testing Extent layer contextmenu', async () => {
     await page.waitForTimeout(500);
-    await page.click('body > mapml-viewer');
+    await page.locator('mapml-viewer').click();
     await page.waitForTimeout(500);
     await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
@@ -112,20 +111,18 @@ test.describe('Using arrow keys to navigate context menu', () => {
     expect(activeElement).toEqual('Zoom To Sub-layer (<kbd>Z</kbd>)');
 
     await page.keyboard.press('Escape');
-    let hide = await page.$eval(
-      'body > mapml-viewer',
-      (viewer) => viewer._map.contextMenu._extentLayerMenu.hidden
-    );
-    expect(hide).toEqual(true);
+    let hidden = await page
+      .locator('mapml-viewer')
+      .evaluate((viewer) => viewer._map.contextMenu._extentLayerMenu.hidden);
+    expect(hidden).toEqual(true);
 
     await page.keyboard.press('Shift+F10');
 
-    await page.click('body > mapml-viewer');
-    hide = await page.$eval(
-      'body > mapml-viewer',
-      (viewer) => viewer._map.contextMenu._extentLayerMenu.hidden
-    );
-    expect(hide).toEqual(true);
+    await page.locator('mapml-viewer').click();
+    hidden = await page
+      .locator('mapml-viewer')
+      .evaluate((viewer) => viewer._map.contextMenu._extentLayerMenu.hidden);
+    expect(hidden).toEqual(true);
 
     // Ensuring the extent is still being revealed after layercontrol was closed and reopened
     await page.keyboard.press('Tab');
@@ -143,6 +140,7 @@ test.describe('Using arrow keys to navigate context menu', () => {
     await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
     await page.keyboard.press('Shift+F10');
+    await page.waitForTimeout(500);
     activeElement = await page.evaluate(
       () => document.activeElement.shadowRoot.activeElement.innerHTML
     );
@@ -150,7 +148,7 @@ test.describe('Using arrow keys to navigate context menu', () => {
   });
 
   test('(partial) Up and Down Arrow keys to navigate the contextmenu', async () => {
-    await page.click('body > mapml-viewer', { button: 'right' });
+    await page.locator('mapml-viewer').click({ button: 'right' });
     await page.keyboard.press('ArrowDown');
 
     let activeElement = await page.evaluate(
@@ -192,7 +190,7 @@ test.describe('Using arrow keys to navigate context menu', () => {
   });
 
   test('Right and Left Arrow keys to navigate the contextmenu', async () => {
-    await page.click('body > mapml-viewer');
+    await page.locator('mapml-viewer').click();
     await page.keyboard.press('Shift+F10');
     await page.keyboard.press('ArrowDown');
 
@@ -262,16 +260,15 @@ test.describe('Using arrow keys to navigate context menu', () => {
     );
     expect(activeElement).toEqual('Copy (<kbd>C</kbd>)<span></span>');
 
-    let hide = await page.$eval(
-      'body > mapml-viewer',
-      (viewer) => viewer._map.contextMenu._copySubMenu.hidden
-    );
-    expect(hide).toEqual(true);
+    let hidden = await page
+      .locator('mapml-viewer')
+      .evaluate((viewer) => viewer._map.contextMenu._copySubMenu.hidden);
+    expect(hidden).toEqual(true);
   });
 
   test('(full) Up and Down Arrow keys to navigate the contextmenu', async () => {
     await page.waitForTimeout(500);
-    await page.click('body > mapml-viewer');
+    await page.locator('mapml-viewer').click();
     await page.keyboard.press('ArrowRight');
     await page.waitForTimeout(500);
     await page.keyboard.press('ArrowRight');

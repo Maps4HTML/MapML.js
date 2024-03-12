@@ -32,9 +32,10 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     await expect(zoom).toBe(0);
 
     await page.locator('mapml-viewer').press('Tab');
-    await page.locator('[aria-label="Zoom in"]').press('Tab');
-    await page.locator('[aria-label="Zoom out"]').press('Tab');
-    await page.locator('[aria-label="Reload"]').press('Tab');
+    await page.getByLabel('Zoom in').press('Tab');
+    await page.getByLabel('Zoom out').press('Tab');
+    await page.getByLabel('Reload').press('Tab');
+    await page.getByRole('button', { name: 'View Fullscreen' }).press('Tab');
 
     // layer control is next tab stop, opened by hover or Enter key
     await page.locator('a[role="button"]').nth(3).press('Enter');
@@ -70,8 +71,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     await page.locator('[aria-label="Zoom out"]').press('Tab');
 
     await page.locator('[aria-label="Reload"]').press('Tab');
-    // tab past features, focus on layer control
-    await page.locator('a[role="button"]').nth(2).press('Tab');
+    await page.getByRole('button', { name: 'View Fullscreen' }).press('Tab');
     // Press Enter on layer control
     await page.locator('a[role="button"]').nth(3).press('Enter');
     // Press Shift+F10 to bring up layer context menu on first layer
@@ -104,8 +104,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     await page.locator('[aria-label="Zoom in"]').press('Tab');
     await page.locator('[aria-label="Zoom out"]').press('Tab');
     await page.locator('[aria-label="Reload"]').press('Tab');
-    // tab past features, focus on layer control
-    await page.locator('a[role="button"]').nth(2).press('Tab');
+    await page.getByRole('button', { name: 'View Fullscreen' }).press('Tab');
     // Press Enter on layer control
     await page.locator('a[role="button"]').nth(3).press('Enter');
     // Press Shift+F10 to bring up layer context menu on first layer
@@ -143,8 +142,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     await page.locator('[aria-label="Zoom in"]').press('Tab');
     await page.locator('[aria-label="Zoom out"]').press('Tab');
     await page.locator('[aria-label="Reload"]').press('Tab');
-    // tab past features, focus on layer control
-    await page.locator('a[role="button"]').nth(2).press('Tab');
+    await page.getByRole('button', { name: 'View Fullscreen' }).press('Tab');
     // Press Enter on layer control
     await page.locator('a[role="button"]').nth(3).press('Enter');
     // Press Shift+F10 to bring up layer context menu on first layer
