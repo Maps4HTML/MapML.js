@@ -10,8 +10,10 @@ test.describe('mapml-viewer can be inside a shadow root or other custom element'
       (await context.newPage());
     await page.goto('in-shadow-root.html');
   });
-  test('Console is clean when loading in shadow root', async () => {});
-  test('Fullscreen control works via keyboard or mouse in shadow root', async () => {});
+  test('Parent element of map has map listeners assigned', async () => {});
+  test('Fullscreen control in shadow root works via keyboard or mouse', async () => {
+    
+  });
   test('layer- getMapEl() works in shadow root', async () => {});
   test('map-link getMapEl() works in shadow root', async () => {});
   test('map-feature getMapEl() works in shadow root', async () => {});
@@ -20,6 +22,4 @@ test.describe('mapml-viewer can be inside a shadow root or other custom element'
   test('map-link getLayerEl() works in shadow root', async () => {});
   test('map-input getLayerEl() works in shadow root', async () => {});
   test('map-feature getLayerEl() works in shadow root', async () => {});
-  
-
 });

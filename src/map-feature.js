@@ -128,39 +128,29 @@ export class MapFeature extends HTMLElement {
       return this._getFeatureExtent();
     }
   }
-  getLayerEl() {
-    let layerEl;
-    if (this.getRootNode() instanceof ShadowRoot) {
-      if (this.getRootNode().host.getRootNode() instanceof ShadowRoot) {
-        //   layer- src
-        //     > sd
-        //      map-extent
-        //       map-link
-        //        > sd
-        //          map-feature (1)
-        layerEl = this.getRootNode().host.getRootNode().host;
-      } else if (this.getRootNode().host.nodeName === 'MAP-LINK') {
-        //   layer-
-        //     map-extent
-        //       map-link
-        //         > sd
-        //           map-feature (4)
-        layerEl = this.getRootNode().host.closest('layer-');
-      } else {
-        //   layer- src
-        //     > sd
-        //        map-feature (2)
-        layerEl = this.getRootNode().host;
-      }
-    } else {
-      //     layer-
-      //       map-feature (3)
-      layerEl = this.closest('layer-');
+  getClosest(node, selector) {
+    if (!node) {
+      return null;
     }
-    return layerEl;
+    if (node instanceof ShadowRoot) {
+      return this.getClosest(node.host, selector);
+    }
+
+    if (node instanceof HTMLElement) {
+      if (node.matches(selector)) {
+        return node;
+      } else {
+        return this.getClosest(node.parentNode, selector);
+      }
+    }
+
+    return this.getClosest(node.parentNode, selector);
   }
   getMapEl() {
-    return this.getLayerEl().closest('mapml-viewer,map[is=web-map]');
+    return this.getClosest(this, 'mapml-viewer,map[is=web-map]');
+  }
+  getLayerEl() {
+    return this.getClosest(this, 'layer-');
   }
 
   attributeChangedCallback(name, oldValue, newValue) {

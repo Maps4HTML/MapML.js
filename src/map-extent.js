@@ -125,15 +125,30 @@ export class MapExtent extends HTMLElement {
       animate: false
     });
   }
+
+  getClosest(node, selector) {
+    if (!node) {
+      return null;
+    }
+    if (node instanceof ShadowRoot) {
+      return this.getClosest(node.host, selector);
+    }
+
+    if (node instanceof HTMLElement) {
+      if (node.matches(selector)) {
+        return node;
+      } else {
+        return this.getClosest(node.parentNode, selector);
+      }
+    }
+
+    return this.getClosest(node.parentNode, selector);
+  }
   getMapEl() {
-    return this.getRootNode() instanceof ShadowRoot
-      ? this.getRootNode().host.closest('mapml-viewer,map[is=web-map]')
-      : this.closest('mapml-viewer,map[is=web-map]');
+    return this.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return this.getRootNode() instanceof ShadowRoot
-      ? this.getRootNode().host
-      : this.closest('layer-');
+    return this.getClosest(this, 'layer-');
   }
   attributeChangedCallback(name, oldValue, newValue) {
     if (this.#hasConnected /* jshint ignore:line */) {

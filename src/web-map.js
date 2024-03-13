@@ -684,8 +684,11 @@ export class WebMap extends HTMLMapElement {
       false
     );
 
-    let mapEl = this;
-    this.parentElement.addEventListener('keyup', function (e) {
+    let host =
+      this.getRootNode() instanceof ShadowRoot
+        ? this.getRootNode().host
+        : this.parentElement;
+    host.addEventListener('keyup', function (e) {
       if (
         e.keyCode === 9 &&
         document.activeElement.className === 'mapml-web-map'
@@ -711,7 +714,7 @@ export class WebMap extends HTMLMapElement {
         this._map.fire('keypress', { originalEvent: e });
       }
     });
-    this.parentElement.addEventListener('mousedown', function (e) {
+    host.addEventListener('mousedown', function (e) {
       if (document.activeElement.className === 'mapml-web-map') {
         mapEl.dispatchEvent(
           new CustomEvent('mapfocused', { detail: { target: this } })

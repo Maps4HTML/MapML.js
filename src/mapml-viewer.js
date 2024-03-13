@@ -636,7 +636,11 @@ export class MapViewer extends HTMLElement {
       false
     );
 
-    this.parentElement.addEventListener('keyup', function (e) {
+    let host =
+      this.getRootNode() instanceof ShadowRoot
+        ? this.getRootNode().host
+        : this.parentElement;
+    host.addEventListener('keyup', function (e) {
       if (
         e.keyCode === 9 &&
         document.activeElement.nodeName === 'MAPML-VIEWER'
@@ -661,7 +665,7 @@ export class MapViewer extends HTMLElement {
         this._map.fire('keypress', { originalEvent: e });
       }
     });
-    this.parentElement.addEventListener('mousedown', function (e) {
+    host.addEventListener('mousedown', function (e) {
       if (document.activeElement.nodeName === 'MAPML-VIEWER') {
         document.activeElement.dispatchEvent(
           new CustomEvent('mapfocused', { detail: { target: this } })
