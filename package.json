@@ -1,6 +1,6 @@
 {
   "name": "@maps4html/web-map-custom-element",
-  "version": "0.13.1",
+  "version": "0.13.0",
   "description": "Custom <mapml-viewer> element suite",
   "keywords": [
     "mapml-viewer",
@@ -62,5 +62,8 @@
     "LICENSE.md",
     "README.md",
     "CONTRIBUTING.md"
-  ]
+  ],
+  "publishConfig": {
+    "registry":"https://registry.npmjs.org/"
+}
 }
