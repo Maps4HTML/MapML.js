@@ -62,8 +62,5 @@
     "LICENSE.md",
     "README.md",
     "CONTRIBUTING.md"
-  ],
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  }
+  ]
 }
