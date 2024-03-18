@@ -427,7 +427,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
       options.zoomBounds = feature.extent.zoom;
     }
     let geometry = this._geometryToLayer(feature, options, cs, +zoom, title);
-    if (geometry) {
+    if (geometry && Object.keys(geometry._layers).length !== 0) {
       // if the layer is being used as a query handler output, it will have
       // a color option set.  Otherwise, copy classes from the feature
       if (!geometry.options.color && feature.hasAttribute('class')) {
