@@ -2,9 +2,12 @@
     <map-head>
         <map-title>Natural Resources Canada's CanVec+ 031G - Map Markup Language</map-title>
         <meta http-equiv="Content-Type" content="text/mapml"/>
-        <map-link rel="stylesheet" href="canvec_cantopo_svg.css" type="text/css"></map-link>
-        <map-link rel="stylesheet" href="canvec_feature_properties.css" type="text/css"></map-link>
-        <map-style>
+        <!-- map-link or map-style elements loaded from remote layer- (has src
+             attribute should be rendered as link / style in the 
+             layer-._layer._container -->
+        <map-link id="one" rel="stylesheet" href="canvec_cantopo_svg.css" type="text/css"></map-link>
+        <map-link id="two" rel="stylesheet" href="canvec_feature_properties.css" type="text/css"></map-link>
+        <map-style id="three">
         .all { fill-opacity: 0.7; stroke-width: 2; stroke: white; stroke-opacity: 1; stroke-dasharray: 3; }
         </map-style>
         <map-link rel="license" href="http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="CanVec+ © Natural Resources Canada"></map-link>

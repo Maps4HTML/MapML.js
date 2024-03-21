@@ -22,19 +22,19 @@
 <body>
   <map data-testid="map1" is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
 
-    <layer- label="Arizona" checked>
+    <layer- data-testid="arizona" label="Arizona" checked>
       <map-meta name="projection" content="CBMTILE"></map-meta>
       <map-meta name="zoom" content="min=0,max=5,value=0"></map-meta>
       <map-meta name="extent"
                 content="cs=tilematrix,top-left-vertical=0,top-left-horizontal=0,bottom-right-vertical=5,bottom-right-horizontal=5"></map-meta>
-
+      <!-- Local-content styles rendered as style/link in same order as found, in expected shadow root location -->
       <map-link id="first" rel="stylesheet" type="text/css" href="first.css"></map-link>
-      <map-style>
+      <map-style id="second">
         .second {
           stroke: aqua;
         }
       </map-style>
-      <map-style>
+      <map-style id="third">
         .third {
           stroke: blue
         }
@@ -88,7 +88,7 @@
         </map-geometry>
       </map-feature>
     </layer->
-    <layer- label="Alabama" checked>
+    <layer- data-testid="alabama" label="Alabama" checked>
       <map-meta name="zoom" content="min=0,max=10"></map-meta>
       <map-extent units="CBMTILE" checked hidden>
         <map-input name="z" type="zoom" min="2" max="18" ></map-input>
@@ -96,32 +96,42 @@
         <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46" ></map-input>
         <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" ></map-input>
         <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" ></map-input>
-        <map-link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>
+        <!-- Local layer content map-link[rel=features] remote styles rendered as style/link in same order as found, in expected shadow root location -->
+        <map-link data-testid="alabama-features" rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>
       </map-extent>
     </layer->
   </map>
   <map data-testid="map2" is="web-map" projection="WGS84" zoom="0" lat="0" lon="0" controls>
 
     <layer- label="Inline Countries" checked>
-      <map-link rel="stylesheet" href="styleParsing.css"></map-link>
-      <map-style>
-        .secondVector {
+      <map-style id="one">
+        .firstVector {
           color: aliceblue;
         }
       </map-style>
+      <map-link id="two" rel="stylesheet" href="styleParsing.css"></map-link>
       <map-meta name="zoom" content="min=0,max=10"></map-meta>
-      <map-extent units="WGS84" checked hidden>
+      <map-extent data-testid="map-ext1" units="WGS84" checked hidden>
+        <!-- Local style children of map-extent rendered as style/link in same order as found, in expected shadow root location -->
+        <map-style id="one">.foo { bar:none; }</map-style>
+        <map-link id="two" rel="stylesheet" href="styleParsing.css"></map-link>
         <map-input name="zoomLevel" type="zoom" min="0" max="2" value="0" ></map-input>
 
         <map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="5" ></map-input>
         <map-input name="col" type="location" axis="column" units="tilematrix" min="0" max="5" ></map-input>
 
+        <!-- map-style and map-link elements in tiles should be rendered in the
+          container of the svg element that renders the tile, so that the style
+        rules in them apply to the svg content elements such as path and g -->
+        <!-- Local content map-link[rel=tile][type=text/mapml] with remote styles embedded in text/mapml tiles are rendered in same order as found in shadow root tile container -->
+        <!-- see r0_c0.mapml -->
         <map-link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)'
           tref='data/wgs84/{zoomLevel}/r{row}_c{col}.mapml' ></map-link>
 
       </map-extent>
     </layer->
-    <layer- label="src-based Countries" src="data/vector-tile-test.mapml" checked></layer->
+    
+    <layer- data-testid="remote" label="src-based Countries" src="data/vector-tile-test.mapml" checked></layer->
   </map>
 </body>
 
