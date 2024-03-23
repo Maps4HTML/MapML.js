@@ -17,91 +17,84 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
 
   test.describe('Feature Popup Tab Navigation Tests', () => {
     test('Inline features popup focus order', async () => {
-      await page.evaluateHandle(() =>
-        document.getElementById('vector').removeAttribute('checked')
-      );
-      await page.evaluateHandle(() =>
-        document.getElementById('query').removeAttribute('checked')
-      );
-      const body = page.locator('body');
-      await body.click();
+      const vectorLayer = page.getByTestId('vector');
+      await vectorLayer.evaluate((l) => {
+        l.removeAttribute('checked');
+      });
+      const queryLayer = page.getByTestId('query');
+      await queryLayer.evaluate((l) => {
+        l.removeAttribute('checked');
+      });
+      const viewer = page.locator('mapml-viewer');
+      await viewer.focus();
       await page.keyboard.press('Tab'); // focus map
 
       await page.keyboard.press('Tab'); // focus feature
       await page.keyboard.press('Enter'); // display popup with link in it
-      const viewer = page.locator('mapml-viewer');
-      let f = await viewer.evaluate(
-        (viewer) => viewer.shadowRoot.activeElement.className
-      );
-      expect(f).toEqual('mapml-popup-content');
-
+      const popupContainer = page.locator('.leaflet-popup');
+      const popup = popupContainer.locator('.mapml-popup-content');
+      await expect(popup).toBeFocused();
       await page.keyboard.press('Tab'); // focus link
-      let f2 = await viewer.evaluate(
-        (viewer) => viewer.shadowRoot.activeElement.tagName
-      );
-      expect(f2.toUpperCase()).toEqual('A');
+      // there are actually 2 copies of the testid, so we scope relative to the popup
+      const anchor = popupContainer.getByTestId('anchor');
+      await expect(anchor).toBeFocused();
 
       await page.keyboard.press('Tab'); // focus on "zoom to here" link
-      let f3 = await viewer.evaluate(
-        (viewer) => viewer.shadowRoot.activeElement.tagName
-      );
-      expect(f3.toUpperCase()).toEqual('A');
+      const zoomToHereLink = popupContainer.getByText('Zoom to here');
+      await expect(zoomToHereLink).toBeFocused();
 
       await page.keyboard.press('Tab'); // focus on |< affordance
-      let f4 = await viewer.evaluate(
-        (viewer) => viewer.shadowRoot.activeElement.title
-      );
-      expect(f4).toEqual('Focus Map');
+      const focusMapButton = popupContainer.getByRole('button', {
+        name: 'Focus Map'
+      });
+      await expect(focusMapButton).toBeFocused();
 
       await page.keyboard.press('Tab'); // focus on < affordance
-      let f5 = await viewer.evaluate(
-        (viewer) => viewer.shadowRoot.activeElement.title
-      );
-      expect(f5).toEqual('Previous Feature');
+      const previousFeatureButton = popupContainer.getByRole('button', {
+        name: 'Previous Feature'
+      });
+      await expect(previousFeatureButton).toBeFocused();
 
       await page.keyboard.press('Tab'); // focus on > affordance
-      let f6 = await viewer.evaluate(
-        (viewer) => viewer.shadowRoot.activeElement.title
-      );
-      expect(f6).toEqual('Next Feature');
+      const nextFeatureButton = popupContainer.getByRole('button', {
+        name: 'Next Feature'
+      });
+      await expect(nextFeatureButton).toBeFocused();
 
       await page.keyboard.press('Tab'); // focus on >| affordance
-      let f7 = await viewer.evaluate(
-        (viewer) => viewer.shadowRoot.activeElement.title
-      );
-      expect(f7).toEqual('Focus Controls');
+      const focusControlsButton = popupContainer.getByRole('button', {
+        name: 'Focus Controls'
+      });
+      await expect(focusControlsButton).toBeFocused();
 
       await page.keyboard.press('Tab'); // focus on X dismiss popup affordance
-      let f8 = await viewer.evaluate(
-        (viewer) => viewer.shadowRoot.activeElement.className
-      );
-      expect(f8).toEqual('leaflet-popup-close-button');
+      const dismissButton = popupContainer.getByRole('button', {
+        name: 'Close popup'
+      });
+      await expect(dismissButton).toBeFocused();
     });
 
     test('Tab to next feature after tabbing out of popup', async () => {
+      const viewer = page.getByTestId('viewer');
       await page.keyboard.press('Escape'); // focus back on feature
-      const h = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      // according to https://github.com/microsoft/playwright/issues/15929
+      // tests should locate the element and then check that it is focused
+      const bigSquare = viewer.getByTestId('big-square');
+      const bigSquarePathData = await bigSquare.evaluate((f) => {
+        return f._groupEl.firstElementChild.getAttribute('d');
+      });
+      // no way to get a locator from another locator afaik, but this may work:
+      const bigSquareGroupEl = viewer.locator(
+        'g:has( > path[d="' + bigSquarePathData + '"])'
       );
-      const nh = await page.evaluateHandle((doc) => doc.shadowRoot, h);
-      const rh = await page.evaluateHandle(
-        (root) => root.activeElement.querySelector('.leaflet-interactive'),
-        nh
-      );
-      const f = await (
-        await page.evaluateHandle((elem) => elem.getAttribute('d'), rh)
-      ).jsonValue();
-      expect(f).toEqual('M330 83L586 83L586 339L330 339z');
-      await page.waitForTimeout(500);
+      await expect(bigSquareGroupEl).toBeFocused();
       // that we have to do this to get the tooltip back is a bug #681
       await page.keyboard.press('Shift+Tab');
       await page.keyboard.press('Tab');
-
-      let tooltipCount = await page.$eval(
-        'mapml-viewer .leaflet-tooltip-pane',
+      const toolTipPane = viewer.locator('.leaflet-tooltip-pane');
+      let tooltipCount = await toolTipPane.evaluate(
         (div) => div.childElementCount
       );
-
       expect(tooltipCount).toEqual(1);
     });
 
@@ -110,26 +103,20 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
       await page.waitForTimeout(500);
       await page.keyboard.press('Shift+Tab');
       await page.waitForTimeout(500);
-
-      const h = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      const viewer = page.getByTestId('viewer');
+      const bigSquare = viewer.getByTestId('big-square');
+      const bigSquarePathData = await bigSquare.evaluate((f) => {
+        return f._groupEl.firstElementChild.getAttribute('d');
+      });
+      const bigSquareGroupEl = viewer.locator(
+        'g:has( > path[d="' + bigSquarePathData + '"])'
       );
-      const nh = await page.evaluateHandle((doc) => doc.shadowRoot, h);
-      const rh = await page.evaluateHandle(
-        (root) => root.activeElement.querySelector('.leaflet-interactive'),
-        nh
-      );
-      const f = await (
-        await page.evaluateHandle((elem) => elem.getAttribute('d'), rh)
-      ).jsonValue();
-
-      let tooltipCount = await page.$eval(
-        'mapml-viewer .leaflet-tooltip-pane',
+      await expect(bigSquareGroupEl).toBeFocused();
+      const toolTipPane = viewer.locator('.leaflet-tooltip-pane');
+      let tooltipCount = await toolTipPane.evaluate(
         (div) => div.childElementCount
       );
-
       expect(tooltipCount).toEqual(1);
-      expect(f).toEqual('M330 83L586 83L586 339L330 339z');
     });
 
     test('Previous feature button focuses previous feature', async () => {
@@ -145,25 +132,20 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
       await page.waitForTimeout(500);
       await page.keyboard.press('Enter'); // focus should fall on previous feature
       await page.waitForTimeout(500);
-      const h = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      const viewer = page.getByTestId('viewer');
+      const bigSquare = viewer.getByTestId('big-square');
+      const bigSquarePathData = await bigSquare.evaluate((f) => {
+        return f._groupEl.firstElementChild.getAttribute('d');
+      });
+      const bigSquareGroupEl = viewer.locator(
+        'g:has( > path[d="' + bigSquarePathData + '"])'
       );
-      const nh = await page.evaluateHandle((doc) => doc.shadowRoot, h);
-      const rh = await page.evaluateHandle(
-        (root) => root.activeElement.querySelector('.leaflet-interactive'),
-        nh
-      );
-      const f = await (
-        await page.evaluateHandle((elem) => elem.getAttribute('d'), rh)
-      ).jsonValue();
-
-      let tooltipCount = await page.$eval(
-        'mapml-viewer .leaflet-tooltip-pane',
+      await expect(bigSquareGroupEl).toBeFocused();
+      const toolTipPane = viewer.locator('.leaflet-tooltip-pane');
+      let tooltipCount = await toolTipPane.evaluate(
         (div) => div.childElementCount
       );
-
       expect(tooltipCount).toEqual(1);
-      expect(f).toEqual('M330 83L586 83L586 339L330 339z');
     });
 
     test('Tooltip appears after pressing esc key', async () => {
@@ -172,25 +154,20 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
       await page.keyboard.down('Escape'); // focus back on feature
       await page.keyboard.up('Escape');
       await page.waitForTimeout(500);
-
-      const h = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      const viewer = page.getByTestId('viewer');
+      const bigSquare = viewer.getByTestId('big-square');
+      const bigSquarePathData = await bigSquare.evaluate((f) => {
+        return f._groupEl.firstElementChild.getAttribute('d');
+      });
+      const bigSquareGroupEl = viewer.locator(
+        'g:has( > path[d="' + bigSquarePathData + '"])'
       );
-      const nh = await page.evaluateHandle((doc) => doc.shadowRoot, h);
-      const rh = await page.evaluateHandle(
-        (root) => root.activeElement.querySelector('.leaflet-interactive'),
-        nh
-      );
-      const f = await (
-        await page.evaluateHandle((elem) => elem.getAttribute('d'), rh)
-      ).jsonValue();
-
-      let tooltipCount = await page.$eval(
-        'mapml-viewer .leaflet-tooltip-pane',
+      await expect(bigSquareGroupEl).toBeFocused();
+      const toolTipPane = viewer.locator('.leaflet-tooltip-pane');
+      let tooltipCount = await toolTipPane.evaluate(
         (div) => div.childElementCount
       );
       expect(tooltipCount).toEqual(1);
-      expect(f).toEqual('M330 83L586 83L586 339L330 339z');
     });
 
     test('Tooltip appears after pressing enter on close button', async () => {
@@ -205,25 +182,20 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
       await page.keyboard.down('Enter'); // press x button
       await page.keyboard.up('Enter');
       await page.waitForTimeout(500);
-
-      const h = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      const viewer = page.getByTestId('viewer');
+      const bigSquare = viewer.getByTestId('big-square');
+      const bigSquarePathData = await bigSquare.evaluate((f) => {
+        return f._groupEl.firstElementChild.getAttribute('d');
+      });
+      const bigSquareGroupEl = viewer.locator(
+        'g:has( > path[d="' + bigSquarePathData + '"])'
       );
-      const nh = await page.evaluateHandle((doc) => doc.shadowRoot, h);
-      const rh = await page.evaluateHandle(
-        (root) => root.activeElement.querySelector('.leaflet-interactive'),
-        nh
-      );
-      const f = await (
-        await page.evaluateHandle((elem) => elem.getAttribute('d'), rh)
-      ).jsonValue();
-
-      let tooltipCount = await page.$eval(
-        'mapml-viewer .leaflet-tooltip-pane',
+      await expect(bigSquareGroupEl).toBeFocused();
+      const toolTipPane = viewer.locator('.leaflet-tooltip-pane');
+      let tooltipCount = await toolTipPane.evaluate(
         (div) => div.childElementCount
       );
       expect(tooltipCount).toEqual(1);
-      expect(f).toEqual('M330 83L586 83L586 339L330 339z');
     });
 
     test('Next feature button focuses next feature', async () => {
@@ -240,25 +212,21 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
       await page.keyboard.press('Tab'); // focus > affordance (next feature)
       await page.waitForTimeout(500);
       await page.keyboard.press('Enter'); // focus falls on next feature
-      const h = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
+      const viewer = page.getByTestId('viewer');
+      const smallTrapezoid = viewer.getByTestId('small-trapezoid');
+      const smallTrapezoidPathData = await smallTrapezoid.evaluate((f) => {
+        return f._groupEl.firstElementChild.getAttribute('d');
+      });
+      // no way to get a locator from another locator afaik, but this may work:
+      const smallTrapezoidGroupEl = viewer.locator(
+        'g:has( > path[d="' + smallTrapezoidPathData + '"])'
       );
-      const nh = await page.evaluateHandle((doc) => doc.shadowRoot, h);
-      const rh = await page.evaluateHandle(
-        (root) => root.activeElement.querySelector('.leaflet-interactive'),
-        nh
-      );
-      const f = await (
-        await page.evaluateHandle((elem) => elem.getAttribute('d'), rh)
-      ).jsonValue();
-
-      let tooltipCount = await page.$eval(
-        'mapml-viewer .leaflet-tooltip-pane',
+      await expect(smallTrapezoidGroupEl).toBeFocused();
+      const toolTipPane = viewer.locator('.leaflet-tooltip-pane');
+      let tooltipCount = await toolTipPane.evaluate(
         (div) => div.childElementCount
       );
-
       expect(tooltipCount).toEqual(1);
-      expect(f).toEqual('M285 373L460 380L468 477L329 459z');
     });
 
     test('Focus Controls focuses the first <button> child in control div', async () => {
@@ -283,11 +251,8 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
       await page.keyboard.press('Enter');
       for (let i = 0; i < 6; i++) await page.keyboard.press('Tab');
       await page.keyboard.press('Enter');
-      let f = await page.$eval(
-        'body > mapml-viewer',
-        (viewer) => viewer.shadowRoot.activeElement.innerHTML
-      );
-      expect(f).toEqual('Maps for HTML Community Group');
+      const focusedElement = page.getByText('Maps for HTML Community Group');
+      await expect(focusedElement).toBeFocused();
     });
 
     test('Zoom link zooms to the zoom level = zoom attribute', async () => {
@@ -300,10 +265,8 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
       await page.keyboard.press('Tab'); // focus zoomto link
       await page.keyboard.press('Enter');
       await page.waitForTimeout(500);
-      const zoom = await page.$eval(
-        'body > mapml-viewer',
-        (map) => +map.getAttribute('zoom')
-      );
+      const viewer = page.getByTestId('viewer');
+      const zoom = await viewer.evaluate((map) => +map.getAttribute('zoom'));
       expect(zoom).toEqual(2);
     });
 
@@ -324,10 +287,8 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
       await page.keyboard.press('Tab'); // focus zoomto link
       await page.keyboard.press('Enter');
       await page.waitForTimeout(500);
-      const zoom = await page.$eval(
-        'body > mapml-viewer',
-        (map) => +map.getAttribute('zoom')
-      );
+      const viewer = page.getByTestId('viewer');
+      const zoom = await viewer.evaluate((map) => +map.getAttribute('zoom'));
       expect(zoom).toEqual(2);
     });
   });
