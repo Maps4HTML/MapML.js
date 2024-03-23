@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-test.describe('Style Parsed and Implemented Test', () => {
+test.describe('map-style and map-link[rel=stylesheet] tests', () => {
   let page;
   let context;
   test.beforeAll(async () => {
@@ -12,95 +12,190 @@ test.describe('Style Parsed and Implemented Test', () => {
     await page.waitForTimeout(250);
   });
 
-  test.beforeEach(async () => {
-    await page.waitForTimeout(250);
-  });
-
   test.afterAll(async function () {
     await context.close();
   });
 
   //tests using the 1st map in the page
-  test('CSS within html page added to inorder to overlay-pane container', async () => {
-    const styleContent = await page.$eval(
-      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div',
-      (styleE) => styleE.innerHTML
-    );
-    await expect(styleContent.indexOf('first')).toBeLessThan(
-      styleContent.indexOf('.second')
-    );
-    await expect(styleContent.indexOf('.second')).toBeLessThan(
-      styleContent.indexOf('.third')
-    );
-    await expect(styleContent.indexOf('.third')).toBeLessThan(
-      styleContent.indexOf('fourth')
-    );
+  test(`Local-content (no src) styles rendered as style/link in same order as \
+found, in expected shadow root location`, async () => {
+    const localContentLayer = page.getByTestId('arizona');
+    const ids = await localContentLayer.evaluate((layer) => {
+      const elementSequence = layer.querySelectorAll(
+        'map-link[rel=stylesheet],map-style'
+      );
+      let ids = '';
+      for (let i = 0; i < elementSequence.length; i++)
+        ids +=
+          elementSequence[i].getAttribute('id') +
+          (i < elementSequence.length - 1 ? ',' : '');
+      return ids;
+    });
+    const renderedIds = await localContentLayer.evaluate((layer) => {
+      const elementSequence = layer._layer._container.querySelectorAll(
+        'link[rel=stylesheet],style'
+      );
+      let ids = '';
+      for (let i = 0; i < elementSequence.length; i++)
+        ids +=
+          elementSequence[i].getAttribute('id') +
+          (i < elementSequence.length - 1 ? ',' : '');
+      return ids;
+    });
+    expect(ids).toEqual(renderedIds);
   });
 
-  test('CSS from a retrieved MapML file added inorder inside templated-layer container', async () => {
-    const firstStyle = await page.$eval(
-      // this div                                                                                                                                                         *
-      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-extentlayer-container > .mapml-features-container.mapml-vector-container > link:nth-child(1)',
-      // no longer exists, (the svg is now the child of the first div)
-      // but the link isn't created either, and it should be
-      (styleE) => styleE.outerHTML
-    );
-    const secondStyle = await page.$eval(
-      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-extentlayer-container > .mapml-features-container.mapml-vector-container > link:nth-child(2)',
-      (styleL) => styleL.outerHTML
-    );
-    await expect(firstStyle).toMatch('canvec_cantopo');
-    await expect(secondStyle).toMatch('canvec_feature');
+  test(`Local layer content (no src) map-link[rel=features] remote styles \
+rendered as style/link in same order as found, in expected shadow root location`, async () => {
+    const featuresLink = page.getByTestId('alabama-features');
+    const ids = await featuresLink.evaluate((link) => {
+      const elementSequence = link.shadowRoot.querySelectorAll(
+        'map-link[rel=stylesheet],map-style'
+      );
+      let ids = '';
+      for (let i = 0; i < elementSequence.length; i++)
+        ids +=
+          elementSequence[i].getAttribute('id') +
+          (i < elementSequence.length - 1 ? ',' : '');
+      return ids;
+    });
+    const renderedIds = await featuresLink.evaluate((link) => {
+      const elementSequence = link._templatedLayer._container.querySelectorAll(
+        'link[rel=stylesheet],style'
+      );
+      let ids = '';
+      for (let i = 0; i < elementSequence.length; i++)
+        ids +=
+          elementSequence[i].getAttribute('id') +
+          (i < elementSequence.length - 1 ? ',' : '');
+      return ids;
+    });
+    expect(ids).toEqual(renderedIds);
   });
 
-  test('CSS within html page added to overlay-pane container', async () => {
-    const map1 = await page.getByTestId('map1');
-    const foundStyleLinks = await map1.locator('#first');
-    const foundStyleTags = await map1.locator(
-      '.mapml-layer:nth-child(1) > style'
-    );
-    // expect the map-link#first to have been reflected as a <link> into the shadow root
-    expect(foundStyleLinks).toHaveCount(2);
-    expect(foundStyleTags).toHaveCount(2);
+  test(`Local style children of map-extent rendered as style/link in same order \
+as found, in expected shadow root location`, async () => {
+    const mapExtent = page.getByTestId('map-ext1');
+    const ids = await mapExtent.evaluate((e) => {
+      const elementSequence = e.querySelectorAll(
+        'map-link[rel=stylesheet],map-style'
+      );
+      let ids = '';
+      for (let i = 0; i < elementSequence.length; i++)
+        ids +=
+          elementSequence[i].getAttribute('id') +
+          (i < elementSequence.length - 1 ? ',' : '');
+      return ids;
+    });
+    const renderedIds = await mapExtent.evaluate((e) => {
+      const elementSequence = e._extentLayer._container.querySelectorAll(
+        ':scope > link[rel=stylesheet],:scope > style'
+      );
+      let ids = '';
+      for (let i = 0; i < elementSequence.length; i++)
+        ids +=
+          elementSequence[i].getAttribute('id') +
+          (i < elementSequence.length - 1 ? ',' : '');
+      return ids;
+    });
+    expect(ids).toEqual(renderedIds);
   });
-
-  test('CSS from a retrieved MapML File added to templated-layer container', async () => {
-    const foundStyleLinkOne = await page.$(
-      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-extentlayer-container > .mapml-features-container.mapml-vector-container > link'
-    );
-    const foundStyleLinkTwo = await page.$(
-      'css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div:nth-child(2) > div.leaflet-layer.mapml-extentlayer-container > .mapml-features-container.mapml-vector-container > link:nth-child(2)'
-    );
-    await expect(foundStyleLinkOne).toBeTruthy();
-    await expect(foundStyleLinkTwo).toBeTruthy();
+  test(`Local content map-link[rel=tile][type=text/mapml] with remote styles \
+embedded in text/mapml tiles are rendered in same order as found in tile`, async () => {
+    // it's a bit tricky to work with tiled mapml vectors because the map-feature
+    // is discarded and only the rendered path is kept.  In this case, we're using
+    // the same layer twice in the styleParsing.html (vector-tile-test.mapml),
+    // which refers to the WGS84 countries' test tile data
+    // as a result, we get the same feature rendered whenever we add the layer
+    // in this case it is used inline and remotely. The inline countries are
+    // first in DOM order, so we'll take the first location of the rendered thing
+    // we're looking for (in this test, at least)
+    const renderedPath = await page.getByTestId('r0_c0').first();
+    const renderedStyleIds = await renderedPath.evaluate((p) => {
+      const elementSequence = p
+        .closest('.mapml-tile-group.leaflet-tile')
+        .querySelectorAll(':scope > link[rel=stylesheet],:scope > style');
+      let ids = '';
+      for (let i = 0; i < elementSequence.length; i++)
+        ids +=
+          elementSequence[i].getAttribute('id') +
+          (i < elementSequence.length - 1 ? ',' : '');
+      return ids;
+    });
+    expect(renderedStyleIds).toEqual('one,two,three');
   });
-
-  //testing done on 2nd map in the page
-  test('CSS from a retrieved MapML file added inorder inside svg within templated-tile-container', async () => {
-    const firstStyle = await page.$eval(
-      'xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-extentlayer-container .mapml-tile-group > style:nth-child(1)',
-      (styleE) => styleE.innerHTML
-    );
-    const secondStyle = await page.$eval(
-      'xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-extentlayer-container .mapml-tile-group > style:nth-child(2)',
-      (styleE) => styleE.innerHTML
-    );
-    const foundStyleLink = await page.$(
-      'xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.leaflet-layer.mapml-extentlayer-container .mapml-tile-group > link'
-    );
-    await expect(firstStyle).toMatch('refStyleOne');
-    await expect(secondStyle).toMatch('refStyleTwo');
-    await expect(foundStyleLink).toBeTruthy();
+  test(`Remote styles (layer- src) in the map-head rendered in the same source order\
+as children of layer-._layer._container`, async () => {
+    const remoteLayer = page.getByTestId('remote');
+    const ids = await remoteLayer.evaluate((l) => {
+      const elementSequence = l.shadowRoot.querySelectorAll(
+        ':host > map-style,:host > [rel=stylesheet]'
+      );
+      let ids = '';
+      for (let i = 0; i < elementSequence.length; i++)
+        ids +=
+          elementSequence[i].getAttribute('id') +
+          (i < elementSequence.length - 1 ? ',' : '');
+      return ids;
+    });
+    const renderedIds = await remoteLayer.evaluate((l) => {
+      const elementSequence = l._layer._container.querySelectorAll(
+        ':scope > link[rel=stylesheet],:scope > style'
+      );
+      let ids = '';
+      for (let i = 0; i < elementSequence.length; i++)
+        ids +=
+          elementSequence[i].getAttribute('id') +
+          (i < elementSequence.length - 1 ? ',' : '');
+      return ids;
+    });
+    expect(renderedIds).toEqual(ids);
   });
-
-  test('CSS within html page added inorder to overlay-pane container', async () => {
-    const foundStyleLink = await page.$(
-      'xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > link'
-    );
-    const foundStyleTag = await page.$(
-      'xpath=//html/body/map[2]/div >> css=div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > style'
-    );
-    await expect(foundStyleTag).toBeTruthy();
-    await expect(foundStyleLink).toBeTruthy();
+  test(`Remote (layer- src) styles in the remote map-extent should be rendered \
+in the same order as in remote source, in the map-extent._extentLayer._container`, async () => {
+    const remoteLayer = page.getByTestId('remote');
+    const ids = await remoteLayer.evaluate((l) => {
+      const elementSequence = l.shadowRoot.querySelectorAll(
+        ':host > map-extent > map-style,:host > map-extent > [rel=stylesheet]'
+      );
+      let ids = '';
+      for (let i = 0; i < elementSequence.length; i++)
+        ids +=
+          elementSequence[i].getAttribute('id') +
+          (i < elementSequence.length - 1 ? ',' : '');
+      return ids;
+    });
+    const renderedIds = await remoteLayer.evaluate((l) => {
+      const e = l.shadowRoot.querySelector('map-extent');
+      const elementSequence = e._extentLayer._container.querySelectorAll(
+        ':scope > link[rel=stylesheet],:scope > style'
+      );
+      let ids = '';
+      for (let i = 0; i < elementSequence.length; i++)
+        ids +=
+          elementSequence[i].getAttribute('id') +
+          (i < elementSequence.length - 1 ? ',' : '');
+      return ids;
+    });
+    expect(renderedIds).toEqual(ids);
+  });
+  test(`Remote (layer- src) styles embedded within loaded tiles should be \
+rendered in the same order as in the tile, in the tile container`, async () => {
+    // there's more than one use of vector-tile-test.mapml here, so the test id
+    // is not unique. this is the second and last occurence of it though:
+    const renderedPath = await page.getByTestId('r0_c0').last();
+    const renderedStyleIds = await renderedPath.evaluate((p) => {
+      const elementSequence = p
+        .closest('.mapml-tile-group.leaflet-tile')
+        .querySelectorAll(':scope > link[rel=stylesheet],:scope > style');
+      let ids = '';
+      for (let i = 0; i < elementSequence.length; i++)
+        ids +=
+          elementSequence[i].getAttribute('id') +
+          (i < elementSequence.length - 1 ? ',' : '');
+      return ids;
+    });
+    // see e2e/data/tiles/wgs84/0/r0_c0.mapml for original order, it's one,two,three...
+    expect(renderedStyleIds).toEqual('one,two,three');
   });
 });

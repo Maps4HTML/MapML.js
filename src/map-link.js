@@ -316,6 +316,8 @@ export class MapLink extends HTMLElement {
       this._stylesheetHost._layer.appendStyleLink(this);
     } else if (this._stylesheetHost._templatedLayer) {
       this._stylesheetHost._templatedLayer.appendStyleLink(this);
+    } else if (this._stylesheetHost._extentLayer) {
+      this._stylesheetHost._extentLayer.appendStyleLink(this);
     }
 
     function copyAttributes(source, target) {

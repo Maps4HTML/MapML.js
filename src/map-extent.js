@@ -262,6 +262,11 @@ export class MapExtent extends HTMLElement {
     // this._layerControlHTML is the fieldset for the extent in the LayerControl
     this._layerControlHTML = this._createLayerControlExtentHTML();
     this._calculateBounds();
+    // instead of children using parents' whenReady which can be cyclic,
+    // when this element is ready, run stuff that is only available after
+    // initialization
+    this._runMutationObserver(this.children);
+    // make sure same thing happens when children are added
     this._bindMutationObserver();
   }
   /*
@@ -290,6 +295,16 @@ export class MapExtent extends HTMLElement {
         this._validateDisabled();
       });
     };
+    const _addStylesheetLink = (mapLink) => {
+      this.whenReady().then(() => {
+        this._extentLayer.appendStyleLink(mapLink);
+      });
+    };
+    const _addStyleElement = (mapStyle) => {
+      this.whenReady().then(() => {
+        this._extentLayer.appendStyleElement(mapStyle);
+      });
+    };
     for (let i = 0; i < elementsGroup.length; ++i) {
       let element = elementsGroup[i];
       switch (element.nodeName) {
@@ -303,7 +318,14 @@ export class MapExtent extends HTMLElement {
           }
           break;
         case 'MAP-LINK':
-        // might need this in future, among others
+          if (element.link && !element.link.isConnected)
+            _addStylesheetLink(element);
+          break;
+        case 'MAP-STYLE':
+          if (element.styleElement && !element.styleElement.isConnected) {
+            _addStyleElement(element);
+          }
+          break;
         default:
           break;
       }

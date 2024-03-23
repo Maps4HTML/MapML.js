@@ -196,14 +196,15 @@ export var TemplatedTileLayer = L.TileLayer.extend({
         if (href) {
           if (!container.querySelector("link[href='" + href + "']")) {
             var linkElm = document.createElement('link');
+            copyAttributes(stylesheets[i], linkElm);
             linkElm.setAttribute('href', href);
-            linkElm.setAttribute('rel', 'stylesheet');
             ss.push(linkElm);
           }
         }
       } else {
         // <map-style>
         var styleElm = document.createElement('style');
+        copyAttributes(stylesheets[i], styleElm);
         styleElm.textContent = stylesheets[i].textContent;
         ss.push(styleElm);
       }
@@ -214,6 +215,12 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     // re-parsed from xml and serialized as html elements ready for insertion
     for (var s = ss.length - 1; s >= 0; s--) {
       container.insertAdjacentElement('afterbegin', ss[s]);
+    }
+    function copyAttributes(source, target) {
+      return Array.from(source.attributes).forEach((attribute) => {
+        if (attribute.nodeName !== 'href')
+          target.setAttribute(attribute.nodeName, attribute.nodeValue);
+      });
     }
   },
 

@@ -75,6 +75,31 @@ export var ExtentLayer = L.LayerGroup.extend({
     this._extentEl._opacity = opacity;
     if (this._extentEl._opacitySlider)
       this._extentEl._opacitySlider.value = opacity;
+  },
+  appendStyleLink: function (mapLink) {
+    if (!mapLink.link) return;
+    let positionAndNode = this._getStylePositionAndNode();
+    positionAndNode.node.insertAdjacentElement(
+      positionAndNode.position,
+      mapLink.link
+    );
+  },
+  _getStylePositionAndNode: function () {
+    return this._container.lastChild &&
+      (this._container.lastChild.nodeName.toUpperCase() === 'SVG' ||
+        this._container.lastChild.classList.contains('mapml-vector-container'))
+      ? { position: 'beforebegin', node: this._container.lastChild }
+      : this._container.lastChild
+      ? { position: 'afterend', node: this._container.lastChild }
+      : { position: 'afterbegin', node: this._container };
+  },
+  appendStyleElement: function (mapStyle) {
+    if (!mapStyle.styleElement) return;
+    let positionAndNode = this._getStylePositionAndNode();
+    positionAndNode.node.insertAdjacentElement(
+      positionAndNode.position,
+      mapStyle.styleElement
+    );
   }
 });
 export var extentLayer = function (options) {

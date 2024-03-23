@@ -4,21 +4,26 @@
         <map-meta charset="utf-8"></map-meta>
         <map-meta name="zoom" content="min=0,max=5"></map-meta>
         <map-link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="© Natural Resources Canada" ></map-link>
-        <map-link rel="stylesheet" href="vector-tile-test.css" ></map-link>
-        <map-link href="us_pop_density.mapml" rel="alternate" projection="CBMTILE" ></map-link>
-        <map-style>
+        <!-- Remote styles (layer- src) in the map-head rendered in the same source order as children of layer-._layer._container -->
+        <map-style id="one">
             .secondLayerVector{
                 color:black;
             }
         </map-style>
+        <map-link href="us_pop_density.mapml" rel="alternate" projection="CBMTILE" ></map-link>
+        <map-link id="two" rel="stylesheet" href="vector-tile-test.css" ></map-link>
+
    </map-head>
    <map-body>
         <map-extent units="WGS84" checked="checked" hidden="hidden">
+            <!-- Remote (layer- src) styles in the remote map-extent should be rendered
+               in the same order as in remote source, in the map-extent._extentLayer._container -->
+            <map-link id="three" rel="stylesheet" href="vector-tile-test2.css"></map-link>
+            <map-style id="four">.arule { margin: 2px; }</map-style>
             <map-input name="zoomLevel" type="zoom" min="0" max="2" value="0"></map-input>
 
             <map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="5"></map-input>
             <map-input name="col" type="location" axis="column" units="tilematrix" min="0" max="5"></map-input>
-
             <map-link rel='tile' type='text/mapml' title='Tiles for ne_10m_admin_0_countries (as MapML)' tref='wgs84/{zoomLevel}/r{row}_c{col}.mapml'></map-link>
         </map-extent>
     </map-body>
