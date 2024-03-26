@@ -10,10 +10,7 @@ test.describe('mapml-viewer can be inside a shadow root or other custom element'
       (await context.newPage());
     await page.goto('in-shadow-root.html');
   });
-  test('Parent element of map has map listeners assigned', async () => {});
-  test('Fullscreen control in shadow root works via keyboard or mouse', async () => {
-    
-  });
+  test('Fullscreen control in shadow root works via keyboard or mouse', async () => {});
   test('layer- getMapEl() works in shadow root', async () => {});
   test('map-link getMapEl() works in shadow root', async () => {});
   test('map-feature getMapEl() works in shadow root', async () => {});

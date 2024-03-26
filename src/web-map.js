@@ -694,7 +694,7 @@ export class WebMap extends HTMLMapElement {
         document.activeElement.className === 'mapml-web-map'
       ) {
         // document.activeElement is div.mapml-web-map, not <map>
-        mapEl.dispatchEvent(
+        document.activeElement.dispatchEvent(
           new CustomEvent('mapfocused', { detail: { target: this } })
         );
       }
@@ -716,7 +716,7 @@ export class WebMap extends HTMLMapElement {
     });
     host.addEventListener('mousedown', function (e) {
       if (document.activeElement.className === 'mapml-web-map') {
-        mapEl.dispatchEvent(
+        document.activeElement.dispatchEvent(
           new CustomEvent('mapfocused', { detail: { target: this } })
         );
       }
