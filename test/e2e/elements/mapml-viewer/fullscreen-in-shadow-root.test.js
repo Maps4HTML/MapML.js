@@ -21,7 +21,7 @@ test.describe.skip('Playwright mapml-viewer fullscreen tests', () => {
     await page.goto('fullscreenControlMapmlViewerShadowRoot.html');
   });
   test('Fullscreen button makes mapml-viewer element the fullscreen element', async () => {
-    const fullscreenButton = page.getByTitle('View Fullscreen');
+    const fullscreenButton = page.getByTitle('View Fullscreen').first();
     await fullscreenButton.click();
 
     let fullscreenElement = await page.evaluate(
@@ -29,14 +29,13 @@ test.describe.skip('Playwright mapml-viewer fullscreen tests', () => {
     );
     // the first mapml-viewer should be returned by document.fullscreen
     expect(fullscreenElement).toEqual('map1');
-    await page.click(
-      'xpath=/html/body/mapml-viewer[1] >> css= div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-fullscreen.leaflet-bar.leaflet-control > a'
-    );
+    await fullscreenButton.click();
     fullscreenElement = await page.evaluate(`document.fullscreenElement`);
     expect(fullscreenElement).toBeFalsy();
-    await page.click(
-      'xpath=/html/body/mapml-viewer[2] >> css= div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-fullscreen.leaflet-bar.leaflet-control > a'
-    );
+
+    const fullscreenButton2 = page.getByTitle('View Fullscreen').last();
+    // do the same with second map / element
+    await fullscreenButton2.click();
     fullscreenElement = await page.evaluate(`document.fullscreenElement.id`);
     expect(fullscreenElement).toEqual('map2');
     try {

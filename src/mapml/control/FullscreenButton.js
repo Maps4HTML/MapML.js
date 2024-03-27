@@ -49,47 +49,59 @@ L.Map.include({
   isFullscreen: function () {
     return this._isFullscreen || false;
   },
-  getClosest: function (node, selector) {
-    if (!node) {
-      return null;
-    }
-    if (node instanceof ShadowRoot) {
-      return this.getClosest(node.host, selector);
-    }
 
-    if (node instanceof HTMLElement) {
-      if (node.matches(selector)) {
-        return node;
-      } else {
-        return this.getClosest(node.parentNode, selector);
-      }
-    }
-
-    return this.getClosest(node.parentNode, selector);
-  },
-  getMapEl: function () {
-    return this.getClosest(this._container, 'mapml-viewer,map[is=web-map]');
-  },
-
-  toggleFullscreen: function () {
+  toggleFullscreen: function (options) {
     // the <map> element can't contain a shadow root, so we used a child <div>
     // <mapml-viewer> can contain a shadow root, so return it directly
-    var mapEl = this.getMapEl();
+    var mapEl = this.getContainer().getRootNode().host,
+      container = mapEl.nodeName === 'DIV' ? mapEl.parentElement : mapEl;
     if (this.isFullscreen()) {
-      if (document.exitFullscreen) {
+      if (options && options.pseudoFullscreen) {
+        this._disablePseudoFullscreen(container);
+      } else if (document.exitFullscreen) {
         document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitCancelFullScreen) {
+        document.webkitCancelFullScreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      } else {
+        this._disablePseudoFullscreen(container);
       }
     } else {
-      if (mapEl.requestFullscreen) {
-        mapEl.requestFullscreen();
+      if (options && options.pseudoFullscreen) {
+        this._enablePseudoFullscreen(container);
+      } else if (container.requestFullscreen) {
+        container.requestFullscreen();
+      } else if (container.mozRequestFullScreen) {
+        container.mozRequestFullScreen();
+      } else if (container.webkitRequestFullscreen) {
+        container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      } else if (container.msRequestFullscreen) {
+        container.msRequestFullscreen();
+      } else {
+        this._enablePseudoFullscreen(container);
       }
     }
     this.getContainer().focus();
   },
 
+  _enablePseudoFullscreen: function (container) {
+    L.DomUtil.addClass(container, 'leaflet-pseudo-fullscreen');
+    this._setFullscreen(true);
+    this.fire('fullscreenchange');
+  },
+
+  _disablePseudoFullscreen: function (container) {
+    L.DomUtil.removeClass(container, 'leaflet-pseudo-fullscreen');
+    this._setFullscreen(false);
+    this.fire('fullscreenchange');
+  },
+
   _setFullscreen: function (fullscreen) {
     this._isFullscreen = fullscreen;
-    var container = this._container;
+    var container = this.getContainer().getRootNode().host;
     if (fullscreen) {
       L.DomUtil.addClass(container, 'mapml-fullscreen-on');
     } else {
@@ -99,13 +111,18 @@ L.Map.include({
   },
 
   _onFullscreenChange: function (e) {
-    var fullscreenElement = document.fullscreenElement,
-      mapEl = this.getMapEl();
+    var fullscreenElement =
+        document.fullscreenElement ||
+        document.mozFullScreenElement ||
+        document.webkitFullscreenElement ||
+        document.msFullscreenElement,
+      mapEl = this.getContainer().getRootNode().host,
+      container = mapEl.nodeName === 'DIV' ? mapEl.parentElement : mapEl;
 
-    if (fullscreenElement === mapEl && !this._isFullscreen) {
+    if (fullscreenElement === container && !this._isFullscreen) {
       this._setFullscreen(true);
       this.fire('fullscreenchange');
-    } else if (fullscreenElement !== mapEl && this._isFullscreen) {
+    } else if (fullscreenElement !== container && this._isFullscreen) {
       this._setFullscreen(false);
       this.fire('fullscreenchange');
     }
@@ -124,15 +141,29 @@ L.Map.addInitHook(function () {
     this.addControl(this.fullscreenControl);
   }
 
-  var onFullscreenChange = L.bind(this._onFullscreenChange, this);
+  var fullscreenchange;
 
-  this.whenReady(function () {
-    L.DomEvent.on(document, 'fullscreenchange', onFullscreenChange);
-  });
+  if ('onfullscreenchange' in document) {
+    fullscreenchange = 'fullscreenchange';
+  } else if ('onmozfullscreenchange' in document) {
+    fullscreenchange = 'mozfullscreenchange';
+  } else if ('onwebkitfullscreenchange' in document) {
+    fullscreenchange = 'webkitfullscreenchange';
+  } else if ('onmsfullscreenchange' in document) {
+    fullscreenchange = 'MSFullscreenChange';
+  }
 
-  this.on('unload', function () {
-    L.DomEvent.off(document, 'fullscreenchange', onFullscreenChange);
-  });
+  if (fullscreenchange) {
+    var onFullscreenChange = L.bind(this._onFullscreenChange, this);
+
+    this.whenReady(function () {
+      L.DomEvent.on(document, fullscreenchange, onFullscreenChange);
+    });
+
+    this.on('unload', function () {
+      L.DomEvent.off(document, fullscreenchange, onFullscreenChange);
+    });
+  }
 });
 
 export var fullscreenButton = function (options) {

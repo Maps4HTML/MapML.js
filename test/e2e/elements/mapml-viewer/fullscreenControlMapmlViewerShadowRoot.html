@@ -33,12 +33,28 @@
        }    </style>
   </head>
   <body>
+    <!-- notes:
+    * when the mapml-viewer executes mapml-viewer.requestFullscreen(), it is the
+    * host of the mapml-viewer, that is, host-element, that is returned by
+    * document.fullscreenElement. That is by design, as the user styles must
+    * be able to execute host-element:fullscreen { blah: blah }.  However, the
+    * mapml-viewer will also respond to mapml-viewer:fullscreen { blah: bleh; }
+     in shadow-tree scoped styles.  See this discussion for seemingly important
+     info: https://github.com/WICG/webcomponents/issues/180#issuecomment-224218060
+    
+    -->
     <host-element>
       <template shadowrootmode="open">
-        <mapml-viewer data-testid="map1" style="height: 500px;width:500px;"  zoom="2" lat="63" lon="-87" controls projection="CBMTILE">
+        <mapml-viewer data-testid="map1" id="map1" style="height: 500px;width:500px;"  zoom="2" lat="63" lon="-87" controls projection="CBMTILE">
           <layer- data-testid="test-layer" label="Remote content" src="data/cbmt.mapml" checked></layer->
+        </mapml-viewer>
+        <mapml-viewer data-testid="map2" id="map2" style="height: 500px;width:500px;"  zoom="2" lat="63" lon="-87" controls projection="CBMTILE">
+          <layer- data-testid="test-layer2" label="Remote content" src="data/cbmt.mapml" checked></layer->
         </mapml-viewer>
       </template>
     </host-element>
+        <mapml-viewer data-testid="map3" id="map3" style="height: 500px;width:500px;"  zoom="2" lat="63" lon="-87" controls projection="CBMTILE">
+          <layer- data-testid="test-layer3" label="Remote content" src="data/cbmt.mapml" checked></layer->
+        </mapml-viewer>
   </body>
 </html>
