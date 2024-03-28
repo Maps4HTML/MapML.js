@@ -241,7 +241,7 @@ button.mapml-contextmenu-item:disabled {
 
 /*
 * See: https://developer.mozilla.org/en-US/docs/Web/CSS/:host_function
-*/ and: https://developer.mozilla.org/en-US/docs/Web/CSS/:fullscreen
+and: https://developer.mozilla.org/en-US/docs/Web/CSS/:fullscreen */
 :host(:fullscreen) .leaflet-control-fullscreen a {
   background-position: 3px -35px;
 }
