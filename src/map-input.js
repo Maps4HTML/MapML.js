@@ -172,29 +172,11 @@ export class MapInput extends HTMLElement {
       this.setAttribute('step', val);
     }
   }
-  getClosest(node, selector) {
-    if (!node) {
-      return null;
-    }
-    if (node instanceof ShadowRoot) {
-      return this.getClosest(node.host, selector);
-    }
-
-    if (node instanceof HTMLElement) {
-      if (node.matches(selector)) {
-        return node;
-      } else {
-        return this.getClosest(node.parentNode, selector);
-      }
-    }
-
-    return this.getClosest(node.parentNode, selector);
-  }
   getMapEl() {
-    return this.getClosest(this, 'mapml-viewer,map[is=web-map]');
+    return M.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return this.getClosest(this, 'layer-');
+    return M.getClosest(this, 'layer-');
   }
   attributeChangedCallback(name, oldValue, newValue) {
     this.whenReady()
