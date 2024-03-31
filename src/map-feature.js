@@ -252,7 +252,8 @@ export class MapFeature extends HTMLElement {
     if (!this.querySelector('map-geometry')) return;
     let fallbackCS = this._getFallbackCS();
     let content = parentLayer.src ? parentLayer.shadowRoot : parentLayer;
-    this._geometry = layerToAddTo.createGeometry(this, fallbackCS); // side effect: extends `this` with this._groupEl, points to svg g element that renders to map SD
+    this._geometry = layerToAddTo.createGeometry(this, fallbackCS); // side effect: extends `this` with this._groupEl if successful, points to svg g element that renders to map SD
+    if (!this._geometry) return;
     layerToAddTo.addLayer(this._geometry);
     this._setUpEvents();
   }
