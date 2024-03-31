@@ -1519,5 +1519,23 @@ export var Util = {
     )
       newZoom--;
     return newZoom;
+  },
+  getClosest(node, selector) {
+    if (!node) {
+      return null;
+    }
+    if (node instanceof ShadowRoot) {
+      return M.getClosest(node.host, selector);
+    }
+
+    if (node instanceof HTMLElement) {
+      if (node.matches(selector)) {
+        return node;
+      } else {
+        return M.getClosest(node.parentNode, selector);
+      }
+    }
+
+    return M.getClosest(node.parentNode, selector);
   }
 };

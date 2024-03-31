@@ -172,10 +172,11 @@ export class MapInput extends HTMLElement {
       this.setAttribute('step', val);
     }
   }
+  getMapEl() {
+    return M.getClosest(this, 'mapml-viewer,map[is=web-map]');
+  }
   getLayerEl() {
-    return this.getRootNode() instanceof ShadowRoot
-      ? this.getRootNode().host
-      : this.closest('layer-');
+    return M.getClosest(this, 'layer-');
   }
   attributeChangedCallback(name, oldValue, newValue) {
     this.whenReady()

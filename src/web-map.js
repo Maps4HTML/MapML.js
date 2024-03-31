@@ -241,6 +241,7 @@ export class WebMap extends HTMLMapElement {
 
     // Set default styles for the map element.
     let mapDefaultCSS = document.createElement('style');
+    mapDefaultCSS.id = 'web-map-default-style';
     mapDefaultCSS.innerHTML =
       `[is="web-map"] {` +
       `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
@@ -281,7 +282,13 @@ export class WebMap extends HTMLMapElement {
     shadowRoot.appendChild(tmpl.content.cloneNode(true));
     shadowRoot.appendChild(this._container);
     this.appendChild(rootDiv);
-    document.head.insertAdjacentElement('afterbegin', mapDefaultCSS);
+    if (this.getRootNode() instanceof ShadowRoot) {
+      if (!this.getRootNode().getElementById(mapDefaultCSS.id))
+        this.getRootNode().prepend(mapDefaultCSS);
+    } else {
+      if (!document.getElementById(mapDefaultCSS.id))
+        document.head.insertAdjacentElement('afterbegin', mapDefaultCSS);
+    }
   }
   _createMap() {
     if (!this._map) {
@@ -684,14 +691,17 @@ export class WebMap extends HTMLMapElement {
       false
     );
 
-    let mapEl = this;
-    this.parentElement.addEventListener('keyup', function (e) {
+    let host =
+      this.getRootNode() instanceof ShadowRoot
+        ? this.getRootNode().host
+        : this.parentElement;
+    host.addEventListener('keyup', function (e) {
       if (
         e.keyCode === 9 &&
         document.activeElement.className === 'mapml-web-map'
       ) {
         // document.activeElement is div.mapml-web-map, not <map>
-        mapEl.dispatchEvent(
+        document.activeElement.dispatchEvent(
           new CustomEvent('mapfocused', { detail: { target: this } })
         );
       }
@@ -711,9 +721,9 @@ export class WebMap extends HTMLMapElement {
         this._map.fire('keypress', { originalEvent: e });
       }
     });
-    this.parentElement.addEventListener('mousedown', function (e) {
+    host.addEventListener('mousedown', function (e) {
       if (document.activeElement.className === 'mapml-web-map') {
-        mapEl.dispatchEvent(
+        document.activeElement.dispatchEvent(
           new CustomEvent('mapfocused', { detail: { target: this } })
         );
       }

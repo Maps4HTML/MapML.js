@@ -228,7 +228,8 @@ button.mapml-contextmenu-item:disabled {
 }
 
 /*
- * Fullscreen control.
+ * Fullscreen control. Image contains the on and off images, toggled via
+ * the background-position property
  */
 
 .leaflet-control-fullscreen a {  
@@ -238,16 +239,14 @@ button.mapml-contextmenu-item:disabled {
   background-position: 3px 3px;
 }
 
-:host(.mapml-fullscreen-on) .leaflet-control-fullscreen a {
+/*
+* See: https://developer.mozilla.org/en-US/docs/Web/CSS/:host_function
+and: https://developer.mozilla.org/en-US/docs/Web/CSS/:fullscreen */
+:host(:fullscreen) .leaflet-control-fullscreen a {
   background-position: 3px -35px;
 }
 
 :host(:-webkit-full-screen) {
-  width: 100%!important;
-  height: 100%!important;
-}
-
-:host(.mapml-fullscreen-on) {
   width: 100%!important;
   height: 100%!important;
 }

@@ -152,14 +152,10 @@ export class MapLink extends HTMLElement {
     });
   }
   getMapEl() {
-    return this.getRootNode() instanceof ShadowRoot
-      ? this.getRootNode().host.closest('mapml-viewer,map[is=web-map]')
-      : this.closest('mapml-viewer,map[is=web-map]');
+    return M.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return this.getRootNode() instanceof ShadowRoot
-      ? this.getRootNode().host
-      : this.closest('layer-');
+    return M.getClosest(this, 'layer-');
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
