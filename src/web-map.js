@@ -241,6 +241,7 @@ export class WebMap extends HTMLMapElement {
 
     // Set default styles for the map element.
     let mapDefaultCSS = document.createElement('style');
+    mapDefaultCSS.id = 'web-map-default-style';
     mapDefaultCSS.innerHTML =
       `[is="web-map"] {` +
       `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
@@ -281,7 +282,13 @@ export class WebMap extends HTMLMapElement {
     shadowRoot.appendChild(tmpl.content.cloneNode(true));
     shadowRoot.appendChild(this._container);
     this.appendChild(rootDiv);
-    document.head.insertAdjacentElement('afterbegin', mapDefaultCSS);
+    if (this.getRootNode() instanceof ShadowRoot) {
+      if (!this.getRootNode().getElementById(mapDefaultCSS.id))
+        this.getRootNode().prepend(mapDefaultCSS);
+    } else {
+      if (!document.getElementById(mapDefaultCSS.id))
+        document.head.insertAdjacentElement('afterbegin', mapDefaultCSS);
+    }
   }
   _createMap() {
     if (!this._map) {
