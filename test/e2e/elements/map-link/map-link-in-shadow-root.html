@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>mapml-viewer in shadow root test</title>
+    <meta charset="UTF-8">
+    <script type="module" src="mapml-viewer.js"></script>
+    <style>
+      html {
+        height: 100%
+      }
+
+      body {
+        height: inherit
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      /* styles in here don't affect shadow dom contents */
+       mapml-viewer:defined { 
+         /* Responsive map. */ 
+          max-width: 100%;  
+          
+         /* Full viewport. */
+          width: 100%;  
+          height: 100%;  
+          
+         /* Remove default (native-like) border. */ 
+         border: none;
+         
+         vertical-align: middle;
+       }    </style>
+  </head>
+  <body>
+    <host-element>
+      <template shadowrootmode="open">
+        <mapml-viewer data-testid="viewer" style="height: 500px;width:500px;"  zoom="2" lat="63" lon="-87" controls projection="CBMTILE">
+          <layer- data-testid="test-layer" label="Remote content" src="data/cbmt.mapml" checked></layer->
+        </mapml-viewer>
+      </template>
+    </host-element>
+  </body>
+</html>

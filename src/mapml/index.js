@@ -840,6 +840,7 @@ import { DOMTokenList } from './utils/DOMTokenList';
   M.getZoomBoundsFromMeta = Util.getZoomBoundsFromMeta;
   M.getZoomBounds = Util.getZoomBounds;
   M.getNativeVariables = Util.getNativeVariables;
+  M.getClosest = Util.getClosest;
 
   M.QueryHandler = QueryHandler;
   M.ContextMenu = ContextMenu;

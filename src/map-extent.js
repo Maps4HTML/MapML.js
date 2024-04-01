@@ -125,15 +125,12 @@ export class MapExtent extends HTMLElement {
       animate: false
     });
   }
+
   getMapEl() {
-    return this.getRootNode() instanceof ShadowRoot
-      ? this.getRootNode().host.closest('mapml-viewer,map[is=web-map]')
-      : this.closest('mapml-viewer,map[is=web-map]');
+    return M.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return this.getRootNode() instanceof ShadowRoot
-      ? this.getRootNode().host
-      : this.closest('layer-');
+    return M.getClosest(this, 'layer-');
   }
   attributeChangedCallback(name, oldValue, newValue) {
     if (this.#hasConnected /* jshint ignore:line */) {

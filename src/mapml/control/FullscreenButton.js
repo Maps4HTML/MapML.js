@@ -53,11 +53,10 @@ L.Map.include({
   toggleFullscreen: function (options) {
     // the <map> element can't contain a shadow root, so we used a child <div>
     // <mapml-viewer> can contain a shadow root, so return it directly
-    var mapEl = this.getContainer().getRootNode().host,
-      container = mapEl.nodeName === 'DIV' ? mapEl.parentElement : mapEl;
+    var mapEl = M.getClosest(this.getContainer(), 'mapml-viewer,[is=web-map]');
     if (this.isFullscreen()) {
       if (options && options.pseudoFullscreen) {
-        this._disablePseudoFullscreen(container);
+        this._disablePseudoFullscreen(mapEl);
       } else if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if (document.mozCancelFullScreen) {
@@ -67,21 +66,21 @@ L.Map.include({
       } else if (document.msExitFullscreen) {
         document.msExitFullscreen();
       } else {
-        this._disablePseudoFullscreen(container);
+        this._disablePseudoFullscreen(mapEl);
       }
     } else {
       if (options && options.pseudoFullscreen) {
-        this._enablePseudoFullscreen(container);
-      } else if (container.requestFullscreen) {
-        container.requestFullscreen();
-      } else if (container.mozRequestFullScreen) {
-        container.mozRequestFullScreen();
-      } else if (container.webkitRequestFullscreen) {
-        container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-      } else if (container.msRequestFullscreen) {
-        container.msRequestFullscreen();
+        this._enablePseudoFullscreen(mapEl);
+      } else if (mapEl.requestFullscreen) {
+        mapEl.requestFullscreen();
+      } else if (mapEl.mozRequestFullScreen) {
+        mapEl.mozRequestFullScreen();
+      } else if (mapEl.webkitRequestFullscreen) {
+        mapEl.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      } else if (mapEl.msRequestFullscreen) {
+        mapEl.msRequestFullscreen();
       } else {
-        this._enablePseudoFullscreen(container);
+        this._enablePseudoFullscreen(mapEl);
       }
     }
     this.getContainer().focus();
@@ -101,7 +100,10 @@ L.Map.include({
 
   _setFullscreen: function (fullscreen) {
     this._isFullscreen = fullscreen;
-    var container = this.getContainer().getRootNode().host;
+    var container = M.getClosest(
+      this.getContainer(),
+      'mapml-viewer,[is=web-map]'
+    );
     if (fullscreen) {
       L.DomUtil.addClass(container, 'mapml-fullscreen-on');
     } else {
@@ -111,18 +113,12 @@ L.Map.include({
   },
 
   _onFullscreenChange: function (e) {
-    var fullscreenElement =
-        document.fullscreenElement ||
-        document.mozFullScreenElement ||
-        document.webkitFullscreenElement ||
-        document.msFullscreenElement,
-      mapEl = this.getContainer().getRootNode().host,
-      container = mapEl.nodeName === 'DIV' ? mapEl.parentElement : mapEl;
-
-    if (fullscreenElement === container && !this._isFullscreen) {
+    var fullscreenElement = M.getClosest(this.getContainer(), ':fullscreen'),
+      mapEl = M.getClosest(this.getContainer(), 'mapml-viewer,[is=web-map]');
+    if (fullscreenElement === mapEl && !this._isFullscreen) {
       this._setFullscreen(true);
       this.fire('fullscreenchange');
-    } else if (fullscreenElement !== container && this._isFullscreen) {
+    } else if (fullscreenElement !== mapEl && this._isFullscreen) {
       this._setFullscreen(false);
       this.fire('fullscreenchange');
     }
