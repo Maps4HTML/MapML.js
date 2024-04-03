@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>map-extent mutation observer bug #952</title>
+    <script type="module" src="mapml-viewer.js"></script>
+     <style> 
+       html, 
+       body { 
+         height: 100%; 
+       } 
+       * { 
+         margin: 0; 
+         padding: 0; 
+       } 
+        
+       /* Specifying the `:defined` selector is recommended to style the map 
+       element, such that styles don't apply when fallback content is in use 
+       (e.g. when scripting is disabled or when custom/built-in elements isn't 
+       supported in the browser). */ 
+       mapml-viewer:defined { 
+         /* Responsive map. */ 
+          max-width: 100%;  
+          
+         /* Full viewport. */
+          width: 100%;  
+          height: 100%;  
+          
+         /* Remove default (native-like) border. */ 
+         border: none;
+         
+         vertical-align: middle;
+       } 
+        
+       /* Pre-style to avoid FOUC of inline layer- and fallback content. */ 
+       mapml-viewer:not(:defined) > * { 
+         display: none; 
+       } 
+       
+       /* Pre-style to avoid Layout Shift. */
+       mapml-viewer:not(:defined) {
+         display: inline-block;
+         contain: size;
+         contain-intrinsic-size: 304px 154px;
+       }
+       
+       /* Ensure inline layer content is hidden if custom/built-in elements isn't 
+       supported, or if javascript is disabled. This needs to be defined separately 
+       from the above, because the `:not(:defined)` selector invalidates the entire 
+       declaration in browsers that do not support it. */ 
+       layer- { 
+         display: none; 
+       } 
+     </style> 
+     <noscript> 
+       <style> 
+         /* Ensure fallback content (children of the map element) is displayed if 
+         custom/built-in elements is supported but javascript is disabled. */ 
+         mapml-viewer:not(:defined) > :not(layer-) { 
+           display: initial; 
+         } 
+         
+         /* "Reset" the properties used to pre-style (to avoid Layout Shift) if
+         custom/built-in elements is supported but javascript is disabled. */
+         mapml-viewer:not(:defined) {
+           display: initial;
+           contain: initial;
+           contain-intrinsic-size: initial;
+         }
+       </style> 
+     </noscript> 
+  </head>
+  <body>
+    
+      <mapml-viewer data-testid="viewer" projection="OSMTILE" zoom="2" lat="50.7" lon="-84.4" controls>
+        <layer- data-testid="problem-layer" label="Countries" checked>
+          <map-link rel="stylesheet" href="tiles/vector-tile.css" ></map-link>
+          <map-extent units="OSMTILE" checked hidden>
+            <map-meta name='zoom' content="min=0,max=6"></map-meta>
+            <map-input  name="zoomLevel" type="zoom" min="0" max="2" value="6"></map-input>
+            <map-input  name="row" type="location" axis="row" units="tilematrix" min="20" max="23"></map-input>
+            <map-input  name="col" type="location" axis="column" units="tilematrix" min="15" max="19"></map-input>
+            <map-link data-testid="templated-link" rel='tile' type='text/mapml' tref='tiles/osmtile/{zoomLevel}/{row}/{col}.mapml' ></map-link>           </map-extent>
+        </layer->
+      </mapml-viewer>
+  </body>
+</html>
