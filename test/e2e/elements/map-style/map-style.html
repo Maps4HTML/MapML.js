@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>map-style tests</title>
+    <script type="module" src="mapml-viewer.js"></script>
+     <style> 
+       html, 
+       body { 
+         height: 100%; 
+       } 
+       * { 
+         margin: 0; 
+         padding: 0; 
+       } 
+        
+       /* Specifying the `:defined` selector is recommended to style the map 
+       element, such that styles don't apply when fallback content is in use 
+       (e.g. when scripting is disabled or when custom/built-in elements isn't 
+       supported in the browser). */ 
+       mapml-viewer:defined { 
+         /* Responsive map. */ 
+          max-width: 100%;  
+          
+         /* Full viewport. */
+          width: 100%;  
+          height: 100%;  
+          
+         /* Remove default (native-like) border. */ 
+         border: none;
+         
+         vertical-align: middle;
+       } 
+        
+       /* Pre-style to avoid FOUC of inline layer- and fallback content. */ 
+       mapml-viewer:not(:defined) > * { 
+         display: none; 
+       } 
+       
+       /* Pre-style to avoid Layout Shift. */
+       mapml-viewer:not(:defined) {
+         display: inline-block;
+         contain: size;
+         contain-intrinsic-size: 304px 154px;
+       }
+       
+       /* Ensure inline layer content is hidden if custom/built-in elements isn't 
+       supported, or if javascript is disabled. This needs to be defined separately 
+       from the above, because the `:not(:defined)` selector invalidates the entire 
+       declaration in browsers that do not support it. */ 
+       layer- { 
+         display: none; 
+       } 
+     </style> 
+     <noscript> 
+       <style> 
+         /* Ensure fallback content (children of the map element) is displayed if 
+         custom/built-in elements is supported but javascript is disabled. */ 
+         mapml-viewer:not(:defined) > :not(layer-) { 
+           display: initial; 
+         } 
+         
+         /* "Reset" the properties used to pre-style (to avoid Layout Shift) if
+         custom/built-in elements is supported but javascript is disabled. */
+         mapml-viewer:not(:defined) {
+           display: initial;
+           contain: initial;
+           contain-intrinsic-size: initial;
+         }
+       </style> 
+     </noscript> 
+  </head>
+  <body>
+    
+    <mapml-viewer projection="OSMTILE" zoom="3" lat="45.406314" lon="-75.6883335" controls>
+      <layer- label="Layer" checked="">
+        <map-meta name="extent" content="top-left-longitude=-108.18295690328578, top-left-latitude=50.014258109371525, bottom-right-longitude=-80.36884559227745,bottom-right-latitude=56.408480743634385"></map-meta>
+        <map-meta name="projection" content="OSMTILE"></map-meta>
+        <map-meta name="cs" content="gcrs"></map-meta>
+		<!-----------------------  Element being tested ----------------------->
+        <map-style>.poly {stroke: black; fill:black}</map-style>
+		<!-----------------------  Element being tested ----------------------->
+        <map-feature class="poly"><map-featurecaption>Layer</map-featurecaption><map-geometry><map-polygon><map-coordinates>-100.50664854831412 56.0571475247103 -108.18295690328578 55.57677707477441 -106.44464507203479 51.99763924555603 -91.90173251505614 50.014258109371525 -80.36884559227745 50.0637759718567 -92.5284724652151 56.408480743634385 -100.50664854831412 56.0571475247103 </map-coordinates></map-polygon></map-geometry><map-properties>Styled Polygon</map-properties></map-feature>
+      </layer->
+    </mapml-viewer>
+  </body>
+</html>

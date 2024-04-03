@@ -40,6 +40,16 @@ export class MapStyle extends HTMLElement {
         target.setAttribute(attribute.nodeName, attribute.nodeValue);
       });
     }
+
+    // use observer to monitor the changes in mapStyle textContent
+    this._observer = new MutationObserver(() => {
+      this.styleElement.textContent = this.textContent;
+    });
+    this._observer.observe(this, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
   }
   disconnectedCallback() {
     if (this._stylesheetHost) {
