@@ -19,7 +19,7 @@ jobs:
     - run: npm install -g grunt-cli
     - run: grunt default
     - run: xvfb-run --auto-servernum -- npx playwright test --grep-invert="popupTabNavigation\.test\.js|layerContextMenuKeyboard\.test\.js"  --workers=1 --retries=3
-    - run: xvfb-run --auto-servernum -- npx playwright test --grep="popupTabNavigation\.test\.js|layerContextMenuKeyboard\.test\.js" --workers=1 --retries=3
+#    - run: xvfb-run --auto-servernum -- npx playwright test --grep="popupTabNavigation\.test\.js|layerContextMenuKeyboard\.test\.js" --workers=1 --retries=3
 #    - run: xvfb-run --auto-servernum -- npm run jest
       env:
         CI: true

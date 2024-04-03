@@ -423,7 +423,7 @@ export class MapExtent extends HTMLElement {
         )
       );
     } else {
-      this.parentLayer._layer.removeLayer(this._extentLayer);
+      this.parentLayer._layer?.removeLayer(this._extentLayer);
     }
     // change the checkbox in the layer control to match map-extent.checked
     // doesn't trigger the event handler because it's not user-caused AFAICT
