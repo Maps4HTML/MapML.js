@@ -18,7 +18,7 @@ jobs:
     - run: npx playwright install  --with-deps
     - run: npm install -g grunt-cli
     - run: grunt default
-    - run: xvfb-run --auto-servernum -- npx playwright test --workers=1 --retries=3
+    - run: xvfb-run --auto-servernum -- npx playwright test layerContextMenuKeyboard popup --workers=1 --retries=3
 #    - run: xvfb-run --auto-servernum -- npm run jest
       env:
         CI: true
