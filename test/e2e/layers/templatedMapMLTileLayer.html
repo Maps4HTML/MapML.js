@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>index-map.html</title>
-    <script type="module" src="dist/mapml-viewer.js"></script>
+    <title>TemplatedTileLayer vector tile test</title>
+    <script type="module" src="mapml-viewer.js"></script>
      <style> 
        html, 
        body { 
@@ -73,16 +73,18 @@
   </head>
   <body>
     
-    <mapml-viewer projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation">
-      <layer- data-testid="osm-layer" label="OpenStreetMap" checked >
-        <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
-        <map-extent units="OSMTILE" checked="checked">
-          <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
-          <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
-          <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
-          <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
-        </map-extent>
-      </layer->
-    </mapml-viewer>
+      <mapml-viewer projection="OSMTILE" zoom="2" lat="50.7" lon="-84.4" controls>
+        <layer- label="Countries" checked>
+          <map-link rel="stylesheet" href="tiles/vector-tile.css" ></map-link>
+          <map-extent units="OSMTILE" checked hidden>
+            <!-- tiles at zoom=2 are scaled to zoom=3,4,5 and 6 as required-->
+            <map-meta name='zoom' content="min=0,max=6"></map-meta>
+            <map-input  name="zoomLevel" type="zoom" min="0" max="2" value="6"></map-input>
+            <map-input  name="row" type="location" axis="row" units="tilematrix" min="20" max="23"></map-input>
+            <map-input  name="col" type="location" axis="column" units="tilematrix" min="15" max="19"></map-input>
+            <!-- tiles outside bbox=15,20,19,23,zoom=6 should not be requested at all -->
+            <map-link data-testid="templated-link" rel='tile' type='text/mapml' tref='tiles/osmtile/{zoomLevel}/{row}/{col}.mapml' ></map-link>           </map-extent>
+        </layer->
+      </mapml-viewer>
   </body>
 </html>

@@ -1,0 +1,37 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+    <map-head>
+        <map-title>ne_10m_admin_0_countries</map-title>
+        <map-meta charset="utf-8"/>
+        <map-meta content="text/mapml" http-equiv="Content-Type"/>
+      <map-meta name="projection" content="OSMTILE"></map-meta>
+      <map-meta name="cs" content="pcrs"></map-meta>
+    </map-head>
+    <map-body>
+        <map-feature id="fclass.5" class="fclass">
+            <map-geometry>
+                <map-polygon>
+                    <map-coordinates>
+                        -10107579.41972 -100601.44026 -10134945.54615 -40667.25671 -10158336.70449 0 
+                        <map-span class="noline">-10158573.51798 400.7613 -10196629.74432 400.7613</map-span>
+                         -10197321.96838 0 -10174848.11037 -24614.28654 -10142436.83215 -63600.54332 -10190289.33254 -99684.02686 -10107579.41972 -100601.44026
+                    </map-coordinates>
+                </map-polygon>
+            </map-geometry>
+        </map-feature>
+        <map-feature id="fclass.6" class="fclass">
+            <map-geometry>
+                <map-multipolygon>
+                    <map-polygon>
+                        <map-coordinates>-20037508.34279 -1916626.22114 -20010142.21637 -1880532.43377 -20037508.34279 -1896016.78349 -20037508.34279 -1916626.22114</map-coordinates>
+                    </map-polygon>
+                    <map-polygon>
+                        <map-coordinates>-20037508.34279 -1867450.97229 -20028946.87307 -1863623.69866 -20032463.19099 -1856449.31803 -20037508.34279 -1861550.86463 -20037508.34279 -1867450.97229</map-coordinates>
+                    </map-polygon>
+                    <map-polygon>
+                        <map-coordinates>-20037508.34279 -1824431.49843 -20032616.07438 -1822521.40936 -20031087.2405 -1818701.70843 -20037508.34279 -1822043.91196 -20037508.34279 -1824431.49843</map-coordinates>
+                    </map-polygon>
+                </map-multipolygon>
+            </map-geometry>
+        </map-feature>
+    </map-body>
+</mapml->
