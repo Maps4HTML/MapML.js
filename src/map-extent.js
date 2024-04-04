@@ -176,7 +176,13 @@ export class MapExtent extends HTMLElement {
                 let extentsRootFieldset =
                   this.parentLayer._propertiesGroupAnatomy;
                 let position = Array.from(
-                  this.parentNode.querySelectorAll('map-extent:not([hidden])')
+                  this.parentLayer.src
+                    ? this.parentLayer.shadowRoot.querySelectorAll(
+                        ':host > map-extent:not([hidden])'
+                      )
+                    : this.parentLayer.querySelectorAll(
+                        ':scope > map-extent:not([hidden])'
+                      )
                 ).indexOf(this);
                 if (newValue !== null) {
                   // remove from layer control (hide from user)
@@ -190,12 +196,18 @@ export class MapExtent extends HTMLElement {
                       this._layerControlHTML
                     );
                   } else if (position > 0) {
-                    this.parentNode
-                      .querySelectorAll('map-extent:not([hidden])')
-                      [position - 1]._layerControlHTML.insertAdjacentElement(
-                        'afterend',
-                        this._layerControlHTML
-                      );
+                    Array.from(
+                      this.parentLayer.src
+                        ? this.parentLayer.shadowRoot.querySelectorAll(
+                            ':host > map-extent:not([hidden])'
+                          )
+                        : this.parentLayer.querySelectorAll(
+                            ':scope > map-extent:not([hidden])'
+                          )
+                    )[position - 1]._layerControlHTML.insertAdjacentElement(
+                      'afterend',
+                      this._layerControlHTML
+                    );
                   }
                 }
                 this._validateLayerControlContainerHidden();
@@ -220,16 +232,13 @@ export class MapExtent extends HTMLElement {
   async connectedCallback() {
     // this.parentNode.host returns the layer- element when parentNode is
     // the shadow root
-    this.parentLayer =
-      this.parentNode.nodeName.toUpperCase() === 'LAYER-'
-        ? this.parentNode
-        : this.parentNode.host;
+    this.parentLayer = this.getLayerEl();
     if (
       this.hasAttribute('data-moving') ||
       this.parentLayer.hasAttribute('data-moving')
     )
       return;
-    this.mapEl = this.parentLayer.closest('mapml-viewer,map[is=web-map]');
+    this.mapEl = this.getMapEl();
     await this.mapEl.whenProjectionDefined(this.units).catch(() => {
       throw new Error('Undefined projection:' + this.units);
     });
@@ -252,7 +261,9 @@ export class MapExtent extends HTMLElement {
       opacity: this.opacity,
       crs: M[this.units],
       extentZIndex: Array.from(
-        this.parentLayer.querySelectorAll('map-extent')
+        this.parentLayer.src
+          ? this.parentLayer.shadowRoot.querySelectorAll(':host > map-extent')
+          : this.parentLayer.querySelectorAll(':scope > map-extent')
       ).indexOf(this),
       extentEl: this
     });
@@ -418,9 +429,11 @@ export class MapExtent extends HTMLElement {
       // can be added to mapmllayer layerGroup no matter layer- is checked or not
       this._extentLayer.addTo(this.parentLayer._layer);
       this._extentLayer.setZIndex(
-        Array.from(this.parentLayer.querySelectorAll('map-extent')).indexOf(
-          this
-        )
+        Array.from(
+          this.parentLayer.src
+            ? this.parentLayer.shadowRoot.querySelectorAll(':host > map-extent')
+            : this.parentLayer.querySelectorAll(':scope > map-extent')
+        ).indexOf(this)
       );
     } else {
       this.parentLayer._layer?.removeLayer(this._extentLayer);
@@ -430,13 +443,15 @@ export class MapExtent extends HTMLElement {
   }
   _validateLayerControlContainerHidden() {
     let extentsFieldset = this.parentLayer._propertiesGroupAnatomy;
-    let nodeToSearch = this.parentLayer.src
-      ? this.parentLayer.shadowRoot
-      : this.parentLayer;
     if (!extentsFieldset) return;
-    if (
-      nodeToSearch.querySelectorAll('map-extent:not([hidden])').length === 0
-    ) {
+    const numberOfVisibleSublayers = (
+      this.parentLayer.src
+        ? this.parentLayer.shadowRoot.querySelectorAll(
+            ':host > map-extent:not([hidden])'
+          )
+        : this.parentLayer.querySelectorAll(':scope > map-extent:not([hidden])')
+    ).length;
+    if (numberOfVisibleSublayers === 0) {
       extentsFieldset.setAttribute('hidden', '');
     } else {
       extentsFieldset.removeAttribute('hidden');

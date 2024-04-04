@@ -31,8 +31,8 @@ export var createLayerControlExtentHTML = function () {
       extentSettings
     ),
     extentOpacitySummary = L.DomUtil.create('summary', '', opacityControl),
-    mapEl = this.parentLayer.parentNode,
-    layerEl = this.parentLayer,
+    mapEl = this.getMapEl(),
+    layerEl = this.getLayerEl(),
     opacity = L.DomUtil.create('input', '', opacityControl);
   extentSettings.hidden = true;
   extent.setAttribute('aria-grabbed', 'false');
@@ -227,7 +227,8 @@ export var createLayerControlExtentHTML = function () {
             let extentEl = c.querySelector('span').extent;
 
             extentEl.setAttribute('data-moving', '');
-            layerEl.insertAdjacentElement('beforeend', extentEl);
+            const node = layerEl.src ? layerEl.shadowRoot : layerEl;
+            node.append(extentEl);
             extentEl.removeAttribute('data-moving');
 
             extentEl.extentZIndex = zIndex;
