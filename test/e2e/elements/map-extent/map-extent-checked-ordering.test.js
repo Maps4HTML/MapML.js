@@ -83,8 +83,8 @@ The imagery layer <map-extent> draws on top of the states layer.
       return +e._extentLayer._container.style.zIndex;
     });
     expect(statesZIndex).toEqual(1);
-    // TO DO re-order them via the DOM (insertAdjacentHTML), 
-    // ensure that 
+    // TO DO re-order them via the DOM (insertAdjacentHTML),
+    // ensure that
     // a) render order/z-index is correct
     // b) render order is reflected in layer control order as well
     // see https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/956

@@ -98,10 +98,6 @@ export var LayerControl = L.Control.Layers.extend({
     }
   },
 
-  _withinZoomBounds: function (zoom, range) {
-    return range.min <= zoom && zoom <= range.max;
-  },
-
   // imported from leaflet with slight modifications
   // for layerControl ordering based on zIndex
   _update: function () {
@@ -122,9 +118,11 @@ export var LayerControl = L.Control.Layers.extend({
     // <----------- MODIFICATION from the default _update method
     // sort the layercontrol layers object based on the zIndex
     // provided by MapMLLayer
-    this._layers.sort(
-      (a, b) => a.layer.options.zIndex - b.layer.options.zIndex
-    );
+    if (this.options.sortLayers) {
+      this._layers.sort((a, b) =>
+        this.options.sortFunction(a.layer, b.layer, a.name, b.name)
+      );
+    }
     // -------------------------------------------------->
     for (i = 0; i < this._layers.length; i++) {
       obj = this._layers[i];
