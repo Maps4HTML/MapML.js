@@ -98,9 +98,52 @@ export var LayerControl = L.Control.Layers.extend({
     }
   },
 
-  _withinZoomBounds: function (zoom, range) {
-    return range.min <= zoom && zoom <= range.max;
+  // imported from leaflet with slight modifications
+  // for layerControl ordering based on zIndex
+  _update: function () {
+    if (!this._container) {
+      return this;
+    }
+
+    L.DomUtil.empty(this._baseLayersList);
+    L.DomUtil.empty(this._overlaysList);
+
+    this._layerControlInputs = [];
+    var baseLayersPresent,
+      overlaysPresent,
+      i,
+      obj,
+      baseLayersCount = 0;
+
+    // <----------- MODIFICATION from the default _update method
+    // sort the layercontrol layers object based on the zIndex
+    // provided by MapMLLayer
+    if (this.options.sortLayers) {
+      this._layers.sort((a, b) =>
+        this.options.sortFunction(a.layer, b.layer, a.name, b.name)
+      );
+    }
+    // -------------------------------------------------->
+    for (i = 0; i < this._layers.length; i++) {
+      obj = this._layers[i];
+      this._addItem(obj);
+      overlaysPresent = overlaysPresent || obj.overlay;
+      baseLayersPresent = baseLayersPresent || !obj.overlay;
+      baseLayersCount += !obj.overlay ? 1 : 0;
+    }
+
+    // Hide base layers section if there's only one layer.
+    if (this.options.hideSingleBase) {
+      baseLayersPresent = baseLayersPresent && baseLayersCount > 1;
+      this._baseLayersList.style.display = baseLayersPresent ? '' : 'none';
+    }
+
+    this._separator.style.display =
+      overlaysPresent && baseLayersPresent ? '' : 'none';
+
+    return this;
   },
+
   _addItem: function (obj) {
     var layercontrols = obj.layer._layerEl._layerControlHTML;
     // the input is required by Leaflet...
