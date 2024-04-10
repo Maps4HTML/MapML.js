@@ -128,4 +128,84 @@ test.describe('UI Drag&Drop Test', () => {
     expect(layerIndex).toEqual('1');
     expect(controlText).toBe('Static MapML with tiles');
   });
+  test('Re-order checked bug (#955) test', async () => {
+    await page.waitForTimeout(500);
+    const layerControl = page.locator('.leaflet-top.leaflet-right');
+    await layerControl.hover();
+    const overlaysList = page.locator('.leaflet-control-layers-overlays');
+    const startingLowestLayer = overlaysList
+      .getByRole('group', { name: 'Canada Base Map - Transportation (CBMT)' })
+      .first();
+
+    // assert that CBMT is first of three layers
+    const cbmtIsFirstInLayerControl = await overlaysList.evaluate((l) => {
+      return (
+        l.firstElementChild.querySelector('.mapml-layer-item-name')
+          .textContent === 'Canada Base Map - Transportation (CBMT)'
+      );
+    });
+    expect(cbmtIsFirstInLayerControl).toBe(true);
+
+    const fromBox = await startingLowestLayer.boundingBox();
+    const fromPos = {
+      x: fromBox.x + fromBox.width / 2,
+      y: fromBox.y + fromBox.height / 3
+    };
+    let toPos = { x: fromPos.x, y: fromPos.y + fromBox.height * 1.1 };
+
+    // move (drag/drop) CBMT to the top of the layer stack
+    await page.mouse.move(fromPos.x, fromPos.y);
+    await page.mouse.down();
+    await page.mouse.move(toPos.x, toPos.y);
+    await page.mouse.up();
+    await page.mouse.move(toPos.x, toPos.y);
+    toPos = { x: toPos.x, y: toPos.y + fromBox.height * 1.1 };
+    await page.mouse.down();
+    await page.mouse.move(toPos.x, toPos.y);
+    await page.mouse.up();
+
+    let cbmtIsTopOfLayerControl = await overlaysList.evaluate((l) => {
+      return (
+        l.querySelectorAll(':scope > fieldset').length === 3 &&
+        l.lastElementChild.querySelector('.mapml-layer-item-name')
+          .textContent === 'Canada Base Map - Transportation (CBMT)'
+      );
+    });
+    // assert that CBMT is third of three layers
+    expect(cbmtIsTopOfLayerControl).toBe(true);
+
+    const cbmtCheckbox = overlaysList
+      .getByRole('checkbox', {
+        name: 'Canada Base Map - Transportation (CBMT)'
+      })
+      .first();
+    let cbmtIsChecked = await cbmtCheckbox.isChecked();
+    expect(cbmtIsChecked).toBe(true);
+    await page.pause();
+    await cbmtCheckbox.click();
+    cbmtIsChecked = await cbmtCheckbox.isChecked();
+    expect(cbmtIsChecked).toBe(false);
+    // cbmt layer should still be on top of layer control despite that it's unchecked
+    cbmtIsTopOfLayerControl = await overlaysList.evaluate((l) => {
+      return (
+        l.querySelectorAll(':scope > fieldset').length === 3 &&
+        l.lastElementChild.querySelector('.mapml-layer-item-name')
+          .textContent === 'Canada Base Map - Transportation (CBMT)'
+      );
+    });
+    // assert that CBMT is still third of three layers
+    expect(cbmtIsTopOfLayerControl).toBe(true);
+    await cbmtCheckbox.click();
+    cbmtIsChecked = await cbmtCheckbox.isChecked();
+    expect(cbmtIsChecked).toBe(true);
+    cbmtIsTopOfLayerControl = await overlaysList.evaluate((l) => {
+      return (
+        l.querySelectorAll(':scope > fieldset').length === 3 &&
+        l.lastElementChild.querySelector('.mapml-layer-item-name')
+          .textContent === 'Canada Base Map - Transportation (CBMT)'
+      );
+    });
+    // assert that CBMT is still third of three layers
+    expect(cbmtIsTopOfLayerControl).toBe(true);
+  });
 });
