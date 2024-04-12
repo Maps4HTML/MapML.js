@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /> 
     <meta charset="utf-8" />
     <title>Progressive Web Maps</title>
-    <link rel='icon' href='../MapsForHTML_16x16.png' sizes='16x16'>
+    <link rel='icon' href='./MapsForHTML_16x16.png' sizes='16x16'>
     <meta name="description" content="Progressive Enhancement is the heart of the Web.  The Maps for HTML Community Group wants it to work for Web maps.">
     <meta name="keywords" content="maps,maps for html,web maps,image maps,html5,Web map demos,Web map examples,progressive web apps,web platform,progressive web maps,polymer,javascript,css3,service workers,offline,mobile">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
@@ -13,14 +13,6 @@
     <meta itemprop="description" content="Progressive Enhancement is the heart of the Web.  The Maps for HTML Community Group wants it to work for Web maps.">
     <meta itemprop="image" content="MapsForHTML.png">
 
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:site" content="@maps4html">
-    <meta name="twitter:creator" content="@prushforth">
-    <meta name="twitter:title" content="Progressive Web Maps">
-    <meta name="twitter:description" content="Progressive Enhancement is the heart of the Web.  The Maps for HTML Community Group wants it to work for Web maps.">
-    <meta name="twitter:image" content="http://maps4html.github.io/Web-Map-Custom-Element/map1.png">
-    <meta name="twitter:image:alt" content="OpenStreetMap displayed by map custom element">
-    
     <link rel="author" href="https://twitter.com/prushforth">
     <link href="//fonts.googleapis.com/css?family=Open+Sans:300,400,400italic,600,800|Source+Code+Pro" rel="stylesheet">
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
@@ -86,7 +78,7 @@
       <section class="title">
         <section class="title-text container">
           <h1>Progressive Web Maps</h1>
-          <h2>Customized Built-in &lt;map&gt; or Autonomous Custom &lt;web-map&gt; element?</h2>
+          <h2>Customized Built-in &lt;map&gt; or Autonomous Custom &lt;mapml-viewer&gt; element?</h2>
           <a href="" class="watermark">Maps for HTML</a>
         </section>
       </section>
@@ -114,14 +106,14 @@
 
               <div class="byline-content">
                 <section class="author-images">
-                  <a href="https://twitter.com/prushforth">
-                    <img src="https://pbs.twimg.com/profile_images/477555139427848192/O077Dad0_400x400.png" itemprop="photo" alt="Peter Rushforth" title="Peter Rushforth">
+                  <a href="https://mastodon.social/@prushforth">
+                    <img src="https://files.mastodon.social/accounts/avatars/000/007/480/original/6a6e939fccfd1669.jpg" itemprop="photo" alt="Peter Rushforth" title="Peter Rushforth">
                   </a>
                 </section>
               </div>
             <section class="meta">
               <div class="authors">
-                <strong>By</strong> <a href="https://twitter.com/prushforth">Peter Rushforth</a>
+                <strong>By</strong> <a href="https://mastodon.social/@prushforth">Peter Rushforth</a>
                 
               </div>
 
@@ -130,8 +122,8 @@
               <div class="date">
                 <time pubdate><strong>Published:</strong> 2016-09-29</time>
                 
-                <time class="updated"><strong>Updated:</strong> 2016-09-29</time>
-                <span><strong>Comments:</strong> <a href="#wicg_thread" class="load-comments" data-wicg-identifier="https://discourse.wicg.io/t/progressive-web-maps/1730?u=peterr">0</a></span>
+                <time class="updated"><strong>Updated:</strong> 2024-04-12</time>
+                <span><strong>Comments:</strong> 0</span>
               </div>
 
               <div id="notcompatible" class="hidden">
@@ -180,9 +172,9 @@
       </code>
       </pre>
       <!-- the @width / @height attributes take precedence over properties, but currently don't change to reflect updates -->
-      <img usemap="#dowslake" src="../map1.png" width="700" height="400" alt="Dow's Lake area" />
-      <map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" controls>
-        <layer- id="osm" src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" label="Open Street Map" checked hidden></layer->
+      <img usemap="#dowslake" src="./map1.png" width="700" height="400" alt="Dow's Lake area" />
+      <map name="dowslake" is="web-map" zoom="17" lat="45.398043" lon="-75.70683" controls controlslist="geolocation">
+        <layer- id="osm" src="./osm.mapml" label="Open Street Map" checked></layer->
         <!-- the HTML author can create MapML files and serve them as layers if they prefer -->
         <layer- id="marker" label="Marker layer" src="marker.mapml"></layer->
         
