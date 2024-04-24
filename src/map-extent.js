@@ -375,7 +375,7 @@ export class MapExtent extends HTMLElement {
   }
   getMeta(metaName) {
     let name = metaName.toLowerCase();
-    if (name !== 'extent' && name !== 'zoom') return;
+    if (name !== 'extent' && name !== 'zoom' && name !== 'cs') return;
     return this.parentLayer.src
       ? this.querySelector(`:scope > map-meta[name=${name}]`) ||
           this.parentLayer.shadowRoot.querySelector(

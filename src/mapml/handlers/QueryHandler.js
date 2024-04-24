@@ -102,6 +102,7 @@ export var QueryHandler = L.Handler.extend({
         })
         .then((response) => {
           let features = [];
+          let queryMetas = [];
           let geom =
             "<map-geometry cs='gcrs'><map-point><map-coordinates>" +
             e.latlng.lng +
@@ -129,11 +130,13 @@ export var QueryHandler = L.Handler.extend({
               mapmldoc.querySelectorAll('map-feature')
             );
             // <map-meta> elements for this query
-            layer.queryMetas = Array.prototype.slice.call(
+            queryMetas = Array.prototype.slice.call(
               mapmldoc.querySelectorAll(
                 'map-meta[name=cs], map-meta[name=zoom], map-meta[name=projection]'
               )
             );
+            if (queryMetas.length)
+              features.forEach((f) => (f.meta = queryMetas));
           } else {
             try {
               let featureDocument = parser.parseFromString(
@@ -149,10 +152,16 @@ export var QueryHandler = L.Handler.extend({
                 throw new Error('parsererror');
               }
               let g = parser.parseFromString(geom, 'application/xml');
+              queryMetas = Array.prototype.slice.call(
+                featureDocument.querySelectorAll(
+                  'map-meta[name=cs], map-meta[name=zoom], map-meta[name=projection]'
+                )
+              );
               for (let feature of featureCollection) {
                 if (!feature.querySelector('map-geometry')) {
                   feature.appendChild(g.firstElementChild.cloneNode(true));
                 }
+                feature.meta = queryMetas;
                 features.push(feature);
               }
             } catch (err) {
@@ -339,8 +348,7 @@ export var QueryHandler = L.Handler.extend({
       });
       f.showPaginationFeature({
         i: 0,
-        popup: layer._popup,
-        meta: layer.queryMetas
+        popup: layer._popup
       });
     }
   }

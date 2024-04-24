@@ -259,19 +259,12 @@ export var FeatureLayer = L.FeatureGroup.extend({
   showPaginationFeature: function (e) {
     if (this.options.query && this._queryFeatures[e.i]) {
       let feature = this._queryFeatures[e.i];
-      if (e.type === 'featurepagination') {
-        // remove map-feature only (keep meta's) when paginating
-        feature._linkEl.shadowRoot.querySelector('map-feature')?.remove();
-      } else {
-        // empty the map-extent shadowRoot
-        // remove the prev / next one <map-feature> and <map-meta>'s from shadow if there is any
-        feature._linkEl.shadowRoot.replaceChildren();
-      }
+      feature._linkEl.shadowRoot.replaceChildren();
       this.clearLayers();
       // append all map-meta from mapml document
-      if (e.meta) {
-        for (let i = 0; i < e.meta.length; i++) {
-          feature._linkEl.shadowRoot.appendChild(e.meta[i]);
+      if (feature.meta) {
+        for (let i = 0; i < feature.meta.length; i++) {
+          feature._linkEl.shadowRoot.appendChild(feature.meta[i]);
         }
       }
       feature._linkEl.shadowRoot.appendChild(feature);
