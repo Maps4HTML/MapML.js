@@ -1,0 +1,25 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+  <map-head>
+    <map-title>Query response with default / fallback  cs of 'gcrs'</map-title>
+    <map-meta http-equiv="Content-Type" content="text/mapml"></map-meta>
+    <map-meta charset="utf-8"></map-meta>
+    <map-meta name="projection" content="CBMTILE"></map-meta>
+    <map-meta name="cs" content="pcrs"></map-meta>
+    <map-link rel="license" href="https://leafletjs.com/examples/choropleth/" title=" CC-BY-SA Vladimir Agafonkin"></map-link>
+    <map-style> .all { fill-opacity: 0.7; stroke-width: 2; stroke: white; stroke-opacity: 1; stroke-dasharray: 3; } ._1000plus { fill: #800026; } ._500-1000 { fill: #BD0026; } ._200-500 { fill: #E31A1C; } ._100-200 { fill: #FC4E2A; } ._50-100 { fill: #FD8D3C; } ._20-50 { fill: #FEB24C; } ._10-20 { fill: #FED976; } ._0-10 { fill: #FFEDA0; } </map-style>
+  </map-head>
+  <map-body>
+    <map-feature zoom="0" class="all  _50-100">
+      <map-properties>
+        <h1>PCRS geometry cs not specified by map-geometry cs attribute, but by map-meta</h1>
+      </map-properties>
+      <map-geometry>
+        <!-- before fixing issue #958 this would throw because the map-meta
+             elements above would not be included in the (correct) map-link
+             shadow root  -->
+        <map-polygon>
+          <map-coordinates>-1439979.3 -1758949.3 -1431164.7 -1718827 -1419763.8 -1668441.6 -1404426.5 -1600224.3 -1382942.6 -1505323.2 -1373220.3 -1462927.4 -1346103.5 -1341605.7 -1320202.9 -1225969.1 -1257567.3 -1239340.4 -1174071.5 -1256624.9 -1168371.8 -1257904.9 -1119925.2 -1267086.5 -1117424 -1268710.9 -1081131.5 -1275202.5 -1036324.3 -1283103.9 -1010270 -1287321.2 -963537.4 -1295313.3 -957266.3 -1296253.3 -849276 -1312473 -763210.2 -1323460.8 -755695.1 -1324562.6 -763175.8 -1383979.1 -766024.2 -1383711.3 -772219.2 -1435026.6 -776776 -1472071.3 -778523.5 -1486102.1 -785600.5 -1538912.4 -788711.3 -1564140.2 -791764.7 -1590253.5 -799064.4 -1642281 -806729.8 -1699789.4 -811239.8 -1730909.9 -814545.7 -1753414.3 -821663.3 -1804345.1 -829483.1 -1857053.1 -835669.1 -1909197.2 -837238.8 -1919235.1 -865524.4 -1915292.7 -906466 -1909528.1 -932459.2 -1905912.3 -936345.7 -1905187.3 -1022114.9 -1892881.1 -1029425.4 -1891597.3 -1140566 -1873486.2 -1179064.8 -1866755.1 -1204189.5 -1862119.6 -1207360 -1864114.4 -1205751.4 -1865420.6 -1207161.7 -1872389.1 -1208642.5 -1874466.1 -1206894.7 -1881070 -1207376 -1884330.6 -1200313.6 -1889555.8 -1276802.9 -1875214.1 -1371026.7 -1855852.9 -1382989.8 -1908870.6 -1469030.7 -1890198.6 -1439979.3 -1758949.3</map-coordinates>        </map-polygon>
+      </map-geometry>
+    </map-feature>
+  </map-body>
+</mapml->

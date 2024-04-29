@@ -32,6 +32,28 @@ app.get('/data/query/us_map_query', (req, res, next) => {
     }
   );
 });
+app.get('/data/query-response-fallback-cs-meta.mapml', (req, res, next) => {
+  res.sendFile(
+    __dirname + '/e2e/data/tiles/cbmt/query-response-fallback-cs-meta.mapml',
+    { headers: { 'Content-Type': 'text/mapml' } },
+    (err) => {
+      if (err) {
+        res.status(403).send('Error.');
+      }
+    }
+  );
+});
+app.get('/data/query-response-fallback-cs-no-meta.mapml', (req, res, next) => {
+  res.sendFile(
+    __dirname + '/e2e/data/tiles/cbmt/query-response-fallback-cs-no-meta.mapml',
+    { headers: { 'Content-Type': 'text/mapml' } },
+    (err) => {
+      if (err) {
+        res.status(403).send('Error.');
+      }
+    }
+  );
+});
 // unable to figure out how to map any .mapml file to the text/mapml content type
 // had to hard-code this file
 app.get('/layers/queryableMapExtent.mapml', (req, res, next) => {

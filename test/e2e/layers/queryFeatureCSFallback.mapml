@@ -1,0 +1,33 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+    <map-head xmlns:html="http://www.w3.org/1999/xhtml">
+        <map-title>GetFeatureInfo Results</map-title>
+        <map-meta charset="UTF-8" />
+        <map-meta content="text/mapml" http-equiv="Content-Type" />
+        <map-meta name="projection" content="CBMTILE" />
+        <map-meta name="cs" content="pcrs" />
+    </map-head>
+    <map-body>
+      <map-extent units="CBMTILE" label="query response w meta name=cs" checked="checked">
+        <map-input name="i" type="location" units="map" axis="i" ></map-input>
+        <map-input name="j" type="location" units="map" axis="j" ></map-input>
+        <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" ></map-input>
+        <map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing"  ></map-input>
+        <map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting"  ></map-input>
+        <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing"  ></map-input>
+        <map-input name="w" type="width" ></map-input>
+        <map-input name="h" type="height" ></map-input>
+        <map-link rel="query" tref="/data/query-response-fallback-cs-meta.mapml" ></map-link>
+      </map-extent>
+      <map-extent units="CBMTILE" checked="checked" label="query response w/o meta name=cs">
+        <map-input name="i" type="location" units="map" axis="i" ></map-input>
+        <map-input name="j" type="location" units="map" axis="j" ></map-input>
+        <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting" ></map-input>
+        <map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing"  ></map-input>
+        <map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting"  ></map-input>
+        <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing"  ></map-input>
+        <map-input name="w" type="width" ></map-input>
+        <map-input name="h" type="height" ></map-input>
+        <map-link rel="query" tref="/data/query-response-fallback-cs-no-meta.mapml" ></map-link>
+      </map-extent>
+    </map-body>
+</mapml->

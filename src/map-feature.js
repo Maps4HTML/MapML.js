@@ -287,24 +287,23 @@ export class MapFeature extends HTMLElement {
   _getFallbackCS() {
     let csMeta;
     if (this._parentEl.nodeName === 'MAP-LINK') {
-      // feature attaches to link's shadow
+      // feature attaches to link's shadow root
       csMeta =
-        this._parentEl.shadowRoot.querySelector('map-meta[name=cs]') ||
+        this._parentEl.shadowRoot.querySelector('map-meta[name=cs][content]') ||
         this._parentEl.parentElement.getMeta('cs');
     } else {
       let layerEl = this.getLayerEl();
       csMeta = layerEl.src
-        ? layerEl.shadowRoot.querySelector('map-meta[name=cs]')
-        : layerEl.querySelector('map-meta[name=cs]');
+        ? layerEl.shadowRoot.querySelector('map-meta[name=cs][content]')
+        : layerEl.querySelector('map-meta[name=cs][content]');
     }
-    if (csMeta) {
-      // M._metaContentObject("gcrs") -> {content: "gcrs"}
-      return (
-        M._metaContentToObject(csMeta.getAttribute('content')).content || 'gcrs'
-      );
-    } else {
-      return 'gcrs';
-    }
+    // even here we could make an effort to use the tref variables to determine
+    // the coordinate system of the response - would only work with WMS, I think
+    // the fallback 'gcrs' SHOULD be specified by the MapML spec
+    // per https://github.com/Maps4HTML/MapML/issues/257
+    return csMeta
+      ? M._metaContentToObject(csMeta.getAttribute('content')).content
+      : 'gcrs';
   }
 
   // Util functions:
