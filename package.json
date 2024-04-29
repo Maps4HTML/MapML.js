@@ -1,6 +1,6 @@
 {
   "name": "@maps4html/web-map-custom-element",
-  "version": "0.13.2",
+  "version": "0.13.3",
   "description": "Custom <mapml-viewer> element suite",
   "keywords": [
     "mapml-viewer",
