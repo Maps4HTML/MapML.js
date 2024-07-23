@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const serveStatic = require('serve-static');
 const port = 30001;
 
 //then loads in the index file
@@ -18,7 +19,8 @@ app.use(express.static(path.join(__dirname, 'e2e/elements/layer-')));
 app.use(express.static(path.join(__dirname, 'e2e/api')));
 app.use(express.static(path.join(__dirname, 'e2e/data')));
 app.use(express.static(path.join(__dirname, 'e2e/geojson')));
-app.use(express.static(path.join(__dirname, 'e2e/layers')));
+// serveStatic enables byte range requests, only required on this directory
+app.use(serveStatic(path.join(__dirname, 'e2e/layers')));
 app.use(express.static(path.join(__dirname, 'e2e/mapml-viewer')));
 app.use(express.static(path.join(__dirname, 'e2e/web-map')));
 

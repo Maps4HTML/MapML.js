@@ -1,5 +1,6 @@
 module.exports = function(grunt) {
   const Diff = require('diff');
+  const nodeResolve = require('@rollup/plugin-node-resolve');
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     cssmin: {
@@ -92,6 +93,13 @@ module.exports = function(grunt) {
             flatten: true,
             filter: 'isFile',
             src: ['index.html'],
+            dest: 'dist/'
+          },
+          {
+            expand: true,
+            flatten: true,
+            filter: 'isFile',
+            src: ['src/pmtilesRules.js'],
             dest: 'dist/'
           },
           {
@@ -199,7 +207,9 @@ module.exports = function(grunt) {
     },
     rollup: {
       options: {
-        format: 'iife'
+        format: 'iife',
+        plugins: [nodeResolve()],
+        external: './pmtilesRules.js'
       },
       main: {
         dest: 'dist/mapml.js',

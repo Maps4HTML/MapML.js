@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>templatedPMTilesCBMTILETest.html</title>
+    <script type="module" src="mapml-viewer.js"></script>
+  </head>
+  <body>
+
+  <!-- pmtiles / pmtiles-mvt layers only work in OSMTILE projecton -->
+  <mapml-viewer data-testid="viewer" projection="CBMTILE" zoom="0" lat="52" lon="-93" width="400" height="400">
+    <!-- on load, this layer should be enabled, because one extent is enabled -->
+    <layer- data-testid="flexible-projection-layer" checked>
+      <!-- on load, this  extent is enabled, because the map projection is CBMTILE -->
+      <map-extent units="CBMTILE"  checked="checked" hidden="hidden">
+        <map-input name="z" type="zoom"  value="17" min="0" max="17"></map-input>
+        <map-input name="y" type="location" units="tilematrix" axis="row" min="29750"  max="34475"></map-input>
+        <map-input name="x" type="location" units="tilematrix" axis="column" min="26484"  max="32463"></map-input>
+        <map-link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}?m4h=t" ></map-link>
+      </map-extent>
+      <!-- on load, this  extent is disabled (because the map projection is CBMTILE) -->
+      <map-extent units="OSMTILE" checked="checked">
+        <map-input name="beans" type="zoom" value="18" min="0" max="2"></map-input>
+        <map-input name="foo" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+        <map-input name="bar" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+        <map-link rel="tile" type="application/vnd.mapbox-vector-tile" tref="tiles/osmtile/{beans}/{foo}/{bar}.mvt?theme=light"></map-link>
+      </map-extent>
+    </layer->
+    <!-- on load this layer should be disabled -->
+    <layer- checked data-testid="osmtile-only-layer">
+      <map-title>{z}/{x}/{y}.mvt test</map-title>
+    <!-- on load this extent should be disabled -->
+      <map-extent data-testid="osmtile-only-extent" units="OSMTILE" checked="checked">
+        <map-input name="beans" type="zoom" value="18" min="0" max="2"></map-input>
+        <map-input name="foo" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+        <map-input name="bar" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+        <map-link rel="tile" type="application/vnd.mapbox-vector-tile" tref="tiles/osmtile/{beans}/{foo}/{bar}.mvt?theme=light"></map-link>
+      </map-extent>
+    </layer->
+  </mapml-viewer>
+</body>
+</html>
