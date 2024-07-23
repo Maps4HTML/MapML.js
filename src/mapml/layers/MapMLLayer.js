@@ -338,8 +338,8 @@ export var MapMLLayer = L.LayerGroup.extend({
       if (mapml.querySelector('map-title')) {
         layer._title = mapml.querySelector('map-title').textContent.trim();
         layer._titleIsReadOnly = true;
-      } else if (mapml instanceof Element && mapml.hasAttribute('label')) {
-        layer._title = mapml.getAttribute('label').trim();
+      } else if (layer._layerEl && layer._layerEl.hasAttribute('label')) {
+        layer._title = layer._layerEl.getAttribute('label').trim();
       }
     }
     function parseLicenseAndLegend() {

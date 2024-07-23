@@ -54,6 +54,11 @@ import {
   TemplatedImageLayer,
   templatedImageLayer
 } from './layers/TemplatedImageLayer';
+import * as protomapsL from '../../node_modules/protomaps-leaflet/dist/esm/index.js';
+import {
+  TemplatedPMTilesLayer,
+  templatedPMTilesLayer
+} from './layers/TemplatedPMTilesLayer';
 import { ImageLayer, imageLayer } from './layers/ImageLayer';
 import { MapMLLayer, mapMLLayer } from './layers/MapMLLayer';
 import { DebugOverlay, debugOverlay } from './layers/DebugOverlay';
@@ -928,4 +933,7 @@ import { DOMTokenList } from './utils/DOMTokenList';
   M.BLANK_TT_TREF = 'mapmltemplatedtileplaceholder';
 
   M.DOMTokenList = DOMTokenList;
+  M.protomapsL = protomapsL;
+  M.templatedPMTilesLayer = templatedPMTilesLayer;
+  M.TemplatedPMTilesLayer = TemplatedPMTilesLayer;
 })(window, document);

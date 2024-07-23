@@ -22,7 +22,10 @@ export class MapLink extends HTMLElement {
   }
   set type(val) {
     // improve this
-    if (val === 'text/mapml' || val.startsWith('image/')) {
+    if (
+      val === 'text/mapml' ||
+      val.startsWith('image/' || val === 'application/pmtiles')
+    ) {
       this.setAttribute('type', val);
     }
   }
@@ -259,7 +262,24 @@ export class MapLink extends HTMLElement {
         //this._createLegendLink();
         break;
       case 'stylesheet':
-        this._createStylesheetLink();
+        // MIME type application/pmtiles+stylesheet is an invention of the requirement to get
+        // closer to loading style rules as CSS does, via link / (map-link)
+        // we could probably do something similar with map-style i.e. treat the
+        // content of map-style as though it was a stylesheet tbd caveat CSP
+        if (this.type === 'application/pmtiles+stylesheet') {
+          const pmtilesStyles = new URL(this.href, this.getBase()).href;
+          import(pmtilesStyles)
+            .then((module) => {
+              this._pmtilesRules = module.pmtilesRules;
+            })
+            .catch((reason) => {
+              console.error(
+                'Error importing pmtiles symbolizer rules or theme: \n' + reason
+              );
+            });
+        } else {
+          this._createStylesheetLink();
+        }
         break;
       case 'alternate':
         this._createAlternateLink(); // add media attribute
@@ -346,7 +366,36 @@ export class MapLink extends HTMLElement {
         'map-link[rel=image],map-link[rel=tile],map-link[rel=features]'
       )
     ).indexOf(this);
-    if (this.rel === 'tile') {
+    if (
+      (this.rel === 'tile' && this.type === 'application/pmtiles') ||
+      this.type === 'application/vnd.mapbox-vector-tile'
+    ) {
+      let relativeSelector =
+        'map-link[rel="stylesheet"][type="application/pmtiles+stylesheet"]';
+      let rules = M.getClosest(
+        this,
+        'map-extent:has(' +
+          relativeSelector +
+          '),layer-:has(' +
+          relativeSelector +
+          '),mapml-viewer:has(' +
+          relativeSelector +
+          ')'
+      )?.querySelector(relativeSelector)._pmtilesRules;
+      let options = {
+        zoomBounds: this.getZoomBounds(),
+        extentBounds: this.getBounds(),
+        crs: M[this.parentExtent.units],
+        zIndex: this.zIndex,
+        pane: this.parentExtent._extentLayer.getContainer(),
+        linkEl: this,
+        pmtilesRules: rules
+      };
+      this._templatedLayer = M.templatedPMTilesLayer(
+        this._templateVars,
+        options
+      ).addTo(this.parentExtent._extentLayer);
+    } else if (this.rel === 'tile') {
       this._templatedLayer = M.templatedTileLayer(this._templateVars, {
         zoomBounds: this.getZoomBounds(),
         extentBounds: this.getBounds(),
@@ -897,10 +946,16 @@ export class MapLink extends HTMLElement {
         case 'alternate':
           ready = '_alternate';
           break;
+        case 'stylesheet':
+          if (this.type === 'application/pmtiles+stylesheet') {
+            ready = _pmtilesRules;
+          } else {
+            resolve();
+          }
+          break;
         case 'zoomin':
         case 'zoomout':
         case 'legend':
-        case 'stylesheet':
         case 'license':
           resolve();
           break;
