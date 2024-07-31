@@ -65,6 +65,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
           geometry.bindPopup(c, { autoClose: false, minWidth: 108 });
         }
       });
+      L.extend(this._features.options, { _leafletLayer: this._features });
     } else {
       this._features.eachLayer((layer) => layer.addTo(map));
     }
