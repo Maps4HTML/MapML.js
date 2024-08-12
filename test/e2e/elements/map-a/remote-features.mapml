@@ -1,0 +1,61 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+  <map-head>
+    <map-title>remote-features.mapml</map-title>
+    <map-meta charset="UTF-8"/>
+    <map-meta content="text/mapml" http-equiv="Content-Type"/>
+    <map-meta name="projection" content="OSMTILE"/>
+    <map-meta name="cs" content="pcrs"/>
+    <map-meta name="extent" content="top-left-easting=-8238959.40,top-left-northing=4971112.17,bottom-right-easting=-8237812.69,bottom-right-northing=4969300.12"/>
+    <map-style>.poi-r1-s1.poi-r1-s2 {opacity:1.0; fill:red; stroke:red; fill-opacity:0.7}</map-style>
+  </map-head>
+  <map-body>
+    <map-feature id="poi.2" class="poi-r1-s1 poi-r1-s2">
+      <map-geometry>
+        <map-point>
+          <map-coordinates>-8238848.744948964 4969300.121476209</map-coordinates>
+        </map-point>
+      </map-geometry>
+      <map-properties>
+        <table xmlns="http://www.w3.org/1999/xhtml">
+          <thead>
+            <tr>
+              <th role="columnheader" scope="col">Property name</th>
+              <th role="columnheader" scope="col">Property value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">MAINPAGE</th>
+              <td itemprop="MAINPAGE">pics/22037829-L.jpg</td>
+            </tr>
+          </tbody>
+        </table>
+      </map-properties>
+    </map-feature>
+    <map-feature id="poi.1" class="poi-r1-s1 poi-r1-s2">
+      <map-geometry>
+        <map-a href="https://example.org/" target="_top">
+          <map-point>
+            <map-coordinates>-8238806.8429565085 4969306.111096254</map-coordinates>
+          </map-point>
+        </map-a>
+      </map-geometry>
+      <map-properties>
+        <table xmlns="http://www.w3.org/1999/xhtml">
+          <thead>
+            <tr>
+              <th role="columnheader" scope="col">Property name</th>
+              <th role="columnheader" scope="col">Property value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">MAINPAGE</th>
+              <td itemprop="MAINPAGE">pics/22037827-L.jpg</td>
+            </tr>
+          </tbody>
+        </table>
+      </map-properties>
+    </map-feature>
+  </map-body>
+</mapml->

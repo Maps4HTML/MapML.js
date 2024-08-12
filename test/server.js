@@ -10,6 +10,7 @@ app.use(express.static(path.join(__dirname, 'e2e/elements/map-extent')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/mapml-viewer')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-feature')));
+app.use(express.static(path.join(__dirname, 'e2e/elements/map-a')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-input')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-link')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-style')));
