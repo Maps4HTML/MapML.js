@@ -49,9 +49,10 @@
             </table>
           </map-properties>
         </map-feature>
-        <map-feature id="poi.1" class="poi-r1-s1 poi-r1-s2">
+        <map-feature data-testid="poi-1" id="poi.1" class="poi-r1-s1 poi-r1-s2">
+          <map-featurecaption>Long href</map-featurecaption>
           <map-geometry>
-            <map-a href="https://example.org/" target="_top">
+            <map-a type="text/mapml" target="_blank" href="http://localhost:8080/geoserver/tiger/wms?service=WMS&version=1.1.0&request=GetMap&layers=tiger%3Atiger_roads&bbox=-74.02722%2C40.684221%2C-73.907005%2C40.878178&width=476&height=768&srs=EPSG%3A4326&styles=&format=text%2Fmapml">
               <map-point>
                 <map-coordinates>-8238806.8429565085 4969306.111096254</map-coordinates>
               </map-point>

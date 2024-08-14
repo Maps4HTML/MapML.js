@@ -411,7 +411,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
       );
     }
     let cs =
-      feature.getElementsByTagName('map-geometry')[0]?.getAttribute('cs') ||
+      feature.getElementsByTagName('map-geometry')[0]?.getAttribute('cs') ??
       fallbackCS;
     // options.layerBounds and options.zoomBounds are set by TemplatedTileLayer._createFeatures
     // each geometry needs bounds so that it can be a good community member of this._layers

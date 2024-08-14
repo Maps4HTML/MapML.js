@@ -261,9 +261,11 @@ test.describe('Multiple Extents Bounds Tests', () => {
     await expect(
       page.locator('.mapml-debug-vectors.projection-centre ')
     ).toHaveCount(1);
+    // templated features formerly did not keep track of their layer- element,
+    // which prevented them from being added to the debug layer. That is fixed.
     await expect(
       page.locator('.mapml-debug-vectors.multiple-extents')
-    ).toHaveCount(2);
+    ).toHaveCount(6);
     await expect(
       page.locator('.mapml-debug-vectors.single-extent')
     ).toHaveCount(1);
@@ -312,9 +314,11 @@ test.describe('Multiple Extents Bounds Tests', () => {
     await expect(
       page.locator('.mapml-debug-vectors.projection-centre ')
     ).toHaveCount(1);
+    // templated features formerly did not keep track of their layer- element,
+    // which prevented them from being added to the debug layer. That is fixed.
     await expect(
       page.locator('.mapml-debug-vectors.multiple-extents')
-    ).toHaveCount(2);
+    ).toHaveCount(6);
     await expect(
       page.locator('.mapml-debug-vectors.single-extent')
     ).toHaveCount(1);
