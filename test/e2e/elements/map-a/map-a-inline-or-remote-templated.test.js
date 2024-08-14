@@ -72,4 +72,16 @@ test.describe('map-a loaded inline or remote, directly or via templated map-link
       );
     });
   }
+  test('Long map-a href is actionable, does not cause client to hang', async () => {
+    const longUrl = "http://localhost:8080/geoserver/tiger/wms?service=WMS&version=1.1.0&request=GetMap&layers=tiger%3Atiger_roads&bbox=-74.02722%2C40.684221%2C-73.907005%2C40.878178&width=476&height=768&srs=EPSG%3A4326&styles=&format=text%2Fmapml";
+    // remove the top three layers (the bottom layer has a long href)
+    await page.getByTestId('remote-templated').evaluate(layer => layer.remove());
+    await page.getByTestId('inline-templated').evaluate(layer => layer.remove());
+    await page.getByTestId('remote-features').evaluate(layer => layer.remove());
+    const aWithLongHref = page.getByRole('link', { name: 'Long href' });
+    await aWithLongHref.hover();
+    const toast = await page.locator('.mapml-link-preview > p').evaluate((p) => p.innerText );
+    expect(toast).toEqual(longUrl);
+    
+  });
 });

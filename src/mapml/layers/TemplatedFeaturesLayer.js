@@ -66,6 +66,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
         }
       });
       L.extend(this._features.options, { _leafletLayer: this._features });
+      this._features._layerEl = this._linkEl.getLayerEl();
     } else {
       this._features.eachLayer((layer) => layer.addTo(map));
     }

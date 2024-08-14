@@ -116,20 +116,15 @@ export var Path = L.Path.extend({
       (e) => {
         if (e.target !== e.currentTarget) return;
         hovered = true;
-        let resolver = document.createElement('a'),
-          mapWidth = this._map.getContainer().clientWidth;
+        let resolver = document.createElement('a');
         resolver.href = link.url;
         p.innerHTML = resolver.href;
 
         this._map.getContainer().appendChild(container);
 
-        while (p.clientWidth > mapWidth / 2) {
-          p.innerHTML =
-            p.innerHTML.substring(0, p.innerHTML.length - 5) + '...';
-        }
-        setTimeout(() => {
-          if (hovered) p.innerHTML = resolver.href;
-        }, 1000);
+        //        setTimeout(() => {
+        //          if (hovered) p.innerHTML = resolver.href;
+        //        }, 1000);
       },
       this
     );
