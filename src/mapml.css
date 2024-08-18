@@ -870,13 +870,6 @@ label.mapml-layer-item-toggle {
   padding-inline-start: 1.6rem;
 }
 
-.mapml-layer-item-settings .mapml-layer-extent .mapml-layer-item-controls{
-  position: absolute;
-  right: 0;
-}
-
-
-
 /**
 * Feature Index
  */
