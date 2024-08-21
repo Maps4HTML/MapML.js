@@ -6,7 +6,7 @@ if needed.
 
 ```json
 {
-    "name": "@maps4html/web-map-custom-element",
+    "name": "@maps4html/mapml",
     "version":  "X.X.X",
     ...
     "files": [
@@ -20,7 +20,7 @@ if needed.
 Note that when releasing on npm, you are distributing leaflet, proj4 etc., so 
 you need to distribute the text of their licenses with the dist folder.
 
-Open the command prompt and cd into the Web-Map-Custom-Element project directory.
+Open the command prompt and cd into the MapML.js project directory.
 
 Type in –
 ```bash
@@ -32,12 +32,12 @@ npm publish --access=public
 ```
 When it publishes successfully you should see:
 ```bash
-+@maps4html/web-map-custom-element@X.X.X
++@maps4html/mapml@X.X.X
 ```
 
 **GitHub release procedure**
 
-To create a new release on GitHub, visit the [release page](https://github.com/Maps4HTML/Web-Map-Custom-Element/releases),
+To create a new release on GitHub, visit the [release page](https://github.com/Maps4HTML/MapML.js/releases),
 then click `Draft a new release`.
 
 Enter the new release version in the `Choose a tag` dropdown, fill in the title and description 
@@ -48,7 +48,7 @@ if needed, and then publish the release.
 Create a personal access token on [GitHub](https://github.com/settings/tokens/new)
 and check `write:packages` and `delete:packages`.
 
-Open the command prompt and cd into the Web-Map-Custom-Element project directory. Enter:
+Open the command prompt and cd into the MapML.js project directory. Enter:
 ```bash
 npm login --scope=@Maps4HTML --registry=https://npm.pkg.github.com
 ``` 
@@ -70,6 +70,6 @@ npm publish
 ```
 When it publishes successfully you should see:
 ```bash
-+@maps4html/web-map-custom-element@X.X.X
++@maps4html/mapml@X.X.X
 ```
 Now `"publishConfig"` can be removed from `package.json`.

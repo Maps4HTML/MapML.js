@@ -425,7 +425,7 @@ test.describe('map-extent tests', () => {
       layer.appendChild(me);
     });
 
-    // see https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/921
+    // see https://github.com/Maps4HTML/MapML.js/issues/921
     mapExtent = page.getByTestId('ext5');
 
     // get the extent of map-extent

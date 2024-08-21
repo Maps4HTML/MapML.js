@@ -15,7 +15,7 @@ test.describe('History test', () => {
     await context.close();
   });
 
-  //https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/550
+  //https://github.com/Maps4HTML/MapML.js/issues/550
   test('History does not get added to when trying to zoom out at min zoom level', async () => {
     await page.keyboard.press('Tab');
     await page.keyboard.press('Minus');

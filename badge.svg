@@ -14,10 +14,10 @@
     <g font-family="'DejaVu Sans',Verdana,Geneva,sans-serif" font-size="11">
       <path id="workflow-bg" d="M0,3 C0,1.3431 1.3552,0 3.02702703,0 L65,0 L65,20 L3.02702703,20 C1.3552,20 0,18.6569 0,17 L0,3 Z" fill="url(#workflow-fill)" fill-rule="nonzero"/>
       <text fill="#010101" fill-opacity=".3">
-        <tspan x="22.1981982" y="15" aria-hidden="true">Web-Map-Custom-Element</tspan>
+        <tspan x="22.1981982" y="15" aria-hidden="true">MapML.js</tspan>
       </text>
       <text fill="#FFFFFF">
-        <tspan x="22.1981982" y="14">Web-Map-Custom-Element</tspan>
+        <tspan x="22.1981982" y="14">MapML.js</tspan>
       </text>
     </g>
     <g transform="translate(65)" font-family="'DejaVu Sans',Verdana,Geneva,sans-serif" font-size="11">

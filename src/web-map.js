@@ -244,14 +244,14 @@ export class WebMap extends HTMLMapElement {
     mapDefaultCSS.id = 'web-map-default-style';
     mapDefaultCSS.innerHTML =
       `[is="web-map"] {` +
-      `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
+      `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/MapML.js/issues/140).
       `contain: layout size;` + // Contain layout and size calculations within the map element.
       `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
       `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
       `width: 300px;` +
       `border-width: 2px;` + // Set a default border for contrast, similar to UA default for iframes.
       `border-style: inset;` +
-      `box-sizing: inherit;` + // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/350#issuecomment-888361985
+      `box-sizing: inherit;` + // https://github.com/Maps4HTML/MapML.js/issues/350#issuecomment-888361985
       `}` +
       `[is="web-map"][frameborder="0"] {` +
       `border-width: 0;` +
@@ -266,7 +266,7 @@ export class WebMap extends HTMLMapElement {
     let shadowRootCSS = document.createElement('style');
     shadowRootCSS.innerHTML =
       `:host .leaflet-control-container {` +
-      `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154).
+      `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/MapML.js/issues/154).
       `}`;
 
     // Hide all (light DOM) children of the map element except for the
@@ -336,13 +336,13 @@ export class WebMap extends HTMLMapElement {
 
       // undisplay the img in the image map, because it's not needed now.
       // gives a slight FOUC, unless:
-      // 1) the img is pre-styled (https://github.com/Maps4HTML/Web-Map-Custom-Element/blob/80a4a4e372d2ef61bb7cad6a111e17e396b8e908/index-map-area.html#L35)
+      // 1) the img is pre-styled (https://github.com/Maps4HTML/MapML.js/blob/80a4a4e372d2ef61bb7cad6a111e17e396b8e908/index-map-area.html#L35)
       // 2) placed after the map element
       if (this.poster) {
         this.poster.setAttribute('hidden', '');
       }
 
-      // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
+      // https://github.com/Maps4HTML/MapML.js/issues/274
       this.setAttribute('role', 'application');
       // Make the Leaflet container element programmatically identifiable
       // (https://github.com/Leaflet/Leaflet/issues/7193).

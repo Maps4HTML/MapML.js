@@ -76,7 +76,7 @@ exports.test = (
       await zoomIn(z5, urlBase, u5);
     });
 
-    //https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/666
+    //https://github.com/Maps4HTML/MapML.js/issues/666
     if (native) {
       test('No requests out of native zoom bounds', async () => {
         await zoomIn(0, '', '');

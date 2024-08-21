@@ -1,5 +1,5 @@
 {
-  "name": "@maps4html/web-map-custom-element",
+  "name": "@maps4html/mapml",
   "version": "0.13.4",
   "description": "Custom <mapml-viewer> element suite",
   "keywords": [
@@ -17,18 +17,18 @@
   "author": "Maps for HTML Community Group",
   "repository": {
     "type": "git",
-    "url": "git://github.com/Maps4HTML/Web-Map-Custom-Element.git"
+    "url": "git://github.com/Maps4HTML/MapML.js.git"
   },
   "website": "http://maps4html.org/Web-Map-Doc/",
   "bugs": {
-    "url": "https://github.com/Maps4HTML/Web-Map-Custom-Element/issues"
+    "url": "https://github.com/Maps4HTML/MapML.js/issues"
   },
   "license": "W3C",
   "contributors": [
     {
       "name": "Maps for HTML community",
       "email": "public-maps4html@w3.org",
-      "url": "https://github.com/Maps4HTML/Web-Map-Custom-Element/graphs/contributors"
+      "url": "https://github.com/Maps4HTML/MapML.js/graphs/contributors"
     }
   ],
   "scripts": {

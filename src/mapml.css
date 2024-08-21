@@ -557,7 +557,7 @@ summary {
 
 /*
  * Visibility hack – mitigates FOUC.
- * (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154)
+ * (https://github.com/Maps4HTML/MapML.js/issues/154)
  */
 
 /* Unset `visibility: hidden` (inherited from web-map/mapml-viewer.js). */
@@ -663,7 +663,7 @@ summary {
 }
  
  /* Force printers to include background-images of controls for printing.
-   (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/294) */
+   (https://github.com/Maps4HTML/MapML.js/issues/294) */
 @media print {
   .leaflet-control {
     -webkit-print-color-adjust: exact;

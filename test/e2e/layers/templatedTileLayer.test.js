@@ -56,7 +56,7 @@ test.describe('Playwright mapMLTemplatedTile Layer Tests', () => {
     });
 
     test('Templated tile layer works without <map-input> for zoom level', async () => {
-      // tests fix for https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/669
+      // tests fix for https://github.com/Maps4HTML/MapML.js/issues/669
       await page.hover(
         'div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div'
       );

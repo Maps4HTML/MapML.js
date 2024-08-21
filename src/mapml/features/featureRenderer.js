@@ -8,7 +8,7 @@ export var FeatureRenderer = L.SVG.extend({
    * Override method of same name from L.SVG, use the this._container property
    * to set up the role="none presentation" on featureGroupu container,
    * per this recommendation:
-   * https://github.com/Maps4HTML/Web-Map-Custom-Element/pull/471#issuecomment-845192246
+   * https://github.com/Maps4HTML/MapML.js/pull/471#issuecomment-845192246
    * @private overrides ancestor method so that we have a _container to work with
    */
   _initContainer: function () {

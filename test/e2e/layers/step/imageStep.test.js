@@ -68,7 +68,7 @@ test.describe('Templated image layer with step', () => {
       The resetting mentioned below would make it look like the map zoomed out before panning since the
       scaled layer's css scale transform would be removed and there would be enough time to see it before the new
       layer is added.
-      https://github.com/Maps4HTML/Web-Map-Custom-Element/commit/8df7c993276e719bb30c4f55a8966289d4c918b7
+      https://github.com/Maps4HTML/MapML.js/commit/8df7c993276e719bb30c4f55a8966289d4c918b7
       */
     test('Overlay to remove does not reset its transform on shift pan when on a scaled layer', async () => {
       await page.keyboard.press('Shift+ArrowUp');

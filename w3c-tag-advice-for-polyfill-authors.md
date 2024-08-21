@@ -33,9 +33,9 @@ conforms to the W3C <abbr title="Technical Architecture Group">TAG</abbr>'s
       <ul><li>- [x] </li></ul>
     </td>
     <td>
-      <a href="https://www.npmjs.com/package/@maps4html/web-map-custom-element">Published to npm</a>
+      <a href="https://www.npmjs.com/package/@maps4html/mapml">Published to npm</a>
       and
-      <a href="https://unpkg.com/@maps4html/web-map-custom-element@latest/dist/mapml-viewer.js">hosted on the UNPKG CDN</a>
+      <a href="https://unpkg.com/@maps4html/mapml@latest/dist/mapml-viewer.js">hosted on the UNPKG CDN</a>
     </td>
   </tr>
   <tr>
@@ -62,7 +62,7 @@ conforms to the W3C <abbr title="Technical Architecture Group">TAG</abbr>'s
     </td>
     <td>
       On the backlog of the
-      <a href="https://github.com/Maps4HTML/Web-Map-Custom-Element/projects/2#card-43799737">Road Map</a> project
+      <a href="https://github.com/Maps4HTML/MapML.js/projects/2#card-43799737">Road Map</a> project
     </td>
   </tr>
   <tr>

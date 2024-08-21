@@ -41,7 +41,7 @@ test.describe('<map-span> test ', () => {
     expect(index).toEqual(-1);
   });
 
-  //https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/559#issuecomment-959805896
+  //https://github.com/Maps4HTML/MapML.js/issues/559#issuecomment-959805896
   test('White space parsing for map-coordinates', async () => {
     await page.waitForTimeout(1000);
     const feature = await page.$eval(

@@ -186,7 +186,7 @@ export class MapViewer extends HTMLElement {
 
         this._createMap();
 
-        // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
+        // https://github.com/Maps4HTML/MapML.js/issues/274
         this.setAttribute('role', 'application');
         this._toggleStatic();
 
@@ -241,7 +241,7 @@ export class MapViewer extends HTMLElement {
     let mapDefaultCSS = document.createElement('style');
     mapDefaultCSS.innerHTML =
       `:host {` +
-      `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/140).
+      `all: initial;` + // Reset properties inheritable from html/body, as some inherited styles may cause unexpected issues with the map element's components (https://github.com/Maps4HTML/MapML.js/issues/140).
       `contain: layout size;` + // Contain layout and size calculations within the map element.
       `display: inline-block;` + // This together with dimension properties is required so that Leaflet isn't working with a height=0 box by default.
       `height: 150px;` + // Provide a "default object size" (https://github.com/Maps4HTML/HTML-Map-Element/issues/31).
@@ -256,7 +256,7 @@ export class MapViewer extends HTMLElement {
       `display: none!important;` +
       `}` +
       `:host .leaflet-control-container {` +
-      `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154).
+      `visibility: hidden!important;` + // Visibility hack to improve percieved performance (mitigate FOUC) – visibility is unset in mapml.css! (https://github.com/Maps4HTML/MapML.js/issues/154).
       `}`;
 
     // Hide all (light DOM) children of the map element.

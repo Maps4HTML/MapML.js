@@ -10,7 +10,7 @@ Web standard.
 ## Installation
 
 ```console
-$ npm install @maps4html/web-map-custom-element
+$ npm install @maps4html/mapml
 ```
 
 See [instructions](https://maps4html.org/web-map-doc/docs/installation#install-the-mapml-viewer-suite-of-custom-elements) for further details.
@@ -43,7 +43,7 @@ OR inline content
 
 ## Contributing
 
-See [CONTRIBUTING](https://github.com/Maps4HTML/Web-Map-Custom-Element/blob/main/CONTRIBUTING.md#contributing-to-mapml) for details, but generally:
+See [CONTRIBUTING](https://github.com/Maps4HTML/MapML.js/blob/main/CONTRIBUTING.md#contributing-to-mapml) for details, but generally:
 
 0. Join our [Community Group](https://www.w3.org/community/wp-login.php?redirect_to=%2Fcommunity%2Fmaps4html%2Fjoin)
 1. Fork it!

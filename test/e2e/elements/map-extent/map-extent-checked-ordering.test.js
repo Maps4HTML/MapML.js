@@ -11,7 +11,7 @@ test.describe('map-extent checked order tests', () => {
     await page.goto('map-extent-checked.html');
   });
   test('map-extent layer control order correct when cycling checked state', async () => {
-    // Fixed #935 https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/935
+    // Fixed #935 https://github.com/Maps4HTML/MapML.js/issues/935
     /* 
 Go to this map map-extent-checked.html
 
@@ -87,6 +87,6 @@ The imagery layer <map-extent> draws on top of the states layer.
     // ensure that
     // a) render order/z-index is correct
     // b) render order is reflected in layer control order as well
-    // see https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/956
+    // see https://github.com/Maps4HTML/MapML.js/issues/956
   });
 });
