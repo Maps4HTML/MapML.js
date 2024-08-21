@@ -4,7 +4,7 @@
 
 The &lt;mapml-viewer> is a declarative vocabulary for Web mapping that extends
 HTML to include modern Web maps.  It is a pilot / reference implementation of the
-proposed and evolving [Map Markup Language](https://maps4html.org/web-map-doc/docs/) 
+proposed and evolving [Map Markup Language](https://maps4html.org/web-map-doc/docs/) (MapML)
 Web standard.
 
 ## Installation
