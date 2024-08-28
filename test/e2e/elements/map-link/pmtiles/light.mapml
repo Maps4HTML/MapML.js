@@ -1,0 +1,14 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+  <map-head>
+    <map-title>pmtiles light</map-title>
+    <map-link rel="stylesheet" type="application/pmtiles+stylesheet" href="lightTheme.js"></map-link>
+    <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
+    <map-link rel="style" title="Dark theme" href="dark.mapml"></map-link>
+    <map-link rel="self style" title="Light theme" href="light.mapml"></map-link>
+  </map-head>
+  <map-body>
+    <map-extent units="OSMTILE" checked="checked" hidden="hidden">
+      <map-link rel="tile" type="application/pmtiles" tref="../spearfish.pmtiles?theme=light"></map-link>
+    </map-extent>
+  </map-body>
+</mapml->

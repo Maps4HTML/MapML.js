@@ -1,0 +1,32 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+  <map-head>
+    <map-title>pmtiles dark</map-title>
+
+    <map-link data-testid="operative-light" rel="stylesheet" type="application/pmtiles+stylesheet" href="lightTheme.js"></map-link>
+
+    <!-- only the first stylesheet in document order is used... -->
+    <map-link data-testid="inoperative-dark" rel="stylesheet" type="application/pmtiles+stylesheet" href="darkTheme.js"></map-link>
+
+    <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
+    <map-link rel="self style" title="Dark theme" href="dark.mapml"></map-link>
+    <map-link rel="style" title="Light theme" href="light.mapml"></map-link>
+    <map-meta name="extent" content="top-left-easting=-11593204, top-left-northing=5581432, bottom-right-easting=-11516767, bottom-right-northing=5504995"></map-meta>
+  </map-head>
+  <map-body>
+    <map-extent data-testid="light-me" label="light" units="OSMTILE" checked="checked" >
+
+      <!-- this guy should use the operative-light stylesheet in the map-head -->
+      <map-link rel="tile" type="application/pmtiles" tref="../spearfish.pmtiles?theme=light"></map-link>
+
+    </map-extent>
+    <map-extent data-testid="dark-me" label="dark" units="OSMTILE" checked="checked" >
+
+      <map-link data-testid="operative-dark" rel="stylesheet" type="application/pmtiles+stylesheet" href="darkTheme.js"></map-link>
+      <map-link data-testid="inoperative-light" rel="stylesheet" type="application/pmtiles+stylesheet" href="lightTheme.js"></map-link>
+      
+      <!-- this guy should use the operative-dark stylesheet -->
+      <map-link rel="tile" type="application/pmtiles" tref="../spearfish.pmtiles?theme=dark"></map-link>
+
+    </map-extent>
+  </map-body>
+</mapml->
