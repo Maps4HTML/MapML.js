@@ -143,7 +143,7 @@ test.describe('Playwright templatedPMTilesLayer Tests', () => {
     await hardCodedVariablesLayer.evaluate((l) => (l.checked = true));
     await page.waitForTimeout(1000);
     await expect(viewer).toHaveScreenshot('mvt-blank.png', {
-      maxDiffPixels: 1500
+      maxDiffPixels: 100
     });
     let errorLoadingModule = false;
     let errorFindingRules = false;

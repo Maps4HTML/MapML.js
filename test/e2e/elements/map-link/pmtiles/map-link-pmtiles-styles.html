@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>map-link-pmtiles-styles.html</title>
+    <script type="module" src="../mapml-viewer.js"></script>
+  </head>
+  <body>
+    <mapml-viewer data-testid="viewer" controls style="width: 500px;height: 500px;"  projection="OSMTILE" zoom="10" lat="44.5" lon="-103.8">
+      <layer- data-testid="dark" src="dark.mapml" ></layer->
+      <layer- data-testid="local-layer">
+        <map-link data-testid="local-operative-light" rel="stylesheet" type="application/pmtiles+stylesheet" href="lightTheme.js"></map-link>
+
+        <!-- only the first stylesheet within scope in document order is used... -->
+        <map-link data-testid="local-inoperative-dark" rel="stylesheet" type="application/pmtiles+stylesheet" href="darkTheme.js"></map-link>
+        <map-extent data-testid="local-light-me" label="light" units="OSMTILE" checked="checked" >
+
+          <!-- this guy should use the local-operative-light stylesheet in the local-layer -->
+          <map-link rel="tile" type="application/pmtiles" tref="../spearfish.pmtiles?theme=light"></map-link>
+
+        </map-extent>
+        <map-extent data-testid="local-dark-me" label="dark" units="OSMTILE" checked="checked" >
+
+          <map-link data-testid="local-operative-dark" rel="stylesheet" type="application/pmtiles+stylesheet" href="darkTheme.js"></map-link>
+          <map-link data-testid="local-inoperative-light" rel="stylesheet" type="application/pmtiles+stylesheet" href="lightTheme.js"></map-link>
+
+          <!-- this guy should use the local-operative-dark stylesheet -->
+          <map-link rel="tile" type="application/pmtiles" tref="../spearfish.pmtiles?theme=dark"></map-link>
+
+        </map-extent>
+      </layer->
+    </mapml-viewer>
+  </body>
+</html>

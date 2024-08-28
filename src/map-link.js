@@ -370,18 +370,15 @@ export class MapLink extends HTMLElement {
       (this.rel === 'tile' && this.type === 'application/pmtiles') ||
       this.type === 'application/vnd.mapbox-vector-tile'
     ) {
-      let relativeSelector =
+      let s =
         'map-link[rel="stylesheet"][type="application/pmtiles+stylesheet"]';
-      let rules = M.getClosest(
-        this,
-        'map-extent:has(' +
-          relativeSelector +
-          '),layer-:has(' +
-          relativeSelector +
-          '),mapml-viewer:has(' +
-          relativeSelector +
-          ')'
-      )?.querySelector(relativeSelector)._pmtilesRules;
+      let pmtilesStylesheetLink = this.getLayerEl().src
+        ? this.closest('map-extent')?.querySelector(s) ??
+          this.getRootNode().querySelector(':host > ' + s)
+        : M.getClosest(
+            this,
+            'map-extent:has(' + s + '),layer-:has(' + s + ')'
+          )?.querySelector(s);
       let options = {
         zoomBounds: this.getZoomBounds(),
         extentBounds: this.getBounds(),
@@ -389,7 +386,7 @@ export class MapLink extends HTMLElement {
         zIndex: this.zIndex,
         pane: this.parentExtent._extentLayer.getContainer(),
         linkEl: this,
-        pmtilesRules: rules
+        pmtilesRules: pmtilesStylesheetLink?._pmtilesRules
       };
       this._templatedLayer = M.templatedPMTilesLayer(
         this._templateVars,
