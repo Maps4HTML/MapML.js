@@ -89,7 +89,7 @@ export class WebMap extends HTMLMapElement {
           this.setAttribute('projection', val);
         })
         .catch(() => {
-          throw new Error('Undefined projection:' + val);
+          throw new Error('Undefined projection: ' + val);
         });
     }
   }
@@ -460,13 +460,18 @@ export class WebMap extends HTMLMapElement {
           this._map.options.projection !== newValue
         ) {
           const connect = reconnectLayers.bind(this);
-          connect().then(() => {
-            if (this._map && this._map.options.projection !== oldValue) {
-              // this doesn't completely work either
-              this._resetHistory();
-            }
-            if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
-          });
+          this.whenProjectionDefined(newValue)
+            .then(() => connect())
+            .then(() => {
+              if (this._map && this._map.options.projection !== oldValue) {
+                // this doesn't completely work either
+                this._resetHistory();
+              }
+              if (this._debug) for (let i = 0; i < 2; i++) this.toggleDebug();
+            })
+            .catch(() => {
+              throw new Error('Undefined projection: ' + newValue);
+            });
         }
         break;
     }

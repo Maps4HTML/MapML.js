@@ -83,6 +83,21 @@
           <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
         </map-extent>
       </layer->
+      <layer- label="Restaurants" checked="">
+           <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
+            <map-extent units="OSMTILE" checked="">
+              <map-select id="restaurants" name="cusine">
+                  <map-option value="restaurants" selected="selected">All cuisines</map-option>
+                  <map-option value="african">African</map-option>
+                  <map-option value="asian">Asian</map-option>
+                  <map-option value="cajun">Cajun</map-option>
+                  <map-option value="indian">Indian</map-option>
+                  <map-option value="italian">Italian</map-option>
+                  <map-option value="mexican">Mexican</map-option>
+              </map-select>
+              <map-link tref="https://maps4html.org/experiments/shared/restaurants/{cusine}.mapml" rel="features"></map-link>
+            </map-extent>
+          </layer->
     </mapml-viewer>
   </body>
 </html>
