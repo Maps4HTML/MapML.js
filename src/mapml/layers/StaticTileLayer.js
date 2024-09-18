@@ -1,3 +1,4 @@
+import { Util } from '../utils/Util';
 export var StaticTileLayer = L.GridLayer.extend({
   initialize: function (options) {
     L.setOptions(this, options);
@@ -47,7 +48,7 @@ export var StaticTileLayer = L.GridLayer.extend({
       mapZoom >= this.zoomBounds.minZoom &&
       this._bounds[zoomLevel] &&
       this._bounds[zoomLevel].overlaps(
-        M.pixelToPCRSBounds(
+        Util.pixelToPCRSBounds(
           this._map.getPixelBounds(),
           this._map.getZoom(),
           this._map.options.projection
@@ -112,7 +113,7 @@ export var StaticTileLayer = L.GridLayer.extend({
     // won't be needed
     for (let pixelBounds in layerBounds) {
       let zoom = +pixelBounds;
-      layerBounds[pixelBounds] = M.pixelToPCRSBounds(
+      layerBounds[pixelBounds] = Util.pixelToPCRSBounds(
         layerBounds[pixelBounds],
         zoom,
         projection
@@ -124,7 +125,7 @@ export var StaticTileLayer = L.GridLayer.extend({
   _getZoomBounds: function (container, maxZoomBound) {
     if (!container) return null;
     // should read zoom information from map-meta (of layer-) instead of the zoom attribute value of map-tile
-    let meta = M._metaContentToObject(
+    let meta = Util._metaContentToObject(
         this.options._leafletLayer._layerEl
           .querySelector('map-meta[name=zoom]')
           .getAttribute('content')

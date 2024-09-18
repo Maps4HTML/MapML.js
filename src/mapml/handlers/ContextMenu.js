@@ -1,3 +1,4 @@
+import { Util } from '../utils/Util';
 /*
 MIT License related to portions of M.ContextMenu 
 Copyright (c) 2017 adam.ratcliffe@gmail.com
@@ -479,7 +480,7 @@ export var ContextMenu = L.Handler.extend({
           ? this._map.options.mapEl
           : this.options.mapEl;
     navigator.clipboard.readText().then((layer) => {
-      M._pasteLayer(mapEl, layer);
+      Util._pasteLayer(mapEl, layer);
     });
   },
 

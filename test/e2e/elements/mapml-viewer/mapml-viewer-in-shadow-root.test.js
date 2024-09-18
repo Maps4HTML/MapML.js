@@ -23,7 +23,7 @@ test.describe('Playwright mapml-viewer fullscreen tests', () => {
     await fullscreenButton.click();
 
     let fullscreenElement = await map1.evaluate(
-      (m) => M.getClosest(m._map.getContainer(), ':fullscreen').id
+      (m) => M.Util.getClosest(m._map.getContainer(), ':fullscreen').id
     );
     // the first mapml-viewer should be returned by document.fullscreen
     expect(fullscreenElement).toEqual('map1');
@@ -36,7 +36,7 @@ test.describe('Playwright mapml-viewer fullscreen tests', () => {
     // do the same with second map / element
     await fullscreenButton2.click();
     fullscreenElement = await map2.evaluate(
-      (m) => M.getClosest(m._map.getContainer(), ':fullscreen').id
+      (m) => M.Util.getClosest(m._map.getContainer(), ':fullscreen').id
     );
     expect(fullscreenElement).toEqual('map2');
     try {
@@ -49,7 +49,7 @@ test.describe('Playwright mapml-viewer fullscreen tests', () => {
     }
     // fullscreen element should not have changed
     fullscreenElement = await map2.evaluate(
-      (m) => M.getClosest(m._map.getContainer(), ':fullscreen').id
+      (m) => M.Util.getClosest(m._map.getContainer(), ':fullscreen').id
     );
     expect(fullscreenElement).toEqual('map2');
     await fullscreenButton2.click(); // exit fullscreen
@@ -61,7 +61,7 @@ test.describe('Playwright mapml-viewer fullscreen tests', () => {
     await page.keyboard.press('Shift+F10');
     await page.keyboard.press('F');
     let fullscreenElement = await map2.evaluate(
-      (m) => M.getClosest(m._map.getContainer(), ':fullscreen').id
+      (m) => M.Util.getClosest(m._map.getContainer(), ':fullscreen').id
     );
     expect(fullscreenElement).toEqual('map2');
     await map2.click();
@@ -105,7 +105,7 @@ test.describe('Playwright mapml-viewer fullscreen tests', () => {
     await page.keyboard.press('Shift+F10');
     await page.keyboard.press('F');
     let fullscreenElement = await map3.evaluate(
-      (m) => M.getClosest(m._map.getContainer(), ':fullscreen').id
+      (m) => M.Util.getClosest(m._map.getContainer(), ':fullscreen').id
     );
     expect(fullscreenElement).toEqual('map3');
     await map3.click();

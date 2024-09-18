@@ -1,3 +1,8 @@
+import { Util } from '../utils/Util';
+import { featureLayer } from './FeatureLayer';
+import { staticTileLayer } from './StaticTileLayer';
+import { featureRenderer } from '../features/featureRenderer';
+
 export var MapMLLayer = L.LayerGroup.extend({
   options: {
     zIndex: 0,
@@ -94,18 +99,18 @@ export var MapMLLayer = L.LayerGroup.extend({
       this._layerEl.shadowRoot.querySelector(
         ':host > map-meta[name=extent][content]'
       )
-        ? M.getBoundsFromMeta(this._layerEl.shadowRoot)
+        ? Util.getBoundsFromMeta(this._layerEl.shadowRoot)
         : this._layerEl.querySelector(':scope > map-meta[name=extent][content]')
-        ? M.getBoundsFromMeta(this._layerEl)
+        ? Util.getBoundsFromMeta(this._layerEl)
         : undefined;
     zoomBounds =
       this._layerEl.src &&
       this._layerEl.shadowRoot.querySelector(
         ':host > map-meta[name=zoom][content]'
       )
-        ? M.getZoomBoundsFromMeta(this._layerEl.shadowRoot)
+        ? Util.getZoomBoundsFromMeta(this._layerEl.shadowRoot)
         : this._layerEl.querySelector(':scope > map-meta[name=zoom][content]')
-        ? M.getZoomBoundsFromMeta(this._layerEl)
+        ? Util.getZoomBoundsFromMeta(this._layerEl)
         : undefined;
     const mapExtents = this._layerEl.src
       ? this._layerEl.shadowRoot.querySelectorAll('map-extent')
@@ -277,11 +282,11 @@ export var MapMLLayer = L.LayerGroup.extend({
     // and that of the map, if there is a linked alternate text/mapml
     // resource that matches the map's projection
     function processFeatures() {
-      let native = M.getNativeVariables(layer._content);
-      layer._mapmlvectors = M.featureLayer(null, {
+      let native = Util.getNativeVariables(layer._content);
+      layer._mapmlvectors = featureLayer(null, {
         // pass the vector layer a renderer of its own, otherwise leaflet
         // puts everything into the overlayPane
-        renderer: M.featureRenderer(),
+        renderer: featureRenderer(),
         // pass the vector layer the container for the parent into which
         // it will append its own container for rendering into
         pane: layer._container,
@@ -322,7 +327,7 @@ export var MapMLLayer = L.LayerGroup.extend({
           tiles.appendChild(document.importNode(newTiles[nt], true));
         }
         layer._mapmlTileContainer.appendChild(tiles);
-        layer._staticTileLayer = M.staticTileLayer({
+        layer._staticTileLayer = staticTileLayer({
           pane: layer._container,
           _leafletLayer: layer,
           projection: layer.options.projection,

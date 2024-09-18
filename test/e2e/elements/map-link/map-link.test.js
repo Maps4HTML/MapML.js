@@ -73,8 +73,8 @@ test.describe('map-link extent tests', () => {
         .evaluate((meta) => {
           let content = meta.getAttribute('content');
           return {
-            minZoom: +M._metaContentToObject(content)['min'],
-            maxZoom: +M._metaContentToObject(content)['max']
+            minZoom: +M.Util._metaContentToObject(content)['min'],
+            maxZoom: +M.Util._metaContentToObject(content)['max']
           };
         });
       expect(link1ZoomBounds.minZoom).toEqual(zoomFromMetaLink1.minZoom);
@@ -121,8 +121,8 @@ test.describe('map-link extent tests', () => {
         .evaluate((meta) => {
           let content = meta.getAttribute('content');
           return {
-            minZoom: +M._metaContentToObject(content)['min'],
-            maxZoom: +M._metaContentToObject(content)['max']
+            minZoom: +M.Util._metaContentToObject(content)['min'],
+            maxZoom: +M.Util._metaContentToObject(content)['max']
           };
         });
       const mapInputNativeZoomBounds = await page
@@ -161,10 +161,12 @@ test.describe('map-link extent tests', () => {
         .evaluate((meta) => {
           let content = meta.getAttribute('content');
           return {
-            xmin: +M._metaContentToObject(content)['top-left-easting'],
-            ymin: +M._metaContentToObject(content)['bottom-right-northing'],
-            xmax: +M._metaContentToObject(content)['bottom-right-easting'],
-            ymax: +M._metaContentToObject(content)['top-left-northing']
+            xmin: +M.Util._metaContentToObject(content)['top-left-easting'],
+            ymin: +M.Util._metaContentToObject(content)[
+              'bottom-right-northing'
+            ],
+            xmax: +M.Util._metaContentToObject(content)['bottom-right-easting'],
+            ymax: +M.Util._metaContentToObject(content)['top-left-northing']
           };
         });
       expect(link3Bounds.xmin).toEqual(mapMetaBounds.xmin);

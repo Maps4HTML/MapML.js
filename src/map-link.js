@@ -1,3 +1,8 @@
+import { Util } from './mapml/utils/Util';
+import { templatedImageLayer } from './mapml/layers/TemplatedImageLayer';
+import { templatedTileLayer } from './mapml/layers/TemplatedTileLayer';
+import { templatedFeaturesLayer } from './mapml/layers/TemplatedFeaturesLayer';
+import { templatedPMTilesLayer } from './mapml/layers/TemplatedPMTilesLayer';
 /* global M */
 
 export class MapLink extends HTMLElement {
@@ -101,7 +106,7 @@ export class MapLink extends HTMLElement {
     // return the content of media attribute as an object
     // maybe memoizing the object to avoid repeated formatting
     // the Util function may need to be renamed?
-    return M._metaContentToObject(this.getAttribute('media'));
+    return Util._metaContentToObject(this.getAttribute('media'));
   }
   set media(val) {
     this.setAttribute('media', val);
@@ -129,7 +134,7 @@ export class MapLink extends HTMLElement {
     // _templateVars existence happens for both templated layers and query links
     return this._templateVars
       ? Object.assign(
-          M._convertAndFormatPCRS(
+          Util._convertAndFormatPCRS(
             this.getBounds(),
             M[this.parentExtent.units],
             this.parentExtent.units
@@ -150,15 +155,15 @@ export class MapLink extends HTMLElement {
       center = map.options.crs.unproject(bounds.getCenter(true)),
       maxZoom = extent.zoom.maxZoom,
       minZoom = extent.zoom.minZoom;
-    map.setView(center, M.getMaxZoom(bounds, map, minZoom, maxZoom), {
+    map.setView(center, Util.getMaxZoom(bounds, map, minZoom, maxZoom), {
       animate: false
     });
   }
   getMapEl() {
-    return M.getClosest(this, 'mapml-viewer,map[is=web-map]');
+    return Util.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return M.getClosest(this, 'layer-');
+    return Util.getClosest(this, 'layer-');
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -290,7 +295,7 @@ export class MapLink extends HTMLElement {
     }
     // create the type of templated leaflet layer appropriate to the rel value
     // image/map/features = templated(Image/Feature), tile=templatedTile,
-    // this._tempatedTileLayer = M.templatedTile(pane: this.extentElement._leafletLayer._container)
+    // this._tempatedTileLayer = Util.templatedTile(pane: this.extentElement._leafletLayer._container)
     // add to viewer._map dependant on map-extent.checked, layer-.checked
     // what else?
   }
@@ -313,7 +318,7 @@ export class MapLink extends HTMLElement {
     //  be loaded as part of a templated layer processing i.e. on moveend
     //  and the generated <link> that implements this <map-link> should be located
     //  in the parent <map-link>._templatedLayer.container root node if
-    //  the _templatedLayer is an instance of M.TemplatedTileLayer or M.TemplatedFeaturesLayer
+    //  the _templatedLayer is an instance of TemplatedTileLayer or TemplatedFeaturesLayer
     //
     // if the parent node (or the host of the shadow root parent node) is layer-, the link should be created in the _layer
     // container
@@ -375,7 +380,7 @@ export class MapLink extends HTMLElement {
       let pmtilesStylesheetLink = this.getLayerEl().src
         ? this.closest('map-extent')?.querySelector(s) ??
           this.getRootNode().querySelector(':host > ' + s)
-        : M.getClosest(
+        : Util.getClosest(
             this,
             'map-extent:has(' + s + '),layer-:has(' + s + ')'
           )?.querySelector(s);
@@ -388,12 +393,12 @@ export class MapLink extends HTMLElement {
         linkEl: this,
         pmtilesRules: pmtilesStylesheetLink?._pmtilesRules
       };
-      this._templatedLayer = M.templatedPMTilesLayer(
+      this._templatedLayer = templatedPMTilesLayer(
         this._templateVars,
         options
       ).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'tile') {
-      this._templatedLayer = M.templatedTileLayer(this._templateVars, {
+      this._templatedLayer = templatedTileLayer(this._templateVars, {
         zoomBounds: this.getZoomBounds(),
         extentBounds: this.getBounds(),
         crs: M[this.parentExtent.units],
@@ -404,7 +409,7 @@ export class MapLink extends HTMLElement {
         linkEl: this
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'image') {
-      this._templatedLayer = M.templatedImageLayer(this._templateVars, {
+      this._templatedLayer = templatedImageLayer(this._templateVars, {
         zoomBounds: this.getZoomBounds(),
         extentBounds: this.getBounds(),
         zIndex: this.zIndex,
@@ -414,7 +419,7 @@ export class MapLink extends HTMLElement {
     } else if (this.rel === 'features') {
       // map-feature retrieved by link will be stored in shadowRoot owned by link
       this.attachShadow({ mode: 'open' });
-      this._templatedLayer = M.templatedFeaturesLayer(this._templateVars, {
+      this._templatedLayer = templatedFeaturesLayer(this._templateVars, {
         zoomBounds: this.getZoomBounds(),
         extentBounds: this.getBounds(),
         zIndex: this.zIndex,
@@ -659,7 +664,7 @@ export class MapLink extends HTMLElement {
           case 'longitude':
           case 'column':
           case 'easting':
-            boundsUnit.name = M.axisToCS(
+            boundsUnit.name = Util.axisToCS(
               inputs[i].getAttribute('axis').toLowerCase()
             );
             bounds.min.x = min;
@@ -672,7 +677,7 @@ export class MapLink extends HTMLElement {
           case 'latitude':
           case 'row':
           case 'northing':
-            boundsUnit.name = M.axisToCS(
+            boundsUnit.name = Util.axisToCS(
               inputs[i].getAttribute('axis').toLowerCase()
             );
             bounds.min.y = min;
@@ -703,7 +708,7 @@ export class MapLink extends HTMLElement {
       let zoomValue = this._templateVars.zoom?.hasAttribute('value')
         ? +this._templateVars.zoom.getAttribute('value')
         : 0;
-      bounds = M.boundsToPCRSBounds(
+      bounds = Util.boundsToPCRSBounds(
         bounds,
         zoomValue,
         projection,
@@ -720,7 +725,9 @@ export class MapLink extends HTMLElement {
     let zoom = 0;
     let metaExtent = this.parentElement.getMeta('extent');
     if (metaExtent) {
-      let content = M._metaContentToObject(metaExtent.getAttribute('content')),
+      let content = Util._metaContentToObject(
+          metaExtent.getAttribute('content')
+        ),
         cs;
 
       zoom = content.zoom || zoom;
@@ -728,12 +735,12 @@ export class MapLink extends HTMLElement {
       let metaKeys = Object.keys(content);
       for (let i = 0; i < metaKeys.length; i++) {
         if (!metaKeys[i].includes('zoom')) {
-          cs = M.axisToCS(metaKeys[i].split('-')[2]);
+          cs = Util.axisToCS(metaKeys[i].split('-')[2]);
           break;
         }
       }
-      let axes = M.csToAxes(cs);
-      bounds = M.boundsToPCRSBounds(
+      let axes = Util.csToAxes(cs);
+      bounds = Util.boundsToPCRSBounds(
         L.bounds(
           L.point(
             +content[`top-left-${axes[0]}`],
@@ -804,7 +811,7 @@ export class MapLink extends HTMLElement {
     // search document from here up, using closest source of zoom bounds info
     let meta = this.parentElement.getMeta('zoom');
     let metaMin = meta
-      ? +M._metaContentToObject(meta.getAttribute('content'))?.min
+      ? +Util._metaContentToObject(meta.getAttribute('content'))?.min
       : null;
     zoomBounds.minZoom =
       metaMin || (zoomInput ? +zoomInput.getAttribute('min') : 0);
@@ -812,7 +819,7 @@ export class MapLink extends HTMLElement {
       ? +zoomInput.getAttribute('min')
       : zoomBounds.minZoom;
     let metaMax = meta
-      ? +M._metaContentToObject(meta.getAttribute('content'))?.max
+      ? +Util._metaContentToObject(meta.getAttribute('content'))?.max
       : null;
     zoomBounds.maxZoom =
       metaMax ||

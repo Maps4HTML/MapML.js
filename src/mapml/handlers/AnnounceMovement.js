@@ -1,3 +1,4 @@
+import { Util } from '../utils/Util';
 export var AnnounceMovement = L.Handler.extend({
   addHooks: function () {
     this._map.on({
@@ -65,7 +66,7 @@ export var AnnounceMovement = L.Handler.extend({
       return;
     }
     let mapZoom = this._map.getZoom();
-    let mapBounds = M.pixelToPCRSBounds(
+    let mapBounds = Util.pixelToPCRSBounds(
       this._map.getPixelBounds(),
       mapZoom,
       this._map.options.projection
@@ -133,9 +134,9 @@ export var AnnounceMovement = L.Handler.extend({
         if (layers[i]._layer) {
           let extent = layers[i].extent;
           if (bounds && extent) {
-            bounds.extend(M.extentToBounds(extent, 'pcrs'));
+            bounds.extend(Util.extentToBounds(extent, 'pcrs'));
           } else if (extent) {
-            bounds = M.extentToBounds(extent, 'pcrs');
+            bounds = Util.extentToBounds(extent, 'pcrs');
           }
         }
       }

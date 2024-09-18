@@ -18,11 +18,11 @@ test.describe('Playwright mapml-viewer issue-980 test', () => {
 
   test('mapml-viewer projection set to unknown prj errors to console', async () => {
     let message;
-    page.on('pageerror', exception  => message = exception.message);
+    page.on('pageerror', (exception) => (message = exception.message));
     const viewer = page.getByTestId('testviewer');
     await viewer.evaluate((v) => (v.projection = 'unknown'));
     // update the projection attribute on the viewer
-    await page.waitForTimeout(5000);
-    expect(message).toBe("Undefined projection: unknown");
+    await page.waitForTimeout(6000);
+    expect(message).toBe('Undefined projection: unknown');
   });
 });

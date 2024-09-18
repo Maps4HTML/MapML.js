@@ -1,3 +1,5 @@
+import { Path, path } from './path';
+
 export var Geometry = L.FeatureGroup.extend({
   /**
    * Initialize the feature group
@@ -7,7 +9,7 @@ export var Geometry = L.FeatureGroup.extend({
   initialize: function (layers, options) {
     if (options.wrappers && options.wrappers.length > 0)
       options = Object.assign(
-        M.Path.prototype._convertWrappers(options.wrappers),
+        Path.prototype._convertWrappers(options.wrappers),
         options
       );
 
@@ -26,7 +28,7 @@ export var Geometry = L.FeatureGroup.extend({
     ) {
       L.DomUtil.addClass(this.options.group, 'leaflet-interactive');
       if (this.options.link) {
-        M.Path.prototype.attachLinkHandler.call(
+        Path.prototype.attachLinkHandler.call(
           this,
           this.options.group,
           this.options.link,
@@ -191,7 +193,7 @@ export var Geometry = L.FeatureGroup.extend({
   },
 
   /**
-   * Add a M.Path to the M.Geometry
+   * Add a Path to the Geometry
    * @param layer
    */
   addLayer: function (layer) {
@@ -254,10 +256,10 @@ export var Geometry = L.FeatureGroup.extend({
 });
 
 /**
- * Returns new M.Geometry
+ * Returns new Geometry
  * @param {M.Path[]} layers - Layers belonging to feature group
  * @param {Object} options - Options for the feature group
- * @returns {M.Geometry}
+ * @returns {Geometry}
  */
 export var geometry = function (layers, options) {
   return new Geometry(layers, options);

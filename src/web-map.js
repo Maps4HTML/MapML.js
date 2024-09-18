@@ -1,5 +1,6 @@
-import './leaflet.js'; // bundled with proj4, proj4leaflet, modularized
-import './mapml.js';
+import { Util } from './mapml/utils/Util';
+import { DOMTokenList } from './mapml/utils/DOMTokenList';
+
 import { MapLayer } from './layer.js';
 import { MapArea } from './map-area.js';
 import { MapCaption } from './map-caption.js';
@@ -9,6 +10,16 @@ import { MapInput } from './map-input.js';
 import { MapSelect } from './map-select.js';
 import { MapLink } from './map-link.js';
 import { MapStyle } from './map-style.js';
+
+import { layerControl } from './mapml/control/LayerControl';
+import { AttributionButton } from './mapml/control/AttributionButton';
+import { reloadButton } from './mapml/control/ReloadButton';
+import { scaleBar } from './mapml/control/ScaleBar';
+import { fullscreenButton } from './mapml/control/FullscreenButton';
+import { geolocationButton } from './mapml/control/GeolocationButton';
+import { debugOverlay } from './mapml/layers/DebugOverlay';
+import { crosshair } from './mapml/layers/Crosshair';
+import { featureIndexOverlay } from './mapml/layers/FeatureIndexOverlay';
 
 export class WebMap extends HTMLMapElement {
   static get observedAttributes() {
@@ -111,12 +122,12 @@ export class WebMap extends HTMLMapElement {
 
   get extent() {
     let map = this._map,
-      pcrsBounds = M.pixelToPCRSBounds(
+      pcrsBounds = Util.pixelToPCRSBounds(
         map.getPixelBounds(),
         map.getZoom(),
         map.options.projection
       );
-    let formattedExtent = M._convertAndFormatPCRS(
+    let formattedExtent = Util._convertAndFormatPCRS(
       pcrsBounds,
       map.options.crs,
       this.projection
@@ -162,7 +173,7 @@ export class WebMap extends HTMLMapElement {
       .then(() => {
         this._initShadowRoot();
 
-        this._controlsList = new M.DOMTokenList(
+        this._controlsList = new DOMTokenList(
           this.getAttribute('controlslist'),
           this,
           'controlslist',
@@ -310,10 +321,10 @@ export class WebMap extends HTMLMapElement {
 
       this._createControls();
       this._toggleControls();
-      this._crosshair = M.crosshair().addTo(this._map);
+      this._crosshair = crosshair().addTo(this._map);
 
       if (M.options.featureIndexOverlayOption)
-        this._featureIndexOverlay = M.featureIndexOverlay().addTo(this._map);
+        this._featureIndexOverlay = featureIndexOverlay().addTo(this._map);
 
       if (this.hasAttribute('name')) {
         var name = this.getAttribute('name');
@@ -482,7 +493,7 @@ export class WebMap extends HTMLMapElement {
     let mapSize = this._map.getSize().y,
       totalSize = 0;
 
-    this._layerControl = M.layerControl(null, {
+    this._layerControl = layerControl(null, {
       collapsed: true,
       mapEl: this
     }).addTo(this._map);
@@ -497,8 +508,7 @@ export class WebMap extends HTMLMapElement {
       scaleValue = { metric: false, imperial: true };
     }
 
-    if (!this._scaleBar)
-      this._scaleBar = M.scaleBar(scaleValue).addTo(this._map);
+    if (!this._scaleBar) this._scaleBar = scaleBar(scaleValue).addTo(this._map);
 
     // Only add controls if there is enough top left vertical space
     if (!this._zoomControl && totalSize + 93 <= mapSize) {
@@ -507,15 +517,15 @@ export class WebMap extends HTMLMapElement {
     }
     if (!this._reloadButton && totalSize + 49 <= mapSize) {
       totalSize += 49;
-      this._reloadButton = M.reloadButton().addTo(this._map);
+      this._reloadButton = reloadButton().addTo(this._map);
     }
     if (!this._fullScreenControl && totalSize + 49 <= mapSize) {
       totalSize += 49;
-      this._fullScreenControl = M.fullscreenButton().addTo(this._map);
+      this._fullScreenControl = fullscreenButton().addTo(this._map);
     }
 
     if (!this._geolocationButton) {
-      this._geolocationButton = M.geolocationButton().addTo(this._map);
+      this._geolocationButton = geolocationButton().addTo(this._map);
     }
   }
 
@@ -666,7 +676,7 @@ export class WebMap extends HTMLMapElement {
   _dropHandler(event) {
     event.preventDefault();
     let text = event.dataTransfer.getData('text');
-    M._pasteLayer(this, text);
+    Util._pasteLayer(this, text);
   }
   _dragoverHandler(event) {
     event.preventDefault();
@@ -715,7 +725,7 @@ export class WebMap extends HTMLMapElement {
     this.addEventListener('keydown', function (e) {
       if (e.keyCode === 86 && e.ctrlKey) {
         navigator.clipboard.readText().then((layer) => {
-          M._pasteLayer(this, layer);
+          Util._pasteLayer(this, layer);
         });
         // Prevents default spacebar event on all of web-map
       } else if (
@@ -1026,7 +1036,7 @@ export class WebMap extends HTMLMapElement {
       this._debug.remove();
       this._debug = undefined;
     } else {
-      this._debug = M.debugOverlay().addTo(this._map);
+      this._debug = debugOverlay().addTo(this._map);
     }
   }
 
@@ -1481,7 +1491,7 @@ export class WebMap extends HTMLMapElement {
     if (options.projection === undefined) {
       options.projection = this.projection;
     }
-    let geojsonLayer = M.geojson2mapml(json, options);
+    let geojsonLayer = Util.geojson2mapml(json, options);
     this.appendChild(geojsonLayer);
     return geojsonLayer;
   }

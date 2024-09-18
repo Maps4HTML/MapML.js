@@ -67,7 +67,7 @@ test.describe('map-feature extent functionality and API', () => {
     // get bounds of map-meta
     const meta = await page.getByTestId('meta-ext1');
     const metaExtent = await meta.evaluate((m) => {
-      let content = M._metaContentToObject(m.getAttribute('content'));
+      let content = M.Util._metaContentToObject(m.getAttribute('content'));
       return {
         xmin: +content['top-left-easting'],
         ymin: +content['bottom-right-northing'],
@@ -114,7 +114,7 @@ test.describe('map-feature extent functionality and API', () => {
     // get bounds of map-meta
     const meta = await page.getByTestId('meta-ext1');
     const metaExtent = await meta.evaluate((m) => {
-      let content = M._metaContentToObject(m.getAttribute('content'));
+      let content = M.Util._metaContentToObject(m.getAttribute('content'));
       return {
         xmin: +content['top-left-easting'],
         ymin: +content['bottom-right-northing'],
@@ -194,7 +194,7 @@ test.describe('map-feature extent functionality and API', () => {
     // get zoom bounds of map-meta
     const meta = await page.getByTestId('meta-zoom1');
     const metaZoomBounds = await meta.evaluate((m) => {
-      let content = M._metaContentToObject(m.getAttribute('content'));
+      let content = M.Util._metaContentToObject(m.getAttribute('content'));
       return {
         zmin: +content['min'],
         zmax: +content['max']

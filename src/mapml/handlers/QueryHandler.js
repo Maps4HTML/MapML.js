@@ -1,3 +1,6 @@
+import { featureLayer } from '../layers/FeatureLayer';
+import { featureRenderer } from '../features/featureRenderer';
+
 export var QueryHandler = L.Handler.extend({
   addHooks: function () {
     // get a reference to the actual <map> element, so we can
@@ -312,10 +315,10 @@ export var QueryHandler = L.Handler.extend({
 
     function displayFeaturesPopup(features, loc) {
       if (features.length === 0) return;
-      let f = M.featureLayer(features, {
+      let f = featureLayer(features, {
         // pass the vector layer a renderer of its own, otherwise leaflet
         // puts everything into the overlayPane
-        renderer: M.featureRenderer(),
+        renderer: featureRenderer(),
         // pass the vector layer the container for the parent into which
         // it will append its own container for rendering into
         pane: container,

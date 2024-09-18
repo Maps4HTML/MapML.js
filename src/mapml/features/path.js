@@ -1,3 +1,4 @@
+import { Util } from '../utils/Util';
 /**
  * M.Path is a extension of L.Path that understands mapml feature markup
  * It converts the markup to the following structure (abstract enough to encompass all feature types) for example:
@@ -79,7 +80,7 @@ export var Path = L.Path.extend({
         nextLayer = nextLayer.nextElementSibling;
       }
       if (onTop && dragStart) {
-        //M._handleLink gets called twice, once in the target phase on the path
+        //Util._handleLink gets called twice, once in the target phase on the path
         //element, then in the bubble phase on the g element
         //Using stopPropagation leaves the mouse in the mousedown state
         if (e.eventPhase === Event.BUBBLING_PHASE) return;
@@ -91,7 +92,7 @@ export var Path = L.Path.extend({
           link.visited = true;
           elem.setAttribute('stroke', '#6c00a2');
           elem.classList.add('map-a-visited');
-          M._handleLink(link, leafletLayer);
+          Util._handleLink(link, leafletLayer);
         }
       }
     };
@@ -105,7 +106,7 @@ export var Path = L.Path.extend({
           link.visited = true;
           elem.setAttribute('stroke', '#6c00a2');
           elem.classList.add('map-a-visited');
-          M._handleLink(link, leafletLayer);
+          Util._handleLink(link, leafletLayer);
         }
       },
       this
@@ -388,8 +389,8 @@ export var Path = L.Path.extend({
       bounds;
     for (let p of pairs) {
       let numPair = [];
-      p.split(/\s+/gim).forEach(M._parseNumber, numPair);
-      let point = M.pointToPCRSPoint(
+      p.split(/\s+/gim).forEach(Util._parseNumber, numPair);
+      let point = Util.pointToPCRSPoint(
         L.point(numPair),
         this.options.zoom,
         this.options.projection,

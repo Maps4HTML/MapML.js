@@ -1,3 +1,7 @@
+import { Util } from '../utils/Util';
+import { featureLayer } from '../layers/FeatureLayer';
+import { FeatureRenderer } from '../features/featureRenderer';
+
 export var TemplatedTileLayer = L.TileLayer.extend({
   // a TemplateTileLayer is similar to a L.TileLayer except its templates are
   // defined by the <map-extent><template/></map-extent>
@@ -61,7 +65,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
   isVisible: function () {
     let map = this._linkEl.getMapEl()._map;
     let mapZoom = map.getZoom();
-    let mapBounds = M.pixelToPCRSBounds(
+    let mapBounds = Util.pixelToPCRSBounds(
       map.getPixelBounds(),
       mapZoom,
       map.options.projection
@@ -249,7 +253,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       xOffset = coords.x * tileSize,
       yOffset = coords.y * tileSize;
 
-    let tileFeatures = M.featureLayer(null, {
+    let tileFeatures = featureLayer(null, {
       projection: this._map.options.projection,
       tiles: true,
       layerBounds: this.extentBounds,
@@ -257,7 +261,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       interactive: false,
       mapEl: this._linkEl.getMapEl()
     });
-    let fallback = M.getNativeVariables(markup);
+    let fallback = Util.getNativeVariables(markup);
     let features = markup.querySelectorAll('map-feature:has(> map-geometry)');
     for (let i = 0; i < features.length; i++) {
       let feature = tileFeatures.createGeometry(
@@ -267,10 +271,10 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       );
       for (let featureID in feature._layers) {
         let layer = feature._layers[featureID];
-        M.FeatureRenderer.prototype._initPath(layer, false);
+        FeatureRenderer.prototype._initPath(layer, false);
         layer._project(this._map, L.point([xOffset, yOffset]), coords.z);
-        M.FeatureRenderer.prototype._addPath(layer, g, false);
-        M.FeatureRenderer.prototype._updateFeature(layer);
+        FeatureRenderer.prototype._addPath(layer, g, false);
+        FeatureRenderer.prototype._updateFeature(layer);
       }
     }
     svg.setAttribute('width', tileSize.toString());
@@ -549,11 +553,11 @@ export var TemplatedTileLayer = L.TileLayer.extend({
         template.pcrs.northing = '';
       }
 
-      template.pcrs.bounds = M.boundsToPCRSBounds(
+      template.pcrs.bounds = Util.boundsToPCRSBounds(
         L.bounds(L.point([col.min, row.min]), L.point([col.max, row.max])),
         template.zoom.initialValue,
         this.options.crs,
-        M.axisToCS('column')
+        Util.axisToCS('column')
       );
 
       template.tilematrix = {};

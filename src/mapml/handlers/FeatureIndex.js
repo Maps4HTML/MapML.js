@@ -1,10 +1,11 @@
+import { Util } from '../utils/Util';
 export var FeatureIndex = L.Handler.extend({
   initialize: function (map) {
     L.Handler.prototype.initialize.call(this, map);
     this.inBoundFeatures = [];
     this.outBoundFeatures = [];
     this.currentIndex = 0;
-    this._mapPCRSBounds = M.pixelToPCRSBounds(
+    this._mapPCRSBounds = Util.pixelToPCRSBounds(
       map.getPixelBounds(),
       map.getZoom(),
       map.options.projection
@@ -105,7 +106,7 @@ export var FeatureIndex = L.Handler.extend({
    */
   _updateMapBounds: function (e) {
     // TODO: map's PCRS bounds is used in other parts of the viewer, can be moved out to the map object directly
-    this._mapPCRSBounds = M.pixelToPCRSBounds(
+    this._mapPCRSBounds = Util.pixelToPCRSBounds(
       this._map.getPixelBounds(),
       this._map.getZoom(),
       this._map.options.projection

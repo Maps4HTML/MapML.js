@@ -1,3 +1,5 @@
+import { Util } from './mapml/utils/Util';
+
 export class MapFeature extends HTMLElement {
   static get observedAttributes() {
     return ['zoom', 'min', 'max'];
@@ -10,7 +12,8 @@ export class MapFeature extends HTMLElement {
     // for templated or queried features ** native zoom is only used for zoomTo() **
     let meta = {},
       metaEl = this.getMeta('zoom');
-    if (metaEl) meta = M._metaContentToObject(metaEl.getAttribute('content'));
+    if (metaEl)
+      meta = Util._metaContentToObject(metaEl.getAttribute('content'));
     if (this._parentEl.nodeName === 'MAP-LINK') {
       // nativeZoom = zoom attribute || (sd.map-meta zoom 'value'  || 'max') || this._initialZoom
       return +(this.hasAttribute('zoom')
@@ -43,7 +46,8 @@ export class MapFeature extends HTMLElement {
     // for templated or queried features ** native zoom is only used for zoomTo() **
     let meta = {},
       metaEl = this.getMeta('zoom');
-    if (metaEl) meta = M._metaContentToObject(metaEl.getAttribute('content'));
+    if (metaEl)
+      meta = Util._metaContentToObject(metaEl.getAttribute('content'));
     let projectionMinZoom = 0;
     if (this._parentEl.nodeName === 'MAP-LINK') {
       // minZoom = min attribute || sd.map-meta min zoom || map-link minZoom
@@ -82,7 +86,8 @@ export class MapFeature extends HTMLElement {
     // for templated or queried features ** native zoom is only used for zoomTo() **
     let meta = {},
       metaEl = this.getMeta('zoom');
-    if (metaEl) meta = M._metaContentToObject(metaEl.getAttribute('content'));
+    if (metaEl)
+      meta = Util._metaContentToObject(metaEl.getAttribute('content'));
     let projectionMaxZoom =
       this.getMapEl()._map.options.crs.options.resolutions.length - 1;
     if (this._parentEl.nodeName === 'MAP-LINK') {
@@ -129,10 +134,10 @@ export class MapFeature extends HTMLElement {
     }
   }
   getMapEl() {
-    return M.getClosest(this, 'mapml-viewer,map[is=web-map]');
+    return Util.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return M.getClosest(this, 'layer-');
+    return Util.getClosest(this, 'layer-');
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -231,7 +236,7 @@ export class MapFeature extends HTMLElement {
     // layerToRemoveFrom is the L.LayerGroup or L.FeatureGroup to remove this
     // feature from...
     layerToRemoveFrom.removeLayer(this._geometry);
-    // TODO: MOVE THIS LOGIC TO layerToRemoveFrom.removeLayer(M.Geometry)
+    // TODO: MOVE THIS LOGIC TO layerToRemoveFrom.removeLayer(Geometry)
     //    if (layerToRemoveFrom._staticFeature) {
     //      if (layerToRemoveFrom._features[this.zoom]) {
     //        this._removeInFeatureList(this.zoom);
@@ -302,7 +307,7 @@ export class MapFeature extends HTMLElement {
     // the fallback 'gcrs' SHOULD be specified by the MapML spec
     // per https://github.com/Maps4HTML/MapML/issues/257
     return csMeta
-      ? M._metaContentToObject(csMeta.getAttribute('content')).content
+      ? Util._metaContentToObject(csMeta.getAttribute('content')).content
       : 'gcrs';
   }
 
@@ -341,7 +346,7 @@ export class MapFeature extends HTMLElement {
         }
         let topLeft = L.point(bboxExtent[0], bboxExtent[1]);
         let bottomRight = L.point(bboxExtent[2], bboxExtent[3]);
-        let pcrsBound = M.boundsToPCRSBounds(
+        let pcrsBound = Util.boundsToPCRSBounds(
           L.bounds(topLeft, bottomRight),
           zoom,
           map.options.projection,
@@ -360,14 +365,14 @@ export class MapFeature extends HTMLElement {
               pcrsBound.min,
               M[projection].scale(+this.zoom || maxZoom)
             );
-          pcrsBound = M.pixelToPCRSBounds(
+          pcrsBound = Util.pixelToPCRSBounds(
             L.bounds(pixel.subtract(tileCenter), pixel.add(tileCenter)),
             this.zoom || maxZoom,
             projection
           );
         }
         let result = Object.assign(
-          M._convertAndFormatPCRS(
+          Util._convertAndFormatPCRS(
             pcrsBound,
             map.options.crs,
             map.options.projection
@@ -389,14 +394,14 @@ export class MapFeature extends HTMLElement {
         .split(/[<>\ ]/g);
       switch (shape.tagName.toUpperCase()) {
         case 'MAP-POINT':
-          bboxExtent = M._updateExtent(bboxExtent, +data[0], +data[1]);
+          bboxExtent = Util._updateExtent(bboxExtent, +data[0], +data[1]);
           break;
         case 'MAP-LINESTRING':
         case 'MAP-POLYGON':
         case 'MAP-MULTIPOINT':
         case 'MAP-MULTILINESTRING':
           for (let i = 0; i < data.length; i += 2) {
-            bboxExtent = M._updateExtent(bboxExtent, +data[i], +data[i + 1]);
+            bboxExtent = Util._updateExtent(bboxExtent, +data[i], +data[i + 1]);
           }
           break;
         default:
@@ -433,7 +438,7 @@ export class MapFeature extends HTMLElement {
       newZoom = this.zoom;
     } else {
       // if not, calculate the maximum zoom level that can show the feature completely
-      newZoom = M.getMaxZoom(bound, this.getMapEl()._map, minZoom, maxZoom);
+      newZoom = Util.getMaxZoom(bound, this.getMapEl()._map, minZoom, maxZoom);
       if (this.max < newZoom) {
         // if the calculated zoom is greater than the value of max zoom attribute, go with max zoom attribute
         newZoom = this.max;
@@ -495,7 +500,7 @@ export class MapFeature extends HTMLElement {
     } else if (el.querySelector('table')) {
       // setting properties when table presented
       let table = el.querySelector('table').cloneNode(true);
-      json.properties = M._table2properties(table);
+      json.properties = Util._table2properties(table);
     } else {
       // when no table present, strip any possible html tags to only get text
       json.properties = {
@@ -530,11 +535,11 @@ export class MapFeature extends HTMLElement {
       json.geometry.geometries = [];
       for (let shape of shapes) {
         json.geometry.geometries.push(
-          M._geometry2geojson(shape, source, dest, options.transform)
+          Util._geometry2geojson(shape, source, dest, options.transform)
         );
       }
     } else {
-      json.geometry = M._geometry2geojson(
+      json.geometry = Util._geometry2geojson(
         shapes[0],
         source,
         dest,

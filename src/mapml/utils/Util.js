@@ -1,4 +1,4 @@
-export var Util = {
+export const Util = {
   // _convertAndFormatPCRS returns the converted CRS and formatted pcrsBounds in gcrs, pcrs, tcrs, and tilematrix. Used for setting extent for the map and layer (map.extent, layer.extent).
   // _convertAndFormatPCRS: L.Bounds, _map, projection -> {...}
   _convertAndFormatPCRS: function (pcrsBounds, crs, projection) {
@@ -246,7 +246,7 @@ export var Util = {
     let tileSize = projection.options.crs.tile.bounds.max.x;
     switch (cs.toUpperCase()) {
       case 'TILEMATRIX':
-        return M.pixelToPCRSPoint(
+        return Util.pixelToPCRSPoint(
           L.point(point.x * tileSize, point.y * tileSize),
           zoom,
           projection
@@ -254,7 +254,7 @@ export var Util = {
       case 'PCRS':
         return point;
       case 'TCRS' || 'TILE':
-        return M.pixelToPCRSPoint(point, zoom, projection);
+        return Util.pixelToPCRSPoint(point, zoom, projection);
       case 'GCRS':
         return projection.project(L.latLng(point.y, point.x));
       default:
@@ -292,8 +292,8 @@ export var Util = {
       return undefined;
     projection = typeof projection === 'string' ? M[projection] : projection;
     return L.bounds(
-      M.pointToPCRSPoint(bounds.min, zoom, projection, cs),
-      M.pointToPCRSPoint(bounds.max, zoom, projection, cs)
+      Util.pointToPCRSPoint(bounds.min, zoom, projection, cs),
+      Util.pointToPCRSPoint(bounds.max, zoom, projection, cs)
     );
   },
 
@@ -311,8 +311,8 @@ export var Util = {
       return undefined;
     projection = typeof projection === 'string' ? M[projection] : projection;
     return L.bounds(
-      M.pixelToPCRSPoint(bounds.min, zoom, projection),
-      M.pixelToPCRSPoint(bounds.max, zoom, projection)
+      Util.pixelToPCRSPoint(bounds.min, zoom, projection),
+      Util.pixelToPCRSPoint(bounds.max, zoom, projection)
     );
   },
 
@@ -349,7 +349,7 @@ export var Util = {
   // _splitCoordinate splits string coordinates to an array as floating point numbers
   _splitCoordinate: function (element, index, array) {
     var a = [];
-    element.split(/\s+/gim).forEach(M._parseNumber, a);
+    element.split(/\s+/gim).forEach(Util._parseNumber, a);
     this.push(a);
   },
 
@@ -452,7 +452,7 @@ export var Util = {
       pseudo = mapml instanceof ShadowRoot ? ':host' : ':scope',
       projection =
         (mapml.querySelector(pseudo + ' > map-meta[name=projection]') &&
-          M._metaContentToObject(
+          Util._metaContentToObject(
             mapml
               .querySelector(pseudo + ' > map-meta[name=projection]')
               .getAttribute('content')
@@ -461,7 +461,7 @@ export var Util = {
     try {
       let meta =
         mapml.querySelector(pseudo + ' > map-meta[name=extent]') &&
-        M._metaContentToObject(
+        Util._metaContentToObject(
           mapml
             .querySelector(pseudo + ' > map-meta[name=extent]')
             .getAttribute('content')
@@ -472,7 +472,7 @@ export var Util = {
       let metaKeys = Object.keys(meta);
       for (let i = 0; i < metaKeys.length; i++) {
         if (!metaKeys[i].includes('zoom')) {
-          cs = M.axisToCS(metaKeys[i].split('-')[2]);
+          cs = Util.axisToCS(metaKeys[i].split('-')[2]);
           break;
         }
       }
@@ -489,8 +489,8 @@ export var Util = {
         throw new Error(
           'map-meta[name=extent] zoom= parameter not provided for tcrs,tile or tilematrix bounds'
         );
-      let axes = M.csToAxes(cs);
-      return M.boundsToPCRSBounds(
+      let axes = Util.csToAxes(cs);
+      return Util.boundsToPCRSBounds(
         L.bounds(
           L.point(+meta[`top-left-${axes[0]}`], +meta[`top-left-${axes[1]}`]),
           L.point(
@@ -504,7 +504,7 @@ export var Util = {
       );
     } catch (error) {
       //if error then by default set the layer to osm and bounds to the entire map view
-      return M.boundsToPCRSBounds(
+      return Util.boundsToPCRSBounds(
         M[projection].options.crs.tilematrix.bounds(0),
         0,
         projection,
@@ -523,7 +523,7 @@ export var Util = {
     if (!mapml) return null;
     let pseudo = mapml instanceof ShadowRoot ? ':host' : ':scope';
 
-    let meta = M._metaContentToObject(
+    let meta = Util._metaContentToObject(
       mapml
         .querySelector(pseudo + '> map-meta[name=zoom]')
         .getAttribute('content')
@@ -563,10 +563,10 @@ export var Util = {
       nMin = Math.min(nMin, lZoom);
     }
     try {
-      projection = M._metaContentToObject(
+      projection = Util._metaContentToObject(
         mapml.querySelector('map-meta[name=projection]').getAttribute('content')
       ).content;
-      meta = M._metaContentToObject(
+      meta = Util._metaContentToObject(
         mapml.querySelector('map-meta[name=zoom]').getAttribute('content')
       );
     } catch (error) {
@@ -602,14 +602,14 @@ export var Util = {
       nativeZoom =
         (mapmlEl.querySelector &&
           mapmlEl.querySelector('map-meta[name=zoom]') &&
-          +M._metaContentToObject(
+          +Util._metaContentToObject(
             mapmlEl.querySelector('map-meta[name=zoom]').getAttribute('content')
           ).value) ||
         0;
       nativeCS =
         (mapmlEl.querySelector &&
           mapmlEl.querySelector('map-meta[name=cs]') &&
-          M._metaContentToObject(
+          Util._metaContentToObject(
             mapmlEl.querySelector('map-meta[name=cs]').getAttribute('content')
           ).content) ||
         'GCRS';
@@ -618,14 +618,14 @@ export var Util = {
       nativeZoom =
         (mapml.querySelector &&
           mapml.querySelector('map-meta[name=zoom]') &&
-          +M._metaContentToObject(
+          +Util._metaContentToObject(
             mapml.querySelector('map-meta[name=zoom]').getAttribute('content')
           ).value) ||
         0;
       nativeCS =
         (mapml.querySelector &&
           mapml.querySelector('map-meta[name=cs]') &&
-          M._metaContentToObject(
+          Util._metaContentToObject(
             mapml.querySelector('map-meta[name=cs]').getAttribute('content')
           ).content) ||
         'GCRS';
@@ -872,7 +872,7 @@ export var Util = {
       let features = json.features;
       //console.log("Features length - " + features.length);
       for (let l = 0; l < features.length; l++) {
-        M.geojson2mapml(features[l], options, layer, bboxExtent);
+        Util.geojson2mapml(features[l], options, layer, bboxExtent);
       }
     } else if (jsonType === 'FEATURE') {
       let clone_feature = feature.cloneNode(true);
@@ -946,7 +946,7 @@ export var Util = {
         p = options.properties;
       } else {
         // If no properties function, string or HTMLElement is passed
-        p = M._properties2Table(json.properties);
+        p = Util._properties2Table(json.properties);
       }
 
       if (p) {
@@ -954,7 +954,7 @@ export var Util = {
       }
 
       // Setting map-geometry
-      let g = M.geojson2mapml(json.geometry, options, layer, bboxExtent);
+      let g = Util.geojson2mapml(json.geometry, options, layer, bboxExtent);
       if (typeof options.geometryFunction === 'function') {
         curr_feature
           .querySelector('map-geometry')
@@ -969,7 +969,7 @@ export var Util = {
       //console.log("Geometry Type - " + jsonType);
       switch (jsonType) {
         case 'POINT':
-          bboxExtent = M._updateExtent(
+          bboxExtent = Util._updateExtent(
             bboxExtent,
             json.coordinates[0],
             json.coordinates[1]
@@ -998,7 +998,7 @@ export var Util = {
           out = '';
 
           for (let x = 0; x < json.coordinates.length; x++) {
-            bboxExtent = M._updateExtent(
+            bboxExtent = Util._updateExtent(
               bboxExtent,
               json.coordinates[x][0],
               json.coordinates[x][1]
@@ -1023,7 +1023,7 @@ export var Util = {
 
             // Going over coordinates for the polygon
             for (let x = 0; x < json.coordinates[y].length; x++) {
-              bboxExtent = M._updateExtent(
+              bboxExtent = Util._updateExtent(
                 bboxExtent,
                 json.coordinates[y][x][0],
                 json.coordinates[y][x][1]
@@ -1051,7 +1051,7 @@ export var Util = {
           clone_multipoint = clone_multipoint.querySelector('map-multipoint');
 
           for (let i = 0; i < json.coordinates.length; i++) {
-            bboxExtent = M._updateExtent(
+            bboxExtent = Util._updateExtent(
               bboxExtent,
               json.coordinates[i][0],
               json.coordinates[i][1]
@@ -1073,7 +1073,7 @@ export var Util = {
             let clone_coords = coords.cloneNode(true);
             clone_coords = clone_coords.querySelector('map-coordinates');
             for (let y = 0; y < json.coordinates[i].length; y++) {
-              bboxExtent = M._updateExtent(
+              bboxExtent = Util._updateExtent(
                 bboxExtent,
                 json.coordinates[i][y][0],
                 json.coordinates[i][y][1]
@@ -1107,7 +1107,7 @@ export var Util = {
 
               // Going over coordinates for the polygon
               for (let x = 0; x < json.coordinates[i][y].length; x++) {
-                bboxExtent = M._updateExtent(
+                bboxExtent = Util._updateExtent(
                   bboxExtent,
                   json.coordinates[i][y][x][0],
                   json.coordinates[i][y][x][1]
@@ -1133,7 +1133,7 @@ export var Util = {
           g = g.querySelector('map-geometrycollection');
           //console.log(json.geometries);
           for (let i = 0; i < json.geometries.length; i++) {
-            let fg = M.geojson2mapml(
+            let fg = Util.geojson2mapml(
               json.geometries[i],
               options,
               layer,
@@ -1233,9 +1233,9 @@ export var Util = {
       case 'MAP-LINESTRING':
         j.type = 'LineString';
         coord = el.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g);
-        coord = M._breakArray(coord);
+        coord = Util._breakArray(coord);
         if (transform) {
-          coord = M._pcrsToGcrs(coord, source, dest);
+          coord = Util._pcrsToGcrs(coord, source, dest);
         }
         j.coordinates = coord;
         break;
@@ -1245,9 +1245,9 @@ export var Util = {
         let x = 0;
         el.querySelectorAll('map-coordinates').forEach((coord) => {
           coord = coord.innerHTML.split(/[<>\ ]/g);
-          coord = M._breakArray(coord);
+          coord = Util._breakArray(coord);
           if (transform) {
-            coord = M._pcrsToGcrs(coord, source, dest);
+            coord = Util._pcrsToGcrs(coord, source, dest);
           }
           j.coordinates[x] = coord;
           x++;
@@ -1255,11 +1255,11 @@ export var Util = {
         break;
       case 'MAP-MULTIPOINT':
         j.type = 'MultiPoint';
-        coord = M._breakArray(
+        coord = Util._breakArray(
           el.querySelector('map-coordinates').innerHTML.split(/[<>\ ]/g)
         );
         if (transform) {
-          coord = M._pcrsToGcrs(coord, source, dest);
+          coord = Util._pcrsToGcrs(coord, source, dest);
         }
         j.coordinates = coord;
         break;
@@ -1269,9 +1269,9 @@ export var Util = {
         let i = 0;
         el.querySelectorAll('map-coordinates').forEach((coord) => {
           coord = coord.innerHTML.split(/[<>\ ]/g);
-          coord = M._breakArray(coord);
+          coord = Util._breakArray(coord);
           if (transform) {
-            coord = M._pcrsToGcrs(coord, source, dest);
+            coord = Util._pcrsToGcrs(coord, source, dest);
           }
           j.coordinates[i] = coord;
           i++;
@@ -1286,9 +1286,9 @@ export var Util = {
           j.coordinates.push([]);
           poly.querySelectorAll('map-coordinates').forEach((coord) => {
             coord = coord.innerHTML.split(/[<>\ ]/g);
-            coord = M._breakArray(coord);
+            coord = Util._breakArray(coord);
             if (transform) {
-              coord = M._pcrsToGcrs(coord, source, dest);
+              coord = Util._pcrsToGcrs(coord, source, dest);
             }
             j.coordinates[p].push([]);
             j.coordinates[p][y] = coord;
@@ -1395,7 +1395,7 @@ export var Util = {
             .querySelector('map-properties')
             .querySelector('table')
             .cloneNode(true),
-          properties = M._table2properties(table);
+          properties = Util._table2properties(table);
         json.features[num].properties = properties;
       } else {
         // when no table present, strip any possible html tags to only get text
@@ -1418,7 +1418,7 @@ export var Util = {
 
       // Adding Geometry
       if (geom.nodeName.toUpperCase() !== 'MAP-GEOMETRYCOLLECTION') {
-        json.features[num].geometry = M._geometry2geojson(
+        json.features[num].geometry = Util._geometry2geojson(
           geom,
           source,
           dest,
@@ -1438,11 +1438,11 @@ export var Util = {
               e.replaceWith(...e.children)
             );
             Array.from(g.children).forEach((i) => {
-              i = M._geometry2geojson(i, source, dest, options.transform);
+              i = Util._geometry2geojson(i, source, dest, options.transform);
               json.features[num].geometry.geometries.push(i);
             });
           } else {
-            g = M._geometry2geojson(g, source, dest, options.transform);
+            g = Util._geometry2geojson(g, source, dest, options.transform);
             json.features[num].geometry.geometries.push(g);
           }
         });
@@ -1471,12 +1471,12 @@ export var Util = {
       mapTlNew = mapCenterTCRS.subtract(mapHalf).round(),
       mapBrNew = mapCenterTCRS.add(mapHalf).round();
 
-    let mapTlPCRSNew = M.pixelToPCRSPoint(
+    let mapTlPCRSNew = Util.pixelToPCRSPoint(
         mapTlNew,
         newZoom,
         map.options.projection
       ),
-      mapBrPCRSNew = M.pixelToPCRSPoint(
+      mapBrPCRSNew = Util.pixelToPCRSPoint(
         mapBrNew,
         newZoom,
         map.options.projection
@@ -1498,12 +1498,12 @@ export var Util = {
 
       mapTlNew = mapCenterTCRS.subtract(mapHalf).round();
       mapBrNew = mapCenterTCRS.add(mapHalf).round();
-      mapTlPCRSNew = M.pixelToPCRSPoint(
+      mapTlPCRSNew = Util.pixelToPCRSPoint(
         mapTlNew,
         newZoom,
         map.options.projection
       );
-      mapBrPCRSNew = M.pixelToPCRSPoint(
+      mapBrPCRSNew = Util.pixelToPCRSPoint(
         mapBrNew,
         newZoom,
         map.options.projection
@@ -1525,17 +1525,17 @@ export var Util = {
       return null;
     }
     if (node instanceof ShadowRoot) {
-      return M.getClosest(node.host, selector);
+      return Util.getClosest(node.host, selector);
     }
 
     if (node instanceof HTMLElement) {
       if (node.matches(selector)) {
         return node;
       } else {
-        return M.getClosest(node.parentNode, selector);
+        return Util.getClosest(node.parentNode, selector);
       }
     }
 
-    return M.getClosest(node.parentNode, selector);
+    return Util.getClosest(node.parentNode, selector);
   }
 };
