@@ -1,3 +1,5 @@
+import { Util } from '../utils/Util';
+import * as protomapsL from '../../../node_modules/protomaps-leaflet/dist/esm/index.js';
 /* global L */
 
 export var TemplatedPMTilesLayer = L.Layer.extend({
@@ -85,7 +87,7 @@ export var TemplatedPMTilesLayer = L.Layer.extend({
     this._map = map;
     this.options.pane.appendChild(this._container);
     this.setZIndex(this.options.zIndex);
-    this._pmtilesLayer = M.protomapsL
+    this._pmtilesLayer = protomapsL
       .leafletLayer(this._pmtilesOptions)
       .addTo(map);
   },
@@ -97,7 +99,7 @@ export var TemplatedPMTilesLayer = L.Layer.extend({
     if (this._template.projection !== 'OSMTILE') return false;
     let map = this._linkEl.getMapEl()._map;
     let mapZoom = map.getZoom();
-    let mapBounds = M.pixelToPCRSBounds(
+    let mapBounds = Util.pixelToPCRSBounds(
       map.getPixelBounds(),
       mapZoom,
       map.options.projection

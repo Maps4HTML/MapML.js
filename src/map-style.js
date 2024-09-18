@@ -13,7 +13,7 @@ export class MapStyle extends HTMLElement {
     //  be created as part of a templated layer processing i.e. on moveend / when connected
     //  and the generated <style> that implements this <map-style> should be located
     //  in the parent <map-link>._templatedLayer.container root node if
-    //  the _templatedLayer is an instance of M.TemplatedTileLayer or M.TemplatedFeaturesLayer
+    //  the _templatedLayer is an instance of TemplatedTileLayer or TemplatedFeaturesLayer
     //
     // if the parent node (or the host of the shadow root parent node) is layer-, the link should be created in the _layer
     // container

@@ -1,3 +1,7 @@
+import { Util } from '../utils/Util';
+import { featureLayer } from '../layers/FeatureLayer';
+import { featureRenderer } from '../features/featureRenderer';
+
 export var TemplatedFeaturesLayer = L.Layer.extend({
   // this and M.ImageLayer could be merged or inherit from a common parent
   initialize: function (template, options) {
@@ -19,7 +23,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
   isVisible: function () {
     let map = this._linkEl.getMapEl()._map;
     let mapZoom = map.getZoom();
-    let mapBounds = M.pixelToPCRSBounds(
+    let mapBounds = Util.pixelToPCRSBounds(
       map.getPixelBounds(),
       mapZoom,
       map.options.projection
@@ -44,10 +48,10 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
     var opacity = this.options.opacity || 1,
       container = this._container;
     if (!this._features) {
-      this._features = M.featureLayer(null, {
+      this._features = featureLayer(null, {
         // pass the vector layer a renderer of its own, otherwise leaflet
         // puts everything into the overlayPane
-        renderer: M.featureRenderer(),
+        renderer: featureRenderer(),
         // pass the vector layer the container for the parent into which
         // it will append its own container for rendering into
         pane: container,
@@ -215,7 +219,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
         map.addLayer(featureLayer);
         //Fires event for feature index overlay
         map.fire('templatedfeatureslayeradd');
-        M.TemplatedFeaturesLayer.prototype._updateTabIndex(context);
+        TemplatedFeaturesLayer.prototype._updateTabIndex(context);
       })
       .catch(function (error) {
         console.log(error);

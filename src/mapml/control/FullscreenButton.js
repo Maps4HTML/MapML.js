@@ -1,3 +1,4 @@
+import { Util } from '../utils/Util';
 export var FullscreenButton = L.Control.extend({
   options: {
     position: 'topleft',
@@ -53,7 +54,10 @@ L.Map.include({
   toggleFullscreen: function (options) {
     // the <map> element can't contain a shadow root, so we used a child <div>
     // <mapml-viewer> can contain a shadow root, so return it directly
-    var mapEl = M.getClosest(this.getContainer(), 'mapml-viewer,[is=web-map]');
+    var mapEl = Util.getClosest(
+      this.getContainer(),
+      'mapml-viewer,[is=web-map]'
+    );
     if (this.isFullscreen()) {
       if (options && options.pseudoFullscreen) {
         this._disablePseudoFullscreen(mapEl);
@@ -100,7 +104,7 @@ L.Map.include({
 
   _setFullscreen: function (fullscreen) {
     this._isFullscreen = fullscreen;
-    var container = M.getClosest(
+    var container = Util.getClosest(
       this.getContainer(),
       'mapml-viewer,[is=web-map]'
     );
@@ -113,8 +117,8 @@ L.Map.include({
   },
 
   _onFullscreenChange: function (e) {
-    var fullscreenElement = M.getClosest(this.getContainer(), ':fullscreen'),
-      mapEl = M.getClosest(this.getContainer(), 'mapml-viewer,[is=web-map]');
+    var fullscreenElement = Util.getClosest(this.getContainer(), ':fullscreen'),
+      mapEl = Util.getClosest(this.getContainer(), 'mapml-viewer,[is=web-map]');
     if (fullscreenElement === mapEl && !this._isFullscreen) {
       this._setFullscreen(true);
       this.fire('fullscreenchange');

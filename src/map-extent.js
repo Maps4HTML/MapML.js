@@ -1,3 +1,7 @@
+import { Util } from './mapml/utils/Util';
+import { extentLayer } from './mapml/layers/ExtentLayer';
+import { createLayerControlExtentHTML } from './mapml/elementSupport/extents/createLayerControlForExtent';
+
 /* global M */
 export class MapExtent extends HTMLElement {
   static get observedAttributes() {
@@ -54,7 +58,7 @@ export class MapExtent extends HTMLElement {
   get extent() {
     const getExtent = (extent) => {
       return Object.assign(
-        M._convertAndFormatPCRS(
+        Util._convertAndFormatPCRS(
           extent._extentLayer.bounds,
           M[extent.units],
           extent.units
@@ -121,16 +125,16 @@ export class MapExtent extends HTMLElement {
       center = map.options.crs.unproject(bounds.getCenter(true)),
       maxZoom = extent.zoom.maxZoom,
       minZoom = extent.zoom.minZoom;
-    map.setView(center, M.getMaxZoom(bounds, map, minZoom, maxZoom), {
+    map.setView(center, Util.getMaxZoom(bounds, map, minZoom, maxZoom), {
       animate: false
     });
   }
 
   getMapEl() {
-    return M.getClosest(this, 'mapml-viewer,map[is=web-map]');
+    return Util.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return M.getClosest(this, 'layer-');
+    return Util.getClosest(this, 'layer-');
   }
   attributeChangedCallback(name, oldValue, newValue) {
     if (this.#hasConnected /* jshint ignore:line */) {
@@ -226,7 +230,7 @@ export class MapExtent extends HTMLElement {
     // Always call super first in constructor
     super();
     this._createLayerControlExtentHTML =
-      M._createLayerControlExtentHTML.bind(this);
+      createLayerControlExtentHTML.bind(this);
     this._changeHandler = this._handleChange.bind(this);
   }
   async connectedCallback() {
@@ -257,7 +261,7 @@ export class MapExtent extends HTMLElement {
     // this._opacity is used to record the current opacity value (with or without updates),
     // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
     this._opacity = this.opacity || 1.0;
-    this._extentLayer = M.extentLayer({
+    this._extentLayer = extentLayer({
       opacity: this.opacity,
       crs: M[this.units],
       extentZIndex: Array.from(
@@ -493,12 +497,12 @@ export class MapExtent extends HTMLElement {
 
     // initialize bounds from this.scope > map-meta
     let bounds = this.querySelector(':scope > map-meta[name=extent][content]')
-      ? M.getBoundsFromMeta(this) // TODO rewrite this pile of doo doo
+      ? Util.getBoundsFromMeta(this) // TODO rewrite this pile of doo doo
       : undefined;
 
     // initialize zoom bounds from this.scope > map-meta
     let zoomBounds = this.querySelector(':scope > map-meta[name=zoom][content]')
-      ? M.getZoomBoundsFromMeta(this) // TODO rewrite this pile of doo doo
+      ? Util.getZoomBoundsFromMeta(this) // TODO rewrite this pile of doo doo
       : undefined;
 
     // bounds should be able to be calculated unconditionally, not depend on map-extent.checked

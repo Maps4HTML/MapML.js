@@ -1,3 +1,7 @@
+import { Util } from '../utils/Util';
+import { path } from '../features/path';
+import { geometry } from '../features/geometry';
+
 export var FeatureLayer = L.FeatureGroup.extend({
   /*
    * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.
@@ -94,7 +98,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         this._layers &&
         layerBounds &&
         layerBounds.overlaps(
-          M.pixelToPCRSBounds(
+          Util.pixelToPCRSBounds(
             map.getPixelBounds(),
             mapZoom,
             map.options.projection
@@ -227,7 +231,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
   /**
    * Remove the geomtry rendering (an svg g/ M.Geomtry) from the L.FeatureGroup
    * _layers array, so that it's not visible on the map, but still contributes
-   * to the bounds and zoom limits of the M.FeatureLayer.
+   * to the bounds and zoom limits of the FeatureLayer.
    *
    * @param {type} featureToRemove
    * @returns {undefined}
@@ -371,14 +375,14 @@ export var FeatureLayer = L.FeatureGroup.extend({
    * Render a <map-feature> as a Leaflet layer that can be added to a map or
    * LayerGroup as required.  Kind of a "factory" method.
    *
-   * Uses this.options, so if you need to, you can construct an M.featureLayer
+   * Uses this.options, so if you need to, you can construct a FeatureLayer
    * with options set as required
    *
    * @param feature - a <map-feature> element
    * @param {String} fallbackCS - "gcrs" | "pcrs"
    * @param {String} tileZoom - the zoom of the map at which the coordinates will exist
    *
-   * @returns M.Geometry, which is an L.FeatureGroup
+   * @returns Geometry, which is an L.FeatureGroup
    * @public
    */
   createGeometry: function (feature, fallbackCS, tileZoom) {
@@ -416,26 +420,26 @@ export var FeatureLayer = L.FeatureGroup.extend({
     // options.layerBounds and options.zoomBounds are set by TemplatedTileLayer._createFeatures
     // each geometry needs bounds so that it can be a good community member of this._layers
     if (this._staticFeature || this.options.query) {
-      options.layerBounds = M.extentToBounds(feature.extent, 'PCRS');
+      options.layerBounds = Util.extentToBounds(feature.extent, 'PCRS');
       options.zoomBounds = feature.extent.zoom;
     }
-    let geometry = this._geometryToLayer(feature, options, cs, +zoom, title);
-    if (geometry && Object.keys(geometry._layers).length !== 0) {
+    let geom = this._geometryToLayer(feature, options, cs, +zoom, title);
+    if (geom && Object.keys(geom._layers).length !== 0) {
       // if the layer is being used as a query handler output, it will have
       // a color option set.  Otherwise, copy classes from the feature
-      if (!geometry.options.color && feature.hasAttribute('class')) {
-        geometry.options.className = feature.getAttribute('class');
+      if (!geom.options.color && feature.hasAttribute('class')) {
+        geom.options.className = feature.getAttribute('class');
       }
-      geometry.defaultOptions = geometry.options;
-      this.resetStyle(geometry);
+      geom.defaultOptions = geom.options;
+      this.resetStyle(geom);
 
       if (options.onEachFeature) {
-        geometry.bindTooltip(title, { interactive: true, sticky: true });
+        geom.bindTooltip(title, { interactive: true, sticky: true });
       }
       if (feature.tagName.toUpperCase() === 'MAP-FEATURE') {
-        feature._groupEl = geometry.options.group;
+        feature._groupEl = geom.options.group;
       }
-      return geometry;
+      return geom;
     }
   },
 
@@ -471,18 +475,18 @@ export var FeatureLayer = L.FeatureGroup.extend({
     }
   },
   _geometryToLayer: function (feature, vectorOptions, cs, zoom, title) {
-    let geometry = feature.getElementsByTagName('map-geometry')[0],
+    let geom = feature.getElementsByTagName('map-geometry')[0],
       group = [],
       groupOptions = {},
       svgGroup = L.SVG.create('g'),
       copyOptions = Object.assign({}, vectorOptions);
     svgGroup._featureEl = feature; // rendered <g> has a reference to map-feature
-    if (geometry) {
-      for (let geo of geometry.querySelectorAll(
+    if (geom) {
+      for (let geo of geom.querySelectorAll(
         'map-polygon, map-linestring, map-multilinestring, map-point, map-multipoint'
       )) {
         group.push(
-          M.path(
+          path(
             geo,
             Object.assign(copyOptions, {
               nativeCS: cs,
@@ -509,13 +513,13 @@ export var FeatureLayer = L.FeatureGroup.extend({
           zoomBounds: vectorOptions.zoomBounds
         },
         collections =
-          geometry.querySelector('map-multipolygon') ||
-          geometry.querySelector('map-geometrycollection');
+          geom.querySelector('map-multipolygon') ||
+          geom.querySelector('map-geometrycollection');
       if (collections)
         groupOptions.wrappers = this._getGeometryParents(
           collections.parentElement
         );
-      return M.geometry(group, groupOptions);
+      return geometry(group, groupOptions);
     }
   },
 

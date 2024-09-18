@@ -2,7 +2,7 @@
 
 /* 
  * The following imports from protomaps-leaflet are available on the 
- * M.protomapsL global variable e.g. M.protomapsL.CenteredSymbolizer :
+ * protomapsL global variable e.g. protomapsL.CenteredSymbolizer :
 
   CenteredSymbolizer,
   CenteredTextSymbolizer,
@@ -111,28 +111,28 @@ pmtilesRules.set(
       PAINT_RULES: [
         {
           dataLayer: 'streams',
-          symbolizer: new M.protomapsL.LineSymbolizer({
+          symbolizer: new protomapsL.LineSymbolizer({
             color: 'steelblue',
             width: 2
           })
         },
         {
           dataLayer: 'roads',
-          symbolizer: new M.protomapsL.LineSymbolizer({
+          symbolizer: new protomapsL.LineSymbolizer({
             color: 'maroon',
             width: 2
           })
         },
         {
           dataLayer: 'restricted',
-          symbolizer: new M.protomapsL.PolygonSymbolizer({
+          symbolizer: new protomapsL.PolygonSymbolizer({
             fill: 'red',
             opacity: 0.5
           })
         },
         {
           dataLayer: 'restricted',
-          symbolizer: new M.protomapsL.LineSymbolizer({
+          symbolizer: new protomapsL.LineSymbolizer({
             color: 'red',
             width: 2
           })
@@ -155,7 +155,7 @@ pmtilesRules.set(
       LABEL_RULES: [
         {
           dataLayer: 'archsites',
-          symbolizer: new M.protomapsL.CenteredTextSymbolizer({
+          symbolizer: new protomapsL.CenteredTextSymbolizer({
             labelProps: ['str1'],
             fill: 'white',
             width: 2,

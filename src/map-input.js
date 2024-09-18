@@ -1,3 +1,10 @@
+import { Util } from './mapml/utils/Util';
+import { ZoomInput } from './mapml/elementSupport/inputs/zoomInput';
+import { HiddenInput } from './mapml/elementSupport/inputs/hiddenInput';
+import { WidthInput } from './mapml/elementSupport/inputs/widthInput';
+import { HeightInput } from './mapml/elementSupport/inputs/heightInput';
+import { LocationInput } from './mapml/elementSupport/inputs/locationInput';
+
 /* global M */
 export class MapInput extends HTMLElement {
   static get observedAttributes() {
@@ -30,14 +37,14 @@ export class MapInput extends HTMLElement {
   //              zoomInput.setAttribute('value', boundsFallback.zoom);
   //            }
   //            let axis = inp.getAttribute('axis'),
-  //              axisBounds = M.convertPCRSBounds(
+  //              axisBounds = Util.convertPCRSBounds(
   //                boundsFallback.bounds,
   //                boundsFallback.zoom,
   //                projection,
-  //                M.axisToCS(axis)
+  //                Util.axisToCS(axis)
   //              );
-  //            inp.setAttribute('min', axisBounds.min[M.axisToXY(axis)]);
-  //            inp.setAttribute('max', axisBounds.max[M.axisToXY(axis)]);
+  //            inp.setAttribute('min', axisBounds.min[Util.axisToXY(axis)]);
+  //            inp.setAttribute('max', axisBounds.max[Util.axisToXY(axis)]);
   //          }
 
   get name() {
@@ -108,7 +115,7 @@ export class MapInput extends HTMLElement {
           // for location, it should fall back by searching upwards: same as for zoom
         } else if (this.parentElement.querySelector('map-meta[name=zoom]')) {
           // fallback map-meta on layer
-          return M._metaContentToObject(
+          return Util._metaContentToObject(
             this.parentElement
               .querySelector('map-meta[name=zoom]')
               .getAttribute('content')
@@ -140,7 +147,7 @@ export class MapInput extends HTMLElement {
           // for location, it should fall back by searching upwards: same as for zoom
         } else if (this.parentElement.querySelector('map-meta[name=zoom]')) {
           // fallback map-meta on layer
-          return M._metaContentToObject(
+          return Util._metaContentToObject(
             this.parentElement
               .querySelector('map-meta[name=zoom]')
               .getAttribute('content')
@@ -173,10 +180,10 @@ export class MapInput extends HTMLElement {
     }
   }
   getMapEl() {
-    return M.getClosest(this, 'mapml-viewer,map[is=web-map]');
+    return Util.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return M.getClosest(this, 'layer-');
+    return Util.getClosest(this, 'layer-');
   }
   attributeChangedCallback(name, oldValue, newValue) {
     this.whenReady()
@@ -269,7 +276,7 @@ export class MapInput extends HTMLElement {
           case 'zoom':
             // input will store the input Class specific to the input type
             this.initialValue = +this.getAttribute('value');
-            this.input = new M.ZoomInput(
+            this.input = new ZoomInput(
               this.name,
               this.min,
               this.max,
@@ -280,7 +287,7 @@ export class MapInput extends HTMLElement {
             break;
           case 'location':
             // input will store the input Class specific to the input type
-            this.input = new M.LocationInput(
+            this.input = new LocationInput(
               this.name,
               this.position,
               this.axis,
@@ -293,15 +300,15 @@ export class MapInput extends HTMLElement {
             break;
           case 'width':
             // input will store the input Class specific to the input type
-            this.input = new M.WidthInput(this.name, this._layer);
+            this.input = new WidthInput(this.name, this._layer);
             break;
           case 'height':
             // input will store the input Class specific to the input type
-            this.input = new M.HeightInput(this.name, this._layer);
+            this.input = new HeightInput(this.name, this._layer);
             break;
           case 'hidden':
             // input will store the input Class specific to the input type
-            this.input = new M.HiddenInput(this.name, this.initialValue);
+            this.input = new HiddenInput(this.name, this.initialValue);
             break;
         }
       })

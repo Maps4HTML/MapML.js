@@ -23,22 +23,8 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'dist/mapml.js':        ['<%= rollup.main.dest %>'],
-          'dist/web-map.js':      ['src/web-map.js'],
-          'dist/mapml-viewer.js': ['src/mapml-viewer.js'],
-          'dist/map-caption.js':  ['src/map-caption.js'],
-          'dist/map-feature.js':  ['src/map-feature.js'],
-          'dist/map-extent.js':   ['src/map-extent.js'],
-          'dist/map-input.js':    ['src/map-input.js'],
-          'dist/map-select.js':    ['src/map-select.js'],
-          'dist/map-link.js':    ['src/map-link.js'],
-          'dist/map-style.js':    ['src/map-style.js'],
-          'dist/map-area.js':     ['src/map-area.js'],
-          'dist/layer.js':        ['src/layer.js'],
-          'dist/leaflet.js':      ['dist/leaflet-src.js',
-                                   'dist/proj4-src.js',
-                                   'dist/proj4leaflet.js',
-                                   'dist/L.Control.Locate.js']
+          'dist/mapml-viewer.js':        ['<%= rollup.main.dest %>'],
+          'dist/web-map.js':             ['<%= rollup.webmap.dest %>']
         } 
       }
     },
@@ -187,7 +173,7 @@ module.exports = function(grunt) {
     },
     clean: {
       dist: ['dist'],
-      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js','dist/L.Control.Locate.js'],
+      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js','dist/L.Control.Locate.js','dist/mapmlviewer.js','dist/webmap.js'],
       experiments: {
         options: {force: true},
         src: ['../experiments/dist']
@@ -207,13 +193,17 @@ module.exports = function(grunt) {
     },
     rollup: {
       options: {
-        format: 'iife',
+        format: 'es',
         plugins: [nodeResolve()],
         external: './pmtilesRules.js'
       },
       main: {
-        dest: 'dist/mapml.js',
+        dest: 'dist/mapmlviewer.js',
         src: 'src/mapml/index.js' // Only one source file is permitted
+      },
+      webmap: {
+        dest: 'dist/webmap.js',
+        src: 'src/mapml/index-web-map.js' // Only one source file is permitted
       }
     },
     prettier: {

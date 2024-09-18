@@ -1,3 +1,6 @@
+import { Util } from '../utils/Util';
+import { ImageLayer, imageLayer } from './ImageLayer';
+
 export var TemplatedImageLayer = L.Layer.extend({
   initialize: function (template, options) {
     this._template = template;
@@ -34,7 +37,7 @@ export var TemplatedImageLayer = L.Layer.extend({
   isVisible: function () {
     let map = this._linkEl.getMapEl()._map;
     let mapZoom = map.getZoom();
-    let mapBounds = M.pixelToPCRSBounds(
+    let mapBounds = Util.pixelToPCRSBounds(
       map.getPixelBounds(),
       mapZoom,
       map.options.projection
@@ -57,7 +60,7 @@ export var TemplatedImageLayer = L.Layer.extend({
     let overlayToRemove = this._imageOverlay;
     let src = this.getImageUrl(bounds, zoom);
     let size = map.getSize();
-    this._imageOverlay = M.imageLayer(src, loc, size, 0, this._container);
+    this._imageOverlay = imageLayer(src, loc, size, 0, this._container);
     this._imageOverlay._step = this._template.step;
     this._imageOverlay.addTo(map);
     if (overlayToRemove) {

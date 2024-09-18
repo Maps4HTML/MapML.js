@@ -1,3 +1,4 @@
+import { Util } from '../utils/Util';
 /**
  * Returns a new Feature Renderer
  * @param {Object} options - Options for the renderer
@@ -330,9 +331,9 @@ export var FeatureRenderer = L.SVG.extend({
 });
 
 /**
- * Returns new M.FeatureRenderer
+ * Returns new FeatureRenderer
  * @param {Object} options - Options for the renderer
- * @returns {M.FeatureRenderer}
+ * @returns {FeatureRenderer}
  */
 export var featureRenderer = function (options) {
   return new FeatureRenderer(options);

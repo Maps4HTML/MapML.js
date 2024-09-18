@@ -1,3 +1,4 @@
+import { Util } from '../../utils/Util';
 export class LocationInput {
   constructor(name, position, axis, units, min, max, rel, layer) {
     this.name = name;
@@ -5,7 +6,7 @@ export class LocationInput {
     this.axis = axis;
     // if unit/cs not present, find it
     if (!units && axis && !['i', 'j'].includes(axis)) {
-      this.units = M.axisToCS(axis).toLowerCase();
+      this.units = Util.axisToCS(axis).toLowerCase();
     } else {
       this.units = units; // cs
     }
@@ -30,7 +31,7 @@ export class LocationInput {
     }
     // check if axis match the units/cs
     if (this.units) {
-      let axisCS = M.axisToCS(this.axis);
+      let axisCS = Util.axisToCS(this.axis);
       if (
         typeof axisCS === 'string' &&
         axisCS.toUpperCase() !== this.units.toUpperCase()

@@ -1,5 +1,6 @@
-import './leaflet.js'; // a lightly modified version of Leaflet for use as browser module
-import './mapml.js'; // modified URI to make the function a property of window scope (possibly a bad thing to do).
+import { Util } from './mapml/utils/Util';
+import { MapMLLayer, mapMLLayer } from './mapml/layers/MapMLLayer';
+import { createLayerControlHTML } from './mapml/elementSupport/layers/createLayerControlForLayer';
 
 export class MapLayer extends HTMLElement {
   static get observedAttributes() {
@@ -67,7 +68,7 @@ export class MapLayer extends HTMLElement {
     }
     return this._layer
       ? Object.assign(
-          M._convertAndFormatPCRS(
+          Util._convertAndFormatPCRS(
             this._layer.bounds,
             M[this.getProjection()],
             this.getProjection()
@@ -165,7 +166,7 @@ export class MapLayer extends HTMLElement {
     /* jshint ignore:start */
     this.#hasConnected = true;
     /* jshint ignore:end */
-    this._createLayerControlHTML = M._createLayerControlHTML.bind(this);
+    this._createLayerControlHTML = createLayerControlHTML.bind(this);
     const doConnected = this._onAdd.bind(this);
     const doRemove = this._onRemove.bind(this);
     this.parentElement
@@ -241,7 +242,7 @@ export class MapLayer extends HTMLElement {
             this.checkForPreferredContent();
           })
           .then(() => {
-            this._layer = M.mapMLLayer(new URL(this.src, base).href, this, {
+            this._layer = mapMLLayer(new URL(this.src, base).href, this, {
               projection: this.getProjection(),
               opacity: this.opacity
             });
@@ -278,7 +279,7 @@ export class MapLayer extends HTMLElement {
             this.checkForPreferredContent();
           })
           .then(() => {
-            this._layer = M.mapMLLayer(null, this, {
+            this._layer = mapMLLayer(null, this, {
               projection: this.getProjection(),
               opacity: this.opacity
             });
@@ -398,7 +399,7 @@ export class MapLayer extends HTMLElement {
     let projection = this.parentElement.projection;
     if (mapml.querySelector('map-meta[name=projection][content]')) {
       projection =
-        M._metaContentToObject(
+        Util._metaContentToObject(
           mapml
             .querySelector('map-meta[name=projection]')
             .getAttribute('content')
@@ -793,13 +794,13 @@ export class MapLayer extends HTMLElement {
 
       let maxZoom = extent.zoom.maxZoom,
         minZoom = extent.zoom.minZoom;
-      map.setView(center, M.getMaxZoom(layerBounds, map, minZoom, maxZoom), {
+      map.setView(center, Util.getMaxZoom(layerBounds, map, minZoom, maxZoom), {
         animate: false
       });
     });
   }
   mapml2geojson(options = {}) {
-    return M.mapml2geojson(this, options);
+    return Util.mapml2geojson(this, options);
   }
   pasteFeature(feature) {
     switch (typeof feature) {
