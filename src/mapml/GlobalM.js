@@ -696,6 +696,9 @@ import './handlers/keyboard';
     }
   });
 
+  M.geojson2mapml = Util.geojson2mapml;
+  M.mapml2geojson = Util.mapml2geojson;
+
   // see https://leafletjs.com/examples/extending/extending-3-controls.html#handlers
   L.Map.addInitHook('addHandler', 'query', QueryHandler);
   L.Map.addInitHook('addHandler', 'contextMenu', ContextMenu);
