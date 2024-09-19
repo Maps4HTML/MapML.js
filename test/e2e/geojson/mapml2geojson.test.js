@@ -125,4 +125,11 @@ test.describe('GeoJSON API - mapml2geojson', () => {
     );
     expect(out10).toEqual(exp10);
   });
+  test('M.mapml2geojson public API method exists and works', async () => {
+    const geojsonPoint = await page.evaluate(() => {
+      let layer = document.querySelector('[data-testid=point]');
+      return M.mapml2geojson(layer);
+    });
+    expect(geojsonPoint.title).toEqual('Point Geometry');
+  });
 });
