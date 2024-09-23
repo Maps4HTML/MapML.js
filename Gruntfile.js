@@ -23,8 +23,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'dist/mapml-viewer.js':        ['<%= rollup.main.dest %>'],
-          'dist/web-map.js':             ['<%= rollup.webmap.dest %>']
+          'dist/mapml-viewer.js':        ['<%= rollup.main.dest %>']
         } 
       }
     },
@@ -200,10 +199,6 @@ module.exports = function(grunt) {
       main: {
         dest: 'dist/mapmlviewer.js',
         src: 'src/mapml/index.js' // Only one source file is permitted
-      },
-      webmap: {
-        dest: 'dist/webmap.js',
-        src: 'src/mapml/index-web-map.js' // Only one source file is permitted
       }
     },
     prettier: {

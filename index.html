@@ -25,7 +25,7 @@
           
          /* Full viewport. */
           width: 100%;  
-          height: 100%;  
+          height: 50%;  
           
          /* Remove default (native-like) border. */ 
          border: none;
@@ -45,13 +45,44 @@
          contain-intrinsic-size: 304px 154px;
        }
        
-       /* Ensure inline layer content is hidden if custom/built-in elements isn't 
-       supported, or if javascript is disabled. This needs to be defined separately 
-       from the above, because the `:not(:defined)` selector invalidates the entire 
-       declaration in browsers that do not support it. */ 
-       layer- { 
-         display: none; 
-       } 
+      /* Specifying the `:defined` selector is recommended to style the map
+      element, such that styles don't apply when fallback content is in use
+      (e.g. when scripting is disabled or when custom/built-in elements isn't
+      supported in the browser). */
+      map[is="web-map"]:defined {
+      /* Responsive map. */ 
+          max-width: 100%;  
+          
+         /* Full viewport. */ 
+          width: 100%;  
+          height: 50%;  
+          
+         /* Remove default (native-like) border. */ 
+         border: none;
+         
+         vertical-align: middle;
+      }
+
+      /* Pre-style to avoid Layout Shift. */
+      map[is="web-map"]:not(:defined) {
+        display: inline-block;
+        contain: size;
+        contain-intrinsic-size: 304px 154px;
+      }
+
+      /* Pre-style to avoid FOUC of inline layer- and fallback content. */
+      map[is="web-map"]:not(:defined) + img[usemap],
+      map[is="web-map"]:not(:defined) > :not(area):not(.mapml-web-map) {
+        display: none;
+      }
+
+      /* Ensure inline layer content is hidden if custom/built-in elements isn't
+      supported, or if javascript is disabled. This needs to be defined separately
+      from the above, because the `:not(:defined)` selector invalidates the entire
+      declaration in browsers that do not support it. */
+      layer- {
+        display: none;
+      }
      </style> 
      <noscript> 
        <style> 
@@ -68,6 +99,19 @@
            contain: initial;
            contain-intrinsic-size: initial;
          }
+        /* Ensure client-side image map fallbacks are displayed if custom/built-in
+        elements is supported but javascript is disabled. */
+        map[is="web-map"]:not(:defined) + img[usemap] {
+          display: initial;
+        }
+
+        /* "Reset" the properties used to pre-style (to avoid Layout Shift) if
+        custom/built-in elements is supported but javascript is disabled. */
+        map[is="web-map"]:not(:defined) {
+          display: initial;
+          contain: initial;
+          contain-intrinsic-size: initial;
+        }
        </style> 
      </noscript> 
   </head>
@@ -84,20 +128,46 @@
         </map-extent>
       </layer->
       <layer- label="Restaurants" checked="">
-           <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
-            <map-extent units="OSMTILE" checked="">
-              <map-select id="restaurants" name="cusine">
-                  <map-option value="restaurants" selected="selected">All cuisines</map-option>
-                  <map-option value="african">African</map-option>
-                  <map-option value="asian">Asian</map-option>
-                  <map-option value="cajun">Cajun</map-option>
-                  <map-option value="indian">Indian</map-option>
-                  <map-option value="italian">Italian</map-option>
-                  <map-option value="mexican">Mexican</map-option>
-              </map-select>
-              <map-link tref="https://maps4html.org/experiments/shared/restaurants/{cusine}.mapml" rel="features"></map-link>
-            </map-extent>
-          </layer->
+        <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
+        <map-extent units="OSMTILE" checked="">
+           <map-select id="restaurants" name="cusine">
+               <map-option value="restaurants" selected="selected">All cuisines</map-option>
+               <map-option value="african">African</map-option>
+               <map-option value="asian">Asian</map-option>
+               <map-option value="cajun">Cajun</map-option>
+               <map-option value="indian">Indian</map-option>
+               <map-option value="italian">Italian</map-option>
+               <map-option value="mexican">Mexican</map-option>
+           </map-select>
+           <map-link tref="https://maps4html.org/experiments/shared/restaurants/{cusine}.mapml" rel="features"></map-link>
+        </map-extent>
+      </layer->
     </mapml-viewer>
+    <map is="web-map" projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation">
+      <layer- data-testid="osm-layer" label="OpenStreetMap" checked >
+        <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
+        <map-extent units="OSMTILE" checked="checked">
+          <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
+          <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+          <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+          <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
+        </map-extent>
+      </layer->
+      <layer- label="Restaurants" checked="">
+        <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
+        <map-extent units="OSMTILE" checked="">
+           <map-select id="restaurants" name="cusine">
+               <map-option value="restaurants" selected="selected">All cuisines</map-option>
+               <map-option value="african">African</map-option>
+               <map-option value="asian">Asian</map-option>
+               <map-option value="cajun">Cajun</map-option>
+               <map-option value="indian">Indian</map-option>
+               <map-option value="italian">Italian</map-option>
+               <map-option value="mexican">Mexican</map-option>
+           </map-select>
+           <map-link tref="https://maps4html.org/experiments/shared/restaurants/{cusine}.mapml" rel="features"></map-link>
+        </map-extent>
+      </layer->
+    </map>
   </body>
 </html>

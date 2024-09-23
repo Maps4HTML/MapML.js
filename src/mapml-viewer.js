@@ -9,6 +9,8 @@ import { MapInput } from './map-input.js';
 import { MapSelect } from './map-select.js';
 import { MapLink } from './map-link.js';
 import { MapStyle } from './map-style.js';
+import { WebMap } from './web-map';
+import { MapArea } from './map-area.js';
 
 import { layerControl } from './mapml/control/LayerControl';
 import { AttributionButton } from './mapml/control/AttributionButton';
@@ -1440,8 +1442,15 @@ export class MapViewer extends HTMLElement {
     return geojsonLayer;
   }
 }
-// need to provide options { extends: ... }  for custom built-in elements
 window.customElements.define('mapml-viewer', MapViewer);
+try {
+  window.customElements.define('web-map', WebMap, { extends: 'map' });
+  window.customElements.define('map-area', MapArea, { extends: 'area' });
+} catch (error) {
+  console.log(
+    'Exception occurred while defining custom built-in elements:\n' + error
+  );
+}
 window.customElements.define('layer-', MapLayer);
 window.customElements.define('map-caption', MapCaption);
 window.customElements.define('map-feature', MapFeature);

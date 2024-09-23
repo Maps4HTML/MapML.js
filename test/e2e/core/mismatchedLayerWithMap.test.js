@@ -22,7 +22,7 @@ test.describe('Playwright Mismatched Layers Test', () => {
             <head>
                 <title>index-map.html</title>
                 <meta charset="UTF-8">
-                <script type="module" src="web-map.js"></script>
+                <script type="module" src="mapml-viewer.js"></script>
                 <style>
                 html {height: 100%} body,map {height: inherit} * {margin: 0;padding: 0;}
                 </style>
