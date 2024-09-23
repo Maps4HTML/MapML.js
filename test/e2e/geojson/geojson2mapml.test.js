@@ -158,15 +158,20 @@ test.describe('GeoJSON API - geojson2mapml', () => {
       );
     expect(out).toEqual(exp);
   });
-  test('M.geojson2mapml public API method exists and works', async ()=>{
+  test('M.geojson2mapml public API method exists and works', async () => {
     const viewer = page.getByTestId('map');
-    await viewer.evaluate((v)=>{
-      let l = M.geojson2mapml(point, {label: 'M.geojson2mapml public API method works'});
+    await viewer.evaluate((v) => {
+      let l = M.geojson2mapml(point, {
+        label: 'M.geojson2mapml public API method works'
+      });
       v.appendChild(l);
-      l.setAttribute('data-testid','test-layer');
+      l.setAttribute('data-testid', 'test-layer');
     });
     const layer = page.getByTestId('test-layer');
     await expect(layer).not.toHaveAttribute('disabled');
-    await expect(layer).toHaveAttribute('label','M.geojson2mapml public API method works');
+    await expect(layer).toHaveAttribute(
+      'label',
+      'M.geojson2mapml public API method works'
+    );
   });
 });

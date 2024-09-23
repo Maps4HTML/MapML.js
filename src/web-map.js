@@ -1,16 +1,6 @@
 import { Util } from './mapml/utils/Util';
 import { DOMTokenList } from './mapml/utils/DOMTokenList';
 
-import { MapLayer } from './layer.js';
-import { MapArea } from './map-area.js';
-import { MapCaption } from './map-caption.js';
-import { MapFeature } from './map-feature.js';
-import { MapExtent } from './map-extent.js';
-import { MapInput } from './map-input.js';
-import { MapSelect } from './map-select.js';
-import { MapLink } from './map-link.js';
-import { MapStyle } from './map-style.js';
-
 import { layerControl } from './mapml/control/LayerControl';
 import { AttributionButton } from './mapml/control/AttributionButton';
 import { reloadButton } from './mapml/control/ReloadButton';
@@ -1517,14 +1507,3 @@ export class WebMap extends HTMLMapElement {
     }
   }
 }
-// need to provide options { extends: ... }  for custom built-in elements
-window.customElements.define('web-map', WebMap, { extends: 'map' });
-window.customElements.define('layer-', MapLayer);
-window.customElements.define('map-area', MapArea, { extends: 'area' });
-window.customElements.define('map-caption', MapCaption);
-window.customElements.define('map-feature', MapFeature);
-window.customElements.define('map-extent', MapExtent);
-window.customElements.define('map-input', MapInput);
-window.customElements.define('map-select', MapSelect);
-window.customElements.define('map-link', MapLink);
-window.customElements.define('map-style', MapStyle);
