@@ -23,7 +23,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'dist/mapml-viewer.js':        ['<%= rollup.main.dest %>']
+          'dist/mapml.js':        ['<%= rollup.main.dest %>']
         } 
       }
     },
@@ -109,8 +109,8 @@ module.exports = function(grunt) {
               return Diff.applyPatch(content, patch);
             } else if (srcpath.includes('index.html')) {
               console.log('MODIFYING: ', srcpath);
-              var pathToModuleRE =  /dist\/mapml-viewer\.js/gi;
-              return content.replace(pathToModuleRE,"./mapml-viewer.js");
+              var pathToModuleRE =  /dist\/mapml\.js/gi;
+              return content.replace(pathToModuleRE,"./mapml.js");
             } else {
               return content;
             }
@@ -172,7 +172,7 @@ module.exports = function(grunt) {
     },
     clean: {
       dist: ['dist'],
-      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js','dist/L.Control.Locate.js','dist/mapmlviewer.js','dist/webmap.js'],
+      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js','dist/L.Control.Locate.js','dist/mapmlviewer.js'],
       experiments: {
         options: {force: true},
         src: ['../experiments/dist']
