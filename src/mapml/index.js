@@ -44,4 +44,4 @@ import '../../dist/proj4-src.js';
 import '../../dist/proj4leaflet.js';
 import '../../dist/L.Control.Locate.js';
 import './GlobalM.js';
-import { MapViewer } from '../mapml-viewer';
+export { MapViewer } from '../mapml-viewer';

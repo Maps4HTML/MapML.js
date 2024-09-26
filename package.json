@@ -12,8 +12,8 @@
     "web-map",
     "layer"
   ],
-  "main": "mapml-viewer.js",
-  "module": "mapml-viewer.js",
+  "main": "mapml.js",
+  "module": "mapml.js",
   "author": "Maps for HTML Community Group",
   "repository": {
     "type": "git",
