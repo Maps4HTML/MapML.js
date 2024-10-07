@@ -17,14 +17,11 @@ test.describe('Layer Label Tests', () => {
 	});
 
 	test('Name of unnamed layer is Layer', async () => {
-		const map = await page.locator('body > mapml-viewer');
-		await map.evaluate((map) =>
-			map.querySelector('layer-').removeAttribute('hidden')
-		);
-
 		const label = await page.locator(
 			'body > mapml-viewer > layer-'
 		);
+
+		await page.waitForTimeout(50);
 		expect(await label.evaluate(elem => elem.label)).toEqual('Layer');
 	});
 
