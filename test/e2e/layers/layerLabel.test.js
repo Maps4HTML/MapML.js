@@ -16,19 +16,16 @@ test.describe('Layer Label Tests', () => {
   });
 
   test('Name of unnamed layer is Layer', async () => {
-    const label = await page.locator('body > mapml-viewer > layer-');
-
     await page.waitForTimeout(500);
-    expect(await label.evaluate((elem) => elem.label)).toEqual('Layer');
+    const label = await page.locator('body > mapml-viewer > layer-')
+                            .evaluate((elem) => elem.label);
+    expect(label).toEqual('Layer');
   });
 
   test('Unnamed layer shows up as Layer in layer control', async () => {
     const text = await page.locator(
       'body > mapml-viewer >> css=div > label.mapml-layer-item-toggle'
-    );
-    expect(await text.evaluate((text) => text.textContent)).toEqual('Layer');
+    ).evaluate((text) => text.textContent);
+    expect(text).toEqual('Layer');
   });
 });
-
-// to do: check that the thing's name is 'Layer'
-//		  check that the thing on the layer control panel shows 'Layer'
