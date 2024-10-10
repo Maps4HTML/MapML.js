@@ -646,29 +646,54 @@ export const Util = {
     return [column, row];
   },
 
-  // Pastes text to a mapml-viewer/map element(mapEl), text can be a mapml link, geojson, or a map-layer
-  //    used for pasting layers through ctrl+v, drag/drop, and pasting through the contextmenu
+  // Pastes text to a mapml-viewer/map element(mapEl), text can be a mapml link, GeoJSON link, GeoJSON,
+  //    or a map-layer used for pasting layers through ctrl+v, drag/drop, and pasting through the contextmenu
   // _pasteLayer: HTMLElement Str -> None
   // Effects: append a map-layer element to mapEl, if it is valid
-  _pasteLayer: function (mapEl, text) {
+  _pasteLayer: async function (mapEl, text) {
     try {
+      // try to process text as a link
       new URL(text);
-      // create a new <map-layer> child of the <mapml-viewer> element
-      let l =
-        '<map-layer src="' +
-        text +
-        '" label="' +
-        mapEl.locale.dfLayer +
-        '" checked=""></map-layer>';
-      mapEl.insertAdjacentHTML('beforeend', l);
-      mapEl.lastElementChild.whenReady().catch(() => {
-        if (mapEl) {
-          // should invoke lifecyle callbacks automatically by removing it from DOM
-          mapEl.removeChild(mapEl.lastChild);
+      // get the content type of the link
+      const response = await fetch(text);
+      const contentType = response.headers.get('Content-Type');
+      // get the file extension by removing any query strings that may exist
+      let ext = response.url
+        .split('?')[0]
+        .split('#')[0]
+        .split('.')
+        .pop()
+        .toLowerCase();
+      if (
+        contentType === 'application/json' ||
+        contentType === 'application/geo+json' ||
+        ext === 'geojson' ||
+        ext === 'json'
+      ) {
+        // try to process as GeoJSON
+        const textContent = await response.text();
+        try {
+          mapEl.geojson2mapml(JSON.parse(textContent));
+        } catch {
+          console.log('Error parsing GeoJSON from: ' + text);
         }
-        // garbage collect it
-        l = null;
-      });
+      } else {
+        // try to process as a mapml file
+        // create a new <map-layer> child of the <mapml-viewer> element
+        let l =
+          '<map-layer src="' +
+          text +
+          '" label="' +
+          mapEl.locale.dfLayer +
+          '" checked=""></map-layer>';
+        mapEl.insertAdjacentHTML('beforeend', l);
+        mapEl.lastElementChild.whenReady().catch(() => {
+          if (mapEl) {
+            // should invoke lifecyle callbacks automatically by removing it from DOM
+            mapEl.removeChild(mapEl.lastChild);
+          }
+        });
+      }
     } catch (err) {
       text = text
         .replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '')

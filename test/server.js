@@ -114,6 +114,50 @@ app.get('/data/noMapMeta', (req, res, next) => {
     }
   );
 });
+app.get('/data/query/geojsonFeature', (req, res, next) => {
+  res.sendFile(
+    __dirname + '/e2e/data/geojson/geojsonFeature.geojson',
+    { headers: { 'Content-Type': 'application/geo+json' } },
+    (err) => {
+      if (err) {
+        res.status(403).send('Error.');
+      }
+    }
+  );
+});
+app.get('/data/query/geojsonPoint', (req, res, next) => {
+  res.sendFile(
+    __dirname + '/e2e/data/geojson/geojsonPoint.json',
+    { headers: { 'Content-Type': 'application/json' } },
+    (err) => {
+      if (err) {
+        res.status(403).send('Error.');
+      }
+    }
+  );
+});
+app.get('/data/query/geojsonFeature.geojson', (req, res, next) => {
+  res.sendFile(
+    __dirname + '/e2e/data/geojson/geojsonFeature.geojson',
+    { headers: { 'Content-Type': 'text/html' } },
+    (err) => {
+      if (err) {
+        res.status(403).send('Error.');
+      }
+    }
+  );
+});
+app.get('/data/query/geojsonPoint.json', (req, res, next) => {
+  res.sendFile(
+    __dirname + '/e2e/data/geojson/geojsonPoint.json',
+    { headers: { 'Content-Type': 'text/html' } },
+    (err) => {
+      if (err) {
+        res.status(403).send('Error.');
+      }
+    }
+  );
+});
 
 app.use('/data', express.static(path.join(__dirname, 'e2e/data/tiles/cbmt')));
 app.use('/data', express.static(path.join(__dirname, 'e2e/data/tiles/wgs84')));

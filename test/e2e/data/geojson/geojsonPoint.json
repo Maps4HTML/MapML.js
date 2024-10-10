@@ -1,0 +1,54 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "id": "1535.115.1",
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    -139.12777777777777,
+                    64.04305555555555
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "CURRENT_FLAG": "Y"
+            }
+        }
+    ],
+    "numberMatched": 592926,
+    "numberReturned": 1,
+    "links": [
+        {
+            "type": "application/geo+json",
+            "rel": "self",
+            "title": "This document as GeoJSON",
+            "href": "https://api.weather.gc.ca/collections/climate-normals/items?f=json&limit=10&lang=en"
+        },
+        {
+            "rel": "alternate",
+            "type": "application/ld+json",
+            "title": "This document as RDF (JSON-LD)",
+            "href": "https://api.weather.gc.ca/collections/climate-normals/items?f=jsonld&limit=10&lang=en"
+        },
+        {
+            "type": "text/html",
+            "rel": "alternate",
+            "title": "This document as HTML",
+            "href": "https://api.weather.gc.ca/collections/climate-normals/items?f=html&limit=10&lang=en"
+        },
+        {
+            "type": "application/geo+json",
+            "rel": "next",
+            "title": "items (next)",
+            "href": "https://api.weather.gc.ca/collections/climate-normals/items?offset=10&limit=10&lang=en"
+        },
+        {
+            "type": "application/json",
+            "title": "1981-2010 Climate Normals",
+            "rel": "collection",
+            "href": "https://api.weather.gc.ca/collections/climate-normals/items"
+        }
+    ],
+    "timeStamp": "2024-10-09T17:03:07.763201Z"
+}
