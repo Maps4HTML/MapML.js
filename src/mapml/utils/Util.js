@@ -649,23 +649,24 @@ export const Util = {
   // Effects: append a layer- element to mapEl, if it is valid
   _pasteLayer: async function (mapEl, text) {
     try {
+      // try to process text as a link
       new URL(text);
+      // get the content type of the link
       const response = await fetch(text);
       const contentType = response.headers.get('Content-Type');
       if (
         contentType == 'application/json' ||
         contentType == 'application/geo+json'
       ) {
-        let textContent = await response.text();
-        textContent = textContent
-          .replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '')
-          .trim();
+        // try to process as GeoJSON
+        const textContent = await response.text();
         try {
           mapEl.geojson2mapml(JSON.parse(textContent));
         } catch {
           console.log('Invalid Input!');
         }
       } else {
+        // try to process as a mapml file
         // create a new <layer-> child of the <mapml-viewer> element
         let l =
           '<layer- src="' +
