@@ -90,6 +90,21 @@ test.describe('Playwright web-map Element Tests', () => {
     expect(layerCount).toEqual(4);
   });
 
+  test('Paste JSON link to map using ctrl+v', async () => {
+    await page.click('body > textarea#copyJSONLink');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Control+c');
+
+    await page.click('body > map');
+    await page.keyboard.press('Control+v');
+    await page.waitForTimeout(5000);
+    const layerCount = await page.$eval(
+      'body > map',
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(5);
+  });
+
   test('Press spacebar when focus is on map', async () => {
     //  scroll to the top
     await page.mouse.wheel(0, -1000);

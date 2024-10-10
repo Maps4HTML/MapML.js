@@ -114,6 +114,17 @@ app.get('/data/query/map.geojson', (req, res, next) => {
     }
   );
 });
+app.get('/data/query/items.json', (req, res, next) => {
+  res.sendFile(
+    __dirname + '/e2e/data/geojson/items.json',
+    { headers: { 'Content-Type': 'application/json' } },
+    (err) => {
+      if (err) {
+        res.status(403).send('Error.');
+      }
+    }
+  );
+});
 
 app.use('/data', express.static(path.join(__dirname, 'e2e/data/tiles/cbmt')));
 app.use('/data', express.static(path.join(__dirname, 'e2e/data/tiles/wgs84')));

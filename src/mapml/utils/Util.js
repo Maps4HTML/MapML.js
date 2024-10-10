@@ -663,7 +663,7 @@ export const Util = {
         try {
           mapEl.geojson2mapml(JSON.parse(textContent));
         } catch {
-          console.log('Invalid Input!');
+          console.log('Invalid link!');
         }
       } else {
         // try to process as a mapml file
