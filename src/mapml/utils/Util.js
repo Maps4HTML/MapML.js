@@ -643,8 +643,8 @@ export const Util = {
     return [column, row];
   },
 
-  // Pastes text to a mapml-viewer/map element(mapEl), text can be a mapml link, geojson, or a layer-
-  //    used for pasting layers through ctrl+v, drag/drop, and pasting through the contextmenu
+  // Pastes text to a mapml-viewer/map element(mapEl), text can be a mapml link, GeoJSON link, GeoJSON,
+  //    or a layer- used for pasting layers through ctrl+v, drag/drop, and pasting through the contextmenu
   // _pasteLayer: HTMLElement Str -> None
   // Effects: append a layer- element to mapEl, if it is valid
   _pasteLayer: async function (mapEl, text) {
@@ -655,8 +655,8 @@ export const Util = {
       const response = await fetch(text);
       const contentType = response.headers.get('Content-Type');
       if (
-        contentType == 'application/json' ||
-        contentType == 'application/geo+json'
+        contentType === 'application/json' ||
+        contentType === 'application/geo+json'
       ) {
         // try to process as GeoJSON
         const textContent = await response.text();

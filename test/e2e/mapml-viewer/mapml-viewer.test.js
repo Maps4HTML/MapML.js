@@ -156,7 +156,7 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(1000);
     const layerCount = await page.$eval(
       'body > mapml-viewer',
       (map) => map.layers.length
@@ -171,7 +171,6 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    await page.waitForTimeout(10000);
     const layerCount = await page.$eval(
       'body > mapml-viewer',
       (map) => map.layers.length
@@ -201,7 +200,7 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(1000);
     const layerCount = await page.$eval(
       'body > mapml-viewer',
       (map) => map.layers.length
@@ -216,7 +215,7 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(1000);
     const layerCount = await page.$eval(
       'body > mapml-viewer',
       (map) => map.layers.length
