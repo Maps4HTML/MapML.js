@@ -663,7 +663,7 @@ export const Util = {
         try {
           mapEl.geojson2mapml(JSON.parse(textContent));
         } catch {
-          console.log('Invalid link!');
+          console.log('Error parsing GeoJSON from: ' + text);
         }
       } else {
         // try to process as a mapml file
@@ -680,8 +680,6 @@ export const Util = {
             // should invoke lifecyle callbacks automatically by removing it from DOM
             mapEl.removeChild(mapEl.lastChild);
           }
-          // garbage collect it
-          l = null;
         });
       }
     } catch (err) {
