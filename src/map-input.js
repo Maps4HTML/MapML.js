@@ -6,7 +6,7 @@ import { HeightInput } from './mapml/elementSupport/inputs/heightInput';
 import { LocationInput } from './mapml/elementSupport/inputs/locationInput';
 
 /* global M */
-export class MapInput extends HTMLElement {
+export class HTMLMapInputElement extends HTMLElement {
   static get observedAttributes() {
     return [
       'name',
@@ -183,7 +183,7 @@ export class MapInput extends HTMLElement {
     return Util.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return Util.getClosest(this, 'layer-');
+    return Util.getClosest(this, 'map-layer');
   }
   attributeChangedCallback(name, oldValue, newValue) {
     this.whenReady()

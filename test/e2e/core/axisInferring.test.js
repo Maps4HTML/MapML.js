@@ -29,7 +29,7 @@ test.describe('UI Drag&Drop Test', () => {
   test('TileMatrix inferring', async () => {
     await page.waitForTimeout(1000);
     const layerExtent = await page.$eval(
-      'body > map > layer-:nth-child(1)',
+      'body > map > map-layer:nth-child(1)',
       (layer) => layer.extent
     );
 
@@ -45,7 +45,7 @@ test.describe('UI Drag&Drop Test', () => {
 
   test('TCRS inferring', async () => {
     const layerExtent = await page.$eval(
-      'body > map > layer-:nth-child(2)',
+      'body > map > map-layer:nth-child(2)',
       (layer) => layer.extent
     );
 
@@ -61,7 +61,7 @@ test.describe('UI Drag&Drop Test', () => {
 
   test('PCRS inferring', async () => {
     const layerExtent = await page.$eval(
-      'body > map > layer-:nth-child(3)',
+      'body > map > map-layer:nth-child(3)',
       (layer) => layer.extent
     );
     // the top left corner is that of the map-meta[name=extent]
@@ -78,7 +78,7 @@ test.describe('UI Drag&Drop Test', () => {
 
   test('GCRS inferring', async () => {
     const layerExtent = await page.$eval(
-      'body > map > layer-:nth-child(4)',
+      'body > map > map-layer:nth-child(4)',
       (layer) => layer.extent
     );
     let expectedTopLeftLongitude = -114.815198;

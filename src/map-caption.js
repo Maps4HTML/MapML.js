@@ -2,7 +2,7 @@
 implemented for both mapml-viewer and web-map; however web-map does not focus on map element in the browser resulting in NVDA 
 not being able to read out map-caption and stating that it's an interactive map region
 */
-export class MapCaption extends HTMLElement {
+export class HTMLMapCaptionElement extends HTMLElement {
   constructor() {
     super();
   }

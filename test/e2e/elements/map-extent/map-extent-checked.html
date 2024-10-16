@@ -23,13 +23,13 @@
       mapml-viewer:not(:defined) > * {
         display: none;
       }
-      nlayer- {
+      map-layer {
         display: none;
       }
     </style>
     <noscript>
     <style>
-      mapml-viewer:not(:defined) > :not(layer-) {
+      mapml-viewer:not(:defined) > :not(map-layer) {
         display: initial;
       }
     </style>
@@ -37,7 +37,7 @@
   </head>
   <body>
   <mapml-viewer projection="OSMTILE" zoom="4" lat="37.163851" lon="-95.8506355" controls controlslist="geolocation">
-    <layer- label="North America sample imagery,USA Population" src="map-extent-checked.mapml" checked></layer->
+    <map-layer label="North America sample imagery,USA Population" src="map-extent-checked.mapml" checked></map-layer>
   </mapml-viewer>
 </body>
 </html>

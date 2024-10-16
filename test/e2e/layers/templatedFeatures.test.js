@@ -48,10 +48,10 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
     test("Templated features attaches to MapExtent's shadow root", async () => {
       await page.waitForTimeout(500);
       const shadow = await page.evaluate(
-        `document.querySelector('#map2 > layer- > map-extent > map-link').shadowRoot`
+        `document.querySelector('#map2 > map-layer > map-extent > map-link').shadowRoot`
       );
       const features = await page.evaluate(
-        `document.querySelector('#map2 > layer- > map-extent > map-link').shadowRoot.querySelectorAll('map-feature').length`
+        `document.querySelector('#map2 > map-layer > map-extent > map-link').shadowRoot.querySelectorAll('map-feature').length`
       );
       expect(shadow).toBeTruthy();
       expect(features).toBe(8);
@@ -71,7 +71,9 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
       expect(startTopLeft.vertical).toBe(-170323.5596054569);
       expect(startBottomRight.horizontal).toBe(1511931.6167132407);
       expect(startBottomRight.vertical).toBe(-172638.668402344);
-      await page.evaluate(`document.querySelector('#map2 > layer-').zoomTo()`);
+      await page.evaluate(
+        `document.querySelector('#map2 > map-layer').zoomTo()`
+      );
       const endTopLeft = await page.evaluate(
         `document.querySelector('#map2').extent.topLeft.pcrs`
       );
@@ -100,7 +102,7 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
       expect(startBottomRight.vertical).toBe(-173037.52857506275);
       expect(startZoomLevel).toBe(16);
       await page.evaluate(
-        `document.querySelector('#map2 > layer- > map-extent > map-link').shadowRoot.querySelector('map-feature').zoomTo()`
+        `document.querySelector('#map2 > map-layer > map-extent > map-link').shadowRoot.querySelector('map-feature').zoomTo()`
       );
       await page.waitForTimeout(1000);
       const endTopLeft = await page.evaluate(

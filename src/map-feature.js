@@ -1,6 +1,6 @@
 import { Util } from './mapml/utils/Util';
 
-export class MapFeature extends HTMLElement {
+export class HTMLMapFeatureElement extends HTMLElement {
   static get observedAttributes() {
     return ['zoom', 'min', 'max'];
   }
@@ -137,7 +137,7 @@ export class MapFeature extends HTMLElement {
     return Util.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return Util.getClosest(this, 'layer-');
+    return Util.getClosest(this, 'map-layer');
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -167,7 +167,7 @@ export class MapFeature extends HTMLElement {
     // used for fallback zoom getter for static features
     this._initialZoom = this.getMapEl().zoom;
     this._parentEl =
-      this.parentNode.nodeName.toUpperCase() === 'LAYER-' ||
+      this.parentNode.nodeName.toUpperCase() === 'MAP-LAYER' ||
       this.parentNode.nodeName.toUpperCase() === 'MAP-LINK'
         ? this.parentNode
         : this.parentNode.host;
@@ -569,7 +569,7 @@ export class MapFeature extends HTMLElement {
     let clickEv = new PointerEvent('click', { cancelable: true });
     clickEv.originalEvent = event;
     this.dispatchEvent(clickEv);
-    // for custom projection, layer- element may disconnect and re-attach to the map after the click
+    // for custom projection, map-layer element may disconnect and re-attach to the map after the click
     // so check whether map-feature element is still connected before any further operations
     if (properties && this.isConnected) {
       let geometry = this._geometry,

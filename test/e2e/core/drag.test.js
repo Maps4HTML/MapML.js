@@ -82,7 +82,7 @@ test.describe('UI Drag&Drop Test', () => {
       (div) => div.parentElement.parentElement.style.zIndex
     );
     const domLayer = await page.$eval(
-      'body > map > layer-:nth-child(4)',
+      'body > map > map-layer:nth-child(4)',
       (div) => div.label
     );
 
@@ -120,7 +120,7 @@ test.describe('UI Drag&Drop Test', () => {
       (div) => div.parentElement.style.zIndex
     );
     const domLayer = await page.$eval(
-      'map > layer-:nth-child(3)',
+      'map > map-layer:nth-child(3)',
       (div) => div.label
     );
 

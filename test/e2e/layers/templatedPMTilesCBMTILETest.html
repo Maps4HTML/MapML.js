@@ -11,7 +11,7 @@
   <!-- pmtiles / pmtiles-mvt layers only work in OSMTILE projecton -->
   <mapml-viewer data-testid="viewer" projection="CBMTILE" zoom="0" lat="52" lon="-93" width="400" height="400">
     <!-- on load, this layer should be enabled, because one extent is enabled -->
-    <layer- data-testid="flexible-projection-layer" checked>
+    <map-layer data-testid="flexible-projection-layer" checked>
       <!-- on load, this  extent is enabled, because the map projection is CBMTILE -->
       <map-extent units="CBMTILE"  checked="checked" hidden="hidden">
         <map-input name="z" type="zoom"  value="17" min="0" max="17"></map-input>
@@ -26,9 +26,9 @@
         <map-input name="bar" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
         <map-link rel="tile" type="application/vnd.mapbox-vector-tile" tref="tiles/osmtile/{beans}/{foo}/{bar}.mvt?theme=light"></map-link>
       </map-extent>
-    </layer->
+    </map-layer>
     <!-- on load this layer should be disabled -->
-    <layer- checked data-testid="osmtile-only-layer">
+    <map-layer checked data-testid="osmtile-only-layer">
       <map-title>{z}/{x}/{y}.mvt test</map-title>
     <!-- on load this extent should be disabled -->
       <map-extent data-testid="osmtile-only-extent" units="OSMTILE" checked="checked">
@@ -37,7 +37,7 @@
         <map-input name="bar" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
         <map-link rel="tile" type="application/vnd.mapbox-vector-tile" tref="tiles/osmtile/{beans}/{foo}/{bar}.mvt?theme=light"></map-link>
       </map-extent>
-    </layer->
+    </map-layer>
   </mapml-viewer>
 </body>
 </html>

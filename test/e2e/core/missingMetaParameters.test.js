@@ -18,7 +18,7 @@ test.describe('Missing Parameters Test', () => {
   test("Static features with missing <map-meta name='zoom'></map-meta> & <map-meta name='extent'></map-meta>", async () => {
     await page.waitForTimeout(1000);
     const layerController = await page.$eval(
-      'body > map:nth-child(1) > layer-:nth-child(1)',
+      'body > map:nth-child(1) > map-layer:nth-child(1)',
       (controller) => controller.extent
     );
 
@@ -40,7 +40,7 @@ test.describe('Missing Parameters Test', () => {
 
   test("Static tiles with missing <map-meta name='zoom'></map-meta>", async () => {
     const layerController = await page.$eval(
-      'body > map:nth-child(1) > layer-:nth-child(3)',
+      'body > map:nth-child(1) > map-layer:nth-child(3)',
       (controller) => controller.extent
     );
 
@@ -63,7 +63,7 @@ test.describe('Missing Parameters Test', () => {
   test("Templated features with missing <map-meta name='zoom'></map-meta>", async () => {
     await page.waitForTimeout(500);
     const layerController = await page.$eval(
-      'body > map:nth-child(1) > layer-:nth-child(2)',
+      'body > map:nth-child(1) > map-layer:nth-child(2)',
       (controller) => controller.extent
     );
 
@@ -86,7 +86,7 @@ test.describe('Missing Parameters Test', () => {
   test("Templated tiles with missing <map-meta name='zoom'></map-meta> & extent", async () => {
     await page.waitForTimeout(500);
     const layerController = await page.$eval(
-      'body > map:nth-child(2) > layer-',
+      'body > map:nth-child(2) > map-layer',
       (controller) => controller.extent
     );
 
@@ -108,7 +108,7 @@ test.describe('Missing Parameters Test', () => {
 
   test("Templated image with missing <map-meta name='zoom'></map-meta>", async () => {
     const layerController = await page.$eval(
-      'body > map:nth-child(1) > layer-:nth-child(4)',
+      'body > map:nth-child(1) > map-layer:nth-child(4)',
       (controller) => controller.extent
     );
 

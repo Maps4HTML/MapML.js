@@ -11,7 +11,7 @@ export var MapMLLayer = L.LayerGroup.extend({
   // initialize is executed before the layer is added to a map
   initialize: function (href, layerEl, options) {
     // in the custom element, the attribute is actually 'src'
-    // the _href version is the URL received from layer-@src
+    // the _href version is the URL received from map-layer@src
     L.LayerGroup.prototype.initialize.call(this, null, options);
     if (href) {
       this._href = href;
@@ -64,7 +64,7 @@ export var MapMLLayer = L.LayerGroup.extend({
   },
   setName(newName) {
     // a layer's accessible name is set by the <map-title>, if present
-    // if it's not available the <layer- label="accessible-name"> attribute
+    // if it's not available the <map-layer label="accessible-name"> attribute
     // can be used
     if (!this.titleIsReadOnly()) {
       this._title = newName;
@@ -232,7 +232,7 @@ export var MapMLLayer = L.LayerGroup.extend({
     return new URL(
       this._content.querySelector('map-base')
         ? this._content.querySelector('map-base').getAttribute('href')
-        : this._content.nodeName === 'LAYER-'
+        : this._content.nodeName === 'MAP-LAYER'
         ? this._content.baseURI
         : this._href,
       this._href
@@ -650,7 +650,7 @@ export var MapMLLayer = L.LayerGroup.extend({
         map.getContainer().focus();
       };
       // we found that the popupopen event is fired as many times as there
-      // are layers on the map (<layer-> elements / MapMLLayers that is).
+      // are layers on the map (<map-layer> elements / MapMLLayers that is).
       // In each case the target layer is always this layer, so we can't
       // detect and conditionally add the zoomLink if the target is not this.
       // so, like Ahmad, we are taking a 'delete everyting each time'

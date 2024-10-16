@@ -262,8 +262,8 @@ export var createLayerControlHTML = async function () {
             mapEl.insertAdjacentElement('beforeend', layerEl);
             layerEl.removeAttribute('data-moving');
           }
-          // update zIndex of all layer- elements
-          let layers = mapEl.querySelectorAll('layer-');
+          // update zIndex of all map-layer elements
+          let layers = mapEl.querySelectorAll('map-layer');
           for (let i = 0; i < layers.length; i++) {
             let layer = layers[i]._layer;
             if (layer.options.zIndex !== zIndex) {

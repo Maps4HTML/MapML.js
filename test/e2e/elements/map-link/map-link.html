@@ -21,7 +21,7 @@
   </head>
   <body>
     <mapml-viewer data-testid="viewer" style="height: 500px;width:500px;" controls zoom="1" lat="0" lon="0" >
-      <layer- data-testid="inline-tiles" label="inline content" >
+      <map-layer data-testid="inline-tiles" label="inline content" >
         <map-title>OpenStreetMap image tiles</map-title>
         <map-link rel="license" href="https://www.openstreetmap.org/copyright" title="© OpenStreetMap contributors CC BY-SA"></map-link>  
         <map-extent units="OSMTILE" checked="checked" hidden="hidden">
@@ -30,8 +30,8 @@
           <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="8"></map-input>
           <map-link rel="tile" tref="tiles/osmtile/{z}/{x}/{y}.png"></map-link>
         </map-extent>
-      </layer->
-      <layer- data-testid="inline-image" label="inline content" checked>
+      </map-layer>
+      <map-layer data-testid="inline-image" label="inline content" checked>
         <map-title>Non-queryable inline WMS image Layer</map-title>
         <!-- the extent below should have the same extent property as the extent in the inline-image-queryable layer -->
         <!-- the bounds of the extent are established via native map-input variables -->
@@ -99,8 +99,8 @@
           and the zoom bounds of the projection -->
           <map-link data-testid="inline-link3" rel="image" tref="images/toporama_en.jpg?service=WMS&version=1.3.0&request=GetMap&bbox={xmin3},{ymin3},{xmax3},{ymax3}&width={w3}&height={h3}&layers=FBP_FuelLayer_wBurnScars&CRS=EPSG:3857&format=image/png&transparent=true"></map-link>
         </map-extent>
-      </layer->
-      <layer- data-testid="inline-image-queryable" label="inline queryable content" checked>
+      </map-layer>
+      <map-layer data-testid="inline-image-queryable" label="inline queryable content" checked>
         <!-- this is a separate layer in order to test that the layer becomes
              disabled according to bounds and zoom bounds. This was not always 
              the case, but it is now, and it's got a test. -->
@@ -123,11 +123,11 @@
           <map-link rel="image" tref="images/toporama_en.jpg?service=WMS&version=1.3.0&request=GetMap&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}&layers=FBP_FuelLayer_wBurnScars&CRS=EPSG:3857&format=image/png&transparent=true"></map-link>
           <map-link rel="query" tref="images/toporama_en.jpg?service=WMS&version=1.3.0&request=GetFeatureInfo&i={i}&j={j}&query_layers=FBP_FuelLayer_wBurnScars&layers=FBP_FuelLayer_wBurnScars&info_format=text/html&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}&CRS=EPSG:3857"></map-link>
         </map-extent>
-      </layer->
+      </map-layer>
 <!--          <map-link rel="feature"></map-link>
           <map-link rel="query"></map-link>-->
-      <layer- data-testid="remote-image" label="remote non-queryable content" src="remote-non-queryable-layer-map-link.mapml" checked></layer->
-      <layer- data-testid="remote-image-queryable" label="remote queryable content" src="remote-queryable-layer-map-link.mapml" checked></layer->
+      <map-layer data-testid="remote-image" label="remote non-queryable content" src="remote-non-queryable-layer-map-link.mapml" checked></map-layer>
+      <map-layer data-testid="remote-image-queryable" label="remote queryable content" src="remote-queryable-layer-map-link.mapml" checked></map-layer>
     </mapml-viewer>
   </body>
 </html>

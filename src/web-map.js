@@ -11,7 +11,7 @@ import { debugOverlay } from './mapml/layers/DebugOverlay';
 import { crosshair } from './mapml/layers/Crosshair';
 import { featureIndexOverlay } from './mapml/layers/FeatureIndexOverlay';
 
-export class WebMap extends HTMLMapElement {
+export class HTMLWebMapElement extends HTMLMapElement {
   static get observedAttributes() {
     return [
       'lat',
@@ -104,7 +104,7 @@ export class WebMap extends HTMLMapElement {
     }
   }
   get layers() {
-    return this.getElementsByTagName('layer-');
+    return this.getElementsByTagName('map-layer');
   }
   get areas() {
     return this.getElementsByTagName('area');
@@ -431,7 +431,7 @@ export class WebMap extends HTMLMapElement {
             this._map.options.projection = newValue;
             let layersReady = [];
             this._map.announceMovement.disable();
-            for (let layer of this.querySelectorAll('layer-')) {
+            for (let layer of this.querySelectorAll('map-layer')) {
               layer.removeAttribute('disabled');
               let reAttach = this.removeChild(layer);
               this.appendChild(reAttach);
@@ -446,7 +446,7 @@ export class WebMap extends HTMLMapElement {
               if (M.options.announceMovement)
                 this._map.announceMovement.enable();
               // required to delay until map-extent.disabled is correctly set
-              // which happens as a result of layer-._validateDisabled()
+              // which happens as a result of map-layer._validateDisabled()
               // which happens so much we have to delay until they calls are
               // completed
               setTimeout(() => {
@@ -685,7 +685,7 @@ export class WebMap extends HTMLMapElement {
     this.addEventListener(
       'change',
       function (e) {
-        if (e.target.tagName === 'LAYER-') {
+        if (e.target.tagName === 'map-layer') {
           this.dispatchEvent(
             new CustomEvent('layerchange', {
               details: { target: this, originalEvent: e }
@@ -711,7 +711,7 @@ export class WebMap extends HTMLMapElement {
         );
       }
     });
-    // pasting layer-, links and geojson using Ctrl+V
+    // pasting map-layer, links and geojson using Ctrl+V
     this.addEventListener('keydown', function (e) {
       if (e.keyCode === 86 && e.ctrlKey) {
         navigator.clipboard.readText().then((layer) => {
@@ -1448,7 +1448,7 @@ export class WebMap extends HTMLMapElement {
   }
   whenLayersReady() {
     let layersReady = [];
-    // check if all the children elements (map-extent, map-feature) of all layer- are ready
+    // check if all the children elements (map-extent, map-feature) of all map-layer are ready
     for (let layer of [...this.layers]) {
       layersReady.push(layer.whenReady());
     }

@@ -57,9 +57,9 @@ test.describe('map-projectionchange test ', () => {
     const reload = await page.getByLabel('Reload');
     expect(await reload.evaluate((button) => button.ariaDisabled)).toBe('true');
   });
-  test('Opacity is maintained on layer- and map-extent after map-projectionchange', async () => {
+  test('Opacity is maintained on map-layer and map-extent after map-projectionchange', async () => {
     const viewer = await page.locator('mapml-viewer');
-    const layer = await page.locator('layer-');
+    const layer = await page.locator('map-layer');
     await page.pause();
     await layer.evaluate((layer) => (layer.opacity = 0.5));
     expect(

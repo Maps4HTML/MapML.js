@@ -97,7 +97,7 @@ test.describe('Playwright Map Element Tests', () => {
     await page.waitForTimeout(1000);
 
     const layer = await page.$eval(
-      'body > mapml-viewer > layer-:nth-child(1)',
+      'body > mapml-viewer > map-layer:nth-child(1)',
       (elem) => elem.hasAttribute('disabled')
     );
 

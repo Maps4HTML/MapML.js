@@ -18,7 +18,7 @@ test.describe('Layer Label Tests', () => {
   test('Name of unnamed layer is Layer', async () => {
     await page.waitForTimeout(500);
     const label = await page
-      .locator('body > mapml-viewer > layer-')
+      .locator('body > mapml-viewer > map-layer')
       .evaluate((elem) => elem.label);
     expect(label).toEqual('Layer');
   });

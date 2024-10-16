@@ -22,7 +22,7 @@
 <body>
   <map is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
 
-    <layer- label="Arizona" checked>
+    <map-layer label="Arizona" checked>
       <map-meta name="projection" content="CBMTILE"></map-meta>
       <map-meta name="cs" content="gcrs"></map-meta>
 
@@ -85,8 +85,8 @@
           </map-polygon>
         </map-geometry>
       </map-feature>
-    </layer->
-    <layer- label="Alabama" checked>
+    </map-layer>
+    <map-layer label="Alabama" checked>
 
       <map-extent units="CBMTILE" checked hidden>
         <map-input name="z" type="zoom" min="2" max="18" ></map-input>
@@ -96,8 +96,8 @@
         <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" ></map-input>
         <map-link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>
       </map-extent>
-    </layer->
-    <layer- label="Static MapML with tiles" checked>
+    </map-layer>
+    <map-layer label="Static MapML with tiles" checked>
       <map-meta name="zoom" content="min=1,max=4,value=2"></map-meta>
       <map-meta name="projection" content="CBMTILE"></map-meta>
       <map-link rel="license"
@@ -107,12 +107,12 @@
       <map-tile row="10" col="11" src="data/cbmt/2/c11_r10.png"></map-tile>
       <map-tile row="10" col="9" src="data/cbmt/2/c9_r10.png"></map-tile>
       <map-tile row="11" col="9" src="data/cbmt/2/c9_r11.png"></map-tile>
-    </layer->
-    <layer- label="Toporama" src="data/templatedImage.mapml" checked></layer->
+    </map-layer>
+    <map-layer label="Toporama" src="data/templatedImage.mapml" checked></map-layer>
   </map>
   <map is="web-map" projection="WGS84" zoom="0" lat="0" lon="0" controls>
 
-    <layer- label="Inline Countries" checked>
+    <map-layer label="Inline Countries" checked>
       <map-link rel="stylesheet" href="styleOrder.css"></map-link>
       <map-style>
         .secondVector {
@@ -129,7 +129,7 @@
                   tref='data/wgs84/{zoomLevel}/r{row}_c{col}.mapml' ></map-link>
 
       </map-extent>
-    </layer->
+    </map-layer>
   </map>
 </body>
 

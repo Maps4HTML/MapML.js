@@ -211,7 +211,7 @@ export var DebugVectors = L.LayerGroup.extend({
   },
 
   _addBounds: function (map) {
-    // to delay the addBounds to wait for the layer.extentbounds / layer.layerbounds to be ready when the layer- checked attribute is changed
+    // to delay the addBounds to wait for the layer.extentbounds / layer.layerbounds to be ready when the map-layer checked attribute is changed
     setTimeout(() => {
       let id = Object.keys(map._layers),
         layers = map._layers,
@@ -245,7 +245,7 @@ export var DebugVectors = L.LayerGroup.extend({
             ];
           }
 
-          // boundsTestTag adds the value of from the <layer-@data-testid> element
+          // boundsTestTag adds the value of from the <map-layer@data-testid> element
           // if it exists. this simplifies debugging because the svg path will be
           // tagged with the layer it came from
           let boundsTestTag =

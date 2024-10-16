@@ -58,7 +58,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     await page.keyboard.press('Control+v');
     const copyLayer = await mesageLayerArea.evaluate((text) => text.value);
     expect(copyLayer).toEqual(
-      `<layer- label="CBMT - INLINE" checked="">
+      `<map-layer label="CBMT - INLINE" checked="">
       <map-link rel="license" title="Testing Inc."></map-link>
       <map-extent units="CBMTILE" checked="">
         <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
@@ -66,7 +66,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
         <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>
         <map-link rel="tile" tref="http://localhost:30001/data/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>
       </map-extent>
-    </layer->`
+    </map-layer>`
     );
   });
 
@@ -155,7 +155,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     const copyLayer = await mesageLayerArea.evaluate((text) => text.value);
 
     expect(copyLayer).toEqual(
-      '<layer- src="http://localhost:30001/data/query/DouglasFir" label="Natural Resources Canada - Douglas Fir (Genus Pseudotsuga) 250m resolution"></layer->'
+      '<map-layer src="http://localhost:30001/data/query/DouglasFir" label="Natural Resources Canada - Douglas Fir (Genus Pseudotsuga) 250m resolution"></map-layer>'
     );
   });
 
