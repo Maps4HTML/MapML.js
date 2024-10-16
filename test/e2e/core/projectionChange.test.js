@@ -23,11 +23,11 @@ test.describe('Linked Feature Projection Change Tests', () => {
     await page.keyboard.press('Enter');
     await page.waitForTimeout(2000);
     const isChecked = await page.$eval(
-      'body > map:nth-child(1) > layer-',
+      'body > map:nth-child(1) > map-layer',
       (layer) => layer.checked
     );
     const isDisabled = await page.$eval(
-      'body > map:nth-child(1) > layer-',
+      'body > map:nth-child(1) > map-layer',
       (layer) => layer.disabled
     );
     expect(isChecked).toBeTruthy();
@@ -42,11 +42,11 @@ test.describe('Linked Feature Projection Change Tests', () => {
     await page.keyboard.press('Enter');
     await page.waitForTimeout(2000);
     const isChecked = await page.$eval(
-      'body > map:nth-child(1) > layer-',
+      'body > map:nth-child(1) > map-layer',
       (layer) => layer.checked
     );
     const isDisabled = await page.$eval(
-      'body > map:nth-child(1) > layer-',
+      'body > map:nth-child(1) > map-layer',
       (layer) => layer.disabled
     );
     expect(isChecked).toBeTruthy();

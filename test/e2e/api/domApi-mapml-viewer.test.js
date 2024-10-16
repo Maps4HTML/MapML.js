@@ -80,14 +80,14 @@ test.describe('mapml-viewer DOM API Tests', () => {
     expect(layerControlHidden).toEqual(true);
   });
 
-  test('Create a layer with document.createElement(layer-)', async () => {
+  test('Create a layer with document.createElement(map-layer)', async () => {
     const layerHandle = await page.evaluateHandle(() =>
-      document.createElement('layer-')
+      document.createElement('map-layer')
     );
     const nn = await (
       await page.evaluateHandle((viewer) => viewer.nodeName, layerHandle)
     ).jsonValue();
-    expect(nn).toEqual('LAYER-');
+    expect(nn).toEqual('MAP-LAYER');
     await page.evaluateHandle(
       (layer) => layer.setAttribute('label', 'CBMT'),
       layerHandle
@@ -140,13 +140,13 @@ test.describe('mapml-viewer DOM API Tests', () => {
       document.body.appendChild(m);
     });
     await viewer.evaluate((viewer) =>
-      viewer.querySelector('layer-').whenReady()
+      viewer.querySelector('map-layer').whenReady()
     );
     await page.waitForTimeout(250);
     expect(
       await viewer.evaluate(() => {
         let m = document.querySelector('mapml-viewer');
-        let l = m.querySelector('layer-');
+        let l = m.querySelector('map-layer');
         return l.label;
         // the label attribute is ignored if the mapml document has a map-title
         // element, which is the case here.  Since the layer loads over the
@@ -170,10 +170,10 @@ test.describe('mapml-viewer DOM API Tests', () => {
 
   test('Toggle all mapml-viewer controls by adding or removing controls attribute', async () => {
     await page.evaluateHandle(() =>
-      document.querySelector('layer-').setAttribute('hidden', '')
+      document.querySelector('map-layer').setAttribute('hidden', '')
     );
     await page.evaluateHandle(() =>
-      document.querySelector('layer-').removeAttribute('hidden')
+      document.querySelector('map-layer').removeAttribute('hidden')
     );
 
     const viewerHandle = await page.evaluateHandle(() =>
@@ -243,7 +243,9 @@ test.describe('mapml-viewer DOM API Tests', () => {
     expect(hasControls).toBe(true);
 
     // remove layer and check that layercontrol disappears
-    await page.evaluateHandle(() => document.querySelector('layer-').remove());
+    await page.evaluateHandle(() =>
+      document.querySelector('map-layer').remove()
+    );
     let layerControlHidden = await page.$eval(
       'css=body > mapml-viewer >> css=div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div',
       (elem) => elem.hasAttribute('hidden')
@@ -324,7 +326,7 @@ test.describe('mapml-viewer DOM API Tests', () => {
 
   test('Adding a layer to a map without controls does not add controls', async () => {
     const layerHandle = await page.evaluateHandle(() =>
-      document.createElement('layer-')
+      document.createElement('map-layer')
     );
     await page.evaluateHandle(
       (layer) => layer.setAttribute('label', 'CBMT'),

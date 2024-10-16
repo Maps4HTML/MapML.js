@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-test.describe('layer- local/inline extent source tests', () => {
+test.describe('map-layer local/inline extent source tests', () => {
   let page;
   let context;
   test.beforeAll(async function () {
@@ -11,9 +11,9 @@ test.describe('layer- local/inline extent source tests', () => {
     await page.goto('layer-extent.html');
     await page.waitForTimeout(1000);
   });
-  test('layer-.extent min/maxZoom from map-inputs', async () => {
+  test('map-layer.extent min/maxZoom from map-inputs', async () => {
     // changed to add :host / :scope - create a test that passes now but failed before that change
-    //      <layer- data-testid="inline-layer" label="Local content" checked>
+    //      <map-layer data-testid="inline-layer" label="Local content" checked>
     //        <map-extent units="CBMTILE"  checked="checked">
     //          <!-- the bounds and zoom bounds of the inline content are different than the remote layer's content -->
     //          <map-input name="z" type="zoom"  value="17" min="3" max="17"></map-input>
@@ -24,7 +24,7 @@ test.describe('layer- local/inline extent source tests', () => {
     //            <map-meta name="zoom" content="min=5,max=10"></map-meta>
     //          </map-link>//
     //        </map-extent>
-    //      </layer->
+    //      </map-layer>
     const inline = await page.getByTestId('inline-layer');
     let zoomBounds = await inline.evaluate((l) => l.extent.zoom);
     expect(zoomBounds.minZoom).toEqual(3);
@@ -35,7 +35,7 @@ test.describe('layer- local/inline extent source tests', () => {
     expect(zoomBounds.minZoom).toEqual(0);
     expect(zoomBounds.maxZoom).toEqual(17);
   });
-  test('layer-.extent bounds from map-inputs', async () => {
+  test('map-layer.extent bounds from map-inputs', async () => {
     const inline = await page.getByTestId('inline-layer');
     let bounds = await inline.evaluate((l) => {
       return {
@@ -63,9 +63,9 @@ test.describe('layer- local/inline extent source tests', () => {
     expect(bounds.xmax).toEqual(32463);
     expect(bounds.ymax).toEqual(34475);
   });
-  test('layer-.extent bounds update when map-extent changes extent due to map-meta', async () => {
-    // add a map-meta for extent inside the layer- element
-    //      <layer- data-testid="inline-layer" label="Local content" checked>
+  test('map-layer.extent bounds update when map-extent changes extent due to map-meta', async () => {
+    // add a map-meta for extent inside the map-layer element
+    //      <map-layer data-testid="inline-layer" label="Local content" checked>
     //        <map-extent units="CBMTILE"  checked="checked">
     //          <!-- add map-meta extent here, layer extent bounds should change -->
     //          <!-- add map-meta zoom here, layer extent zoom bounds should change -->
@@ -79,7 +79,7 @@ test.describe('layer- local/inline extent source tests', () => {
     //            <map-meta data-testid="large-extent" name="extent" content="top-left-easting=-5329325, top-left-northing=5643026, bottom-right-easting=5915489, bottom-right-northing=-5601788"></map-meta>
     //          </map-link>//
     //        </map-extent>
-    //      </layer->
+    //      </map-layer>
 
     const inline = await page.getByTestId('inline-layer');
     let bounds = await inline.evaluate((l) => {
@@ -136,13 +136,13 @@ test.describe('layer- local/inline extent source tests', () => {
     expect(bounds.zmaxNative).toEqual(17);
     expect(bounds.zminNative).toEqual(3);
   });
-  test('layer-.extent bounds update with addition of map-meta children', async () => {
+  test('map-layer.extent bounds update with addition of map-meta children', async () => {
     await page.reload();
     await page.waitForTimeout(1000);
-    // this tests the MutationObserver on the layer- element to ensure it's
+    // this tests the MutationObserver on the map-layer element to ensure it's
     // listening for map-meta name=zoom and name=extent
-    // add a map-meta for extent inside the layer- element
-    //      <layer- data-testid="inline-layer" label="Local content" checked>
+    // add a map-meta for extent inside the map-layer element
+    //      <map-layer data-testid="inline-layer" label="Local content" checked>
     //          <!-- add map-meta extent here, layer extent bounds should change -->
     //          <!-- add map-meta zoom here, layer extent zoom bounds should change -->
     //        <map-extent units="CBMTILE"  checked="checked">
@@ -156,7 +156,7 @@ test.describe('layer- local/inline extent source tests', () => {
     //            <map-meta data-testid="large-extent" name="extent" content="top-left-easting=-5329325, top-left-northing=5643026, bottom-right-easting=5915489, bottom-right-northing=-5601788"></map-meta>
     //          </map-link>//
     //        </map-extent>
-    //      </layer->
+    //      </map-layer>
 
     const inline = await page.getByTestId('inline-layer');
     let bounds = await inline.evaluate((l) => {
@@ -213,7 +213,7 @@ test.describe('layer- local/inline extent source tests', () => {
     expect(bounds.zmaxNative).toEqual(17);
     expect(bounds.zminNative).toEqual(3);
   });
-  test(`layer- .extent bounds change with added / removed child map-features`, async () => {
+  test(`map-layer .extent bounds change with added / removed child map-features`, async () => {
     const newFeature = `<map-feature data-testid="f1" zoom="0" min="0" max="11"><map-geometry cs="pcrs"><map-linestring>
                         <map-coordinates>-7195964 5732985 4048850 5732985 4048850 -5511829 -7195964 -5511829 -7195964 5732985 
                         </map-coordinates></map-linestring></map-geometry>

@@ -1,6 +1,6 @@
 <mapml- xmlns="http://www.w3.org/1999/xhtml">
   <map-head>
-    <!-- no map-title provided means the HTML <layer- src> that references 
+    <!-- no map-title provided means the HTML <map-layer src> that references 
          this file may set its name via the HTMLLayerElement.label setter -->
     <map-meta charset="utf-8" ></map-meta>
     <map-meta content="text/mapml" http-equiv="Content-Type" ></map-meta>

@@ -19,7 +19,7 @@
       }
     </style>
     <template>
-      <layer- data-testid="inline-tiles" label="inline content" >
+      <map-layer data-testid="inline-tiles" label="inline content" >
         <map-title>OpenStreetMap image tiles</map-title>
         <map-link rel="license" href="https://www.openstreetmap.org/copyright" title="© OpenStreetMap contributors CC BY-SA"></map-link>  
         <map-extent id="extent-via-map-input" units="OSMTILE" checked="checked" hidden="hidden">
@@ -36,8 +36,8 @@
           <map-input name="y" type="location" units="tilematrix" axis="row"></map-input>
           <map-link rel="tile" tref="tiles/osmtile/{z}/{x}/{y}.png"></map-link>
         </map-extent>
-      </layer->
-      <layer- data-testid="inline-image" label="inline content" checked>
+      </map-layer>
+      <map-layer data-testid="inline-image" label="inline content" checked>
         <map-title>Non-queryable inline WMS image Layer</map-title>
         <!-- the extent below should have the same extent property as the extent in the inline-image-queryable layer -->
         <!-- the bounds of the extent are established via native map-input variables -->
@@ -59,14 +59,14 @@
 
         </map-extent>
         
-      </layer->
+      </map-layer>
     </template>    
   </head>
   <body>
     <mapml-viewer data-testid="viewer" style="height: 500px;width:500px;" controls zoom="1" lat="0" lon="0" >
-      <layer- data-testid="initially-empty" label='Initally empty' checked>
+      <map-layer data-testid="initially-empty" label='Initally empty' checked>
         <map-meta name='projection' content='OSMTILE'></map-meta>
-      </layer->
+      </map-layer>
     </mapml-viewer>
   </body>
 </html>

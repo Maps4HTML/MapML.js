@@ -10,7 +10,7 @@
 
   <body>
   <mapml-viewer data-testid="viewer" style="width: 500px;height: 500px;" projection="CBMTILE" zoom="1" lat="46.17" lon="-88.9" controls>
-    <layer- id="query" label="Fire" checked>
+    <map-layer id="query" label="Fire" checked>
       <map-extent units="CBMTILE" checked hidden>
         <map-input name="z" type="zoom" value="18" min="0" max="18" ></map-input>
         <map-input name="txmin" type="location" units="tilematrix" position="top-left" axis="easting"  ></map-input>
@@ -27,7 +27,7 @@
         <map-input name="h" type="height" ></map-input>
         <map-link rel="query" tref="data/query-feature.mapml?service=WMS&version=1.3.0&request=GetFeatureInfo&i={i}&j={j}&query_layers=FBP_FuelLayer_wBurnScars&layers=FBP_FuelLayer_wBurnScars&info_format=text/html&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}&CRS=EPSG:3857"></map-link>
       </map-extent>
-    </layer->
+    </map-layer>
 
   </mapml-viewer>
 </body>

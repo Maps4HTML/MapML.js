@@ -119,12 +119,12 @@ test.describe('Playwright Query Link Tests', () => {
       expect(href).toEqual('#6,32.62418749999957,-86.6801555');
 
       const elementCount = await page.evaluate(
-        `document.querySelector('mapml-viewer > layer- > map-extent > map-link').shadowRoot.children.length`
+        `document.querySelector('mapml-viewer > map-layer > map-extent > map-link').shadowRoot.children.length`
       );
       // shadowRoot contains 1 map-feature and 3 map-meta (cs, zoom, projection)
       expect(elementCount).toEqual(4);
       const property = await page.evaluate(
-        `document.querySelector('mapml-viewer > layer- > map-extent > map-link').shadowRoot.querySelector('map-properties').innerText.trim()`
+        `document.querySelector('mapml-viewer > map-layer > map-extent > map-link').shadowRoot.querySelector('map-properties').innerText.trim()`
       );
       expect(property).toEqual('Alabama');
     });
@@ -152,12 +152,12 @@ test.describe('Playwright Query Link Tests', () => {
       expect(href).toEqual('#0,34.168684499999635,-111.9288505');
 
       const elementCount = await page.evaluate(
-        `document.querySelector('mapml-viewer > layer- > map-extent > map-link').shadowRoot.children.length`
+        `document.querySelector('mapml-viewer > map-layer > map-extent > map-link').shadowRoot.children.length`
       );
       // shadowRoot contains 1 map-feature and 3 map-meta (cs, zoom, projection)
       expect(elementCount).toEqual(4);
       const property = await page.evaluate(
-        `document.querySelector('mapml-viewer > layer- > map-extent > map-link').shadowRoot.querySelector('map-properties').innerText.trim()`
+        `document.querySelector('mapml-viewer > map-layer > map-extent > map-link').shadowRoot.querySelector('map-properties').innerText.trim()`
       );
       expect(property).toEqual('Arizona');
     });
@@ -187,12 +187,12 @@ test.describe('Playwright Query Link Tests', () => {
       expect(href).toEqual('#6,32.62418749999957,-86.6801555');
 
       const elementCount = await page.evaluate(
-        `document.querySelector('mapml-viewer > layer- > map-extent > map-link').shadowRoot.children.length`
+        `document.querySelector('mapml-viewer > map-layer > map-extent > map-link').shadowRoot.children.length`
       );
       // shadowRoot contains 1 map-feature and 3 map-meta (cs, zoom, projection)
       expect(elementCount).toEqual(4);
       const property = await page.evaluate(
-        `document.querySelector('mapml-viewer > layer- > map-extent > map-link').shadowRoot.querySelector('map-properties').innerText.trim()`
+        `document.querySelector('mapml-viewer > map-layer > map-extent > map-link').shadowRoot.querySelector('map-properties').innerText.trim()`
       );
       expect(property).toEqual('Alabama');
     });
@@ -319,7 +319,7 @@ test.describe('Playwright Query Link Tests', () => {
       let popups = await popupPane.evaluate((pane) => pane.childElementCount);
       // expect results
       expect(popups).toBe(1);
-      const layer = await page.locator('layer-');
+      const layer = await page.locator('map-layer');
       // dismiss the popup
       await page.keyboard.press('Escape');
       // hide the layer

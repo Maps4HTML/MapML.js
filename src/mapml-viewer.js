@@ -1,16 +1,16 @@
 import { Util } from './mapml/utils/Util';
 import { DOMTokenList } from './mapml/utils/DOMTokenList';
 
-import { MapLayer } from './layer.js';
-import { MapCaption } from './map-caption.js';
-import { MapFeature } from './map-feature.js';
-import { MapExtent } from './map-extent.js';
-import { MapInput } from './map-input.js';
-import { MapSelect } from './map-select.js';
-import { MapLink } from './map-link.js';
-import { MapStyle } from './map-style.js';
-import { WebMap } from './web-map';
-import { MapArea } from './map-area.js';
+import { HTMLMapLayerElement } from './layer.js';
+import { HTMLMapCaptionElement } from './map-caption.js';
+import { HTMLMapFeatureElement } from './map-feature.js';
+import { HTMLMapExtentElement } from './map-extent.js';
+import { HTMLMapInputElement } from './map-input.js';
+import { HTMLMapSelectElement } from './map-select.js';
+import { HTMLMapLinkElement } from './map-link.js';
+import { HTMLMapStyleElement } from './map-style.js';
+import { HTMLWebMapElement } from './web-map';
+import { HTMLMapAreaElement } from './map-area.js';
 
 import { layerControl } from './mapml/control/LayerControl';
 import { AttributionButton } from './mapml/control/AttributionButton';
@@ -22,7 +22,7 @@ import { debugOverlay } from './mapml/layers/DebugOverlay';
 import { crosshair } from './mapml/layers/Crosshair';
 import { featureIndexOverlay } from './mapml/layers/FeatureIndexOverlay';
 
-export class MapViewer extends HTMLElement {
+export class HTMLMapmlViewerElement extends HTMLElement {
   static get observedAttributes() {
     return [
       'lat',
@@ -115,7 +115,7 @@ export class MapViewer extends HTMLElement {
     }
   }
   get layers() {
-    return this.getElementsByTagName('layer-');
+    return this.getElementsByTagName('map-layer');
   }
 
   get extent() {
@@ -390,7 +390,7 @@ export class MapViewer extends HTMLElement {
           this._map.options.projection = newValue;
           let layersReady = [];
           this._map.announceMovement.disable();
-          for (let layer of this.querySelectorAll('layer-')) {
+          for (let layer of this.querySelectorAll('map-layer')) {
             layer.removeAttribute('disabled');
             let reAttach = this.removeChild(layer);
             this.appendChild(reAttach);
@@ -404,7 +404,7 @@ export class MapViewer extends HTMLElement {
             this.zoomTo(lat, lon, zoom);
             if (M.options.announceMovement) this._map.announceMovement.enable();
             // required to delay until map-extent.disabled is correctly set
-            // which happens as a result of layer-._validateDisabled()
+            // which happens as a result of map-layer._validateDisabled()
             // which happens so much we have to delay until they calls are
             // completed
             setTimeout(() => {
@@ -642,7 +642,7 @@ export class MapViewer extends HTMLElement {
     this.addEventListener(
       'change',
       function (e) {
-        if (e.target.tagName === 'LAYER-') {
+        if (e.target.tagName === 'MAP-LAYER') {
           this.dispatchEvent(
             new CustomEvent('layerchange', {
               details: { target: this, originalEvent: e }
@@ -667,7 +667,7 @@ export class MapViewer extends HTMLElement {
         );
       }
     });
-    // pasting layer-, links and geojson using Ctrl+V
+    // pasting map-layer, links and geojson using Ctrl+V
     this.addEventListener('keydown', function (e) {
       if (e.keyCode === 86 && e.ctrlKey) {
         navigator.clipboard.readText().then((layer) => {
@@ -1404,7 +1404,7 @@ export class MapViewer extends HTMLElement {
   }
   whenLayersReady() {
     let layersReady = [];
-    // check if all the children elements (map-extent, map-feature) of all layer- are ready
+    // check if all the children elements (map-extent, map-feature) of all map-layer are ready
     for (let layer of [...this.layers]) {
       layersReady.push(layer.whenReady());
     }
@@ -1442,20 +1442,37 @@ export class MapViewer extends HTMLElement {
     return geojsonLayer;
   }
 }
-window.customElements.define('mapml-viewer', MapViewer);
+window.customElements.define('mapml-viewer', HTMLMapmlViewerElement);
 try {
-  window.customElements.define('web-map', WebMap, { extends: 'map' });
-  window.customElements.define('map-area', MapArea, { extends: 'area' });
+  window.customElements.define('web-map', HTMLWebMapElement, {
+    extends: 'map'
+  });
+  window.customElements.define('map-area', HTMLMapAreaElement, {
+    extends: 'area'
+  });
 } catch (error) {
   console.log(
     'Exception occurred while defining custom built-in elements:\n' + error
   );
 }
-window.customElements.define('layer-', MapLayer);
-window.customElements.define('map-caption', MapCaption);
-window.customElements.define('map-feature', MapFeature);
-window.customElements.define('map-extent', MapExtent);
-window.customElements.define('map-input', MapInput);
-window.customElements.define('map-select', MapSelect);
-window.customElements.define('map-link', MapLink);
-window.customElements.define('map-style', MapStyle);
+window.customElements.define('map-layer', HTMLMapLayerElement);
+window.customElements.define('map-caption', HTMLMapCaptionElement);
+window.customElements.define('map-feature', HTMLMapFeatureElement);
+window.customElements.define('map-extent', HTMLMapExtentElement);
+window.customElements.define('map-input', HTMLMapInputElement);
+window.customElements.define('map-select', HTMLMapSelectElement);
+window.customElements.define('map-link', HTMLMapLinkElement);
+window.customElements.define('map-style', HTMLMapStyleElement);
+
+export {
+  HTMLMapLayerElement,
+  HTMLMapCaptionElement,
+  HTMLMapFeatureElement,
+  HTMLMapExtentElement,
+  HTMLMapInputElement,
+  HTMLMapSelectElement,
+  HTMLMapLinkElement,
+  HTMLMapStyleElement,
+  HTMLWebMapElement,
+  HTMLMapAreaElement
+};

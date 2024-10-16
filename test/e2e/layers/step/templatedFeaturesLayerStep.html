@@ -22,7 +22,7 @@
 <body>
 <map style="width: 500px;height: 500px;" is="web-map" projection="CBMTILE" zoom="1" lat="45.5052040" lon="-75.2202344"
      controls>
-  <layer- label="Alabama" checked>
+  <map-layer label="Alabama" checked>
     <map-meta name="zoom" content="min=0,max=5"></map-meta>
     <map-extent units="CBMTILE" checked hidden>
       <map-input name="z" type="zoom" min="0" max="18" value="0" step="3"></map-input>
@@ -32,7 +32,7 @@
       <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" ></map-input>
       <map-link rel="features" tref="../data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>
     </map-extent>
-  </layer->
+  </map-layer>
 </map>
 </body>
 

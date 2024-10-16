@@ -376,7 +376,7 @@ export const Util = {
       if (['/', '.', '#'].includes(link.url[0])) link.target = '_self';
     }
     if (!justPan) {
-      layer = document.createElement('layer-');
+      layer = document.createElement('map-layer');
       layer.setAttribute('src', link.url);
       layer.setAttribute('checked', '');
       switch (link.target) {
@@ -390,7 +390,7 @@ export const Util = {
           break;
         case '_parent':
           postTraversalSetup();
-          for (let l of map.options.mapEl.querySelectorAll('layer-'))
+          for (let l of map.options.mapEl.querySelectorAll('map-layer'))
             if (l._layer !== leafletLayer) map.options.mapEl.removeChild(l);
           map.options.mapEl.appendChild(layer);
           map.options.mapEl.removeChild(leafletLayer._layerEl);
@@ -588,8 +588,8 @@ export const Util = {
   // getNativeVariables: returns an object with the native zoom and CS,
   //                     based on the map-metas that are available within
   //                     the layer or the fallback default values.
-  // getNativeVariables: mapml-||layer-||null||[map-feature,...] -> {zoom: _, val: _}
-  // mapml can be a mapml- element, layer- element, null, or an array of map-features
+  // getNativeVariables: mapml-||map-layer||null||[map-feature,...] -> {zoom: _, val: _}
+  // mapml can be a mapml- element, map-layer element, null, or an array of map-features
   getNativeVariables: function (mapml) {
     let nativeZoom, nativeCS;
     // when mapml is an array of features provided by the query
@@ -614,7 +614,7 @@ export const Util = {
           ).content) ||
         'GCRS';
     } else {
-      // when mapml is null or a layer-/mapml- element
+      // when mapml is null or a map-layer/mapml- element
       nativeZoom =
         (mapml.querySelector &&
           mapml.querySelector('map-meta[name=zoom]') &&
@@ -643,20 +643,20 @@ export const Util = {
     return [column, row];
   },
 
-  // Pastes text to a mapml-viewer/map element(mapEl), text can be a mapml link, geojson, or a layer-
+  // Pastes text to a mapml-viewer/map element(mapEl), text can be a mapml link, geojson, or a map-layer
   //    used for pasting layers through ctrl+v, drag/drop, and pasting through the contextmenu
   // _pasteLayer: HTMLElement Str -> None
-  // Effects: append a layer- element to mapEl, if it is valid
+  // Effects: append a map-layer element to mapEl, if it is valid
   _pasteLayer: function (mapEl, text) {
     try {
       new URL(text);
-      // create a new <layer-> child of the <mapml-viewer> element
+      // create a new <map-layer> child of the <mapml-viewer> element
       let l =
-        '<layer- src="' +
+        '<map-layer src="' +
         text +
         '" label="' +
         M.options.locale.dfLayer +
-        '" checked=""></layer->';
+        '" checked=""></map-layer>';
       mapEl.insertAdjacentHTML('beforeend', l);
       mapEl.lastElementChild.whenReady().catch(() => {
         if (mapEl) {
@@ -670,17 +670,20 @@ export const Util = {
       text = text
         .replace(/(<!--.*?-->)|(<!--[\S\s]+?-->)|(<!--[\S\s]*?$)/g, '')
         .trim();
-      if (text.slice(0, 7) === '<layer-' && text.slice(-9) === '</layer->') {
+      if (
+        text.slice(0, 10) === '<map-layer' &&
+        text.slice(-12) === '</map-layer>'
+      ) {
         mapEl.insertAdjacentHTML('beforeend', text);
       } else if (
         text.slice(0, 12) === '<map-feature' &&
         text.slice(-14) === '</map-feature>'
       ) {
         let layer =
-          `<layer- label="${M.options.locale.dfPastedLayer}" checked>
+          `<map-layer label="${M.options.locale.dfPastedLayer}" checked>
                        <map-meta name='projection' content='${mapEl.projection}'></map-meta>` +
           text +
-          '</layer->';
+          '</map-layer>';
         mapEl.insertAdjacentHTML('beforeend', layer);
       } else {
         try {
@@ -744,14 +747,14 @@ export const Util = {
     return bboxExtent;
   },
 
-  // Takes a GeoJSON geojson and an options Object which returns a <layer-> Element
+  // Takes a GeoJSON geojson and an options Object which returns a <map-layer> Element
   // The options object can contain the following:
   //      label            - String, contains the layer name, if included overrides the default label mapping
   //      projection       - String, contains the projection of the layer (OSMTILE, WGS84, CBMTILE, APSTILE), defaults to   OSMTILE
   //      caption          - Function | String, function accepts one argument being the feature object which produces the   featurecaption string OR a string that is the name of the property that will be mapped to featurecaption
   //      properties       - Function | String | HTMLElement, a function which maps the geojson feature to an HTMLElement   or a string that will be parsed as an HTMLElement or an HTMLElement
   //      geometryFunction - Function, A function you supply that can add classes, hyperlinks and spans to the created  <map-geometry> element, default would be the plain map-geometry element
-  // geojson2mapml: geojson Object <layer-> [min x, min y, max x, max y] -> <layer->
+  // geojson2mapml: geojson Object <map-layer> [min x, min y, max x, max y] -> <map-layer>
   geojson2mapml: function (json, options = {}, layer = null, bboxExtent = {}) {
     let defaults = {
       label: null,
@@ -790,20 +793,20 @@ export const Util = {
       }
       // creating an empty mapml layer
       let xmlStringLayer =
-        "<layer- label='' checked><map-meta name='projection' content='" +
+        "<map-layer label='' checked><map-meta name='projection' content='" +
         options.projection +
-        "'></map-meta><map-meta name='cs' content='gcrs'></map-meta></layer->";
+        "'></map-meta><map-meta name='cs' content='gcrs'></map-meta></map-layer>";
       layer = parser.parseFromString(xmlStringLayer, 'text/html');
       //console.log(layer)
       if (options.label !== null) {
-        layer.querySelector('layer-').setAttribute('label', options.label);
+        layer.querySelector('map-layer').setAttribute('label', options.label);
       } else if (json.name) {
-        layer.querySelector('layer-').setAttribute('label', json.name);
+        layer.querySelector('map-layer').setAttribute('label', json.name);
       } else if (json.title) {
-        layer.querySelector('layer-').setAttribute('label', json.title);
+        layer.querySelector('map-layer').setAttribute('label', json.title);
       } else {
         layer
-          .querySelector('layer-')
+          .querySelector('map-layer')
           .setAttribute('label', M.options.locale.dfLayer);
       }
     }
@@ -847,7 +850,7 @@ export const Util = {
       // Setting bbox if it exists
       if (json.bbox) {
         layer
-          .querySelector('layer-')
+          .querySelector('map-layer')
           .insertAdjacentHTML(
             'afterbegin',
             "<map-meta name='extent' content='top-left-longitude=" +
@@ -881,7 +884,7 @@ export const Util = {
       // Setting bbox if it exists
       if (json.bbox) {
         layer
-          .querySelector('layer-')
+          .querySelector('map-layer')
           .insertAdjacentHTML(
             'afterbegin',
             "<map-meta name='extent' content='top-left-longitude=" +
@@ -907,7 +910,9 @@ export const Util = {
       }
 
       // Setting featurecaption
-      let featureCaption = layer.querySelector('layer-').getAttribute('label');
+      let featureCaption = layer
+        .querySelector('map-layer')
+        .getAttribute('label');
       if (typeof options.caption === 'function') {
         featureCaption = options.caption(json);
       } else if (typeof options.caption === 'string') {
@@ -964,7 +969,7 @@ export const Util = {
       }
 
       // Appending feature to layer
-      layer.querySelector('layer-').appendChild(curr_feature);
+      layer.querySelector('map-layer').appendChild(curr_feature);
     } else if (geometryType.includes(jsonType)) {
       //console.log("Geometry Type - " + jsonType);
       switch (jsonType) {
@@ -1147,7 +1152,7 @@ export const Util = {
     //Add default bbox
     if (setExtent) {
       layer
-        .querySelector('layer-')
+        .querySelector('map-layer')
         .insertAdjacentHTML(
           'afterbegin',
           "<map-meta name='extent' content='top-left-longitude=" +
@@ -1161,7 +1166,7 @@ export const Util = {
             "'></map-meta>"
         );
     }
-    return layer.querySelector('layer-');
+    return layer.querySelector('map-layer');
   },
 
   // Takes an array of length n to return an array of arrays with length 2, helper function
@@ -1312,11 +1317,11 @@ export const Util = {
     return newArr;
   },
 
-  // Takes an <layer-> element and returns a geojson feature collection object
+  // Takes an <map-layer> element and returns a geojson feature collection object
   // The options object can contain the following:
   //      propertyFunction   - function(<map-properties>), A function that maps the features' <map-properties> element to   a GeoJSON "properties" member.
   //      transform          - Bool, Transform coordinates to gcrs values, defaults to True
-  // mapml2geojson: <layer-> Object -> GeoJSON
+  // mapml2geojson: <map-layer> Object -> GeoJSON
   mapml2geojson: function (element, options = {}) {
     let defaults = {
       propertyFunction: null,

@@ -9,7 +9,7 @@
   <body>
 
   <mapml-viewer data-testid="viewer" projection="OSMTILE" zoom="0" lat="0" lon="0" width="400" height="400">
-    <layer- data-testid="dark">
+    <map-layer data-testid="dark">
       <map-title>PMTiles test dark</map-title>
       <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
       <map-extent units="OSMTILE" checked>
@@ -17,8 +17,8 @@
         <map-meta name="extent" content="top-left-easting=-11563967, top-left-northing=5549940, bottom-right-easting=-11534883, bottom-right-northing=5516384"></map-meta>
         <map-link rel="tile" type="application/pmtiles" tref="spearfish.pmtiles?theme=dark"></map-link>
       </map-extent>
-    </layer->
-    <layer- checked data-testid="light">
+    </map-layer>
+    <map-layer checked data-testid="light">
       <map-title>{z}/{x}/{y}.mvt test</map-title>
       <map-link rel="stylesheet" type="application/pmtiles+stylesheet" href="pmtilesRulesModule.js"></map-link>
       <map-extent units="OSMTILE" checked="checked">
@@ -27,14 +27,14 @@
         <map-input name="bar" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
         <map-link rel="tile" type="application/vnd.mapbox-vector-tile" tref="tiles/osmtile/{beans}/{foo}/{bar}.mvt?theme=light"></map-link>
       </map-extent>
-    </layer->
-    <layer- data-testid="hard-coded-variables">
+    </map-layer>
+    <map-layer data-testid="hard-coded-variables">
       <map-title>{z}/{x}/{y}.mvt hardcoding test</map-title>
       <map-link rel="stylesheet" type="application/pmtiles+stylesheet" href="pmtilesRulesModule.js"></map-link>
       <map-extent units="OSMTILE" checked="checked">
         <map-link rel="tile" type="application/vnd.mapbox-vector-tile" tref="tiles/osmtile/{z}/{x}/{y}.mvt?theme=light"></map-link>
       </map-extent>
-    </layer->
+    </map-layer>
   </mapml-viewer>
 </body>
 </html>

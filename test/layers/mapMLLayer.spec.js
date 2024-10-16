@@ -17,10 +17,10 @@ describe('MapMLLayer Constructor Tests', () => {
     });
   });
 
-  describe('M.mapMLLayer(null, <layer-></layer->, options) factory function ', () => {
+  describe('M.mapMLLayer(null, <map-layer></map-layer>, options) factory function ', () => {
     var content;
     beforeEach(async () => {
-      content = document.createElement('layer-');
+      content = document.createElement('map-layer');
       content.innerHTML = `<map-extent units="CBMTILE">
                         <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
                         <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>

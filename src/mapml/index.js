@@ -44,4 +44,29 @@ import '../../dist/proj4-src.js';
 import '../../dist/proj4leaflet.js';
 import '../../dist/L.Control.Locate.js';
 import './GlobalM.js';
-export { MapViewer } from '../mapml-viewer';
+
+import { HTMLMapmlViewerElement } from '../mapml-viewer';
+import { HTMLMapLayerElement } from '../mapml-viewer';
+import { HTMLMapCaptionElement } from '../mapml-viewer';
+import { HTMLMapFeatureElement } from '../mapml-viewer';
+import { HTMLMapExtentElement } from '../mapml-viewer';
+import { HTMLMapInputElement } from '../mapml-viewer';
+import { HTMLMapSelectElement } from '../mapml-viewer';
+import { HTMLMapLinkElement } from '../mapml-viewer';
+import { HTMLMapStyleElement } from '../mapml-viewer';
+import { HTMLWebMapElement } from '../mapml-viewer';
+import { HTMLMapAreaElement } from '../mapml-viewer';
+
+window.MapML = {
+  HTMLMapmlViewerElement,
+  HTMLMapLayerElement,
+  HTMLMapCaptionElement,
+  HTMLMapFeatureElement,
+  HTMLMapExtentElement,
+  HTMLMapInputElement,
+  HTMLMapSelectElement,
+  HTMLMapLinkElement,
+  HTMLMapStyleElement,
+  HTMLWebMapElement,
+  HTMLMapAreaElement
+};

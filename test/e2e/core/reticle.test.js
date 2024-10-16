@@ -67,7 +67,7 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
       await page.keyboard.press('Tab');
       await page.keyboard.press('ArrowUp');
       await page.evaluateHandle(() =>
-        document.querySelector('layer-').removeAttribute('checked')
+        document.querySelector('map-layer').removeAttribute('checked')
       );
       const afterUncheck = await page.$eval(
         'div > div.mapml-crosshair',
@@ -75,7 +75,7 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
       );
 
       await page.evaluateHandle(() =>
-        document.querySelector('layer-').setAttribute('checked', '')
+        document.querySelector('map-layer').setAttribute('checked', '')
       );
       const afterCheck = await page.$eval('div > div.mapml-crosshair', (div) =>
         window.getComputedStyle(div).getPropertyValue('display')

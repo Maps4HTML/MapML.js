@@ -36,7 +36,7 @@ mapml-viewer:defined,
     vertical-align: middle;
 }
 
-/* Pre-style to avoid FOUC of inline layer- and fallback content. */
+/* Pre-style to avoid FOUC of inline map-layer and fallback content. */
 mapml-viewer:not(:defined) > * {
     display: none;
 }
@@ -48,6 +48,6 @@ mapml-viewer:not(:defined) > * {
 supported, or if javascript is disabled. This needs to be defined separately
 from the above, because the `:not(:defined)` selector invalidates the entire
 declaration in browsers that do not support it. */
-layer- {
+map-layer {
     display: none;
 }

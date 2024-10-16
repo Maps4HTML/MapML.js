@@ -22,7 +22,7 @@
 <body>
   <map data-testid="map1" is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
 
-    <layer- data-testid="arizona" label="Arizona" checked>
+    <map-layer data-testid="arizona" label="Arizona" checked>
       <map-meta name="projection" content="CBMTILE"></map-meta>
       <map-meta name="zoom" content="min=0,max=5,value=0"></map-meta>
       <map-meta name="extent"
@@ -87,8 +87,8 @@
           </map-polygon>
         </map-geometry>
       </map-feature>
-    </layer->
-    <layer- data-testid="alabama" label="Alabama" checked>
+    </map-layer>
+    <map-layer data-testid="alabama" label="Alabama" checked>
       <map-meta name="zoom" content="min=0,max=10"></map-meta>
       <map-extent units="CBMTILE" checked hidden>
         <map-input name="z" type="zoom" min="2" max="18" ></map-input>
@@ -99,11 +99,11 @@
         <!-- Local layer content map-link[rel=features] remote styles rendered as style/link in same order as found, in expected shadow root location -->
         <map-link data-testid="alabama-features" rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>
       </map-extent>
-    </layer->
+    </map-layer>
   </map>
   <map data-testid="map2" is="web-map" projection="WGS84" zoom="0" lat="0" lon="0" controls>
 
-    <layer- label="Inline Countries" checked>
+    <map-layer label="Inline Countries" checked>
       <map-style id="one">
         .firstVector {
           color: aliceblue;
@@ -129,9 +129,9 @@
           tref='data/wgs84/{zoomLevel}/r{row}_c{col}.mapml' ></map-link>
 
       </map-extent>
-    </layer->
+    </map-layer>
     
-    <layer- data-testid="remote" label="src-based Countries" src="data/vector-tile-test.mapml" checked></layer->
+    <map-layer data-testid="remote" label="src-based Countries" src="data/vector-tile-test.mapml" checked></map-layer>
   </map>
 </body>
 

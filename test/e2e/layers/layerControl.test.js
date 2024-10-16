@@ -27,7 +27,7 @@ test.describe('Playwright layerControl Tests', () => {
     test('Control panel shown when layers are on map', async () => {
       const map = await page.locator('body > mapml-viewer');
       await map.evaluate((map) =>
-        map.querySelector('layer-').removeAttribute('hidden')
+        map.querySelector('map-layer').removeAttribute('hidden')
       );
       await page.waitForTimeout(1000);
       const controlsHidden = await page.$eval(

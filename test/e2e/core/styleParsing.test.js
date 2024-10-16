@@ -124,8 +124,8 @@ embedded in text/mapml tiles are rendered in same order as found in tile`, async
     });
     expect(renderedStyleIds).toEqual('one,two,three');
   });
-  test(`Remote styles (layer- src) in the map-head rendered in the same source order\
-as children of layer-._layer._container`, async () => {
+  test(`Remote styles (map-layer src) in the map-head rendered in the same source order\
+as children of map-layer._layer._container`, async () => {
     const remoteLayer = page.getByTestId('remote');
     const ids = await remoteLayer.evaluate((l) => {
       const elementSequence = l.shadowRoot.querySelectorAll(
@@ -151,7 +151,7 @@ as children of layer-._layer._container`, async () => {
     });
     expect(renderedIds).toEqual(ids);
   });
-  test(`Remote (layer- src) styles in the remote map-extent should be rendered \
+  test(`Remote (map-layer src) styles in the remote map-extent should be rendered \
 in the same order as in remote source, in the map-extent._extentLayer._container`, async () => {
     const remoteLayer = page.getByTestId('remote');
     const ids = await remoteLayer.evaluate((l) => {
@@ -179,7 +179,7 @@ in the same order as in remote source, in the map-extent._extentLayer._container
     });
     expect(renderedIds).toEqual(ids);
   });
-  test(`Remote (layer- src) styles embedded within loaded tiles should be \
+  test(`Remote (map-layer src) styles embedded within loaded tiles should be \
 rendered in the same order as in the tile, in the tile container`, async () => {
     // there's more than one use of vector-tile-test.mapml here, so the test id
     // is not unique. this is the second and last occurence of it though:

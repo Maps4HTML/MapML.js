@@ -7,9 +7,9 @@
   </head>
   <body>
     <template>
-      <layer- id="remote-with-title" label="This should not appear in layer control" src="with-title.mapml" checked></layer->
-      <layer- id="remote-no-title" label="Layer with name settable via HTMLLayerElement.label" src="no-title.mapml" checked></layer->
-      <layer- id="local-no-title" label="Another Layer with name settable via HTMLLayerElement.label" checked>
+      <map-layer id="remote-with-title" label="This should not appear in layer control" src="with-title.mapml" checked></map-layer>
+      <map-layer id="remote-no-title" label="Layer with name settable via HTMLLayerElement.label" src="no-title.mapml" checked></map-layer>
+      <map-layer id="local-no-title" label="Another Layer with name settable via HTMLLayerElement.label" checked>
         <map-meta name="projection" content="OSMTILE"></map-meta>
         <map-feature id="hg" zoom="3" min="0" max="22">
           <map-featurecaption>Statue of a guy with a hat</map-featurecaption>
@@ -22,8 +22,8 @@
               <h1>A Man With Two Hats</h1>
             </map-properties>
         </map-feature>
-      </layer->
-      <layer- id="local-with-title" label="This should not appear in layer control" checked>
+      </map-layer>
+      <map-layer id="local-with-title" label="This should not appear in layer control" checked>
         <map-title>Layer name set via local map-title element - unsettable via HTMLLayerelement.label</map-title>
         <map-meta name="projection" content="OSMTILE"></map-meta>
         <map-feature id="hg" zoom="3" min="0" max="22">
@@ -37,13 +37,13 @@
               <h1>A Man With Two Hats</h1>
             </map-properties>
         </map-feature>
-      </layer->
+      </map-layer>
     </template>
   <mapml-viewer projection="OSMTILE" controls  zoom="15" lat="45.39778" lon="-75.70528" width="500" height="500">
   </mapml-viewer>
   </body>
   <script type="module">
-    const elementsDefined = ['mapml-viewer','layer-','map-feature'].map((e)=>{customElements.whenDefined(e);});
+    const elementsDefined = ['mapml-viewer','map-layer','map-feature'].map((e)=>{customElements.whenDefined(e);});
     Promise.all(elementsDefined).then(()=>{
       let remoteWithTitle = document.querySelector('template').content.cloneNode(true).querySelector('#remote-with-title');
       remoteWithTitle = document.querySelector('mapml-viewer').appendChild(remoteWithTitle);

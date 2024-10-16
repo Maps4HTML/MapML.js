@@ -5,7 +5,7 @@ import { templatedFeaturesLayer } from './mapml/layers/TemplatedFeaturesLayer';
 import { templatedPMTilesLayer } from './mapml/layers/TemplatedPMTilesLayer';
 /* global M */
 
-export class MapLink extends HTMLElement {
+export class HTMLMapLinkElement extends HTMLElement {
   static get observedAttributes() {
     return [
       'type',
@@ -163,7 +163,7 @@ export class MapLink extends HTMLElement {
     return Util.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return Util.getClosest(this, 'layer-');
+    return Util.getClosest(this, 'map-layer');
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -296,7 +296,7 @@ export class MapLink extends HTMLElement {
     // create the type of templated leaflet layer appropriate to the rel value
     // image/map/features = templated(Image/Feature), tile=templatedTile,
     // this._tempatedTileLayer = Util.templatedTile(pane: this.extentElement._leafletLayer._container)
-    // add to viewer._map dependant on map-extent.checked, layer-.checked
+    // add to viewer._map dependant on map-extent.checked, map-layer.checked
     // what else?
   }
   disconnectedCallback() {
@@ -320,7 +320,7 @@ export class MapLink extends HTMLElement {
     //  in the parent <map-link>._templatedLayer.container root node if
     //  the _templatedLayer is an instance of TemplatedTileLayer or TemplatedFeaturesLayer
     //
-    // if the parent node (or the host of the shadow root parent node) is layer-, the link should be created in the _layer
+    // if the parent node (or the host of the shadow root parent node) is map-layer, the link should be created in the _layer
     // container
     this._stylesheetHost =
       this.getRootNode() instanceof ShadowRoot
@@ -382,7 +382,7 @@ export class MapLink extends HTMLElement {
           this.getRootNode().querySelector(':host > ' + s)
         : Util.getClosest(
             this,
-            'map-extent:has(' + s + '),layer-:has(' + s + ')'
+            'map-extent:has(' + s + '),map-layer:has(' + s + ')'
           )?.querySelector(s);
       let options = {
         zoomBounds: this.getZoomBounds(),
@@ -640,7 +640,7 @@ export class MapLink extends HTMLElement {
    * TODO: review getBounds for sanity, also getFallbackBounds, perhaps integrate
    * there is no other kind of bounds but native....
    *  each rectangle must be established and valid and converted to PCRS coordinates...
-    // "native" bounds = input type=location min max || map-extent/map-meta name=extent min,max || layer-/map-meta name=extent min,max || layer projection min/max
+    // "native" bounds = input type=location min max || map-extent/map-meta name=extent min,max || map-layer/map-meta name=extent min,max || layer projection min/max
  */
   getBounds() {
     let template = this._templateVars;
@@ -772,7 +772,7 @@ export class MapLink extends HTMLElement {
         ? /* use the baseURI algorithm which takes into account any <base> */
           this.getRootNode().querySelector('map-base')?.getAttribute('href') ||
           this.baseURI
-        : /* else use the resolved <layer- src="..."> value */ new URL(
+        : /* else use the resolved <map-layer src="..."> value */ new URL(
             layer.src,
             layer.baseURI
           ).href;

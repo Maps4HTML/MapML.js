@@ -2,7 +2,7 @@ import { Util } from './mapml/utils/Util';
 import { MapMLLayer, mapMLLayer } from './mapml/layers/MapMLLayer';
 import { createLayerControlHTML } from './mapml/elementSupport/layers/createLayerControlForLayer';
 
-export class MapLayer extends HTMLElement {
+export class HTMLMapLayerElement extends HTMLElement {
   static get observedAttributes() {
     return ['src', 'label', 'checked', 'hidden', 'opacity'];
   }
@@ -429,7 +429,7 @@ export class MapLayer extends HTMLElement {
   /*
    * Runs the effects of the mutation observer, which is to add map-features' and
    * map-extents' leaflet layer implementations to the appropriate container in
-   * the layer-._layer: either as a sub-layer directly in the L.LayerGroup
+   * the map-layer._layer: either as a sub-layer directly in the L.LayerGroup
    * (MapMLLayer._layer) or as a sub-layer in the MapMLLayer._mapmlvectors
    * L.FeatureGroup
    */
@@ -516,8 +516,8 @@ export class MapLayer extends HTMLElement {
     }
   }
   /*
-   * Set up a function to watch additions of child elements of layer- or
-   * layer-.shadowRoot and to invoke desired side  effects of those additions
+   * Set up a function to watch additions of child elements of map-layer or
+   * map-layer.shadowRoot and to invoke desired side  effects of those additions
    * via _runMutationObserver
    */
   _bindMutationObserver() {
@@ -539,7 +539,7 @@ export class MapLayer extends HTMLElement {
     var i = 0,
       position = 1;
     for (var nodes = this.parentNode.children; i < nodes.length; i++) {
-      if (this.parentNode.children[i].nodeName === 'LAYER-') {
+      if (this.parentNode.children[i].nodeName === 'MAP-LAYER') {
         if (this.parentNode.children[i] === this) {
           position = i + 1;
         } else if (this.parentNode.children[i]._layer) {
@@ -681,7 +681,7 @@ export class MapLayer extends HTMLElement {
       }
     }
   }
-  // disable/italicize layer control elements based on the layer-.disabled property
+  // disable/italicize layer control elements based on the map-layer.disabled property
   toggleLayerControlDisabled() {
     let input = this._layerControlCheckbox,
       label = this._layerControlLabel,

@@ -1,4 +1,4 @@
-export class MapSelect extends HTMLElement {
+export class HTMLMapSelectElement extends HTMLElement {
   static get observedAttributes() {
     return ['name', 'id'];
   }

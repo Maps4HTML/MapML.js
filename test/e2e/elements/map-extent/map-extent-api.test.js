@@ -72,7 +72,7 @@ test.describe('map-extent tests', () => {
     await map.evaluate((map) => {
       map.insertAdjacentHTML(
         'beforeend',
-        `<layer- data-testid="remote-layer" src="remote-layer.mapml"></layer>`
+        `<map-layer data-testid="remote-layer" src="remote-layer.mapml"></layer>`
       );
     });
     let remoteMapExtent = await page.getByTestId('remote-map-extent');
@@ -101,7 +101,7 @@ test.describe('map-extent tests', () => {
     await map.evaluate((map) => {
       map.insertAdjacentHTML(
         'beforeend',
-        `<layer- data-testid="remote-layer" src="remote-layer.mapml"></layer>`
+        `<map-layer data-testid="remote-layer" src="remote-layer.mapml"></layer>`
       );
     });
     remoteMapExtent = await page.getByTestId('remote-map-extent');
@@ -115,7 +115,7 @@ test.describe('map-extent tests', () => {
     await page.waitForTimeout(1000);
   });
   test('map-extent.getLayerEl() works', async () => {
-    // test that map-extent.getLayerEl() returns ancestor layer-
+    // test that map-extent.getLayerEl() returns ancestor map-layer
     // for inline content
     let layer = await page.getByTestId('cbmt1');
     let layerSelectedByGetLayerEl = await layer.evaluate((layer) => {
@@ -123,12 +123,12 @@ test.describe('map-extent tests', () => {
     });
     expect(layerSelectedByGetLayerEl).toBe(true);
 
-    // test that map-extent.getLayerEl() returns ancestor layer-
+    // test that map-extent.getLayerEl() returns ancestor map-layer
     // for remote content
     await layer.evaluate((map) => {
       map.insertAdjacentHTML(
         'afterend',
-        `<layer- data-testid="remote-layer" src="remote-layer.mapml"></layer>`
+        `<map-layer data-testid="remote-layer" src="remote-layer.mapml"></layer>`
       );
     });
     let remoteMapExtent = await page.getByTestId('remote-map-extent');
@@ -140,7 +140,7 @@ test.describe('map-extent tests', () => {
   });
   test('map-extent.getMeta() works', async () => {
     // map-meta distribution is like so:
-    //    <layer- id="cbmt1" data-testid="cbmt1" label="CBMT - INLINE" checked>
+    //    <map-layer id="cbmt1" data-testid="cbmt1" label="CBMT - INLINE" checked>
     //      <map-meta data-testid="meta-zoom-1" name="zoom" content="min=1,max=2"></map-meta>
     //      <map-meta data-testid="meta-zoom-1-1" name="zoom" content="min=-1,max=-1"></map-meta>
     //      <map-extent data-testid="ext1" label="User-generated label" units="CBMTILE" checked hidden>
@@ -154,7 +154,7 @@ test.describe('map-extent tests', () => {
     //          <map-meta data-testid="meta-zoom-3-1" name="zoom" content="min=14,max=27"></map-meta>
     //        </map-link>
     //      </map-extent>
-    //    </layer->
+    //    </map-layer>
 
     //  meta-zoom-2 should be found first
     const mapExtent = await page.getByTestId('ext1');

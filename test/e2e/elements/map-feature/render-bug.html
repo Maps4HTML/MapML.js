@@ -15,7 +15,7 @@
   </head>
   <body>
   <mapml-viewer data-testid="viewer" zoom="7" lon="16.53066406" lat="45.21669922" controls>
-    <layer- label="Polygon with map-span" checked>
+    <map-layer label="Polygon with map-span" checked>
       <map-meta name="cs" content="gcrs"></map-meta>
       <map-meta name="projection" content="OSMTILE"></map-meta>
       <map-style>.bbox{display:none; stroke:none; fill:none}
@@ -27,8 +27,8 @@
           <h2>zinger</h2>
         </map-properties>
       </map-feature>  
-    </layer->
-    <layer- label="Same polygon, no map-span" >
+    </map-layer>
+    <map-layer label="Same polygon, no map-span" >
       <map-meta name="cs" content="gcrs"></map-meta>
       <map-meta name="projection" content="OSMTILE"></map-meta>
       <map-style>.bbox{display:none; stroke:none; fill:none}
@@ -39,7 +39,7 @@
           <h2>normal</h2>
         </map-properties>
       </map-feature>
-    </layer->
+    </map-layer>
   </mapml-viewer>
 </body>
 </html>

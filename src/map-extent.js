@@ -3,7 +3,7 @@ import { extentLayer } from './mapml/layers/ExtentLayer';
 import { createLayerControlExtentHTML } from './mapml/elementSupport/extents/createLayerControlForExtent';
 
 /* global M */
-export class MapExtent extends HTMLElement {
+export class HTMLMapExtentElement extends HTMLElement {
   static get observedAttributes() {
     return ['checked', 'label', 'opacity', 'hidden'];
   }
@@ -134,7 +134,7 @@ export class MapExtent extends HTMLElement {
     return Util.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return Util.getClosest(this, 'layer-');
+    return Util.getClosest(this, 'map-layer');
   }
   attributeChangedCallback(name, oldValue, newValue) {
     if (this.#hasConnected /* jshint ignore:line */) {
@@ -234,7 +234,7 @@ export class MapExtent extends HTMLElement {
     this._changeHandler = this._handleChange.bind(this);
   }
   async connectedCallback() {
-    // this.parentNode.host returns the layer- element when parentNode is
+    // this.parentNode.host returns the map-layer element when parentNode is
     // the shadow root
     this.parentLayer = this.getLayerEl();
     if (
@@ -246,8 +246,8 @@ export class MapExtent extends HTMLElement {
     await this.mapEl.whenProjectionDefined(this.units).catch(() => {
       throw new Error('Undefined projection:' + this.units);
     });
-    // when projection is changed, the parent layer-._layer is created (so whenReady is fulfilled) but then removed,
-    // then the map-extent disconnectedCallback will be triggered by layer-._onRemove() (clear the shadowRoot)
+    // when projection is changed, the parent map-layer._layer is created (so whenReady is fulfilled) but then removed,
+    // then the map-extent disconnectedCallback will be triggered by map-layer._onRemove() (clear the shadowRoot)
     // even before connectedCallback is finished
     // in this case, the microtasks triggered by the fulfillment of the removed MapMLLayer should be stopped as well
     // !this.isConnected <=> the disconnectedCallback has run before
@@ -430,7 +430,7 @@ export class MapExtent extends HTMLElement {
   _handleChange() {
     // add _extentLayer to map if map-extent is checked, otherwise remove it
     if (this.checked && !this.disabled) {
-      // can be added to mapmllayer layerGroup no matter layer- is checked or not
+      // can be added to mapmllayer layerGroup no matter map-layer is checked or not
       this._extentLayer.addTo(this.parentLayer._layer);
       this._extentLayer.setZIndex(
         Array.from(
@@ -462,8 +462,8 @@ export class MapExtent extends HTMLElement {
     }
   }
   disconnectedCallback() {
-    // in case of projection change, the disconnectedcallback will be triggered by removing layer-._layer even before
-    // map-extent.connectedcallback is finished (because it will wait for the layer- to be ready)
+    // in case of projection change, the disconnectedcallback will be triggered by removing map-layer._layer even before
+    // map-extent.connectedcallback is finished (because it will wait for the map-layer to be ready)
     // !this._extentLayer <=> this.connectedCallback has not yet been finished before disconnectedCallback is triggered
     if (
       this.hasAttribute('data-moving') ||
