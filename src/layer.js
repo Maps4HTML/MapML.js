@@ -2,7 +2,7 @@ import { Util } from './mapml/utils/Util';
 import { MapMLLayer, mapMLLayer } from './mapml/layers/MapMLLayer';
 import { createLayerControlHTML } from './mapml/elementSupport/layers/createLayerControlForLayer';
 
-export class HTMLMapLayerElement extends HTMLElement {
+export class HTMLLayerElement extends HTMLElement {
   static get observedAttributes() {
     return ['src', 'label', 'checked', 'hidden', 'opacity'];
   }

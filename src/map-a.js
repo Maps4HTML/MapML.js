@@ -1,4 +1,4 @@
-export class HTMLMapAnchorElement extends HTMLElement {
+export class HTMLAnchorElement extends HTMLElement {
   static get observedAttributes() {
     return ['href', 'target', 'type', 'inplace'];
   }

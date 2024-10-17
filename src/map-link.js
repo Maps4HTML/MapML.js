@@ -5,7 +5,7 @@ import { templatedFeaturesLayer } from './mapml/layers/TemplatedFeaturesLayer';
 import { templatedPMTilesLayer } from './mapml/layers/TemplatedPMTilesLayer';
 /* global M */
 
-export class HTMLMapLinkElement extends HTMLElement {
+export class HTMLLinkElement extends HTMLElement {
   static get observedAttributes() {
     return [
       'type',

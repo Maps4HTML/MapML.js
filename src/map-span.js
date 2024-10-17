@@ -1,4 +1,4 @@
-export class HTMLMapSpanElement extends HTMLElement {
+export class HTMLSpanElement extends HTMLElement {
   static get observedAttributes() {
     return;
   }

@@ -1,14 +1,14 @@
 import { Util } from './mapml/utils/Util';
 import { DOMTokenList } from './mapml/utils/DOMTokenList';
 
-import { HTMLMapLayerElement } from './layer.js';
+import { HTMLLayerElement } from './layer.js';
 import { HTMLMapCaptionElement } from './map-caption.js';
-import { HTMLMapFeatureElement } from './map-feature.js';
-import { HTMLMapExtentElement } from './map-extent.js';
-import { HTMLMapInputElement } from './map-input.js';
-import { HTMLMapSelectElement } from './map-select.js';
-import { HTMLMapLinkElement } from './map-link.js';
-import { HTMLMapStyleElement } from './map-style.js';
+import { HTMLFeatureElement } from './map-feature.js';
+import { HTMLExtentElement } from './map-extent.js';
+import { HTMLInputElement } from './map-input.js';
+import { HTMLSelectElement } from './map-select.js';
+import { HTMLLinkElement } from './map-link.js';
+import { HTMLStyleElement } from './map-style.js';
 import { HTMLWebMapElement } from './web-map';
 import { HTMLMapAreaElement } from './map-area.js';
 
@@ -1455,24 +1455,24 @@ try {
     'Exception occurred while defining custom built-in elements:\n' + error
   );
 }
-window.customElements.define('map-layer', HTMLMapLayerElement);
+window.customElements.define('map-layer', HTMLLayerElement);
 window.customElements.define('map-caption', HTMLMapCaptionElement);
-window.customElements.define('map-feature', HTMLMapFeatureElement);
-window.customElements.define('map-extent', HTMLMapExtentElement);
-window.customElements.define('map-input', HTMLMapInputElement);
-window.customElements.define('map-select', HTMLMapSelectElement);
-window.customElements.define('map-link', HTMLMapLinkElement);
-window.customElements.define('map-style', HTMLMapStyleElement);
+window.customElements.define('map-feature', HTMLFeatureElement);
+window.customElements.define('map-extent', HTMLExtentElement);
+window.customElements.define('map-input', HTMLInputElement);
+window.customElements.define('map-select', HTMLSelectElement);
+window.customElements.define('map-link', HTMLLinkElement);
+window.customElements.define('map-style', HTMLStyleElement);
 
 export {
-  HTMLMapLayerElement,
+  HTMLLayerElement,
   HTMLMapCaptionElement,
-  HTMLMapFeatureElement,
-  HTMLMapExtentElement,
-  HTMLMapInputElement,
-  HTMLMapSelectElement,
-  HTMLMapLinkElement,
-  HTMLMapStyleElement,
+  HTMLFeatureElement,
+  HTMLExtentElement,
+  HTMLInputElement,
+  HTMLSelectElement,
+  HTMLLinkElement,
+  HTMLStyleElement,
   HTMLWebMapElement,
   HTMLMapAreaElement
 };

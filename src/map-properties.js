@@ -1,4 +1,4 @@
-export class HTMLMapPropertiesElement extends HTMLElement {
+export class HTMLPropertiesElement extends HTMLElement {
   static get observedAttributes() {
     return;
   }

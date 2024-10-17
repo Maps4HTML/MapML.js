@@ -1,4 +1,4 @@
-export class HTMLMapMetaElement extends HTMLElement {
+export class HTMLMetaElement extends HTMLElement {
   static get observedAttributes() {
     return ['name', 'content'];
   }
