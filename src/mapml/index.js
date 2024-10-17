@@ -46,27 +46,27 @@ import '../../dist/L.Control.Locate.js';
 import './GlobalM.js';
 
 import { HTMLMapmlViewerElement } from '../mapml-viewer';
-import { HTMLMapLayerElement } from '../mapml-viewer';
+import { HTMLLayerElement } from '../mapml-viewer';
 import { HTMLMapCaptionElement } from '../mapml-viewer';
-import { HTMLMapFeatureElement } from '../mapml-viewer';
-import { HTMLMapExtentElement } from '../mapml-viewer';
-import { HTMLMapInputElement } from '../mapml-viewer';
-import { HTMLMapSelectElement } from '../mapml-viewer';
-import { HTMLMapLinkElement } from '../mapml-viewer';
-import { HTMLMapStyleElement } from '../mapml-viewer';
+import { HTMLFeatureElement } from '../mapml-viewer';
+import { HTMLExtentElement } from '../mapml-viewer';
+import { HTMLInputElement } from '../mapml-viewer';
+import { HTMLSelectElement } from '../mapml-viewer';
+import { HTMLLinkElement } from '../mapml-viewer';
+import { HTMLStyleElement } from '../mapml-viewer';
 import { HTMLWebMapElement } from '../mapml-viewer';
 import { HTMLMapAreaElement } from '../mapml-viewer';
 
 window.MapML = {
   HTMLMapmlViewerElement,
-  HTMLMapLayerElement,
+  HTMLLayerElement,
   HTMLMapCaptionElement,
-  HTMLMapFeatureElement,
-  HTMLMapExtentElement,
-  HTMLMapInputElement,
-  HTMLMapSelectElement,
-  HTMLMapLinkElement,
-  HTMLMapStyleElement,
+  HTMLFeatureElement,
+  HTMLExtentElement,
+  HTMLInputElement,
+  HTMLSelectElement,
+  HTMLLinkElement,
+  HTMLStyleElement,
   HTMLWebMapElement,
   HTMLMapAreaElement
 };

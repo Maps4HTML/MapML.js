@@ -1,6 +1,6 @@
 import { Util } from './mapml/utils/Util';
 
-export class HTMLMapFeatureElement extends HTMLElement {
+export class HTMLFeatureElement extends HTMLElement {
   static get observedAttributes() {
     return ['zoom', 'min', 'max'];
   }

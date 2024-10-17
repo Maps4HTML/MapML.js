@@ -3,7 +3,7 @@ import { extentLayer } from './mapml/layers/ExtentLayer';
 import { createLayerControlExtentHTML } from './mapml/elementSupport/extents/createLayerControlForExtent';
 
 /* global M */
-export class HTMLMapExtentElement extends HTMLElement {
+export class HTMLExtentElement extends HTMLElement {
   static get observedAttributes() {
     return ['checked', 'label', 'opacity', 'hidden'];
   }

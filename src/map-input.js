@@ -6,7 +6,7 @@ import { HeightInput } from './mapml/elementSupport/inputs/heightInput';
 import { LocationInput } from './mapml/elementSupport/inputs/locationInput';
 
 /* global M */
-export class HTMLMapInputElement extends HTMLElement {
+export class HTMLInputElement extends HTMLElement {
   static get observedAttributes() {
     return [
       'name',
