@@ -170,6 +170,7 @@ export class HTMLMapmlViewerElement extends HTMLElement {
   connectedCallback() {
     this.whenProjectionDefined(this.projection)
       .then(() => {
+        this._setLocale();
         this._initShadowRoot();
 
         this._controlsList = new DOMTokenList(
@@ -232,6 +233,16 @@ export class HTMLMapmlViewerElement extends HTMLElement {
       .catch(() => {
         throw new Error('Projection not defined');
       });
+  }
+  _setLocale() {
+    if (this.closest(':lang(fr)') === this) {
+      this.locale = M.options.localeFr;
+    } else if (this.closest(':lang(en)') === this) {
+      this.locale = M.options.localeEn;
+    } else {
+      // "browser" locale
+      this.locale = M.options.locale;
+    }
   }
   _initShadowRoot() {
     if (!this.shadowRoot) {
@@ -461,7 +472,12 @@ export class HTMLMapmlViewerElement extends HTMLElement {
     // Only add controls if there is enough top left vertical space
     if (!this._zoomControl && totalSize + 93 <= mapSize) {
       totalSize += 93;
-      this._zoomControl = L.control.zoom().addTo(this._map);
+      this._zoomControl = L.control
+        .zoom({
+          zoomInTitle: this.locale.btnZoomIn,
+          zoomOutTitle: this.locale.btnZoomOut
+        })
+        .addTo(this._map);
     }
     if (!this._reloadButton && totalSize + 49 <= mapSize) {
       totalSize += 49;

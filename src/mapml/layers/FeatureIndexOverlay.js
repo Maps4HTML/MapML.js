@@ -75,7 +75,8 @@ export var FeatureIndexOverlay = L.Layer.extend({
     let keys = Object.keys(features);
     let body = this._body;
     let noFeaturesMessage = document.createElement('span');
-    noFeaturesMessage.innerHTML = M.options.locale.fIndexNoFeatures;
+    noFeaturesMessage.innerHTML =
+      this._map.options.mapEl.locale.fIndexNoFeatures;
 
     body.innerHTML = '';
     body.index = 0;

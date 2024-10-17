@@ -404,7 +404,9 @@ export var FeatureLayer = L.FeatureGroup.extend({
     // is rendered on a tile-shaped FeatureLayer
     let zoom = feature.zoom ?? tileZoom,
       title = feature.querySelector('map-featurecaption');
-    title = title ? title.innerHTML : 'Feature';
+    title = title
+      ? title.innerHTML
+      : this.options.mapEl.locale.dfFeatureCaption;
 
     if (feature.querySelector('map-properties')) {
       options.properties = document.createElement('div');

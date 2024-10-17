@@ -154,7 +154,7 @@ test.describe('Using arrow keys to navigate context menu', () => {
     let activeElement = await page.evaluate(
       () => document.activeElement.shadowRoot.activeElement.innerHTML
     );
-    expect(activeElement).toEqual('View Fullscreen (<kbd>F</kbd>)');
+    expect(activeElement).toEqual('View fullscreen (<kbd>F</kbd>)');
 
     await page.keyboard.press('ArrowDown');
     await page.keyboard.press('ArrowDown');
@@ -186,7 +186,7 @@ test.describe('Using arrow keys to navigate context menu', () => {
     activeElement = await page.evaluate(
       () => document.activeElement.shadowRoot.activeElement.innerHTML
     );
-    expect(activeElement).toEqual('View Fullscreen (<kbd>F</kbd>)');
+    expect(activeElement).toEqual('View fullscreen (<kbd>F</kbd>)');
   });
 
   test('Right and Left Arrow keys to navigate the contextmenu', async () => {
@@ -301,7 +301,7 @@ test.describe('Using arrow keys to navigate context menu', () => {
     activeElement = await page.evaluate(
       () => document.activeElement.shadowRoot.activeElement.innerHTML
     );
-    expect(activeElement).toEqual('View Fullscreen (<kbd>F</kbd>)');
+    expect(activeElement).toEqual('View fullscreen (<kbd>F</kbd>)');
 
     await page.keyboard.press('ArrowDown');
 

@@ -1,7 +1,8 @@
 module.exports = function(grunt) {
-  const Diff = require('diff');
-  const nodeResolve = require('@rollup/plugin-node-resolve');
-  grunt.initConfig({
+const Diff = require('diff');
+const nodeResolve = require('@rollup/plugin-node-resolve');
+const loadLocalePlugin = require('./load-locales.js');
+grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     cssmin: {
       options: {
@@ -193,7 +194,7 @@ module.exports = function(grunt) {
     rollup: {
       options: {
         format: 'es',
-        plugins: [nodeResolve()],
+        plugins: [nodeResolve(),loadLocalePlugin()],
         external: './pmtilesRules.js'
       },
       main: {

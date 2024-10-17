@@ -38,6 +38,7 @@ export var AnnounceMovement = L.Handler.extend({
 
   focusAnnouncement: function () {
     let mapEl = this;
+    let locale = this.locale;
     setTimeout(function () {
       let el = mapEl.querySelector('.mapml-web-map')
         ? mapEl
@@ -46,12 +47,12 @@ export var AnnounceMovement = L.Handler.extend({
         : mapEl.shadowRoot.querySelector('.leaflet-container');
 
       let mapZoom = mapEl._map.getZoom();
-      let standard = M.options.locale.amZoom + ' ' + mapZoom;
+      let standard = locale.amZoom + ' ' + mapZoom;
 
       if (mapZoom === mapEl._map.getMaxZoom()) {
-        standard = M.options.locale.amMaxZoom + ' ' + standard;
+        standard = locale.amMaxZoom + ' ' + standard;
       } else if (mapZoom === mapEl._map._layersMinZoom) {
-        standard = M.options.locale.amMinZoom + ' ' + standard;
+        standard = locale.amMinZoom + ' ' + standard;
       }
 
       el.setAttribute('aria-roledescription', 'region ' + standard);
@@ -65,6 +66,7 @@ export var AnnounceMovement = L.Handler.extend({
     if (this._traversalCall > 0) {
       return;
     }
+    let locale = this.locale;
     let mapZoom = this._map.getZoom();
     let mapBounds = Util.pixelToPCRSBounds(
       this._map.getPixelBounds(),
@@ -86,7 +88,7 @@ export var AnnounceMovement = L.Handler.extend({
         )
       : this.shadowRoot.querySelector('.mapml-screen-reader-output');
 
-    let standard = M.options.locale.amZoom + ' ' + mapZoom;
+    let standard = locale.amZoom + ' ' + mapZoom;
 
     if (!visible) {
       let outOfBoundsPos = this._history[this._historyIndex];
@@ -95,26 +97,26 @@ export var AnnounceMovement = L.Handler.extend({
       this._history.pop();
 
       if (outOfBoundsPos.zoom !== inBoundsPos.zoom) {
-        output.innerText = M.options.locale.amZoomedOut;
+        output.innerText = locale.amZoomedOut;
       } else if (this._map.dragging._draggable.wasDragged) {
-        output.innerText = M.options.locale.amDraggedOut;
+        output.innerText = locale.amDraggedOut;
       } else if (outOfBoundsPos.x > inBoundsPos.x) {
-        output.innerText = M.options.locale.amEastBound;
+        output.innerText = locale.amEastBound;
       } else if (outOfBoundsPos.x < inBoundsPos.x) {
-        output.innerText = M.options.locale.amWestBound;
+        output.innerText = locale.amWestBound;
       } else if (outOfBoundsPos.y < inBoundsPos.y) {
-        output.innerText = M.options.locale.amNorthBound;
+        output.innerText = locale.amNorthBound;
       } else if (outOfBoundsPos.y > inBoundsPos.y) {
-        output.innerText = M.options.locale.amSouthBound;
+        output.innerText = locale.amSouthBound;
       }
     } else {
       let prevZoom = this._history[this._historyIndex - 1]
         ? this._history[this._historyIndex - 1].zoom
         : this._history[this._historyIndex].zoom;
       if (mapZoom === this._map.getMaxZoom() && mapZoom !== prevZoom) {
-        output.innerText = M.options.locale.amMaxZoom + ' ' + standard;
+        output.innerText = locale.amMaxZoom + ' ' + standard;
       } else if (mapZoom === this._map._layersMinZoom && mapZoom !== prevZoom) {
-        output.innerText = M.options.locale.amMinZoom + ' ' + standard;
+        output.innerText = locale.amMinZoom + ' ' + standard;
       } else {
         output.innerText = standard;
       }

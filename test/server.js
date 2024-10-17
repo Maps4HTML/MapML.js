@@ -4,6 +4,14 @@ const path = require('path');
 const serveStatic = require('serve-static');
 const port = 30001;
 
+app.use((req, res, next) => {
+  // Check if the request URL contains .mapml
+  if (req.url.includes('.mapml')) {
+    res.setHeader('Content-Type', 'text/mapml');
+  }
+  next();
+});
+
 //then loads in the index file
 app.use(express.static(path.join(__dirname, '../dist')));
 app.use(express.static(path.join(__dirname, 'e2e/core')));

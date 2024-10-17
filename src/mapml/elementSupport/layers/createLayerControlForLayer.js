@@ -62,7 +62,7 @@ export var createLayerControlHTML = async function () {
     layerItemControls
   );
   removeControlButton.type = 'button';
-  removeControlButton.title = 'Remove Layer';
+  removeControlButton.title = mapEl.locale.lmRemoveLayer;
   removeControlButton.innerHTML = "<span aria-hidden='true'>&#10005;</span>";
   removeControlButton.classList.add('mapml-button');
   L.DomEvent.on(removeControlButton, 'click', L.DomEvent.stop);
@@ -107,7 +107,7 @@ export var createLayerControlHTML = async function () {
     layerItemControls
   );
   itemSettingControlButton.type = 'button';
-  itemSettingControlButton.title = 'Layer Settings';
+  itemSettingControlButton.title = mapEl.locale.lmLayerSettings;
   itemSettingControlButton.setAttribute('aria-expanded', false);
   itemSettingControlButton.classList.add('mapml-button');
   L.DomEvent.on(
@@ -149,7 +149,7 @@ export var createLayerControlHTML = async function () {
     layerItemName.innerHTML = this._layer._title;
   }
   layerItemName.id = 'mapml-layer-item-name-{' + L.stamp(layerItemName) + '}';
-  opacityControlSummary.innerText = 'Opacity';
+  opacityControlSummary.innerText = mapEl.locale.lcOpacity;
   opacityControlSummary.id =
     'mapml-layer-item-opacity-' + L.stamp(opacityControlSummary);
   opacityControl.appendChild(opacityControlSummary);

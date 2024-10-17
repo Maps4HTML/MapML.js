@@ -655,7 +655,7 @@ export const Util = {
         '<map-layer src="' +
         text +
         '" label="' +
-        M.options.locale.dfLayer +
+        mapEl.locale.dfLayer +
         '" checked=""></map-layer>';
       mapEl.insertAdjacentHTML('beforeend', l);
       mapEl.lastElementChild.whenReady().catch(() => {
@@ -680,7 +680,7 @@ export const Util = {
         text.slice(-14) === '</map-feature>'
       ) {
         let layer =
-          `<map-layer label="${M.options.locale.dfPastedLayer}" checked>
+          `<map-layer label="${mapEl.locale.dfPastedLayer}" checked>
                        <map-meta name='projection' content='${mapEl.projection}'></map-meta>` +
           text +
           '</map-layer>';
@@ -706,8 +706,8 @@ export const Util = {
     let row = thead.insertRow();
     let th1 = document.createElement('th');
     let th2 = document.createElement('th');
-    th1.appendChild(document.createTextNode('Property name'));
-    th2.appendChild(document.createTextNode('Property value'));
+    th1.appendChild(document.createTextNode(M.options.locale.popupPropName));
+    th2.appendChild(document.createTextNode(M.options.locale.popupPropValue));
     th1.setAttribute('role', 'columnheader');
     th2.setAttribute('role', 'columnheader');
     th1.setAttribute('scope', 'col');
