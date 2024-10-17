@@ -149,7 +149,7 @@ export var createLayerControlHTML = async function () {
     layerItemName.innerHTML = this._layer._title;
   }
   layerItemName.id = 'mapml-layer-item-name-{' + L.stamp(layerItemName) + '}';
-  opacityControlSummary.innerText = 'Opacity';
+  opacityControlSummary.innerText = mapEl.locale.lcOpacity;
   opacityControlSummary.id =
     'mapml-layer-item-opacity-' + L.stamp(opacityControlSummary);
   opacityControl.appendChild(opacityControlSummary);

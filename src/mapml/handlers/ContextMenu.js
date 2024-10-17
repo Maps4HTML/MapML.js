@@ -15,9 +15,14 @@ export var ContextMenu = L.Handler.extend({
     : L.Browser.pointer
     ? 'pointerdown'
     : 'touchstart',
-
+  _getLocale: function (map) {
+    return map.options.mapEl && map.options.mapEl.locale
+      ? map.options.mapEl.locale
+      : M.options.locale;
+  },
   initialize: function (map) {
     L.Handler.prototype.initialize.call(this, map);
+    let locale = this._getLocale(map);
     this.activeIndex = 0; //current fous index on menu
     this.excludedIndices = [4, 7]; //menu indexes that are --------
     this.isRunned = false; //variable for tracking edge case
@@ -50,22 +55,22 @@ export var ContextMenu = L.Handler.extend({
     this._items = [
       {
         // 0
-        text: M.options.locale.cmBack + ' (<kbd>Alt+Left Arrow</kbd>)',
+        text: locale.cmBack + ' (<kbd>Alt+Left Arrow</kbd>)',
         callback: this._goBack
       },
       {
         // 1
-        text: M.options.locale.cmForward + ' (<kbd>Alt+Right Arrow</kbd>)',
+        text: locale.cmForward + ' (<kbd>Alt+Right Arrow</kbd>)',
         callback: this._goForward
       },
       {
         // 2
-        text: M.options.locale.cmReload + ' (<kbd>Ctrl+R</kbd>)',
+        text: locale.cmReload + ' (<kbd>Ctrl+R</kbd>)',
         callback: this._reload
       },
       {
         // 3
-        text: M.options.locale.btnFullScreen + ' (<kbd>F</kbd>)',
+        text: locale.btnFullScreen + ' (<kbd>F</kbd>)',
         callback: this._toggleFullScreen
       },
       {
@@ -74,31 +79,31 @@ export var ContextMenu = L.Handler.extend({
       },
       {
         // 5
-        text: M.options.locale.cmCopyCoords + ' (<kbd>C</kbd>)<span></span>',
+        text: locale.cmCopyCoords + ' (<kbd>C</kbd>)<span></span>',
         callback: this._copyCoords,
         hideOnSelect: false,
         popup: true,
         submenu: [
           {
             // 5.0
-            text: M.options.locale.cmCopyMapML,
+            text: locale.cmCopyMapML,
             callback: this._copyMapML
           },
           {
             // 5.1
-            text: M.options.locale.cmCopyExtent,
+            text: locale.cmCopyExtent,
             callback: this._copyExtent
           },
           {
             // 5.2
-            text: M.options.locale.cmCopyLocation,
+            text: locale.cmCopyLocation,
             callback: this._copyLocation
           }
         ]
       },
       {
         // 6
-        text: M.options.locale.cmPasteLayer + ' (<kbd>P</kbd>)',
+        text: locale.cmPasteLayer + ' (<kbd>P</kbd>)',
         callback: this._paste
       },
       {
@@ -107,17 +112,17 @@ export var ContextMenu = L.Handler.extend({
       },
       {
         // 8
-        text: M.options.locale.cmToggleControls + ' (<kbd>T</kbd>)',
+        text: locale.cmToggleControls + ' (<kbd>T</kbd>)',
         callback: this._toggleControls
       },
       {
         // 9
-        text: M.options.locale.cmToggleDebug + ' (<kbd>D</kbd>)',
+        text: locale.cmToggleDebug + ' (<kbd>D</kbd>)',
         callback: this._toggleDebug
       },
       {
         // 10
-        text: M.options.locale.cmViewSource + ' (<kbd>V</kbd>)',
+        text: locale.cmViewSource + ' (<kbd>V</kbd>)',
         callback: this._viewSource
       }
     ];
@@ -136,12 +141,12 @@ export var ContextMenu = L.Handler.extend({
     this._layerItems = [
       {
         // 0
-        text: M.options.locale.lmZoomToLayer + ' (<kbd>Z</kbd>)',
+        text: locale.lmZoomToLayer + ' (<kbd>Z</kbd>)',
         callback: this._zoomToLayer
       },
       {
         // 1
-        text: M.options.locale.lmCopyLayer + ' (<kbd>L</kbd>)',
+        text: locale.lmCopyLayer + ' (<kbd>L</kbd>)',
         callback: this._copyLayer
       }
     ];
@@ -149,12 +154,12 @@ export var ContextMenu = L.Handler.extend({
     this._extentLayerItems = [
       {
         // 0
-        text: M.options.locale.lmZoomToExtent + ' (<kbd>Z</kbd>)',
+        text: locale.lmZoomToExtent + ' (<kbd>Z</kbd>)',
         callback: this._zoomToMapExtent
       },
       {
         // 1
-        text: M.options.locale.lmCopyExtent + ' (<kbd>L</kbd>)',
+        text: locale.lmCopyExtent + ' (<kbd>L</kbd>)',
         callback: this._copyMapExtent
       }
     ];
@@ -1370,7 +1375,8 @@ export var ContextMenu = L.Handler.extend({
 
   _onItemMouseOver: function (e) {
     L.DomUtil.addClass(e.target || e.srcElement, 'over');
-    if (e.srcElement.innerText === M.options.locale.cmCopyCoords + ' (C)')
+    let locale = e.locale || M.options.locale;
+    if (e.srcElement.innerText === locale.cmCopyCoords + ' (C)')
       this._showCopySubMenu(e);
   },
 
@@ -1407,10 +1413,10 @@ export var ContextMenu = L.Handler.extend({
   setViewFullScreenInnerHTML: function (options) {
     if (options === 'view') {
       this._map.contextMenu._items[3].el.el.innerHTML =
-        M.options.locale.btnFullScreen + ' (<kbd>F</kbd>)';
+        this._map.options.mapEl.locale.btnFullScreen + ' (<kbd>F</kbd>)';
     } else if (options === 'exit') {
       this._map.contextMenu._items[3].el.el.innerHTML =
-        M.options.locale.btnExitFullScreen + ' (<kbd>F</kbd>)';
+        this._map.options.mapEl.locale.btnExitFullScreen + ' (<kbd>F</kbd>)';
     }
   }
 });
