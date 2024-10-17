@@ -36,7 +36,7 @@
         contain-intrinsic-size: 304px 154px;
       }
 
-      /* Pre-style to avoid FOUC of inline layer- and fallback content. */
+      /* Pre-style to avoid FOUC of inline map-layer and fallback content. */
       map[is="web-map"]:not(:defined) + img[usemap],
       map[is="web-map"]:not(:defined) > :not(area):not(.mapml-web-map) {
         display: none;
@@ -46,7 +46,7 @@
       supported, or if javascript is disabled. This needs to be defined separately
       from the above, because the `:not(:defined)` selector invalidates the entire
       declaration in browsers that do not support it. */
-      layer- {
+      map-layer {
         display: none;
       }
     </style>
@@ -70,7 +70,7 @@
   </head>
   <body>
     <map is="web-map" projection="CBMTILE" zoom="2" lat="45" lon="-90" height = "800" width = "800" controls>
-      <layer- label="CBMT" src="tiles/cbmt/cbmt.mapml" checked></layer->
+      <map-layer label="CBMT" src="tiles/cbmt/cbmt.mapml" checked></map-layer>
     </map>
   </body>
 </html>

@@ -124,7 +124,7 @@ export var StaticTileLayer = L.GridLayer.extend({
 
   _getZoomBounds: function (container, maxZoomBound) {
     if (!container) return null;
-    // should read zoom information from map-meta (of layer-) instead of the zoom attribute value of map-tile
+    // should read zoom information from map-meta (of map-layer) instead of the zoom attribute value of map-tile
     let meta = Util._metaContentToObject(
         this.options._leafletLayer._layerEl
           .querySelector('map-meta[name=zoom]')

@@ -16,7 +16,7 @@ test.describe('Playwright Checked Attribute Tests', () => {
   });
 
   test('Check attribute removed', async () => {
-    await page.$eval('body > mapml-viewer > layer-', (layer) =>
+    await page.$eval('body > mapml-viewer > map-layer', (layer) =>
       layer.removeAttribute('checked')
     );
     await page.hover(
@@ -30,7 +30,7 @@ test.describe('Playwright Checked Attribute Tests', () => {
     expect(layerController).toEqual(false);
   });
   test('Check attribute added', async () => {
-    await page.$eval('body > mapml-viewer > layer-', (layer) =>
+    await page.$eval('body > mapml-viewer > map-layer', (layer) =>
       layer.setAttribute('checked', '')
     );
     const layerController = await page.$eval(
@@ -43,7 +43,7 @@ test.describe('Playwright Checked Attribute Tests', () => {
 
   test.describe('Hidden attribute tests', () => {
     test('Control panel hidden when no layers/all layers hidden', async () => {
-      await page.$eval('body > mapml-viewer > layer-', (layer) =>
+      await page.$eval('body > mapml-viewer > map-layer', (layer) =>
         layer.setAttribute('hidden', '')
       );
       const controlsHidden = await page.$eval(
@@ -53,7 +53,7 @@ test.describe('Playwright Checked Attribute Tests', () => {
       expect(controlsHidden).toEqual(true);
     });
     test('Control panel unhidden when at least one layer with no hidden attribute', async () => {
-      await page.$eval('body > mapml-viewer > layer-', (layer) =>
+      await page.$eval('body > mapml-viewer > map-layer', (layer) =>
         layer.setAttribute('hidden', '')
       );
       // there's a single layer in the mapml-viewer.html page, so the layer control
@@ -64,7 +64,7 @@ test.describe('Playwright Checked Attribute Tests', () => {
       );
       expect(controlsHidden).toEqual(true);
       // so far so good
-      await page.$eval('body > mapml-viewer > layer-', (layer) =>
+      await page.$eval('body > mapml-viewer > map-layer', (layer) =>
         layer.removeAttribute('hidden')
       );
       controlsHidden = await page.$eval(
@@ -74,7 +74,7 @@ test.describe('Playwright Checked Attribute Tests', () => {
       expect(controlsHidden).toEqual(false);
     });
     //        test("[" + browserType + "]" + " Initial map element extent", async () => {
-    //          await page.$eval("body > mapml-viewer > layer-",
+    //          await page.$eval("body > mapml-viewer > map-layer",
     //            (layer) => layer.setAttribute("checked", ""));
     //          const layerController = await page.$eval("div > div.leaflet-control-container > div.leaflet-top.leaflet-right > div > section > div.leaflet-control-layers-overlays > fieldset > details > summary > div > label > input",
     //            (controller) => controller.checked);
@@ -85,14 +85,15 @@ test.describe('Playwright Checked Attribute Tests', () => {
 
   test.describe('Disabled attributes test', () => {
     test('Setting disabled, attribute reset on update/move', async () => {
-      await page.$eval('body > mapml-viewer > layer-', (layer) =>
+      await page.$eval('body > mapml-viewer > map-layer', (layer) =>
         layer.setAttribute('disabled', '')
       );
 
       await page.$eval('body > mapml-viewer', (map) => map.zoomTo(47, -92, 0));
 
-      let disabled = await page.$eval('body > mapml-viewer > layer-', (layer) =>
-        layer.hasAttribute('disabled', '')
+      let disabled = await page.$eval(
+        'body > mapml-viewer > map-layer',
+        (layer) => layer.hasAttribute('disabled', '')
       );
       expect(disabled).toEqual(false);
     });

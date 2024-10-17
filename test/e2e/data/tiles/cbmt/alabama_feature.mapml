@@ -2,9 +2,9 @@
     <map-head>
         <map-title>Natural Resources Canada's CanVec+ 031G - Map Markup Language</map-title>
         <meta http-equiv="Content-Type" content="text/mapml"/>
-        <!-- map-link or map-style elements loaded from remote layer- (has src
+        <!-- map-link or map-style elements loaded from remote map-layer (has src
              attribute should be rendered as link / style in the 
-             layer-._layer._container -->
+             map-layer._layer._container -->
         <map-link id="one" rel="stylesheet" href="canvec_cantopo_svg.css" type="text/css"></map-link>
         <map-link id="two" rel="stylesheet" href="canvec_feature_properties.css" type="text/css"></map-link>
         <map-style id="three">

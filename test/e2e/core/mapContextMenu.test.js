@@ -374,14 +374,14 @@ test.describe('Playwright Map Context Menu Tests', () => {
       (text) => text.value
     );
     const expected = `<map data-testid="firstmap" style="height: 600px;width:500px;" is="web-map" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls="" role="application">
-    <layer- label="CBMT - INLINE" checked="">
+    <map-layer label="CBMT - INLINE" checked="">
       <map-extent units="CBMTILE" checked="" hidden="">
         <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
         <map-input name="row" type="location" axis="row" units="tilematrix" min="14" max="21"></map-input>
         <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>
         <map-link rel="tile" tref="/data/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>
       </map-extent>
-    </layer->
+    </map-layer>
   </map>`;
     expect(copyValue).toEqual(expected);
     await page.locator('body > textarea#coord').fill('');

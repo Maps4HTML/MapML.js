@@ -24,7 +24,7 @@
 
 <body>
   <mapml-viewer style="width: 500px;height: 500px;" projection="CBMTILE" zoom="2" lat="47" lon="-92" controls>
-    <layer- data-testid="multiple-extents" label="Multiple Extents" checked>
+    <map-layer data-testid="multiple-extents" label="Multiple Extents" checked>
       <map-extent label="cbmt" units="CBMTILE" checked>
         <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3" ></map-input>
         <map-input name="row" type="location" axis="row" units="tilematrix" min="16" max="20" ></map-input>
@@ -38,8 +38,8 @@
         <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" ></map-input>
         <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="6" ></map-input>
         <map-link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>
-    </layer->
-    <layer- data-testid="single-extent" label="One hidden Extent" checked>
+    </map-layer>
+    <map-layer data-testid="single-extent" label="One hidden Extent" checked>
       <map-extent units="CBMTILE" checked hidden>
         <map-meta name="zoom" content="min=2,max=4"></map-meta>
         <map-input name="w" type="width" ></map-input>
@@ -51,7 +51,7 @@
         <map-link rel="image"
           tref="images/toporama_en.jpg?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/jpeg&TRANSPARENT=FALSE&STYLES=&VERSION=1.3.0&LAYERS=WMS-Toporama&WIDTH={w}&HEIGHT={h}&CRS=EPSG:3978&BBOX={xmin},{ymin},{xmax},{ymax}&m4h=t" ></map-link>
       </map-extent>
-    </layer->
+    </map-layer>
   </mapml-viewer>
   <textarea name="message" rows="10" cols="100"></textarea>
 </body>

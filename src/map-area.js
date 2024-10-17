@@ -1,4 +1,4 @@
-export class MapArea extends HTMLAreaElement {
+export class HTMLMapAreaElement extends HTMLAreaElement {
   static get observedAttributes() {
     return ['coords', 'alt', 'href', 'shape', 'rel', 'type', 'target'];
   }

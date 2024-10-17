@@ -68,7 +68,7 @@ test.describe('HTMLLayerElement DOM API Tests', () => {
       return layer._layer.getName();
     });
     // this isn't working, because waiting for the createmap event means
-    // that the layer-._layer doesn't exist, so attributeChangeCallback on label
+    // that the map-layer._layer doesn't exist, so attributeChangeCallback on label
     // shortcircuits (does / can not setName on _layer) unless you wait for it.
     // need to ditch the createmap event!!
     expect(localNoTitleName).toEqual(localNoTitleLabel);

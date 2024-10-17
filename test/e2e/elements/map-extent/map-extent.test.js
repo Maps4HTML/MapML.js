@@ -163,7 +163,7 @@ test.describe('map-extent tests', () => {
     });
     const viewer = page.getByTestId('firstmap');
     await viewer.evaluate((viewer) => {
-      const l = document.createElement('layer-');
+      const l = document.createElement('map-layer');
       l.label = 'Layer';
       const e = document
         .querySelector('template')
@@ -182,7 +182,7 @@ test.describe('map-extent tests', () => {
   test("An empty layer's extent equals projection extent + it updates once content is added to the layer", async () => {
     const viewer = await page.getByTestId('firstmap');
     await viewer.evaluate((viewer) => {
-      const l = document.createElement('layer-');
+      const l = document.createElement('map-layer');
       l.label = 'An empty layer';
       l.setAttribute('data-testid', 'empty');
       const metaProjection = document.createElement('map-meta');
@@ -309,7 +309,7 @@ test.describe('map-extent tests', () => {
     });
     // set up an empty layer
     await viewer.evaluate((viewer) => {
-      const l = document.createElement('layer-');
+      const l = document.createElement('map-layer');
       l.label = 'An empty layer';
       l.setAttribute('data-testid', 'empty');
       const metaProjection = document.createElement('map-meta');

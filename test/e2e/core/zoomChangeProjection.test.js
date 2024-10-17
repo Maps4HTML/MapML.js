@@ -40,7 +40,7 @@ test.describe.skip('Playwright zoomin zoomout Projection Change Tests', () => {
       (map) => map.projection
     );
     const layerValid = await page.$eval(
-      'body > map > layer-',
+      'body > map > map-layer',
       (layer) => !layer.hasAttribute('disabled')
     );
     expect(newProjection).toEqual('OSMTILE');
@@ -57,7 +57,7 @@ test.describe.skip('Playwright zoomin zoomout Projection Change Tests', () => {
       (map) => map.projection
     );
     const layerValid = await page.$eval(
-      'body > map > layer-',
+      'body > map > map-layer',
       (layer) => !layer.hasAttribute('disabled')
     );
     expect(newProjection).toEqual('CBMTILE');

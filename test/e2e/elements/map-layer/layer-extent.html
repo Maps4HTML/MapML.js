@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>&lt;layer-&gt; test</title>
+    <title>&lt;map-layer&gt; test</title>
     <meta charset="UTF-8">
     <script type="module" src="mapml.js"></script>
     <style>
@@ -21,8 +21,8 @@
   </head>
   <body>
     <mapml-viewer data-testid="viewer" style="height: 500px;width:500px;" controls zoom="2" lat="68" lon="-87" controls projection="CBMTILE">
-      <layer- data-testid="remote-layer" label="Remote content" src="dummy-cbmtile-cbmt-layer-extent.mapml" checked></layer->
-      <layer- data-testid="inline-layer" label="Local content" checked>
+      <map-layer data-testid="remote-layer" label="Remote content" src="dummy-cbmtile-cbmt-layer-extent.mapml" checked></map-layer>
+      <map-layer data-testid="inline-layer" label="Local content" checked>
         <map-extent data-testid="inline-extent" units="CBMTILE"  checked="checked">
           <!-- the bounds and zoom bounds of the inline map-extent are different than those of the remote layer's map-extent -->
           <map-input name="z" type="zoom"  value="17" min="3" max="17"></map-input>
@@ -38,7 +38,7 @@
           </map-link>
         </map-extent>
         
-      </layer->
+      </map-layer>
     </mapml-viewer>
   </body>
 </html>

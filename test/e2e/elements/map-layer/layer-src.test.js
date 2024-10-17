@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-test.describe('layer- local/inline vs remote content/src tests', () => {
+test.describe('map-layer local/inline vs remote content/src tests', () => {
   let page;
   let context;
   test.beforeAll(async function () {
@@ -8,10 +8,10 @@ test.describe('layer- local/inline vs remote content/src tests', () => {
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
-    await page.goto('layer-.html');
+    await page.goto('map-layer.html');
     await page.waitForTimeout(1000);
   });
-  test('Test that a layer- with src attribute can transition to inline content', async () => {
+  test('Test that a map-layer with src attribute can transition to inline content', async () => {
     const viewer = await page.getByTestId('viewer');
     const layer = await page.getByTestId('test-layer');
     const labelAttribute = await layer.evaluate((l) => l.getAttribute('label'));
@@ -70,7 +70,7 @@ test.describe('layer- local/inline vs remote content/src tests', () => {
       (layer) => (layer.label = 'You can set the label of a local layer')
     );
   });
-  test('Test that a layer- with inline content can transition to remote (src-based) content', async () => {
+  test('Test that a map-layer with inline content can transition to remote (src-based) content', async () => {
     const viewer = await page.getByTestId('viewer');
     const layer = await page.getByTestId('test-layer');
     let label = await layer.evaluate((l) => l.label);

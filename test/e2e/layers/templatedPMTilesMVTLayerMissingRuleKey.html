@@ -9,7 +9,7 @@
   <body>
 
   <mapml-viewer data-testid="viewer" projection="OSMTILE" zoom="0" lat="0" lon="0" width="400" height="400">
-    <layer- checked data-testid="light" checked>
+    <map-layer checked data-testid="light" checked>
       <map-title>{z}/{x}/{y}.mvt test</map-title>
       <map-link rel="stylesheet" type="application/pmtiles+stylesheet" href="pmtilesRulesModule.js"></map-link>
       <map-extent units="OSMTILE" checked="checked">
@@ -18,7 +18,7 @@
         <map-input name="bar" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
         <map-link rel="tile" type="application/vnd.mapbox-vector-tile" tref="tiles/osmtile/{beans}/{foo}/{bar}.mvt?theme=light&foil-the-key-lookup=foo"></map-link>
       </map-extent>
-    </layer->
+    </map-layer>
   </mapml-viewer>
 </body>
 </html>

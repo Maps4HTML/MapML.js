@@ -58,7 +58,7 @@ test.describe('Playwright web-map map-captions Test', () => {
   });
   test("Map Caption doesn't create aria-label on a layer", async () => {
     let arialabel = await page.evaluate(
-      `document.querySelector('layer-').getAttribute('aria-label')`
+      `document.querySelector('map-layer').getAttribute('aria-label')`
     );
     expect(arialabel).toEqual(null);
   });

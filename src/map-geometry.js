@@ -1,4 +1,4 @@
-export class MapGeometry extends HTMLElement {
+export class HTMLGeometryElement extends HTMLElement {
   static get observedAttributes() {
     return ['cs'];
   }

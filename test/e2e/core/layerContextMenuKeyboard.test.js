@@ -92,7 +92,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
       let t = document.querySelector('[name="messageExtent"]').value;
       if (t !== '') {
         let l = p.parseFromString(t, 'text/html');
-        return l.querySelector('layer-').getAttribute('label');
+        return l.querySelector('map-layer').getAttribute('label');
       }
       return '';
     });
@@ -130,7 +130,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
       let t = document.querySelector('[name="messageExtent"]').value;
       if (t !== '') {
         let l = p.parseFromString(t, 'text/html');
-        return l.querySelector('layer-').getAttribute('label');
+        return l.querySelector('map-layer').getAttribute('label');
       }
       return '';
     });
@@ -168,7 +168,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
       let t = document.querySelector('[name="messageExtent"]').value;
       if (t !== '') {
         let l = p.parseFromString(t, 'text/html');
-        return l.querySelector('layer-').getAttribute('label');
+        return l.querySelector('map-layer').getAttribute('label');
       }
       return '';
     });

@@ -11,7 +11,7 @@
 <body>
 <mapml-viewer style="width: 600px;height:600px" projection="WGS84" zoom="1" lat="-10" lon="-112" controls>
 
-  <layer- label="Inline Countries" checked>
+  <map-layer label="Inline Countries" checked>
     <map-meta name="zoom" content="min=0,max=7"></map-meta>
     <map-extent units="WGS84" checked hidden>
       <map-input name="zoomLevel" type="zoom" value="1" min="0" max="4" step="3"></map-input>
@@ -22,7 +22,7 @@
       <map-link tms rel="tile" tref="https://maps4html.org/TiledArt-Rousseau/TheBanksOfTheBièvreNearBicêtre/{zoomLevel}/{col}/{row}.png" ></map-link>
 
     </map-extent>
-  </layer->
+  </map-layer>
 </mapml-viewer>
 </body>
 </html>

@@ -13,7 +13,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         mapml:
         1. for query: an array of map-feature elements that it fetches
         2. for static templated feature: null
-        3. for non-templated feature: layer- (with no src) or mapml file (with src)
+        3. for non-templated feature: map-layer (with no src) or mapml file (with src)
       */
     // options.extent: when you use a FeatureLayer, you can either get it to calculate the
     // .layerBounds dynamically (the default), based on adds/removes of features from the layer/
@@ -173,10 +173,10 @@ export var FeatureLayer = L.FeatureGroup.extend({
     L.FeatureGroup.prototype.removeLayer.call(this, featureToRemove);
     if (!this.options.layerBounds) {
       delete this.layerBounds;
-      // this ensures that the <layer->.extent gets recalculated if needed
+      // this ensures that the <map-layer>.extent gets recalculated if needed
       delete this.options._leafletLayer.bounds;
       delete this.zoomBounds;
-      // this ensures that the <layer->.extent gets recalculated if needed
+      // this ensures that the <map-layer>.extent gets recalculated if needed
       delete this.options._leafletLayer.zoomBounds;
       delete this._layers[featureToRemove._leaflet_id];
       this._removeFromFeaturesList(featureToRemove);

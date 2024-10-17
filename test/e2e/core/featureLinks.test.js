@@ -57,7 +57,7 @@ test.describe('Playwright Feature Links Tests', () => {
       );
       await page.waitForTimeout(1000);
       const layerName = await page.$eval(
-        '//html/body/map/layer-[2]',
+        '//html/body/map/map-layer[2]',
         (layer) => layer.label
       );
       const extentAfterLink = await page.$eval(
@@ -95,7 +95,7 @@ test.describe('Playwright Feature Links Tests', () => {
       );
       await page.waitForTimeout(1000);
       const layerName = await page.$eval(
-        '//html/body/map/layer-[2]',
+        '//html/body/map/map-layer[2]',
         (layer) => layer.label
       );
       const extent = await page.$eval('body > map', (map) => map.extent);

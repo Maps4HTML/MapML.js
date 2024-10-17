@@ -9,8 +9,8 @@
   <body>
     <mapml-viewer width="640" height="480" projection="CBMTILE" zoom="2" lat="45" lon="-90" controls>
       <map-caption>A pleasing map of Canada</map-caption>
-      <layer- label="CBMT" src="tiles/cbmt/cbmt.mapml" checked></layer->
-      <layer- label="Hat Guy" checked>
+      <map-layer label="CBMT" src="tiles/cbmt/cbmt.mapml" checked></map-layer>
+      <map-layer label="Hat Guy" checked>
         <map-meta name="projection" content="CBMTILE"></map-meta>
         <map-feature id="twohats" zoom="15" class="twohats">
           <map-featurecaption>The Man With Two Hats</map-featurecaption>
@@ -23,7 +23,7 @@
           </map-point>
         </map-geometry>
       </map-feature>
-      </layer->
+      </map-layer>
    </mapml-viewer>
   <div style="width: 100%; height:300px"></div>
   <p>Some text</p>

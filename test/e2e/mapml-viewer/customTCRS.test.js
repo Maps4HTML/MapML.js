@@ -20,12 +20,12 @@ test.describe('Playwright Custom TCRS Tests', () => {
     await page.waitForTimeout(500);
     const misMatchedLayerDisabled = await page.$eval(
       'body > mapml-viewer:nth-child(1)',
-      (map) => map.querySelectorAll('layer-')[0].hasAttribute('disabled')
+      (map) => map.querySelectorAll('map-layer')[0].hasAttribute('disabled')
     );
 
     const matchedLayerEnabled = await page.$eval(
       'body > mapml-viewer:nth-child(1)',
-      (map) => map.querySelectorAll('layer-')[1].hasAttribute('disabled')
+      (map) => map.querySelectorAll('map-layer')[1].hasAttribute('disabled')
     );
 
     await expect(
@@ -45,12 +45,12 @@ test.describe('Playwright Custom TCRS Tests', () => {
     const staticFeaturesLayerDisabled = await page
       .getByTestId('map2')
       .evaluate((map) =>
-        map.querySelectorAll('layer-')[0].hasAttribute('disabled')
+        map.querySelectorAll('map-layer')[0].hasAttribute('disabled')
       );
     const templatedFeaturesLayerDisabled = await page
       .getByTestId('map2')
       .evaluate((map) =>
-        map.querySelectorAll('layer-')[1].hasAttribute('disabled')
+        map.querySelectorAll('map-layer')[1].hasAttribute('disabled')
       );
 
     const featureOne = await page

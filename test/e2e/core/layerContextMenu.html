@@ -23,7 +23,7 @@
 
 <body>
   <mapml-viewer style="width: 1000px;height: 500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls>
-    <layer- label="CBMT - INLINE" checked>
+    <map-layer label="CBMT - INLINE" checked>
       <map-link rel="license" title="Testing Inc."></map-link>
       <map-extent units="CBMTILE" checked>
         <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
@@ -31,24 +31,24 @@
         <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>
         <map-link rel="tile" tref="/data/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>
       </map-extent>
-    </layer->
-    <layer- label="Layer 2" checked>
+    </map-layer>
+    <map-layer label="Layer 2" checked>
       <map-meta name="zoom" content="min=0,max=25"></map-meta>
       <map-meta name="projection" content="CBMTILE"></map-meta>
       <map-link rel="license"
         href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
         title="Canada Base Map © Natural Resources Canada"></map-link>
       <map-tile zoom="10" row="100" col="100" src="/data/cbmt/3/c14_r16.png"></map-tile>
-    </layer->
-    <layer- label="Layer 3" checked>
+    </map-layer>
+    <map-layer label="Layer 3" checked>
       <map-meta name="zoom" content="min=0,max=25"></map-meta>
       <map-meta name="projection" content="CBMTILE"></map-meta>
       <map-link rel="license"
         href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
         title="Canada Base Map © Natural Resources Canada"></map-link>
       <map-tile zoom="10" row="101" col="100" src="/data/cbmt/2/c9_r10.png"></map-tile>
-    </layer->
-    <layer- label="Layer 4" checked>
+    </map-layer>
+    <map-layer label="Layer 4" checked>
       <map-meta name="zoom" content="min=0,max=25"></map-meta>
       <map-meta name="projection" content="CBMTILE"></map-meta>
       <map-link rel="license"
@@ -57,8 +57,8 @@
       <map-tile zoom="6" row="50" col="50" src="/data/cbmt/3/c14_r16.png"></map-tile>
       <map-tile zoom="6" row="51" col="50" src="/data/cbmt/3/c14_r16.png"></map-tile>
       <map-tile zoom="6" row="51" col="51" src="/data/cbmt/2/c9_r10.png"></map-tile>
-    </layer->
-    <layer- src="data/query/DouglasFir" label="Natural Resources Canada - Douglas Fir (Genus Pseudotsuga) 250m resolution"></layer->
+    </map-layer>
+    <map-layer src="data/query/DouglasFir" label="Natural Resources Canada - Douglas Fir (Genus Pseudotsuga) 250m resolution"></map-layer>
   </mapml-viewer>
   <textarea id="messageExtent" name="messageExtent" rows="10" cols="100"></textarea>
   <textarea data-testid="messageLayer" id="messageLayer" name="messageLayer" rows="10" cols="100"></textarea>

@@ -16,14 +16,14 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
     await context.close();
   });
 
-  test('Shadowroot tests of <layer- > with src attribute', async () => {
+  test('Shadowroot tests of <map-layer > with src attribute', async () => {
     let shadowAttached = await page.$eval(
       'body > map',
       (map) => map.layers[1].shadowRoot !== null
     );
     expect(shadowAttached).toEqual(true);
 
-    // remove and then re-add <layer- > element
+    // remove and then re-add <map-layer > element
     shadowAttached = await page.$eval('body > map', (map) => {
       let layer = map.layers[1];
       map.removeChild(layer);
@@ -42,7 +42,7 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
 
     // change <map-feature> attributes
     await page.$eval('body > map', async (map) => {
-      let layer = map.querySelector('layer-'),
+      let layer = map.querySelector('map-layer'),
         mapFeature = layer.querySelector('map-feature');
       mapFeature.setAttribute('zoom', '4');
       mapFeature.zoomTo();
@@ -58,13 +58,13 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
     await page.reload();
     await page.waitForTimeout(500);
     let prevExtentBR = await page.$eval('body > map', (map) => {
-      let layer = map.querySelector('layer-'),
+      let layer = map.querySelector('map-layer'),
         mapFeature = layer.querySelector('map-feature');
       return mapFeature.extent.bottomRight.pcrs;
     });
 
     let newExtentBR = await page.$eval('body > map', (map) => {
-      let layer = map.querySelector('layer-'),
+      let layer = map.querySelector('map-layer'),
         mapFeature = layer.querySelector('map-feature'),
         mapCoord = mapFeature.querySelector('map-coordinates');
       mapCoord.innerHTML = '12 11 12 11 12 12 11 13';
@@ -75,12 +75,12 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
 
     // remove <map-properties>
     await page.$eval('body > map', (map) => {
-      let layer = map.querySelector('layer-'),
+      let layer = map.querySelector('map-layer'),
         mapFeature = layer.querySelector('map-feature');
       mapFeature.querySelector('map-properties').remove();
     });
     await page.$eval('body > map', (map) => {
-      let layer = map.querySelector('layer-'),
+      let layer = map.querySelector('map-layer'),
         mapFeature = layer.querySelector('map-feature');
       return mapFeature.click();
     });
@@ -224,7 +224,7 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
     let focus = await page.$eval(
       'body > map > div > div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g > g:nth-child(1)',
       (g) => {
-        let layer = document.querySelector('map').querySelector('layer-'),
+        let layer = document.querySelector('map').querySelector('map-layer'),
           mapFeature = layer.querySelector('map-feature');
         mapFeature.focus();
         return document.activeElement.shadowRoot?.activeElement === g;
@@ -333,7 +333,7 @@ test.describe('MapFeature Events', () => {
   test('click() method - stopPropagation', async () => {
     // click() method on line feature
     await page.$eval(
-      'body > mapml-viewer > layer- > map-feature#line',
+      'body > mapml-viewer > map-layer > map-feature#line',
       (line) => line.click()
     );
 
