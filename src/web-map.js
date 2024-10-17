@@ -685,7 +685,7 @@ export class HTMLWebMapElement extends HTMLMapElement {
     this.addEventListener(
       'change',
       function (e) {
-        if (e.target.tagName === 'map-layer') {
+        if (e.target.tagName === 'MAP-LAYER') {
           this.dispatchEvent(
             new CustomEvent('layerchange', {
               details: { target: this, originalEvent: e }

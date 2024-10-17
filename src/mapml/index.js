@@ -54,8 +54,8 @@ import { HTMLInputElement } from '../mapml-viewer';
 import { HTMLSelectElement } from '../mapml-viewer';
 import { HTMLLinkElement } from '../mapml-viewer';
 import { HTMLStyleElement } from '../mapml-viewer';
-import { HTMLWebMapElement } from '../mapml-viewer';
-import { HTMLMapAreaElement } from '../mapml-viewer';
+import { HTMLWebMapElement as HTMLMapElement } from '../mapml-viewer';
+import { HTMLMapAreaElement as HTMLAreaElement } from '../mapml-viewer';
 
 window.MapML = {
   HTMLMapmlViewerElement,
@@ -67,6 +67,6 @@ window.MapML = {
   HTMLSelectElement,
   HTMLLinkElement,
   HTMLStyleElement,
-  HTMLWebMapElement,
-  HTMLMapAreaElement
+  HTMLMapElement,
+  HTMLAreaElement
 };
