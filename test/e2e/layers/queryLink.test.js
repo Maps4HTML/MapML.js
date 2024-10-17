@@ -9,6 +9,7 @@ test.describe('Playwright Query Link Tests', () => {
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('queryLink.html');
+    await page.waitForTimeout(1000);
   });
 
   test.afterAll(async function () {
@@ -17,7 +18,6 @@ test.describe('Playwright Query Link Tests', () => {
 
   test.describe('Query Popup Tests', () => {
     test('Query link shows when within bounds', async () => {
-      await page.waitForTimeout(500);
       await page.getByLabel('Interactive map').click();
       const popups = await page
         .locator('.leaflet-popup-pane')

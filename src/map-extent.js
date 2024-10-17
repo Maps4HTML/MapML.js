@@ -28,7 +28,7 @@ export class HTMLExtentElement extends HTMLElement {
   get label() {
     return this.hasAttribute('label')
       ? this.getAttribute('label')
-      : M.options.locale.dfExtent;
+      : this.mapEl.locale.dfExtent;
   }
   set label(val) {
     if (val) {
@@ -148,7 +148,7 @@ export class HTMLExtentElement extends HTMLElement {
           if (oldValue !== newValue) {
             this._layerControlHTML.querySelector(
               '.mapml-extent-item-name'
-            ).innerHTML = newValue || M.options.locale.dfExtent;
+            ).innerHTML = newValue || this.getMapEl().locale.dfExtent;
           }
           break;
         case 'checked':

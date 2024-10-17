@@ -1,0 +1,93 @@
+  <!doctype html>
+<html lang="en"><!-- default locale = en -->
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>localization.html</title>
+    <template data-testid="map-options"><map-options>{"locale":{"cmBack":"Повернутися назад","cmForward":"Перейти вперед","cmReload":"Перезавантажити","cmToggleControls":"Увімкнути/вимкнути елементи керування","cmCopyCoords":"Копіювати","cmToggleDebug":"Перемкнути на режим діагностики","cmCopyMapML":"Мапа","cmCopyExtent":"Межа екрану","cmCopyLocation":"Місцеположення","cmPasteLayer":"Вставити","cmViewSource":"Переглянути джерело мапи","lmZoomToLayer":"Збільшити до шару","lmCopyLayer":"Копіювати шар","lmLayerSettings":"Налаштування шару","lmRemoveLayer":"Видалити шар","lmZoomToExtent":"Збільшити до підтипу шару","lmCopyExtent":"Копіювати підтип шару","lmExtentSettings":"Налаштування підшару","lmRemoveExtent":"Видалити підшар","lmStyle":"Стиль","lcOpacity":"Прозорість","btnZoomIn":"Збільшити","btnZoomOut":"Зменшити","btnAttribution":"Авторські права","btnFullScreen":"Повноекранний режим","btnExitFullScreen":"Вихід з повноекранного режиму","btnLocTrackOn":"Показувати моє місцезнаходження - відстеження місцезнаходження увімкнено","btnMyLocTrackOn":"Моє поточне місцезнаходження на карті","btnLocTrackOff":"Показувати моє місцезнаходження - відстеження місцезнаходження вимкнено","btnMyLastKnownLocTrackOn":"Моє останнє відоме місцезнаходження на карті","btnLocTrackLastKnown":"Показати моє місцезнаходження - показано останнє відоме місцезнаходження","btnFocusMap":"Карта Фокусування","btnFocusControls":"Елементи Керування Фокусуванням","btnPrevFeature":"Попередня Функція","btnNextFeature":"Наступна Функція","amZoom":"рівень масштабування","amColumn":"стовпчик","amRow":"рядок","amMaxZoom":"На максимальному рівні масштабування наближення вимкнено","amMinZoom":"На мінімальному рівні масштабування зменшення масштабу вимкнено","amZoomedOut":"Збільшення за межами, повернутись до","amDraggedOut":"Розширення за межами, повернутись до","amEastBound":"Досягнуто східного напрямку, панорамування на схід вимкнено","amWestBound":"Досягнуто західного напрямку, панорамування на захід вимкнено","amNorthBound":"Досягнуто північного напрямку, панорамування на північ вимкнено","amSouthBound":"Досягнуто південного напрямку, панорамування на південь вимкнено","kbdShortcuts":"Комбінації клавіш","kbdMovement":"Клавіші переміщення","kbdFeature":"Функціональні клавіші навігації","kbdPanUp":"Переміщення вгору","kbdPanDown":"Переміщення вниз","kbdPanLeft":"Переміщення ліворуч","kbdPanRight":"Переміщення праворуч","kbdPanIncrement":"крок переміщення зображення","kbdZoom":"Збільшення/зменшення на 3 рівні","kbdFocusMap":"Сфокусувати карту","kbdFocusControls":"Сфокусувати елементи керування","kbdPrevFeature":"Попередній об'єкт","kbdNextFeature":"Наступний об'єкт","dfLayer":"Шар","dfExtent":"Підтип шару","dfPastedLayer":"Вставлений шар","dfFeatureCaption":"Об'єкт","popupZoom":"Наблизити сюди","popupPropName":"Назва властивості","popupPropValue":"Значення властивості","fIndexNoFeatures":"Об'єктів не знайдено"}}</map-options></template>
+    <script>
+// this is the only way to force the browser to  keep the map-options element in
+// the head, where it is looked for by the mapml-viewer...
+    let options = document.querySelector("template").content.firstChild.cloneNode(true);
+    document.head.appendChild(options);
+
+    let f1 = {
+      "type": "Feature",
+      "geometry": {
+          "type": "Point",
+          "coordinates": [-75,45]
+      },
+      "properties": {"creation": "via global M.geojson2mapml"}
+    }, f2 = {
+      "type": "Feature",
+      "geometry": {
+          "type": "Point",
+          "coordinates": [-105,45]
+      },
+      "properties": {"creation": "via map.geojson2mapml"}
+    };
+    customElements.whenDefined('mapml-viewer').then(()=>{
+      let mapEn = document.body.querySelector('[data-testid=english]'),
+          mapFr = document.body.querySelector('[data-testid=french]'),
+          mapBrowser = document.body.querySelector('[data-testid=ukrainian]');
+      mapEn.appendChild(M.geojson2mapml(f1, {projection: 'CBMTILE'}));
+      mapFr.appendChild(M.geojson2mapml(f1, {projection: 'CBMTILE'}));
+      mapBrowser.appendChild(M.geojson2mapml(f1, {projection: 'CBMTILE'}));
+      mapEn.geojson2mapml(f2);
+      mapFr.geojson2mapml(f2);
+      mapBrowser.geojson2mapml(f2);
+      
+    }).catch((e)=>console.log(e));
+    </script>
+    <script type="module" src="./mapml.js"></script>
+  </head>
+  <body >
+    <mapml-viewer data-testid="french" lang="fr" projection="CBMTILE" zoom="2" lat="56.8" lon="-90" controls controlslist="geolocation" width="500" height="275">
+      <layer- checked>
+        <map-meta name="projection" content="CBMTILE"></map-meta>
+        <map-extent units="CBMTILE" checked>
+          <map-link rel="query" tref="localization.mapml" ></map-link>
+        </map-extent>
+        <map-feature data-testid="map-feature">
+          <map-properties><h6>Un lieu</h6></map-properties>
+          <map-geometry cs="gcrs">
+            <map-point><map-coordinates>-90 45</map-coordinates></map-point>
+          </map-geometry>
+        </map-feature>
+      </layer->
+      <layer- src="localization.red.mapml"></layer->
+      
+    </mapml-viewer>
+    <mapml-viewer data-testid="ukrainian" lang="browser-language" projection="CBMTILE" zoom="2" lat="56.8" lon="-90"  controls controlslist="geolocation" width="500" height="275">
+      <layer- checked>
+        <map-meta name="projection" content="CBMTILE"></map-meta>
+        <map-extent units="CBMTILE" checked>
+          <map-link rel="query" tref="localization.mapml" ></map-link>
+        </map-extent>
+        <map-feature data-testid="map-feature">
+          <map-properties><h6>A place - this map is not localized</h6></map-properties>
+          <map-geometry cs="gcrs">
+            <map-point><map-coordinates>-90 45</map-coordinates></map-point>
+          </map-geometry>
+        </map-feature>
+      </layer->
+      <layer- src="localization.red.mapml"></layer->
+    </mapml-viewer>
+    <mapml-viewer data-testid="english" lang="en" projection="CBMTILE" zoom="2" lat="56.8" lon="-90"  controls controlslist="geolocation" width="500" height="275">
+      <layer- checked>
+        <map-meta name="projection" content="CBMTILE"></map-meta>
+        <map-extent units="CBMTILE" checked>
+          <map-link rel="query" tref="localization.mapml" ></map-link>
+        </map-extent>
+        <map-feature data-testid="map-feature">
+          <map-properties><h6>A place</h6></map-properties>
+          <map-geometry cs="gcrs">
+            <map-point><map-coordinates>-90 45</map-coordinates></map-point>
+          </map-geometry>
+          <a href="mapml-viewer.html"></a>
+        </map-feature>
+      </layer->
+      <layer- src="localization.red.mapml"></layer->
+    </mapml-viewer> 
+  </body>
+</html>

@@ -1,0 +1,24 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml" lang="en">
+    <map-head>
+        <map-title>localization.mapml</map-title>
+        <map-meta charset="utf-8" ></map-meta>
+        <map-meta content="text/mapml" http-equiv="Content-Type" ></map-meta>
+        <map-link rel="license" href="http://opendatacommons.org/licenses/odbl/1-0/" title="© OpenStreetMap and contributors" />
+        <map-meta name="projection" content="CBMTILE"></map-meta>
+        <map-meta name="zoom" content="min=0,max=22,value=2" ></map-meta>
+        <map-meta name="cs" content="gcrs" ></map-meta>
+        <map-meta name="extent" content="top-left-easting=1509080.1964270622,top-left-northing=-169400.558801122,bottom-right-easting=1512094.3357886747,bottom-right-northing=-172702.5654051304" ></map-meta>
+    </map-head>
+    <map-body>
+        <map-feature>
+            <map-geometry>
+              <map-point>
+                  <map-coordinates>-75.7093517 45.4005727</map-coordinates>
+              </map-point>
+            </map-geometry>
+            <map-properties>en content
+            </map-properties>
+        </map-feature>
+    </map-body>
+</mapml->
+

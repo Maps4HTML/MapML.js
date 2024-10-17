@@ -76,7 +76,7 @@ test.describe('Playwright Map Context Menu Tests', () => {
     );
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual('View Fullscreen (F)');
+    expect(name).toEqual('View fullscreen (F)');
   });
 
   test('Context menu tab goes to next item', async () => {
@@ -520,10 +520,10 @@ test.describe('Playwright Map Context Menu Tests', () => {
       'body > map',
       (map) => map.layers[1].label
     );
-    expect(layerLabel).toEqual('Pasted layer');
+    expect(layerLabel).toEqual('Pasted Layer');
     // clean up
     await page.$eval('body > map', (map) =>
-      map.removeChild(map.querySelector('[label="Pasted layer"]'))
+      map.removeChild(map.querySelector('[label="Pasted Layer"]'))
     );
   });
   test('Submenu, copy location in tilematrix coordinates, which is not implemented, so faked with gcrs', async () => {
@@ -804,7 +804,7 @@ test.describe('Playwright Map Context Menu Tests', () => {
       'div > div.mapml-contextmenu > button:nth-child(4)',
       (btn) => btn.textContent
     );
-    expect(fullScreen).toEqual('View Fullscreen (F)');
+    expect(fullScreen).toEqual('View fullscreen (F)');
     let copy = await page.$eval(
       'div > div.mapml-contextmenu > button:nth-child(6)',
       (btn) => btn.textContent

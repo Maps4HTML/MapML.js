@@ -67,7 +67,7 @@ test.describe('Playwright mapml-viewer Context Menu (and api) Tests', () => {
     );
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual('View Fullscreen (F)');
+    expect(name).toEqual('View fullscreen (F)');
   });
 
   test('Context menu tab goes to next item', async () => {
@@ -111,7 +111,7 @@ test.describe('Playwright mapml-viewer Context Menu (and api) Tests', () => {
     );
     let name = await nameHandle.jsonValue();
     await nameHandle.dispose();
-    expect(name).toEqual('View Fullscreen (F)');
+    expect(name).toEqual('View fullscreen (F)');
   });
 
   test('Submenu opens on C with focus on first item', async () => {
@@ -502,10 +502,10 @@ test.describe('Playwright mapml-viewer Context Menu (and api) Tests', () => {
       'body > mapml-viewer',
       (map) => map.layers[1].label
     );
-    expect(layerLabel).toEqual('Pasted layer');
+    expect(layerLabel).toEqual('Pasted Layer');
     // clean up
     await page.$eval('body > mapml-viewer', (map) =>
-      map.removeChild(map.querySelector('[label="Pasted layer"]'))
+      map.removeChild(map.querySelector('[label="Pasted Layer"]'))
     );
   });
   // other cs not implemented yet: tile,map,
@@ -718,7 +718,7 @@ test.describe('Playwright mapml-viewer Context Menu (and api) Tests', () => {
       'div > div.mapml-contextmenu > button:nth-child(4)',
       (btn) => btn.textContent
     );
-    expect(fullScreen).toEqual('View Fullscreen (F)');
+    expect(fullScreen).toEqual('View fullscreen (F)');
     let copy = await page.$eval(
       'div > div.mapml-contextmenu > button:nth-child(6)',
       (btn) => btn.textContent
