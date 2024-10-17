@@ -15,6 +15,8 @@ import './handlers/keyboard';
   M.options = Options;
   if (mapOptions)
     M.options = Object.assign(M.options, JSON.parse(mapOptions.innerHTML));
+  // make a copy of the default locale strings as localeEn to support gcds-map
+  M.options.localeEn = Options.locale;
 
   // see https://leafletjs.com/reference-1.5.0.html#crs-l-crs-base
   // "new classes can't inherit from (L.CRS), and methods can't be added

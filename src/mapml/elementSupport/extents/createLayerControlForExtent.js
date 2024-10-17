@@ -102,7 +102,7 @@ export var createLayerControlExtentHTML = function () {
   extentLabel.appendChild(input);
   extentsettingsButton.appendChild(extentNameIcon);
   extentNameIcon.appendChild(svgExtentControlIcon);
-  extentOpacitySummary.innerText = 'Opacity';
+  extentOpacitySummary.innerText = mapEl.locale.lcOpacity;
   extentOpacitySummary.id =
     'mapml-extent-item-opacity-' + L.stamp(extentOpacitySummary);
   opacity.setAttribute('type', 'range');
