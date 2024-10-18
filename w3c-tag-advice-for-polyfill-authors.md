@@ -35,7 +35,7 @@ conforms to the W3C <abbr title="Technical Architecture Group">TAG</abbr>'s
     <td>
       <a href="https://www.npmjs.com/package/@maps4html/mapml">Published to npm</a>
       and
-      <a href="https://unpkg.com/@maps4html/mapml@latest/dist/mapml-viewer.js">hosted on the UNPKG CDN</a>
+      <a href="https://unpkg.com/@maps4html/mapml@latest/dist/mapml.js">hosted on the UNPKG CDN</a>
     </td>
   </tr>
   <tr>

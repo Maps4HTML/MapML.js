@@ -560,7 +560,7 @@ summary {
  * (https://github.com/Maps4HTML/MapML.js/issues/154)
  */
 
-/* Unset `visibility: hidden` (inherited from web-map/mapml-viewer.js). */
+/* Unset `visibility: hidden` (inherited from mapml.js). */
 .leaflet-container .mapml-contextmenu,
 .leaflet-container .leaflet-control-container {
   visibility: unset!important;
