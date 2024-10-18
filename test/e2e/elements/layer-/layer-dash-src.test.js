@@ -8,7 +8,7 @@ test.describe('layer- local/inline vs remote content/src tests', () => {
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
-    await page.goto('layer-.html');
+    await page.goto('layer-dash.html');
     await page.waitForTimeout(1000);
   });
   test('Test that a layer- with src attribute can transition to inline content', async () => {

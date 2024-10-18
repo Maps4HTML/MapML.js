@@ -22,7 +22,7 @@
 <body>
   <map data-testid="map1" style="width: 500px;height: 500px;" is="web-map" projection="CBMTILE" zoom="3" lat="45.5052040" lon="-75.2202344"
     controls>
-    <layer- label="Alabama" checked>
+    <map-layer label="Alabama" checked>
       <map-meta name="zoom" content="min=3,max=5"></map-meta>
       <map-extent units="CBMTILE" checked hidden>
         <map-input name="z" type="zoom" min="2" max="18" value="0" ></map-input>
@@ -32,18 +32,18 @@
         <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" ></map-input>
         <map-link rel="features" tref="data/alabama_feature.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>
       </map-extent>
-    </layer->
-    <layer- label="Static MapML with tiles" checked>
+    </map-layer>
+    <map-layer label="Static MapML with tiles" checked>
       <map-meta name="zoom" content="min=0,max=10"></map-meta>
       <map-meta name="projection" content="CBMTILE"></map-meta>
       <map-link rel="license"
         href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
         title="Canada Base Map © Natural Resources Canada"></map-link>
       <map-tile zoom="0" row="3" col="3" src="data/cbmt/0/c3_r3.png"></map-tile>
-    </layer->
+    </map-layer>
   </map>
   <map data-testid="map2" id="map2" data-testid="map2" style="width: 500px;height: 500px;" is="web-map" projection="CBMTILE" zoom="17" lat="45.4069740362364" lon="-75.70155300710053" controls>
-    <layer- data-testid="restaurants" label="Restaurants" checked>
+    <map-layer data-testid="restaurants" label="Restaurants" checked>
       <map-meta name="cs" content="gcrs" ></map-meta>
       <map-meta name="extent" content="top-left-easting=1509080.1964270622,top-left-northing=-169400.558801122,bottom-right-easting=1512094.3357886747,bottom-right-northing=-172702.5654051304" ></map-meta>
       <map-extent units="CBMTILE" checked hidden>
@@ -58,7 +58,7 @@
           </map-select>
         <map-link tref="restaurants/{cuisine}.mapml" rel="features"></map-link>
         </map-extent>
-    </layer->
+    </map-layer>
   </map>
 
 </body>

@@ -33,7 +33,7 @@
          vertical-align: middle;
        } 
         
-       /* Pre-style to avoid FOUC of inline layer- and fallback content. */ 
+       /* Pre-style to avoid FOUC of inline map-layer and fallback content. */ 
        mapml-viewer:not(:defined) > * { 
          display: none; 
        } 
@@ -49,7 +49,7 @@
        supported, or if javascript is disabled. This needs to be defined separately 
        from the above, because the `:not(:defined)` selector invalidates the entire 
        declaration in browsers that do not support it. */ 
-       layer- { 
+       map-layer { 
          display: none; 
        } 
      </style> 
@@ -57,7 +57,7 @@
        <style> 
          /* Ensure fallback content (children of the map element) is displayed if 
          custom/built-in elements is supported but javascript is disabled. */ 
-         mapml-viewer:not(:defined) > :not(layer-) { 
+         mapml-viewer:not(:defined) > :not(map-layer) { 
            display: initial; 
          } 
          
@@ -73,8 +73,8 @@
   </head>
   <body>
     <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls>
-      <layer- label="CBMT" src="tiles/cbmt/cbmt.mapml" checked></layer->
-      <layer- label="CBMT - INLINE" >
+      <map-layer label="CBMT" src="tiles/cbmt/cbmt.mapml" checked></map-layer>
+      <map-layer label="CBMT - INLINE" >
       <map-link rel="license" title="Testing Inc."></map-link>
       <map-extent units="CBMTILE" checked>
         <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3"></map-input>
@@ -82,7 +82,7 @@
         <map-input name="col" type="location" axis="column" units="tilematrix" min="14" max="19"></map-input>
         <map-link rel="tile" tref="/data/cbmt/{zoomLevel}/c{col}_r{row}.png"></map-link>
       </map-extent>
-    </layer->
+    </map-layer>
     </mapml-viewer>
   </body>
 </html>

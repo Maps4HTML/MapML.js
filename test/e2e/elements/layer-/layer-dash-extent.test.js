@@ -8,7 +8,7 @@ test.describe('layer- local/inline extent source tests', () => {
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
-    await page.goto('layer-extent.html');
+    await page.goto('layer-dash-extent.html');
     await page.waitForTimeout(1000);
   });
   test('layer-.extent min/maxZoom from map-inputs', async () => {

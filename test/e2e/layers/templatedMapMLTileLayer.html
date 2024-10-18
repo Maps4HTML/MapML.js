@@ -33,7 +33,7 @@
          vertical-align: middle;
        } 
         
-       /* Pre-style to avoid FOUC of inline layer- and fallback content. */ 
+       /* Pre-style to avoid FOUC of inline map-layer and fallback content. */ 
        mapml-viewer:not(:defined) > * { 
          display: none; 
        } 
@@ -49,7 +49,7 @@
        supported, or if javascript is disabled. This needs to be defined separately 
        from the above, because the `:not(:defined)` selector invalidates the entire 
        declaration in browsers that do not support it. */ 
-       layer- { 
+       map-layer { 
          display: none; 
        } 
      </style> 
@@ -57,7 +57,7 @@
        <style> 
          /* Ensure fallback content (children of the map element) is displayed if 
          custom/built-in elements is supported but javascript is disabled. */ 
-         mapml-viewer:not(:defined) > :not(layer-) { 
+         mapml-viewer:not(:defined) > :not(map-layer) { 
            display: initial; 
          } 
          
@@ -74,7 +74,7 @@
   <body>
     
       <mapml-viewer projection="OSMTILE" zoom="2" lat="50.7" lon="-84.4" controls>
-        <layer- label="Countries" checked>
+        <map-layer label="Countries" checked>
           <map-link rel="stylesheet" href="tiles/vector-tile.css" ></map-link>
           <map-extent units="OSMTILE" checked hidden>
             <!-- tiles at zoom=2 are scaled to zoom=3,4,5 and 6 as required-->
@@ -84,7 +84,7 @@
             <map-input  name="col" type="location" axis="column" units="tilematrix" min="15" max="19"></map-input>
             <!-- tiles outside bbox=15,20,19,23,zoom=6 should not be requested at all -->
             <map-link data-testid="templated-link" rel='tile' type='text/mapml' tref='tiles/osmtile/{zoomLevel}/{row}/{col}.mapml' ></map-link>           </map-extent>
-        </layer->
+        </map-layer>
       </mapml-viewer>
   </body>
 </html>

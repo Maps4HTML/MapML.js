@@ -27,7 +27,7 @@
 <!-- Local content map-link[rel=tile][type=text/mapml] with remote styles \
 embedded in text/mapml tiles are rendered in same order as found in tile -->
 <!-- AND -->
-<!-- Remote (layer- src) styles embedded within loaded tiles should be \
+<!-- Remote (map-layer src) styles embedded within loaded tiles should be \
 rendered in the same order as in the tile, in the tile container -->
                <map-polygon data-testid="r0_c0">
                   <map-coordinates>-163.4686870536532 -83.0479765610694 -162.1722212049075 -83.1578465482512 -161.8082768723677 -83.0067753158762 -162.4688701702985 -82.8776780809375 -163.711774400293 -82.8405969602637 -163.4686870536532 -83.0479765610694</map-coordinates>

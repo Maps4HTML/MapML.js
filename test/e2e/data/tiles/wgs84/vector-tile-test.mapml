@@ -4,7 +4,7 @@
         <map-meta charset="utf-8"></map-meta>
         <map-meta name="zoom" content="min=0,max=5"></map-meta>
         <map-link rel="license" href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285" title="© Natural Resources Canada" ></map-link>
-        <!-- Remote styles (layer- src) in the map-head rendered in the same source order as children of layer-._layer._container -->
+        <!-- Remote styles (map-layer src) in the map-head rendered in the same source order as children of map-layer._layer._container -->
         <map-style id="one">
             .secondLayerVector{
                 color:black;
@@ -16,7 +16,7 @@
    </map-head>
    <map-body>
         <map-extent units="WGS84" checked="checked" hidden="hidden">
-            <!-- Remote (layer- src) styles in the remote map-extent should be rendered
+            <!-- Remote (map-layer src) styles in the remote map-extent should be rendered
                in the same order as in remote source, in the map-extent._extentLayer._container -->
             <map-link id="three" rel="stylesheet" href="vector-tile-test2.css"></map-link>
             <map-style id="four">.arule { margin: 2px; }</map-style>

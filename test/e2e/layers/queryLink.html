@@ -10,7 +10,7 @@
 
 <body>
   <mapml-viewer style="width: 500px;height: 500px;" projection="CBMTILE" zoom="0" lat="45" lon="-90" controls>
-    <layer- label="Inline Templated Tile" checked>
+    <map-layer label="Inline Templated Tile" checked>
       <map-meta name="zoom" content="min=0,max=6"></map-meta>
       <map-extent units="CBMTILE" checked hidden>
         <map-input name="i" type="location" units="map" axis="i" ></map-input>
@@ -27,7 +27,7 @@
         <map-input name="h" type="height" ></map-input>
         <map-link rel="query" tref="data/query/us_map_query?{i}{j}{xmin}{ymin}{xmax}{ymax}{w}{h}" ></map-link>
       </map-extent>
-    </layer->
+    </map-layer>
   </mapml-viewer>
 </body>
 

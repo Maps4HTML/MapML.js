@@ -23,7 +23,7 @@
 
 <body>
   <mapml-viewer style="width: 500px;height: 500px;" projection="CBMTILE" zoom="2" lat="40.59994213516742" lon="-102.62078167264747" controls>
-    <layer- label="Multiple Heterogeneous Query Extents" checked>
+    <map-layer label="Multiple Heterogeneous Query Extents" checked>
       <map-extent label="cbmt" units="CBMTILE" checked>
         <map-input name="z" type="zoom" value="17" min="0" max="17"></map-input>
         <map-input name="y" type="location" units="tilematrix" axis="row" min="29750" max="34475"></map-input>
@@ -52,7 +52,7 @@
         <map-input name="h" type="height" ></map-input>
         <map-link rel="query" tref="data/query/us_map_query?{i}{j}{xmin}{ymin}{xmax}{ymax}{w}{h}" ></map-link>
       </map-extent>
-    </layer->
+    </map-layer>
   </mapml-viewer>
   <textarea name="message" rows="10" cols="100"></textarea>
 </body>

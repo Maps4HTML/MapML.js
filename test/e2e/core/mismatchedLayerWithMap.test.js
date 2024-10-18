@@ -29,8 +29,8 @@ test.describe('Playwright Mismatched Layers Test', () => {
             </head>
             <body>
                 <map is="web-map" style="width:500px;height:500px" projection="CBMTILE" zoom="2" lat="45" lon="-90" controls >
-                    <layer- label='CBMT' src='cbmtile-cbmt.mapml' checked></layer->
-                    <layer- id="checkMe" label="OpenStreetMap" src="osm.mapml" checked></layer->
+                    <map-layer label='CBMT' src='cbmtile-cbmt.mapml' checked></map-layer>
+                    <map-layer id="checkMe" label="OpenStreetMap" src="osm.mapml" checked></map-layer>
                 </map>     
             </body>
             </html>
@@ -40,7 +40,7 @@ test.describe('Playwright Mismatched Layers Test', () => {
       'div > div.leaflet-control-container > div.leaflet-top.leaflet-right'
     );
     const cbmtileLayer = await page.$eval(
-      'body > map > layer-:nth-child(1)',
+      'body > map > map-layer:nth-child(1)',
       (controller) => controller.hasAttribute('disabled')
     );
     const osmtileLayer = await page.$eval('#checkMe', (controller) =>
@@ -65,8 +65,8 @@ test.describe('Playwright Mismatched Layers Test', () => {
             </head>
             <body>
                 <mapml-viewer style="width:500px;height:500px" projection="OSMTILE" zoom="2" lat="45" lon="-90" controls >
-                    <layer- id="checkMe" label='CBMT' src='cbmtile-cbmt.mapml' checked></layer->
-                    <layer- label="OpenStreetMap" src="osm.mapml" checked></layer->
+                    <map-layer id="checkMe" label='CBMT' src='cbmtile-cbmt.mapml' checked></map-layer>
+                    <map-layer label="OpenStreetMap" src="osm.mapml" checked></map-layer>
                 </mapml-viewer>     
             </body>
             </html>
@@ -79,7 +79,7 @@ test.describe('Playwright Mismatched Layers Test', () => {
       controller.hasAttribute('disabled')
     );
     const osmtileLayer = await page.$eval(
-      'body > mapml-viewer > layer-:nth-child(2)',
+      'body > mapml-viewer > map-layer:nth-child(2)',
       (controller) => controller.hasAttribute('disabled')
     );
 

@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-test.describe('Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer', () => {
+test.describe('Drag and Drop Layers (map-layer, GeoJSON, Link) to mapml-viewer', () => {
   let page;
   let context;
   test.beforeAll(async () => {
@@ -50,11 +50,11 @@ test.describe('Drag and Drop Layers (layer-, GeoJSON, Link) to mapml-viewer', ()
     expect(vars.length).toBe(3);
   });
 
-  test('Drag and drop of valid layer-', async () => {
+  test('Drag and drop of valid map-layer', async () => {
     const dataTransfer = await page.evaluateHandle(() => {
       const dt = new DataTransfer();
       dt.items.add(
-        '<layer- label="Ottawa" checked> <map-meta name="projection" content="CBMTILE"></map-meta> <map-meta name="cs" content="gcrs"></map-meta> <map-feature> <map-featurecaption>Ottawa</map-featurecaption> <map-geometry> <map-point class="ottawa"> <map-coordinates>-75.697193 45.421530</map-coordinates> </map-point> </map-geometry> </map-feature> </layer->',
+        '<map-layer label="Ottawa" checked> <map-meta name="projection" content="CBMTILE"></map-meta> <map-meta name="cs" content="gcrs"></map-meta> <map-feature> <map-featurecaption>Ottawa</map-featurecaption> <map-geometry> <map-point class="ottawa"> <map-coordinates>-75.697193 45.421530</map-coordinates> </map-point> </map-geometry> </map-feature> </map-layer>',
         'text/plain'
       );
       return dt;

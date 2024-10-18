@@ -23,7 +23,7 @@
 
 <body>
   <mapml-viewer style="width: 500px;height: 500px;" projection="CBMTILE" zoom="0" lat="47" lon="-92" controls>
-<layer- label="Multiple Query Extents" checked>
+<map-layer label="Multiple Query Extents" checked>
       <!-- the non-query extent (in this case a TemplatedTileLayer) is necessary 
            to have the layer not disabled in the layer control -->
       <!-- see: https://github.com/Maps4HTML/MapML.js/issues/647#issue-1096626052 -->
@@ -66,7 +66,7 @@
         <map-input name="h" type="height" ></map-input>
         <map-link rel="query" tref="data/query/us_map_query?{i}{j}{xmin}{ymin}{xmax}{ymax}{w}{h}" ></map-link>
       </map-extent>
-    </layer->
+    </map-layer>
   </mapml-viewer>
   <textarea name="message" rows="10" cols="100"></textarea>
 </body>

@@ -10,7 +10,7 @@ test.describe('map-feature extent functionality and API', () => {
       (await context.newPage());
     await page.goto('map-feature-extent.html');
   });
-  /* Test that feature extent is correct, interaction with layer- extent is
+  /* Test that feature extent is correct, interaction with map-layer extent is
    * appropriate.  Tests SHOULD cover different projections, not only OSMTILE and WGS84,
    * but also CBMTILE and perhaps a custom projection.  The tricky thing about
    * features is that coordinates are supposed to be expressed in any of gcrs,
@@ -110,7 +110,7 @@ test.describe('map-feature extent functionality and API', () => {
     );
     expect(metaBoundsExcludeFeatureBounds).toBe(true);
   });
-  test(`bounds of map-meta + map-feature extent bounds equal layer- extent bounds`, async () => {
+  test(`bounds of map-meta + map-feature extent bounds equal map-layer extent bounds`, async () => {
     // get bounds of map-meta
     const meta = await page.getByTestId('meta-ext1');
     const metaExtent = await meta.evaluate((m) => {

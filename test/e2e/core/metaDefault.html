@@ -16,9 +16,9 @@
 <body>
   <mapml-viewer style="width: 500px; height: 500px;" projection="CBMTILE" zoom="0" lat="45.5052040" lon="-75.2202344"
     controls>
-    <layer- label="Map Layer" src="data/missing_min_max.mapml" checked></layer->
+    <map-layer label="Map Layer" src="data/missing_min_max.mapml" checked></map-layer>
 
-    <layer- label="Toporama" checked>
+    <map-layer label="Toporama" checked>
       <map-meta name="zoom" content="min=4,max=5"></map-meta>
       <map-meta name="extent"
                 content="zoom=19,top-left-easting=-7786477.0,top-left-northing=-927808.0,bottom-right-easting=7148753.0,bottom-right-northing=7928344.0"></map-meta>
@@ -33,8 +33,8 @@
         <map-link rel="image"
           tref="images/toporama_en.jpg?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/jpeg&TRANSPARENT=FALSE&STYLES=&VERSION=1.3.0&LAYERS=WMS-Toporama&WIDTH={w}&HEIGHT={h}&CRS=EPSG:3978&BBOX={xmin},{ymin},{xmax},{ymax}&m4h=t" ></map-link>
       </map-extent>
-    </layer->
-    <layer- id="defaultMeta" label="Default meta" checked>
+    </map-layer>
+    <map-layer id="defaultMeta" label="Default meta" checked>
       <map-feature>
         <map-geometry>
           <map-point>
@@ -42,8 +42,8 @@
           </map-point>
         </map-geometry>
       </map-feature>
-    </layer->
-    <layer- id="defaultMetaFetched" src="data/noMapMeta" checked></layer->
+    </map-layer>
+    <map-layer id="defaultMetaFetched" src="data/noMapMeta" checked></map-layer>
   </mapml-viewer>
 
 </body>

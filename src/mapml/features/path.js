@@ -75,7 +75,11 @@ export var Path = L.Path.extend({
       let onTop = true,
         nextLayer = this.options._leafletLayer._layerEl.nextElementSibling;
       while (nextLayer && onTop) {
-        if (nextLayer.tagName && nextLayer.tagName.toUpperCase() === 'LAYER-')
+        if (
+          nextLayer.tagName &&
+          (nextLayer.tagName.toUpperCase() === 'MAP-LAYER' ||
+            nextLayer.tagName.toUpperCase() === 'LAYER-')
+        )
           onTop = !nextLayer.queryable();
         nextLayer = nextLayer.nextElementSibling;
       }

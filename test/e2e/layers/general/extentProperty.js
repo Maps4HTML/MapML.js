@@ -17,10 +17,10 @@ exports.test = (path, expectedPCRS, expectedGCRS) => {
       await page.waitForTimeout(250);
     });
 
-    test('<layer->.extent test', async () => {
+    test('<map-layer>.extent test', async () => {
       await page.waitForTimeout(200);
       const extent = await page.$eval(
-        'body > map > layer-:nth-child(1)',
+        'body > map > map-layer:nth-child(1)',
         (layer) => layer.extent
       );
       expect(extent.hasOwnProperty('zoom')).toBeTruthy();
@@ -32,9 +32,9 @@ exports.test = (path, expectedPCRS, expectedGCRS) => {
       expect(extent.topLeft.gcrs).toEqual(expectedGCRS.topLeft);
       expect(extent.bottomRight.gcrs).toEqual(expectedGCRS.bottomRight);
     });
-    test('2nd <layer->.extent test', async () => {
+    test('2nd <map-layer>.extent test', async () => {
       const extent = await page.$eval(
-        'body > map > layer-:nth-child(2)',
+        'body > map > map-layer:nth-child(2)',
         (layer) => layer.extent
       );
       expect(extent.hasOwnProperty('zoom')).toBeTruthy();

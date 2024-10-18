@@ -8,8 +8,8 @@
   </head>
   <body>
     <mapml-viewer data-testid="viewer" controls style="width: 500px;height: 500px;"  projection="OSMTILE" zoom="10" lat="44.5" lon="-103.8">
-      <layer- data-testid="dark" src="dark.mapml" ></layer->
-      <layer- data-testid="local-layer">
+      <map-layer data-testid="dark" src="dark.mapml" ></map-layer>
+      <map-layer data-testid="local-layer">
         <map-link data-testid="local-operative-light" rel="stylesheet" type="application/pmtiles+stylesheet" href="lightTheme.js"></map-link>
 
         <!-- only the first stylesheet within scope in document order is used... -->
@@ -29,7 +29,7 @@
           <map-link rel="tile" type="application/pmtiles" tref="../spearfish.pmtiles?theme=dark"></map-link>
 
         </map-extent>
-      </layer->
+      </map-layer>
     </mapml-viewer>
   </body>
 </html>

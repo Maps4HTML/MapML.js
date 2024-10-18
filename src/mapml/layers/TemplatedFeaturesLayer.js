@@ -145,7 +145,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
       steppedZoom
     );
 
-    // should set this.isVisible properly BEFORE return, otherwise will cause layer-.validateDisabled not work properly
+    // should set this.isVisible properly BEFORE return, otherwise will cause map-layer.validateDisabled not work properly
     let url = this._getfeaturesUrl(steppedZoom, scaleBounds);
     // No request needed if the current template url is the same as the url to request
     if (url === this._url) return;

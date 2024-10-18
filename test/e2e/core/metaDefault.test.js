@@ -60,7 +60,7 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
 
   test('Fetched layer extent test', async () => {
     const extent = await page.$eval(
-      'body > mapml-viewer > layer-:nth-child(1)',
+      'body > mapml-viewer > map-layer:nth-child(1)',
       (layer) => layer.extent
     );
     expect(extent.hasOwnProperty('zoom')).toBeTruthy();
@@ -74,7 +74,7 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
   });
   test('Inline layer extent test', async () => {
     const extent = await page.$eval(
-      'body > mapml-viewer > layer-:nth-child(2)',
+      'body > mapml-viewer > map-layer:nth-child(2)',
       (layer) => layer.extent
     );
 
@@ -94,7 +94,7 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
   test("Layer with no map-meta's is rendered on map", async () => {
     await page.waitForTimeout(200);
     const layer = await page.evaluateHandle(() =>
-      document.querySelector('layer-[id=defaultMeta]')
+      document.querySelector('map-layer[id=defaultMeta]')
     );
     const layerSVG = await page.evaluate(
       (layer) =>
@@ -105,7 +105,7 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
   });
   test("Fetched layer with no map-meta's is rendered on map", async () => {
     const layer = await page.evaluateHandle(() =>
-      document.querySelector('layer-[id=defaultMetaFetched]')
+      document.querySelector('map-layer[id=defaultMetaFetched]')
     );
     const layerSVG = await page.evaluate(
       (layer) =>

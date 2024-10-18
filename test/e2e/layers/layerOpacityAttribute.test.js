@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-test.describe('Adding Opacity Attribute to the Layer- Element', () => {
+test.describe('Adding Opacity Attribute to the map-layer Element', () => {
   let page;
   let context;
   test.beforeAll(async function () {
@@ -9,20 +9,20 @@ test.describe('Adding Opacity Attribute to the Layer- Element', () => {
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('layerOpacityAttribute.html');
-    const l = await page.locator('layer-');
+    const l = await page.locator('map-layer');
     await l.evaluate((l) => l.whenReady());
   });
   test.afterAll(async function () {
     await context.close();
   });
 
-  test('Setting Opacity Attibute to Layer- Element', async () => {
+  test('Setting Opacity Attibute to map-layer Element', async () => {
     let opacity_attribute_value = await page.$eval(
-      'body > mapml-viewer > layer-',
+      'body > mapml-viewer > map-layer',
       (layer) => layer.getAttribute('opacity')
     );
     let layer_opacity = await page.$eval(
-      'body > mapml-viewer > layer-',
+      'body > mapml-viewer > map-layer',
       (layer) => layer.opacity
     );
     expect(layer_opacity).toEqual(+opacity_attribute_value);
@@ -33,7 +33,7 @@ test.describe('Adding Opacity Attribute to the Layer- Element', () => {
       (input) => input.value
     );
     let layer_opacity = await page.$eval(
-      'body > mapml-viewer > layer-',
+      'body > mapml-viewer > map-layer',
       (layer) => layer.opacity
     );
     expect(layer_opacity).toEqual(+opacity_slider_value);

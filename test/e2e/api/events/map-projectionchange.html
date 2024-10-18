@@ -9,7 +9,7 @@
   </head>
   <body>
   <mapml-viewer zoom="2" lon="-75.703611" lat="45.411105" width="500" height="500" controls projection="OSMTILE">
-    <layer- label="Projection changer"  checked>
+    <map-layer label="Projection changer"  checked>
       <map-extent label="National Geographic" units="OSMTILE" checked >
         <map-input name="TileMatrix" type="zoom" value="18" min="0" max="18"></map-input>
         <map-input name="TileCol" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
@@ -22,7 +22,7 @@
         <map-input name="x" type="location" units="tilematrix" axis="column"></map-input>
         <map-link rel="tile" tref="/tiles/cbmt/{z}/c{x}_r{y}.png" ></map-link>
       </map-extent>    
-    </layer->
+    </map-layer>
   </mapml-viewer>
   <script>
     function changeProjection() {

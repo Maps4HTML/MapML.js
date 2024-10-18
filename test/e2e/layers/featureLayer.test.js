@@ -46,7 +46,7 @@ test.describe('Playwright featureLayer (Static Features) Layer Tests', () => {
     test('Loading in retrieved features', async () => {
       await page.waitForTimeout(350);
       const features = await page.$eval(
-        'layer-#US',
+        'map-layer#US',
         (layer) =>
           layer._layer._container.querySelector('svg').firstChild
             .childElementCount
@@ -81,7 +81,7 @@ test.describe('Playwright featureLayer (Static Features) Layer Tests', () => {
     test('valid <layer>.extent', async () => {
       // this is the us_pop_density.mapml layer
       const layerExtent = await page.$eval(
-        'body > map > layer-:nth-child(3)',
+        'body > map > map-layer:nth-child(3)',
         (layer) => layer.extent
       );
       expect(layerExtent.topLeft.pcrs).toEqual({
@@ -132,14 +132,14 @@ test.describe('Playwright featureLayer (Static Features) Layer Tests', () => {
     test('Feature without properties renders & is not interactable', async () => {
       await page.waitForTimeout(2000);
       const featureRendering = await page
-        .locator('layer-#inline > map-feature')
+        .locator('map-layer#inline > map-feature')
         .evaluate((f) => f._groupEl.firstChild.getAttribute('d'));
       await expect(featureRendering).toEqual(
         'M74 -173L330 -173L330 83L74 83L74 -173z'
       );
 
       const classList = await page
-        .locator('layer-#inline > map-feature')
+        .locator('map-layer#inline > map-feature')
         .evaluate((f) => f._groupEl.firstChild.getAttribute('class'));
       await expect(classList).toBeFalsy();
     });

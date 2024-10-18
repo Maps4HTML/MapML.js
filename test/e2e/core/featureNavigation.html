@@ -11,7 +11,7 @@
 <body>
   <mapml-viewer style="width: 500px;height: 500px;" is="web-map" projection="CBMTILE" zoom="2" lat="45.5052040"
     lon="-75.2202344" controls>
-    <layer- id="query" label="Fire" checked>
+    <map-layer id="query" label="Fire" checked>
       <map-extent units="CBMTILE" checked hidden>
         <map-input name="z" type="zoom" value="18" min="0" max="18" ></map-input>
         <map-input name="txmin" type="location" units="tilematrix" position="top-left" axis="easting" min="-2.003750834E7"
@@ -39,9 +39,9 @@
         <map-link rel="query"
                   tref="https://cwfis.cfs.nrcan.gc.ca/geoserver/public/wms?i={i}&j={j}&service=WMS&version=1.3.0&request=GetFeatureInfo&layers=public:fdr_current&QUERY_LAYERS=current:fdr_current&styles=&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}&srs=EPSG:3978&INFO_FORMAT=text/html&m4h=t" ></map-link>
       </map-extent>
-    </layer->
+    </map-layer>
 
-    <layer- label="Arizona" checked>
+    <map-layer label="Arizona" checked>
       <map-meta name="projection" content="CBMTILE"></map-meta>
       <map-meta name="zoom" content="min=1,max=5,value=0"></map-meta>
       <map-meta name="cs" content="gcrs"></map-meta>
@@ -79,8 +79,8 @@
           </map-polygon>
         </map-geometry>
       </map-feature>
-    </layer->
-    <layer- id="vector" label="vector states" src="data/us_pop_density.mapml"></layer->
+    </map-layer>
+    <map-layer id="vector" label="vector states" src="data/us_pop_density.mapml"></map-layer>
   </mapml-viewer>
 </body>
 

@@ -42,7 +42,7 @@ test.describe('Playwright Viewer Default Projection', () => {
     test('layer renders', async () => {
       await page.waitForTimeout(500);
       const featureSVG = await page.$eval(
-        'body > mapml-viewer > layer- > map-feature',
+        'body > mapml-viewer > map-layer > map-feature',
         (feature) => feature._groupEl.firstChild.getAttribute('d')
       );
       expect(featureSVG).toEqual('M62 27L62 75L206 75L206 27L62 27z');
