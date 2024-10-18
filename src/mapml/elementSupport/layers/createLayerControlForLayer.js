@@ -263,7 +263,7 @@ export var createLayerControlHTML = async function () {
             layerEl.removeAttribute('data-moving');
           }
           // update zIndex of all map-layer elements
-          let layers = mapEl.querySelectorAll('map-layer');
+          let layers = mapEl.querySelectorAll('map-layer,layer-');
           for (let i = 0; i < layers.length; i++) {
             let layer = layers[i]._layer;
             if (layer.options.zIndex !== zIndex) {

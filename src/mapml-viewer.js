@@ -1,7 +1,8 @@
 import { Util } from './mapml/utils/Util';
 import { DOMTokenList } from './mapml/utils/DOMTokenList';
 
-import { HTMLLayerElement } from './layer.js';
+import { HTMLLayerElement } from './map-layer.js';
+import { LayerDashElement } from './layer-.js';
 import { HTMLMapCaptionElement } from './map-caption.js';
 import { HTMLFeatureElement } from './map-feature.js';
 import { HTMLExtentElement } from './map-extent.js';
@@ -642,7 +643,7 @@ export class HTMLMapmlViewerElement extends HTMLElement {
     this.addEventListener(
       'change',
       function (e) {
-        if (e.target.tagName === 'MAP-LAYER') {
+        if (e.target.tagName === 'MAP-LAYER' || e.target.tagName === 'LAYER-') {
           this.dispatchEvent(
             new CustomEvent('layerchange', {
               details: { target: this, originalEvent: e }
@@ -1456,6 +1457,7 @@ try {
   );
 }
 window.customElements.define('map-layer', HTMLLayerElement);
+window.customElements.define('layer-', LayerDashElement);
 window.customElements.define('map-caption', HTMLMapCaptionElement);
 window.customElements.define('map-feature', HTMLFeatureElement);
 window.customElements.define('map-extent', HTMLExtentElement);

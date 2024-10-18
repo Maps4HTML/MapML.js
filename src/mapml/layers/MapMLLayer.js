@@ -232,7 +232,8 @@ export var MapMLLayer = L.LayerGroup.extend({
     return new URL(
       this._content.querySelector('map-base')
         ? this._content.querySelector('map-base').getAttribute('href')
-        : this._content.nodeName === 'MAP-LAYER'
+        : this._content.nodeName === 'MAP-LAYER' ||
+          this._content.nodeName === 'LAYER-'
         ? this._content.baseURI
         : this._href,
       this._href

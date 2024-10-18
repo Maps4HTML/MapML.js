@@ -390,7 +390,7 @@ export const Util = {
           break;
         case '_parent':
           postTraversalSetup();
-          for (let l of map.options.mapEl.querySelectorAll('map-layer'))
+          for (let l of map.options.mapEl.querySelectorAll('map-layer,layer-'))
             if (l._layer !== leafletLayer) map.options.mapEl.removeChild(l);
           map.options.mapEl.appendChild(layer);
           map.options.mapEl.removeChild(leafletLayer._layerEl);

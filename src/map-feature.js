@@ -137,7 +137,7 @@ export class HTMLFeatureElement extends HTMLElement {
     return Util.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return Util.getClosest(this, 'map-layer');
+    return Util.getClosest(this, 'map-layer,layer-');
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -168,6 +168,7 @@ export class HTMLFeatureElement extends HTMLElement {
     this._initialZoom = this.getMapEl().zoom;
     this._parentEl =
       this.parentNode.nodeName.toUpperCase() === 'MAP-LAYER' ||
+      this.parentNode.nodeName.toUpperCase() === 'LAYER-' ||
       this.parentNode.nodeName.toUpperCase() === 'MAP-LINK'
         ? this.parentNode
         : this.parentNode.host;

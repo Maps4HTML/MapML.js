@@ -183,7 +183,7 @@ export class HTMLInputElement extends HTMLElement {
     return Util.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return Util.getClosest(this, 'map-layer');
+    return Util.getClosest(this, 'map-layer,layer-');
   }
   attributeChangedCallback(name, oldValue, newValue) {
     this.whenReady()
