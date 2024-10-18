@@ -656,7 +656,7 @@ export const Util = {
         text +
         '" label="' +
         mapEl.locale.dfLayer +
-        '" checked=""></map-layer>';
+        '" checked=""></layer->';
       mapEl.insertAdjacentHTML('beforeend', l);
       mapEl.lastElementChild.whenReady().catch(() => {
         if (mapEl) {
@@ -677,7 +677,7 @@ export const Util = {
         text.slice(-14) === '</map-feature>'
       ) {
         let layer =
-          `<map-layer label="${mapEl.locale.dfPastedLayer}" checked>
+          `<layer- label="${mapEl.locale.dfPastedLayer}" checked>
                        <map-meta name='projection' content='${mapEl.projection}'></map-meta>` +
           text +
           '</layer->';
