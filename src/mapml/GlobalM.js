@@ -12,7 +12,13 @@ import './handlers/keyboard';
   M.mime = 'text/mapml';
 
   let mapOptions = document.head.querySelector('map-options');
+  // key fact is that M.options now refers to the Options object, it's not copied
   M.options = Options;
+  // make a DEEP copy of the default locale strings under a new name localeEn
+  // to support gcds-map
+  M.options.localeEn = JSON.parse(JSON.stringify(Options.locale));
+  // if there's a locale field in mapOptions.innerHTML, it will overwrite the
+  //field of the same name in M.options
   if (mapOptions)
     M.options = Object.assign(M.options, JSON.parse(mapOptions.innerHTML));
 
