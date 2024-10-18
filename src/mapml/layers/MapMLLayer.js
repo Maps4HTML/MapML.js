@@ -457,7 +457,7 @@ export var MapMLLayer = L.LayerGroup.extend({
     // creates |< button, focuses map
     let mapFocusButton = L.DomUtil.create('button', 'mapml-popup-button', div);
     mapFocusButton.type = 'button';
-    mapFocusButton.title = 'Focus Map';
+    mapFocusButton.title = M.options.locale.btnFocusMap;
     mapFocusButton.innerHTML = "<span aria-hidden='true'>|&#10094;</span>";
     L.DomEvent.on(
       mapFocusButton,
@@ -474,7 +474,7 @@ export var MapMLLayer = L.LayerGroup.extend({
     // creates < button, focuses previous feature, if none exists focuses the current feature
     let previousButton = L.DomUtil.create('button', 'mapml-popup-button', div);
     previousButton.type = 'button';
-    previousButton.title = 'Previous Feature';
+    previousButton.title = M.options.locale.btnPrevFeature;
     previousButton.innerHTML = "<span aria-hidden='true'>&#10094;</span>";
     L.DomEvent.on(previousButton, 'click', layer._previousFeature, popup);
 
@@ -486,7 +486,7 @@ export var MapMLLayer = L.LayerGroup.extend({
     // creates > button, focuses next feature, if none exists focuses the current feature
     let nextButton = L.DomUtil.create('button', 'mapml-popup-button', div);
     nextButton.type = 'button';
-    nextButton.title = 'Next Feature';
+    nextButton.title = M.options.locale.btnNextFeature;
     nextButton.innerHTML = "<span aria-hidden='true'>&#10095;</span>";
     L.DomEvent.on(nextButton, 'click', layer._nextFeature, popup);
 
@@ -497,7 +497,7 @@ export var MapMLLayer = L.LayerGroup.extend({
       div
     );
     controlFocusButton.type = 'button';
-    controlFocusButton.title = 'Focus Controls';
+    controlFocusButton.title = M.options.locale.btnFocusControls;
     controlFocusButton.innerHTML = "<span aria-hidden='true'>&#10095;|</span>";
     L.DomEvent.on(
       controlFocusButton,
