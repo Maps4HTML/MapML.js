@@ -431,7 +431,7 @@ export class HTMLWebMapElement extends HTMLMapElement {
             this._map.options.projection = newValue;
             let layersReady = [];
             this._map.announceMovement.disable();
-            for (let layer of this.querySelectorAll('map-layer')) {
+            for (let layer of this.querySelectorAll('map-layer,layer-')) {
               layer.removeAttribute('disabled');
               let reAttach = this.removeChild(layer);
               this.appendChild(reAttach);
@@ -685,7 +685,7 @@ export class HTMLWebMapElement extends HTMLMapElement {
     this.addEventListener(
       'change',
       function (e) {
-        if (e.target.tagName === 'MAP-LAYER') {
+        if (e.target.tagName === 'MAP-LAYER' || e.target.tagName === 'LAYER-') {
           this.dispatchEvent(
             new CustomEvent('layerchange', {
               details: { target: this, originalEvent: e }

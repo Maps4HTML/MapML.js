@@ -163,7 +163,7 @@ export class HTMLLinkElement extends HTMLElement {
     return Util.getClosest(this, 'mapml-viewer,map[is=web-map]');
   }
   getLayerEl() {
-    return Util.getClosest(this, 'map-layer');
+    return Util.getClosest(this, 'map-layer,layer-');
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -382,7 +382,13 @@ export class HTMLLinkElement extends HTMLElement {
           this.getRootNode().querySelector(':host > ' + s)
         : Util.getClosest(
             this,
-            'map-extent:has(' + s + '),map-layer:has(' + s + ')'
+            'map-extent:has(' +
+              s +
+              '),map-layer:has(' +
+              s +
+              '),layer-:has(' +
+              s +
+              ')'
           )?.querySelector(s);
       let options = {
         zoomBounds: this.getZoomBounds(),

@@ -127,7 +127,7 @@ export var AnnounceMovement = L.Handler.extend({
     if (!e.layer._layerEl) return;
     let map = this.options.mapEl;
     map.whenLayersReady().then(() => {
-      let layers = map.querySelectorAll('map-layer');
+      let layers = map.querySelectorAll('map-layer,layer-');
       let bounds;
       for (let i = 0; i < layers.length; i++) {
         // the _layer may no longer exist if this is invoked by layerremove

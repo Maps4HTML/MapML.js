@@ -16,6 +16,7 @@ app.use(express.static(path.join(__dirname, 'e2e/elements/map-input')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-link')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-style')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-layer')));
+app.use(express.static(path.join(__dirname, 'e2e/elements/layer-')));
 app.use(express.static(path.join(__dirname, 'e2e/api')));
 app.use(express.static(path.join(__dirname, 'e2e/data')));
 app.use(express.static(path.join(__dirname, 'e2e/geojson')));

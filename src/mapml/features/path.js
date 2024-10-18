@@ -77,7 +77,8 @@ export var Path = L.Path.extend({
       while (nextLayer && onTop) {
         if (
           nextLayer.tagName &&
-          nextLayer.tagName.toUpperCase() === 'MAP-LAYER'
+          (nextLayer.tagName.toUpperCase() === 'MAP-LAYER' ||
+            nextLayer.tagName.toUpperCase() === 'LAYER-')
         )
           onTop = !nextLayer.queryable();
         nextLayer = nextLayer.nextElementSibling;

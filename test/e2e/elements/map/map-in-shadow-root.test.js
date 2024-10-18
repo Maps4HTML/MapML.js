@@ -114,6 +114,7 @@ test.describe('Playwright map[is=web-map] fullscreen tests', () => {
     await page.keyboard.press('F'); // exit fullscreen
     await page.waitForTimeout(200);
     fullscreenElement = await page.evaluate(`document.fullscreenElement`);
+    await page.waitForTimeout(200);
     expect(fullscreenElement).toBeFalsy();
   });
 });

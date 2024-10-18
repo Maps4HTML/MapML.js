@@ -2,7 +2,7 @@ import { Util } from './mapml/utils/Util';
 import { MapMLLayer, mapMLLayer } from './mapml/layers/MapMLLayer';
 import { createLayerControlHTML } from './mapml/elementSupport/layers/createLayerControlForLayer';
 
-export class HTMLLayerElement extends HTMLElement {
+export class BaseLayerElement extends HTMLElement {
   static get observedAttributes() {
     return ['src', 'label', 'checked', 'hidden', 'opacity'];
   }
@@ -539,7 +539,10 @@ export class HTMLLayerElement extends HTMLElement {
     var i = 0,
       position = 1;
     for (var nodes = this.parentNode.children; i < nodes.length; i++) {
-      if (this.parentNode.children[i].nodeName === 'MAP-LAYER') {
+      if (
+        this.parentNode.children[i].nodeName === 'MAP-LAYER' ||
+        this.parentNode.children[i].nodeName === 'LAYER-'
+      ) {
         if (this.parentNode.children[i] === this) {
           position = i + 1;
         } else if (this.parentNode.children[i]._layer) {
