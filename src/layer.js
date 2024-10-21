@@ -247,6 +247,7 @@ export class MapLayer extends HTMLElement {
               opacity: this.opacity
             });
             this._createLayerControlHTML();
+            this._setLocalizedDefaultLabel();
             this._attachedToMap();
             // initializing map-features that previously exist
             this._runMutationObserver(this.shadowRoot.children);
@@ -284,6 +285,7 @@ export class MapLayer extends HTMLElement {
               opacity: this.opacity
             });
             this._createLayerControlHTML();
+            this._setLocalizedDefaultLabel();
             this._attachedToMap();
             // initializing map-features that previously exist
             this._runMutationObserver(this.children);
@@ -331,6 +333,12 @@ export class MapLayer extends HTMLElement {
         );
       }
     });
+  }
+
+  _setLocalizedDefaultLabel() {
+    if (!this._layer._titleIsReadOnly && !this._layer._title) {
+      this.label = this.parentElement.locale.dfLayer;
+    }
   }
 
   selectAlternateOrChangeProjection() {
@@ -725,7 +733,7 @@ export class MapLayer extends HTMLElement {
     if (styleLinks.length > 1) {
       var stylesControl = document.createElement('details'),
         stylesControlSummary = document.createElement('summary');
-      stylesControlSummary.innerText = mapEl.locale.lmStyle;
+      stylesControlSummary.innerText = this.parentElement.locale.lmStyle;
       stylesControl.appendChild(stylesControlSummary);
 
       for (var j = 0; j < styleLinks.length; j++) {
