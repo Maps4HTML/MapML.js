@@ -14,6 +14,7 @@ app.use((req, res, next) => {
 
 //then loads in the index file
 app.use(express.static(path.join(__dirname, '../dist')));
+app.use(express.static(path.join(__dirname, '../node_modules/leaflet/dist')));
 app.use(express.static(path.join(__dirname, 'e2e/core')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-extent')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/mapml-viewer')));

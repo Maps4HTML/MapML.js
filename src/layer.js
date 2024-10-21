@@ -1,6 +1,8 @@
-import { Util } from './mapml/utils/Util';
-import { MapMLLayer, mapMLLayer } from './mapml/layers/MapMLLayer';
-import { createLayerControlHTML } from './mapml/elementSupport/layers/createLayerControlForLayer';
+import { setOptions, DomUtil, bounds, point } from 'leaflet';
+
+import { Util } from './mapml/utils/Util.js';
+import { MapMLLayer, mapMLLayer } from './mapml/layers/MapMLLayer.js';
+import { createLayerControlHTML } from './mapml/elementSupport/layers/createLayerControlForLayer.js';
 
 export class BaseLayerElement extends HTMLElement {
   static get observedAttributes() {
@@ -437,9 +439,9 @@ export class BaseLayerElement extends HTMLElement {
   /*
    * Runs the effects of the mutation observer, which is to add map-features' and
    * map-extents' leaflet layer implementations to the appropriate container in
-   * the map-layer._layer: either as a sub-layer directly in the L.LayerGroup
+   * the map-layer._layer: either as a sub-layer directly in the LayerGroup
    * (MapMLLayer._layer) or as a sub-layer in the MapMLLayer._mapmlvectors
-   * L.FeatureGroup
+   * FeatureGroup
    */
   _runMutationObserver(elementsGroup) {
     const _addFeatureToMapMLVectors = (feature) => {
@@ -561,7 +563,7 @@ export class BaseLayerElement extends HTMLElement {
     var proj = this.parentNode.projection
       ? this.parentNode.projection
       : 'OSMTILE';
-    L.setOptions(this._layer, {
+    setOptions(this._layer, {
       zIndex: position,
       mapprojection: proj,
       opacity: window.getComputedStyle(this).opacity
@@ -741,7 +743,7 @@ export class BaseLayerElement extends HTMLElement {
 
       for (var j = 0; j < styleLinks.length; j++) {
         stylesControl.appendChild(styleLinks[j].getLayerControlOption());
-        L.DomUtil.addClass(
+        DomUtil.addClass(
           stylesControl,
           'mapml-layer-item-style mapml-control-layers'
         );
@@ -797,9 +799,9 @@ export class BaseLayerElement extends HTMLElement {
         extent = this.extent,
         tL = extent.topLeft.pcrs,
         bR = extent.bottomRight.pcrs,
-        layerBounds = L.bounds(
-          L.point(tL.horizontal, tL.vertical),
-          L.point(bR.horizontal, bR.vertical)
+        layerBounds = bounds(
+          point(tL.horizontal, tL.vertical),
+          point(bR.horizontal, bR.vertical)
         ),
         center = map.options.crs.unproject(layerBounds.getCenter(true));
 

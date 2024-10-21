@@ -1,4 +1,13 @@
-import { Util } from '../utils/Util';
+import {
+  Handler,
+  Browser,
+  DomUtil,
+  DomEvent,
+  point,
+  stamp,
+  extend
+} from 'leaflet';
+import { Util } from '../utils/Util.js';
 /*
 MIT License related to portions of M.ContextMenu 
 Copyright (c) 2017 adam.ratcliffe@gmail.com
@@ -9,10 +18,10 @@ The above copyright notice and this permission notice shall be included in all c
 */
 /* global M, KeyboardEvent */
 
-export var ContextMenu = L.Handler.extend({
-  _touchstart: L.Browser.msPointer
+export var ContextMenu = Handler.extend({
+  _touchstart: Browser.msPointer
     ? 'MSPointerDown'
-    : L.Browser.pointer
+    : Browser.pointer
     ? 'pointerdown'
     : 'touchstart',
   _getLocale: function (map) {
@@ -21,7 +30,7 @@ export var ContextMenu = L.Handler.extend({
       : M.options.locale;
   },
   initialize: function (map) {
-    L.Handler.prototype.initialize.call(this, map);
+    Handler.prototype.initialize.call(this, map);
     let locale = this._getLocale(map);
     this.activeIndex = 0; //current fous index on menu
     this.excludedIndices = [4, 7]; //menu indexes that are --------
@@ -166,7 +175,7 @@ export var ContextMenu = L.Handler.extend({
     this._mapMenuVisible = false;
     this._keyboardEvent = false;
 
-    this._container = L.DomUtil.create(
+    this._container = DomUtil.create(
       'div',
       'mapml-contextmenu',
       map.getContainer()
@@ -198,7 +207,7 @@ export var ContextMenu = L.Handler.extend({
       this._items[CTXCOPY]
     );
 
-    this._copySubMenu = L.DomUtil.create(
+    this._copySubMenu = DomUtil.create(
       'div',
       'mapml-contextmenu mapml-submenu',
       this._container
@@ -251,7 +260,7 @@ export var ContextMenu = L.Handler.extend({
       this._items[CTXVWSRC]
     );
 
-    this._layerMenu = L.DomUtil.create(
+    this._layerMenu = DomUtil.create(
       'div',
       'mapml-contextmenu mapml-layer-menu',
       map.getContainer()
@@ -260,7 +269,7 @@ export var ContextMenu = L.Handler.extend({
     this._createItem(this._layerMenu, this._layerItems[LYRZOOMTO]);
     this._createItem(this._layerMenu, this._layerItems[LYRCOPY]);
 
-    this._extentLayerMenu = L.DomUtil.create(
+    this._extentLayerMenu = DomUtil.create(
       'div',
       'mapml-contextmenu mapml-extent-menu',
       map.getContainer()
@@ -269,18 +278,18 @@ export var ContextMenu = L.Handler.extend({
     this._createItem(this._extentLayerMenu, this._extentLayerItems[LYRZOOMTO]);
     this._createItem(this._extentLayerMenu, this._extentLayerItems[LYRCOPY]);
 
-    L.DomEvent.on(this._container, 'click', L.DomEvent.stop)
-      .on(this._container, 'mousedown', L.DomEvent.stop)
-      .on(this._container, 'dblclick', L.DomEvent.stop)
-      .on(this._container, 'contextmenu', L.DomEvent.stop)
-      .on(this._layerMenu, 'click', L.DomEvent.stop)
-      .on(this._layerMenu, 'mousedown', L.DomEvent.stop)
-      .on(this._layerMenu, 'dblclick', L.DomEvent.stop)
-      .on(this._layerMenu, 'contextmenu', L.DomEvent.stop)
-      .on(this._extentLayerMenu, 'click', L.DomEvent.stop)
-      .on(this._extentLayerMenu, 'mousedown', L.DomEvent.stop)
-      .on(this._extentLayerMenu, 'dblclick', L.DomEvent.stop)
-      .on(this._extentLayerMenu, 'contextmenu', L.DomEvent.stop);
+    DomEvent.on(this._container, 'click', DomEvent.stop)
+      .on(this._container, 'mousedown', DomEvent.stop)
+      .on(this._container, 'dblclick', DomEvent.stop)
+      .on(this._container, 'contextmenu', DomEvent.stop)
+      .on(this._layerMenu, 'click', DomEvent.stop)
+      .on(this._layerMenu, 'mousedown', DomEvent.stop)
+      .on(this._layerMenu, 'dblclick', DomEvent.stop)
+      .on(this._layerMenu, 'contextmenu', DomEvent.stop)
+      .on(this._extentLayerMenu, 'click', DomEvent.stop)
+      .on(this._extentLayerMenu, 'mousedown', DomEvent.stop)
+      .on(this._extentLayerMenu, 'dblclick', DomEvent.stop)
+      .on(this._extentLayerMenu, 'contextmenu', DomEvent.stop);
 
     this.t = document.createElement('template');
     this.t.innerHTML = `<map-feature zoom="">
@@ -300,15 +309,15 @@ export var ContextMenu = L.Handler.extend({
   addHooks: function () {
     var container = this._map.getContainer();
 
-    L.DomEvent.on(container, 'mouseleave', this._hide, this).on(
+    DomEvent.on(container, 'mouseleave', this._hide, this).on(
       document,
       'keydown',
       this._onKeyDown,
       this
     );
 
-    if (L.Browser.touch) {
-      L.DomEvent.on(document, this._touchstart, this._hide, this);
+    if (Browser.touch) {
+      DomEvent.on(document, this._touchstart, this._hide, this);
     }
 
     this._map.on(
@@ -324,15 +333,15 @@ export var ContextMenu = L.Handler.extend({
   removeHooks: function () {
     var container = this._map.getContainer();
 
-    L.DomEvent.off(container, 'mouseleave', this._hide, this).off(
+    DomEvent.off(container, 'mouseleave', this._hide, this).off(
       document,
       'keydown',
       this._onKeyDown,
       this
     );
 
-    if (L.Browser.touch) {
-      L.DomEvent.off(document, this._touchstart, this._hide, this);
+    if (Browser.touch) {
+      DomEvent.off(document, this._touchstart, this._hide, this);
     }
 
     this._map.off(
@@ -567,8 +576,8 @@ export var ContextMenu = L.Handler.extend({
   _copyTCRS: function (e) {
     let mapEl = this.options.mapEl,
       click = this.contextMenu._clickEvent,
-      point = mapEl._map.project(click.latlng),
-      pt = { x: point.x.toFixed(), y: point.y.toFixed() },
+      pt0 = mapEl._map.project(click.latlng),
+      pt = { x: pt0.x.toFixed(), y: pt0.y.toFixed() },
       projection = mapEl.projection,
       feature = this.contextMenu.t.content.firstElementChild.cloneNode(true),
       caption = feature.querySelector('map-featurecaption'),
@@ -589,7 +598,7 @@ export var ContextMenu = L.Handler.extend({
   _copyTileMatrix: function (e) {
     let mapEl = this.options.mapEl,
       click = this.contextMenu._clickEvent,
-      point = mapEl._map.project(click.latlng),
+      pt = mapEl._map.project(click.latlng),
       tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x,
       projection = mapEl.projection,
       feature = this.contextMenu.t.content.firstElementChild.cloneNode(true),
@@ -603,8 +612,8 @@ export var ContextMenu = L.Handler.extend({
     geom.setAttribute('cs', 'gcrs');
     caption.textContent = `Copied ${projection} tilematrix location (not implemented yet)`;
     h2.textContent = `Copied ${projection} tilematrix location (not implemented yet)`;
-    div.textContent = `${Math.trunc(point.x / tileSize)} ${Math.trunc(
-      point.y / tileSize
+    div.textContent = `${Math.trunc(pt.x / tileSize)} ${Math.trunc(
+      pt.y / tileSize
     )}`;
     coords.textContent = `${click.latlng.lng.toFixed(
       6
@@ -644,11 +653,11 @@ export var ContextMenu = L.Handler.extend({
       // method returns meters, confusingly:
       // https://leafletjs.com/reference.html#map-project
       // https://leafletjs.com/reference.html#crs-project
-      point = mapEl._map.project(click.latlng),
+      pt0 = mapEl._map.project(click.latlng),
       tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x,
-      pointX = point.x % tileSize,
-      pointY = point.y % tileSize,
-      pt = L.point(pointX, pointY).trunc(),
+      pointX = pt0.x % tileSize,
+      pointY = pt0.y % tileSize,
+      pt = point(pointX, pointY).trunc(),
       projection = mapEl.projection,
       feature = this.contextMenu.t.content.firstElementChild.cloneNode(true),
       caption = feature.querySelector('map-featurecaption'),
@@ -697,21 +706,21 @@ export var ContextMenu = L.Handler.extend({
   _copyAllCoords: function (e) {
     let mapEl = this.options.mapEl,
       click = this.contextMenu._clickEvent,
-      point = mapEl._map.project(click.latlng),
+      pt0 = mapEl._map.project(click.latlng),
       tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x,
-      pointX = point.x % tileSize,
-      pointY = point.y % tileSize,
+      pointX = pt0.x % tileSize,
+      pointY = pt0.y % tileSize,
       scale = mapEl._map.options.crs.scale(+mapEl.zoom),
-      pcrs = mapEl._map.options.crs.transformation.untransform(point, scale);
+      pcrs = mapEl._map.options.crs.transformation.untransform(pt0, scale);
     let allData = `z:${mapEl.zoom}\n`;
     allData += `tile: i:${Math.trunc(pointX)}, j:${Math.trunc(pointY)}\n`;
     allData += `tilematrix: column:${Math.trunc(
-      point.x / tileSize
-    )}, row:${Math.trunc(point.y / tileSize)}\n`;
+      pt0.x / tileSize
+    )}, row:${Math.trunc(pt0.y / tileSize)}\n`;
     allData += `map: i:${Math.trunc(click.containerPoint.x)}, j:${Math.trunc(
       click.containerPoint.y
     )}\n`;
-    allData += `tcrs: x:${Math.trunc(point.x)}, y:${Math.trunc(point.y)}\n`;
+    allData += `tcrs: x:${Math.trunc(pt0.x)}, y:${Math.trunc(pt0.y)}\n`;
     allData += `pcrs: easting:${pcrs.x.toFixed(2)}, northing:${pcrs.y.toFixed(
       2
     )}\n`;
@@ -745,22 +754,22 @@ export var ContextMenu = L.Handler.extend({
       el.setAttribute('aria-controls', 'mapml-copy-submenu');
     }
 
-    L.DomEvent.on(el, 'mouseover', this._onItemMouseOver, this)
+    DomEvent.on(el, 'mouseover', this._onItemMouseOver, this)
       .on(el, 'mouseout', this._onItemMouseOut, this)
-      .on(el, 'mousedown', L.DomEvent.stopPropagation)
+      .on(el, 'mousedown', DomEvent.stopPropagation)
       .on(el, 'click', callback);
 
-    if (L.Browser.touch) {
-      L.DomEvent.on(el, this._touchstart, L.DomEvent.stopPropagation);
+    if (Browser.touch) {
+      DomEvent.on(el, this._touchstart, DomEvent.stopPropagation);
     }
 
     // Devices without a mouse fire "mouseover" on tap, but never “mouseout"
-    if (!L.Browser.pointer) {
-      L.DomEvent.on(el, 'click', this._onItemMouseOut, this);
+    if (!Browser.pointer) {
+      DomEvent.on(el, 'click', this._onItemMouseOut, this);
     }
 
     return {
-      id: L.Util.stamp(el),
+      id: stamp(el),
       el: el,
       callback: callback
     };
@@ -775,7 +784,7 @@ export var ContextMenu = L.Handler.extend({
     );
 
     return {
-      id: L.Util.stamp(el),
+      id: stamp(el),
       el: el
     };
   },
@@ -867,7 +876,7 @@ export var ContextMenu = L.Handler.extend({
       // use a keyboard Shift+F10 to display the context menu; this appears
       // to be because blink returns a PointerEvent of type==='contextmenu',
       // while gecko returns an object (for e.originalEvent).
-      if (L.Browser.gecko) {
+      if (Browser.gecko) {
         const getCenter = function (el) {
           let w = el.getBoundingClientRect().width;
           let h = el.getBoundingClientRect().height;
@@ -901,7 +910,7 @@ export var ContextMenu = L.Handler.extend({
 
   _showAtPoint: function (pt, data, container) {
     if (this._items.length) {
-      let event = L.extend(data || {}, { contextmenu: this });
+      let event = extend(data || {}, { contextmenu: this });
 
       this._showLocation = {
         containerPoint: pt
@@ -942,7 +951,7 @@ export var ContextMenu = L.Handler.extend({
       anchor;
 
     if (this._map.options.contextmenuAnchor) {
-      anchor = L.point(this._map.options.contextmenuAnchor);
+      anchor = point(this._map.options.contextmenuAnchor);
       pt = pt.add(anchor);
     }
 
@@ -1233,7 +1242,7 @@ export var ContextMenu = L.Handler.extend({
       }
     } else if (e.code === 'Escape') {
       if (this._layerMenuTabs || this._extentLayerMenuTabs) {
-        L.DomEvent.stop(e);
+        DomEvent.stop(e);
         this._focusOnLayerControl();
         return;
       }
@@ -1374,14 +1383,14 @@ export var ContextMenu = L.Handler.extend({
   },
 
   _onItemMouseOver: function (e) {
-    L.DomUtil.addClass(e.target || e.srcElement, 'over');
+    DomUtil.addClass(e.target || e.srcElement, 'over');
     let locale = e.locale || M.options.locale;
     if (e.srcElement.innerText === locale.cmCopyCoords + ' (C)')
       this._showCopySubMenu(e);
   },
 
   _onItemMouseOut: function (e) {
-    L.DomUtil.removeClass(e.target || e.srcElement, 'over');
+    DomUtil.removeClass(e.target || e.srcElement, 'over');
     this._hideCopySubMenu(e);
   },
 

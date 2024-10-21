@@ -1,9 +1,24 @@
-import { Util } from '../utils/Util';
-import { featureLayer } from '../layers/FeatureLayer';
-import { FeatureRenderer } from '../features/featureRenderer';
+import {
+  TileLayer,
+  DomUtil,
+  extend,
+  bind,
+  setOptions,
+  SVG,
+  point,
+  Point,
+  Util as LeafletUtil,
+  Browser,
+  bounds,
+  GridLayer
+} from 'leaflet';
 
-export var TemplatedTileLayer = L.TileLayer.extend({
-  // a TemplateTileLayer is similar to a L.TileLayer except its templates are
+import { Util } from '../utils/Util.js';
+import { featureLayer } from '../layers/FeatureLayer.js';
+import { FeatureRenderer } from '../features/featureRenderer.js';
+
+export var TemplatedTileLayer = TileLayer.extend({
+  // a TemplateTileLayer is similar to a TileLayer except its templates are
   // defined by the <map-extent><template/></map-extent>
   // content found in the MapML document.  As such, the client map does not
   // 'revisit' the server for more MapML content, it simply fills the map extent
@@ -21,8 +36,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     this.zoomBounds = Object.assign({}, options.zoomBounds);
     // unpack object to this.options.minZ... etc where minZ... are the props
     // of the this.zoomBounds object:
-    L.extend(options, this.zoomBounds);
-    L.setOptions(this, options);
+    extend(options, this.zoomBounds);
+    setOptions(this, options);
     // _setup call here relies on this.options.minZ.. etc
     this._setUpTileTemplateVars(template);
     this._linkEl = options.linkEl;
@@ -35,28 +50,28 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     this._initContainer();
     // call the parent constructor with the template tref value, per the
     // Leaflet tutorial: http://leafletjs.com/examples/extending/extending-1-classes.html#methods-of-the-parent-class
-    L.TileLayer.prototype.initialize.call(
+    TileLayer.prototype.initialize.call(
       this,
       template.template,
-      L.extend(options, { pane: this.options.pane })
+      extend(options, { pane: this.options.pane })
     );
   },
   onAdd: function (map) {
     this.options.pane.appendChild(this._container);
-    L.TileLayer.prototype.onAdd.call(this, map);
+    TileLayer.prototype.onAdd.call(this, map);
     this._handleMoveEnd();
   },
 
   onRemove: function () {
-    L.DomUtil.remove(this._container);
+    DomUtil.remove(this._container);
     // should clean up the container
     for (let child of this._container.children) {
-      L.DomUtil.remove(child);
+      DomUtil.remove(child);
     }
   },
 
   getEvents: function () {
-    let events = L.TileLayer.prototype.getEvents.call(this, this._map);
+    let events = TileLayer.prototype.getEvents.call(this, this._map);
     this._parentOnMoveEnd = events.moveend;
     events.moveend = this._handleMoveEnd;
     return events;
@@ -82,12 +97,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       return;
     }
 
-    this._container = L.DomUtil.create(
-      'div',
-      'leaflet-layer',
-      this.options.pane
-    );
-    L.DomUtil.addClass(this._container, 'mapml-templated-tile-container');
+    this._container = DomUtil.create('div', 'leaflet-layer', this.options.pane);
+    DomUtil.addClass(this._container, 'mapml-templated-tile-container');
     this._updateZIndex();
   },
 
@@ -98,8 +109,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
   createTile: function (coords) {
     let tileGroup = document.createElement('DIV'),
       tileSize = this.getTileSize();
-    L.DomUtil.addClass(tileGroup, 'mapml-tile-group');
-    L.DomUtil.addClass(tileGroup, 'leaflet-tile');
+    DomUtil.addClass(tileGroup, 'mapml-tile-group');
+    DomUtil.addClass(tileGroup, 'leaflet-tile');
 
     this._template.linkEl.dispatchEvent(
       new CustomEvent('tileloadstart', {
@@ -115,7 +126,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     );
 
     if (this._template.type.startsWith('image/')) {
-      let tile = L.TileLayer.prototype.createTile.call(
+      let tile = TileLayer.prototype.createTile.call(
         this,
         coords,
         function () {}
@@ -127,13 +138,13 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       // tiles of type="text/mapml" will have to fetch content while creating
       // the tile here, unless there can be a callback associated to the element
       // that will render the content in the alread-placed tile
-      // var tile = L.DomUtil.create('canvas', 'leaflet-tile');
+      // var tile = DomUtil.create('canvas', 'leaflet-tile');
       this._fetchTile(coords, tileGroup);
     }
     return tileGroup;
   },
   _mapmlTileReady: function (tile) {
-    L.DomUtil.addClass(tile, 'leaflet-tile-loaded');
+    DomUtil.addClass(tile, 'leaflet-tile-loaded');
   },
   // instead of being child of a pane, the TemplatedTileLayers are 'owned' by the group,
   // and so are DOM children of the group, not the pane element (the MapMLLayer is
@@ -167,7 +178,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
           this._mapmlTileReady(tile);
         })
         .catch((err) => {
-          console.log('Error Creating Tile');
+          console.log('Error creating tile: ' + err);
         });
     }
   },
@@ -247,8 +258,8 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       this._parseStylesheetAsHTML(markup, base, tile);
     }
 
-    let svg = L.SVG.create('svg'),
-      g = L.SVG.create('g'),
+    let svg = SVG.create('svg'),
+      g = SVG.create('g'),
       tileSize = this._map.options.crs.options.crs.tile.bounds.max.x,
       xOffset = coords.x * tileSize,
       yOffset = coords.y * tileSize;
@@ -272,7 +283,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       for (let featureID in feature._layers) {
         let layer = feature._layers[featureID];
         FeatureRenderer.prototype._initPath(layer, false);
-        layer._project(this._map, L.point([xOffset, yOffset]), coords.z);
+        layer._project(this._map, point([xOffset, yOffset]), coords.z);
         FeatureRenderer.prototype._addPath(layer, g, false);
         FeatureRenderer.prototype._updateFeature(layer);
       }
@@ -335,10 +346,10 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       //obj[`-${this._template.tilematrix.row.name}`] = invertedY; //leaflet has this but I dont see a use in storing row and -row as it doesnt follow that pattern
     }
     obj.r =
-      this.options.detectRetina && L.Browser.retina && this.options.maxZoom > 0
+      this.options.detectRetina && Browser.retina && this.options.maxZoom > 0
         ? '@2x'
         : '';
-    return L.Util.template(this._url, obj);
+    return LeafletUtil.template(this._url, obj);
   },
   _tileMatrixToPCRSPosition: function (coords, pos) {
     // this is a tile:
@@ -378,25 +389,25 @@ export var TemplatedTileLayer = L.TileLayer.extend({
         result = nw;
         break;
       case 'bottom-left':
-        result = new L.Point(nw.x, se.y);
+        result = new Point(nw.x, se.y);
         break;
       case 'center-left':
-        result = new L.Point(nw.x, cen.y);
+        result = new Point(nw.x, cen.y);
         break;
       case 'top-right':
-        result = new L.Point(se.x, nw.y);
+        result = new Point(se.x, nw.y);
         break;
       case 'bottom-right':
         result = se;
         break;
       case 'center-right':
-        result = new L.Point(se.x, cen.y);
+        result = new Point(se.x, cen.y);
         break;
       case 'top-center':
-        result = new L.Point(cen.x, nw.y);
+        result = new Point(cen.x, nw.y);
         break;
       case 'bottom-center':
-        result = new L.Point(cen.x, se.y);
+        result = new Point(cen.x, se.y);
         break;
       case 'center':
         result = cen;
@@ -524,7 +535,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     }
     var transformation = this.options.crs.transformation,
       tileSize = this.options.crs.options.crs.tile.bounds.max.x,
-      scale = L.bind(this.options.crs.scale, this.options.crs),
+      scale = bind(this.options.crs.scale, this.options.crs),
       tilematrix2pcrs = function (c, zoom) {
         return transformation.untransform(c.multiplyBy(tileSize), scale(zoom));
       },
@@ -536,7 +547,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       };
     if (east && north) {
       template.pcrs = {};
-      template.pcrs.bounds = L.bounds(
+      template.pcrs.bounds = bounds(
         [east.min, north.min],
         [east.max, north.max]
       );
@@ -554,7 +565,7 @@ export var TemplatedTileLayer = L.TileLayer.extend({
       }
 
       template.pcrs.bounds = Util.boundsToPCRSBounds(
-        L.bounds(L.point([col.min, row.min]), L.point([col.max, row.max])),
+        bounds(point([col.min, row.min]), point([col.max, row.max])),
         template.zoom.initialValue,
         this.options.crs,
         Util.axisToCS('column')
@@ -581,15 +592,15 @@ export var TemplatedTileLayer = L.TileLayer.extend({
     for (var z = 0; z <= zmax; z++) {
       template.tilematrix.bounds[z] =
         z >= zmin
-          ? L.bounds(
+          ? bounds(
               pcrs2tilematrix(pcrsBounds.min, z),
               pcrs2tilematrix(pcrsBounds.max, z)
             )
-          : L.bounds(L.point([-1, -1]), L.point([-1, -1]));
+          : bounds(point([-1, -1]), point([-1, -1]));
     }
   },
   _clampZoom: function (zoom) {
-    let clamp = L.GridLayer.prototype._clampZoom.call(this, zoom);
+    let clamp = GridLayer.prototype._clampZoom.call(this, zoom);
     if (this._template.step > this.options.maxNativeZoom)
       this._template.step = this.options.maxNativeZoom;
 

@@ -189,6 +189,7 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
       'body > mapml-viewer',
       (map) => map.layers.length
     );
+    await page.waitForTimeout(1000);
     expect(layerCount).toEqual(3);
   });
 

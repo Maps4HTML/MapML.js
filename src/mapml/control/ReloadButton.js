@@ -1,4 +1,6 @@
-export var ReloadButton = L.Control.extend({
+import { Control, DomUtil, DomEvent } from 'leaflet';
+
+export var ReloadButton = Control.extend({
   options: {
     position: 'topleft'
   },
@@ -9,18 +11,18 @@ export var ReloadButton = L.Control.extend({
   },
   onAdd: function (map) {
     let locale = this._getLocale(map);
-    let container = L.DomUtil.create('div', 'mapml-reload-button leaflet-bar');
+    let container = DomUtil.create('div', 'mapml-reload-button leaflet-bar');
 
-    let link = L.DomUtil.create('button', 'mapml-reload-button', container);
+    let link = DomUtil.create('button', 'mapml-reload-button', container);
     link.innerHTML = "<span aria-hidden='true'>&#x021BA</span>";
     link.title = locale.cmReload;
     link.setAttribute('type', 'button');
     link.classList.add('mapml-button');
     link.setAttribute('aria-label', 'Reload');
 
-    L.DomEvent.disableClickPropagation(link);
-    L.DomEvent.on(link, 'click', L.DomEvent.stop);
-    L.DomEvent.on(link, 'click', this._goReload, this);
+    DomEvent.disableClickPropagation(link);
+    DomEvent.on(link, 'click', DomEvent.stop);
+    DomEvent.on(link, 'click', this._goReload, this);
 
     this._reloadButton = link;
 
@@ -54,14 +56,14 @@ export var ReloadButton = L.Control.extend({
 
   _updateDisabled: function () {
     setTimeout(() => {
-      L.DomUtil.removeClass(this._reloadButton, 'leaflet-disabled');
+      DomUtil.removeClass(this._reloadButton, 'leaflet-disabled');
       this._reloadButton.setAttribute('aria-disabled', 'false');
 
       if (
         this._map &&
         (this._disabled || this._map.options.mapEl._history.length <= 1)
       ) {
-        L.DomUtil.addClass(this._reloadButton, 'leaflet-disabled');
+        DomUtil.addClass(this._reloadButton, 'leaflet-disabled');
         this._reloadButton.setAttribute('aria-disabled', 'true');
       }
     }, 0);

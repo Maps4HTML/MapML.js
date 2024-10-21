@@ -1,14 +1,22 @@
-export var DebugOverlay = L.Layer.extend({
+import {
+  Layer,
+  DomUtil,
+  GridLayer,
+  LayerGroup,
+  Path,
+  point,
+  circle,
+  bounds,
+  setOptions
+} from 'leaflet';
+
+export var DebugOverlay = Layer.extend({
   onAdd: function (map) {
     let mapSize = map.getSize();
 
     //conditionally show container for debug panel/banner only when the map has enough space for it
     if (mapSize.x > 400 || mapSize.y > 300) {
-      this._container = L.DomUtil.create(
-        'table',
-        'mapml-debug',
-        map._container
-      );
+      this._container = DomUtil.create('table', 'mapml-debug', map._container);
 
       this._panel = debugPanel({
         className: 'mapml-debug-panel',
@@ -39,7 +47,7 @@ export var DebugOverlay = L.Layer.extend({
     if (this._panel) {
       //conditionally remove the panel, as it's not always added
       map.removeLayer(this._panel);
-      L.DomUtil.remove(this._container);
+      DomUtil.remove(this._container);
     }
   }
 });
@@ -48,13 +56,13 @@ export var debugOverlay = function () {
   return new DebugOverlay();
 };
 
-export var DebugPanel = L.Layer.extend({
+export var DebugPanel = Layer.extend({
   initialize: function (options) {
-    L.setOptions(this, options);
+    setOptions(this, options);
   },
 
   onAdd: function (map) {
-    this._title = L.DomUtil.create(
+    this._title = DomUtil.create(
       'caption',
       'mapml-debug-banner',
       this.options.pane
@@ -62,7 +70,7 @@ export var DebugPanel = L.Layer.extend({
     this._title.innerHTML = 'Debug mode';
 
     map.debug = {};
-    map.debug._infoContainer = this._debugContainer = L.DomUtil.create(
+    map.debug._infoContainer = this._debugContainer = DomUtil.create(
       'tbody',
       'mapml-debug-panel',
       this.options.pane
@@ -70,32 +78,32 @@ export var DebugPanel = L.Layer.extend({
 
     let infoContainer = map.debug._infoContainer;
 
-    map.debug._tileCoord = L.DomUtil.create(
+    map.debug._tileCoord = DomUtil.create(
       'tr',
       'mapml-debug-coordinates',
       infoContainer
     );
-    map.debug._tileMatrixCoord = L.DomUtil.create(
+    map.debug._tileMatrixCoord = DomUtil.create(
       'tr',
       'mapml-debug-coordinates',
       infoContainer
     );
-    map.debug._mapCoord = L.DomUtil.create(
+    map.debug._mapCoord = DomUtil.create(
       'tr',
       'mapml-debug-coordinates',
       infoContainer
     );
-    map.debug._tcrsCoord = L.DomUtil.create(
+    map.debug._tcrsCoord = DomUtil.create(
       'tr',
       'mapml-debug-coordinates',
       infoContainer
     );
-    map.debug._pcrsCoord = L.DomUtil.create(
+    map.debug._pcrsCoord = DomUtil.create(
       'tr',
       'mapml-debug-coordinates',
       infoContainer
     );
-    map.debug._gcrsCoord = L.DomUtil.create(
+    map.debug._gcrsCoord = DomUtil.create(
       'tr',
       'mapml-debug-coordinates',
       infoContainer
@@ -104,21 +112,24 @@ export var DebugPanel = L.Layer.extend({
     this._map.on('mousemove', this._updateCoords);
   },
   onRemove: function () {
-    L.DomUtil.remove(this._title);
+    DomUtil.remove(this._title);
     if (this._debugContainer) {
-      L.DomUtil.remove(this._debugContainer);
+      DomUtil.remove(this._debugContainer);
       this._map.off('mousemove', this._updateCoords);
     }
   },
   _updateCoords: function (e) {
     if (this.contextMenu._visible) return;
     let mapEl = this.options.mapEl,
-      point = mapEl._map.project(e.latlng),
+      pointCoords = mapEl._map.project(e.latlng),
       scale = mapEl._map.options.crs.scale(+mapEl.zoom),
-      pcrs = mapEl._map.options.crs.transformation.untransform(point, scale),
+      pcrs = mapEl._map.options.crs.transformation.untransform(
+        pointCoords,
+        scale
+      ),
       tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.x,
-      pointI = point.x % tileSize,
-      pointJ = point.y % tileSize;
+      pointI = pointCoords.x % tileSize,
+      pointJ = pointCoords.y % tileSize;
 
     if (pointI < 0) pointI += tileSize;
     if (pointJ < 0) pointJ += tileSize;
@@ -140,13 +151,13 @@ export var DebugPanel = L.Layer.extend({
       `;
     this.debug._tcrsCoord.innerHTML = `
       <th scope="row">tcrs: </th>
-      <td>x: ${Math.trunc(point.x)}, </td>
-      <td>y: ${Math.trunc(point.y)}</td>
+      <td>x: ${Math.trunc(pointCoords.x)}, </td>
+      <td>y: ${Math.trunc(pointCoords.y)}</td>
       `;
     this.debug._tileMatrixCoord.innerHTML = `
       <th scope="row">tilematrix: </th>
-      <td>column: ${Math.trunc(point.x / tileSize)}, </td>
-      <td>row: ${Math.trunc(point.y / tileSize)}</td>
+      <td>column: ${Math.trunc(pointCoords.x / tileSize)}, </td>
+      <td>row: ${Math.trunc(pointCoords.y / tileSize)}</td>
       `;
     this.debug._pcrsCoord.innerHTML = `
       <th scope="row">pcrs: </th>
@@ -160,14 +171,14 @@ export var debugPanel = function (options) {
   return new DebugPanel(options);
 };
 
-export var DebugGrid = L.GridLayer.extend({
+export var DebugGrid = GridLayer.extend({
   initialize: function (options) {
-    L.setOptions(this, options);
-    L.GridLayer.prototype.initialize.call(this, this._map);
+    setOptions(this, options);
+    GridLayer.prototype.initialize.call(this, this._map);
   },
 
   createTile: function (coords) {
-    let tile = L.DomUtil.create('div', 'mapml-debug-tile');
+    let tile = DomUtil.create('div', 'mapml-debug-tile');
     tile.setAttribute('col', coords.x);
     tile.setAttribute('row', coords.y);
     tile.setAttribute('zoom', coords.z);
@@ -186,19 +197,19 @@ export var debugGrid = function (options) {
   return new DebugGrid(options);
 };
 
-export var DebugVectors = L.LayerGroup.extend({
+export var DebugVectors = LayerGroup.extend({
   initialize: function (options) {
-    L.setOptions(this, options);
-    L.LayerGroup.prototype.initialize.call(this, this._map, options);
+    setOptions(this, options);
+    LayerGroup.prototype.initialize.call(this, this._map, options);
   },
   onAdd: function (map) {
     map.on('overlayremove', this._mapLayerUpdate, this);
     map.on('overlayadd', this._mapLayerUpdate, this);
     let center = map.options.crs.transformation.transform(
-      L.point(0, 0),
+      point(0, 0),
       map.options.crs.scale(0)
     );
-    this._centerVector = L.circle(map.options.crs.pointToLatLng(center, 0), {
+    this._centerVector = circle(map.options.crs.pointToLatLng(center, 0), {
       radius: 250,
       className: 'mapml-debug-vectors projection-centre'
     });
@@ -226,22 +237,16 @@ export var DebugVectors = L.LayerGroup.extend({
           if (layers[i].layerBounds) {
             boundsArray = [
               layers[i].layerBounds.min,
-              L.point(layers[i].layerBounds.max.x, layers[i].layerBounds.min.y),
+              point(layers[i].layerBounds.max.x, layers[i].layerBounds.min.y),
               layers[i].layerBounds.max,
-              L.point(layers[i].layerBounds.min.x, layers[i].layerBounds.max.y)
+              point(layers[i].layerBounds.min.x, layers[i].layerBounds.max.y)
             ];
           } else {
             boundsArray = [
               layers[i].extentBounds.min,
-              L.point(
-                layers[i].extentBounds.max.x,
-                layers[i].extentBounds.min.y
-              ),
+              point(layers[i].extentBounds.max.x, layers[i].extentBounds.min.y),
               layers[i].extentBounds.max,
-              L.point(
-                layers[i].extentBounds.min.x,
-                layers[i].extentBounds.max.y
-              )
+              point(layers[i].extentBounds.min.x, layers[i].extentBounds.max.y)
             ];
           }
 
@@ -282,9 +287,9 @@ export var DebugVectors = L.LayerGroup.extend({
       if (map.totalLayerBounds) {
         let totalBoundsArray = [
           map.totalLayerBounds.min,
-          L.point(map.totalLayerBounds.max.x, map.totalLayerBounds.min.y),
+          point(map.totalLayerBounds.max.x, map.totalLayerBounds.min.y),
           map.totalLayerBounds.max,
-          L.point(map.totalLayerBounds.min.x, map.totalLayerBounds.max.y)
+          point(map.totalLayerBounds.min.x, map.totalLayerBounds.max.y)
         ];
 
         let totalBounds = projectedExtent(totalBoundsArray, {
@@ -309,10 +314,10 @@ export var debugVectors = function (options) {
   return new DebugVectors(options);
 };
 
-var ProjectedExtent = L.Path.extend({
+var ProjectedExtent = Path.extend({
   getCenter: function (round) {
     let crs = this._map.options.crs;
-    return crs.unproject(L.bounds(this._locations).getCenter());
+    return crs.unproject(bounds(this._locations).getCenter());
   },
 
   options: {
@@ -321,7 +326,7 @@ var ProjectedExtent = L.Path.extend({
   initialize: function (locations, options) {
     //locations passed in as pcrs coordinates
     this._locations = locations;
-    L.setOptions(this, options);
+    setOptions(this, options);
   },
 
   _project: function () {
@@ -329,14 +334,12 @@ var ProjectedExtent = L.Path.extend({
     let scale = this._map.options.crs.scale(this._map.getZoom()),
       map = this._map;
     for (let i = 0; i < this._locations.length; i++) {
-      let point = map.options.crs.transformation.transform(
+      let pt0 = map.options.crs.transformation.transform(
         this._locations[i],
         scale
       );
       //substract the pixel origin from the pixel coordinates to get the location relative to map viewport
-      this._rings.push(
-        L.point(point.x, point.y)._subtract(map.getPixelOrigin())
-      );
+      this._rings.push(point(pt0.x, pt0.y)._subtract(map.getPixelOrigin()));
     }
     //leaflet SVG renderer looks for and array of arrays to build polygons,
     //in this case it only deals with a rectangle so one closed array or points

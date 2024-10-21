@@ -1,6 +1,8 @@
-import { Util } from './mapml/utils/Util';
-import { extentLayer } from './mapml/layers/ExtentLayer';
-import { createLayerControlExtentHTML } from './mapml/elementSupport/extents/createLayerControlForExtent';
+import { bounds as Lbounds, point as Lpoint } from 'leaflet';
+
+import { Util } from './mapml/utils/Util.js';
+import { extentLayer } from './mapml/layers/ExtentLayer.js';
+import { createLayerControlExtentHTML } from './mapml/elementSupport/extents/createLayerControlForExtent.js';
 
 /* global M */
 export class HTMLExtentElement extends HTMLElement {
@@ -121,7 +123,7 @@ export class HTMLExtentElement extends HTMLElement {
       xmax = extent.bottomRight.pcrs.horizontal,
       ymin = extent.bottomRight.pcrs.vertical,
       ymax = extent.topLeft.pcrs.vertical,
-      bounds = L.bounds(L.point(xmin, ymin), L.point(xmax, ymax)),
+      bounds = Lbounds(Lpoint(xmin, ymin), Lpoint(xmax, ymax)),
       center = map.options.crs.unproject(bounds.getCenter(true)),
       maxZoom = extent.zoom.maxZoom,
       minZoom = extent.zoom.minZoom;
@@ -544,7 +546,7 @@ export class HTMLExtentElement extends HTMLElement {
         zoomBounds.maxNativeZoom = maxNativeZoom;
       }
       if (!bounds) {
-        bounds = L.bounds(templateBounds.min, templateBounds.max);
+        bounds = Lbounds(templateBounds.min, templateBounds.max);
       } else {
         bounds.extend(templateBounds);
       }
@@ -552,7 +554,7 @@ export class HTMLExtentElement extends HTMLElement {
     if (bounds) {
       this._extentLayer.bounds = bounds;
     } else {
-      this._extentLayer.bounds = L.bounds(
+      this._extentLayer.bounds = Lbounds(
         M[this.units].options.bounds.min,
         M[this.units].options.bounds.max
       );

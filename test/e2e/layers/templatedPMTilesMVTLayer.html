@@ -28,7 +28,7 @@
         <map-link rel="tile" type="application/vnd.mapbox-vector-tile" tref="tiles/osmtile/{beans}/{foo}/{bar}.mvt?theme=light"></map-link>
       </map-extent>
     </map-layer>
-    <map-layer data-testid="hard-coded-variables">
+    <map-layer data-testid="hard-coded-variables"><!-- not expected to work / causes exceptions -->
       <map-title>{z}/{x}/{y}.mvt hardcoding test</map-title>
       <map-link rel="stylesheet" type="application/pmtiles+stylesheet" href="pmtilesRulesModule.js"></map-link>
       <map-extent units="OSMTILE" checked="checked">

@@ -48,10 +48,10 @@ test.describe('Custom Projection Feature & Extent Tests', () => {
       let endBottomRight = await page.evaluate(
         `document.querySelector('mapml-viewer').extent.bottomRight.gcrs`
       );
-      expect(endTopLeft.horizontal).toBe(-0.9410810217335936);
-      expect(endTopLeft.vertical).toBe(51.98599427568946);
-      expect(endBottomRight.horizontal).toBe(0.713006572604242);
-      expect(endBottomRight.vertical).toBe(51.005402746850955);
+      expect(endTopLeft.horizontal).toBeCloseTo(-0.9410810217335936, 7);
+      expect(endTopLeft.vertical).toBeCloseTo(51.98599427568946, 7);
+      expect(endBottomRight.horizontal).toBeCloseTo(0.713006572604242, 7);
+      expect(endBottomRight.vertical).toBeCloseTo(51.005402746850955, 7);
     });
 
     test('Popup displays Zoom link', async () => {

@@ -1,8 +1,12 @@
-import { Util } from '../utils/Util';
-import * as protomapsL from '../../../node_modules/protomaps-leaflet/dist/esm/index.js';
-/* global L */
+import { Layer, GridLayer, DomUtil, extend, setOptions } from 'leaflet';
+// window.L as defined below is required for protomaps-leaflet <= 4.0.1
+const Leaflet = { GridLayer, DomUtil };
+window.L = Leaflet;
 
-export var TemplatedPMTilesLayer = L.Layer.extend({
+import { Util } from '../utils/Util.js';
+import * as protomapsL from 'protomaps-leaflet';
+
+export var TemplatedPMTilesLayer = Layer.extend({
   initialize: function (template, options) {
     /* structure of this._template:
       {
@@ -19,7 +23,7 @@ export var TemplatedPMTilesLayer = L.Layer.extend({
       }
     */
     this._template = template;
-    this._container = L.DomUtil.create(
+    this._container = DomUtil.create(
       'div',
       'leaflet-layer mapml-pmtiles-container'
     );
@@ -32,14 +36,14 @@ export var TemplatedPMTilesLayer = L.Layer.extend({
 
     let paintRules = options?.pmtilesRules?.get(this._template.template);
     if (paintRules?.rules) {
-      L.extend(this._pmtilesOptions, {
+      extend(this._pmtilesOptions, {
         paintRules: paintRules.rules.PAINT_RULES
       });
-      L.extend(this._pmtilesOptions, {
+      extend(this._pmtilesOptions, {
         labelRules: paintRules.rules.LABEL_RULES
       });
     } else if (paintRules?.theme?.theme) {
-      L.extend(this._pmtilesOptions, { theme: paintRules.theme.theme });
+      extend(this._pmtilesOptions, { theme: paintRules.theme.theme });
     } else {
       console.warn(
         'pmtiles symbolizer rules or theme not found for map-link@tref ->  ' +
@@ -52,7 +56,7 @@ export var TemplatedPMTilesLayer = L.Layer.extend({
     delete options.zoomBounds;
     delete options.extentBounds;
     this._linkEl = options.linkEl;
-    L.setOptions(this, options);
+    setOptions(this, options);
   },
   /**
    *
@@ -93,7 +97,7 @@ export var TemplatedPMTilesLayer = L.Layer.extend({
   },
   onRemove: function (map) {
     this._pmtilesLayer.remove();
-    L.DomUtil.remove(this._container);
+    DomUtil.remove(this._container);
   },
   isVisible: function () {
     if (this._template.projection !== 'OSMTILE') return false;

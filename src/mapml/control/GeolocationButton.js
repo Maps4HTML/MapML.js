@@ -1,4 +1,7 @@
-export var GeolocationButton = L.Control.extend({
+import { Control } from 'leaflet';
+import { LocateControl } from 'leaflet.locatecontrol';
+
+export var GeolocationButton = Control.extend({
   options: {
     position: 'bottomright'
   },
@@ -10,18 +13,19 @@ export var GeolocationButton = L.Control.extend({
   onAdd: function (map) {
     // customize locate control to focus map after start/stop, so that
     // featureIndexOverlay is correctly displayed
-    L.Control.CustomLocate = L.Control.Locate.extend({
+    Control.CustomLocate = LocateControl.extend({
       start: function () {
-        L.Control.Locate.prototype.start.call(this);
+        LocateControl.prototype.start.call(this);
         map.getContainer().focus();
       },
       stop: function () {
-        L.Control.Locate.prototype.stop.call(this);
+        LocateControl.prototype.stop.call(this);
         map.getContainer().focus();
       }
     });
     let locale = this._getLocale(map);
-    this.locateControl = new L.Control.CustomLocate({
+
+    this.locateControl = new Control.CustomLocate({
       showPopup: false,
       strings: {
         title: locale.btnLocTrackOff

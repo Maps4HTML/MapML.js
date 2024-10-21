@@ -1,21 +1,27 @@
-import { Util } from '../utils/Util';
-import { ImageLayer, imageLayer } from './ImageLayer';
+import {
+  Layer,
+  DomUtil,
+  extend,
+  setOptions,
+  point,
+  Util as LeafletUtil
+} from 'leaflet';
 
-export var TemplatedImageLayer = L.Layer.extend({
+import { Util } from '../utils/Util.js';
+import { ImageLayer, imageLayer } from './ImageLayer.js';
+
+export var TemplatedImageLayer = Layer.extend({
   initialize: function (template, options) {
     this._template = template;
-    this._container = L.DomUtil.create('div', 'leaflet-layer');
-    L.DomUtil.addClass(this._container, 'mapml-image-container');
+    this._container = DomUtil.create('div', 'leaflet-layer');
+    DomUtil.addClass(this._container, 'mapml-image-container');
     this._linkEl = options.linkEl;
     this.zoomBounds = options.zoomBounds;
     this.extentBounds = options.extentBounds;
     // get rid of unused duplicate information that can be confusing
     delete options.zoomBounds;
     delete options.extentBounds;
-    L.setOptions(
-      this,
-      L.extend(options, this._setUpExtentTemplateVars(template))
-    );
+    setOptions(this, extend(options, this._setUpExtentTemplateVars(template)));
   },
   getEvents: function () {
     var events = {
@@ -82,7 +88,7 @@ export var TemplatedImageLayer = L.Layer.extend({
         .multiplyBy(scale)
         .subtract(obj._map._getNewPixelOrigin(obj._map.getCenter(), zoom))
         .round();
-      L.DomUtil.setTransform(obj._imageOverlay._image, translate, scale);
+      DomUtil.setTransform(obj._imageOverlay._image, translate, scale);
     });
   },
 
@@ -121,14 +127,14 @@ export var TemplatedImageLayer = L.Layer.extend({
       (mapZoom + 1) % step === 0 &&
       current.zoom === previous.zoom - 1
     ) {
-      this._addImage(bounds, steppedZoom, L.point(0, 0));
+      this._addImage(bounds, steppedZoom, point(0, 0));
       this._scaleImage(bounds, mapZoom);
       //Zooming or panning within a step increment
     } else if (e && mapZoom % step !== 0) {
       this._imageOverlay._overlayToRemove = this._imageOverlay._url;
       if (current.zoom !== previous.zoom) {
         //Zoomed from within one step increment into another
-        this._addImage(bounds, steppedZoom, L.point(0, 0));
+        this._addImage(bounds, steppedZoom, point(0, 0));
         this._pixelOrigins[steppedZoom] = bounds.min;
         this._scaleImage(bounds, mapZoom);
       } else {
@@ -169,7 +175,7 @@ export var TemplatedImageLayer = L.Layer.extend({
     }
   },
   onRemove: function (map) {
-    L.DomUtil.remove(this._container);
+    DomUtil.remove(this._container);
     this._clearLayer();
   },
   getImageUrl: function (pixelBounds, zoom) {
@@ -188,7 +194,7 @@ export var TemplatedImageLayer = L.Layer.extend({
         obj[v] = this.options.extent[v];
       }
     }
-    return L.Util.template(this._template.template, obj);
+    return LeafletUtil.template(this._template.template, obj);
   },
   _TCRSToPCRS: function (coords, zoom) {
     // TCRS pixel point to Projected CRS point (in meters, presumably)

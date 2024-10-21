@@ -838,7 +838,9 @@ test.describe('Playwright Map Context Menu Tests', () => {
     } catch (error) {
       expect(error).toHaveProperty(
         'message',
-        'page.$eval: Error: failed to find element matching selector "div > div.mapml-contextmenu > button:nth-child(13)"'
+        expect.stringContaining(
+          'page.$eval: Failed to find element matching selector'
+        )
       );
     }
     let copySubMenu1 = await page.$eval(

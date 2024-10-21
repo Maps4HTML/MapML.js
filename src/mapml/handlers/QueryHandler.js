@@ -1,18 +1,26 @@
-import { featureLayer } from '../layers/FeatureLayer';
-import { featureRenderer } from '../features/featureRenderer';
+import {
+  Handler,
+  DomEvent,
+  DomUtil,
+  setOptions,
+  Bounds,
+  Util as LeafletUtil
+} from 'leaflet';
+import { featureLayer } from '../layers/FeatureLayer.js';
+import { featureRenderer } from '../features/featureRenderer.js';
 
-export var QueryHandler = L.Handler.extend({
+export var QueryHandler = Handler.extend({
   addHooks: function () {
     // get a reference to the actual <map> element, so we can
     // use its layers property to iterate the layers from top down
     // evaluating if they are 'on the map' (enabled)
-    L.setOptions(this, { mapEl: this._map.options.mapEl });
-    L.DomEvent.on(this._map, 'click', this._queryTopLayer, this);
-    L.DomEvent.on(this._map, 'keypress', this._queryTopLayerAtMapCenter, this);
+    setOptions(this, { mapEl: this._map.options.mapEl });
+    DomEvent.on(this._map, 'click', this._queryTopLayer, this);
+    DomEvent.on(this._map, 'keypress', this._queryTopLayerAtMapCenter, this);
   },
   removeHooks: function () {
-    L.DomEvent.off(this._map, 'click', this._queryTopLayer, this);
-    L.DomEvent.on(this._map, 'keypress', this._queryTopLayerAtMapCenter, this);
+    DomEvent.off(this._map, 'click', this._queryTopLayer, this);
+    DomEvent.on(this._map, 'keypress', this._queryTopLayerAtMapCenter, this);
   },
   _getTopQueryableLayer: function () {
     var layers = this.options.mapEl.layers;
@@ -71,7 +79,7 @@ export var QueryHandler = L.Handler.extend({
       };
     var tcrsClickLoc = crs.latLngToPoint(e.latlng, zoom),
       tileMatrixClickLoc = tcrsClickLoc.divideBy(tileSize).floor(),
-      tileBounds = new L.Bounds(
+      tileBounds = new Bounds(
         tcrsClickLoc.divideBy(tileSize).floor().multiplyBy(tileSize),
         tcrsClickLoc.divideBy(tileSize).ceil().multiplyBy(tileSize)
       );
@@ -88,7 +96,7 @@ export var QueryHandler = L.Handler.extend({
 
     var fetchFeatures = function (template, obj) {
       const parser = new DOMParser();
-      return fetch(L.Util.template(template.template, obj), {
+      return fetch(LeafletUtil.template(template.template, obj), {
         redirect: 'follow'
       })
         .then((response) => {
@@ -258,7 +266,7 @@ export var QueryHandler = L.Handler.extend({
       obj[template.query.tiletop] = tcrs2pcrs(tileBounds.min).y;
       obj[template.query.tileright] = tcrs2pcrs(tileBounds.max).x;
       // add hidden or other variables that may be present into the values to
-      // be processed by L.Util.template below.
+      // be processed by Util.template below.
       for (var v in template.query) {
         if (
           [
@@ -334,8 +342,8 @@ export var QueryHandler = L.Handler.extend({
 
       f.addTo(layer);
 
-      let div = L.DomUtil.create('div', 'mapml-popup-content'),
-        c = L.DomUtil.create('iframe');
+      let div = DomUtil.create('div', 'mapml-popup-content'),
+        c = DomUtil.create('iframe');
       c.style = 'border: none';
       c.srcdoc = features[0].querySelector(
         'map-feature map-properties'

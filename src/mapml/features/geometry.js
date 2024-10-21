@@ -1,6 +1,8 @@
-import { Path, path } from './path';
+import { FeatureGroup, LayerGroup, DomUtil, DomEvent, bounds } from 'leaflet';
 
-export var Geometry = L.FeatureGroup.extend({
+import { Path, path } from './path.js';
+
+export var Geometry = FeatureGroup.extend({
   /**
    * Initialize the feature group
    * @param {M.Path[]} layers
@@ -13,7 +15,7 @@ export var Geometry = L.FeatureGroup.extend({
         options
       );
 
-    L.LayerGroup.prototype.initialize.call(this, layers, options);
+    LayerGroup.prototype.initialize.call(this, layers, options);
     this._featureEl = this.options.mapmlFeature;
 
     this.layerBounds = options.layerBounds;
@@ -26,7 +28,7 @@ export var Geometry = L.FeatureGroup.extend({
       (this.options.onEachFeature && this.options.properties) ||
       this.options.link
     ) {
-      L.DomUtil.addClass(this.options.group, 'leaflet-interactive');
+      DomUtil.addClass(this.options.group, 'leaflet-interactive');
       if (this.options.link) {
         Path.prototype.attachLinkHandler.call(
           this,
@@ -43,7 +45,7 @@ export var Geometry = L.FeatureGroup.extend({
       }
     }
 
-    L.DomEvent.on(this.options.group, 'keyup keydown', this._handleFocus, this);
+    DomEvent.on(this.options.group, 'keyup keydown', this._handleFocus, this);
     this.options.group.setAttribute('aria-label', this.options.accessibleTitle);
     if (this.options.featureID)
       this.options.group.setAttribute('data-fid', this.options.featureID);
@@ -53,7 +55,7 @@ export var Geometry = L.FeatureGroup.extend({
   },
 
   onAdd: function (map) {
-    L.LayerGroup.prototype.onAdd.call(this, map);
+    LayerGroup.prototype.onAdd.call(this, map);
     this.updateInteraction();
   },
 
@@ -104,7 +106,7 @@ export var Geometry = L.FeatureGroup.extend({
 
   /**
    * Handler for focus events
-   * @param {L.DOMEvent} e - Event that occurred
+   * @param {DOMEvent} e - Event that occurred
    * @private
    */
   _handleFocus: function (e) {
@@ -117,7 +119,7 @@ export var Geometry = L.FeatureGroup.extend({
       // Down/right arrow keys replicate tabbing through the feature index
       // Up/left arrow keys replicate shift-tabbing through the feature index
       if (e.keyCode === 37 || e.keyCode === 38) {
-        L.DomEvent.stop(e);
+        DomEvent.stop(e);
         this._map.featureIndex.inBoundFeatures[index].path.setAttribute(
           'tabindex',
           -1
@@ -133,7 +135,7 @@ export var Geometry = L.FeatureGroup.extend({
           this._map.featureIndex.currentIndex--;
         }
       } else if (e.keyCode === 39 || e.keyCode === 40) {
-        L.DomEvent.stop(e);
+        DomEvent.stop(e);
         this._map.featureIndex.inBoundFeatures[index].path.setAttribute(
           'tabindex',
           -1
@@ -184,7 +186,7 @@ export var Geometry = L.FeatureGroup.extend({
     } else if (e.keyCode === 13 || e.keyCode === 32) {
       this.closeTooltip();
       if (!this.options.link && this.options.onEachFeature) {
-        L.DomEvent.stop(e);
+        DomEvent.stop(e);
         this.openPopup();
       }
     } else {
@@ -200,7 +202,7 @@ export var Geometry = L.FeatureGroup.extend({
     if (!layer.options.link && layer.options.interactive) {
       this.options.onEachFeature(this.options.properties, layer);
     }
-    L.FeatureGroup.prototype.addLayer.call(this, layer);
+    FeatureGroup.prototype.addLayer.call(this, layer);
   },
 
   /**
@@ -209,7 +211,7 @@ export var Geometry = L.FeatureGroup.extend({
    * @private
    */
   _previousFeature: function (e) {
-    L.DomEvent.stop(e);
+    DomEvent.stop(e);
     this._map.featureIndex.currentIndex = Math.max(
       this._map.featureIndex.currentIndex - 1,
       0
@@ -228,7 +230,7 @@ export var Geometry = L.FeatureGroup.extend({
    * @private
    */
   _nextFeature: function (e) {
-    L.DomEvent.stop(e);
+    DomEvent.stop(e);
     this._map.featureIndex.currentIndex = Math.min(
       this._map.featureIndex.currentIndex + 1,
       this._map.featureIndex.inBoundFeatures.length - 1
@@ -242,16 +244,16 @@ export var Geometry = L.FeatureGroup.extend({
   },
 
   getPCRSCenter: function () {
-    let bounds;
+    let bnds;
     for (let l in this._layers) {
       let layer = this._layers[l];
-      if (!bounds) {
-        bounds = L.bounds(layer.getPCRSCenter(), layer.getPCRSCenter());
+      if (!bnds) {
+        bnds = bounds(layer.getPCRSCenter(), layer.getPCRSCenter());
       } else {
-        bounds.extend(layer.getPCRSCenter());
+        bnds.extend(layer.getPCRSCenter());
       }
     }
-    return bounds.getCenter();
+    return bnds.getCenter();
   }
 });
 

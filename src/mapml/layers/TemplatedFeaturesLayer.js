@@ -1,22 +1,30 @@
-import { Util } from '../utils/Util';
-import { featureLayer } from '../layers/FeatureLayer';
-import { featureRenderer } from '../features/featureRenderer';
+import {
+  Layer,
+  DomUtil,
+  extend,
+  setOptions,
+  Util as LeafletUtil
+} from 'leaflet';
 
-export var TemplatedFeaturesLayer = L.Layer.extend({
+import { Util } from '../utils/Util.js';
+import { featureLayer } from '../layers/FeatureLayer.js';
+import { featureRenderer } from '../features/featureRenderer.js';
+
+export var TemplatedFeaturesLayer = Layer.extend({
   // this and M.ImageLayer could be merged or inherit from a common parent
   initialize: function (template, options) {
     this._template = template;
-    this._container = L.DomUtil.create('div', 'leaflet-layer');
-    L.DomUtil.addClass(this._container, 'mapml-features-container');
+    this._container = DomUtil.create('div', 'leaflet-layer');
+    DomUtil.addClass(this._container, 'mapml-features-container');
     this.zoomBounds = options.zoomBounds;
     this.extentBounds = options.extentBounds;
     // get rid of duplicate info, it can be confusing
     delete options.zoomBounds;
     delete options.extentBounds;
     this._linkEl = options.linkEl;
-    L.setOptions(
+    setOptions(
       this,
-      L.extend(options, this._setUpFeaturesTemplateVars(template))
+      extend(options, this._setUpFeaturesTemplateVars(template))
     );
   },
 
@@ -69,7 +77,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
           geometry.bindPopup(c, { autoClose: false, minWidth: 108 });
         }
       });
-      L.extend(this._features.options, { _leafletLayer: this._features });
+      extend(this._features.options, { _leafletLayer: this._features });
       this._features._layerEl = this._linkEl.getLayerEl();
     } else {
       this._features.eachLayer((layer) => layer.addTo(map));
@@ -78,7 +86,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
   },
   onRemove: function () {
     if (this._features) this._features.eachLayer((layer) => layer.remove());
-    L.DomUtil.remove(this._container);
+    DomUtil.remove(this._container);
   },
   appendStyleLink: function (mapLink) {
     if (!mapLink.link) return;
@@ -292,7 +300,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
         obj[v] = this.options.feature[v];
       }
     }
-    return L.Util.template(this._template.template, obj);
+    return LeafletUtil.template(this._template.template, obj);
   },
   _TCRSToPCRS: function (coords, zoom) {
     // TCRS pixel point to Projected CRS point (in meters, presumably)

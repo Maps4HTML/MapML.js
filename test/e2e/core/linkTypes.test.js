@@ -59,7 +59,7 @@ test.describe('Playwright Feature Links Tests', () => {
     });
     test('HTML _blank target projection negotiation with hash', async () => {
       await page.goBack();
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(2000);
       await page.click('body > map');
       await page.keyboard.press('Tab');
       await page.waitForTimeout(200);

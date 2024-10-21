@@ -1,3 +1,5 @@
+import { DomUtil } from 'leaflet';
+
 export class HTMLSelectElement extends HTMLElement {
   static get observedAttributes() {
     return ['name', 'id'];
@@ -48,12 +50,12 @@ export class HTMLSelectElement extends HTMLElement {
     // don't add it again if it is referenced > once
     // generate a <details><summary></summary><select...></details>
     this.htmlselect = this.transcribe();
-    var selectdetails = L.DomUtil.create(
+    var selectdetails = DomUtil.create(
         'details',
         'mapml-layer-item-details mapml-control-layers'
       ),
-      selectsummary = L.DomUtil.create('summary'),
-      selectSummaryLabel = L.DomUtil.create('label');
+      selectsummary = DomUtil.create('summary'),
+      selectSummaryLabel = DomUtil.create('label');
     selectSummaryLabel.innerText = this.getAttribute('name');
     selectSummaryLabel.setAttribute('for', this.getAttribute('id'));
     selectsummary.appendChild(selectSummaryLabel);

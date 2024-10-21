@@ -4,11 +4,18 @@ test.describe('map-feature extent functionality and API', () => {
   let page;
   let context;
   test.beforeAll(async function () {
-    context = await chromium.launchPersistentContext('', { slowMo: 500 });
+    context = await chromium.launchPersistentContext('', {
+      slowMo: 500,
+      ignoreHTTPSErrors: true
+    });
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('map-feature-extent.html');
+    await page.evaluate(async () => {
+      const leaflet = await import('http://localhost:30001/leaflet-src.esm.js');
+      window.L = leaflet;
+    });
   });
   /* Test that feature extent is correct, interaction with map-layer extent is
    * appropriate.  Tests SHOULD cover different projections, not only OSMTILE and WGS84,

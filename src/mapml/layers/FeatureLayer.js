@@ -1,8 +1,16 @@
-import { Util } from '../utils/Util';
-import { path } from '../features/path';
-import { geometry } from '../features/geometry';
+import {
+  FeatureGroup,
+  DomUtil,
+  bounds,
+  SVG,
+  Util as LeafletUtil,
+  Browser
+} from 'leaflet';
+import { Util } from '../utils/Util.js';
+import { path } from '../features/path.js';
+import { geometry } from '../features/geometry.js';
 
-export var FeatureLayer = L.FeatureGroup.extend({
+export var FeatureLayer = FeatureGroup.extend({
   /*
    * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.
    *
@@ -15,12 +23,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         2. for static templated feature: null
         3. for non-templated feature: map-layer (with no src) or mapml file (with src)
       */
-    // options.extent: when you use a FeatureLayer, you can either get it to calculate the
-    // .layerBounds dynamically (the default), based on adds/removes of features from the layer/
-    // or you can construct it with a bounds (via options.extent),
-    // which will then remain static for the lifetime of the layer
-
-    L.FeatureGroup.prototype.initialize.call(this, null, options);
+    FeatureGroup.prototype.initialize.call(this, null, options);
     // this.options.static is false ONLY for tiled vector features
     // this._staticFeature is ONLY true when not used by TemplatedFeaturesLayer
     // this.options.query true when created by QueryHandler.js
@@ -29,39 +32,35 @@ export var FeatureLayer = L.FeatureGroup.extend({
       // not a tiled vector layer
       this._container = null;
       if (this.options.query) {
-        this._container = L.DomUtil.create(
+        this._container = DomUtil.create(
           'div',
           'leaflet-layer',
           this.options.pane
         );
-        // must have leaflet-pane class because of new/changed rule in leaflet.css
-        // info: https://github.com/Leaflet/Leaflet/pull/4597
-        L.DomUtil.addClass(
+        DomUtil.addClass(
           this._container,
           'leaflet-pane mapml-vector-container'
         );
       } else if (this.options._leafletLayer) {
-        this._container = L.DomUtil.create(
+        this._container = DomUtil.create(
           'div',
           'leaflet-layer',
           this.options.pane
         );
-        L.DomUtil.addClass(
+        DomUtil.addClass(
           this._container,
           'leaflet-pane mapml-vector-container'
         );
-        // static mapmlvector should always at the top
-        //        this._container.style.zIndex = 1000;
       } else {
         // if the current featureLayer is a sublayer of templatedFeatureLayer,
         // append <svg> directly to the templated feature container (passed in as options.pane)
         this._container = this.options.pane;
-        L.DomUtil.addClass(
+        DomUtil.addClass(
           this._container,
           'leaflet-pane mapml-vector-container'
         );
       }
-      L.setOptions(this.options.renderer, { pane: this._container });
+      this.options.renderer.options.pane = this._container;
     }
     if (this.options.query) {
       this._queryFeatures = mapml.features ? mapml.features : mapml;
@@ -110,25 +109,20 @@ export var FeatureLayer = L.FeatureGroup.extend({
 
   onAdd: function (map) {
     this._map = map;
-    L.FeatureGroup.prototype.onAdd.call(this, map);
+    FeatureGroup.prototype.onAdd.call(this, map);
     if (this._staticFeature) {
       this._validateRendering();
     }
-    if (this._queryFeatures)
+    if (this._queryFeatures) {
       map.on('featurepagination', this.showPaginationFeature, this);
+    }
   },
   addLayer: function (layerToAdd) {
-    L.FeatureGroup.prototype.addLayer.call(this, layerToAdd);
-    // static FeatureLayer (e.g. MapMLLayer._mapmlvectors) NEVER has a
-    // .layerBounds property, so if there is this.options.layerBounds, don't
-    // go copying it to this.layerBounds.  Same for zoomBounds.
-    // bug alert: it's necessary to create a new bounds object to initialize
-    // this.layerBounds, to avoid changing the layerBounds of the first geometry
-    // added to this layer
+    FeatureGroup.prototype.addLayer.call(this, layerToAdd);
     if (!this.options.layerBounds) {
       this.layerBounds = this.layerBounds
         ? this.layerBounds.extend(layerToAdd.layerBounds)
-        : L.bounds(layerToAdd.layerBounds.min, layerToAdd.layerBounds.max);
+        : bounds(layerToAdd.layerBounds.min, layerToAdd.layerBounds.max);
 
       if (this.zoomBounds) {
         if (layerToAdd.zoomBounds.minZoom < this.zoomBounds.minZoom)
@@ -157,20 +151,20 @@ export var FeatureLayer = L.FeatureGroup.extend({
     return this;
   },
   addRendering: function (featureToAdd) {
-    L.FeatureGroup.prototype.addLayer.call(this, featureToAdd);
+    FeatureGroup.prototype.addLayer.call(this, featureToAdd);
   },
   onRemove: function (map) {
     if (this._queryFeatures) {
       map.off('featurepagination', this.showPaginationFeature, this);
       delete this._queryFeatures;
-      L.DomUtil.remove(this._container);
+      DomUtil.remove(this._container);
     }
-    L.FeatureGroup.prototype.onRemove.call(this, map);
+    FeatureGroup.prototype.onRemove.call(this, map);
     this._map.featureIndex.cleanIndex();
   },
 
   removeLayer: function (featureToRemove) {
-    L.FeatureGroup.prototype.removeLayer.call(this, featureToRemove);
+    FeatureGroup.prototype.removeLayer.call(this, featureToRemove);
     if (!this.options.layerBounds) {
       delete this.layerBounds;
       // this ensures that the <map-layer>.extent gets recalculated if needed
@@ -193,7 +187,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
         if (layerBounds) {
           layerBounds.extend(layer.layerBounds);
         } else {
-          layerBounds = L.bounds(layer.layerBounds.min, layer.layerBounds.max);
+          layerBounds = bounds(layer.layerBounds.min, layer.layerBounds.max);
         }
         if (zoomBounds) {
           if (layer.zoomBounds.minZoom < zoomBounds.minZoom)
@@ -237,7 +231,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
    * @returns {undefined}
    */
   removeRendering: function (featureToRemove) {
-    L.FeatureGroup.prototype.removeLayer.call(this, featureToRemove);
+    FeatureGroup.prototype.removeLayer.call(this, featureToRemove);
   },
   _removeFromFeaturesList: function (feature) {
     for (let zoom in this._features)
@@ -364,10 +358,10 @@ export var FeatureLayer = L.FeatureGroup.extend({
         .subtract(this._map._getNewPixelOrigin(center, this._map.getZoom()))
         .round();
 
-    if (any3d) {
-      L.setTransform(this._layers[clampZoom], translate, scale);
+    if (Browser.any3d) {
+      DomUtil.setTransform(this._layers[clampZoom], translate, scale);
     } else {
-      L.setPosition(this._layers[clampZoom], translate);
+      DomUtil.setPosition(this._layers[clampZoom], translate);
     }
   },
 
@@ -449,7 +443,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
     var style = this.options.style;
     if (style) {
       // reset any custom styles
-      L.Util.extend(layer.options, layer.defaultOptions);
+      LeafletUtil.extend(layer.options, layer.defaultOptions);
       this._setLayerStyle(layer, style);
     }
   },
@@ -480,7 +474,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
     let geom = feature.getElementsByTagName('map-geometry')[0],
       group = [],
       groupOptions = {},
-      svgGroup = L.SVG.create('g'),
+      svgGroup = SVG.create('g'),
       copyOptions = Object.assign({}, vectorOptions);
     svgGroup._featureEl = feature; // rendered <g> has a reference to map-feature
     if (geom) {

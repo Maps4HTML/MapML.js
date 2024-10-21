@@ -1,4 +1,5 @@
-L.Map.Keyboard.include({
+import { Map, DomEvent, point } from 'leaflet';
+Map.Keyboard.include({
   _onKeyDown: function (e) {
     if (e.altKey || e.metaKey) {
       return;
@@ -26,10 +27,10 @@ L.Map.Keyboard.include({
       if (!map._panAnim || !map._panAnim._inProgress) {
         offset = this._panKeys[key];
         if (e.shiftKey) {
-          offset = L.point(offset).multiplyBy(3);
+          offset = point(offset).multiplyBy(3);
         }
         if (e.ctrlKey) {
-          offset = L.point(offset).divideBy(5);
+          offset = point(offset).divideBy(5);
         }
 
         map.panBy(offset);
@@ -54,6 +55,6 @@ L.Map.Keyboard.include({
       return;
     }
 
-    L.DomEvent.stop(e);
+    DomEvent.stop(e);
   }
 });

@@ -1,6 +1,12 @@
+/* global M */
+
+import { bounds, latLngBounds, point, latLng } from 'leaflet';
+
+import proj4 from 'proj4';
+
 export const Util = {
   // _convertAndFormatPCRS returns the converted CRS and formatted pcrsBounds in gcrs, pcrs, tcrs, and tilematrix. Used for setting extent for the map and layer (map.extent, layer.extent).
-  // _convertAndFormatPCRS: L.Bounds, _map, projection -> {...}
+  // _convertAndFormatPCRS: Bounds, _map, projection -> {...}
   _convertAndFormatPCRS: function (pcrsBounds, crs, projection) {
     if (!pcrsBounds || !crs) return {};
 
@@ -83,24 +89,21 @@ export const Util = {
     return extent;
   },
   // extentToBounds: returns bounds in gcrs, pcrs. Used for setting bounds for the map (map.totalLayerBounds).
-  // extentToBounds: {...}, crs -> L.Bounds / L.LatlngBounds
+  // extentToBounds: {...}, crs -> Bounds / LatlngBounds
   extentToBounds(extent, crs) {
     switch (crs.toUpperCase()) {
       case 'PCRS':
-        return L.bounds(
-          L.point(extent.topLeft.pcrs.horizontal, extent.topLeft.pcrs.vertical),
-          L.point(
+        return bounds(
+          point(extent.topLeft.pcrs.horizontal, extent.topLeft.pcrs.vertical),
+          point(
             extent.bottomRight.pcrs.horizontal,
             extent.bottomRight.pcrs.vertical
           )
         );
       case 'GCRS':
-        return L.latLngBounds(
-          L.latLng(
-            extent.topLeft.gcrs.vertical,
-            extent.topLeft.gcrs.horizontal
-          ),
-          L.latLng(
+        return latLngBounds(
+          latLng(extent.topLeft.gcrs.vertical, extent.topLeft.gcrs.horizontal),
+          latLng(
             extent.bottomRight.gcrs.vertical,
             extent.bottomRight.gcrs.horizontal
           )
@@ -188,7 +191,7 @@ export const Util = {
   },
 
   // convertPCRSBounds converts pcrsBounds to the given cs Bounds.
-  // convertPCRSBounds: L.Bounds, Int, L.CRS, Str('PCRS'|'TCRS'|'TILEMATRIX'|'GCRS') -> L.Bounds
+  // convertPCRSBounds: Bounds, Int, CRS, Str('PCRS'|'TCRS'|'TILEMATRIX'|'GCRS') -> Bounds
   convertPCRSBounds: function (pcrsBounds, zoom, projection, cs) {
     if (
       !pcrsBounds ||
@@ -212,29 +215,29 @@ export const Util = {
             pcrsBounds.max,
             projection.scale(+zoom)
           );
-        if (cs.toUpperCase() === 'TCRS') return L.bounds(minPixel, maxPixel);
+        if (cs.toUpperCase() === 'TCRS') return bounds(minPixel, maxPixel);
         let tileSize = projection.options.crs.tile.bounds.max.x;
-        return L.bounds(
-          L.point(minPixel.x / tileSize, minPixel.y / tileSize),
-          L.point(maxPixel.x / tileSize, maxPixel.y / tileSize)
+        return bounds(
+          point(minPixel.x / tileSize, minPixel.y / tileSize),
+          point(maxPixel.x / tileSize, maxPixel.y / tileSize)
         );
       case 'GCRS':
         let minGCRS = projection.unproject(pcrsBounds.min),
           maxGCRS = projection.unproject(pcrsBounds.max);
-        return L.bounds(
-          L.point(minGCRS.lng, minGCRS.lat),
-          L.point(maxGCRS.lng, maxGCRS.lat)
+        return bounds(
+          point(minGCRS.lng, minGCRS.lat),
+          point(maxGCRS.lng, maxGCRS.lat)
         );
       default:
         return undefined;
     }
   },
 
-  // pointToPCRSPoint takes a point, with a projection and cs and converts it to a pcrs L.point/L.latLng
-  //pointToPCRSPoint: L.Point, Int, L.CRS, Str('PCRS'|'TCRS'|'TILEMATRIX'|'GCRS') -> L.point|L.latLng
-  pointToPCRSPoint: function (point, zoom, projection, cs) {
+  // pointToPCRSPoint takes a point, with a projection and cs and converts it to a pcrs point/latLng
+  //pointToPCRSPoint: Point, Int, CRS, Str('PCRS'|'TCRS'|'TILEMATRIX'|'GCRS') -> point|latLng
+  pointToPCRSPoint: function (pt, zoom, projection, cs) {
     if (
-      !point ||
+      !pt ||
       (zoom !== undefined && !Number.isFinite(+zoom)) ||
       (zoom === undefined &&
         (cs === 'TILEMATRIX' || cs === 'TCRS' || cs === 'TILE')) ||
@@ -247,23 +250,23 @@ export const Util = {
     switch (cs.toUpperCase()) {
       case 'TILEMATRIX':
         return Util.pixelToPCRSPoint(
-          L.point(point.x * tileSize, point.y * tileSize),
+          point(pt.x * tileSize, pt.y * tileSize),
           zoom,
           projection
         );
       case 'PCRS':
-        return point;
+        return pt;
       case 'TCRS' || 'TILE':
-        return Util.pixelToPCRSPoint(point, zoom, projection);
+        return Util.pixelToPCRSPoint(pt, zoom, projection);
       case 'GCRS':
-        return projection.project(L.latLng(point.y, point.x));
+        return projection.project(latLng(pt.y, pt.x));
       default:
         return undefined;
     }
   },
 
-  // pixelToPCRSPoint takes a pixel L.point, the zoom and projection and returns a L.point in pcrs
-  // pixelToPCRSPoint: L.Point, Int, L.CRS|Str -> L.point
+  // pixelToPCRSPoint takes a pixel point, the zoom and projection and returns a point in pcrs
+  // pixelToPCRSPoint: Point, Int, CRS|Str -> point
   pixelToPCRSPoint: function (point, zoom, projection) {
     if (
       !point ||
@@ -277,12 +280,12 @@ export const Util = {
   },
 
   // boundsToPCRSBounds converts bounds with projection and cs to PCRS bounds
-  // boundsToPCRSBounds: L.bounds, Int, L.CRS|Str, Str('PCRS'|'TCRS'|'TILEMATRIX'|'GCRS') -> L.bounds
-  boundsToPCRSBounds: function (bounds, zoom, projection, cs) {
+  // boundsToPCRSBounds: bounds, Int, CRS|Str, Str('PCRS'|'TCRS'|'TILEMATRIX'|'GCRS') -> bounds
+  boundsToPCRSBounds: function (bnds, zoom, projection, cs) {
     if (
-      !bounds ||
-      !bounds.max ||
-      !bounds.min ||
+      !bnds ||
+      !bnds.max ||
+      !bnds.min ||
       (zoom !== undefined && !Number.isFinite(+zoom)) ||
       (zoom === undefined &&
         (cs === 'TILEMATRIX' || cs === 'TCRS' || cs === 'TILE')) ||
@@ -291,28 +294,28 @@ export const Util = {
     )
       return undefined;
     projection = typeof projection === 'string' ? M[projection] : projection;
-    return L.bounds(
-      Util.pointToPCRSPoint(bounds.min, zoom, projection, cs),
-      Util.pointToPCRSPoint(bounds.max, zoom, projection, cs)
+    return bounds(
+      Util.pointToPCRSPoint(bnds.min, zoom, projection, cs),
+      Util.pointToPCRSPoint(bnds.max, zoom, projection, cs)
     );
   },
 
-  //L.bounds have fixed point positions, where min is always topleft, max is always bottom right, and the values are always sorted by leaflet
+  //bounds have fixed point positions, where min is always topleft, max is always bottom right, and the values are always sorted by leaflet
   //important to consider when working with pcrs where the origin is not topleft but rather bottomleft, could lead to confusion
-  pixelToPCRSBounds: function (bounds, zoom, projection) {
+  pixelToPCRSBounds: function (bnds, zoom, projection) {
     if (
-      !bounds ||
-      !bounds.max ||
-      !bounds.min ||
+      !bnds ||
+      !bnds.max ||
+      !bnds.min ||
       (!zoom && zoom !== 0) ||
       !Number.isFinite(+zoom) ||
       !projection
     )
       return undefined;
     projection = typeof projection === 'string' ? M[projection] : projection;
-    return L.bounds(
-      Util.pixelToPCRSPoint(bounds.min, zoom, projection),
-      Util.pixelToPCRSPoint(bounds.max, zoom, projection)
+    return bounds(
+      Util.pixelToPCRSPoint(bnds.min, zoom, projection),
+      Util.pixelToPCRSPoint(bnds.max, zoom, projection)
     );
   },
 
@@ -491,9 +494,9 @@ export const Util = {
         );
       let axes = Util.csToAxes(cs);
       return Util.boundsToPCRSBounds(
-        L.bounds(
-          L.point(+meta[`top-left-${axes[0]}`], +meta[`top-left-${axes[1]}`]),
-          L.point(
+        bounds(
+          point(+meta[`top-left-${axes[0]}`], +meta[`top-left-${axes[1]}`]),
+          point(
             +meta[`bottom-right-${axes[0]}`],
             +meta[`bottom-right-${axes[1]}`]
           )
@@ -636,10 +639,10 @@ export const Util = {
   // _gcrsToTileMatrix returns the [column, row] of the tiles at map center. Used for Announce movement for screen readers
   // _gcrsToTileMatrix: map/mapml-viewer -> [column, row]
   _gcrsToTileMatrix: function (mapEl) {
-    let point = mapEl._map.project(mapEl._map.getCenter());
+    let pt0 = mapEl._map.project(mapEl._map.getCenter());
     let tileSize = mapEl._map.options.crs.options.crs.tile.bounds.max.y;
-    let column = Math.trunc(point.x / tileSize);
-    let row = Math.trunc(point.y / tileSize);
+    let column = Math.trunc(pt0.x / tileSize);
+    let row = Math.trunc(pt0.y / tileSize);
     return [column, row];
   },
 
@@ -810,8 +813,8 @@ export const Util = {
           .setAttribute('label', M.options.locale.dfLayer);
       }
     }
-    let point = '<map-point></map-point>';
-    point = parser.parseFromString(point, 'text/html');
+    let ptElStr = '<map-point></map-point>',
+      ptEl = parser.parseFromString(ptElStr, 'text/html');
 
     let multiPoint =
       '<map-multipoint><map-coordinates></map-coordinates></map-multipoint>';
@@ -982,7 +985,7 @@ export const Util = {
           out = json.coordinates[0] + ' ' + json.coordinates[1];
 
           // Create Point element
-          let clone_point = point.cloneNode(true);
+          let clone_point = ptEl.cloneNode(true);
           clone_point = clone_point.querySelector('map-point');
 
           // Create map-coords to add to the polygon
@@ -1461,7 +1464,7 @@ export const Util = {
 
   // Takes leaflet bound, leaflet map and min and max zoom limit,
   // return the maximum zoom level that can show the bound completely
-  // getMaxZoom: L.Bound, L.Map, Number, Number -> Number
+  // getMaxZoom: Bound, Map, Number, Number -> Number
   getMaxZoom: function (bound, map, minZoom, maxZoom) {
     if (!bound) return;
 
@@ -1487,7 +1490,7 @@ export const Util = {
         map.options.projection
       );
 
-    let mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew),
+    let mapPCRS = bounds(mapTlPCRSNew, mapBrPCRSNew),
       zOffset = mapPCRS.contains(bound) ? 1 : -1;
 
     while (
@@ -1514,7 +1517,7 @@ export const Util = {
         map.options.projection
       );
 
-      mapPCRS = L.bounds(mapTlPCRSNew, mapBrPCRSNew);
+      mapPCRS = bounds(mapTlPCRSNew, mapBrPCRSNew);
     }
 
     if (

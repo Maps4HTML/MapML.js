@@ -1,4 +1,4 @@
-import { BaseLayerElement } from './layer';
+import { BaseLayerElement } from './layer.js';
 
 export class LayerDashElement extends BaseLayerElement {
   constructor() {

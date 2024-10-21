@@ -1,9 +1,9 @@
-import { Util } from './mapml/utils/Util';
-import { ZoomInput } from './mapml/elementSupport/inputs/zoomInput';
-import { HiddenInput } from './mapml/elementSupport/inputs/hiddenInput';
-import { WidthInput } from './mapml/elementSupport/inputs/widthInput';
-import { HeightInput } from './mapml/elementSupport/inputs/heightInput';
-import { LocationInput } from './mapml/elementSupport/inputs/locationInput';
+import { Util } from './mapml/utils/Util.js';
+import { ZoomInput } from './mapml/elementSupport/inputs/zoomInput.js';
+import { HiddenInput } from './mapml/elementSupport/inputs/hiddenInput.js';
+import { WidthInput } from './mapml/elementSupport/inputs/widthInput.js';
+import { HeightInput } from './mapml/elementSupport/inputs/heightInput.js';
+import { LocationInput } from './mapml/elementSupport/inputs/locationInput.js';
 
 /* global M */
 export class HTMLInputElement extends HTMLElement {
