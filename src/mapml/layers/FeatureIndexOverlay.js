@@ -1,16 +1,18 @@
-import { Util } from '../utils/Util';
-export var FeatureIndexOverlay = L.Layer.extend({
+import { Layer, DomUtil, point, bounds } from 'leaflet';
+import { Util } from '../utils/Util.js';
+
+export var FeatureIndexOverlay = Layer.extend({
   onAdd: function (map) {
     let svgInnerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 100 100"><path fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M0 0h100v100H0z" color="#000" overflow="visible"/></svg>`;
 
-    this._container = L.DomUtil.create(
+    this._container = DomUtil.create(
       'div',
       'mapml-feature-index-box',
       map._container
     );
     this._container.innerHTML = svgInnerHTML;
 
-    this._output = L.DomUtil.create(
+    this._output = DomUtil.create(
       'output',
       'mapml-feature-index',
       map._container
@@ -18,7 +20,7 @@ export var FeatureIndexOverlay = L.Layer.extend({
     this._output.setAttribute('role', 'status');
     this._output.setAttribute('aria-live', 'polite');
     this._output.setAttribute('aria-atomic', 'true');
-    this._body = L.DomUtil.create(
+    this._body = DomUtil.create(
       'span',
       'mapml-feature-index-content',
       this._output
@@ -32,12 +34,12 @@ export var FeatureIndexOverlay = L.Layer.extend({
   },
 
   _calculateReticleBounds: function () {
-    let bounds = this._map.getPixelBounds();
-    let center = bounds.getCenter();
+    let bnds = this._map.getPixelBounds();
+    let center = bnds.getCenter();
     let wRatio =
-      Math.abs(bounds.min.x - bounds.max.x) / this._map.options.mapEl.width;
+      Math.abs(bnds.min.x - bnds.max.x) / this._map.options.mapEl.width;
     let hRatio =
-      Math.abs(bounds.min.y - bounds.max.y) / this._map.options.mapEl.height;
+      Math.abs(bnds.min.y - bnds.max.y) / this._map.options.mapEl.height;
 
     let reticleDimension = getComputedStyle(this._container).width.replace(
       /[^\d.]/g,
@@ -49,9 +51,9 @@ export var FeatureIndexOverlay = L.Layer.extend({
     }
     let w = (wRatio * reticleDimension) / 2;
     let h = (hRatio * reticleDimension) / 2;
-    let minPoint = L.point(center.x - w, center.y + h);
-    let maxPoint = L.point(center.x + w, center.y - h);
-    let b = L.bounds(minPoint, maxPoint);
+    let minPoint = point(center.x - w, center.y + h);
+    let maxPoint = point(center.x + w, center.y - h);
+    let b = bounds(minPoint, maxPoint);
     return Util.pixelToPCRSBounds(
       b,
       this._map.getZoom(),
@@ -85,24 +87,24 @@ export var FeatureIndexOverlay = L.Layer.extend({
     keys.forEach((i) => {
       let layer = features[i].layer;
       let layers = features[i].layer._layers;
-      let bounds = L.bounds();
+      let b = bounds();
 
       if (layers) {
         let keys = Object.keys(layers);
         keys.forEach((j) => {
-          if (!bounds)
-            bounds = L.bounds(
+          if (!b)
+            b = bounds(
               layer._layers[j]._bounds.min,
               layer._layers[j]._bounds.max
             );
-          bounds.extend(layer._layers[j]._bounds.min);
-          bounds.extend(layer._layers[j]._bounds.max);
+          b.extend(layer._layers[j]._bounds.min);
+          b.extend(layer._layers[j]._bounds.max);
         });
       } else if (layer._bounds) {
-        bounds = L.bounds(layer._bounds.min, layer._bounds.max);
+        b = bounds(layer._bounds.min, layer._bounds.max);
       }
 
-      if (featureIndexBounds.overlaps(bounds)) {
+      if (featureIndexBounds.overlaps(b)) {
         let label = features[i].path.getAttribute('aria-label');
 
         if (index < 8) {

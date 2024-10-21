@@ -12,8 +12,8 @@
     "web-map",
     "layer"
   ],
-  "main": "mapml.js",
-  "module": "mapml.js",
+  "main": "dist/mapml.js",
+  "module": "dist/mapml.js",
   "author": "Maps for HTML Community Group",
   "repository": {
     "type": "git",
@@ -37,6 +37,8 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.39.0",
+    "@rollup/plugin-alias": "^5.1.1",
+    "@rollup/plugin-legacy": "^3.0.2",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "mapml-extension": "git+https://github.com/Maps4HTML/mapml-extension",
     "diff": "^5.1.0",
@@ -53,12 +55,12 @@
     "grunt-prettier": "^2.2.0",
     "grunt-rollup": "^12.0.0",
     "leaflet": "^1.9.4",
-    "leaflet.locatecontrol": "^0.79.0",
+    "leaflet.locatecontrol": "^0.81.1",
     "path": "^0.12.7",
     "playwright": "^1.39.0",
     "proj4": "^2.6.2",
-    "proj4leaflet": "^1.0.2",
-    "protomaps-leaflet": "4.0.0",
+    "proj4leaflet": "git+https://github.com/Maps4HTML/proj4leaflet.git#es-module",
+    "protomaps-leaflet": "^4.0.1",
     "rollup": "^3.29.5",
     "serve-static": "^1.15.0"
   },

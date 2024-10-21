@@ -1,7 +1,8 @@
-import { Util } from '../utils/Util';
-export var FeatureIndex = L.Handler.extend({
+import { Handler } from 'leaflet';
+import { Util } from '../utils/Util.js';
+export var FeatureIndex = Handler.extend({
   initialize: function (map) {
-    L.Handler.prototype.initialize.call(this, map);
+    Handler.prototype.initialize.call(this, map);
     this.inBoundFeatures = [];
     this.outBoundFeatures = [];
     this.currentIndex = 0;

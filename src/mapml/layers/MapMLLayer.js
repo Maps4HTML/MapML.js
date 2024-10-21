@@ -1,9 +1,18 @@
-import { Util } from '../utils/Util';
-import { featureLayer } from './FeatureLayer';
-import { staticTileLayer } from './StaticTileLayer';
-import { featureRenderer } from '../features/featureRenderer';
+import {
+  LayerGroup,
+  setOptions,
+  DomUtil,
+  DomEvent,
+  bounds,
+  latLng,
+  latLngBounds
+} from 'leaflet';
+import { Util } from '../utils/Util.js';
+import { featureLayer } from './FeatureLayer.js';
+import { staticTileLayer } from './StaticTileLayer.js';
+import { featureRenderer } from '../features/featureRenderer.js';
 
-export var MapMLLayer = L.LayerGroup.extend({
+export var MapMLLayer = LayerGroup.extend({
   options: {
     zIndex: 0,
     opacity: '1.0'
@@ -12,20 +21,20 @@ export var MapMLLayer = L.LayerGroup.extend({
   initialize: function (href, layerEl, options) {
     // in the custom element, the attribute is actually 'src'
     // the _href version is the URL received from map-layer@src
-    L.LayerGroup.prototype.initialize.call(this, null, options);
+    LayerGroup.prototype.initialize.call(this, null, options);
     if (href) {
       this._href = href;
     }
     this._layerEl = layerEl;
     this._content = layerEl.src ? layerEl.shadowRoot : layerEl;
-    L.setOptions(this, options);
-    this._container = L.DomUtil.create('div', 'leaflet-layer');
+    setOptions(this, options);
+    this._container = DomUtil.create('div', 'leaflet-layer');
     this.changeOpacity(this.options.opacity);
-    L.DomUtil.addClass(this._container, 'mapml-layer');
+    DomUtil.addClass(this._container, 'mapml-layer');
 
     // this layer 'owns' a mapmlTileLayer, which is a subclass of L.GridLayer
     // it 'passes' what tiles to load via the content of this._mapmlTileContainer
-    this._mapmlTileContainer = L.DomUtil.create(
+    this._mapmlTileContainer = DomUtil.create(
       'div',
       'mapml-tile-container',
       this._container
@@ -78,7 +87,7 @@ export var MapMLLayer = L.LayerGroup.extend({
   },
 
   onAdd: function (map) {
-    L.LayerGroup.prototype.onAdd.call(this, map);
+    LayerGroup.prototype.onAdd.call(this, map);
     this.getPane().appendChild(this._container);
 
     //only add the layer if there are tiles to be rendered
@@ -92,9 +101,9 @@ export var MapMLLayer = L.LayerGroup.extend({
   _calculateBounds: function () {
     delete this.bounds;
     delete this.zoomBounds;
-    let bounds, zoomBounds;
+    let bnds, zoomBounds;
     let layerTypes = ['_staticTileLayer', '_mapmlvectors', '_extentLayer'];
-    bounds =
+    bnds =
       this._layerEl.src &&
       this._layerEl.shadowRoot.querySelector(
         ':host > map-meta[name=extent][content]'
@@ -131,13 +140,13 @@ export var MapMLLayer = L.LayerGroup.extend({
         for (let i = 0; i < mapExtents.length; i++) {
           if (mapExtents[i]._extentLayer.bounds) {
             let mapExtentLayer = mapExtents[i]._extentLayer;
-            if (!bounds) {
-              bounds = L.bounds(
+            if (!bnds) {
+              bnds = bounds(
                 mapExtentLayer.bounds.min,
                 mapExtentLayer.bounds.max
               );
             } else {
-              bounds.extend(mapExtentLayer.bounds);
+              bnds.extend(mapExtentLayer.bounds);
             }
             if (mapExtentLayer.zoomBounds) {
               if (!zoomBounds) {
@@ -167,10 +176,10 @@ export var MapMLLayer = L.LayerGroup.extend({
         (type === '_staticTileLayer' && this._staticTileLayer)
       ) {
         if (this[type].layerBounds) {
-          if (!bounds) {
-            bounds = this[type].layerBounds;
+          if (!bnds) {
+            bnds = this[type].layerBounds;
           } else {
-            bounds.extend(this[type].layerBounds);
+            bnds.extend(this[type].layerBounds);
           }
         }
         if (this[type].zoomBounds) {
@@ -196,11 +205,11 @@ export var MapMLLayer = L.LayerGroup.extend({
         }
       }
     });
-    if (bounds) {
-      this.bounds = bounds;
+    if (bnds) {
+      this.bounds = bnds;
     } else {
       let projectionBounds = M[this.options.projection].options.bounds;
-      this.bounds = L.bounds(projectionBounds.min, projectionBounds.max);
+      this.bounds = bounds(projectionBounds.min, projectionBounds.max);
     }
     // we could get here and zoomBounds might still not be defined (empty layer)
     if (!zoomBounds) zoomBounds = {};
@@ -221,8 +230,8 @@ export var MapMLLayer = L.LayerGroup.extend({
   },
 
   onRemove: function (map) {
-    L.LayerGroup.prototype.onRemove.call(this, map);
-    L.DomUtil.remove(this._container);
+    LayerGroup.prototype.onRemove.call(this, map);
+    DomUtil.remove(this._container);
     map.off('popupopen', this._attachSkipButtons);
   },
   getAttribution: function () {
@@ -365,7 +374,7 @@ export var MapMLLayer = L.LayerGroup.extend({
           licenseTitle +
           '</a>';
       }
-      L.setOptions(layer, { attribution: attText });
+      setOptions(layer, { attribution: attText });
       var legendLink = mapml.querySelector('map-link[rel=legend]');
       if (legendLink) {
         layer._legendUrl = legendLink.getAttribute('href');
@@ -445,24 +454,23 @@ export var MapMLLayer = L.LayerGroup.extend({
     }
 
     if (popup._container.querySelector('nav[class="mapml-focus-buttons"]')) {
-      L.DomUtil.remove(
+      DomUtil.remove(
         popup._container.querySelector('nav[class="mapml-focus-buttons"]')
       );
-      L.DomUtil.remove(popup._container.querySelector('hr'));
+      DomUtil.remove(popup._container.querySelector('hr'));
     }
     //add when popopen event happens instead
-    let div = L.DomUtil.create('nav', 'mapml-focus-buttons');
-
+    let div = DomUtil.create('nav', 'mapml-focus-buttons');
     // creates |< button, focuses map
-    let mapFocusButton = L.DomUtil.create('button', 'mapml-popup-button', div);
+    let mapFocusButton = DomUtil.create('button', 'mapml-popup-button', div);
     mapFocusButton.type = 'button';
     mapFocusButton.title = map.options.mapEl.locale.kbdFocusMap;
     mapFocusButton.innerHTML = "<span aria-hidden='true'>|&#10094;</span>";
-    L.DomEvent.on(
+    DomEvent.on(
       mapFocusButton,
       'click',
       (e) => {
-        L.DomEvent.stop(e);
+        DomEvent.stop(e);
         map.featureIndex._sortIndex();
         map.closePopup();
         map._container.focus();
@@ -471,26 +479,26 @@ export var MapMLLayer = L.LayerGroup.extend({
     );
 
     // creates < button, focuses previous feature, if none exists focuses the current feature
-    let previousButton = L.DomUtil.create('button', 'mapml-popup-button', div);
+    let previousButton = DomUtil.create('button', 'mapml-popup-button', div);
     previousButton.type = 'button';
     previousButton.title = map.options.mapEl.locale.kbdPrevFeature;
     previousButton.innerHTML = "<span aria-hidden='true'>&#10094;</span>";
-    L.DomEvent.on(previousButton, 'click', layer._previousFeature, popup);
+    DomEvent.on(previousButton, 'click', layer._previousFeature, popup);
 
     // static feature counter that 1/1
-    let featureCount = L.DomUtil.create('p', 'mapml-feature-count', div),
+    let featureCount = DomUtil.create('p', 'mapml-feature-count', div),
       totalFeatures = this._totalFeatureCount ? this._totalFeatureCount : 1;
     featureCount.innerText = popup._count + 1 + '/' + totalFeatures;
 
     // creates > button, focuses next feature, if none exists focuses the current feature
-    let nextButton = L.DomUtil.create('button', 'mapml-popup-button', div);
+    let nextButton = DomUtil.create('button', 'mapml-popup-button', div);
     nextButton.type = 'button';
     nextButton.title = map.options.mapEl.locale.kbdNextFeature;
     nextButton.innerHTML = "<span aria-hidden='true'>&#10095;</span>";
-    L.DomEvent.on(nextButton, 'click', layer._nextFeature, popup);
+    DomEvent.on(nextButton, 'click', layer._nextFeature, popup);
 
     // creates >| button, focuses map controls
-    let controlFocusButton = L.DomUtil.create(
+    let controlFocusButton = DomUtil.create(
       'button',
       'mapml-popup-button',
       div
@@ -498,7 +506,7 @@ export var MapMLLayer = L.LayerGroup.extend({
     controlFocusButton.type = 'button';
     controlFocusButton.title = map.options.mapEl.locale.kbdFocusControls;
     controlFocusButton.innerHTML = "<span aria-hidden='true'>&#10095;|</span>";
-    L.DomEvent.on(
+    DomEvent.on(
       controlFocusButton,
       'click',
       (e) => {
@@ -509,14 +517,14 @@ export var MapMLLayer = L.LayerGroup.extend({
         map.featureIndex.inBoundFeatures[
           map.featureIndex.currentIndex
         ]?.path.setAttribute('tabindex', 0);
-        L.DomEvent.stop(e);
+        DomEvent.stop(e);
         map.closePopup();
         map._controlContainer.querySelector('A:not([hidden])').focus();
       },
       popup
     );
 
-    let divider = L.DomUtil.create('hr', 'mapml-popup-divider');
+    let divider = DomUtil.create('hr', 'mapml-popup-divider');
 
     popup._navigationBar = div;
     popup._content.appendChild(divider);
@@ -550,7 +558,7 @@ export var MapMLLayer = L.LayerGroup.extend({
         setTimeout(() => {
           map.closePopup(popup);
           group.focus();
-          L.DomEvent.stop(focusEvent);
+          DomEvent.stop(focusEvent);
         }, 0);
       } else if (
         path[0].classList.contains('mapml-popup-content') &&
@@ -561,7 +569,7 @@ export var MapMLLayer = L.LayerGroup.extend({
           //timeout needed so focus of the feature is done even after the keypressup event occurs
           map.closePopup(popup);
           group.focus();
-          L.DomEvent.stop(focusEvent);
+          DomEvent.stop(focusEvent);
         }, 0);
       } else if (
         path[0] === popup._content.querySelector('a') &&
@@ -571,7 +579,7 @@ export var MapMLLayer = L.LayerGroup.extend({
         setTimeout(() => {
           map.closePopup(popup);
           group.focus();
-          L.DomEvent.stop(focusEvent);
+          DomEvent.stop(focusEvent);
         }, 0);
       }
     }
@@ -588,7 +596,7 @@ export var MapMLLayer = L.LayerGroup.extend({
           path[0].classList.contains('leaflet-popup-close-button')) ||
         focusEvent.originalEvent.keyCode === 27
       ) {
-        L.DomEvent.stopPropagation(focusEvent);
+        DomEvent.stopPropagation(focusEvent);
         map.closePopup(popup);
         map._container.focus();
         if (focusEvent.originalEvent.keyCode !== 27) map._popupClosed = true;
@@ -605,7 +613,7 @@ export var MapMLLayer = L.LayerGroup.extend({
         map.closePopup(popup);
         setTimeout(() => {
           //timeout needed so focus of the feature is done even after the keypressup event occurs
-          L.DomEvent.stop(focusEvent);
+          DomEvent.stop(focusEvent);
           map._container.focus();
         }, 0);
       } else if (
@@ -615,7 +623,7 @@ export var MapMLLayer = L.LayerGroup.extend({
       ) {
         map.closePopup(popup);
         setTimeout(() => {
-          L.DomEvent.stop(focusEvent);
+          DomEvent.stop(focusEvent);
           map.getContainer.focus();
         }, 0);
       }
@@ -631,9 +639,9 @@ export var MapMLLayer = L.LayerGroup.extend({
       if (!featureEl.querySelector('map-geometry')) return;
       let tL = featureEl.extent.topLeft.gcrs,
         bR = featureEl.extent.bottomRight.gcrs,
-        center = L.latLngBounds(
-          L.latLng(tL.horizontal, tL.vertical),
-          L.latLng(bR.horizontal, bR.vertical)
+        center = latLngBounds(
+          latLng(tL.horizontal, tL.vertical),
+          latLng(bR.horizontal, bR.vertical)
         ).getCenter(true);
       let zoomLink = document.createElement('a');
       zoomLink.href = `#${featureEl.getZoomToZoom()},${center.lng},${

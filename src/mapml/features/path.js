@@ -1,6 +1,14 @@
-import { Util } from '../utils/Util';
+import {
+  Path as LeafletPath,
+  setOptions,
+  DomEvent,
+  point,
+  bounds
+} from 'leaflet';
+
+import { Util } from '../utils/Util.js';
 /**
- * M.Path is a extension of L.Path that understands mapml feature markup
+ * M.Path is a extension of Path that understands mapml feature markup
  * It converts the markup to the following structure (abstract enough to encompass all feature types) for example:
  *  this._outlinePath = HTMLElement;
  *  this._parts = [
@@ -19,7 +27,7 @@ import { Util } from '../utils/Util';
  *    ...
  *  ];
  */
-export var Path = L.Path.extend({
+export var Path = LeafletPath.extend({
   /**
    * Initializes the M.Path
    * @param {HTMLElement} markup - The markup representation of the feature
@@ -33,7 +41,7 @@ export var Path = L.Path.extend({
 
     if (options.wrappers.length > 0)
       options = Object.assign(this._convertWrappers(options.wrappers), options);
-    L.setOptions(this, options);
+    setOptions(this, options);
 
     this.group = this.options.group;
     this.options.interactive =
@@ -69,7 +77,7 @@ export var Path = L.Path.extend({
     elem.classList.add('map-a');
     if (link.visited) elem.classList.add('map-a-visited');
     elem.mousedown = (e) => (dragStart = { x: e.clientX, y: e.clientY });
-    L.DomEvent.on(elem, 'mousedown', elem.mousedown, this);
+    DomEvent.on(elem, 'mousedown', elem.mousedown, this);
     elem.mouseup = (e) => {
       if (e.button !== 0) return; // don't trigger when button isn't left click
       let onTop = true,
@@ -100,12 +108,12 @@ export var Path = L.Path.extend({
         }
       }
     };
-    L.DomEvent.on(elem, 'mouseup', elem.mouseup, this);
-    L.DomEvent.on(
+    DomEvent.on(elem, 'mouseup', elem.mouseup, this);
+    DomEvent.on(
       elem,
       'keypress',
       (e) => {
-        L.DomEvent.stop(e);
+        DomEvent.stop(e);
         if (e.keyCode === 13 || e.keyCode === 32) {
           link.visited = true;
           elem.setAttribute('stroke', '#6c00a2');
@@ -115,7 +123,7 @@ export var Path = L.Path.extend({
       },
       this
     );
-    L.DomEvent.on(
+    DomEvent.on(
       elem,
       'mouseenter keyup',
       (e) => {
@@ -133,7 +141,7 @@ export var Path = L.Path.extend({
       },
       this
     );
-    L.DomEvent.on(
+    DomEvent.on(
       elem,
       'mouseout keydown mousedown',
       (e) => {
@@ -151,7 +159,7 @@ export var Path = L.Path.extend({
       this._map.getContainer().removeChild(container);
     }
     function addMouseHandler() {
-      L.DomEvent.on(
+      DomEvent.on(
         this._map.getContainer(),
         'mouseout mouseenter click',
         handleMouse,
@@ -160,7 +168,7 @@ export var Path = L.Path.extend({
     }
     leafletLayer.on('remove', removeMouseHandler, leafletLayer);
     function removeMouseHandler() {
-      L.DomEvent.off(this._map.getContainer(), {
+      DomEvent.off(this._map.getContainer(), {
         mouseout: handleMouse,
         mouseenter: handleMouse,
         click: handleMouse
@@ -170,8 +178,8 @@ export var Path = L.Path.extend({
 
   /**
    * Updates internal structure of the feature to the new map state, the structure can be found in this._parts
-   * @param {L.Map} addedMap - The map that the feature is part of, can be left blank in the case of static features
-   * @param {L.Point} tileOrigin - The tile origin for the feature, if blank then it takes the maps pixel origin in the function
+   * @param {Map} addedMap - The map that the feature is part of, can be left blank in the case of static features
+   * @param {Point} tileOrigin - The tile origin for the feature, if blank then it takes the maps pixel origin in the function
    * @param {int} zoomingTo - The zoom the map is animating to, if left blank then it takes the map zoom, its provided because in templated tiles zoom is delayed
    * @private
    */
@@ -196,11 +204,11 @@ export var Path = L.Path.extend({
 
   /**
    * Converts the PCRS points to pixel points that can be used to create the SVG
-   * @param {L.Point[][]} r - Is the rings of a feature, either the mainParts, subParts or outline
-   * @param {L.Map} map - The map that the feature is part of
-   * @param {L.Point} origin - The origin used to calculate the pixel points
+   * @param {Point[][]} r - Is the rings of a feature, either the mainParts, subParts or outline
+   * @param {Map} map - The map that the feature is part of
+   * @param {Point} origin - The origin used to calculate the pixel points
    * @param {int} zoom - The current zoom level of the map
-   * @returns {L.Point[][]}
+   * @returns {Point[][]}
    * @private
    */
   _convertRing: function (r, map, origin, zoom) {
@@ -211,7 +219,7 @@ export var Path = L.Path.extend({
       let interm = [];
       for (let p of sub.points) {
         let conv = map.options.crs.transformation.transform(p, scale);
-        interm.push(L.point(conv.x, conv.y)._subtract(origin).round());
+        interm.push(point(conv.x, conv.y)._subtract(origin).round());
       }
       parts.push(interm);
     }
@@ -284,11 +292,11 @@ export var Path = L.Path.extend({
         if (subRings.length > 0)
           this._parts[0].subrings = this._parts[0].subrings.concat(subRings);
       } else if (this.type === 'MAP-MULTIPOINT') {
-        for (let point of ring[0].points.concat(subRings)) {
+        for (let pt of ring[0].points.concat(subRings)) {
           this._parts.push({
-            rings: [{ points: [point] }],
+            rings: [{ points: [pt] }],
             subrings: [],
-            cls: `${point.cls || ''} ${this.options.className || ''}`.trim()
+            cls: `${pt.cls || ''} ${this.options.className || ''}`.trim()
           });
         }
       } else {
@@ -390,24 +398,24 @@ export var Path = L.Path.extend({
     let noSpan = coords.textContent.replace(/(<([^>]+)>)/gi, ''),
       pairs = noSpan.trim().match(/(\S+\s+\S+)/gim),
       local = [],
-      bounds;
+      bnds;
     for (let p of pairs) {
       let numPair = [];
       p.split(/\s+/gim).forEach(Util._parseNumber, numPair);
-      let point = Util.pointToPCRSPoint(
-        L.point(numPair),
+      let pt = Util.pointToPCRSPoint(
+        point(numPair),
         this.options.zoom,
         this.options.projection,
         this.options.nativeCS
       );
-      local.push(point);
-      bounds = bounds ? bounds.extend(point) : L.bounds(point, point);
+      local.push(pt);
+      bnds = bnds ? bnds.extend(pt) : bounds(pt, pt);
     }
     if (this._bounds) {
-      this._bounds.extend(bounds.min);
-      this._bounds.extend(bounds.max);
+      this._bounds.extend(bnds.min);
+      this._bounds.extend(bnds.max);
     } else {
-      this._bounds = bounds;
+      this._bounds = bnds;
     }
     if (isFirst) {
       main.push({ points: local });
@@ -422,7 +430,7 @@ export var Path = L.Path.extend({
       }
       subParts.unshift({
         points: local,
-        center: bounds.getCenter(),
+        center: bnds.getCenter(),
         cls: `${cls || ''} ${wrapperAttr.className || ''}`.trim(),
         attr: attrMap,
         link: wrapperAttr.link,
@@ -454,7 +462,7 @@ export var Path = L.Path.extend({
 
   /**
    * Returns the center of the entire feature
-   * @returns {L.Point}
+   * @returns {Point}
    */
   getCenter: function () {
     if (!this._bounds) return null;

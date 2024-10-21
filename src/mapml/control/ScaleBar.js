@@ -1,4 +1,6 @@
-export var ScaleBar = L.Control.Scale.extend({
+import { Control, DomUtil } from 'leaflet';
+
+export var ScaleBar = Control.Scale.extend({
   options: {
     maxWidth: 100,
     updateWhenIdle: true,
@@ -12,8 +14,8 @@ export var ScaleBar = L.Control.Scale.extend({
     map._container.insertAdjacentHTML('beforeend', outputScale);
 
     // initialize _container
-    this._container = L.DomUtil.create('div', 'mapml-control-scale');
-    let scaleControl = L.Control.Scale.prototype.onAdd.call(this, map);
+    this._container = DomUtil.create('div', 'mapml-control-scale');
+    let scaleControl = Control.Scale.prototype.onAdd.call(this, map);
     this._container.appendChild(scaleControl);
     this._container.setAttribute('tabindex', 0);
     this._scaleControl = this;

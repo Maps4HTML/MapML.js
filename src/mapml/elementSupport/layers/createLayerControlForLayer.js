@@ -1,42 +1,40 @@
+import { DomUtil, SVG, DomEvent, stamp } from 'leaflet';
 export var createLayerControlHTML = async function () {
-  var fieldset = L.DomUtil.create('fieldset', 'mapml-layer-item'),
-    input = L.DomUtil.create('input'),
-    layerItemName = L.DomUtil.create('span', 'mapml-layer-item-name'),
-    settingsButtonNameIcon = L.DomUtil.create('span'),
-    layerItemProperty = L.DomUtil.create(
+  var fieldset = DomUtil.create('fieldset', 'mapml-layer-item'),
+    input = DomUtil.create('input'),
+    layerItemName = DomUtil.create('span', 'mapml-layer-item-name'),
+    settingsButtonNameIcon = DomUtil.create('span'),
+    layerItemProperty = DomUtil.create(
       'div',
       'mapml-layer-item-properties',
       fieldset
     ),
-    layerItemSettings = L.DomUtil.create(
+    layerItemSettings = DomUtil.create(
       'div',
       'mapml-layer-item-settings',
       fieldset
     ),
-    itemToggleLabel = L.DomUtil.create(
+    itemToggleLabel = DomUtil.create(
       'label',
       'mapml-layer-item-toggle',
       layerItemProperty
     ),
-    layerItemControls = L.DomUtil.create(
+    layerItemControls = DomUtil.create(
       'div',
       'mapml-layer-item-controls',
       layerItemProperty
     ),
-    opacityControl = L.DomUtil.create(
+    opacityControl = DomUtil.create(
       'details',
       'mapml-layer-item-opacity mapml-control-layers',
       layerItemSettings
     ),
-    opacity = L.DomUtil.create('input'),
-    opacityControlSummary = L.DomUtil.create('summary'),
-    svgSettingsControlIcon = L.SVG.create('svg'),
-    settingsControlPath1 = L.SVG.create('path'),
-    settingsControlPath2 = L.SVG.create('path'),
-    extentsFieldset = L.DomUtil.create(
-      'fieldset',
-      'mapml-layer-grouped-extents'
-    ),
+    opacity = DomUtil.create('input'),
+    opacityControlSummary = DomUtil.create('summary'),
+    svgSettingsControlIcon = SVG.create('svg'),
+    settingsControlPath1 = SVG.create('path'),
+    settingsControlPath2 = SVG.create('path'),
+    extentsFieldset = DomUtil.create('fieldset', 'mapml-layer-grouped-extents'),
     mapEl = this.parentNode;
 
   // append the paths in svg for the remove layer and toggle icons
@@ -56,7 +54,7 @@ export var createLayerControlHTML = async function () {
   layerItemSettings.hidden = true;
   settingsButtonNameIcon.setAttribute('aria-hidden', true);
 
-  let removeControlButton = L.DomUtil.create(
+  let removeControlButton = DomUtil.create(
     'button',
     'mapml-layer-item-remove-control',
     layerItemControls
@@ -65,8 +63,8 @@ export var createLayerControlHTML = async function () {
   removeControlButton.title = mapEl.locale.lmRemoveLayer;
   removeControlButton.innerHTML = "<span aria-hidden='true'>&#10005;</span>";
   removeControlButton.classList.add('mapml-button');
-  L.DomEvent.on(removeControlButton, 'click', L.DomEvent.stop);
-  L.DomEvent.on(
+  DomEvent.on(removeControlButton, 'click', DomEvent.stop);
+  DomEvent.on(
     removeControlButton,
     'click',
     (e) => {
@@ -101,7 +99,7 @@ export var createLayerControlHTML = async function () {
     this._layer
   );
 
-  let itemSettingControlButton = L.DomUtil.create(
+  let itemSettingControlButton = DomUtil.create(
     'button',
     'mapml-layer-item-settings-control',
     layerItemControls
@@ -110,7 +108,7 @@ export var createLayerControlHTML = async function () {
   itemSettingControlButton.title = mapEl.locale.lmLayerSettings;
   itemSettingControlButton.setAttribute('aria-expanded', false);
   itemSettingControlButton.classList.add('mapml-button');
-  L.DomEvent.on(
+  DomEvent.on(
     itemSettingControlButton,
     'click',
     (e) => {
@@ -148,10 +146,10 @@ export var createLayerControlHTML = async function () {
   } else {
     layerItemName.innerHTML = this._layer._title;
   }
-  layerItemName.id = 'mapml-layer-item-name-{' + L.stamp(layerItemName) + '}';
+  layerItemName.id = 'mapml-layer-item-name-{' + stamp(layerItemName) + '}';
   opacityControlSummary.innerText = mapEl.locale.lcOpacity;
   opacityControlSummary.id =
-    'mapml-layer-item-opacity-' + L.stamp(opacityControlSummary);
+    'mapml-layer-item-opacity-' + stamp(opacityControlSummary);
   opacityControl.appendChild(opacityControlSummary);
   opacityControl.appendChild(opacity);
   opacity.setAttribute('type', 'range');
@@ -161,7 +159,7 @@ export var createLayerControlHTML = async function () {
   opacity.setAttribute('step', '0.1');
   opacity.setAttribute(
     'aria-labelledby',
-    'mapml-layer-item-opacity-' + L.stamp(opacityControlSummary)
+    'mapml-layer-item-opacity-' + stamp(opacityControlSummary)
   );
 
   const changeOpacity = function (e) {

@@ -1,8 +1,17 @@
-import { Util } from './mapml/utils/Util';
-import { templatedImageLayer } from './mapml/layers/TemplatedImageLayer';
-import { templatedTileLayer } from './mapml/layers/TemplatedTileLayer';
-import { templatedFeaturesLayer } from './mapml/layers/TemplatedFeaturesLayer';
-import { templatedPMTilesLayer } from './mapml/layers/TemplatedPMTilesLayer';
+import {
+  bounds,
+  point,
+  extend,
+  DomEvent,
+  stamp,
+  Util as LeafletUtil
+} from 'leaflet';
+
+import { Util } from './mapml/utils/Util.js';
+import { templatedImageLayer } from './mapml/layers/TemplatedImageLayer.js';
+import { templatedTileLayer } from './mapml/layers/TemplatedTileLayer.js';
+import { templatedFeaturesLayer } from './mapml/layers/TemplatedFeaturesLayer.js';
+import { templatedPMTilesLayer } from './mapml/layers/TemplatedPMTilesLayer.js';
 /* global M */
 
 export class HTMLLinkElement extends HTMLElement {
@@ -151,11 +160,11 @@ export class HTMLLinkElement extends HTMLElement {
       xmax = extent.bottomRight.pcrs.horizontal,
       ymin = extent.bottomRight.pcrs.vertical,
       ymax = extent.topLeft.pcrs.vertical,
-      bounds = L.bounds(L.point(xmin, ymin), L.point(xmax, ymax)),
-      center = map.options.crs.unproject(bounds.getCenter(true)),
+      newBounds = bounds(point(xmin, ymin), point(xmax, ymax)),
+      center = map.options.crs.unproject(newBounds.getCenter(true)),
       maxZoom = extent.zoom.maxZoom,
       minZoom = extent.zoom.minZoom;
-    map.setView(center, Util.getMaxZoom(bounds, map, minZoom, maxZoom), {
+    map.setView(center, Util.getMaxZoom(newBounds, map, minZoom, maxZoom), {
       animate: false
     });
   }
@@ -434,8 +443,8 @@ export class HTMLLinkElement extends HTMLElement {
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'query') {
       this.attachShadow({ mode: 'open' });
-      L.extend(this._templateVars, this._setupQueryVars(this._templateVars));
-      L.extend(this._templateVars, { extentBounds: this.getBounds() });
+      extend(this._templateVars, this._setupQueryVars(this._templateVars));
+      extend(this._templateVars, { extentBounds: this.getBounds() });
     }
   }
   _setupQueryVars(template) {
@@ -654,7 +663,7 @@ export class HTMLLinkElement extends HTMLElement {
       projection = this.parentElement.units,
       boundsUnit = {};
     boundsUnit.name = M.FALLBACK_CS;
-    let bounds = M[projection].options.crs.tilematrix.bounds(0),
+    let bnds = M[projection].options.crs.tilematrix.bounds(0),
       locInputs = false,
       numberOfAxes = 0,
       horizontalAxis = false,
@@ -673,8 +682,8 @@ export class HTMLLinkElement extends HTMLElement {
             boundsUnit.name = Util.axisToCS(
               inputs[i].getAttribute('axis').toLowerCase()
             );
-            bounds.min.x = min;
-            bounds.max.x = max;
+            bnds.min.x = min;
+            bnds.max.x = max;
             boundsUnit.horizontalAxis = inputs[i]
               .getAttribute('axis')
               .toLowerCase();
@@ -686,8 +695,8 @@ export class HTMLLinkElement extends HTMLElement {
             boundsUnit.name = Util.axisToCS(
               inputs[i].getAttribute('axis').toLowerCase()
             );
-            bounds.min.y = min;
-            bounds.max.y = max;
+            bnds.min.y = min;
+            bnds.max.y = max;
             boundsUnit.verticalAxis = inputs[i]
               .getAttribute('axis')
               .toLowerCase();
@@ -714,19 +723,19 @@ export class HTMLLinkElement extends HTMLElement {
       let zoomValue = this._templateVars.zoom?.hasAttribute('value')
         ? +this._templateVars.zoom.getAttribute('value')
         : 0;
-      bounds = Util.boundsToPCRSBounds(
-        bounds,
+      bnds = Util.boundsToPCRSBounds(
+        bnds,
         zoomValue,
         projection,
         boundsUnit.name
       );
     } else if (!locInputs) {
-      bounds = this.getFallbackBounds(projection);
+      bnds = this.getFallbackBounds(projection);
     }
-    return bounds;
+    return bnds;
   }
   getFallbackBounds(projection) {
-    let bounds;
+    let bnds;
 
     let zoom = 0;
     let metaExtent = this.parentElement.getMeta('extent');
@@ -746,13 +755,13 @@ export class HTMLLinkElement extends HTMLElement {
         }
       }
       let axes = Util.csToAxes(cs);
-      bounds = Util.boundsToPCRSBounds(
-        L.bounds(
-          L.point(
+      bnds = Util.boundsToPCRSBounds(
+        bounds(
+          point(
             +content[`top-left-${axes[0]}`],
             +content[`top-left-${axes[1]}`]
           ),
-          L.point(
+          point(
             +content[`bottom-right-${axes[0]}`],
             +content[`bottom-right-${axes[1]}`]
           )
@@ -763,9 +772,9 @@ export class HTMLLinkElement extends HTMLElement {
       );
     } else {
       let crs = M[projection];
-      bounds = crs.options.crs.pcrs.bounds;
+      bnds = crs.options.crs.pcrs.bounds;
     }
-    return bounds;
+    return bnds;
   }
   getBase() {
     let layer = this.getRootNode().host;
@@ -792,7 +801,7 @@ export class HTMLLinkElement extends HTMLElement {
   }
   /**
    * Return BOTH min/max(Display)Zoom AND min/maxNativeZoom which
-   * are options that can be passed to L.GridLayer...
+   * are options that can be passed to GridLayer...
    * https://leafletjs.com/reference.html#gridlayer-minzoom
    *
    * @param {Object} zoomInput - is an element reference to a map-input[type=zoom]
@@ -847,7 +856,7 @@ export class HTMLLinkElement extends HTMLElement {
       xmax = extent.bottomRight.pcrs.horizontal,
       ymin = extent.bottomRight.pcrs.vertical,
       ymax = extent.topLeft.pcrs.vertical,
-      mapBounds = L.bounds(L.point(xmin, ymin), L.point(xmax, ymax));
+      mapBounds = bounds(point(xmin, ymin), point(xmax, ymax));
 
     if (this._templatedLayer) {
       isVisible = this._templatedLayer.isVisible();
@@ -867,7 +876,7 @@ export class HTMLLinkElement extends HTMLElement {
   _createSelfOrStyleLink() {
     let layerEl = this.getLayerEl();
     const changeStyle = function (e) {
-      L.DomEvent.stop(e);
+      DomEvent.stop(e);
       layerEl.dispatchEvent(
         new CustomEvent('changestyle', {
           detail: {
@@ -883,11 +892,11 @@ export class HTMLLinkElement extends HTMLElement {
         document.createElement('input')
       );
     styleOptionInput.setAttribute('type', 'radio');
-    styleOptionInput.setAttribute('id', 'rad-' + L.stamp(styleOptionInput));
+    styleOptionInput.setAttribute('id', 'rad-' + stamp(styleOptionInput));
     styleOptionInput.setAttribute(
       'name',
       // grouping radio buttons based on parent layer's style <detail>
-      'styles-' + L.stamp(styleOption)
+      'styles-' + stamp(styleOption)
     );
     styleOptionInput.setAttribute('value', this.getAttribute('title'));
     styleOptionInput.setAttribute(
@@ -897,7 +906,7 @@ export class HTMLLinkElement extends HTMLElement {
     var styleOptionLabel = styleOption.appendChild(
       document.createElement('label')
     );
-    styleOptionLabel.setAttribute('for', 'rad-' + L.stamp(styleOptionInput));
+    styleOptionLabel.setAttribute('for', 'rad-' + stamp(styleOptionInput));
     styleOptionLabel.innerText = this.title;
     if (this.rel === 'style self' || this.rel === 'self style') {
       styleOptionInput.checked = true;
@@ -921,7 +930,7 @@ export class HTMLLinkElement extends HTMLElement {
           obj[inp.name] = inp.value;
         }
         console.log(obj); // DEBUGGING
-        return L.Util.template(this.tref, obj);
+        return LeafletUtil.template(this.tref, obj);
       } else if (this.rel === 'tile') {
         // TODO. Need to get tile coords from moveend
         // should be done/called from the TemplatedTilelayer.js file

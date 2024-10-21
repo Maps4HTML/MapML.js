@@ -1,18 +1,27 @@
-export var ImageLayer = L.ImageOverlay.extend({
+import {
+  ImageOverlay,
+  DomUtil,
+  point,
+  setOptions,
+  Util,
+  Browser
+} from 'leaflet';
+
+export var ImageLayer = ImageOverlay.extend({
   initialize: function (url, location, size, angle, container, options) {
     // (String, Point, Point, Number, Element, Object)
     this._container = container;
     this._url = url;
     // instead of calculating where the image goes, put it at 0,0
-    //this._location = L.point(location);
-    // the location for WMS requests will be the upper left hand
+    // this._location = point(location);
+    // the location for WMS requests will be the upper left-hand
     // corner of the map.  When the map is initialized, that is 0,0,
     // but as the user pans, of course the
     this._location = location;
-    this._size = L.point(size);
+    this._size = point(size);
     this._angle = angle;
 
-    L.setOptions(this, options);
+    setOptions(this, options);
   },
   getEvents: function () {
     var events = {
@@ -35,7 +44,7 @@ export var ImageLayer = L.ImageOverlay.extend({
     }
 
     if (this.options.interactive) {
-      L.DomUtil.addClass(this._image, 'leaflet-interactive');
+      DomUtil.addClass(this._image, 'leaflet-interactive');
       this.addInteractiveTarget(this._image);
     }
 
@@ -43,7 +52,7 @@ export var ImageLayer = L.ImageOverlay.extend({
     this._reset();
   },
   onRemove: function () {
-    L.DomUtil.remove(this._image);
+    DomUtil.remove(this._image);
     if (this.options.interactive) {
       this.removeInteractiveTarget(this._image);
     }
@@ -64,10 +73,10 @@ export var ImageLayer = L.ImageOverlay.extend({
         .subtract(this._map._getNewPixelOrigin(e.center, e.zoom))
         .round();
 
-    if (L.Browser.any3d) {
-      L.DomUtil.setTransform(this._image, translate, scale);
+    if (Browser.any3d) {
+      DomUtil.setTransform(this._image, translate, scale);
     } else {
-      L.DomUtil.setPosition(this._image, translate);
+      DomUtil.setPosition(this._image, translate);
     }
   },
   _reset: function (e) {
@@ -85,7 +94,7 @@ export var ImageLayer = L.ImageOverlay.extend({
     ) {
       return;
     }
-    L.DomUtil.setPosition(image, location);
+    DomUtil.setPosition(image, location);
 
     image.style.width = size.x + 'px';
     image.style.height = size.y + 'px';
@@ -104,15 +113,15 @@ export var ImageLayer = L.ImageOverlay.extend({
 
     var fade = Math.min(1, (now - image.loaded) / 200);
 
-    L.DomUtil.setOpacity(image, fade);
+    DomUtil.setOpacity(image, fade);
     if (fade < 1) {
       nextFrame = true;
     }
     if (nextFrame) {
-      L.Util.cancelAnimFrame(this._fadeFrame);
-      this._fadeFrame = L.Util.requestAnimFrame(this._updateOpacity, this);
+      Util.cancelAnimFrame(this._fadeFrame);
+      this._fadeFrame = Util.requestAnimFrame(this._updateOpacity, this);
     }
-    L.DomUtil.addClass(image, 'leaflet-image-loaded');
+    DomUtil.addClass(image, 'leaflet-image-loaded');
   }
 });
 export var imageLayer = function (

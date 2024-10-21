@@ -1,12 +1,14 @@
-import { Util } from '../utils/Util';
-export var StaticTileLayer = L.GridLayer.extend({
+import { GridLayer, setOptions, extend, point, bounds } from 'leaflet';
+import { Util } from '../utils/Util.js';
+
+export var StaticTileLayer = GridLayer.extend({
   initialize: function (options) {
-    L.setOptions(this, options);
+    setOptions(this, options);
     this.zoomBounds = this._getZoomBounds(
       options.tileContainer,
       options.maxZoomBound
     );
-    L.extend(this.options, this.zoomBounds);
+    extend(this.options, this.zoomBounds);
     this._groups = this._groupTiles(
       this.options.tileContainer.getElementsByTagName('map-tile')
     );
@@ -20,12 +22,12 @@ export var StaticTileLayer = L.GridLayer.extend({
 
   onAdd: function (map) {
     this._map = map;
-    L.GridLayer.prototype.onAdd.call(this, this._map);
+    GridLayer.prototype.onAdd.call(this, this._map);
     this._handleMoveEnd();
   },
 
   getEvents: function () {
-    let events = L.GridLayer.prototype.getEvents.call(this, this._map);
+    let events = GridLayer.prototype.getEvents.call(this, this._map);
     this._parentOnMoveEnd = events.moveend;
     events.moveend = this._handleMoveEnd;
     events.move = () => {}; //needed to prevent moveend from running
@@ -98,14 +100,14 @@ export var StaticTileLayer = L.GridLayer.extend({
       pixelCoords.y = +sCoords[1] * tileSize;
       pixelCoords.z = +sCoords[2]; //+String same as parseInt(String)
       if (sCoords[2] in layerBounds) {
-        layerBounds[sCoords[2]].extend(L.point(pixelCoords.x, pixelCoords.y));
+        layerBounds[sCoords[2]].extend(point(pixelCoords.x, pixelCoords.y));
         layerBounds[sCoords[2]].extend(
-          L.point(pixelCoords.x + tileSize, pixelCoords.y + tileSize)
+          point(pixelCoords.x + tileSize, pixelCoords.y + tileSize)
         );
       } else {
-        layerBounds[sCoords[2]] = L.bounds(
-          L.point(pixelCoords.x, pixelCoords.y),
-          L.point(pixelCoords.x + tileSize, pixelCoords.y + tileSize)
+        layerBounds[sCoords[2]] = bounds(
+          point(pixelCoords.x, pixelCoords.y),
+          point(pixelCoords.x + tileSize, pixelCoords.y + tileSize)
         );
       }
     }

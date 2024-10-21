@@ -1,5 +1,7 @@
-export var LayerControl = L.Control.Layers.extend({
-  /* removes 'base' layers as a concept */
+import { Control, DomEvent, DomUtil, setOptions, stamp } from 'leaflet';
+
+// Refactored LayerControl to remove global L dependency
+export var LayerControl = Control.Layers.extend({
   options: {
     autoZIndex: false,
     sortLayers: true,
@@ -12,10 +14,10 @@ export var LayerControl = L.Control.Layers.extend({
     }
   },
   initialize: function (overlays, options) {
-    L.setOptions(this, options);
+    setOptions(this, options);
 
     // the _layers array contains objects like {layer: layer, name: "name", overlay: true}
-    // the array index is the id of the layer returned by L.stamp(layer) which I guess is a unique hash
+    // the array index is the id of the layer returned by stamp(layer) which I guess is a unique hash
     this._layerControlInputs = [];
     this._layers = [];
     this._lastZIndex = 0;
@@ -28,13 +30,13 @@ export var LayerControl = L.Control.Layers.extend({
   onAdd: function () {
     this._initLayout();
     // Adding event on layer control button
-    L.DomEvent.on(
+    DomEvent.on(
       this._container.getElementsByTagName('a')[0],
       'keydown',
       this._focusFirstLayer,
       this._container
     );
-    L.DomEvent.on(
+    DomEvent.on(
       this._container,
       'contextmenu',
       this._preventDefaultContextMenu,
@@ -49,7 +51,7 @@ export var LayerControl = L.Control.Layers.extend({
     return this._container;
   },
   onRemove: function (map) {
-    L.DomEvent.off(
+    DomEvent.off(
       this._container.getElementsByTagName('a')[0],
       'keydown',
       this._focusFirstLayer,
@@ -76,7 +78,7 @@ export var LayerControl = L.Control.Layers.extend({
     return this._map ? this._update() : this;
   },
   removeLayer: function (layer) {
-    L.Control.Layers.prototype.removeLayer.call(this, layer);
+    Control.Layers.prototype.removeLayer.call(this, layer);
     if (this._layers.length === 0) {
       this._container.setAttribute('hidden', '');
     }
@@ -105,8 +107,8 @@ export var LayerControl = L.Control.Layers.extend({
       return this;
     }
 
-    L.DomUtil.empty(this._baseLayersList);
-    L.DomUtil.empty(this._overlaysList);
+    DomUtil.empty(this._baseLayersList);
+    DomUtil.empty(this._overlaysList);
 
     this._layerControlInputs = [];
     var baseLayersPresent,
@@ -123,7 +125,7 @@ export var LayerControl = L.Control.Layers.extend({
         this.options.sortFunction(a.layer, b.layer, a.name, b.name)
       );
     }
-    // -------------------------------------------------->
+
     for (i = 0; i < this._layers.length; i++) {
       obj = this._layers[i];
       this._addItem(obj);
@@ -152,7 +154,7 @@ export var LayerControl = L.Control.Layers.extend({
     );
 
     this._layerControlInputs.push(obj.input);
-    obj.input.layerId = L.stamp(obj.layer);
+    obj.input.layerId = stamp(obj.layer);
 
     this._overlaysList.appendChild(layercontrols);
     return layercontrols;
@@ -182,7 +184,7 @@ export var LayerControl = L.Control.Layers.extend({
     )
       return this;
 
-    L.DomUtil.removeClass(this._container, 'leaflet-control-layers-expanded');
+    DomUtil.removeClass(this._container, 'leaflet-control-layers-expanded');
     if (e.originalEvent?.pointerType === 'touch') {
       this._container._isExpanded = false;
     }

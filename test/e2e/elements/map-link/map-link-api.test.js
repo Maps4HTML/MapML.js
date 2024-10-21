@@ -4,11 +4,17 @@ test.describe('map-link api tests', () => {
   let page;
   let context;
   test.beforeAll(async function () {
-    context = await chromium.launchPersistentContext('');
+    context = await chromium.launchPersistentContext('', {
+      ignoreHTTPSErrors: true
+    });
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('map-link-api.html');
+    await page.evaluate(async () => {
+      const leaflet = await import('http://localhost:30001/leaflet-src.esm.js');
+      window.L = leaflet;
+    });
   });
   test(`extent of map-link established via map-meta vs map-inputs`, async () => {
     // create map-extent with map-link whose min,maxZoom and min/maxNativeZoom

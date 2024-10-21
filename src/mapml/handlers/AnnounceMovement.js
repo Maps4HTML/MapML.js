@@ -1,5 +1,6 @@
-import { Util } from '../utils/Util';
-export var AnnounceMovement = L.Handler.extend({
+import { Handler } from 'leaflet';
+import { Util } from '../utils/Util.js';
+export var AnnounceMovement = Handler.extend({
   addHooks: function () {
     this._map.on({
       layeradd: this.totalBounds,

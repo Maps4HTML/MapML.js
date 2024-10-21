@@ -1,4 +1,6 @@
-import { Util } from '../../utils/Util';
+import { Point } from 'leaflet';
+
+import { Util } from '../../utils/Util.js';
 export class LocationInput {
   constructor(name, position, axis, units, min, max, rel, layer) {
     this.name = name;
@@ -101,7 +103,7 @@ export class LocationInput {
       let obj = [];
       for (let j = tileRange.min.y; j <= tileRange.max.y; j++) {
         for (let i = tileRange.min.x; i <= tileRange.max.x; i++) {
-          const coords = new L.Point(i, j);
+          const coords = new Point(i, j);
           coords.z = templatedTileLayer._tileZoom;
           obj.push(coords);
         }

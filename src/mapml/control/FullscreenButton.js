@@ -1,5 +1,7 @@
-import { Util } from '../utils/Util';
-export var FullscreenButton = L.Control.extend({
+import { Control, DomUtil, DomEvent, Map, Util as LeafletUtil } from 'leaflet';
+import { Util } from '../utils/Util.js';
+
+export var FullscreenButton = Control.extend({
   options: {
     position: 'topleft',
     title: {
@@ -18,12 +20,12 @@ export var FullscreenButton = L.Control.extend({
       false: locale.btnFullScreen,
       true: locale.btnExitFullScreen
     };
-    var container = L.DomUtil.create(
+    var container = DomUtil.create(
       'div',
       'leaflet-control-fullscreen leaflet-bar leaflet-control'
     );
 
-    this.link = L.DomUtil.create(
+    this.link = DomUtil.create(
       'a',
       'leaflet-control-fullscreen-button leaflet-bar-part',
       container
@@ -35,7 +37,7 @@ export var FullscreenButton = L.Control.extend({
     this._map.on('fullscreenchange', this._toggleTitle, this);
     this._toggleTitle();
 
-    L.DomEvent.on(this.link, 'click', this._click, this);
+    DomEvent.on(this.link, 'click', this._click, this);
 
     return container;
   },
@@ -45,8 +47,8 @@ export var FullscreenButton = L.Control.extend({
   },
 
   _click: function (e) {
-    L.DomEvent.stopPropagation(e);
-    L.DomEvent.preventDefault(e);
+    DomEvent.stopPropagation(e);
+    DomEvent.preventDefault(e);
     this._map.toggleFullscreen(this.options);
   },
 
@@ -55,7 +57,7 @@ export var FullscreenButton = L.Control.extend({
   }
 });
 
-L.Map.include({
+Map.include({
   isFullscreen: function () {
     return this._isFullscreen || false;
   },
@@ -100,13 +102,13 @@ L.Map.include({
   },
 
   _enablePseudoFullscreen: function (container) {
-    L.DomUtil.addClass(container, 'leaflet-pseudo-fullscreen');
+    DomUtil.addClass(container, 'leaflet-pseudo-fullscreen');
     this._setFullscreen(true);
     this.fire('fullscreenchange');
   },
 
   _disablePseudoFullscreen: function (container) {
-    L.DomUtil.removeClass(container, 'leaflet-pseudo-fullscreen');
+    DomUtil.removeClass(container, 'leaflet-pseudo-fullscreen');
     this._setFullscreen(false);
     this.fire('fullscreenchange');
   },
@@ -118,9 +120,9 @@ L.Map.include({
       'mapml-viewer,[is=web-map]'
     );
     if (fullscreen) {
-      L.DomUtil.addClass(container, 'mapml-fullscreen-on');
+      DomUtil.addClass(container, 'mapml-fullscreen-on');
     } else {
-      L.DomUtil.removeClass(container, 'mapml-fullscreen-on');
+      DomUtil.removeClass(container, 'mapml-fullscreen-on');
     }
     this.invalidateSize();
   },
@@ -138,11 +140,11 @@ L.Map.include({
   }
 });
 
-L.Map.mergeOptions({
+Map.mergeOptions({
   fullscreenControl: false
 });
 
-L.Map.addInitHook(function () {
+Map.addInitHook(function () {
   if (this.options.fullscreenControl) {
     this.fullscreenControl = new FullscreenButton(
       this.options.fullscreenControl
@@ -163,14 +165,14 @@ L.Map.addInitHook(function () {
   }
 
   if (fullscreenchange) {
-    var onFullscreenChange = L.bind(this._onFullscreenChange, this);
+    var onFullscreenChange = LeafletUtil.bind(this._onFullscreenChange, this);
 
     this.whenReady(function () {
-      L.DomEvent.on(document, fullscreenchange, onFullscreenChange);
+      DomEvent.on(document, fullscreenchange, onFullscreenChange);
     });
 
     this.on('unload', function () {
-      L.DomEvent.off(document, fullscreenchange, onFullscreenChange);
+      DomEvent.off(document, fullscreenchange, onFullscreenChange);
     });
   }
 });

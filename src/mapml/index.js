@@ -38,24 +38,19 @@
  * publicity pertaining to the work without specific, written prior permission.
  * Title to copyright in this work will at all times remain with copyright holders.
  */
-/* global L, Node */
-import '../../dist/leaflet-src.js';
-import '../../dist/proj4-src.js';
-import '../../dist/proj4leaflet.js';
-import '../../dist/L.Control.Locate.js';
 import './GlobalM.js';
 
-import { HTMLMapmlViewerElement } from '../mapml-viewer';
-import { HTMLLayerElement } from '../mapml-viewer';
-import { HTMLMapCaptionElement } from '../mapml-viewer';
-import { HTMLFeatureElement } from '../mapml-viewer';
-import { HTMLExtentElement } from '../mapml-viewer';
-import { HTMLInputElement } from '../mapml-viewer';
-import { HTMLSelectElement } from '../mapml-viewer';
-import { HTMLLinkElement } from '../mapml-viewer';
-import { HTMLStyleElement } from '../mapml-viewer';
-import { HTMLWebMapElement as HTMLMapElement } from '../mapml-viewer';
-import { HTMLMapAreaElement as HTMLAreaElement } from '../mapml-viewer';
+import { HTMLMapmlViewerElement } from '../mapml-viewer.js';
+import { HTMLLayerElement } from '../mapml-viewer.js';
+import { HTMLMapCaptionElement } from '../mapml-viewer.js';
+import { HTMLFeatureElement } from '../mapml-viewer.js';
+import { HTMLExtentElement } from '../mapml-viewer.js';
+import { HTMLInputElement } from '../mapml-viewer.js';
+import { HTMLSelectElement } from '../mapml-viewer.js';
+import { HTMLLinkElement } from '../mapml-viewer.js';
+import { HTMLStyleElement } from '../mapml-viewer.js';
+import { HTMLWebMapElement as HTMLMapElement } from '../mapml-viewer.js';
+import { HTMLMapAreaElement as HTMLAreaElement } from '../mapml-viewer.js';
 
 window.MapML = {
   HTMLMapmlViewerElement,

@@ -1,21 +1,23 @@
-import { Util } from '../utils/Util';
+import { SVG, DomUtil, stamp } from 'leaflet';
+
+import { Util } from '../utils/Util.js';
 /**
  * Returns a new Feature Renderer
  * @param {Object} options - Options for the renderer
  * @returns {*}
  */
-export var FeatureRenderer = L.SVG.extend({
+export var FeatureRenderer = SVG.extend({
   /**
-   * Override method of same name from L.SVG, use the this._container property
+   * Override method of same name from SVG, use the this._container property
    * to set up the role="none presentation" on featureGroupu container,
    * per this recommendation:
-   * https://github.com/Maps4HTML/MapML.js/pull/471#issuecomment-845192246
+   * https://github.com/Maps4HTML/MapMjs/pull/471#issuecomment-845192246
    * @private overrides ancestor method so that we have a _container to work with
    */
   _initContainer: function () {
     // call the method we're overriding, per https://leafletjs.com/examples/extending/extending-1-classes.html#methods-of-the-parent-class
     // note you have to pass 'this' as the first arg
-    L.SVG.prototype._initContainer.call(this);
+    SVG.prototype._initContainer.call(this);
     // knowing that the previous method call creates the this._container, we
     // access it and set the role="none presetation" which suppresses the
     // announcement of "Graphic" on each feature focus.
@@ -30,13 +32,13 @@ export var FeatureRenderer = L.SVG.extend({
    */
   _initPath: function (layer, stampLayer = true) {
     if (layer._outline) {
-      let outlinePath = L.SVG.create('path');
+      let outlinePath = SVG.create('path');
       if (layer.options.className)
-        L.DomUtil.addClass(
+        DomUtil.addClass(
           outlinePath,
           layer.featureAttributes.class || layer.options.className
         );
-      L.DomUtil.addClass(outlinePath, 'mapml-feature-outline');
+      DomUtil.addClass(outlinePath, 'mapml-feature-outline');
       outlinePath.style.fill = 'none';
       layer.outlinePath = outlinePath;
     }
@@ -67,8 +69,8 @@ export var FeatureRenderer = L.SVG.extend({
       this._updateStyle(layer);
     }
     if (stampLayer) {
-      let stamp = L.stamp(layer);
-      this._layers[stamp] = layer;
+      let s = stamp(layer);
+      this._layers[s] = layer;
     }
   },
 
@@ -88,7 +90,7 @@ export var FeatureRenderer = L.SVG.extend({
     interactive = false,
     attr = undefined
   ) {
-    let p = L.SVG.create('path');
+    let p = SVG.create('path');
     ring.path = p;
     if (!attr) {
       if (title) p.setAttribute('aria-label', title);
@@ -99,10 +101,10 @@ export var FeatureRenderer = L.SVG.extend({
       }
     }
     if (ring.cls || cls) {
-      L.DomUtil.addClass(p, ring.cls || cls);
+      DomUtil.addClass(p, ring.cls || cls);
     }
     if (interactive) {
-      L.DomUtil.addClass(p, 'leaflet-interactive');
+      DomUtil.addClass(p, 'leaflet-interactive');
     }
   },
 
@@ -165,16 +167,16 @@ export var FeatureRenderer = L.SVG.extend({
     for (let p of layer._parts) {
       if (p.path) {
         layer.removeInteractiveTarget(p.path);
-        L.DomUtil.remove(p.path);
+        DomUtil.remove(p.path);
       }
       for (let subP of p.subrings) {
-        if (subP.path) L.DomUtil.remove(subP.path);
+        if (subP.path) DomUtil.remove(subP.path);
       }
     }
-    if (layer.outlinePath) L.DomUtil.remove(layer.outlinePath);
+    if (layer.outlinePath) DomUtil.remove(layer.outlinePath);
     layer.removeInteractiveTarget(layer.group);
-    L.DomUtil.remove(layer.group);
-    delete this._layers[L.stamp(layer)];
+    DomUtil.remove(layer.group);
+    delete this._layers[stamp(layer)];
   },
 
   /**
@@ -201,7 +203,7 @@ export var FeatureRenderer = L.SVG.extend({
 
   /**
    * Generates the marker d attribute for a given point
-   * @param {L.Point} p - The point of the marker
+   * @param {Point} p - The point of the marker
    * @returns {string}
    * @private
    */
@@ -302,7 +304,7 @@ export var FeatureRenderer = L.SVG.extend({
 
   /**
    * Generates the d string of a feature part
-   * @param {L.Point[]} rings - The points making up a given part of a feature
+   * @param {Point[]} rings - The points making up a given part of a feature
    * @param {boolean} closed - Whether a feature is closed or not
    * @returns {string}
    */

@@ -1,39 +1,38 @@
+import { DomUtil, SVG, DomEvent, stamp } from 'leaflet';
+import { Util } from '../../utils/Util.js';
+
 export var createLayerControlExtentHTML = function () {
-  var extent = L.DomUtil.create('fieldset', 'mapml-layer-extent'),
-    extentProperties = L.DomUtil.create(
+  var extent = DomUtil.create('fieldset', 'mapml-layer-extent'),
+    extentProperties = DomUtil.create(
       'div',
       'mapml-layer-item-properties',
       extent
     ),
-    extentSettings = L.DomUtil.create(
-      'div',
-      'mapml-layer-item-settings',
-      extent
-    ),
-    extentLabel = L.DomUtil.create(
+    extentSettings = DomUtil.create('div', 'mapml-layer-item-settings', extent),
+    extentLabel = DomUtil.create(
       'label',
       'mapml-layer-item-toggle',
       extentProperties
     ),
-    input = L.DomUtil.create('input'),
-    svgExtentControlIcon = L.SVG.create('svg'),
-    extentControlPath1 = L.SVG.create('path'),
-    extentControlPath2 = L.SVG.create('path'),
-    extentNameIcon = L.DomUtil.create('span'),
-    extentItemControls = L.DomUtil.create(
+    input = DomUtil.create('input'),
+    svgExtentControlIcon = SVG.create('svg'),
+    extentControlPath1 = SVG.create('path'),
+    extentControlPath2 = SVG.create('path'),
+    extentNameIcon = DomUtil.create('span'),
+    extentItemControls = DomUtil.create(
       'div',
       'mapml-layer-item-controls',
       extentProperties
     ),
-    opacityControl = L.DomUtil.create(
+    opacityControl = DomUtil.create(
       'details',
       'mapml-layer-item-details mapml-control-layers',
       extentSettings
     ),
-    extentOpacitySummary = L.DomUtil.create('summary', '', opacityControl),
+    extentOpacitySummary = DomUtil.create('summary', '', opacityControl),
     mapEl = this.getMapEl(),
     layerEl = this.getLayerEl(),
-    opacity = L.DomUtil.create('input', '', opacityControl);
+    opacity = DomUtil.create('input', '', opacityControl);
   extentSettings.hidden = true;
   extent.setAttribute('aria-grabbed', 'false');
 
@@ -59,7 +58,7 @@ export var createLayerControlExtentHTML = function () {
     extentSettings.appendChild(frag);
   }
 
-  let removeExtentButton = L.DomUtil.create(
+  let removeExtentButton = DomUtil.create(
     'button',
     'mapml-layer-item-remove-control',
     extentItemControls
@@ -74,7 +73,7 @@ export var createLayerControlExtentHTML = function () {
     this.remove();
   });
 
-  let extentsettingsButton = L.DomUtil.create(
+  let extentsettingsButton = DomUtil.create(
     'button',
     'mapml-layer-item-settings-control',
     extentItemControls
@@ -83,7 +82,7 @@ export var createLayerControlExtentHTML = function () {
   extentsettingsButton.title = mapEl.locale.lmExtentSettings;
   extentsettingsButton.setAttribute('aria-expanded', false);
   extentsettingsButton.classList.add('mapml-button');
-  L.DomEvent.on(
+  DomEvent.on(
     extentsettingsButton,
     'click',
     (e) => {
@@ -104,14 +103,14 @@ export var createLayerControlExtentHTML = function () {
   extentNameIcon.appendChild(svgExtentControlIcon);
   extentOpacitySummary.innerText = mapEl.locale.lcOpacity;
   extentOpacitySummary.id =
-    'mapml-extent-item-opacity-' + L.stamp(extentOpacitySummary);
+    'mapml-extent-item-opacity-' + stamp(extentOpacitySummary);
   opacity.setAttribute('type', 'range');
   opacity.setAttribute('min', '0');
   opacity.setAttribute('max', '1.0');
   opacity.setAttribute('step', '0.1');
   opacity.setAttribute(
     'aria-labelledby',
-    'mapml-extent-item-opacity-' + L.stamp(extentOpacitySummary)
+    'mapml-extent-item-opacity-' + stamp(extentOpacitySummary)
   );
   const changeOpacity = function (e) {
     if (e && e.target && e.target.value >= 0 && e.target.value <= 1.0) {
@@ -122,7 +121,7 @@ export var createLayerControlExtentHTML = function () {
   opacity.value = this._extentLayer._container.style.opacity || '1.0';
   opacity.addEventListener('change', changeOpacity.bind(this));
 
-  var extentItemNameSpan = L.DomUtil.create(
+  var extentItemNameSpan = DomUtil.create(
     'span',
     'mapml-extent-item-name',
     extentLabel
@@ -137,7 +136,7 @@ export var createLayerControlExtentHTML = function () {
   this._layerControlCheckbox = input;
   input.addEventListener('change', changeCheck.bind(this));
   extentItemNameSpan.id =
-    'mapml-extent-item-name-{' + L.stamp(extentItemNameSpan) + '}';
+    'mapml-extent-item-name-{' + stamp(extentItemNameSpan) + '}';
   extent.setAttribute('aria-labelledby', extentItemNameSpan.id);
   extentItemNameSpan.extent = this;
 

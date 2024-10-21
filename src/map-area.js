@@ -1,3 +1,5 @@
+import { point, circle, latLngBounds, rectangle, polygon, SVG } from 'leaflet';
+
 export class HTMLMapAreaElement extends HTMLAreaElement {
   static get observedAttributes() {
     return ['coords', 'alt', 'href', 'shape', 'rel', 'type', 'target'];
@@ -89,31 +91,31 @@ export class HTMLMapAreaElement extends HTMLAreaElement {
 
       if (this.shape === 'circle') {
         var pixelRadius = parseInt(this.coords.split(',')[2]),
-          pointOnCirc = L.point(points[0]).add(L.point(0, pixelRadius)),
+          pointOnCirc = point(points[0]).add(point(0, pixelRadius)),
           latLngOnCirc = map.containerPointToLatLng(pointOnCirc),
           latLngCenter = map.containerPointToLatLng(points[0]),
           radiusInMeters = map.distance(latLngCenter, latLngOnCirc);
-        this._feature = L.circle(latLngCenter, radiusInMeters, options).addTo(
+        this._feature = circle(latLngCenter, radiusInMeters, options).addTo(
           map
         );
       } else if (!this.shape || this.shape === 'rect') {
-        var bounds = L.latLngBounds(
+        var bnds = latLngBounds(
           map.containerPointToLatLng(points[0]),
           map.containerPointToLatLng(points[1])
         );
-        this._feature = L.rectangle(bounds, options).addTo(map);
+        this._feature = rectangle(bnds, options).addTo(map);
       } else if (this.shape === 'poly') {
-        this._feature = L.polygon(this._pointsToLatLngs(points), options).addTo(
+        this._feature = polygon(this._pointsToLatLngs(points), options).addTo(
           map
         );
       } else {
         // whole initial area of map is a hyperlink
-        this._feature = L.rectangle(map.getBounds(), options).addTo(map);
+        this._feature = rectangle(map.getBounds(), options).addTo(map);
       }
       if (this.alt) {
         // other Leaflet features are implemented via SVG.  SVG displays tooltips
         // based on the <svg:title> graphics child element.
-        var title = L.SVG.create('title'),
+        var title = SVG.create('title'),
           titleText = document.createTextNode(this.alt);
         title.appendChild(titleText);
         this._feature._path.appendChild(title);

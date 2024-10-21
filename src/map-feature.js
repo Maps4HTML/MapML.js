@@ -1,4 +1,7 @@
-import { Util } from './mapml/utils/Util';
+import { bounds, point } from 'leaflet';
+
+import { Util } from './mapml/utils/Util.js';
+import proj4 from 'proj4';
 
 export class HTMLFeatureElement extends HTMLElement {
   static get observedAttributes() {
@@ -234,7 +237,7 @@ export class HTMLFeatureElement extends HTMLElement {
   }
 
   removeFeature(layerToRemoveFrom) {
-    // layerToRemoveFrom is the L.LayerGroup or L.FeatureGroup to remove this
+    // layerToRemoveFrom is the LayerGroup or FeatureGroup to remove this
     // feature from...
     layerToRemoveFrom.removeLayer(this._geometry);
     // TODO: MOVE THIS LOGIC TO layerToRemoveFrom.removeLayer(Geometry)
@@ -345,10 +348,10 @@ export class HTMLFeatureElement extends HTMLElement {
             bboxExtent = _updateExtent(shape, coord[i], bboxExtent);
           }
         }
-        let topLeft = L.point(bboxExtent[0], bboxExtent[1]);
-        let bottomRight = L.point(bboxExtent[2], bboxExtent[3]);
+        let topLeft = point(bboxExtent[0], bboxExtent[1]);
+        let bottomRight = point(bboxExtent[2], bboxExtent[3]);
         let pcrsBound = Util.boundsToPCRSBounds(
-          L.bounds(topLeft, bottomRight),
+          bounds(topLeft, bottomRight),
           zoom,
           map.options.projection,
           cs
@@ -367,7 +370,7 @@ export class HTMLFeatureElement extends HTMLElement {
               M[projection].scale(+this.zoom || maxZoom)
             );
           pcrsBound = Util.pixelToPCRSBounds(
-            L.bounds(pixel.subtract(tileCenter), pixel.add(tileCenter)),
+            bounds(pixel.subtract(tileCenter), pixel.add(tileCenter)),
             this.zoom || maxZoom,
             projection
           );
@@ -423,9 +426,9 @@ export class HTMLFeatureElement extends HTMLElement {
   getZoomToZoom() {
     let tL = this.extent.topLeft.pcrs,
       bR = this.extent.bottomRight.pcrs,
-      bound = L.bounds(
-        L.point(tL.horizontal, tL.vertical),
-        L.point(bR.horizontal, bR.vertical)
+      bound = bounds(
+        point(tL.horizontal, tL.vertical),
+        point(bR.horizontal, bR.vertical)
       );
     let projection = this.getMapEl()._map.options.projection,
       layerZoomBounds = this.getLayerEl().extent.zoom,
@@ -616,9 +619,9 @@ export class HTMLFeatureElement extends HTMLElement {
       map = this.getMapEl()._map;
     let tL = extent.topLeft.pcrs,
       bR = extent.bottomRight.pcrs,
-      bound = L.bounds(
-        L.point(tL.horizontal, tL.vertical),
-        L.point(bR.horizontal, bR.vertical)
+      bound = bounds(
+        point(tL.horizontal, tL.vertical),
+        point(bR.horizontal, bR.vertical)
       ),
       center = map.options.crs.unproject(bound.getCenter(true));
     map.setView(center, this.getZoomToZoom(), { animate: false });

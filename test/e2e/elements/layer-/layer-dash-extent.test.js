@@ -4,7 +4,9 @@ test.describe('layer- local/inline extent source tests', () => {
   let page;
   let context;
   test.beforeAll(async function () {
-    context = await chromium.launchPersistentContext('');
+    context = await chromium.launchPersistentContext('', {
+      ignoreHTTPSErrors: true
+    });
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
@@ -139,6 +141,10 @@ test.describe('layer- local/inline extent source tests', () => {
   test('layer-.extent bounds update with addition of map-meta children', async () => {
     await page.reload();
     await page.waitForTimeout(1000);
+    await page.evaluate(async () => {
+      const leaflet = await import('http://localhost:30001/leaflet-src.esm.js');
+      window.L = leaflet;
+    });
     // this tests the MutationObserver on the layer- element to ensure it's
     // listening for map-meta name=zoom and name=extent
     // add a map-meta for extent inside the layer- element

@@ -1,8 +1,9 @@
 module.exports = function(grunt) {
-const Diff = require('diff');
-const nodeResolve = require('@rollup/plugin-node-resolve');
-const loadLocalePlugin = require('./load-locales.js');
-grunt.initConfig({
+  const Diff = require('diff');
+  const nodeResolve = require('@rollup/plugin-node-resolve');
+  const loadLocalePlugin = require('./load-locales.js');
+  const alias = require('@rollup/plugin-alias');
+  grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     cssmin: {
       options: {
@@ -52,30 +53,6 @@ grunt.initConfig({
         files: [
           {
             expand: true,
-            cwd: 'node_modules/leaflet/dist/',
-            flatten: true,
-            filter: 'isFile',
-            src: ['leaflet-src.js'],
-            dest: 'dist/'
-          },
-          {
-            expand: true,
-            cwd: 'node_modules/proj4/dist/',
-            flatten: true,
-            filter: 'isFile',
-            src: ['proj4-src.js'],
-            dest: 'dist/'
-          },
-          {
-            expand: true,
-            cwd: 'node_modules/proj4leaflet/src/',
-            flatten: true,
-            filter: 'isFile',
-            src: ['proj4leaflet.js'],
-            dest: 'dist/'
-          },
-          {
-            expand: true,
             flatten: true,
             filter: 'isFile',
             src: ['index.html'],
@@ -87,28 +64,12 @@ grunt.initConfig({
             filter: 'isFile',
             src: ['src/pmtilesRules.js'],
             dest: 'dist/'
-          },
-          {
-            expand: true,
-            cwd: 'node_modules/leaflet.locatecontrol/src/',
-            flatten: true,
-            filter: 'isFile',
-            src: ['L.Control.Locate.js'],
-            dest: 'dist/'
           }
         ],
         options: {
           process: function (content, srcpath) {
             // see patch.diff file for comments on why patching is necessary
-            if (srcpath.includes('proj4leaflet.js')) {
-              console.log('PATCHING: ', srcpath);
-              const patch = grunt.file.read('src/proj4leaflet/patch.diff');
-              return Diff.applyPatch(content, patch);
-            } else if (srcpath.includes('proj4-src.js')) {
-              console.log('PATCHING: ', srcpath);
-              const patch = grunt.file.read('src/proj4/patch.diff');
-              return Diff.applyPatch(content, patch);
-            } else if (srcpath.includes('index.html')) {
+            if (srcpath.includes('index.html')) {
               console.log('MODIFYING: ', srcpath);
               var pathToModuleRE =  /dist\/mapml\.js/gi;
               return content.replace(pathToModuleRE,"./mapml.js");
@@ -173,7 +134,7 @@ grunt.initConfig({
     },
     clean: {
       dist: ['dist'],
-      tidyup: ['dist/leaflet-src.js','dist/proj4-src.js','dist/proj4leaflet.js','dist/L.Control.Locate.js','dist/mapmlviewer.js'],
+      tidyup: ['dist/mapmlviewer.js'],
       experiments: {
         options: {force: true},
         src: ['../experiments/dist']
@@ -192,17 +153,28 @@ grunt.initConfig({
       }
     },
     rollup: {
-      options: {
-        format: 'es',
-        plugins: [nodeResolve(),loadLocalePlugin()],
-        external: './pmtilesRules.js'
-      },
-      main: {
-        dest: 'dist/mapmlviewer.js',
-        src: 'src/mapml/index.js' // Only one source file is permitted
-      }
-    },
-    prettier: {
+       options: {
+         format: 'es',
+         plugins: [
+           nodeResolve(),
+           loadLocalePlugin(),
+           alias({
+            entries: [
+              {
+                find: 'leaflet',
+                replacement: 'leaflet/dist/leaflet-src.esm.js'
+              }
+            ]
+          })
+         ],
+         external: './pmtilesRules.js'
+       },
+       main: {
+         dest: 'dist/mapmlviewer.js',
+         src: 'src/mapml/index.js' // Only one source file is permitted
+       }
+     },
+     prettier: {
       options: {
         // https://prettier.io/docs/en/options.html
         progress: true
