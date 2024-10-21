@@ -242,7 +242,7 @@ export var TemplatedFeaturesLayer = L.Layer.extend({
         }
         if (layer._path.childElementCount === 0) {
           let title = document.createElement('title');
-          title.innerText = 'Feature';
+          title.innerText = mapEl.locale.dfFeatureCaption;
           layer._path.appendChild(title);
         }
       }

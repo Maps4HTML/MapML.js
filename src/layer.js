@@ -725,7 +725,7 @@ export class MapLayer extends HTMLElement {
     if (styleLinks.length > 1) {
       var stylesControl = document.createElement('details'),
         stylesControlSummary = document.createElement('summary');
-      stylesControlSummary.innerText = 'Style';
+      stylesControlSummary.innerText = mapEl.locale.lmStyle;
       stylesControl.appendChild(stylesControlSummary);
 
       for (var j = 0; j < styleLinks.length; j++) {

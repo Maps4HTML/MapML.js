@@ -65,7 +65,7 @@ export var createLayerControlExtentHTML = function () {
     extentItemControls
   );
   removeExtentButton.type = 'button';
-  removeExtentButton.title = 'Remove Sub Layer';
+  removeExtentButton.title = mapEl.locale.lmRemoveExtent;
   removeExtentButton.innerHTML = "<span aria-hidden='true'>&#10005;</span>";
   removeExtentButton.classList.add('mapml-button');
   removeExtentButton.addEventListener('click', (e) => {
@@ -80,7 +80,7 @@ export var createLayerControlExtentHTML = function () {
     extentItemControls
   );
   extentsettingsButton.type = 'button';
-  extentsettingsButton.title = 'Extent Settings';
+  extentsettingsButton.title = mapEl.locale.lmExtentSettings;
   extentsettingsButton.setAttribute('aria-expanded', false);
   extentsettingsButton.classList.add('mapml-button');
   L.DomEvent.on(
