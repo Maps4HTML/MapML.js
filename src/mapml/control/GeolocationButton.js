@@ -2,7 +2,11 @@ export var GeolocationButton = L.Control.extend({
   options: {
     position: 'bottomright'
   },
-
+  _getLocale: function (map) {
+    return map.options.mapEl && map.options.mapEl.locale
+      ? map.options.mapEl.locale
+      : M.options.locale;
+  },
   onAdd: function (map) {
     // customize locate control to focus map after start/stop, so that
     // featureIndexOverlay is correctly displayed
@@ -16,10 +20,11 @@ export var GeolocationButton = L.Control.extend({
         map.getContainer().focus();
       }
     });
+    let locale = this._getLocale(map);
     this.locateControl = new L.Control.CustomLocate({
       showPopup: false,
       strings: {
-        title: M.options.locale.btnLocTrackOff
+        title: locale.btnLocTrackOff
       },
       position: this.options.position,
       locateOptions: {
@@ -34,15 +39,15 @@ export var GeolocationButton = L.Control.extend({
         container.classList.contains('active') &&
         container.classList.contains('following')
       ) {
-        container.firstChild.title = M.options.locale.btnLocTrackOn;
-        button._marker.bindTooltip(M.options.locale.btnMyLocTrackOn, {
+        container.firstChild.title = locale.btnLocTrackOn;
+        button._marker.bindTooltip(locale.btnMyLocTrackOn, {
           permanent: true
         });
       } else if (container.classList.contains('active')) {
-        container.firstChild.title = M.options.locale.btnLocTrackLastKnown;
-        button._marker.bindTooltip(M.options.locale.btnMyLastKnownLocTrackOn);
+        container.firstChild.title = locale.btnLocTrackLastKnown;
+        button._marker.bindTooltip(locale.btnMyLastKnownLocTrackOn);
       } else {
-        container.firstChild.title = M.options.locale.btnLocTrackOff;
+        container.firstChild.title = locale.btnLocTrackOff;
       }
     });
     var observerConfig = { attributes: true, attributeFilter: ['class'] };

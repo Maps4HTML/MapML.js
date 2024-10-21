@@ -3,12 +3,21 @@ export var FullscreenButton = L.Control.extend({
   options: {
     position: 'topleft',
     title: {
-      false: 'View Fullscreen',
-      true: 'Exit Fullscreen'
+      false: M.options.locale.btnFullScreen,
+      true: M.options.locale.btnExitFullScreen
     }
   },
-
+  _getLocale: function (map) {
+    return map.options.mapEl && map.options.mapEl.locale
+      ? map.options.mapEl.locale
+      : M.options.locale;
+  },
   onAdd: function (map) {
+    let locale = this._getLocale(map);
+    this.options.title = {
+      false: locale.btnFullScreen,
+      true: locale.btnExitFullScreen
+    };
     var container = L.DomUtil.create(
       'div',
       'leaflet-control-fullscreen leaflet-bar leaflet-control'
