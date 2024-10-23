@@ -45,12 +45,12 @@ test.describe('Multiple Extent Query Tests', () => {
 
   test('Querying overlapping extents, user is able to navigate into second set of query results using popup controls', async () => {
     let feature;
-    await page.getByTitle('Next Feature', { exact: true }).click();
-    await page.getByTitle('Next Feature', { exact: true }).click();
-    await page.getByTitle('Next Feature', { exact: true }).click();
-    await page.getByTitle('Next Feature', { exact: true }).click();
-    await page.getByTitle('Next Feature', { exact: true }).click();
-    await page.getByTitle('Next Feature', { exact: true }).click();
+    await page.getByTitle('Next feature', { exact: true }).click();
+    await page.getByTitle('Next feature', { exact: true }).click();
+    await page.getByTitle('Next feature', { exact: true }).click();
+    await page.getByTitle('Next feature', { exact: true }).click();
+    await page.getByTitle('Next feature', { exact: true }).click();
+    await page.getByTitle('Next feature', { exact: true }).click();
 
     const name = await page
       .frameLocator('iframe')
@@ -70,7 +70,7 @@ test.describe('Multiple Extent Query Tests', () => {
   });
 
   test("Navigate back from second query result set to end of first query result set by clicking '< / Previous'", async () => {
-    await page.getByTitle('Previous Feature', { exact: true }).click();
+    await page.getByTitle('Previous feature', { exact: true }).click();
     const feature = await page.$eval(
       'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > div > div.mapml-vector-container > svg > g',
       (g) => (g.firstElementChild ? g.firstElementChild : false)
@@ -109,11 +109,11 @@ test.describe('Multiple Extent Query Tests', () => {
     // panning / zooming takes time...
     await page.waitForTimeout(1000);
     await page.locator('mapml-viewer').click({ position: { x: 450, y: 150 } });
-    await page.getByTitle('Next Feature').click();
-    await page.getByTitle('Next Feature').click();
-    await page.getByTitle('Next Feature').click();
-    await page.getByTitle('Next Feature').click();
-    await page.getByTitle('Next Feature').click();
+    await page.getByTitle('Next feature').click();
+    await page.getByTitle('Next feature').click();
+    await page.getByTitle('Next feature').click();
+    await page.getByTitle('Next feature').click();
+    await page.getByTitle('Next feature').click();
     let feature = page.locator('.mapml-vector-container > svg > g');
     await expect(feature).toBeEmpty();
 

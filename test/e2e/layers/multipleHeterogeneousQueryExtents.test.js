@@ -109,6 +109,7 @@ test.describe('Multiple Extent Queries with heterogeneous response content types
     );
   });
   test('Enusre extents that are unchecked or removed are not included in query results', async () => {
+    await page.pause();
     // starting conditions
     let firstExtentInLayerControl = await page.$eval(
       'fieldset.mapml-layer-grouped-extents > fieldset:nth-child(1) span',
@@ -183,7 +184,7 @@ test.describe('Multiple Extent Queries with heterogeneous response content types
     await page.click("text='HTML query response'");
     // remove it entirely
     await page.click(
-      "fieldset.mapml-layer-extent:nth-child(3) button[title='Remove Sub Layer'].mapml-layer-item-remove-control"
+      "fieldset.mapml-layer-extent:nth-child(3) button[title='Remove Sub-layer'].mapml-layer-item-remove-control"
     );
 
     // query the page, should create popup content

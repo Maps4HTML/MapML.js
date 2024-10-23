@@ -28,7 +28,9 @@ The imagery layer <map-extent> draws on top of the states layer.
      * */
     const layerControl = page.locator('.leaflet-top.leaflet-right');
     await layerControl.hover();
-    const layerSettings = layerControl.getByTitle('Layer Settings');
+    const layerSettings = layerControl.getByTitle('Layer Settings', {
+      exact: true
+    });
     await layerSettings.click();
     const imageryExtentCheckbox = layerControl.getByRole('checkbox', {
       name: 'Extent One'

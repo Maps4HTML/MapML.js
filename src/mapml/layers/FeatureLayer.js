@@ -406,7 +406,7 @@ export var FeatureLayer = L.FeatureGroup.extend({
       title = feature.querySelector('map-featurecaption');
     title = title
       ? title.innerHTML
-      : this?._map.options.mapEl.locale.dfFeatureCaption;
+      : this.options.mapEl.locale.dfFeatureCaption;
 
     if (feature.querySelector('map-properties')) {
       options.properties = document.createElement('div');

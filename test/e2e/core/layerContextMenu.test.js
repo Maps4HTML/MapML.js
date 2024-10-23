@@ -164,7 +164,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     await layerControl.hover();
     await page
       .getByRole('group', { name: 'CBMT - INLINE' })
-      .getByTitle('Layer Settings')
+      .getByTitle('Layer Settings', { exact: true })
       .click();
     await page
       .getByRole('group', { name: 'Sub-layer' })
