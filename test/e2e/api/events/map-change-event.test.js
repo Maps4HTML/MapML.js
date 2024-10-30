@@ -4,11 +4,12 @@ test.describe('map change event test ', () => {
   let page;
   let context;
   test.beforeAll(async () => {
-    context = await chromium.launchPersistentContext('');
+    context = await chromium.launchPersistentContext('', { headless: false });
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('events/map-change-event.html');
+    await page.waitForTimeout(1000);
   });
 
   test.afterAll(async function () {
@@ -23,6 +24,7 @@ test.describe('map change event test ', () => {
       }
     });
 
+    // check and uncheck layers in the DOM
     await page.evaluate(() => {
       const layer = document.querySelector('map-layer');
       layer.addEventListener('map-change', () => {
@@ -31,9 +33,26 @@ test.describe('map change event test ', () => {
       layer.checked = false;
       layer.checked = true;
     });
-
     await page.waitForTimeout(500);
     expect(layerClicked).toBe(2);
+
+    // check and uncheck layers using removeAttribute and setAttribute
+    await page.evaluate(() => {
+      const layer = document.querySelector('map-layer');
+      layer.removeAttribute('checked');
+      layer.setAttribute('checked', '');
+    });
+    await page.waitForTimeout(500);
+    expect(layerClicked).toBe(4);
+
+    // check and uncheck layers in the layer menu
+    await page.hover('.leaflet-top.leaflet-right');
+    const button = await page.locator('.leaflet-control-layers-selector');
+    await button.click();
+    await button.click();
+
+    await page.waitForTimeout(500);
+    expect(layerClicked).toBe(6);
   });
 
   test('Map change event for sub-layers work', async () => {
@@ -44,6 +63,7 @@ test.describe('map change event test ', () => {
       }
     });
 
+    // check and uncheck extents in the DOM
     await page.evaluate(() => {
       const extent = document.querySelector('map-extent');
       extent.addEventListener('map-change', () => {
@@ -52,8 +72,28 @@ test.describe('map change event test ', () => {
       extent.checked = false;
       extent.checked = true;
     });
-
     await page.waitForTimeout(500);
     expect(extentClicked).toBe(2);
+
+    // check and uncheck layers using removeAttribute and setAttribute
+    await page.evaluate(() => {
+      const extent = document.querySelector('map-extent');
+      extent.removeAttribute('checked');
+      extent.setAttribute('checked', '');
+    });
+    await page.waitForTimeout(500);
+    expect(extentClicked).toBe(4);
+
+    // check and uncheck extents in the layer menu
+    const layerSettings = await page.locator('.mapml-layer-item-settings-control');
+    await page.hover('.leaflet-top.leaflet-right');
+    await layerSettings.first().click();
+    const extentControls = await page.locator('.mapml-layer-extent');
+    const button = await extentControls.locator('.mapml-layer-item-toggle');
+    await button.click();
+    await button.click();
+
+    await page.waitForTimeout(500);
+    expect(extentClicked).toBe(6);
   });
 });
