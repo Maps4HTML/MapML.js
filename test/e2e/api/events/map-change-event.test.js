@@ -32,6 +32,7 @@ test.describe('map change event test ', () => {
       layer.checked = true;
     });
 
+    await page.waitForTimeout(500);
     expect(layerClicked).toBe(2);
   });
 
@@ -52,6 +53,7 @@ test.describe('map change event test ', () => {
       extent.checked = true;
     });
 
+    await page.waitForTimeout(500);
     expect(extentClicked).toBe(2);
   });
 });
