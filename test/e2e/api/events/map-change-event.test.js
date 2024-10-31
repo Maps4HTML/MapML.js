@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-test.describe('map change event test ', () => {
+test.describe('Map change event are fired when layers/extents are checked or unchecked ', () => {
   let page;
   let context;
   test.beforeAll(async () => {
@@ -75,7 +75,7 @@ test.describe('map change event test ', () => {
     await page.waitForTimeout(500);
     expect(extentClicked).toBe(2);
 
-    // check and uncheck layers using removeAttribute and setAttribute
+    // check and uncheck extents using removeAttribute and setAttribute
     await page.evaluate(() => {
       const extent = document.querySelector('map-extent');
       extent.removeAttribute('checked');
