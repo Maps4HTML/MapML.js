@@ -92,7 +92,6 @@ export class BaseLayerElement extends HTMLElement {
             this.parentElement._map.removeLayer(this._layer);
           }
           this._layerControlCheckbox.checked = this.checked;
-          this.dispatchEvent(new CustomEvent('map-change'));
           break;
         case 'hidden':
           if (typeof newValue === 'string') {

@@ -160,7 +160,6 @@ export class HTMLExtentElement extends HTMLElement {
               this._handleChange();
               this._calculateBounds();
               this._layerControlCheckbox.checked = newValue !== null;
-              this.dispatchEvent(new CustomEvent('map-change'));
             })
             .catch((error) => {
               console.log(

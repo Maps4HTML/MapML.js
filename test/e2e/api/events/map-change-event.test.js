@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-test.describe('Map change event are fired when layers/extents are checked or unchecked ', () => {
+test.describe('Map change event are only fired when layers/extents are checked or unchecked in the layer menu ', () => {
   let page;
   let context;
   test.beforeAll(async () => {
@@ -34,7 +34,7 @@ test.describe('Map change event are fired when layers/extents are checked or unc
       layer.checked = true;
     });
     await page.waitForTimeout(500);
-    expect(layerClicked).toBe(2);
+    expect(layerClicked).toBe(0);
 
     // check and uncheck layers using removeAttribute and setAttribute
     await page.evaluate(() => {
@@ -43,7 +43,7 @@ test.describe('Map change event are fired when layers/extents are checked or unc
       layer.setAttribute('checked', '');
     });
     await page.waitForTimeout(500);
-    expect(layerClicked).toBe(4);
+    expect(layerClicked).toBe(0);
 
     // check and uncheck layers in the layer menu
     await page.hover('.leaflet-top.leaflet-right');
@@ -52,7 +52,7 @@ test.describe('Map change event are fired when layers/extents are checked or unc
     await button.click();
 
     await page.waitForTimeout(500);
-    expect(layerClicked).toBe(6);
+    expect(layerClicked).toBe(2);
   });
 
   test('Map change event for sub-layers work', async () => {
@@ -73,7 +73,7 @@ test.describe('Map change event are fired when layers/extents are checked or unc
       extent.checked = true;
     });
     await page.waitForTimeout(500);
-    expect(extentClicked).toBe(2);
+    expect(extentClicked).toBe(0);
 
     // check and uncheck extents using removeAttribute and setAttribute
     await page.evaluate(() => {
@@ -82,10 +82,12 @@ test.describe('Map change event are fired when layers/extents are checked or unc
       extent.setAttribute('checked', '');
     });
     await page.waitForTimeout(500);
-    expect(extentClicked).toBe(4);
+    expect(extentClicked).toBe(0);
 
     // check and uncheck extents in the layer menu
-    const layerSettings = await page.locator('.mapml-layer-item-settings-control');
+    const layerSettings = await page.locator(
+      '.mapml-layer-item-settings-control'
+    );
     await page.hover('.leaflet-top.leaflet-right');
     await layerSettings.first().click();
     const extentControls = await page.locator('.mapml-layer-extent');
@@ -94,6 +96,6 @@ test.describe('Map change event are fired when layers/extents are checked or unc
     await button.click();
 
     await page.waitForTimeout(500);
-    expect(extentClicked).toBe(6);
+    expect(extentClicked).toBe(2);
   });
 });
