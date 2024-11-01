@@ -9,7 +9,6 @@ test.describe('Map change event are only fired when layers/extents are checked o
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     await page.goto('events/map-change-event.html');
-    await page.waitForTimeout(1000);
   });
 
   test.afterAll(async function () {
@@ -24,7 +23,7 @@ test.describe('Map change event are only fired when layers/extents are checked o
       }
     });
 
-    // check and uncheck layers in the DOM
+    // check and uncheck layers in the DOM shouldn't call map-change
     await page.evaluate(() => {
       const layer = document.querySelector('map-layer');
       layer.addEventListener('map-change', () => {
@@ -36,7 +35,8 @@ test.describe('Map change event are only fired when layers/extents are checked o
     await page.waitForTimeout(500);
     expect(layerClicked).toBe(0);
 
-    // check and uncheck layers using removeAttribute and setAttribute
+    // check and uncheck layers using removeAttribute and setAttribute 
+    // shouldn't call map-change
     await page.evaluate(() => {
       const layer = document.querySelector('map-layer');
       layer.removeAttribute('checked');
@@ -45,7 +45,7 @@ test.describe('Map change event are only fired when layers/extents are checked o
     await page.waitForTimeout(500);
     expect(layerClicked).toBe(0);
 
-    // check and uncheck layers in the layer menu
+    // check and uncheck layers in the layer menu should call map-change
     await page.hover('.leaflet-top.leaflet-right');
     const button = await page.locator('.leaflet-control-layers-selector');
     await button.click();
@@ -63,7 +63,7 @@ test.describe('Map change event are only fired when layers/extents are checked o
       }
     });
 
-    // check and uncheck extents in the DOM
+    // check and uncheck extents in the DOM shouldn't call map-change
     await page.evaluate(() => {
       const extent = document.querySelector('map-extent');
       extent.addEventListener('map-change', () => {
@@ -75,7 +75,8 @@ test.describe('Map change event are only fired when layers/extents are checked o
     await page.waitForTimeout(500);
     expect(extentClicked).toBe(0);
 
-    // check and uncheck extents using removeAttribute and setAttribute
+    // check and uncheck extents using removeAttribute and setAttribute 
+    // shouldn't call map-change
     await page.evaluate(() => {
       const extent = document.querySelector('map-extent');
       extent.removeAttribute('checked');
@@ -84,7 +85,7 @@ test.describe('Map change event are only fired when layers/extents are checked o
     await page.waitForTimeout(500);
     expect(extentClicked).toBe(0);
 
-    // check and uncheck extents in the layer menu
+    // check and uncheck extents in the layer menu should call map-change
     const layerSettings = await page.locator(
       '.mapml-layer-item-settings-control'
     );
