@@ -1,0 +1,16 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+  <map-head>
+    <map-title>Canada Base Map - Transportation (OSM)</map-title>
+  </map-head>
+  <map-body>
+    <map-extent units="OSMTILE"  checked="checked">
+      <map-input name="z" type="zoom"  value="17" min="0" max="17"></map-input>
+      <map-input name="y" type="location" units="tilematrix" axis="row" min="29750"  max="34475"></map-input>
+      <map-input name="x" type="location" units="tilematrix" axis="column" min="26484"  max="32463"></map-input>
+      <map-link rel="tile" tref="dummy/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}">
+        <!-- previously this would have been used. Now it is ignored -->
+        <map-meta name="zoom" content="min=5,max=10"></map-meta>
+      </map-link>
+    </map-extent>
+  </map-body>
+</mapml-> 

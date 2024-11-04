@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <title>matchMedia.html</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="mapml.js"></script>
+    <!-- set up two layers, one in fr other in en -->
+    <script>
+      document.addEventListener('DOMContentLoaded',(e) => {
+        // this experiment is meant to be the procedural equivalent of:
+        // 
+        // <map-layer lang=en media="(prefers-lang: en)" src="https://geogratis.gc.ca/mapml/en/osmtile/cbmt/" checked></map-layer>
+        // <map-layer lang=fr media="(prefers-lang: fr)" src="https://geogratis.gc.ca/mapml/fr/osmtile/cbmt/" checked></map-layer>
+        // <map-layer         media="not (prefers-lang: en) and not (prefers-lang: fr)"data-testid="osm-layer" label="OpenStreetMap" checked>
+        //   <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
+        //   <map-extent units="OSMTILE" checked="checked">
+        //     <map-input name="z" type="zoom" value="18" min="0" max="18">  </map-input>
+        //     <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144">  </map-input>
+        //     <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144">  </map-input>
+        //     <map-link rel="tile" tref="https://tile.openstreetmap.org/{//z}/{x}/{y}.png">  </map-link>
+        //   </map-extent>
+        // </map-layer>
+        
+        let map = document.querySelector('mapml-viewer'),
+            preferenceMatcher = map.matchMedia('(prefers-lang: en) and (not (map-zoom > 15))'),
+            prefersEn = preferenceMatcher.matches,
+            en = map.querySelector('[lang=en]'),
+            fr = map.querySelector('[lang=fr]');
+
+        
+        const setBaseLayer = (prefersEn) => {
+          if (prefersEn) {
+            // The behaviour of a <map-layer> when it matches a media query 
+            // (in the media attribute, specifically), should be to add itself to the
+            // layer control (in accord with its hidden attribute state) and to the map
+            // (in accord with its checked attribute state) i.e. it may or may not
+            // actually render in either place, depending on those attributes.
+            // HOWEVER, when a <map-layer> does NOT match a media query, it should 
+            // NOT be present on the map, nor in the layer control, and it should not
+            // fetch stuff or be active in any way.  i.e. it is REALLY disabled
+            en.checked = true;
+            en.hidden = false;
+            fr.checked = false;
+            fr.hidden = true;
+          } else if (map.matchMedia('(prefers-lang: fr) and (not (map-zoom > 15))').matches) {
+            fr.checked = true;
+            fr.hidden = false;
+            en.checked = false;
+            en.hidden = true;
+          }
+        };
+        // need to wait until all layers are ready, can take a moment...
+        map.whenLayersReady().then(()=>setBaseLayer(prefersEn));
+        
+        const changeHandler = (e) => {
+            let matches = preferenceMatcher.matches;
+            setBaseLayer(matches); 
+          };
+        preferenceMatcher.addEventListener('change', changeHandler);
+       
+      });
+    </script>
+  </head>
+
+  <body>
+    <mapml-viewer data-testid="viewer" style="width: 500px;height: 500px;" projection="CBMTILE" zoom="0" lat="46.17" lon="-88.9" controls>
+      <map-layer lang="en" label="English" checked>
+        <map-extent units="CBMTILE" checked hidden>
+          <map-input name="z" type="zoom" value="18" min="0" max="18" ></map-input>
+          <map-input name="y" type="location" units="tilematrix" axis="row" min="51599"  max="61455" ></map-input>
+          <map-input name="x" type="location" units="tilematrix" axis="column" min="46501"  max="56244" ></map-input>
+          <map-link rel="tile" tref="/tiles/cbmt/{z}/c{x}_r{y}.png" ></map-link>
+        </map-extent>
+      </map-layer>
+      <map-layer lang="fr" label="Français" checked>
+        <map-extent units="CBMTILE" checked hidden>
+          <map-input name="z" type="zoom" value="18" min="0" max="18" ></map-input>
+          <map-input name="y" type="location" units="tilematrix" axis="row" min="51599"  max="61455" ></map-input>
+          <map-input name="x" type="location" units="tilematrix" axis="column" min="46501"  max="56244" ></map-input>
+          <map-link rel="tile" tref="/tiles/cbmt/{z}/c{x}_r{y}.png" ></map-link>
+        </map-extent>
+      </map-layer>
+    </mapml-viewer>
+  </body>
+
+</html>

@@ -10,7 +10,7 @@ import {
 import Proj from 'proj4leaflet/src/proj4leaflet.js';
 import { Util } from './mapml/utils/Util.js';
 import { DOMTokenList } from './mapml/utils/DOMTokenList.js';
-
+import { matchMedia } from './mapml/elementSupport/viewers/matchMedia.js';
 import { layerControl } from './mapml/control/LayerControl.js';
 import { AttributionButton } from './mapml/control/AttributionButton.js';
 import { reloadButton } from './mapml/control/ReloadButton.js';
@@ -1031,7 +1031,6 @@ export class HTMLWebMapElement extends HTMLMapElement {
       }
     });
   }
-
   locate(options) {
     //options: https://leafletjs.com/reference.html#locate-options
     if (this._geolocationButton) {
@@ -1534,3 +1533,7 @@ export class HTMLWebMapElement extends HTMLMapElement {
     }
   }
 }
+// ensure that 'this' always refers the the map on which the function runs
+HTMLWebMapElement.prototype.matchMedia = function (...args) {
+  return matchMedia.apply(this, args);
+};

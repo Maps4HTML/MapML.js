@@ -27,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'e2e/elements/map-style')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-layer')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/layer-')));
 app.use(express.static(path.join(__dirname, 'e2e/api')));
+app.use(express.static(path.join(__dirname, 'e2e/api/matchMedia')));
 app.use(express.static(path.join(__dirname, 'e2e/data')));
 app.use(express.static(path.join(__dirname, 'e2e/geojson')));
 // serveStatic enables byte range requests, only required on this directory

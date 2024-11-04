@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="dark light">
+    <title>matchMedia API</title>
+    <script type="module" src="mapml.js"></script>
+    <style>
+        mapml-viewer {
+            width: 100%;
+            height: 50vh;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        document.addEventListener('DOMContentLoaded', (e) => {
+            const header = document.getElementById('preferred-color');
+
+            let l, map = document.querySelector('mapml-viewer'),
+                preferenceMatcher = map.matchMedia('(prefers-color-scheme: dark)'),
+                prefersDark = preferenceMatcher.matches;
+
+            const changePreference = (prefersDark) => {
+                if (prefersDark) {
+                    header.textContent = 'Prefers dark'
+                } else {
+                    header.textContent = 'Prefers light'
+                }
+            };
+
+            changePreference(prefersDark);
+        });
+    </script>
+
+    <mapml-viewer projection="OSMTILE" zoom="9" lat="44.630550504861795" lon="-103.86611938476564" controls>
+    </mapml-viewer>
+    
+    <h3 id="preferred-color"></h3>
+</body>
+
+</html>

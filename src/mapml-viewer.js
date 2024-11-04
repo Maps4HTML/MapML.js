@@ -9,7 +9,7 @@ import {
 import Proj from 'proj4leaflet/src/proj4leaflet.js';
 import { Util } from './mapml/utils/Util.js';
 import { DOMTokenList } from './mapml/utils/DOMTokenList.js';
-
+import { matchMedia } from './mapml/elementSupport/viewers/matchMedia.js';
 import { HTMLLayerElement } from './map-layer.js';
 import { LayerDashElement } from './layer-.js';
 import { HTMLMapCaptionElement } from './map-caption.js';
@@ -240,7 +240,8 @@ export class HTMLMapmlViewerElement extends HTMLElement {
         }
       })
       .catch((e) => {
-        throw new Error('Projection not defined: ' + e);
+        console.log(e);
+        throw new Error('Error: ' + e);
       });
   }
   _setLocale() {
@@ -411,7 +412,7 @@ export class HTMLMapmlViewerElement extends HTMLElement {
           this._map.options.projection = newValue;
           let layersReady = [];
           this._map.announceMovement.disable();
-          for (let layer of this.querySelectorAll('map-layer')) {
+          for (let layer of this.querySelectorAll('map-layer,layer-')) {
             layer.removeAttribute('disabled');
             let reAttach = this.removeChild(layer);
             this.appendChild(reAttach);
@@ -986,7 +987,6 @@ export class HTMLMapmlViewerElement extends HTMLElement {
       }
     });
   }
-
   locate(options) {
     //options: https://leafletjs.com/reference.html#locate-options
     if (this._geolocationButton) {
@@ -1468,6 +1468,12 @@ export class HTMLMapmlViewerElement extends HTMLElement {
     return geojsonLayer;
   }
 }
+
+// ensure that 'this' always refers the the map on which the function runs
+HTMLMapmlViewerElement.prototype.matchMedia = function (...args) {
+  return matchMedia.apply(this, args);
+};
+
 window.customElements.define('mapml-viewer', HTMLMapmlViewerElement);
 try {
   window.customElements.define('web-map', HTMLWebMapElement, {
