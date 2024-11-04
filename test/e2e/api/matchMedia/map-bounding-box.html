@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="dark light">
+    <title>Map Bounding Box</title>
+    <script type="module" src="mapml.js"></script>
+    <style media="">
+        mapml-viewer {
+            height: 50vh;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const map = document.querySelector('mapml-viewer');
+
+            // Retrieve the map extent
+            const extent = map.extent;
+
+            // Extract the PCRS values for the bounding box
+            const topLeftEasting = Math.trunc(extent.topLeft.pcrs.horizontal);
+            const topLeftNorthing = Math.trunc(extent.topLeft.pcrs.vertical);
+            const bottomRightEasting = Math.trunc(extent.bottomRight.pcrs.horizontal);
+            const bottomRightNorthing = Math.trunc(extent.bottomRight.pcrs.vertical);
+
+            // Format the media query string to detect overlap:
+            // (xminm < xmaxq) and (xmaxm > xminq) and (yminm < ymaxq) and (ymaxm > yminq)
+            const query = `(map-projection: OSMTILE) and (map-zoom < 14) and (map-top-left-easting < ${bottomRightEasting}) and (map-bottom-right-easting > ${topLeftEasting}) and (map-bottom-right-northing < ${topLeftNorthing}) and (map-top-left-northing > ${bottomRightNorthing})`;
+
+            let matcher = map.matchMedia(query);
+            const updateLayerVisibility = (e) => {
+                if (e.target.matches) {
+                    layer.checked = true;
+                    layer.removeAttribute('hidden');
+                } else {
+                    layer.checked = false;
+                    layer.hidden = true;
+                }
+            };
+            matcher.addEventListener('change', updateLayerVisibility);
+
+            // create a layer to visually represent the query as the map moves
+            let f = `<map-layer checked label="test media query"><map-meta name="projection" content="OSMTILE"></map-meta>
+                    <map-meta name="cs" content="pcrs"></map-meta><map-feature><map-properties>${query}</map-properties>
+                    <map-geometry><map-polygon><map-coordinates>${topLeftEasting} ${topLeftNorthing}
+                    ${bottomRightEasting} ${topLeftNorthing} ${bottomRightEasting} ${bottomRightNorthing} ${topLeftEasting} ${bottomRightNorthing}
+                    ${topLeftEasting} ${topLeftNorthing}</map-coordinates</map-polygon></map-geometry></map-feature></map-layer>`;
+
+            const parser = new DOMParser();
+            const layer = parser
+                .parseFromString(f, 'text/html')
+                .querySelector('map-layer');
+            map.appendChild(layer);
+        });
+    </script>
+
+    <mapml-viewer projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls="">
+    </mapml-viewer>
+</body>
+
+</html>

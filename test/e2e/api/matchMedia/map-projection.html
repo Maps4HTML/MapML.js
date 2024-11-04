@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="dark light">
+    <title>Map Projection Toggle</title>
+    <script type="module" src="mapml.js"></script>
+    <style media="">
+        body {
+            display: flex;
+        }
+
+        mapml-viewer {
+            flex: 2;
+            height: 50vh;
+        }
+
+        .description {
+            padding: 20px;
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const map = document.querySelector('mapml-viewer');
+            let projectionMatcher = map.matchMedia('(map-projection: OSMTILE)'),
+                osmtile = map.querySelector('#OSMTILE'),
+                cbmtile = map.querySelector('#CBMTILE');
+
+            const hideLayer = (matchesOSMTILE) => {
+                map.whenLayersReady().then(() => {
+                    if (matchesOSMTILE) {
+                        cbmtile.setAttribute('hidden', 'hidden');
+                        osmtile.removeAttribute('hidden');
+                    } else {
+                        osmtile.setAttribute('hidden', 'hidden');
+                        cbmtile.removeAttribute('hidden');
+                    }
+                });
+            };
+            hideLayer(projectionMatcher.matches);
+            document.querySelector('.switchOSM').addEventListener('click', () => map.projection = 'OSMTILE');
+            document.querySelector('.switchCBMT').addEventListener('click', () => map.projection = 'CBMTILE');
+
+            const changeHandler = (e) => {
+                let matchesOSMTILE = projectionMatcher.matches;
+                hideLayer(matchesOSMTILE);
+            };
+            projectionMatcher.addEventListener('change', changeHandler);
+        });
+    </script>
+
+    <mapml-viewer projection="OSMTILE" zoom="9" lat="44.630550504861795" lon="-103.86611938476564" controls>
+        <map-layer id="OSMTILE" label="OpenStreetMap" checked="">
+        </map-layer>
+        <map-layer id="CBMTILE" checked>
+        </map-layer>
+    </mapml-viewer>
+
+    <div class="description">
+        <h2>Descriptions</h2>
+        <button class="switchOSM">Change projection to OSMTILE</button>
+        <button class="switchCBMT">Change projection to CBMTILE</button>
+    </div>
+</body>
+
+</html>
