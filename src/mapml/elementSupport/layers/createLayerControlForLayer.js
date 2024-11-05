@@ -134,6 +134,7 @@ export var createLayerControlHTML = async function () {
   layerItemName.layer = this._layer;
   const changeCheck = function () {
     this.checked = !this.checked;
+    this._layerControlCheckbox.focus();
   };
   input.addEventListener('change', changeCheck.bind(this));
   if (this._layer._legendUrl) {
