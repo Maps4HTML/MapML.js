@@ -1,10 +1,13 @@
 import { test, expect, chromium } from '@playwright/test';
 
-test.describe('Map change event are only fired when layers/extents are checked or unchecked in the layer menu ', () => {
+test.describe('Map-change event are only fired when layers/extents are checked or unchecked in the layer menu ', () => {
   let page;
   let context;
   test.beforeAll(async () => {
-    context = await chromium.launchPersistentContext('', { headless: false });
+    context = await chromium.launchPersistentContext('', {
+      headless: false,
+      slowMo: 250
+    });
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
@@ -15,7 +18,7 @@ test.describe('Map change event are only fired when layers/extents are checked o
     await context.close();
   });
 
-  test('Map change event for layers work', async () => {
+  test('Map-change event for layers work', async () => {
     let layerClicked = 0;
     page.on('console', (msg) => {
       if (msg.text() === 'Layer clicked') {
@@ -32,17 +35,15 @@ test.describe('Map change event are only fired when layers/extents are checked o
       layer.checked = false;
       layer.checked = true;
     });
-    await page.waitForTimeout(500);
     expect(layerClicked).toBe(0);
 
-    // check and uncheck layers using removeAttribute and setAttribute 
+    // check and uncheck layers using removeAttribute and setAttribute
     // shouldn't call map-change
     await page.evaluate(() => {
       const layer = document.querySelector('map-layer');
       layer.removeAttribute('checked');
       layer.setAttribute('checked', '');
     });
-    await page.waitForTimeout(500);
     expect(layerClicked).toBe(0);
 
     // check and uncheck layers in the layer menu should call map-change
@@ -51,11 +52,24 @@ test.describe('Map change event are only fired when layers/extents are checked o
     await button.click();
     await button.click();
 
-    await page.waitForTimeout(500);
     expect(layerClicked).toBe(2);
+
+    // using keyboard to check and uncheck layers in the layer menu should
+    // call map-change
+    await page.locator('mapml-viewer').click();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Space');
+    await page.keyboard.press('Space');
+
+    expect(layerClicked).toBe(4);
   });
 
-  test('Map change event for sub-layers work', async () => {
+  test('Map-change event for sub-layers work', async () => {
     let extentClicked = 0;
     page.on('console', (msg) => {
       if (msg.text() === 'Sub-layer clicked') {
@@ -72,17 +86,15 @@ test.describe('Map change event are only fired when layers/extents are checked o
       extent.checked = false;
       extent.checked = true;
     });
-    await page.waitForTimeout(500);
     expect(extentClicked).toBe(0);
 
-    // check and uncheck extents using removeAttribute and setAttribute 
+    // check and uncheck extents using removeAttribute and setAttribute
     // shouldn't call map-change
     await page.evaluate(() => {
       const extent = document.querySelector('map-extent');
       extent.removeAttribute('checked');
       extent.setAttribute('checked', '');
     });
-    await page.waitForTimeout(500);
     expect(extentClicked).toBe(0);
 
     // check and uncheck extents in the layer menu should call map-change
@@ -96,7 +108,24 @@ test.describe('Map change event are only fired when layers/extents are checked o
     await button.click();
     await button.click();
 
-    await page.waitForTimeout(500);
     expect(extentClicked).toBe(2);
+
+    // using keyboard to check and uncheck extents in the layer menu should
+    // call map-change
+    await page.locator('mapml-viewer').click();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Space');
+    await page.keyboard.press('Space');
+
+    expect(extentClicked).toBe(4);
   });
 });
