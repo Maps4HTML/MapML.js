@@ -1,68 +1,66 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Layer Control Tests</title>
-  <script type="module" src="mapml.js"></script>
-  <style>
-    html,
-    body {
-      height: 100%;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-    }
-
-    /* Specifying the `:defined` selector is recommended to style the map 
-       element, such that styles don't apply when fallback content is in use 
-       (e.g. when scripting is disabled or when custom/built-in elements isn't 
-       supported in the browser). */
-    mapml-viewer:defined {
-      /* Responsive map. */
-      max-width: 100%;
-
-      /* Full viewport. */
-      width: 100%;
-      height: 100%;
-
-      /* Remove default (native-like) border. */
-      /* border: none; */
-    }
-
-    /* Pre-style to avoid FOUC of inline map-layer and fallback content. */
-    mapml-viewer:not(:defined)>* {
-      display: none;
-    }
-
-    /* Ensure inline layer content is hidden if custom/built-in elements isn't 
-       supported, or if javascript is disabled. This needs to be defined separately 
-       from the above, because the `:not(:defined)` selector invalidates the entire 
-       declaration in browsers that do not support it. */
-    map-layer {
-      display: none;
-    }
-  </style>
-  <noscript>
+    <title>Layer Control Tests</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="mapml.js"></script>
     <style>
-      /* Ensure fallback content (children of the map element) is displayed if 
-         custom/built-in elements is supported but javascript is disabled. */
-      mapml-viewer:not(:defined)> :not(map-layer) {
-        display: initial;
+      html, body {
+        height: 100%;
+      }
+  
+      * {
+        margin: 0;
+        padding: 0;
+      }
+  
+      /* Specifying the `:defined` selector is recommended to style the map 
+         element, such that styles don't apply when fallback content is in use 
+         (e.g. when scripting is disabled or when custom/built-in elements isn't 
+         supported in the browser). */
+      mapml-viewer:defined {
+        /* Responsive map. */
+        max-width: 100%;
+  
+        /* Full viewport. */
+        width: 100%;
+        height: 100%;
+  
+        /* Remove default (native-like) border. */
+        /* border: none; */
+      }
+  
+      /* Pre-style to avoid FOUC of inline map-layer and fallback content. */
+      mapml-viewer:not(:defined)>* {
+        display: none;
+      }
+  
+      /* Ensure inline layer content is hidden if custom/built-in elements isn't 
+         supported, or if javascript is disabled. This needs to be defined separately 
+         from the above, because the `:not(:defined)` selector invalidates the entire 
+         declaration in browsers that do not support it. */
+      map-layer {
+        display: none;
       }
     </style>
-  </noscript>
 </head>
 
 <body>
-  <mapml-viewer projection="CBMTILE" zoom="2" lat="61.2091250" lon="-90.8508370" controls>
-    <map-layer hidden label="Canada Base Map - Transportation (CBMT)" src="https://geogratis.gc.ca/mapml/en/cbmtile/cbmt/"
-      checked>
-    </map-layer>
-  </mapml-viewer>
+    <mapml-viewer projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls=""
+        controlslist="geolocation">
+        <map-layer data-testid="osm-layer" label="OpenStreetMap" checked="" hidden="">
+            <map-link rel="license" title="Â© OpenStreetMap contributors CC BY-SA"
+                href="https://www.openstreetmap.org/copyright"></map-link>
+            <map-extent units="OSMTILE" checked="checked">
+                <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
+                <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
+                <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
+                <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
+            </map-extent>
+        </map-layer>
+    </mapml-viewer>
 </body>
 
 </html>
