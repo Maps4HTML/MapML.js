@@ -131,6 +131,7 @@ export var createLayerControlExtentHTML = function () {
   extentItemNameSpan.innerHTML = this.label;
   const changeCheck = function () {
     this.checked = !this.checked;
+    this.dispatchEvent(new CustomEvent('map-change'));
   };
   // save for later access by API
   this._layerControlCheckbox = input;
