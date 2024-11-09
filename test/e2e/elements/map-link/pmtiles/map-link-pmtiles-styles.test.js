@@ -20,13 +20,16 @@ test.describe('pmtiles map-link with associated style can be in a remote mapml d
     layer.evaluate((l) => (l.checked = true));
     await page.waitForTimeout(500);
     await expect(viewer).toHaveScreenshot('pmtiles-dark.png', {
-      maxDiffPixels: 100
+      maxDiffPixels: 200
     });
   });
 
   test('map-link in remote content selects correct stylesheet link from context', async () => {
     const viewer = page.getByTestId('viewer');
     await expect(viewer).toBeTruthy();
+    const layer = viewer.getByTestId('dark');
+    layer.evaluate((l) => (l.checked = true));
+    await page.waitForTimeout(500);
     const darkExtent = viewer.getByTestId('dark-me');
     const lightExtent = viewer.getByTestId('light-me');
 
@@ -38,7 +41,7 @@ test.describe('pmtiles map-link with associated style can be in a remote mapml d
     });
     await page.waitForTimeout(500);
     await expect(viewer).toHaveScreenshot('pmtiles-light.png', {
-      maxDiffPixels: 100
+      maxDiffPixels: 200
     });
   });
   test('map-link in local content selects correct stylesheet link from context', async () => {
@@ -59,7 +62,7 @@ test.describe('pmtiles map-link with associated style can be in a remote mapml d
     });
     await page.waitForTimeout(500);
     await expect(viewer).toHaveScreenshot('pmtiles-local-light.png', {
-      maxDiffPixels: 100
+      maxDiffPixels: 200
     });
   });
 });

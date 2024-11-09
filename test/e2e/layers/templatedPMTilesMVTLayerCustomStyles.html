@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>templatedPMTilesMVTLayerCustomStyles.html</title>
+    <script type="module" src="../mapml.js"></script>
+  </head>
+  <body>
+    <mapml-viewer data-testid="viewer" controls style="width: 500px;height: 500px;"  projection="OSMTILE"  zoom="12" lat="44.436108753775116" lon="-103.75024795532228" >
+      <map-layer label="Custom styled spearfish tiles" data-testid="spearfish" checked>
+        <map-link rel="stylesheet" type="application/pmtiles+stylesheet" href="./customPmtilesStyleRules.js"></map-link>
+        <map-extent units="OSMTILE" label="Spearfish" checked="checked">
+          <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
+          <map-input name="x" type="location" axis="column" units="tilematrix" min="55430" max="55616"></map-input>
+          <map-input name="y" type="location" axis="row" units="tilematrix" min="94810" max="94944"></map-input>
+          <map-link id='mvt'  rel="tile" type="application/vnd.mapbox-vector-tile" tref="../tiles/osmtile/{z}/{y}/{x}.mvt?format=application/vnd.mapbox-vector-tile" ></map-link>
+        </map-extent>
+      </map-layer>
+    </mapml-viewer>
+  </body>
+</html>
