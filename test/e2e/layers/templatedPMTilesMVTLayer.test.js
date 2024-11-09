@@ -64,7 +64,9 @@ test.describe('Playwright templatedPMTilesLayer Tests', () => {
     }
 
     expect(errorLoadingModule).toBe(true);
-    expect(errorFindingRules).toBe(true);
+    // code should not get into looking for the rules because the import has
+    // failed
+    expect(errorFindingRules).toBe(false);
     messages.length = 0;
     await page.goto('templatedPMTilesMVTLayerMissingRuleKey.html');
     await page.waitForTimeout(1000);
@@ -185,5 +187,16 @@ test.describe('Playwright templatedPMTilesLayer Tests', () => {
     expect(errorNoZoomInput).toBe(true);
     expect(errorNoXInput).toBe(true);
     expect(errorNoYInput).toBe(true);
+  });
+  test('Custom pmtilesRules can render mvt data', async ({ page }) => {
+    await page.goto('templatedPMTilesMVTLayerCustomStyles.html');
+    await page.waitForTimeout(1000);
+    const viewer = page.getByTestId('viewer');
+    // seems like a lot of pixels to allow to be different, but missing fonts
+    // across instances can require the snapshots to tolerate differences
+    // due to that
+    await expect(viewer).toHaveScreenshot('mvt-custom-spearfish.png', {
+      maxDiffPixels: 100
+    });
   });
 });

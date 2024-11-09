@@ -5,6 +5,7 @@ window.L = Leaflet;
 
 import { Util } from '../utils/Util.js';
 import * as protomapsL from 'protomaps-leaflet';
+window.protomapsL = protomapsL;
 
 export var TemplatedPMTilesLayer = Layer.extend({
   initialize: function (template, options) {
@@ -42,6 +43,9 @@ export var TemplatedPMTilesLayer = Layer.extend({
       extend(this._pmtilesOptions, {
         labelRules: paintRules.rules.LABEL_RULES
       });
+      if (paintRules.sheet) {
+        extend(this._pmtilesOptions, { tasks: [paintRules.sheet.load()] });
+      }
     } else if (paintRules?.theme?.theme) {
       extend(this._pmtilesOptions, { theme: paintRules.theme.theme });
     } else {

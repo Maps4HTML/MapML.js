@@ -283,8 +283,9 @@ export class HTMLLinkElement extends HTMLElement {
         if (this.type === 'application/pmtiles+stylesheet') {
           const pmtilesStyles = new URL(this.href, this.getBase()).href;
           import(pmtilesStyles)
-            .then((module) => {
-              this._pmtilesRules = module.pmtilesRules;
+            .then((module) => module.pmtilesRulesReady)
+            .then((initializedRules) => {
+              this._pmtilesRules = initializedRules;
             })
             .catch((reason) => {
               console.error(
@@ -399,19 +400,24 @@ export class HTMLLinkElement extends HTMLElement {
               s +
               ')'
           )?.querySelector(s);
-      let options = {
-        zoomBounds: this.getZoomBounds(),
-        extentBounds: this.getBounds(),
-        crs: M[this.parentExtent.units],
-        zIndex: this.zIndex,
-        pane: this.parentExtent._extentLayer.getContainer(),
-        linkEl: this,
-        pmtilesRules: pmtilesStylesheetLink?._pmtilesRules
-      };
-      this._templatedLayer = templatedPMTilesLayer(
-        this._templateVars,
-        options
-      ).addTo(this.parentExtent._extentLayer);
+      if (pmtilesStylesheetLink) {
+        await pmtilesStylesheetLink.whenReady();
+        let options = {
+          zoomBounds: this.getZoomBounds(),
+          extentBounds: this.getBounds(),
+          crs: M[this.parentExtent.units],
+          zIndex: this.zIndex,
+          pane: this.parentExtent._extentLayer.getContainer(),
+          linkEl: this,
+          pmtilesRules: pmtilesStylesheetLink?._pmtilesRules
+        };
+        this._templatedLayer = templatedPMTilesLayer(
+          this._templateVars,
+          options
+        ).addTo(this.parentExtent._extentLayer);
+      } else {
+        console.warn('Stylesheet not found for ' + this._templateVars.template);
+      }
     } else if (this.rel === 'tile') {
       this._templatedLayer = templatedTileLayer(this._templateVars, {
         zoomBounds: this.getZoomBounds(),
@@ -967,7 +973,7 @@ export class HTMLLinkElement extends HTMLElement {
           break;
         case 'stylesheet':
           if (this.type === 'application/pmtiles+stylesheet') {
-            ready = _pmtilesRules;
+            ready = '_pmtilesRules';
           } else {
             resolve();
           }
@@ -986,7 +992,7 @@ export class HTMLLinkElement extends HTMLElement {
         resolve();
       }
       interval = setInterval(testForLinkReady, 300, this);
-      failureTimer = setTimeout(linkNotDefined, 10000);
+      failureTimer = setTimeout(linkNotDefined, 1000);
       function testForLinkReady(linkElement) {
         if (linkElement[ready]) {
           clearInterval(interval);

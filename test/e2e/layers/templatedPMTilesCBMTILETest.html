@@ -17,10 +17,11 @@
         <map-input name="z" type="zoom"  value="17" min="0" max="17"></map-input>
         <map-input name="y" type="location" units="tilematrix" axis="row" min="29750"  max="34475"></map-input>
         <map-input name="x" type="location" units="tilematrix" axis="column" min="26484"  max="32463"></map-input>
-        <map-link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}?m4h=t" ></map-link>
+        <map-link rel="tile" tref="tiles/cbmt/{z}/c{x}_r{y}.png" ></map-link>
       </map-extent>
       <!-- on load, this  extent is disabled (because the map projection is CBMTILE) -->
       <map-extent units="OSMTILE" checked="checked">
+        <!-- no stylesheet module here will result in console.warn message -->
         <map-input name="beans" type="zoom" value="18" min="0" max="2"></map-input>
         <map-input name="foo" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
         <map-input name="bar" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
@@ -32,6 +33,7 @@
       <map-title>{z}/{x}/{y}.mvt test</map-title>
     <!-- on load this extent should be disabled -->
       <map-extent data-testid="osmtile-only-extent" units="OSMTILE" checked="checked">
+        <!-- no stylesheet module here will result in console.warn message -->
         <map-input name="beans" type="zoom" value="18" min="0" max="2"></map-input>
         <map-input name="foo" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
         <map-input name="bar" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
