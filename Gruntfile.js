@@ -1,8 +1,7 @@
 module.exports = function(grunt) {
+  const rollup = require('rollup');
+  const rollupConfig = require('./rollup.config.js');
   const Diff = require('diff');
-  const nodeResolve = require('@rollup/plugin-node-resolve');
-  const loadLocalePlugin = require('./load-locales.js');
-  const alias = require('@rollup/plugin-alias');
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     cssmin: {
@@ -12,21 +11,8 @@ module.exports = function(grunt) {
       },
       combine: {
         files: {
-        'dist/mapml.css': ['node_modules/leaflet/dist/leaflet.css', 'node_modules/leaflet.locatecontrol/dist/L.Control.Locate.css', 'src/mapml.css']
+          'dist/mapml.css': ['node_modules/leaflet/dist/leaflet.css', 'node_modules/leaflet.locatecontrol/dist/L.Control.Locate.css', 'src/mapml.css']
         }
-      }
-    },
-    uglify: {
-      options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
-        sourceMap: {
-          includeSources: true
-        }
-      },
-      dist: {
-        files: {
-          'dist/mapml.js':        ['<%= rollup.main.dest %>']
-        } 
       }
     },
     jshint: {
@@ -49,7 +35,7 @@ module.exports = function(grunt) {
       tasks: ['jshint']
     },
     copy : {
-    	 main : {
+      main : {
         files: [
           {
             expand: true,
@@ -100,7 +86,7 @@ module.exports = function(grunt) {
             expand: true,
             src: ['dist/*'],
             dest: '../experiments'
-      }
+          }
         ]
       },
       extension: {
@@ -152,29 +138,7 @@ module.exports = function(grunt) {
         src: ['../web-map-doc/dist']
       }
     },
-    rollup: {
-       options: {
-         format: 'es',
-         plugins: [
-           nodeResolve(),
-           loadLocalePlugin(),
-           alias({
-            entries: [
-              {
-                find: 'leaflet',
-                replacement: 'leaflet/dist/leaflet-src.esm.js'
-              }
-            ]
-          })
-         ],
-         external: './pmtilesRules.js'
-       },
-       main: {
-         dest: 'dist/mapmlviewer.js',
-         src: 'src/mapml/index.js' // Only one source file is permitted
-       }
-     },
-     prettier: {
+    prettier: {
       options: {
         // https://prettier.io/docs/en/options.html
         progress: true
@@ -188,22 +152,35 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-rollup');
   grunt.loadNpmTasks('grunt-prettier');
 
+  // "grunt-rollup" plugin seems no longer maintained
+  grunt.registerTask('customRollup', 'A custom Rollup build task', async function() {
+    const done = this.async();
+    try {
+      // Use the configuration loaded from rollup.config.js
+      const bundle = await rollup.rollup(rollupConfig);
+      await bundle.write(rollupConfig.output);
+
+      console.log('Rollup build completed successfully.');
+      done();
+    } catch (error) {
+      console.error('Rollup build failed:', error);
+      done(false);
+    }
+  });
   grunt.registerTask('format', ['prettier', 'jshint']);
-  grunt.registerTask('default', ['clean:dist', 'copy:main', 'copy:images', 'format', 'rollup', 
-                                 'uglify', 'cssmin','clean:tidyup']);
-  grunt.registerTask('experiments',['clean:experiments','default','copy:experiments']);
-  grunt.registerTask('extension',['clean:extension','default','copy:extension']);
-  grunt.registerTask('geoserver',['clean:geoserver','default','copy:geoserver']);
-  grunt.registerTask('docs', ['clean:docs','default','copy:docs']);
-  grunt.registerTask('sync', ['default','experiments','extension','docs']);
+  grunt.registerTask('default', ['clean:dist', 'copy:main', 'copy:images', 'format', 'customRollup', 'cssmin']);
+  grunt.registerTask('experiments', ['clean:experiments', 'default', 'copy:experiments']);
+  grunt.registerTask('extension', ['clean:extension', 'default', 'copy:extension']);
+  grunt.registerTask('geoserver', ['clean:geoserver', 'default', 'copy:geoserver']);
+  grunt.registerTask('basemap', ['clean:basemap', 'default', 'copy:basemap']);
+  grunt.registerTask('docs', ['clean:docs', 'default', 'copy:docs']);
+  grunt.registerTask('sync', ['default', 'experiments', 'extension', 'docs']);
 
 };
