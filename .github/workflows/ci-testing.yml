@@ -15,6 +15,7 @@ jobs:
         node-version: latest
     - run: sudo apt-get install xvfb
     - run: npm install
+    - run: npx playwright install  --with-deps
     - run: npm install -g grunt-cli
     - run: grunt default
     - run: xvfb-run --auto-servernum -- npx playwright test --grep-invert="popupTabNavigation\.test\.js|layerContextMenuKeyboard\.test\.js"  --workers=1 --retries=3

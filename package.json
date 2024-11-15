@@ -33,7 +33,7 @@
   ],
   "scripts": {
     "test-serve": "node test/server.js",
-    "postinstall": "npx playwright install --with-deps",
+    "postinstall": "npx playwright install",
     "test": "npx playwright test --retries=3 --workers=1"
   },
   "devDependencies": {
