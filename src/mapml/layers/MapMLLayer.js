@@ -310,12 +310,20 @@ export var MapMLLayer = LayerGroup.extend({
         _leafletLayer: layer,
         mapEl: layer._layerEl.parentElement,
         onEachFeature: function (properties, geometry) {
+          const map = layer._layerEl.parentElement._map;
+          const popupOptions = {
+            autoClose: false,
+            autoPan: true,
+            maxHeight: map.getSize().y * 0.5 - 50,
+            maxWidth: map.getSize().x * 0.7,
+            minWidth: 165
+          };
           // need to parse as HTML to preserve semantics and styles
           if (properties) {
             var c = document.createElement('div');
             c.classList.add('mapml-popup-content');
             c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-            geometry.bindPopup(c, { autoClose: false, minWidth: 165 });
+            geometry.bindPopup(c, popupOptions);
           }
         }
       }).addTo(layer);
@@ -527,8 +535,8 @@ export var MapMLLayer = LayerGroup.extend({
     let divider = DomUtil.create('hr', 'mapml-popup-divider');
 
     popup._navigationBar = div;
-    popup._content.appendChild(divider);
-    popup._content.appendChild(div);
+    popup._content.parentElement.parentElement.appendChild(divider);
+    popup._content.parentElement.parentElement.appendChild(div);
 
     content.focus();
 
@@ -631,24 +639,32 @@ export var MapMLLayer = LayerGroup.extend({
 
     function attachZoomLink(e) {
       // this === popup
-      let content = this._content,
+      let content = this._content.parentElement.parentElement,
         featureEl = e ? e.currFeature : this._source._groupLayer._featureEl;
       if (content.querySelector('a.mapml-zoom-link')) {
         content.querySelector('a.mapml-zoom-link').remove();
       }
+
+      // return early if feature doesn't have map-geometry
       if (!featureEl.querySelector('map-geometry')) return;
+
+      // calculate zoom parameters
       let tL = featureEl.extent.topLeft.gcrs,
         bR = featureEl.extent.bottomRight.gcrs,
         center = latLngBounds(
           latLng(tL.horizontal, tL.vertical),
           latLng(bR.horizontal, bR.vertical)
         ).getCenter(true);
+
+      // construct zoom link
       let zoomLink = document.createElement('a');
       zoomLink.href = `#${featureEl.getZoomToZoom()},${center.lng},${
         center.lat
       }`;
       zoomLink.innerHTML = `${map.options.mapEl.locale.popupZoom}`;
       zoomLink.className = 'mapml-zoom-link';
+
+      // handle zoom link interactions
       zoomLink.onclick = zoomLink.onkeydown = function (e) {
         if (!(e instanceof MouseEvent) && e.keyCode !== 13) return;
         e.preventDefault();
@@ -656,6 +672,7 @@ export var MapMLLayer = LayerGroup.extend({
         map.closePopup();
         map.getContainer().focus();
       };
+
       // we found that the popupopen event is fired as many times as there
       // are layers on the map (<map-layer> elements / MapMLLayers that is).
       // In each case the target layer is always this layer, so we can't
@@ -667,6 +684,8 @@ export var MapMLLayer = LayerGroup.extend({
       // apart from this slightly non-optimal method. Revisit sometime!
       let link = content.querySelector('.mapml-zoom-link');
       if (link) link.remove();
+
+      // attach link to popup
       content.insertBefore(
         zoomLink,
         content.querySelector('hr.mapml-popup-divider')

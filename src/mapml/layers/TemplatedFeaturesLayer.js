@@ -70,11 +70,18 @@ export var TemplatedFeaturesLayer = Layer.extend({
         projection: map.options.projection,
         mapEl: this._linkEl.getMapEl(),
         onEachFeature: function (properties, geometry) {
+          const popupOptions = {
+            autoClose: false,
+            autoPan: true,
+            maxHeight: map.getSize().y * 0.5 - 50,
+            maxWidth: map.getSize().x * 0.7,
+            minWidth: 108
+          };
           // need to parse as HTML to preserve semantics and styles
           var c = document.createElement('div');
           c.classList.add('mapml-popup-content');
           c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-          geometry.bindPopup(c, { autoClose: false, minWidth: 108 });
+          geometry.bindPopup(c, popupOptions);
         }
       });
       extend(this._features.options, { _leafletLayer: this._features });
