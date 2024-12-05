@@ -310,16 +310,16 @@ export var MapMLLayer = LayerGroup.extend({
         _leafletLayer: layer,
         mapEl: layer._layerEl.parentElement,
         onEachFeature: function (properties, geometry) {
-          const map = layer._layerEl.parentElement._map;
-          const popupOptions = {
-            autoClose: false,
-            autoPan: true,
-            maxHeight: map.getSize().y * 0.5 - 50,
-            maxWidth: map.getSize().x * 0.7,
-            minWidth: 165
-          };
           // need to parse as HTML to preserve semantics and styles
           if (properties) {
+            const map = layer._map;
+            const popupOptions = {
+              autoClose: false,
+              autoPan: true,
+              maxHeight: map.getSize().y * 0.5 - 50,
+              maxWidth: map.getSize().x * 0.7,
+              minWidth: 165
+            };
             var c = document.createElement('div');
             c.classList.add('mapml-popup-content');
             c.insertAdjacentHTML('afterbegin', properties.innerHTML);
@@ -639,10 +639,10 @@ export var MapMLLayer = LayerGroup.extend({
 
     function attachZoomLink(e) {
       // this === popup
-      let content = this._content.parentElement.parentElement,
+      let popupWrapper = this._wrapper,
         featureEl = e ? e.currFeature : this._source._groupLayer._featureEl;
-      if (content.querySelector('a.mapml-zoom-link')) {
-        content.querySelector('a.mapml-zoom-link').remove();
+      if (popupWrapper.querySelector('a.mapml-zoom-link')) {
+        popupWrapper.querySelector('a.mapml-zoom-link').remove();
       }
 
       // return early if feature doesn't have map-geometry
@@ -682,13 +682,13 @@ export var MapMLLayer = LayerGroup.extend({
       // feature navigation buttons); obviously he dealt with this leaflet bug
       // this way some time ago, and we can't figure out how to get around it
       // apart from this slightly non-optimal method. Revisit sometime!
-      let link = content.querySelector('.mapml-zoom-link');
+      let link = popupWrapper.querySelector('.mapml-zoom-link');
       if (link) link.remove();
 
       // attach link to popup
-      content.insertBefore(
+      popupWrapper.insertBefore(
         zoomLink,
-        content.querySelector('hr.mapml-popup-divider')
+        popupWrapper.querySelector('hr.mapml-popup-divider')
       );
     }
 
