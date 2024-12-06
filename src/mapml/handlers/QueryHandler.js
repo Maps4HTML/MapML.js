@@ -66,7 +66,8 @@ export var QueryHandler = Handler.extend({
       popupOptions = {
         autoClose: false,
         autoPan: true,
-        maxHeight: map.getSize().y * 0.5 - 50
+        maxHeight: map.getSize().y * 0.5 - 50,
+        maxWidth: map.getSize().x * 0.7
       },
       tcrs2pcrs = function (c) {
         return crs.transformation.untransform(c, crs.scale(zoom));

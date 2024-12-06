@@ -592,6 +592,11 @@ summary {
   line-height: 44px;
 }
 
+.mapml-zoom-link {
+  display: block;
+  text-align: center;
+}
+
 .mapml-focus-buttons {
   white-space: nowrap;
 }
@@ -614,6 +619,7 @@ summary {
 .leaflet-popup-content {
   margin: 0;
   min-width: min-content;
+  scrollbar-width: thin;
 }
 .mapml-popup-content {
   padding-top: 44px;

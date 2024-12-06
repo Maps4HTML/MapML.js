@@ -108,7 +108,7 @@ test.describe('Playwright Query Link Tests', () => {
         (iframe) => iframe.contentWindow.document.querySelector('h1').innerText
       );
       const href = await page.$eval(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > a.mapml-zoom-link',
+        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > a.mapml-zoom-link',
         (link) => link.getAttribute('href')
       );
 
@@ -141,7 +141,7 @@ test.describe('Playwright Query Link Tests', () => {
         (iframe) => iframe.contentWindow.document.querySelector('h1').innerText
       );
       const href = await page.$eval(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > a.mapml-zoom-link',
+        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > a.mapml-zoom-link',
         (link) => link.getAttribute('href')
       );
 
@@ -176,7 +176,7 @@ test.describe('Playwright Query Link Tests', () => {
         (iframe) => iframe.contentWindow.document.querySelector('h1').innerText
       );
       const href = await page.$eval(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > a.mapml-zoom-link',
+        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > a.mapml-zoom-link',
         (link) => link.getAttribute('href')
       );
 
@@ -254,7 +254,7 @@ test.describe('Playwright Query Link Tests', () => {
         (iframe) => iframe.contentWindow.document.querySelector('h1').innerText
       );
       const link = await page.$eval(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div',
+        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper',
         (popup) => popup.querySelector('a.mapml-zoom-link')
       );
 
