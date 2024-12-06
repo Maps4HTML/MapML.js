@@ -1,6 +1,6 @@
 {
   "name": "@maps4html/mapml",
-  "version": "0.15.0",
+  "version": "0.15.2",
   "description": "Custom <mapml-viewer> element suite",
   "keywords": [
     "mapml-viewer",
@@ -66,10 +66,10 @@
     "rollup": "^3.29.5",
     "serve-static": "^1.15.0"
   },
-  "files": [
-    "dist",
+    "files": [
+      "dist",
     "LICENSE.md",
     "README.md",
     "CONTRIBUTING.md"
-  ]
+    ]
 }
