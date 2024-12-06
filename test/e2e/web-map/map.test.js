@@ -38,6 +38,7 @@ test.describe('Playwright web-map Element Tests', () => {
 
     await page.click('body > map');
     await page.keyboard.press('Control+v');
+    await page.waitForTimeout(1000);
     const layerCount = await page.$eval(
       'body > map',
       (map) => map.layers.length
@@ -72,6 +73,66 @@ test.describe('Playwright web-map Element Tests', () => {
       (map) => map.layers.length
     );
     expect(layerCount).toEqual(3);
+  });
+
+  test('Paste links with GeoJSON content-type to map using ctrl+v', async () => {
+    await page.click('body > textarea#linkGeoJSONContentType');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Control+c');
+
+    await page.click('body > map');
+    await page.keyboard.press('Control+v');
+    await page.waitForTimeout(1000);
+    const layerCount = await page.$eval(
+      'body > map',
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(4);
+  });
+
+  test('Paste links with JSON content-type to map using ctrl+v', async () => {
+    await page.click('body > textarea#linkJSONContentType');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Control+c');
+
+    await page.click('body > map');
+    await page.keyboard.press('Control+v');
+    await page.waitForTimeout(1000);
+    const layerCount = await page.$eval(
+      'body > map',
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(5);
+  });
+
+  test('Paste links with GeoJSON extension to map using ctrl+v', async () => {
+    await page.click('body > textarea#linkGeoJSONExt');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Control+c');
+
+    await page.click('body > map');
+    await page.keyboard.press('Control+v');
+    await page.waitForTimeout(1000);
+    const layerCount = await page.$eval(
+      'body > map',
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(6);
+  });
+
+  test('Paste links with JSON extension to map using ctrl+v', async () => {
+    await page.click('body > textarea#linkJSONExt');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Control+c');
+
+    await page.click('body > map');
+    await page.keyboard.press('Control+v');
+    await page.waitForTimeout(1000);
+    const layerCount = await page.$eval(
+      'body > map',
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(7);
   });
 
   test('Press spacebar when focus is on map', async () => {
