@@ -182,6 +182,8 @@ export var Geometry = FeatureGroup.extend({
       ) &&
       e.type === 'keyup'
     ) {
+      this.options.group.parentNode.appendChild(this.options.group);
+      this.options.group.focus();
       this.openTooltip();
     } else if (e.keyCode === 13 || e.keyCode === 32) {
       this.closeTooltip();
