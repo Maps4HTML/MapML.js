@@ -252,11 +252,9 @@ export class HTMLLinkElement extends HTMLElement {
           break;
         case 'disabled':
           if (typeof newValue === 'string') {
-            // take steps to disable - disabled will mean different things for
-            // different link@rel values:
-            disableLink();
+            this.disableLink();
           } else {
-            enableLink();
+            this.enableLink();
           }
           break;
       }
@@ -266,7 +264,7 @@ export class HTMLLinkElement extends HTMLElement {
     // Always call super first in constructor
     super();
   }
-  connectedCallback() {
+  async connectedCallback() {
     this.#hasConnected = true; /* jshint ignore:line */
     if (
       this.getLayerEl().hasAttribute('data-moving') ||
@@ -279,8 +277,10 @@ export class HTMLLinkElement extends HTMLElement {
       case 'image':
       case 'features':
       case 'query':
-        this._initTemplateVars();
-        this._createTemplatedLink();
+        if (!this.disabled) {
+          this._initTemplateVars();
+          await this._createTemplatedLink();
+        }
         break;
       case 'style':
       case 'self':
@@ -342,12 +342,10 @@ export class HTMLLinkElement extends HTMLElement {
   }
   disableLink() {
     switch (this.rel.toLowerCase()) {
-      // for some cases, require a dependency check
       case 'tile':
       case 'image':
       case 'features':
-      case 'query':
-        // tile, image, features, query
+        // tile, image, features
         if (this._templatedLayer) {
           if (
             this.parentExtent?._extentLayer &&
@@ -358,18 +356,11 @@ export class HTMLLinkElement extends HTMLElement {
           delete this._templatedLayer;
         }
         break;
-      case 'style':
-      case 'self':
-      case 'style self':
-      case 'self style':
-        // remove from layer control, layer control HTML??
-        break;
-      //      case 'zoomin':
-      //      case 'zoomout':
-      // no longer supported
-      //        break;
-      case 'legend':
-        // update layer control/ remove link
+      case 'query':
+        delete this._templateVars;
+        if (this.shadowRoot) {
+          this.shadowRoot.innerHTML = '';
+        }
         break;
       case 'stylesheet':
         // MIME type application/pmtiles+stylesheet is an invention of the requirement to get
@@ -391,69 +382,17 @@ export class HTMLLinkElement extends HTMLElement {
         } else {
           this._createStylesheetLink();
         }
-        break;
-      case 'alternate':
-        this._createAlternateLink(); // add media attribute
-        break;
-      case 'license':
-        // this._createLicenseLink();
         break;
     }
   }
   enableLink() {
-    if (
-      this.getLayerEl().hasAttribute('data-moving') ||
-      (this.parentExtent && this.parentExtent.hasAttribute('data-moving'))
-    )
-      return;
     switch (this.rel.toLowerCase()) {
-      // for some cases, require a dependency check
       case 'tile':
       case 'image':
       case 'features':
       case 'query':
-        this._initTemplateVars();
-        this._createTemplatedLink();
-        break;
-      case 'style':
-      case 'self':
-      case 'style self':
-      case 'self style':
-        this._createSelfOrStyleLink();
-        break;
-      case 'zoomin':
-      case 'zoomout':
-        //        this._createZoominOrZoomoutLink();
-        break;
-      case 'legend':
-        //this._createLegendLink();
-        break;
       case 'stylesheet':
-        // MIME type application/pmtiles+stylesheet is an invention of the requirement to get
-        // closer to loading style rules as CSS does, via link / (map-link)
-        // we could probably do something similar with map-style i.e. treat the
-        // content of map-style as though it was a stylesheet tbd caveat CSP
-        if (this.type === 'application/pmtiles+stylesheet') {
-          const pmtilesStyles = new URL(this.href, this.getBase()).href;
-          import(pmtilesStyles)
-            .then((module) => module.pmtilesRulesReady)
-            .then((initializedRules) => {
-              this._pmtilesRules = initializedRules;
-            })
-            .catch((reason) => {
-              console.error(
-                'Error importing pmtiles symbolizer rules or theme: \n' + reason
-              );
-            });
-        } else {
-          this._createStylesheetLink();
-        }
-        break;
-      case 'alternate':
-        this._createAlternateLink(); // add media attribute
-        break;
-      case 'license':
-        // this._createLicenseLink();
+        this.connectedCallback();
         break;
     }
   }
