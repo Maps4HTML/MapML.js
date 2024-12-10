@@ -25,7 +25,8 @@ export class HTMLLinkElement extends HTMLElement {
       'hreflang',
       'tref',
       'tms',
-      'projection'
+      'projection',
+      'disabled'
     ];
   }
   /* jshint ignore:start */
@@ -174,6 +175,16 @@ export class HTMLLinkElement extends HTMLElement {
   getLayerEl() {
     return Util.getClosest(this, 'map-layer,layer-');
   }
+  get disabled() {
+    return this.hasAttribute('disabled');
+  }
+  set disabled(val) {
+    if (val) {
+      this.setAttribute('disabled', '');
+    } else {
+      this.removeAttribute('disabled');
+    }
+  }
 
   attributeChangedCallback(name, oldValue, newValue) {
     //['type','rel','href','hreflang','tref','tms','projection'];
@@ -239,6 +250,13 @@ export class HTMLLinkElement extends HTMLElement {
             // handle side effects
           }
           break;
+        case 'disabled':
+          if (typeof newValue === 'string') {
+            this.disableLink();
+          } else {
+            this.enableLink();
+          }
+          break;
       }
     }
   }
@@ -246,7 +264,7 @@ export class HTMLLinkElement extends HTMLElement {
     // Always call super first in constructor
     super();
   }
-  connectedCallback() {
+  async connectedCallback() {
     this.#hasConnected = true; /* jshint ignore:line */
     if (
       this.getLayerEl().hasAttribute('data-moving') ||
@@ -259,8 +277,10 @@ export class HTMLLinkElement extends HTMLElement {
       case 'image':
       case 'features':
       case 'query':
-        this._initTemplateVars();
-        this._createTemplatedLink();
+        if (!this.disabled) {
+          this._initTemplateVars();
+          await this._createTemplatedLink();
+        }
         break;
       case 'style':
       case 'self':
@@ -320,6 +340,67 @@ export class HTMLLinkElement extends HTMLElement {
         break;
     }
   }
+  disableLink() {
+    switch (this.rel.toLowerCase()) {
+      case 'tile':
+      case 'image':
+      case 'features':
+        // tile, image, features
+        if (this._templatedLayer) {
+          if (
+            this.parentExtent?._extentLayer &&
+            this.parentExtent._extentLayer.hasLayer(this._templatedLayer)
+          ) {
+            this.parentExtent._extentLayer.removeLayer(this._templatedLayer);
+          }
+          delete this._templatedLayer;
+          this.getLayerEl()._validateDisabled();
+        }
+        break;
+      case 'query':
+        delete this._templateVars;
+        if (this.shadowRoot) {
+          this.shadowRoot.innerHTML = '';
+        }
+        this.getLayerEl()._validateDisabled();
+        break;
+      case 'stylesheet':
+        // MIME type application/pmtiles+stylesheet is an invention of the requirement to get
+        // closer to loading style rules as CSS does, via link / (map-link)
+        // we could probably do something similar with map-style i.e. treat the
+        // content of map-style as though it was a stylesheet tbd caveat CSP
+        if (this.type === 'application/pmtiles+stylesheet') {
+          const pmtilesStyles = new URL(this.href, this.getBase()).href;
+          import(pmtilesStyles)
+            .then((module) => module.pmtilesRulesReady)
+            .then((initializedRules) => {
+              this._pmtilesRules = initializedRules;
+            })
+            .catch((reason) => {
+              console.error(
+                'Error importing pmtiles symbolizer rules or theme: \n' + reason
+              );
+            });
+        } else {
+          this._createStylesheetLink();
+        }
+        break;
+    }
+  }
+  enableLink() {
+    switch (this.rel.toLowerCase()) {
+      case 'tile':
+      case 'image':
+      case 'features':
+      case 'query':
+      case 'stylesheet':
+        this.connectedCallback().then(() => {
+          // ensures that the layer control is updated, if applicable
+          this.getLayerEl()._validateDisabled();
+        });
+        break;
+    }
+  }
   _createAlternateLink(mapml) {
     if (this.href && this.projection) this._alternate = true;
   }
@@ -366,7 +447,7 @@ export class HTMLLinkElement extends HTMLElement {
       this.parentNode.nodeName.toUpperCase() === 'MAP-EXTENT'
         ? this.parentNode
         : this.parentNode.host;
-    if (!this.tref || !this.parentExtent) return;
+    if (this.disabled || !this.tref || !this.parentExtent) return;
     try {
       await this.parentExtent.whenReady();
       await this._templateVars.inputsReady;
@@ -439,7 +520,9 @@ export class HTMLLinkElement extends HTMLElement {
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'features') {
       // map-feature retrieved by link will be stored in shadowRoot owned by link
-      this.attachShadow({ mode: 'open' });
+      if (!this.shadowRoot) {
+        this.attachShadow({ mode: 'open' });
+      }
       this._templatedLayer = templatedFeaturesLayer(this._templateVars, {
         zoomBounds: this.getZoomBounds(),
         extentBounds: this.getBounds(),
@@ -448,7 +531,9 @@ export class HTMLLinkElement extends HTMLElement {
         linkEl: this
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'query') {
-      this.attachShadow({ mode: 'open' });
+      if (!this.shadowRoot) {
+        this.attachShadow({ mode: 'open' });
+      }
       extend(this._templateVars, this._setupQueryVars(this._templateVars));
       extend(this._templateVars, { extentBounds: this.getBounds() });
     }
@@ -853,7 +938,8 @@ export class HTMLLinkElement extends HTMLElement {
 
     return zoomBounds;
   }
-  _validateDisabled() {
+  isVisible() {
+    if (this.disabled) return false;
     let isVisible = false,
       map = this.getMapEl(),
       mapZoom = map.zoom,
@@ -958,6 +1044,7 @@ export class HTMLLinkElement extends HTMLElement {
         case 'image':
         case 'features':
           ready = '_templatedLayer';
+          if (this.disabled) resolve();
           break;
         case 'style':
         case 'self':
@@ -967,6 +1054,7 @@ export class HTMLLinkElement extends HTMLElement {
           break;
         case 'query':
           ready = 'shadowRoot';
+          if (this.disabled) resolve();
           break;
         case 'alternate':
           ready = '_alternate';
