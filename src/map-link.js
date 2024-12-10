@@ -995,6 +995,7 @@ export class HTMLLinkElement extends HTMLElement {
     return zoomBounds;
   }
   isVisible() {
+    if (this.disabled) return false;
     let isVisible = false,
       map = this.getMapEl(),
       mapZoom = map.zoom,
@@ -1099,6 +1100,7 @@ export class HTMLLinkElement extends HTMLElement {
         case 'image':
         case 'features':
           ready = '_templatedLayer';
+          if (this.disabled) resolve();
           break;
         case 'style':
         case 'self':
@@ -1108,6 +1110,7 @@ export class HTMLLinkElement extends HTMLElement {
           break;
         case 'query':
           ready = 'shadowRoot';
+          if (this.disabled) resolve();
           break;
         case 'alternate':
           ready = '_alternate';
