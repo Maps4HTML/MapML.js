@@ -354,6 +354,7 @@ export class HTMLLinkElement extends HTMLElement {
             this.parentExtent._extentLayer.removeLayer(this._templatedLayer);
           }
           delete this._templatedLayer;
+          this.getLayerEl()._validateDisabled();
         }
         break;
       case 'query':
@@ -361,6 +362,7 @@ export class HTMLLinkElement extends HTMLElement {
         if (this.shadowRoot) {
           this.shadowRoot.innerHTML = '';
         }
+        this.getLayerEl()._validateDisabled();
         break;
       case 'stylesheet':
         // MIME type application/pmtiles+stylesheet is an invention of the requirement to get
@@ -392,7 +394,10 @@ export class HTMLLinkElement extends HTMLElement {
       case 'features':
       case 'query':
       case 'stylesheet':
-        this.connectedCallback();
+        this.connectedCallback().then(() => {
+          // ensures that the layer control is updated, if applicable
+          this.getLayerEl()._validateDisabled();
+        });
         break;
     }
   }
