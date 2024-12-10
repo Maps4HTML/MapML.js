@@ -1,0 +1,24 @@
+<mapml-  xmlns="http://www.w3.org/1999/xhtml">
+<map-head>
+  <map-title>Queryable remote Layer</map-title>
+</map-head>
+<map-body>
+        <map-title>Queryable remote Layer</map-title>
+        <map-extent units="OSMTILE" checked="checked" hidden="hidden">
+          <map-meta name="extent" content="top-left-easting=-13898086, top-left-northing=7357523, bottom-right-easting=-12675094, bottom-right-northing=6134530"></map-meta>
+          <!-- set zoom bounds via map-meta vs map-input/min/max -->
+          <map-meta name="zoom" content="min=3,max=10"></map-meta>
+          <map-input name="w" type="width"></map-input>
+          <map-input name="h" type="height"></map-input>
+          <map-input name="i" type="location" units="map" axis="i"></map-input>
+          <map-input name="j" type="location" units="map" axis="j"></map-input>
+          <map-input name="xmin" type="location" units="pcrs" axis="easting" position="top-left" ></map-input>
+          <map-input name="xmax" type="location" units="pcrs" axis="easting" position="top-right"></map-input>
+          <map-input name="ymin" type="location" units="pcrs" axis="northing" position="bottom-left"></map-input>
+          <map-input name="ymax" type="location" units="pcrs" axis="northing" position="top-left"></map-input>
+
+          <map-link data-testid="query-link" rel="query" tref="restaurants/african.mapml?i={i}&amp;j={j}&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;width={w}&amp;height={h}"></map-link>
+        </map-extent>
+</map-body>
+
+</mapml->

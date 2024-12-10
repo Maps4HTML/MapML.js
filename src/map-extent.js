@@ -362,7 +362,7 @@ export class HTMLExtentElement extends HTMLElement {
       let totalTemplateCount = templates.length,
         disabledTemplateCount = 0;
       for (let j = 0; j < totalTemplateCount; j++) {
-        if (!templates[j]._validateDisabled()) {
+        if (!templates[j].isVisible()) {
           disabledTemplateCount++;
         }
       }
@@ -494,7 +494,7 @@ export class HTMLExtentElement extends HTMLElement {
       maxNativeZoom = -Infinity,
       minNativeZoom = Infinity,
       templates = this.querySelectorAll(
-        'map-link[rel=image],map-link[rel=tile],map-link[rel=features],map-link[rel=query]'
+        'map-link[rel=image]:not([disabled]),map-link[rel=tile]:not([disabled]),map-link[rel=features]:not([disabled]),map-link[rel=query]:not([disabled])'
       );
 
     // initialize bounds from this.scope > map-meta

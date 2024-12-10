@@ -10,7 +10,7 @@
         <map-meta name="extent" content="top-left-easting=1509080.1964270622,top-left-northing=-169400.558801122,bottom-right-easting=1512094.3357886747,bottom-right-northing=-172702.5654051304" ></map-meta>
     </map-head>
     <map-body>
-        <map-feature id="restaurant_polygon.2" class="restaurant_polygon">
+        <map-feature id="restaurant_polygon.2" class="restaurant_polygon mexican">
           <map-featurecaption>Banditos</map-featurecaption>
             <map-geometry>
               <map-point>

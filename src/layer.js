@@ -727,7 +727,9 @@ export class BaseLayerElement extends HTMLElement {
   queryable() {
     let content = this.src ? this.shadowRoot : this;
     return (
-      content.querySelector('map-extent[checked] > map-link[rel=query]') &&
+      content.querySelector(
+        'map-extent[checked] > map-link[rel=query]:not([disabled])'
+      ) &&
       this.checked &&
       this._layer &&
       !this.hidden

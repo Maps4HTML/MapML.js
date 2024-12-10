@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>map-link-stylesheet-disabled.html</title>
+    <meta charset="UTF-8">
+    <script type="module" src="mapml.js"></script>
+    <style>
+      html {
+        height: 100%
+      }
+
+      body {
+        height: inherit
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <mapml-viewer data-testid="viewer" style="height: 500px;width:500px;" zoom="14" lat="45.41" lon="-75.7"  projection="OSMTILE">
+      <map-layer data-testid="inline_tiles" checked>
+        <map-title>OpenStreetMap image tiles</map-title>
+        <map-link rel="license" href="https://www.openstreetmap.org/copyright" title="© OpenStreetMap contributors CC BY-SA"></map-link>  
+        <map-extent units="OSMTILE" checked="checked" hidden="hidden">
+          <map-input name="z" type="zoom" value="3" min="0" max="3"></map-input>
+          <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="8"></map-input>
+          <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="8"></map-input>
+          <map-link data-testid="tile_template" rel="tile" tref="tiles/osmtile/{z}/{x}/{y}.png"></map-link>
+        </map-extent>
+      </map-layer>
+      <map-layer data-testid="inline_templated_features" label="inline templated styled features" checked>
+        <map-meta name="cs" content="gcrs" ></map-meta>
+        <map-meta name="extent" content="top-left-easting=-8431654, top-left-northing=5690699, bottom-right-easting=-8422099, bottom-right-northing=5681144"></map-meta>
+        <map-link rel="stylesheet" href="restaurants/restaurants.css"></map-link>
+        <map-extent units="OSMTILE" checked >
+           <map-select id="restaurants" name="cuisine">
+              <map-option selected label="All cuisines" value="restaurants">restaurants</map-option>
+              <map-option label="Italian">italian</map-option>
+              <map-option label="African">african</map-option>
+              <map-option label="Asian">asian</map-option>
+              <map-option label="Cajun">cajun</map-option>
+              <map-option label="Mexican">mexican</map-option>
+              <map-option label="Indian">indian</map-option>
+            </map-select>
+          <map-link disabled data-testid="restaurants_templated_link" tref="restaurants/{cuisine}.mapml" rel="features"></map-link>
+        </map-extent>
+      </map-layer>
+      <map-layer data-testid="inline_image" label="inline content">
+        <map-title>Non-queryable inline WMS image Layer</map-title>
+        <!-- the extent below should have the same extent property as the extent in the inline-image-queryable layer -->
+        <!-- the bounds of the extent are established via native map-input variables -->
+        <map-extent units="OSMTILE" hidden="hidden" checked>
+          
+          <!-- this map-input (should) establish the min/maxNativeZoom for #link1 -->
+          <map-input data-testid="inline-image-z1" name="z" type="zoom" min="3" max="10"></map-input>
+          <map-input name="w" type="width"></map-input>
+          <map-input name="h" type="height"></map-input>
+          <map-input name="i" type="location" units="map" axis="i"></map-input>
+          <map-input name="j" type="location" units="map" axis="j"></map-input>
+          <!-- bounds of map-link #link1 should have same values as the identified inputs below -->
+          <map-input name="xmin" type="location" units="pcrs" axis="easting" position="top-left"     min="-13898086" max="-12675094"></map-input>
+          <map-input name="xmax" type="location" units="pcrs" axis="easting" position="bottom-right"    min="-13898086" max="-12675094"></map-input>
+          <map-input name="ymin" type="location" units="pcrs" axis="northing" position="bottom-left" min="6134530"   max="7357523"></map-input>
+          <map-input name="ymax" type="location" units="pcrs" axis="northing" position="top-left"    min="6134530"   max="7357523"></map-input>
+
+          <map-link data-testid="inline-link1" rel="image" tref="images/toporama_en.jpg?service=WMS&version=1.3.0&request=GetMap&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}&layers=FBP_FuelLayer_wBurnScars&CRS=EPSG:3857&format=image/png&transparent=true"></map-link>
+
+        </map-extent>
+        
+      </map-layer>
+      <map-layer data-testid="remote-queryable" label="remote queryable layer" src="map-link-disabled.mapml" checked></map-layer>
+    </mapml-viewer>
+  </body>
+</html>
