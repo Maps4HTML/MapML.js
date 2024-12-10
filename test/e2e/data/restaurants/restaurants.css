@@ -1,0 +1,32 @@
+.chinese {
+  fill: yellow;
+  stroke: red;
+}
+.japanese {
+  fill: red;
+  stroke: white;
+}
+.indian {
+  fill: orange;
+  stroke: green;
+}
+.thai {
+  fill: darkblue;
+  stroke: burgundy;
+}
+.african {
+  fill: blue;
+  stroke: yellow;
+}
+.cajun {
+  fill: yellow;
+  stroke: blue;
+}
+.italian {
+  fill: green;
+  stroke: red;
+}
+.mexican {
+  fill: green;
+  stroke: white;
+}

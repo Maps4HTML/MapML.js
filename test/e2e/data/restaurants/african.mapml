@@ -10,7 +10,7 @@
         <map-meta name="extent" content="top-left-easting=1509080.1964270622,top-left-northing=-169400.558801122,bottom-right-easting=1512094.3357886747,bottom-right-northing=-172702.5654051304" ></map-meta>
     </map-head>
     <map-body>
-        <map-feature data-testid="hareg" id="restaurant_map-point.9" class="restaurant_map-point">
+        <map-feature data-testid="hareg" id="restaurant_map-point.9" class="restaurant_map-point african">
           <map-featurecaption>Hareg Cafe &amp; Variety</map-featurecaption>
             <map-geometry>
               <map-point>

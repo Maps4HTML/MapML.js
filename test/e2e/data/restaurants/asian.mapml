@@ -10,7 +10,7 @@
         <map-meta name="extent" content="top-left-easting=1509080.1964270622,top-left-northing=-169400.558801122,bottom-right-easting=1512094.3357886747,bottom-right-northing=-172702.5654051304" ></map-meta>
     </map-head>
     <map-body>
-        <map-feature id="restaurant_map-point.77" class="restaurant_map-point">
+        <map-feature id="restaurant_map-point.77" class="restaurant_map-point asian chinese">
           <map-featurecaption>Hung Sum Restaurant</map-featurecaption>
             <map-geometry>
                 <map-point>
@@ -50,7 +50,7 @@
                 </table>
             </map-properties>
         </map-feature>
-        <map-feature id="restaurant_map-point.13" class="restaurant_map-point">
+        <map-feature id="restaurant_map-point.13" class="restaurant_map-point asian thai">
           <map-featurecaption>Phucket Royal</map-featurecaption>
             <map-geometry>
               <map-point>
@@ -90,7 +90,7 @@
                 </table>
             </map-properties>
         </map-feature>
-        <map-feature id="restaurant_map-point.18" class="restaurant_map-point">
+        <map-feature id="restaurant_map-point.18" class="restaurant_map-point asian japanese">
           <map-featurecaption>Sushi 88</map-featurecaption>
             <map-geometry>
               <map-point>
