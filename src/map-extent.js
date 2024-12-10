@@ -362,7 +362,7 @@ export class HTMLExtentElement extends HTMLElement {
       let totalTemplateCount = templates.length,
         disabledTemplateCount = 0;
       for (let j = 0; j < totalTemplateCount; j++) {
-        if (!templates[j]._validateDisabled()) {
+        if (!templates[j].isVisible()) {
           disabledTemplateCount++;
         }
       }

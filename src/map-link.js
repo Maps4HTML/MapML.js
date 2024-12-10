@@ -25,7 +25,8 @@ export class HTMLLinkElement extends HTMLElement {
       'hreflang',
       'tref',
       'tms',
-      'projection'
+      'projection',
+      'disabled'
     ];
   }
   /* jshint ignore:start */
@@ -174,6 +175,16 @@ export class HTMLLinkElement extends HTMLElement {
   getLayerEl() {
     return Util.getClosest(this, 'map-layer,layer-');
   }
+  get disabled() {
+    return this.hasAttribute('disabled');
+  }
+  set disabled(val) {
+    if (val) {
+      this.setAttribute('disabled', '');
+    } else {
+      this.removeAttribute('disabled');
+    }
+  }
 
   attributeChangedCallback(name, oldValue, newValue) {
     //['type','rel','href','hreflang','tref','tms','projection'];
@@ -237,6 +248,15 @@ export class HTMLLinkElement extends HTMLElement {
           // rel = alternate
           if (oldValue !== newValue) {
             // handle side effects
+          }
+          break;
+        case 'disabled':
+          if (typeof newValue === 'string') {
+            // take steps to disable - disabled will mean different things for
+            // different link@rel values:
+            disableLink();
+          } else {
+            enableLink();
           }
           break;
       }
@@ -320,6 +340,123 @@ export class HTMLLinkElement extends HTMLElement {
         break;
     }
   }
+  disableLink() {
+    switch (this.rel.toLowerCase()) {
+      // for some cases, require a dependency check
+      case 'tile':
+      case 'image':
+      case 'features':
+      case 'query':
+        // tile, image, features, query
+        if (this._templatedLayer) {
+          if (
+            this.parentExtent?._extentLayer &&
+            this.parentExtent._extentLayer.hasLayer(this._templatedLayer)
+          ) {
+            this.parentExtent._extentLayer.removeLayer(this._templatedLayer);
+          }
+          delete this._templatedLayer;
+        }
+        break;
+      case 'style':
+      case 'self':
+      case 'style self':
+      case 'self style':
+        // remove from layer control, layer control HTML??
+        break;
+      //      case 'zoomin':
+      //      case 'zoomout':
+      // no longer supported
+      //        break;
+      case 'legend':
+        // update layer control/ remove link
+        break;
+      case 'stylesheet':
+        // MIME type application/pmtiles+stylesheet is an invention of the requirement to get
+        // closer to loading style rules as CSS does, via link / (map-link)
+        // we could probably do something similar with map-style i.e. treat the
+        // content of map-style as though it was a stylesheet tbd caveat CSP
+        if (this.type === 'application/pmtiles+stylesheet') {
+          const pmtilesStyles = new URL(this.href, this.getBase()).href;
+          import(pmtilesStyles)
+            .then((module) => module.pmtilesRulesReady)
+            .then((initializedRules) => {
+              this._pmtilesRules = initializedRules;
+            })
+            .catch((reason) => {
+              console.error(
+                'Error importing pmtiles symbolizer rules or theme: \n' + reason
+              );
+            });
+        } else {
+          this._createStylesheetLink();
+        }
+        break;
+      case 'alternate':
+        this._createAlternateLink(); // add media attribute
+        break;
+      case 'license':
+        // this._createLicenseLink();
+        break;
+    }
+  }
+  enableLink() {
+    if (
+      this.getLayerEl().hasAttribute('data-moving') ||
+      (this.parentExtent && this.parentExtent.hasAttribute('data-moving'))
+    )
+      return;
+    switch (this.rel.toLowerCase()) {
+      // for some cases, require a dependency check
+      case 'tile':
+      case 'image':
+      case 'features':
+      case 'query':
+        this._initTemplateVars();
+        this._createTemplatedLink();
+        break;
+      case 'style':
+      case 'self':
+      case 'style self':
+      case 'self style':
+        this._createSelfOrStyleLink();
+        break;
+      case 'zoomin':
+      case 'zoomout':
+        //        this._createZoominOrZoomoutLink();
+        break;
+      case 'legend':
+        //this._createLegendLink();
+        break;
+      case 'stylesheet':
+        // MIME type application/pmtiles+stylesheet is an invention of the requirement to get
+        // closer to loading style rules as CSS does, via link / (map-link)
+        // we could probably do something similar with map-style i.e. treat the
+        // content of map-style as though it was a stylesheet tbd caveat CSP
+        if (this.type === 'application/pmtiles+stylesheet') {
+          const pmtilesStyles = new URL(this.href, this.getBase()).href;
+          import(pmtilesStyles)
+            .then((module) => module.pmtilesRulesReady)
+            .then((initializedRules) => {
+              this._pmtilesRules = initializedRules;
+            })
+            .catch((reason) => {
+              console.error(
+                'Error importing pmtiles symbolizer rules or theme: \n' + reason
+              );
+            });
+        } else {
+          this._createStylesheetLink();
+        }
+        break;
+      case 'alternate':
+        this._createAlternateLink(); // add media attribute
+        break;
+      case 'license':
+        // this._createLicenseLink();
+        break;
+    }
+  }
   _createAlternateLink(mapml) {
     if (this.href && this.projection) this._alternate = true;
   }
@@ -366,7 +503,7 @@ export class HTMLLinkElement extends HTMLElement {
       this.parentNode.nodeName.toUpperCase() === 'MAP-EXTENT'
         ? this.parentNode
         : this.parentNode.host;
-    if (!this.tref || !this.parentExtent) return;
+    if (this.disabled || !this.tref || !this.parentExtent) return;
     try {
       await this.parentExtent.whenReady();
       await this._templateVars.inputsReady;
@@ -439,7 +576,9 @@ export class HTMLLinkElement extends HTMLElement {
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'features') {
       // map-feature retrieved by link will be stored in shadowRoot owned by link
-      this.attachShadow({ mode: 'open' });
+      if (!this.shadowRoot) {
+        this.attachShadow({ mode: 'open' });
+      }
       this._templatedLayer = templatedFeaturesLayer(this._templateVars, {
         zoomBounds: this.getZoomBounds(),
         extentBounds: this.getBounds(),
@@ -448,7 +587,9 @@ export class HTMLLinkElement extends HTMLElement {
         linkEl: this
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'query') {
-      this.attachShadow({ mode: 'open' });
+      if (!this.shadowRoot) {
+        this.attachShadow({ mode: 'open' });
+      }
       extend(this._templateVars, this._setupQueryVars(this._templateVars));
       extend(this._templateVars, { extentBounds: this.getBounds() });
     }
@@ -853,7 +994,7 @@ export class HTMLLinkElement extends HTMLElement {
 
     return zoomBounds;
   }
-  _validateDisabled() {
+  isVisible() {
     let isVisible = false,
       map = this.getMapEl(),
       mapZoom = map.zoom,
