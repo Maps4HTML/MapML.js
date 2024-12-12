@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>index-map.html</title>
-    <script type="module" src="dist/mapml.js"></script>
+    <title>map-link-media.html</title>
+    <script type="module" src="mapml.js"></script>
      <style> 
        html, 
        body { 
@@ -99,34 +99,12 @@
            contain: initial;
            contain-intrinsic-size: initial;
          }
-        /* Ensure client-side image map fallbacks are displayed if custom/built-in
-        elements is supported but javascript is disabled. */
-        map[is="web-map"]:not(:defined) + img[usemap] {
-          display: initial;
-        }
-
-        /* "Reset" the properties used to pre-style (to avoid Layout Shift) if
-        custom/built-in elements is supported but javascript is disabled. */
-        map[is="web-map"]:not(:defined) {
-          display: initial;
-          contain: initial;
-          contain-intrinsic-size: initial;
-        }
        </style> 
      </noscript> 
   </head>
   <body>
     
     <mapml-viewer projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation">
-      <map-layer data-testid="osm-layer" label="OpenStreetMap" checked >
-        <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
-        <map-extent units="OSMTILE" checked="checked">
-          <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
-          <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
-          <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
-          <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
-        </map-extent>
-      </map-layer>
       <map-layer label="Restaurants" checked="">
         <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
         <map-extent units="OSMTILE" checked="">
@@ -143,31 +121,5 @@
         </map-extent>
       </map-layer>
     </mapml-viewer>
-    <map is="web-map" projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation">
-      <map-layer data-testid="osm-layer" label="OpenStreetMap" checked >
-        <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
-        <map-extent units="OSMTILE" checked="checked">
-          <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
-          <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
-          <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
-          <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
-        </map-extent>
-      </map-layer>
-      <map-layer label="Restaurants" checked="">
-        <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
-        <map-extent units="OSMTILE" checked="">
-           <map-select id="restaurants" name="cusine">
-               <map-option value="restaurants" selected="selected">All cuisines</map-option>
-               <map-option value="african">African</map-option>
-               <map-option value="asian">Asian</map-option>
-               <map-option value="cajun">Cajun</map-option>
-               <map-option value="indian">Indian</map-option>
-               <map-option value="italian">Italian</map-option>
-               <map-option value="mexican">Mexican</map-option>
-           </map-select>
-           <map-link tref="https://maps4html.org/experiments/shared/restaurants/{cusine}.mapml" rel="features"></map-link>
-        </map-extent>
-      </map-layer>
-    </map>
   </body>
 </html>
