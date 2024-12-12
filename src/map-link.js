@@ -113,10 +113,7 @@ export class HTMLLinkElement extends HTMLElement {
     }
   }
   get media() {
-    // return the content of media attribute as an object
-    // maybe memoizing the object to avoid repeated formatting
-    // the Util function may need to be renamed?
-    return Util._metaContentToObject(this.getAttribute('media'));
+    return this.getAttribute('media');
   }
   set media(val) {
     this.setAttribute('media', val);
@@ -237,6 +234,9 @@ export class HTMLLinkElement extends HTMLElement {
           }
           break;
         case 'media':
+          if (oldValue !== newValue) {
+            this._registerMediaQuery(newValue);
+          }
           break;
         case 'tms':
           // rel = tile
@@ -305,6 +305,7 @@ export class HTMLLinkElement extends HTMLElement {
         // this._createLicenseLink();
         break;
     }
+    this._registerMediaQuery(this.media);
     // create the type of templated leaflet layer appropriate to the rel value
     // image/map/features = templated(Image/Feature), tile=templatedTile,
     // this._tempatedTileLayer = Util.templatedTile(pane: this.extentElement._leafletLayer._container)
@@ -354,18 +355,48 @@ export class HTMLLinkElement extends HTMLElement {
         break;
     }
   }
-  enableLink() {
+  async enableLink() {
     switch (this.rel.toLowerCase()) {
       case 'tile':
       case 'image':
       case 'features':
       case 'query':
-      case 'stylesheet':
-        this.connectedCallback().then(() => {
-          // ensures that the layer control is updated, if applicable
+        if (!this.disabled) {
+          this._initTemplateVars();
+          await this._createTemplatedLink();
           this.getLayerEl()._validateDisabled();
-        });
+        }
         break;
+      case 'stylesheet':
+        this._createStylesheetLink();
+        break;
+    }
+  }
+  _registerMediaQuery(mq) {
+    if (!this._changeHandler) {
+      // Define and bind the change handler once
+      this._changeHandler = () => {
+        this.disabled = !this._mql.matches;
+      };
+    }
+
+    if (mq) {
+      let map = this.getMapEl();
+      if (!map) return;
+
+      // Remove listener from the old media query (if it exists)
+      if (this._mql) {
+        this._mql.removeEventListener('change', this._changeHandler);
+      }
+
+      // Set up the new media query and listener
+      this._mql = map.matchMedia(mq);
+      this._changeHandler(); // Initial evaluation
+      this._mql.addEventListener('change', this._changeHandler);
+    } else if (this._mql) {
+      // Clean up the existing listener
+      this._mql.removeEventListener('change', this._changeHandler);
+      delete this._mql;
     }
   }
   _createAlternateLink(mapml) {
