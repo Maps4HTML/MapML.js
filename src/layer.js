@@ -168,7 +168,6 @@ export class BaseLayerElement extends HTMLElement {
     // this._opacity is used to record the current opacity value (with or without updates),
     // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
     this._opacity = this.opacity || 1.0;
-    this._renderingMapContent = M.options.contentPreference;
     this.attachShadow({ mode: 'open' });
   }
   disconnectedCallback() {
@@ -297,7 +296,6 @@ export class BaseLayerElement extends HTMLElement {
           .then(() => {
             // may throw:
             this.selectAlternateOrChangeProjection();
-            this.checkForPreferredContent();
           })
           .then(() => {
             this._layer = mapMLLayer(new URL(this.src, base).href, this, {
@@ -335,7 +333,6 @@ export class BaseLayerElement extends HTMLElement {
           .then(() => {
             // may throw:
             this.selectAlternateOrChangeProjection();
-            this.checkForPreferredContent();
           })
           .then(() => {
             this._layer = mapMLLayer(null, this, {
@@ -373,13 +370,6 @@ export class BaseLayerElement extends HTMLElement {
             'Changing map projection to match layer: ' + e.cause.mapprojection
           );
           this.parentElement.projection = e.cause.mapprojection;
-        }
-      } else if (e.message === 'findmatchingpreferredcontent') {
-        if (e.cause.href) {
-          console.log(
-            'Changing layer to matching preferred content at: ' + e.cause.href
-          );
-          this.src = e.cause.href;
         }
       } else if (e.message === 'Failed to fetch') {
         // cut short whenReady with the _fetchError property
@@ -425,23 +415,6 @@ export class BaseLayerElement extends HTMLElement {
     ) {
       throw new Error('changeprojection', {
         cause: { mapprojection: contentProjection }
-      });
-    }
-  }
-
-  checkForPreferredContent() {
-    let mapml = this.src ? this.shadowRoot : this;
-    let availablePreferMapContents = mapml.querySelector(
-      `map-link[rel="style"][media="prefers-map-content=${this._renderingMapContent}"][href]`
-    );
-    if (availablePreferMapContents) {
-      // resolve href
-      let url = new URL(
-        availablePreferMapContents.getAttribute('href'),
-        availablePreferMapContents.getBase()
-      ).href;
-      throw new Error('findmatchingpreferredcontent', {
-        cause: { href: url }
       });
     }
   }
