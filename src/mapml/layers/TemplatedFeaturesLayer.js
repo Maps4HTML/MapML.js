@@ -9,6 +9,7 @@ import {
 import { Util } from '../utils/Util.js';
 import { featureLayer } from '../layers/FeatureLayer.js';
 import { featureRenderer } from '../features/featureRenderer.js';
+import { renderStyles } from '../elementSupport/layers/renderStyles.js';
 
 export var TemplatedFeaturesLayer = Layer.extend({
   // this and M.ImageLayer could be merged or inherit from a common parent
@@ -95,31 +96,8 @@ export var TemplatedFeaturesLayer = Layer.extend({
     if (this._features) this._features.eachLayer((layer) => layer.remove());
     DomUtil.remove(this._container);
   },
-  appendStyleLink: function (mapLink) {
-    if (!mapLink.link) return;
-    let positionAndNode = this._getStylePositionAndNode();
-    positionAndNode.node.insertAdjacentElement(
-      positionAndNode.position,
-      mapLink.link
-    );
-  },
-  _getStylePositionAndNode: function () {
-    return this._container.lastChild &&
-      (this._container.lastChild.nodeName.toUpperCase() === 'SVG' ||
-        this._container.lastChild.classList.contains('mapml-vector-container'))
-      ? { position: 'beforebegin', node: this._container.lastChild }
-      : this._container.lastChild
-      ? { position: 'afterend', node: this._container.lastChild }
-      : { position: 'afterbegin', node: this._container };
-  },
-  appendStyleElement: function (mapStyle) {
-    if (!mapStyle.styleElement) return;
-    let positionAndNode = this._getStylePositionAndNode();
-    positionAndNode.node.insertAdjacentElement(
-      positionAndNode.position,
-      mapStyle.styleElement
-    );
-  },
+  renderStyles,
+
   redraw: function () {
     this._onMoveEnd();
   },

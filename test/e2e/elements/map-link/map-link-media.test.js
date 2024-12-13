@@ -1,3 +1,7 @@
+/* to do: test that map-link rel=features is re-enabled when the media attribute
+ * is removed
+ */
+
 import { test, expect, chromium } from '@playwright/test';
 
 test.describe('map-link media attribute', () => {
@@ -97,5 +101,17 @@ test.describe('map-link media attribute', () => {
     });
     await expect(layer).not.toHaveAttribute('disabled');
     await expect(mapLink).not.toHaveAttribute('disabled');
+  });
+  test('map-link rel=features is enabled when non-matching media attribute removed', async () => {
+    const viewer = page.getByTestId('viewer');
+    const featuresLink = page.getByTestId('features-link');
+    await featuresLink.evaluate((l) => (l.media = '(16 < map-zoom <= 18)'));
+    await expect(featuresLink).toHaveAttribute('disabled');
+    await featuresLink.evaluate((l) => l.removeAttribute('media'));
+    await expect(featuresLink).not.toHaveAttribute('disabled');
+    await page.waitForTimeout(500);
+    await expect(viewer).toHaveScreenshot('default_styled_markers.png', {
+      maxDiffPixels: 100
+    });
   });
 });

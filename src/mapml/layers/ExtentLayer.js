@@ -1,4 +1,5 @@
 import { LayerGroup, DomUtil } from 'leaflet';
+import { renderStyles } from '../elementSupport/layers/renderStyles.js';
 
 export var ExtentLayer = LayerGroup.extend({
   initialize: function (options) {
@@ -82,31 +83,7 @@ export var ExtentLayer = LayerGroup.extend({
     if (this._extentEl._opacitySlider)
       this._extentEl._opacitySlider.value = opacity;
   },
-  appendStyleLink: function (mapLink) {
-    if (!mapLink.link) return;
-    let positionAndNode = this._getStylePositionAndNode();
-    positionAndNode.node.insertAdjacentElement(
-      positionAndNode.position,
-      mapLink.link
-    );
-  },
-  _getStylePositionAndNode: function () {
-    return this._container.lastChild &&
-      (this._container.lastChild.nodeName.toUpperCase() === 'SVG' ||
-        this._container.lastChild.classList.contains('mapml-vector-container'))
-      ? { position: 'beforebegin', node: this._container.lastChild }
-      : this._container.lastChild
-      ? { position: 'afterend', node: this._container.lastChild }
-      : { position: 'afterbegin', node: this._container };
-  },
-  appendStyleElement: function (mapStyle) {
-    if (!mapStyle.styleElement) return;
-    let positionAndNode = this._getStylePositionAndNode();
-    positionAndNode.node.insertAdjacentElement(
-      positionAndNode.position,
-      mapStyle.styleElement
-    );
-  }
+  renderStyles
 });
 export var extentLayer = function (options) {
   return new ExtentLayer(options);

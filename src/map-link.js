@@ -252,9 +252,9 @@ export class HTMLLinkElement extends HTMLElement {
           break;
         case 'disabled':
           if (typeof newValue === 'string') {
-            this.disableLink();
+            this._disableLink();
           } else {
-            this.enableLink();
+            this._enableLink();
           }
           break;
       }
@@ -277,6 +277,9 @@ export class HTMLLinkElement extends HTMLElement {
       case 'image':
       case 'features':
       case 'query':
+        // because we skip the attributeChangedCallback for initialization,
+        // respect the disabled attribute which can be set by the author prior
+        // to initialization
         if (!this.disabled) {
           this._initTemplateVars();
           await this._createTemplatedLink();
@@ -296,7 +299,9 @@ export class HTMLLinkElement extends HTMLElement {
         //this._createLegendLink();
         break;
       case 'stylesheet':
-        this._createStylesheetLink();
+        if (!this.disabled) {
+          this._createStylesheetLink();
+        }
         break;
       case 'alternate':
         this._createAlternateLink(); // add media attribute
@@ -305,7 +310,10 @@ export class HTMLLinkElement extends HTMLElement {
         // this._createLicenseLink();
         break;
     }
-    this._registerMediaQuery(this.media);
+    // the media attribute uses / overrides the disabled attribute to enable or
+    // disable the link, so at this point the #hasConnected must be true so
+    // that the disabled attributeChangedCallback can have its desired side effect
+    await this._registerMediaQuery(this.media);
     // create the type of templated leaflet layer appropriate to the rel value
     // image/map/features = templated(Image/Feature), tile=templatedTile,
     // this._tempatedTileLayer = Util.templatedTile(pane: this.extentElement._leafletLayer._container)
@@ -323,7 +331,7 @@ export class HTMLLinkElement extends HTMLElement {
         break;
     }
   }
-  disableLink() {
+  _disableLink() {
     switch (this.rel.toLowerCase()) {
       case 'tile':
       case 'image':
@@ -355,24 +363,22 @@ export class HTMLLinkElement extends HTMLElement {
         break;
     }
   }
-  async enableLink() {
+  async _enableLink() {
     switch (this.rel.toLowerCase()) {
       case 'tile':
       case 'image':
       case 'features':
       case 'query':
-        if (!this.disabled) {
-          this._initTemplateVars();
-          await this._createTemplatedLink();
-          this.getLayerEl()._validateDisabled();
-        }
+        this._initTemplateVars();
+        await this._createTemplatedLink();
+        this.getLayerEl()._validateDisabled();
         break;
       case 'stylesheet':
         this._createStylesheetLink();
         break;
     }
   }
-  _registerMediaQuery(mq) {
+  async _registerMediaQuery(mq) {
     if (!this._changeHandler) {
       // Define and bind the change handler once
       this._changeHandler = () => {
@@ -383,6 +389,9 @@ export class HTMLLinkElement extends HTMLElement {
     if (mq) {
       let map = this.getMapEl();
       if (!map) return;
+      // have to wait until map has an extent i.e. is ready, because the
+      // matchMedia function below relies on it for map related queries
+      await map.whenReady();
 
       // Remove listener from the old media query (if it exists)
       if (this._mql) {
@@ -397,6 +406,8 @@ export class HTMLLinkElement extends HTMLElement {
       // Clean up the existing listener
       this._mql.removeEventListener('change', this._changeHandler);
       delete this._mql;
+      // unlike map-layer.disabled, map-link.disabled is an observed attribute
+      this.disabled = false;
     }
   }
   _createAlternateLink(mapml) {
@@ -441,17 +452,17 @@ export class HTMLLinkElement extends HTMLElement {
       copyAttributes(this, this.link);
 
       if (this._stylesheetHost._layer) {
-        this._stylesheetHost._layer.appendStyleLink(this);
+        this._stylesheetHost._layer.renderStyles(this);
       } else if (this._stylesheetHost._templatedLayer) {
-        this._stylesheetHost._templatedLayer.appendStyleLink(this);
+        this._stylesheetHost._templatedLayer.renderStyles(this);
       } else if (this._stylesheetHost._extentLayer) {
-        this._stylesheetHost._extentLayer.appendStyleLink(this);
+        this._stylesheetHost._extentLayer.renderStyles(this);
       }
     }
 
     function copyAttributes(source, target) {
       return Array.from(source.attributes).forEach((attribute) => {
-        if (attribute.nodeName !== 'href')
+        if (attribute.nodeName !== 'href' && attribute.nodeName !== 'media')
           target.setAttribute(attribute.nodeName, attribute.nodeValue);
       });
     }
@@ -989,8 +1000,7 @@ export class HTMLLinkElement extends HTMLElement {
       layerEl.dispatchEvent(
         new CustomEvent('changestyle', {
           detail: {
-            src: e.target.getAttribute('data-href'),
-            preference: this.media['prefers-map-content']
+            src: e.target.getAttribute('data-href')
           }
         })
       );
