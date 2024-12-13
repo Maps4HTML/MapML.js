@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>&lt;map-layer&gt; media attribute test</title>
+    <meta charset="UTF-8">
+    <script type="module" src="mapml.js"></script>
+    <style>
+      html {
+        height: 100%
+      }
+
+      body {
+        height: inherit
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <mapml-viewer data-testid="viewer" style="height: 500px;width:500px;" controls zoom="2" lat="68" lon="-87" controls projection="CBMTILE">
+      <!-- map loads at z=2, so both layers should be enabled -->
+      <map-layer data-testid="initial-mq" media="(0 <= map-zoom <=3)" checked>
+        <map-title>media query: (0 <= map-zoom <=3)</map-title>
+        <map-meta name="projection" content="CBMTILE"></map-meta>
+        <map-meta name="extent" content="top-left-easting=-2985112, top-left-northing=5403578, bottom-right-easting=3629485, bottom-right-northing=-1211019"></map-meta>
+        <!<!-- to be enabled, a map-layer must have in-view content -->
+        <map-feature min="0" max="17"><map-geometry cs="gcrs"><map-point><map-coordinates>-87 68</map-coordinates></map-point></map-geometry></map-feature>
+      </map-layer>
+      <!-- at z=4, only this layer should be enabled -->
+      <map-layer data-testid="no-initial-mq"  src="dummy-cbmtile-cbmt.mapml" checked></map-layer>
+      
+      <!-- adding a media attribute value of media="(0 <= map-zoom <=3)" to the above layer while map is at z=4
+           should result in the above layer being disabled until z is in range.
+           This tests that the media attribute is 'observed' -->
+      
+      <!-- removing the media attribute while the above layer is disabled due to
+      the media query mismatch should result in the layer being re-enanbled and the
+      disable attribute cleared -->
+    </mapml-viewer>
+  </body>
+</html>

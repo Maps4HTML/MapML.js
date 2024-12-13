@@ -11,6 +11,7 @@ import { Util } from '../utils/Util.js';
 import { featureLayer } from './FeatureLayer.js';
 import { staticTileLayer } from './StaticTileLayer.js';
 import { featureRenderer } from '../features/featureRenderer.js';
+import { renderStyles } from '../elementSupport/layers/renderStyles.js';
 
 export var MapMLLayer = LayerGroup.extend({
   options: {
@@ -248,31 +249,7 @@ export var MapMLLayer = LayerGroup.extend({
       this._href
     ).href;
   },
-  appendStyleLink: function (mapLink) {
-    if (!mapLink.link) return;
-    let positionAndNode = this._getStylePositionAndNode();
-    positionAndNode.node.insertAdjacentElement(
-      positionAndNode.position,
-      mapLink.link
-    );
-  },
-  _getStylePositionAndNode: function () {
-    return this._container.lastChild &&
-      (this._container.lastChild.nodeName.toUpperCase() === 'SVG' ||
-        this._container.lastChild.classList.contains('mapml-vector-container'))
-      ? { position: 'beforebegin', node: this._container.lastChild }
-      : this._container.lastChild
-      ? { position: 'afterend', node: this._container.lastChild }
-      : { position: 'afterbegin', node: this._container };
-  },
-  appendStyleElement: function (mapStyle) {
-    if (!mapStyle.styleElement) return;
-    let positionAndNode = this._getStylePositionAndNode();
-    positionAndNode.node.insertAdjacentElement(
-      positionAndNode.position,
-      mapStyle.styleElement
-    );
-  },
+  renderStyles,
   _initialize: function () {
     var layer = this;
     var base = layer.getBase(),
