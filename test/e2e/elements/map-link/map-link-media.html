@@ -104,7 +104,7 @@
   </head>
   <body>
     
-    <mapml-viewer projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation">
+    <mapml-viewer data-testid="viewer" projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls style="height: 500px;width:500px;">
       <map-layer label="Restaurants" checked="">
         <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
         <map-extent units="OSMTILE" checked="">
@@ -117,7 +117,7 @@
                <map-option value="italian">Italian</map-option>
                <map-option value="mexican">Mexican</map-option>
            </map-select>
-           <map-link media="(11 < map-zoom <= 18)" tref="https://maps4html.org/experiments/shared/restaurants/{cusine}.mapml" rel="features"></map-link>
+           <map-link data-testid="features-link" media="(11 < map-zoom <= 18)" tref="https://maps4html.org/experiments/shared/restaurants/{cusine}.mapml" rel="features"></map-link>
         </map-extent>
       </map-layer>
     </mapml-viewer>

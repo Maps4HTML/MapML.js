@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>map-link-stylesheet-media.html</title>
+    <script type="module" src="mapml.js"></script>
+     <style> 
+       html, 
+       body { 
+         height: 100%; 
+       } 
+       * { 
+         margin: 0; 
+         padding: 0; 
+       } 
+
+      /* Ensure inline layer content is hidden if custom/built-in elements isn't
+      supported, or if javascript is disabled. This needs to be defined separately
+      from the above, because the `:not(:defined)` selector invalidates the entire
+      declaration in browsers that do not support it. */
+      map-layer {
+        display: none;
+      }
+     </style> 
+  </head>
+  <body>
+    
+    <mapml-viewer data-testid="viewer" projection="OSMTILE" zoom="14" lat="45.40954467619979" lon="-75.70168476290948" style="height: 500px;width:500px;">
+      <map-layer data-testid="restaurants" label="Restaurants" checked="">
+        <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
+        <map-extent units="OSMTILE" checked="">
+          <!-- markers should be red on load -->
+          <map-link rel="stylesheet" data-testid="stylesheet-link" href="red.css"></map-link>
+           <map-select id="restaurants" name="cusine">
+               <map-option value="restaurants" selected="selected">All cuisines</map-option>
+               <map-option value="african">African</map-option>
+               <map-option value="asian">Asian</map-option>
+               <map-option value="cajun">Cajun</map-option>
+               <map-option value="indian">Indian</map-option>
+               <map-option value="italian">Italian</map-option>
+               <map-option value="mexican">Mexican</map-option>
+           </map-select>
+           <map-link tref="restaurants/{cusine}.mapml" rel="features"></map-link>
+        </map-extent>
+      </map-layer>
+    </mapml-viewer>
+  </body>
+</html>
