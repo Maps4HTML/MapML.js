@@ -1,0 +1,3 @@
+Deleting connectedCallback event handler for zoomin/zoomout links.  Also deleting
+that code call from _validateDisabled().  So, need to ensure that media attribute
+replaces that functionality.

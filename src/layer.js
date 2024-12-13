@@ -53,6 +53,13 @@ export class BaseLayerElement extends HTMLElement {
     }
   }
 
+  get media() {
+    return this.getAttribute('media');
+  }
+  set media(val) {
+    this.setAttribute('media', val);
+  }
+
   get opacity() {
     // use ?? since 0 is falsy, || would return rhs in that case
     return +(this._opacity ?? this.getAttribute('opacity'));
@@ -114,10 +121,47 @@ export class BaseLayerElement extends HTMLElement {
               this._onAdd();
             }
           }
+          break;
+        case 'media':
+          if (oldValue !== newValue) {
+            this._registerMediaQuery(newValue);
+          }
+          break;
       }
     }
   }
+  _registerMediaQuery(mq) {
+    if (!this._changeHandler) {
+      // Define and bind the change handler once
+      this._changeHandler = () => {
+        // TODO figure out how to propagate this correctly, cause there's no 
+        // disabled api per se.
+        this.disabled = !this._mql.matches;
+      };
+    }
 
+    if (mq) {
+      let map = this.getMapEl();
+      if (!map) return;
+
+      // Remove listener from the old media query (if it exists)
+      if (this._mql) {
+        this._mql.removeEventListener('change', this._changeHandler);
+      }
+
+      // Set up the new media query and listener
+      this._mql = map.matchMedia(mq);
+      this._changeHandler(); // Initial evaluation
+      this._mql.addEventListener('change', this._changeHandler);
+    } else if (this._mql) {
+      // Clean up the existing listener
+      this._mql.removeEventListener('change', this._changeHandler);
+      delete this._mql;
+    }
+  }
+  getMapEl() {
+    return Util.getClosest(this, 'mapml-viewer,map[is=web-map]');
+  }
   constructor() {
     // Always call super first in constructor
     super();
@@ -148,6 +192,13 @@ export class BaseLayerElement extends HTMLElement {
     delete this._fetchError;
     this.shadowRoot.innerHTML = '';
     if (this.src) this.innerHTML = '';
+    
+    if (this._mql) {
+      if (this._changeHandler) {
+        this._mql.removeEventListener('change', this._changeHandler);
+      }
+      delete this._mql;
+    }
 
     if (l) {
       l.off();
@@ -170,10 +221,15 @@ export class BaseLayerElement extends HTMLElement {
     this._createLayerControlHTML = createLayerControlHTML.bind(this);
     const doConnected = this._onAdd.bind(this);
     const doRemove = this._onRemove.bind(this);
+    const registerMediaQuery = this._registerMediaQuery(this);
+    let mq = this.media;
     this.parentElement
       .whenReady()
       .then(() => {
         doRemove();
+        if (mq) {
+          registerMediaQuery(mq);
+        }
         doConnected();
       })
       .catch((error) => {
@@ -195,6 +251,7 @@ export class BaseLayerElement extends HTMLElement {
         },
         { once: true }
       );
+      // get rid of me
       this.addEventListener(
         'zoomchangesrc',
         function (e) {
