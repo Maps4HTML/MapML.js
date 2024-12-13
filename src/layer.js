@@ -134,9 +134,15 @@ export class BaseLayerElement extends HTMLElement {
     if (!this._changeHandler) {
       // Define and bind the change handler once
       this._changeHandler = () => {
-        // TODO figure out how to propagate this correctly, cause there's no 
-        // disabled api per se.
-        this.disabled = !this._mql.matches;
+        if (this._mql.matches) {
+          // TODO evaluate if _onAdd does the right thing for this situation
+          this._onAdd();
+        } else {
+          // TODO evaluate if _onRemove does the right thing for this situation
+          this._onRemove();
+        }
+        // set the disabled 'read-only' attribute indirectly, via _validateDisabled
+        this._validateDisabled();
       };
     }
 
@@ -175,6 +181,13 @@ export class BaseLayerElement extends HTMLElement {
     // removed from the map and the layer control
     if (this.hasAttribute('data-moving')) return;
     this._onRemove();
+
+    if (this._mql) {
+      if (this._changeHandler) {
+        this._mql.removeEventListener('change', this._changeHandler);
+      }
+      delete this._mql;
+    }
   }
 
   _onRemove() {
@@ -191,13 +204,6 @@ export class BaseLayerElement extends HTMLElement {
     delete this._fetchError;
     this.shadowRoot.innerHTML = '';
     if (this.src) this.innerHTML = '';
-    
-    if (this._mql) {
-      if (this._changeHandler) {
-        this._mql.removeEventListener('change', this._changeHandler);
-      }
-      delete this._mql;
-    }
 
     if (l) {
       l.off();
@@ -220,7 +226,7 @@ export class BaseLayerElement extends HTMLElement {
     this._createLayerControlHTML = createLayerControlHTML.bind(this);
     const doConnected = this._onAdd.bind(this);
     const doRemove = this._onRemove.bind(this);
-    const registerMediaQuery = this._registerMediaQuery(this);
+    const registerMediaQuery = this._registerMediaQuery.bind(this);
     let mq = this.media;
     this.parentElement
       .whenReady()
@@ -247,15 +253,6 @@ export class BaseLayerElement extends HTMLElement {
             this._renderingMapContent = e.detail._renderingMapContent;
             this.src = e.detail.src;
           }
-        },
-        { once: true }
-      );
-      // get rid of me
-      this.addEventListener(
-        'zoomchangesrc',
-        function (e) {
-          e.stopPropagation();
-          this.src = e.detail.href;
         },
         { once: true }
       );
@@ -641,7 +638,13 @@ export class BaseLayerElement extends HTMLElement {
       let layer = this._layer,
         map = layer?._map;
       if (map) {
-        this._validateLayerZoom({ zoom: map.getZoom() });
+        // if there's a media query in play, check it early
+        if (this._mql && !this._mql.matches) {
+          this.setAttribute('disabled', '');
+          this.disabled = true;
+          this.toggleLayerControlDisabled();
+          return;
+        }
         // prerequisite: no inline and remote mapml elements exists at the same time
         const mapExtents = this.src
           ? this.shadowRoot.querySelectorAll('map-extent')
@@ -693,35 +696,6 @@ export class BaseLayerElement extends HTMLElement {
           });
       }
     }, 0);
-  }
-  _validateLayerZoom(e) {
-    // get the min and max zooms from all extents
-    let toZoom = e.zoom;
-    let min = this.extent.zoom.minZoom;
-    let max = this.extent.zoom.maxZoom;
-    let inLink = this.src
-        ? this.shadowRoot.querySelector('map-link[rel=zoomin]')
-        : this.querySelector('map-link[rel=zoomin]'),
-      outLink = this.src
-        ? this.shadowRoot.querySelector('map-link[rel=zoomout]')
-        : this.querySelector('map-link[rel=zoomout]');
-    let targetURL;
-    if (!(min <= toZoom && toZoom <= max)) {
-      if (inLink && toZoom > max) {
-        targetURL = inLink.href;
-      } else if (outLink && toZoom < min) {
-        targetURL = outLink.href;
-      }
-      if (targetURL) {
-        this.dispatchEvent(
-          new CustomEvent('zoomchangesrc', {
-            detail: {
-              href: targetURL
-            }
-          })
-        );
-      }
-    }
   }
   // disable/italicize layer control elements based on the map-layer.disabled property
   toggleLayerControlDisabled() {
