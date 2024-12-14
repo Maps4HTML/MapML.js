@@ -197,13 +197,6 @@ export class BaseLayerElement extends HTMLElement {
     let l = this._layer,
       lc = this._layerControl,
       lchtml = this._layerControlHTML;
-    // remove properties of layer involved in whenReady() logic
-    delete this._layer;
-    delete this._layerControl;
-    delete this._layerControlHTML;
-    delete this._fetchError;
-    this.shadowRoot.innerHTML = '';
-    if (this.src) this.innerHTML = '';
 
     if (l) {
       l.off();
@@ -214,8 +207,16 @@ export class BaseLayerElement extends HTMLElement {
     }
 
     if (lc && !this.hidden) {
+      // lc.removeLayer depends on this._layerControlHTML, can't delete it until after
       lc.removeLayer(l);
     }
+    // remove properties of layer involved in whenReady() logic
+    delete this._layer;
+    delete this._layerControl;
+    delete this._layerControlHTML;
+    delete this._fetchError;
+    this.shadowRoot.innerHTML = '';
+    if (this.src) this.innerHTML = '';
   }
 
   connectedCallback() {
@@ -234,8 +235,9 @@ export class BaseLayerElement extends HTMLElement {
         doRemove();
         if (mq) {
           registerMediaQuery(mq);
+        } else {
+          doConnected();
         }
-        doConnected();
       })
       .catch((error) => {
         throw new Error('Map never became ready: ' + error);
