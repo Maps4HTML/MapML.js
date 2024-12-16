@@ -989,8 +989,7 @@ export class HTMLLinkElement extends HTMLElement {
       layerEl.dispatchEvent(
         new CustomEvent('changestyle', {
           detail: {
-            src: e.target.getAttribute('data-href'),
-            preference: this.media['prefers-map-content']
+            src: e.target.getAttribute('data-href')
           }
         })
       );

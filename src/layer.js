@@ -252,7 +252,6 @@ export class BaseLayerElement extends HTMLElement {
           e.stopPropagation();
           // if user changes the style in layer control
           if (e.detail) {
-            this._renderingMapContent = e.detail._renderingMapContent;
             this.src = e.detail.src;
           }
         },
@@ -639,14 +638,13 @@ export class BaseLayerElement extends HTMLElement {
     setTimeout(() => {
       let layer = this._layer,
         map = layer?._map;
+      // if there's a media query in play, check it early
+      if (this._mql && !this._mql.matches) {
+        this.setAttribute('disabled', '');
+        this.disabled = true;
+        return;
+      }
       if (map) {
-        // if there's a media query in play, check it early
-        if (this._mql && !this._mql.matches) {
-          this.setAttribute('disabled', '');
-          this.disabled = true;
-          this.toggleLayerControlDisabled();
-          return;
-        }
         // prerequisite: no inline and remote mapml elements exists at the same time
         const mapExtents = this.src
           ? this.shadowRoot.querySelectorAll('map-extent')
