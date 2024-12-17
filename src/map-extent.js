@@ -430,27 +430,22 @@ export class HTMLExtentElement extends HTMLElement {
   }
 
   _handleChange() {
-    // parent layer can be disabled due to media query
-    if (!this.parentLayer.disabled) {
-      // add _extentLayer to map if map-extent is checked, otherwise remove it
-      if (this.checked && !this.disabled) {
-        // can be added to mapmllayer layerGroup no matter map-layer is checked or not
-        this._extentLayer.addTo(this.parentLayer._layer);
-        this._extentLayer.setZIndex(
-          Array.from(
-            this.parentLayer.src
-              ? this.parentLayer.shadowRoot.querySelectorAll(
-                  ':host > map-extent'
-                )
-              : this.parentLayer.querySelectorAll(':scope > map-extent')
-          ).indexOf(this)
-        );
-      } else {
-        this.parentLayer._layer?.removeLayer(this._extentLayer);
-      }
-      // change the checkbox in the layer control to match map-extent.checked
-      // doesn't trigger the event handler because it's not user-caused AFAICT
+    // add _extentLayer to map if map-extent is checked, otherwise remove it
+    if (this.checked && !this.disabled && this.parentLayer._layer) {
+      // can be added to mapmllayer layerGroup no matter map-layer is checked or not
+      this._extentLayer.addTo(this.parentLayer._layer);
+      this._extentLayer.setZIndex(
+        Array.from(
+          this.parentLayer.src
+            ? this.parentLayer.shadowRoot.querySelectorAll(':host > map-extent')
+            : this.parentLayer.querySelectorAll(':scope > map-extent')
+        ).indexOf(this)
+      );
+    } else {
+      this.parentLayer._layer?.removeLayer(this._extentLayer);
     }
+    // change the checkbox in the layer control to match map-extent.checked
+    // doesn't trigger the event handler because it's not user-caused AFAICT
   }
   _validateLayerControlContainerHidden() {
     let extentsFieldset = this.parentLayer._propertiesGroupAnatomy;
