@@ -132,11 +132,9 @@ export class BaseLayerElement extends HTMLElement {
   }
   _registerMediaQuery(mq) {
     if (!this._changeHandler) {
-      // Define and bind the change handler once
       this._changeHandler = () => {
         this._onRemove();
         if (this._mql.matches) {
-          // TODO evaluate if _onAdd does the right thing for this situation
           this._onAdd();
         }
         // set the disabled 'read-only' attribute indirectly, via _validateDisabled
@@ -154,13 +152,11 @@ export class BaseLayerElement extends HTMLElement {
         this._mql.removeEventListener('change', this._changeHandler);
       }
 
-      // Set up the new media query and listener
       this._mql = map.matchMedia(mq);
-      this._changeHandler(); // Initial evaluation
+      this._changeHandler();
       this._mql.addEventListener('change', this._changeHandler);
     } else if (this._mql) {
       // the media attribute removed or query set to ''
-      // Clean up the existing listener
       this._mql.removeEventListener('change', this._changeHandler);
       delete this._mql;
       // effectively, no / empty media attribute matches, do what changeHandler does
