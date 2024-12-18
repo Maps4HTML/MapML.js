@@ -6,7 +6,7 @@ import { createLayerControlHTML } from './mapml/elementSupport/layers/createLaye
 
 export class BaseLayerElement extends HTMLElement {
   static get observedAttributes() {
-    return ['src', 'label', 'checked', 'hidden', 'opacity'];
+    return ['src', 'label', 'checked', 'hidden', 'opacity', 'media'];
   }
   /* jshint ignore:start */
   #hasConnected;
@@ -51,6 +51,13 @@ export class BaseLayerElement extends HTMLElement {
     } else {
       this.removeAttribute('hidden');
     }
+  }
+
+  get media() {
+    return this.getAttribute('media');
+  }
+  set media(val) {
+    this.setAttribute('media', val);
   }
 
   get opacity() {
@@ -114,17 +121,63 @@ export class BaseLayerElement extends HTMLElement {
               this._onAdd();
             }
           }
+          break;
+        case 'media':
+          if (oldValue !== newValue) {
+            this._registerMediaQuery(newValue);
+          }
+          break;
       }
     }
   }
+  _registerMediaQuery(mq) {
+    if (!this._changeHandler) {
+      // Define and bind the change handler once
+      this._changeHandler = () => {
+        this._onRemove();
+        if (this._mql.matches) {
+          // TODO evaluate if _onAdd does the right thing for this situation
+          this._onAdd();
+        }
+        // set the disabled 'read-only' attribute indirectly, via _validateDisabled
+        this._validateDisabled();
+      };
+    }
 
+    if (mq) {
+      // a new media query is being established
+      let map = this.getMapEl();
+      if (!map) return;
+
+      // Remove listener from the old media query (if it exists)
+      if (this._mql) {
+        this._mql.removeEventListener('change', this._changeHandler);
+      }
+
+      // Set up the new media query and listener
+      this._mql = map.matchMedia(mq);
+      this._changeHandler(); // Initial evaluation
+      this._mql.addEventListener('change', this._changeHandler);
+    } else if (this._mql) {
+      // the media attribute removed or query set to ''
+      // Clean up the existing listener
+      this._mql.removeEventListener('change', this._changeHandler);
+      delete this._mql;
+      // effectively, no / empty media attribute matches, do what changeHandler does
+      this._onRemove();
+      this._onAdd();
+      this._validateDisabled();
+    }
+  }
+  getMapEl() {
+    return Util.getClosest(this, 'mapml-viewer,map[is=web-map]');
+  }
   constructor() {
     // Always call super first in constructor
     super();
     // this._opacity is used to record the current opacity value (with or without updates),
     // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
     this._opacity = this.opacity || 1.0;
-    this._renderingMapContent = M.options.contentPreference;
     this.attachShadow({ mode: 'open' });
   }
   disconnectedCallback() {
@@ -132,6 +185,13 @@ export class BaseLayerElement extends HTMLElement {
     // removed from the map and the layer control
     if (this.hasAttribute('data-moving')) return;
     this._onRemove();
+
+    if (this._mql) {
+      if (this._changeHandler) {
+        this._mql.removeEventListener('change', this._changeHandler);
+      }
+      delete this._mql;
+    }
   }
 
   _onRemove() {
@@ -141,13 +201,6 @@ export class BaseLayerElement extends HTMLElement {
     let l = this._layer,
       lc = this._layerControl,
       lchtml = this._layerControlHTML;
-    // remove properties of layer involved in whenReady() logic
-    delete this._layer;
-    delete this._layerControl;
-    delete this._layerControlHTML;
-    delete this._fetchError;
-    this.shadowRoot.innerHTML = '';
-    if (this.src) this.innerHTML = '';
 
     if (l) {
       l.off();
@@ -158,8 +211,16 @@ export class BaseLayerElement extends HTMLElement {
     }
 
     if (lc && !this.hidden) {
+      // lc.removeLayer depends on this._layerControlHTML, can't delete it until after
       lc.removeLayer(l);
     }
+    // remove properties of layer involved in whenReady() logic
+    delete this._layer;
+    delete this._layerControl;
+    delete this._layerControlHTML;
+    delete this._fetchError;
+    this.shadowRoot.innerHTML = '';
+    if (this.src) this.innerHTML = '';
   }
 
   connectedCallback() {
@@ -170,11 +231,17 @@ export class BaseLayerElement extends HTMLElement {
     this._createLayerControlHTML = createLayerControlHTML.bind(this);
     const doConnected = this._onAdd.bind(this);
     const doRemove = this._onRemove.bind(this);
+    const registerMediaQuery = this._registerMediaQuery.bind(this);
+    let mq = this.media;
     this.parentElement
       .whenReady()
       .then(() => {
         doRemove();
-        doConnected();
+        if (mq) {
+          registerMediaQuery(mq);
+        } else {
+          doConnected();
+        }
       })
       .catch((error) => {
         throw new Error('Map never became ready: ' + error);
@@ -189,17 +256,8 @@ export class BaseLayerElement extends HTMLElement {
           e.stopPropagation();
           // if user changes the style in layer control
           if (e.detail) {
-            this._renderingMapContent = e.detail._renderingMapContent;
             this.src = e.detail.src;
           }
-        },
-        { once: true }
-      );
-      this.addEventListener(
-        'zoomchangesrc',
-        function (e) {
-          e.stopPropagation();
-          this.src = e.detail.href;
         },
         { once: true }
       );
@@ -240,7 +298,6 @@ export class BaseLayerElement extends HTMLElement {
           .then(() => {
             // may throw:
             this.selectAlternateOrChangeProjection();
-            this.checkForPreferredContent();
           })
           .then(() => {
             this._layer = mapMLLayer(new URL(this.src, base).href, this, {
@@ -278,7 +335,6 @@ export class BaseLayerElement extends HTMLElement {
           .then(() => {
             // may throw:
             this.selectAlternateOrChangeProjection();
-            this.checkForPreferredContent();
           })
           .then(() => {
             this._layer = mapMLLayer(null, this, {
@@ -316,13 +372,6 @@ export class BaseLayerElement extends HTMLElement {
             'Changing map projection to match layer: ' + e.cause.mapprojection
           );
           this.parentElement.projection = e.cause.mapprojection;
-        }
-      } else if (e.message === 'findmatchingpreferredcontent') {
-        if (e.cause.href) {
-          console.log(
-            'Changing layer to matching preferred content at: ' + e.cause.href
-          );
-          this.src = e.cause.href;
         }
       } else if (e.message === 'Failed to fetch') {
         // cut short whenReady with the _fetchError property
@@ -368,23 +417,6 @@ export class BaseLayerElement extends HTMLElement {
     ) {
       throw new Error('changeprojection', {
         cause: { mapprojection: contentProjection }
-      });
-    }
-  }
-
-  checkForPreferredContent() {
-    let mapml = this.src ? this.shadowRoot : this;
-    let availablePreferMapContents = mapml.querySelector(
-      `map-link[rel="style"][media="prefers-map-content=${this._renderingMapContent}"][href]`
-    );
-    if (availablePreferMapContents) {
-      // resolve href
-      let url = new URL(
-        availablePreferMapContents.getAttribute('href'),
-        availablePreferMapContents.getBase()
-      ).href;
-      throw new Error('findmatchingpreferredcontent', {
-        cause: { href: url }
       });
     }
   }
@@ -610,8 +642,13 @@ export class BaseLayerElement extends HTMLElement {
     setTimeout(() => {
       let layer = this._layer,
         map = layer?._map;
+      // if there's a media query in play, check it early
+      if (this._mql && !this._mql.matches) {
+        this.setAttribute('disabled', '');
+        this.disabled = true;
+        return;
+      }
       if (map) {
-        this._validateLayerZoom({ zoom: map.getZoom() });
         // prerequisite: no inline and remote mapml elements exists at the same time
         const mapExtents = this.src
           ? this.shadowRoot.querySelectorAll('map-extent')
@@ -663,35 +700,6 @@ export class BaseLayerElement extends HTMLElement {
           });
       }
     }, 0);
-  }
-  _validateLayerZoom(e) {
-    // get the min and max zooms from all extents
-    let toZoom = e.zoom;
-    let min = this.extent.zoom.minZoom;
-    let max = this.extent.zoom.maxZoom;
-    let inLink = this.src
-        ? this.shadowRoot.querySelector('map-link[rel=zoomin]')
-        : this.querySelector('map-link[rel=zoomin]'),
-      outLink = this.src
-        ? this.shadowRoot.querySelector('map-link[rel=zoomout]')
-        : this.querySelector('map-link[rel=zoomout]');
-    let targetURL;
-    if (!(min <= toZoom && toZoom <= max)) {
-      if (inLink && toZoom > max) {
-        targetURL = inLink.href;
-      } else if (outLink && toZoom < min) {
-        targetURL = outLink.href;
-      }
-      if (targetURL) {
-        this.dispatchEvent(
-          new CustomEvent('zoomchangesrc', {
-            detail: {
-              href: targetURL
-            }
-          })
-        );
-      }
-    }
   }
   // disable/italicize layer control elements based on the map-layer.disabled property
   toggleLayerControlDisabled() {

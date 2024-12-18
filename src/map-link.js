@@ -305,7 +305,7 @@ export class HTMLLinkElement extends HTMLElement {
         // this._createLicenseLink();
         break;
     }
-    this._registerMediaQuery(this.media);
+    await this._registerMediaQuery(this.media);
     // create the type of templated leaflet layer appropriate to the rel value
     // image/map/features = templated(Image/Feature), tile=templatedTile,
     // this._tempatedTileLayer = Util.templatedTile(pane: this.extentElement._leafletLayer._container)
@@ -372,7 +372,7 @@ export class HTMLLinkElement extends HTMLElement {
         break;
     }
   }
-  _registerMediaQuery(mq) {
+  async _registerMediaQuery(mq) {
     if (!this._changeHandler) {
       // Define and bind the change handler once
       this._changeHandler = () => {
@@ -383,6 +383,7 @@ export class HTMLLinkElement extends HTMLElement {
     if (mq) {
       let map = this.getMapEl();
       if (!map) return;
+      await map.whenReady();
 
       // Remove listener from the old media query (if it exists)
       if (this._mql) {
@@ -451,7 +452,7 @@ export class HTMLLinkElement extends HTMLElement {
 
     function copyAttributes(source, target) {
       return Array.from(source.attributes).forEach((attribute) => {
-        if (attribute.nodeName !== 'href')
+        if (attribute.nodeName !== 'href' && attribute.nodeName !== 'media')
           target.setAttribute(attribute.nodeName, attribute.nodeValue);
       });
     }
@@ -989,8 +990,7 @@ export class HTMLLinkElement extends HTMLElement {
       layerEl.dispatchEvent(
         new CustomEvent('changestyle', {
           detail: {
-            src: e.target.getAttribute('data-href'),
-            preference: this.media['prefers-map-content']
+            src: e.target.getAttribute('data-href')
           }
         })
       );

@@ -15,10 +15,6 @@ test.describe('map-link disabled', () => {
   });
   test('rel=stylesheet disabled attribute', async () => {
     const viewer = page.getByTestId('viewer');
-    // there's a problem when attempting to select this link by testid. The map-link
-    // code copies all the attributes of the map-link element onto the generated
-    // <link> element it uses to render the content, including the data-testid,
-    // resulting in duplicate ids that mess up the getByTestId algorithm.
     const featuresLink = page.getByTestId('restaurants_templated_link');
     // test that a templated content link can be disabled by the HTML author at
     // page load, and the bounds of the extent do not include the disabled link
@@ -29,6 +25,11 @@ test.describe('map-link disabled', () => {
       maxDiffPixels: 20
     });
     await featuresLink.evaluate((fl) => (fl.disabled = false));
+    // there's a problem when attempting to select this link by testid. The map-link
+    // code copies all the attributes of the map-link element onto the generated
+    // <link> element it uses to render the content, including the data-testid,
+    // resulting in duplicate ids that mess up the getByTestId algorithm.
+    //
     // selecting it this way seems unambiguous at least
     const stylesheetLink = page.locator(
       'map-link[rel=stylesheet][href="restaurants/restaurants.css"]'
