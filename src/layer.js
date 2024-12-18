@@ -6,7 +6,7 @@ import { createLayerControlHTML } from './mapml/elementSupport/layers/createLaye
 
 export class BaseLayerElement extends HTMLElement {
   static get observedAttributes() {
-    return ['src', 'label', 'checked', 'hidden', 'opacity'];
+    return ['src', 'label', 'checked', 'hidden', 'opacity', 'media'];
   }
   /* jshint ignore:start */
   #hasConnected;
