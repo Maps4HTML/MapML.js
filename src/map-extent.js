@@ -431,7 +431,7 @@ export class HTMLExtentElement extends HTMLElement {
 
   _handleChange() {
     // add _extentLayer to map if map-extent is checked, otherwise remove it
-    if (this.checked && !this.disabled) {
+    if (this.checked && !this.disabled && this.parentLayer._layer) {
       // can be added to mapmllayer layerGroup no matter map-layer is checked or not
       this._extentLayer.addTo(this.parentLayer._layer);
       this._extentLayer.setZIndex(
