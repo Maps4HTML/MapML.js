@@ -30,8 +30,12 @@
       <map-layer data-testid="restaurants" label="Restaurants" checked="">
         <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
         <map-extent units="OSMTILE" checked="">
-          <!-- markers should be red on load -->
           <map-style>.restaurant {fill: red; stroke: red;}</map-style>
+          <!-- markers should be orange on load -->
+          <!-- markers should go red on zoomend -->
+          <map-style media="(map-zoom: 14)">.restaurant {fill: orange; stroke: orange}</map-style>
+          <!-- markers should turn purple when media query below is removed -->
+          <map-style data-testid="invalid-mq" media="invalid query">.restaurant {fill: purple; stroke: purple}</map-style>
            <map-select id="restaurants" name="cusine">
                <map-option value="restaurants" selected="selected">All cuisines</map-option>
                <map-option value="african">African</map-option>

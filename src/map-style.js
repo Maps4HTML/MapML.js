@@ -71,11 +71,11 @@ export class HTMLStyleElement extends HTMLElement {
     this.styleElement.textContent = this.textContent;
     copyAttributes(this, this.styleElement);
     if (this._stylesheetHost._layer) {
-      this._stylesheetHost._layer.appendStyleElement(this);
+      this._stylesheetHost._layer.renderStyles(this);
     } else if (this._stylesheetHost._templatedLayer) {
-      this._stylesheetHost._templatedLayer.appendStyleElement(this);
+      this._stylesheetHost._templatedLayer.renderStyles(this);
     } else if (this._stylesheetHost._extentLayer) {
-      this._stylesheetHost._extentLayer.appendStyleElement(this);
+      this._stylesheetHost._extentLayer.renderStyles(this);
     }
 
     function copyAttributes(source, target) {

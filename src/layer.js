@@ -482,12 +482,12 @@ export class BaseLayerElement extends HTMLElement {
     };
     const _addStylesheetLink = (mapLink) => {
       this.whenReady().then(() => {
-        this._layer.appendStyleLink(mapLink);
+        this._layer.renderStyles(mapLink);
       });
     };
     const _addStyleElement = (mapStyle) => {
       this.whenReady().then(() => {
-        this._layer.appendStyleElement(mapStyle);
+        this._layer.renderStyles(mapStyle);
       });
     };
     const _addExtentElement = (mapExtent) => {

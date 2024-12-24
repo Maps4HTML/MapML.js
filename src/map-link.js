@@ -452,11 +452,11 @@ export class HTMLLinkElement extends HTMLElement {
       copyAttributes(this, this.link);
 
       if (this._stylesheetHost._layer) {
-        this._stylesheetHost._layer.appendStyleLink(this);
+        this._stylesheetHost._layer.renderStyles(this);
       } else if (this._stylesheetHost._templatedLayer) {
-        this._stylesheetHost._templatedLayer.appendStyleLink(this);
+        this._stylesheetHost._templatedLayer.renderStyles(this);
       } else if (this._stylesheetHost._extentLayer) {
-        this._stylesheetHost._extentLayer.appendStyleLink(this);
+        this._stylesheetHost._extentLayer.renderStyles(this);
       }
     }
 

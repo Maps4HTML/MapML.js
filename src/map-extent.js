@@ -311,12 +311,12 @@ export class HTMLExtentElement extends HTMLElement {
     };
     const _addStylesheetLink = (mapLink) => {
       this.whenReady().then(() => {
-        this._extentLayer.appendStyleLink(mapLink);
+        this._extentLayer.renderStyles(mapLink);
       });
     };
     const _addStyleElement = (mapStyle) => {
       this.whenReady().then(() => {
-        this._extentLayer.appendStyleElement(mapStyle);
+        this._extentLayer.renderStyles(mapStyle);
       });
     };
     for (let i = 0; i < elementsGroup.length; ++i) {
