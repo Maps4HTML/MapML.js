@@ -31,7 +31,7 @@ OR inline content
 ```html
 <mapml-viewer projection="OSMTILE" lat="10" lon="0" zoom="1" controls>
   <map-layer label="OpenStreetMap" checked>
-    <map-extent units="OSMTILE">
+    <map-extent units="OSMTILE" checked hidden>
       <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
       <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
       <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
