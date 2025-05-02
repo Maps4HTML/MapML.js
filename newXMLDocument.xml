@@ -1,0 +1,24 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+  <map-head>
+    <map-title>Spearfish</map-title>
+    <map-base href="http://localhost:8080/geoserver/wms"/>
+    <map-meta charset="utf-8"/>
+    <map-meta content="text/mapml;projection=OSMTILE" http-equiv="Content-Type"/>
+    <map-link href="http://localhost:8080/geoserver/wms?format_options=mapml-wms-format%3Aimage%2Fpng%3Bmapmlusemultiextents%3Afalse%3Bmapmlusetiles%3Afalse%3Bmapmlusefeatures%3Atrue&amp;request=GetMap&amp;crs=MapML%3AOSMTILE&amp;service=WMS&amp;bbox=-1.1563633841554081E7%2C5522909.350493801%2C-1.1535183234733827E7%2C5543493.457347733&amp;format=text%2Fmapml&amp;layers=spearfish&amp;width=555&amp;styles=&amp;version=1.3.0&amp;height=768" rel="self style" title=""/>
+    <map-link href="http://localhost:8080/geoserver/wms?format_options=mapml-wms-format%3Aimage%2Fpng%3Bmapmlusemultiextents%3Afalse%3Bmapmlusetiles%3Afalse%3Bmapmlusefeatures%3Atrue&amp;request=GetMap&amp;crs=MapML%3ACBMTILE&amp;service=WMS&amp;bbox=-719810.8190782989%2C-472267.35686616425%2C-697195.1212005654%2C-454594.0802043977&amp;format=text%2Fmapml&amp;layers=spearfish&amp;width=555&amp;version=1.3.0&amp;height=768" rel="alternate" projection="CBMTILE"/>
+    <map-link href="http://localhost:8080/geoserver/wms?format_options=mapml-wms-format%3Aimage%2Fpng%3Bmapmlusemultiextents%3Afalse%3Bmapmlusetiles%3Afalse%3Bmapmlusefeatures%3Atrue&amp;request=GetMap&amp;crs=MapML%3AAPSTILE&amp;service=WMS&amp;bbox=5837588.126624491%2C-1702029.8481186293%2C5866425.6870730845%2C-1672987.582881113&amp;format=text%2Fmapml&amp;layers=spearfish&amp;width=555&amp;version=1.3.0&amp;height=768" rel="alternate" projection="APSTILE"/>
+    <map-link href="http://localhost:8080/geoserver/wms?format_options=mapml-wms-format%3Aimage%2Fpng%3Bmapmlusemultiextents%3Afalse%3Bmapmlusetiles%3Afalse%3Bmapmlusefeatures%3Atrue&amp;request=GetMap&amp;crs=MapML%3AWGS84&amp;service=WMS&amp;bbox=-103.87789019829768%2C44.37018707413261%2C-103.62231404880659%2C44.502218486214794&amp;format=text%2Fmapml&amp;layers=spearfish&amp;width=555&amp;version=1.3.0&amp;height=768" rel="alternate" projection="WGS84"/>
+  </map-head>
+  <map-body>
+    <map-extent units="OSMTILE" checked="checked" hidden="hidden">
+      <map-input name="z" type="zoom" min="0" max="18"/>
+      <map-input name="xmin" type="location" rel="map" position="top-left" axis="easting" units="pcrs" min="-1.1563626767407158E7" max="-1.1535226376969203E7"/>
+      <map-input name="ymin" type="location" rel="map" position="bottom-left" axis="northing" units="pcrs" min="5522923.367797318" max="5543507.621758875"/>
+      <map-input name="xmax" type="location" rel="map" position="top-right" axis="easting" units="pcrs" min="-1.1563626767407158E7" max="-1.1535226376969203E7"/>
+      <map-input name="ymax" type="location" rel="map" position="top-left" axis="northing" units="pcrs" min="5522923.367797318" max="5543507.621758875"/>
+      <map-input name="w" type="width" min="1" max="4096"/>
+      <map-input name="h" type="height" min="1" max="4096"/>
+      <map-link tref="http://localhost:8080/geoserver/wms?format_options=mapmlfeatures:true&amp;request=GetMap&amp;crs=MapML:OSMTILE&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;format=text/mapml&amp;language=en&amp;version=1.3.0&amp;transparent=false&amp;service=WMS&amp;layers=spearfish&amp;width={w}&amp;styles=&amp;height={h}" rel="features"/>
+    </map-extent>
+  </map-body>
+</mapml->

@@ -317,7 +317,7 @@ export var MapMLLayer = LayerGroup.extend({
             (zoom && zoom.getAttribute('value')) ||
             '0'
         );
-        var newTiles = mapml.getElementsByTagName('map-tile');
+        var newTiles = mapml.querySelectorAll('map-tile');
         for (var nt = 0; nt < newTiles.length; nt++) {
           tiles.appendChild(document.importNode(newTiles[nt], true));
         }

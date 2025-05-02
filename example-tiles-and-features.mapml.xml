@@ -1,0 +1,128 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+    <map-head>
+        <map-title>sfdem, streams, roads, restricted, archsites, bugsites</map-title>
+        <map-meta charset="UTF-8" />
+        <map-meta content="text/mapml" http-equiv="Content-Type" />
+        <map-meta name="extent"
+            content="top-left-easting=-11562869.44,top-left-northing=5543411.27,bottom-right-easting=-11535965.66,bottom-right-northing=5522923.37" />
+        <map-meta name="cs" content="pcrs" />
+        <map-meta name="projection" content="OSMTILE" />
+        <map-style>.bbox {display:none} .capitals-r1-s1{r:48.0; stroke-opacity:1.0;
+            stroke-dashoffset:0; well-known-name:circle; stroke-width:2.0; opacity:1.0;
+            fill:#FFFFFF; fill-opacity:1.0; stroke:#000000; stroke-linecap:butt}</map-style>
+    </map-head>
+    <map-body>
+        <map-tile col="3472" row="10452" zoom="14"
+            src="http://localhost:8080/geoserver/wms?LAYERS=sf%3Asfdem&amp;BBOX=-1.1545048750585938E7%2C5527925.884814452%2C-1.1542602765681153E7%2C5530371.869719239&amp;HEIGHT=256&amp;WIDTH=256&amp;SRS=MapML%3AOSMTILE&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;Language=en" />
+        <map-tile col="3472" row="10453" zoom="14"
+            src="http://localhost:8080/geoserver/wms?LAYERS=sf%3Asfdem&amp;BBOX=-1.1545048750585938E7%2C5530371.869719239%2C-1.1542602765681153E7%2C5532817.854624024&amp;HEIGHT=256&amp;WIDTH=256&amp;SRS=MapML%3AOSMTILE&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;Language=en" />
+        <map-tile col="3472" row="10454" zoom="14"
+            src="http://localhost:8080/geoserver/wms?LAYERS=sf%3Asfdem&amp;BBOX=-1.1545048750585938E7%2C5532817.854624024%2C-1.1542602765681153E7%2C5535263.839528808&amp;HEIGHT=256&amp;WIDTH=256&amp;SRS=MapML%3AOSMTILE&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;Language=en" />
+        <map-tile col="3472" row="10455" zoom="14"
+            src="http://localhost:8080/geoserver/wms?LAYERS=sf%3Asfdem&amp;BBOX=-1.1545048750585938E7%2C5535263.839528808%2C-1.1542602765681153E7%2C5537709.824433593&amp;HEIGHT=256&amp;WIDTH=256&amp;SRS=MapML%3AOSMTILE&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;Language=en" />
+        <map-tile col="3473" row="10452" zoom="14"
+            src="http://localhost:8080/geoserver/wms?LAYERS=sf%3Asfdem&amp;BBOX=-1.1542602765681153E7%2C5527925.884814452%2C-1.1540156780776367E7%2C5530371.869719239&amp;HEIGHT=256&amp;WIDTH=256&amp;SRS=MapML%3AOSMTILE&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;Language=en" />
+        <map-tile col="3473" row="10453" zoom="14"
+            src="http://localhost:8080/geoserver/wms?LAYERS=sf%3Asfdem&amp;BBOX=-1.1542602765681153E7%2C5530371.869719239%2C-1.1540156780776367E7%2C5532817.854624024&amp;HEIGHT=256&amp;WIDTH=256&amp;SRS=MapML%3AOSMTILE&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;Language=en" />
+        <map-tile col="3473" row="10454" zoom="14"
+            src="http://localhost:8080/geoserver/wms?LAYERS=sf%3Asfdem&amp;BBOX=-1.1542602765681153E7%2C5532817.854624024%2C-1.1540156780776367E7%2C5535263.839528808&amp;HEIGHT=256&amp;WIDTH=256&amp;SRS=MapML%3AOSMTILE&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;Language=en" />
+        <map-tile col="3473" row="10455" zoom="14"
+            src="http://localhost:8080/geoserver/wms?LAYERS=sf%3Asfdem&amp;BBOX=-1.1542602765681153E7%2C5535263.839528808%2C-1.1540156780776367E7%2C5537709.824433593&amp;HEIGHT=256&amp;WIDTH=256&amp;SRS=MapML%3AOSMTILE&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;Language=en" />
+        <map-tile col="3474" row="10452" zoom="14"
+            src="http://localhost:8080/geoserver/wms?LAYERS=sf%3Asfdem&amp;BBOX=-1.1540156780776367E7%2C5527925.884814452%2C-1.1537710795871582E7%2C5530371.869719239&amp;HEIGHT=256&amp;WIDTH=256&amp;SRS=MapML%3AOSMTILE&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;Language=en" />
+        <map-tile col="3474" row="10453" zoom="14"
+            src="http://localhost:8080/geoserver/wms?LAYERS=sf%3Asfdem&amp;BBOX=-1.1540156780776367E7%2C5530371.869719239%2C-1.1537710795871582E7%2C5532817.854624024&amp;HEIGHT=256&amp;WIDTH=256&amp;SRS=MapML%3AOSMTILE&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;Language=en" />
+        <map-tile col="3474" row="10454" zoom="14"
+            src="http://localhost:8080/geoserver/wms?LAYERS=sf%3Asfdem&amp;BBOX=-1.1540156780776367E7%2C5532817.854624024%2C-1.1537710795871582E7%2C5535263.839528808&amp;HEIGHT=256&amp;WIDTH=256&amp;SRS=MapML%3AOSMTILE&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;Language=en" />
+        <map-tile col="3474" row="10455" zoom="14"
+            src="http://localhost:8080/geoserver/wms?LAYERS=sf%3Asfdem&amp;BBOX=-1.1540156780776367E7%2C5535263.839528808%2C-1.1537710795871582E7%2C5537709.824433593&amp;HEIGHT=256&amp;WIDTH=256&amp;SRS=MapML%3AOSMTILE&amp;FORMAT=image%2Fpng&amp;SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;Language=en" />
+        <map-feature id="streams.7" class="simple_streams-r1-s1">
+            <map-geometry>
+                <map-linestring>
+                    <map-coordinates>-11538847.8 5531019.6 -11538860.6 5531045.3 -11538871.2
+                        5531077.4 -11538896 5531123.7 -11538899.6 5531138 -11538917.3 5531170.1
+                        -11539009.6 5531252.1 -11539119.7 5531316.3 -11539254.6 5531433.9
+                        -11539300.8 5531483.8 -11539332.7 5531548 -11539329.1 5531637.1 -11539311.4
+                        5531683.4 -11539279.4 5531701.2 -11539130.2 5531722.6 -11539073.4 5531765.3
+                        -11539041.4 5531843.7 -11538995.2 5531847.2 -11538959.7 5531829.4
+                        -11538874.4 5531832.9 -11538847.8 5531846.3</map-coordinates>
+                </map-linestring>
+            </map-geometry>
+        </map-feature>
+        <map-feature id="streams.8" class="simple_streams-r1-s1">
+            <map-geometry>
+                <map-linestring>
+                    <map-coordinates>-11543278.6 5529563.7 -11543275 5529602.9 -11543257.3 5529642
+                        -11543236 5529656.3 -11543157.8 5529770.3 -11543125.9 5529852.3 -11543111.7
+                        5529941.4 -11543108.2 5530012.6 -11543093.9 5530119.5 -11543062 5530240.7
+                        -11543026.5 5530294.1 -11543005.2 5530301.3 -11542969.7 5530297.7
+                        -11542937.7 5530272.8 -11542905.7 5530226.4 -11542891.5 5530176.6
+                        -11542838.3 5530098.2 -11542763.7 5530101.7 -11542593.2 5530190.8
+                        -11542458.3 5530201.5 -11542397.9 5530233.6 -11542316.2 5530247.8
+                        -11542270.1 5530369 -11542263 5530415.3 -11542220.3 5530483 -11542170.6
+                        5530500.8 -11542081.8 5530486.6 -11542039.2 5530461.6 -11541978.8 5530401
+                        -11541964.7 5530369 -11541946.9 5530351.2 -11541922 5530301.3 -11541875.9
+                        5530247.8 -11541858.1 5530240.7 -11541801.3 5530247.8 -11541765.8 5530287
+                        -11541662.8 5530426 -11541606 5530486.5 -11541531.4 5530497.2 -11541439
+                        5530458 -11541353.8 5530404.5 -11541197.6 5530265.5 -11541140.8 5530197.8
+                        -11541101.7 5530180 -11541041.4 5530183.6 -11540956.1 5530229.9 -11540856.7
+                        5530222.7 -11540743.1 5530190.6 -11540672 5530204.9 -11540604.5 5530304.6
+                        -11540579.7 5530318.9 -11540448.3 5530329.6 -11540224.5 5530415 -11540157
+                        5530429.2 -11540061.1 5530429.2 -11539951.1 5530350.8 -11539890.7 5530322.3
+                        -11539787.8 5530233.2 -11539752.3 5530204.6 -11539667 5530204.6 -11539599.5
+                        5530222.4 -11539535.6 5530265.1 -11539496.5 5530318.6 -11539471.7 5530375.6
+                        -11539425.4 5530518.1 -11539393.4 5530635.7 -11539372.1 5530678.5
+                        -11539350.8 5530710.5 -11539283.3 5530739 -11539166.1 5530739 -11539080.9
+                        5530706.9 -11539041.8 5530660.5 -11539020.6 5530599.9 -11538985.1 5530557.1
+                        -11538931.8 5530550 -11538896.3 5530560.7 -11538847.8 5530609.3</map-coordinates>
+                </map-linestring>
+            </map-geometry>
+        </map-feature>
+        <map-feature id="streams.9" class="simple_streams-r1-s1">
+            <map-geometry>
+                <map-linestring>
+                    <map-coordinates>-11543097.4 5528690.3 -11543097.4 5528740.6 -11543118.7
+                        5528765.5 -11543186.2 5528797.6 -11543232.4 5528897.4 -11543235.9 5528918.7
+                        -11543250.1 5528936.6 -11543260.8 5528965.1 -11543267.9 5529072 -11543243
+                        5529153.9 -11543161.4 5529275 -11543129.4 5529307.1 -11543129.4 5529381.9
+                        -11543211.1 5529471 -11543260.8 5529513.8 -11543278.6 5529549.4 -11543278.6
+                        5529563.7</map-coordinates>
+                </map-linestring>
+            </map-geometry>
+        </map-feature>
+        <map-feature id="roads.526" class="simple_roads-r1-s1">
+            <map-geometry>
+                <map-linestring>
+                    <map-coordinates>-1.154197545486741E7 5528690.2558668 -1.15419842E7 5528702.6
+                        -1.15420779E7 5528948.8 -1.15421423E7 5529066.4 -1.15423138E7 5529238.3
+                        -1.15423223E7 5529233.2 -1.15424015E7 5529256.6 -1.15424412E7 5529352.7
+                        -1.15424537E7 5529429.8</map-coordinates>
+                </map-linestring>
+            </map-geometry>
+        </map-feature>
+        <map-feature id="roads.528" class="simple_roads-r1-s1">
+            <map-geometry>
+                <map-linestring>
+                    <map-coordinates>-1.15432167E7 5529271.1 -1.1543219E7 5529347.4 -1.15432537E7
+                        5529412.6 -1.15433427E7 5529536.3 -1.15433579E7 5529585.2 -1.1543356E7
+                        5529639.1 -1.1543219E7 5529868.4 -1.15432153E7 5529937.8 -1.15432021E7
+                        5530059.4 -1.15431755E7 5530144.2 -1.15431196E7 5530299.9 -1.15431364E7
+                        5530354 -1.15431942E7 5530403 -1.15433533E7 5530481.5 -1.15434197E7
+                        5530475.7 -1.15435152E7 5530461.4 -1.15435587E7 5530450.4 -1.15435759E7
+                        5530410.2 -1.1543599E7 5530374.3 -1.15436169E7 5530375.2 -1.15436371E7
+                        5530437.8 -1.15436496E7 5530524.4 -1.15436859E7 5530638.5 -1.15436064E7
+                        5530707.6 -1.15436037E7 5530757.3 -1.1543651E7 5530900.6 -1.154373E7
+                        5530962.5 -1.15437836E7 5530985 -1.15438474E7 5531032.3</map-coordinates>
+                </map-linestring>
+            </map-geometry>
+        </map-feature>
+        <map-feature id="roads.529" class="simple_roads-r1-s1">
+            <map-geometry>
+                <map-linestring>
+                    <map-coordinates>-1.15438474E7 5531032.3 -1.15438747E7 5531008.4
+                        -1.154394996991142E7 5530977.68753614</map-coordinates>
+                </map-linestring>
+            </map-geometry>
+        </map-feature>
+    </map-body>
+</mapml->

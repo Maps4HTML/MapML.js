@@ -1,173 +1,43 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
+<html><head>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>index-map.html</title>
     <script type="module" src="dist/mapml.js"></script>
-     <style> 
-       html, 
-       body { 
-         height: 100%; 
-       } 
-       * { 
-         margin: 0; 
-         padding: 0; 
-       } 
-        
-       /* Specifying the `:defined` selector is recommended to style the map 
-       element, such that styles don't apply when fallback content is in use 
-       (e.g. when scripting is disabled or when custom/built-in elements isn't 
-       supported in the browser). */ 
-       mapml-viewer:defined { 
-         /* Responsive map. */ 
-          max-width: 100%;  
-          
-         /* Full viewport. */
-          width: 100%;  
-          height: 50%;  
-          
-         /* Remove default (native-like) border. */ 
-         border: none;
-         
-         vertical-align: middle;
-       } 
-        
-       /* Pre-style to avoid FOUC of inline map-layer and fallback content. */ 
-       mapml-viewer:not(:defined) > * { 
-         display: none; 
-       } 
-       
-       /* Pre-style to avoid Layout Shift. */
-       mapml-viewer:not(:defined) {
-         display: inline-block;
-         contain: size;
-         contain-intrinsic-size: 304px 154px;
-       }
-       
-      /* Specifying the `:defined` selector is recommended to style the map
-      element, such that styles don't apply when fallback content is in use
-      (e.g. when scripting is disabled or when custom/built-in elements isn't
-      supported in the browser). */
-      map[is="web-map"]:defined {
-      /* Responsive map. */ 
-          max-width: 100%;  
-          
-         /* Full viewport. */ 
-          width: 100%;  
-          height: 50%;  
-          
-         /* Remove default (native-like) border. */ 
-         border: none;
-         
-         vertical-align: middle;
+    <style>
+      html, body {
+        height: 100%;
       }
-
-      /* Pre-style to avoid Layout Shift. */
-      map[is="web-map"]:not(:defined) {
-        display: inline-block;
-        contain: size;
-        contain-intrinsic-size: 304px 154px;
+      * {
+        margin: 0;
+        padding: 0;
       }
-
-      /* Pre-style to avoid FOUC of inline map-layer and fallback content. */
-      map[is="web-map"]:not(:defined) + img[usemap],
-      map[is="web-map"]:not(:defined) > :not(area):not(.mapml-web-map) {
+      mapml-viewer:defined {
+        max-width: 100%;
+        width: 100%;
+        height: 100%;
+        border: none;
+        vertical-align: middle
+      }
+      mapml-viewer:not(:defined) > * {
         display: none;
       }
-
-      /* Ensure inline layer content is hidden if custom/built-in elements isn't
-      supported, or if javascript is disabled. This needs to be defined separately
-      from the above, because the `:not(:defined)` selector invalidates the entire
-      declaration in browsers that do not support it. */
-      map-layer {
+      nmap-layer {
         display: none;
       }
-     </style> 
-     <noscript> 
-       <style> 
-         /* Ensure fallback content (children of the map element) is displayed if 
-         custom/built-in elements is supported but javascript is disabled. */ 
-         mapml-viewer:not(:defined) > :not(map-layer) { 
-           display: initial; 
-         } 
-         
-         /* "Reset" the properties used to pre-style (to avoid Layout Shift) if
-         custom/built-in elements is supported but javascript is disabled. */
-         mapml-viewer:not(:defined) {
-           display: initial;
-           contain: initial;
-           contain-intrinsic-size: initial;
-         }
-        /* Ensure client-side image map fallbacks are displayed if custom/built-in
-        elements is supported but javascript is disabled. */
-        map[is="web-map"]:not(:defined) + img[usemap] {
-          display: initial;
-        }
-
-        /* "Reset" the properties used to pre-style (to avoid Layout Shift) if
-        custom/built-in elements is supported but javascript is disabled. */
-        map[is="web-map"]:not(:defined) {
-          display: initial;
-          contain: initial;
-          contain-intrinsic-size: initial;
-        }
-       </style> 
-     </noscript> 
+    </style>
+    <noscript>
+    <style>
+      mapml-viewer:not(:defined) > :not(map-layer) {
+        display: initial;
+      }
+    </style>
+    </noscript>
   </head>
-  <body>
-    
-    <mapml-viewer projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation">
-      <map-layer data-testid="osm-layer" label="OpenStreetMap" checked >
-        <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
-        <map-extent units="OSMTILE" checked="checked">
-          <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
-          <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
-          <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
-          <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
-        </map-extent>
-      </map-layer>
-      <map-layer label="Restaurants" checked="">
-        <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
-        <map-extent units="OSMTILE" checked="">
-           <map-select id="restaurants" name="cusine">
-               <map-option value="restaurants" selected="selected">All cuisines</map-option>
-               <map-option value="african">African</map-option>
-               <map-option value="asian">Asian</map-option>
-               <map-option value="cajun">Cajun</map-option>
-               <map-option value="indian">Indian</map-option>
-               <map-option value="italian">Italian</map-option>
-               <map-option value="mexican">Mexican</map-option>
-           </map-select>
-           <map-link media="(11 < map-zoom <= 18)" tref="https://maps4html.org/experiments/shared/restaurants/{cusine}.mapml" rel="features"></map-link>
-        </map-extent>
-      </map-layer>
-    </mapml-viewer>
-    <map is="web-map" projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation">
-      <map-layer data-testid="osm-layer" label="OpenStreetMap" checked >
-        <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
-        <map-extent units="OSMTILE" checked="checked">
-          <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
-          <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
-          <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
-          <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
-        </map-extent>
-      </map-layer>
-      <map-layer label="Restaurants" checked="">
-        <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
-        <map-extent units="OSMTILE" checked="">
-           <map-select id="restaurants" name="cusine">
-               <map-option value="restaurants" selected="selected">All cuisines</map-option>
-               <map-option value="african">African</map-option>
-               <map-option value="asian">Asian</map-option>
-               <map-option value="cajun">Cajun</map-option>
-               <map-option value="indian">Indian</map-option>
-               <map-option value="italian">Italian</map-option>
-               <map-option value="mexican">Mexican</map-option>
-           </map-select>
-           <map-link tref="https://maps4html.org/experiments/shared/restaurants/{cusine}.mapml" rel="features"></map-link>
-        </map-extent>
-      </map-layer>
-    </map>
-  </body>
-</html>
+  <body> <!-- comment -->
+  <mapml-viewer projection="OSMTILE" zoom="14" lat="44.43522010257481" lon="-103.67815017700197" controls>
+    <map-layer label="Spearfish" checked src="http://localhost:8080/geoserver/wms?LAYERS=spearfish&BBOX=-1.1563633841554081E7,5522909.350493801,-1.1535183234733827E7,5543493.457347733&HEIGHT=768&WIDTH=555&SRS=MapML:OSMTILE&STYLES=&FORMAT=text%2Fmapml&format_options=mapml-wms-format:image%2Fpng;mapmlusemultiextents:false;mapmlusetiles:false;mapmlusefeatures:true;mapmlskipattributes:true;&SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0">
+  
+    </map-layer>
+   </mapml-viewer>
+
+</body></html>
