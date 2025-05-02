@@ -10,12 +10,27 @@ import { Util } from '../utils/Util.js';
 import { path } from '../features/path.js';
 import { geometry } from '../features/geometry.js';
 
-export var FeatureLayer = FeatureGroup.extend({
-  /*
-   * M.MapML turns any MapML feature data into a Leaflet layer. Based on L.GeoJSON.
-   *
-   * Used by MapLayer to create _mapmlvectors property, used to render features
-   */
+/**
+ * The equivalent of MapTileLayer and MapExtentLayer, for features.
+ * Represents an adjacent sequence of <map-feature> elements on the Leaflet map
+ *
+ * This layer will be inserted into the LayerGroup hosted by the <map-link> or
+ * <map-layer> immediately after creation, so that its index within the _layers array of
+ * that LayerGroup will be equal to its z-index within the LayerGroup's container
+ *
+ * <map-tile row="10" col="12" src="url1"></map-tile>  LayerGroup._layers[0] <- each *set* of adjacent tiles
+ * <map-tile row="11" col="12" src="url2"></map-tile>  LayerGroup._layers[0] <- is a *single* MapTileLayer
+ * <map-extent units="OSMTILE" checked hidden> LayerGroup._layers[1] *each* <map-extent> is a LayerGroup of Templated*Layer.js
+ * <map-feature id="a"> LayerGroup._layers[2] <- each *set* of adjacent features
+ * <map-feature id="b"> LayerGroup._layers[2] <- is a single MapFeatureLayer FeatureGroup
+ * <map-tile row="10" col="12" src="url3"></map-tile>  LayerGroup._layers[3]
+ * <map-tile row="11" col="12" src="url4"></map-tile>  LayerGroup._layers[3]
+ * <map-feature id="c"> LayerGroup._layers[4]
+ * <map-feature id="d"> LayerGroup._layers[4]
+ * and so on
+ *
+ */
+export var MapFeatureLayer = FeatureGroup.extend({
   initialize: function (mapml, options) {
     /*
         mapml:
@@ -535,6 +550,6 @@ export var FeatureLayer = FeatureGroup.extend({
     }
   }
 });
-export var featureLayer = function (mapml, options) {
-  return new FeatureLayer(mapml, options);
+export var mapFeatureLayer = function (mapml, options) {
+  return new MapFeatureLayer(mapml, options);
 };

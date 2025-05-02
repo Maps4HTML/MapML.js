@@ -116,7 +116,7 @@ test.describe('UI Drag&Drop Test', () => {
       (span) => span.innerText
     );
     const layerIndex = await page.$eval(
-      '.leaflet-overlay-pane .mapml-static-tile-layer',
+      '.leaflet-overlay-pane .mapml-static-tile-container',
       (div) => div.parentElement.style.zIndex
     );
     const domLayer = await page.$eval(
@@ -181,7 +181,6 @@ test.describe('UI Drag&Drop Test', () => {
       .first();
     let cbmtIsChecked = await cbmtCheckbox.isChecked();
     expect(cbmtIsChecked).toBe(true);
-    await page.pause();
     await cbmtCheckbox.click();
     cbmtIsChecked = await cbmtCheckbox.isChecked();
     expect(cbmtIsChecked).toBe(false);

@@ -33,7 +33,7 @@
       <map-title>{z}/{x}/{y}.mvt test</map-title>
     <!-- on load this extent should be disabled -->
       <map-extent data-testid="osmtile-only-extent" units="OSMTILE" checked="checked">
-        <!-- no stylesheet module here will result in console.warn message -->
+        <map-link rel="stylesheet" type="application/pmtiles+stylesheet" href="pmtilesRulesModule.js"></map-link>
         <map-input name="beans" type="zoom" value="18" min="0" max="2"></map-input>
         <map-input name="foo" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
         <map-input name="bar" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>

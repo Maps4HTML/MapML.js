@@ -1,7 +1,8 @@
 import { setOptions, DomUtil, bounds, point } from 'leaflet';
 
 import { Util } from './mapml/utils/Util.js';
-import { MapMLLayer, mapMLLayer } from './mapml/layers/MapMLLayer.js';
+import { MapLayer, mapLayer } from './mapml/layers/MapLayer.js';
+import { MapTileLayer } from './mapml/layers/MapTileLayer.js';
 import { createLayerControlHTML } from './mapml/elementSupport/layers/createLayerControlForLayer.js';
 
 export class BaseLayerElement extends HTMLElement {
@@ -72,7 +73,7 @@ export class BaseLayerElement extends HTMLElement {
 
   get extent() {
     // calculate the bounds of all content, return it.
-    if (this._layer && !this._layer.bounds) {
+    if (this._layer) {
       this._layer._calculateBounds();
     }
     return this._layer
@@ -296,7 +297,7 @@ export class BaseLayerElement extends HTMLElement {
             this.selectAlternateOrChangeProjection();
           })
           .then(() => {
-            this._layer = mapMLLayer(new URL(this.src, base).href, this, {
+            this._layer = mapLayer(new URL(this.src, base).href, this, {
               projection: this.getProjection(),
               opacity: this.opacity
             });
@@ -333,7 +334,7 @@ export class BaseLayerElement extends HTMLElement {
             this.selectAlternateOrChangeProjection();
           })
           .then(() => {
-            this._layer = mapMLLayer(null, this, {
+            this._layer = mapLayer(null, this, {
               projection: this.getProjection(),
               opacity: this.opacity
             });
@@ -467,7 +468,7 @@ export class BaseLayerElement extends HTMLElement {
    * Runs the effects of the mutation observer, which is to add map-features' and
    * map-extents' leaflet layer implementations to the appropriate container in
    * the map-layer._layer: either as a sub-layer directly in the LayerGroup
-   * (MapMLLayer._layer) or as a sub-layer in the MapMLLayer._mapmlvectors
+   * (MapLayer._layer) or as a sub-layer in the MapLayer._mapmlvectors
    * FeatureGroup
    */
   _runMutationObserver(elementsGroup) {
@@ -633,6 +634,19 @@ export class BaseLayerElement extends HTMLElement {
   }
 
   _validateDisabled() {
+    const countTileLayers = () => {
+      let totalCount = 0;
+      let disabledCount = 0;
+
+      this._layer.eachLayer((layer) => {
+        if (layer instanceof MapTileLayer) {
+          totalCount++;
+          if (!layer.isVisible()) disabledCount++;
+        }
+      });
+
+      return { totalCount, disabledCount };
+    };
     // setTimeout is necessary to make the validateDisabled happen later than the moveend operations etc.,
     // to ensure that the validated result is correct
     setTimeout(() => {
@@ -671,10 +685,15 @@ export class BaseLayerElement extends HTMLElement {
                     if (mapExtents[i]._validateDisabled())
                       disabledExtentCount++;
                   }
-                } else if (layer[type]) {
-                  // not a templated layer
+                } else if (type === '_mapmlvectors') {
+                  // inline / static features
                   totalExtentCount++;
                   if (!layer[type].isVisible()) disabledExtentCount++;
+                } else {
+                  // inline tiles
+                  const tileLayerCounts = countTileLayers();
+                  totalExtentCount += tileLayerCounts.totalCount;
+                  disabledExtentCount += tileLayerCounts.disabledCount;
                 }
               }
             }

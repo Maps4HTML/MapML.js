@@ -29,7 +29,7 @@ test.describe('Playwright Custom TCRS Tests', () => {
     );
 
     await expect(
-      page.locator('mapml-viewer:nth-child(1) map-tile.leaflet-tile-loaded')
+      page.locator('mapml-viewer:nth-child(1) map-tile')
     ).toHaveCount(2);
     expect(misMatchedLayerDisabled).toEqual(true);
     expect(matchedLayerEnabled).toEqual(false);

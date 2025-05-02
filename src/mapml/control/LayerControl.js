@@ -119,7 +119,7 @@ export var LayerControl = Control.Layers.extend({
 
     // <----------- MODIFICATION from the default _update method
     // sort the layercontrol layers object based on the zIndex
-    // provided by MapMLLayer
+    // provided by MapLayer
     if (this.options.sortLayers) {
       this._layers.sort((a, b) =>
         this.options.sortFunction(a.layer, b.layer, a.name, b.name)

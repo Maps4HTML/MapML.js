@@ -147,7 +147,7 @@ export var TemplatedTileLayer = TileLayer.extend({
     DomUtil.addClass(tile, 'leaflet-tile-loaded');
   },
   // instead of being child of a pane, the TemplatedTileLayers are 'owned' by the group,
-  // and so are DOM children of the group, not the pane element (the MapMLLayer is
+  // and so are DOM children of the group, not the pane element (the MapLayer is
   // a child of the overlay pane and always has a set of sub-layers)
   getPane: function () {
     return this.options.pane;
@@ -273,19 +273,64 @@ export var TemplatedTileLayer = TileLayer.extend({
       mapEl: this._linkEl.getMapEl()
     });
     let fallback = Util.getNativeVariables(markup);
-    let features = markup.querySelectorAll('map-feature:has(> map-geometry)');
-    for (let i = 0; i < features.length; i++) {
-      let feature = tileFeatures.createGeometry(
-        features[i],
-        fallback.cs,
-        coords.z
-      );
-      for (let featureID in feature._layers) {
-        let layer = feature._layers[featureID];
-        FeatureRenderer.prototype._initPath(layer, false);
-        layer._project(this._map, point([xOffset, yOffset]), coords.z);
-        FeatureRenderer.prototype._addPath(layer, g, false);
-        FeatureRenderer.prototype._updateFeature(layer);
+    // log the tiles in case there's more than one - was a dev issue with geoserver
+    //    let tiles = markup.querySelectorAll('map-tile');
+    //    for (let i = 0; i < tiles.length; i++) {
+    //      let row = tiles[i].getAttribute('row'),
+    //        col = tiles[i].getAttribute('col'),
+    //        z = tiles[i].getAttribute('zoom');
+    //      console.log(
+    //        'Total tiles for row: ' +
+    //          row +
+    //          ', col: ' +
+    //          col +
+    //          ', z: ' +
+    //          z +
+    //          ': ' +
+    //          tiles.length
+    //      );
+    //    }
+    let currentTileSelector =
+      '[row="' +
+      coords.y +
+      '"][col="' +
+      coords.x +
+      '"][zoom="' +
+      coords.z +
+      '"]';
+
+    // this should select and process the features and tiles in DOM order
+    let featuresOrTiles = markup.querySelectorAll(
+      'map-feature:has(> map-geometry),map-tile' + currentTileSelector
+    );
+    for (let i = 0; i < featuresOrTiles.length; i++) {
+      if (featuresOrTiles[i].nodeName === 'map-feature') {
+        let feature = tileFeatures.createGeometry(
+          featuresOrTiles[i],
+          fallback.cs,
+          coords.z
+        );
+        for (let featureID in feature._layers) {
+          // layer is an M.Path instance
+          let layer = feature._layers[featureID];
+          FeatureRenderer.prototype._initPath(layer, false);
+          // does something to layer
+          layer._project(this._map, point([xOffset, yOffset]), coords.z);
+          // appends the guts of layer to g
+          FeatureRenderer.prototype._addPath(layer, g, false);
+          // updates the guts of layer that have already been appended to g
+          FeatureRenderer.prototype._updateFeature(layer);
+        }
+      } else {
+        // render tile as an svg image element
+        let tile = featuresOrTiles[i];
+        // No need to append to DOM, the browser will cache it
+        // observed to be a bit faster than waiting until img is appended to DOM
+        const imgObj = new Image();
+        imgObj.src = tile.getAttribute('src');
+        let img = SVG.create('image');
+        img.setAttribute('href', imgObj.src);
+        g.appendChild(img);
       }
     }
     svg.setAttribute('width', tileSize.toString());

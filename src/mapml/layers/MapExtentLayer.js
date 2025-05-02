@@ -1,7 +1,35 @@
 import { LayerGroup, DomUtil } from 'leaflet';
 import { renderStyles } from '../elementSupport/layers/renderStyles.js';
-
-export var ExtentLayer = LayerGroup.extend({
+/**
+ * Leaflet layer implementing map-extent elements
+ * Extends LayerGroup to create a single layer containing "templated" layers
+ * from child map-link[@tref] elements
+ *
+ * Similar in intent to MapFeatureLayer and MapTileLayer, which are LayerGroup or
+ * GridLayer for map-feature and map-tile elements' leaflet layer object, respectively.
+ *
+ * This layer will be inserted into the LayerGroup hosted by the <map-layer>
+ * immediately after creation, so that its index within the _layers array of
+ * that LayerGroup will be equal to its z-index within the LayerGroup's container
+ *
+ * <map-tile row="10" col="12" src="url1"></map-tile>  LayerGroup._layers[0] <- each *set* of adjacent tiles
+ * <map-tile row="11" col="12" src="url2"></map-tile>  LayerGroup._layers[0] <- is a *single* MapTileLayer
+ * <map-extent units="OSMTILE" checked hidden> LayerGroup._layers[1] *each* <map-extent> is a LayerGroup of Templated*Layer.js
+ * <map-feature id="a"> LayerGroup._layers[2] <- each *set* of adjacent features
+ * <map-feature id="b"> LayerGroup._layers[2] <- is a single MapFeatureLayer FeatureGroup
+ * <map-tile row="10" col="12" src="url3"></map-tile>  LayerGroup._layers[3]
+ * <map-tile row="11" col="12" src="url4"></map-tile>  LayerGroup._layers[3]
+ * <map-feature id="c"> LayerGroup._layers[4]
+ * <map-feature id="d"> LayerGroup._layers[4]
+ * and so on
+ *
+ * A constraint of <map-extent> is that it cannot be nested inside a templated
+ * layer i.e. if a <map-link> retrieves a text/mapml document that contains a
+ * <map-extent>, it will be ignored, otherwise there could be infinite nested
+ * fetches triggered. That is why the "TemplatedFeaturesOrTilesLayer" exists - it
+ * excludes <map-extent> elements.
+ */
+export var MapExtentLayer = LayerGroup.extend({
   initialize: function (options) {
     // Call LayerGroup's initialize to trigger Leaflet's setup
     LayerGroup.prototype.initialize.call(this, null, options);
@@ -85,6 +113,6 @@ export var ExtentLayer = LayerGroup.extend({
   },
   renderStyles
 });
-export var extentLayer = function (options) {
-  return new ExtentLayer(options);
+export var mapExtentLayer = function (options) {
+  return new MapExtentLayer(options);
 };

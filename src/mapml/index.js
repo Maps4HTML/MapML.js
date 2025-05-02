@@ -44,6 +44,7 @@ import { HTMLMapmlViewerElement } from '../mapml-viewer.js';
 import { HTMLLayerElement } from '../mapml-viewer.js';
 import { HTMLMapCaptionElement } from '../mapml-viewer.js';
 import { HTMLFeatureElement } from '../mapml-viewer.js';
+import { HTMLTileElement } from '../mapml-viewer.js';
 import { HTMLExtentElement } from '../mapml-viewer.js';
 import { HTMLInputElement } from '../mapml-viewer.js';
 import { HTMLSelectElement } from '../mapml-viewer.js';
@@ -57,6 +58,7 @@ window.MapML = {
   HTMLLayerElement,
   HTMLMapCaptionElement,
   HTMLFeatureElement,
+  HTMLTileElement,
   HTMLExtentElement,
   HTMLInputElement,
   HTMLSelectElement,
