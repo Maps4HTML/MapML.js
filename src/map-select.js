@@ -39,7 +39,7 @@ export class HTMLSelectElement extends HTMLElement {
     this._extentEl = this.parentElement;
     // TODO make the layer redraw after map-select change event
     // origin of this block was in _initTemplateVars from map-extent, which was
-    // originally part of MapMLLayer...
+    // originally part of MapLayer...
     //
     // use a throwaway div to parse the input from MapML into HTML
     this._createLayerControlForSelect();

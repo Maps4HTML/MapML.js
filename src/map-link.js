@@ -10,7 +10,7 @@ import {
 import { Util } from './mapml/utils/Util.js';
 import { templatedImageLayer } from './mapml/layers/TemplatedImageLayer.js';
 import { templatedTileLayer } from './mapml/layers/TemplatedTileLayer.js';
-import { templatedFeaturesLayer } from './mapml/layers/TemplatedFeaturesLayer.js';
+import { templatedFeaturesOrTilesLayer } from './mapml/layers/TemplatedFeaturesOrTilesLayer.js';
 import { templatedPMTilesLayer } from './mapml/layers/TemplatedPMTilesLayer.js';
 /* global M */
 
@@ -436,7 +436,8 @@ export class HTMLLinkElement extends HTMLElement {
       //  be loaded as part of a templated layer processing i.e. on moveend
       //  and the generated <link> that implements this <map-link> should be located
       //  in the parent <map-link>._templatedLayer.container root node if
-      //  the _templatedLayer is an instance of TemplatedTileLayer or TemplatedFeaturesLayer
+      //  the _templatedLayer is an instance of TemplatedTileLayer or
+      //  TemplatedFeaturesOrTilesLayer
       //
       // if the parent node (or the host of the shadow root parent node) is map-layer, the link should be created in the _layer
       // container
@@ -551,12 +552,15 @@ export class HTMLLinkElement extends HTMLElement {
       if (!this.shadowRoot) {
         this.attachShadow({ mode: 'open' });
       }
-      this._templatedLayer = templatedFeaturesLayer(this._templateVars, {
+      // Use the FeaturesTilesLayerGroup to handle both map-feature and map-tile elements
+      this._templatedLayer = templatedFeaturesOrTilesLayer(this._templateVars, {
         zoomBounds: this.getZoomBounds(),
         extentBounds: this.getBounds(),
         zIndex: this.zIndex,
         pane: this.parentExtent._extentLayer.getContainer(),
-        linkEl: this
+        linkEl: this,
+        projection: this.mapEl._map.options.projection,
+        renderer: this.mapEl._map.options.renderer
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'query') {
       if (!this.shadowRoot) {

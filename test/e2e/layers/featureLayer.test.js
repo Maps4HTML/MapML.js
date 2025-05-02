@@ -100,7 +100,7 @@ test.describe('Playwright featureLayer (Static Features) Layer Tests', () => {
         horizontal: 79.6961805581841,
         vertical: -60.79110984572508
       });
-      // corrected logic for MapMLLayer._calculateBounds min/maxNativeZoom
+      // corrected logic for MapLayer._calculateBounds min/maxNativeZoom
       // there are a bunch of features loaded at map zoom=2. Two have default
       // (no) zoom attribute, all the others have zoom=0. So, the minNativeZoom
       // should be 0, while the maxNativeZoom should be 2.

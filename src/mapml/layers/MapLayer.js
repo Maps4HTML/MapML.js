@@ -9,11 +9,11 @@ import {
 } from 'leaflet';
 import { Util } from '../utils/Util.js';
 import { featureLayer } from './FeatureLayer.js';
-import { staticTileLayer } from './StaticTileLayer.js';
+import { MapTileLayer } from './MapTileLayer.js';
 import { featureRenderer } from '../features/featureRenderer.js';
 import { renderStyles } from '../elementSupport/layers/renderStyles.js';
 
-export var MapMLLayer = LayerGroup.extend({
+export var MapLayer = LayerGroup.extend({
   options: {
     zIndex: 0,
     opacity: '1.0'
@@ -33,17 +33,13 @@ export var MapMLLayer = LayerGroup.extend({
     this.changeOpacity(this.options.opacity);
     DomUtil.addClass(this._container, 'mapml-layer');
 
-    // this layer 'owns' a mapmlTileLayer, which is a subclass of L.GridLayer
-    // it 'passes' what tiles to load via the content of this._mapmlTileContainer
-    this._mapmlTileContainer = DomUtil.create(
-      'div',
-      'mapml-tile-container',
-      this._container
-    );
     // hit the service to determine what its extent might be
     // OR use the extent of the content provided
 
     this._initialize(this._content);
+  },
+  getContainer: function () {
+    return this._container;
   },
   setZIndex: function (zIndex) {
     this.options.zIndex = zIndex;
@@ -88,13 +84,9 @@ export var MapMLLayer = LayerGroup.extend({
   },
 
   onAdd: function (map) {
-    LayerGroup.prototype.onAdd.call(this, map);
     this.getPane().appendChild(this._container);
+    LayerGroup.prototype.onAdd.call(this, map);
 
-    //only add the layer if there are tiles to be rendered
-    if (this._staticTileLayer) {
-      this.addLayer(this._staticTileLayer);
-    }
     this.setZIndex(this.options.zIndex);
     map.on('popupopen', this._attachSkipButtons, this);
   },
@@ -172,10 +164,7 @@ export var MapMLLayer = LayerGroup.extend({
             }
           }
         }
-      } else if (
-        type === '_mapmlvectors' ||
-        (type === '_staticTileLayer' && this._staticTileLayer)
-      ) {
+      } else if (type === '_mapmlvectors') {
         if (this[type].layerBounds) {
           if (!bnds) {
             bnds = this[type].layerBounds;
@@ -204,6 +193,37 @@ export var MapMLLayer = LayerGroup.extend({
             zoomBounds.maxNativeZoom = maxNativeZoom;
           }
         }
+      } else {
+        // inline tiles
+        this.eachLayer((layer) => {
+          if (layer instanceof MapTileLayer) {
+            if (layer.layerBounds) {
+              if (!bnds) {
+                bnds = layer.layerBounds;
+              } else {
+                bnds.extend(layer.layerBounds);
+              }
+            }
+
+            if (layer.zoomBounds) {
+              // Extend zoomBounds with layer zoomBounds
+              zoomMax = Math.max(zoomMax, layer.zoomBounds.maxZoom);
+              zoomMin = Math.min(zoomMin, layer.zoomBounds.minZoom);
+              maxNativeZoom = Math.max(
+                maxNativeZoom,
+                layer.zoomBounds.maxNativeZoom
+              );
+              minNativeZoom = Math.min(
+                minNativeZoom,
+                layer.zoomBounds.minNativeZoom
+              );
+              zoomBounds.minZoom = zoomMin;
+              zoomBounds.maxZoom = zoomMax;
+              zoomBounds.minNativeZoom = minNativeZoom;
+              zoomBounds.maxNativeZoom = maxNativeZoom;
+            }
+          }
+        });
       }
     });
     if (bnds) {
@@ -256,8 +276,6 @@ export var MapMLLayer = LayerGroup.extend({
       mapml = this._content;
     parseLicenseAndLegend();
     setLayerTitle();
-    // crs is only set if the layer has the same projection as the map
-    if (M[layer.options.projection]) processTiles();
     processFeatures();
     // update controls if needed based on mapml-viewer controls/controlslist attribute
     if (layer._layerEl.parentElement) {
@@ -304,35 +322,6 @@ export var MapMLLayer = LayerGroup.extend({
           }
         }
       }).addTo(layer);
-    }
-    function processTiles() {
-      if (mapml.querySelector('map-tile')) {
-        var tiles = document.createElement('map-tiles'),
-          zoom =
-            mapml.querySelector('map-meta[name=zoom][content]') ||
-            mapml.querySelector('map-input[type=zoom][value]');
-        tiles.setAttribute(
-          'zoom',
-          (zoom && zoom.getAttribute('content')) ||
-            (zoom && zoom.getAttribute('value')) ||
-            '0'
-        );
-        var newTiles = mapml.getElementsByTagName('map-tile');
-        for (var nt = 0; nt < newTiles.length; nt++) {
-          tiles.appendChild(document.importNode(newTiles[nt], true));
-        }
-        layer._mapmlTileContainer.appendChild(tiles);
-        layer._staticTileLayer = staticTileLayer({
-          pane: layer._container,
-          _leafletLayer: layer,
-          projection: layer.options.projection,
-          className: 'mapml-static-tile-layer',
-          tileContainer: layer._mapmlTileContainer,
-          maxZoomBound:
-            M[layer.options.projection].options.resolutions.length - 1,
-          tileSize: M[layer.options.projection].options.crs.tile.bounds.max.x
-        });
-      }
     }
     function setLayerTitle() {
       if (mapml.querySelector('map-title')) {
@@ -651,7 +640,7 @@ export var MapMLLayer = LayerGroup.extend({
       };
 
       // we found that the popupopen event is fired as many times as there
-      // are layers on the map (<map-layer> elements / MapMLLayers that is).
+      // are layers on the map (<map-layer> elements / MapLayers that is).
       // In each case the target layer is always this layer, so we can't
       // detect and conditionally add the zoomLink if the target is not this.
       // so, like Ahmad, we are taking a 'delete everyting each time'
@@ -682,7 +671,7 @@ export var MapMLLayer = LayerGroup.extend({
     }
   }
 });
-export var mapMLLayer = function (url, node, options) {
+export var mapLayer = function (url, node, options) {
   if (!url && !node) return null;
-  return new MapMLLayer(url, node, options);
+  return new MapLayer(url, node, options);
 };

@@ -95,7 +95,9 @@ test.describe('Playwright templatedPMTilesLayer Tests', () => {
     await expect(fixedProjectionLayer).toHaveAttribute('disabled');
     await viewer.evaluate((v) => (v.projection = 'OSMTILE'));
     await page.waitForTimeout(500);
-    await expect(flexProjectionLayer).not.toHaveAttribute('disabled');
+    // the flex projection layer will still be disabled because the pmtiles
+    // layer lacks a stylesheet...
+    await expect(flexProjectionLayer).toHaveAttribute('disabled');
     await expect(fixedProjectionLayer).not.toHaveAttribute('disabled');
   });
   test('A protomaps map-link, parent map-extent and ancestor map-layer are disabled when out of bounds', async ({

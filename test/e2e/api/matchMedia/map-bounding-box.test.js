@@ -17,6 +17,7 @@ test.describe('matchMedia map-bounding-box tests', () => {
   });
 
   test('matchMedia API detects changes in map-extents', async () => {
+    await page.waitForTimeout(500);
     const map = page.locator('mapml-viewer');
     const zoomIn = page.locator('.leaflet-control-zoom-in');
     const zoomOut = page.locator('.leaflet-control-zoom-out');

@@ -11,6 +11,7 @@ export default defineConfig({
   use: {
       headless: true,
       browserName: 'chromium',
-      baseURL: 'http://localhost:30001/'
+      baseURL: 'http://localhost:30001/',
+      ignoreHTTPSErrors: true
   }
 });

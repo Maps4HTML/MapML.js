@@ -1,7 +1,7 @@
 import { bounds as Lbounds, point as Lpoint } from 'leaflet';
 
 import { Util } from './mapml/utils/Util.js';
-import { extentLayer } from './mapml/layers/ExtentLayer.js';
+import { mapExtentLayer } from './mapml/layers/MapExtentLayer.js';
 import { createLayerControlExtentHTML } from './mapml/elementSupport/extents/createLayerControlForExtent.js';
 
 /* global M */
@@ -251,7 +251,7 @@ export class HTMLExtentElement extends HTMLElement {
     // when projection is changed, the parent map-layer._layer is created (so whenReady is fulfilled) but then removed,
     // then the map-extent disconnectedCallback will be triggered by map-layer._onRemove() (clear the shadowRoot)
     // even before connectedCallback is finished
-    // in this case, the microtasks triggered by the fulfillment of the removed MapMLLayer should be stopped as well
+    // in this case, the microtasks triggered by the fulfillment of the removed MapLayer should be stopped as well
     // !this.isConnected <=> the disconnectedCallback has run before
     if (!this.isConnected) return;
     /* jshint ignore:start */
@@ -263,7 +263,7 @@ export class HTMLExtentElement extends HTMLElement {
     // this._opacity is used to record the current opacity value (with or without updates),
     // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
     this._opacity = this.opacity || 1.0;
-    this._extentLayer = extentLayer({
+    this._extentLayer = mapExtentLayer({
       opacity: this.opacity,
       crs: M[this.units],
       extentZIndex: Array.from(
@@ -432,7 +432,7 @@ export class HTMLExtentElement extends HTMLElement {
   _handleChange() {
     // add _extentLayer to map if map-extent is checked, otherwise remove it
     if (this.checked && !this.disabled && this.parentLayer._layer) {
-      // can be added to mapmllayer layerGroup no matter map-layer is checked or not
+      // can be added to MapLayer LayerGroup no matter map-layer is checked or not
       this._extentLayer.addTo(this.parentLayer._layer);
       this._extentLayer.setZIndex(
         Array.from(

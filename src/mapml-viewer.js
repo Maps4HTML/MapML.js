@@ -14,6 +14,7 @@ import { HTMLLayerElement } from './map-layer.js';
 import { LayerDashElement } from './layer-.js';
 import { HTMLMapCaptionElement } from './map-caption.js';
 import { HTMLFeatureElement } from './map-feature.js';
+import { HTMLTileElement } from './map-tile.js';
 import { HTMLExtentElement } from './map-extent.js';
 import { HTMLInputElement } from './map-input.js';
 import { HTMLSelectElement } from './map-select.js';
@@ -1491,6 +1492,7 @@ window.customElements.define('map-layer', HTMLLayerElement);
 window.customElements.define('layer-', LayerDashElement);
 window.customElements.define('map-caption', HTMLMapCaptionElement);
 window.customElements.define('map-feature', HTMLFeatureElement);
+window.customElements.define('map-tile', HTMLTileElement);
 window.customElements.define('map-extent', HTMLExtentElement);
 window.customElements.define('map-input', HTMLInputElement);
 window.customElements.define('map-select', HTMLSelectElement);
@@ -1501,6 +1503,7 @@ export {
   HTMLLayerElement,
   HTMLMapCaptionElement,
   HTMLFeatureElement,
+  HTMLTileElement,
   HTMLExtentElement,
   HTMLInputElement,
   HTMLSelectElement,
