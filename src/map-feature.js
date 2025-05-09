@@ -310,7 +310,22 @@ export class HTMLFeatureElement extends HTMLElement {
         layerBounds: parentElement.getBounds(),
         zoomBounds: this._getZoomBounds(),
         projection: map.options.projection,
-        mapEl: parentElement.getMapEl()
+        mapEl: parentElement.getMapEl(),
+        onEachFeature: function (properties, geometry) {
+          if (properties) {
+            const popupOptions = {
+              autoClose: false,
+              autoPan: true,
+              maxHeight: map.getSize().y * 0.5 - 50,
+              maxWidth: map.getSize().x * 0.7,
+              minWidth: 165
+            };
+            var c = document.createElement('div');
+            c.classList.add('mapml-popup-content');
+            c.insertAdjacentHTML('afterbegin', properties.innerHTML);
+            geometry.bindPopup(c, popupOptions);
+          }
+        }
       });
       this.addFeature(this._featureLayer);
 

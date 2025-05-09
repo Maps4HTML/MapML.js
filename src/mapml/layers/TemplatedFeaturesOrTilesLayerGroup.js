@@ -94,7 +94,7 @@ export var TemplatedFeaturesOrTilesLayerGroup = LayerGroup.extend({
         this._map.getZoom()
       ),
       zoom = this._map.getZoom();
-    const getUrl = function (zoom, bounds) {
+    const getUrl = ((zoom, bounds) => {
       if (zoom === undefined) zoom = this._map.getZoom();
       if (bounds === undefined) bounds = this._map.getPixelBounds();
       const _TCRSToPCRS = (coords, zoom) => {
@@ -127,7 +127,7 @@ export var TemplatedFeaturesOrTilesLayerGroup = LayerGroup.extend({
         obj[this.options.param.right] = _TCRSToPCRS(bounds.max, zoom).x;
       }
       // hidden and other variables that may be associated
-      for (var v in this.options.feature) {
+      for (var v in this.options.param) {
         if (
           ['width', 'height', 'left', 'right', 'top', 'bottom', 'zoom'].indexOf(
             v
@@ -137,10 +137,8 @@ export var TemplatedFeaturesOrTilesLayerGroup = LayerGroup.extend({
         }
       }
       return LeafletUtil.template(this._template.template, obj);
-    }.bind(this);
+    }).bind(this);
     var url = getUrl(zoom, bounds);
-    // No request needed if the current template url is the same as the url to request
-    if (url === this._url) return;
     this._url = url;
 
     // do cleaning up for new request
@@ -156,53 +154,50 @@ export var TemplatedFeaturesOrTilesLayerGroup = LayerGroup.extend({
       return;
     }
 
-    var mapml,
+    let mapml,
       headers = new Headers({
         Accept: 'text/mapml'
       }),
-      parser = new DOMParser(),
       linkEl = this._linkEl,
-      MAX_PAGES = 10,
-      getMapML = function (url, limit) {
+      getMapML = (url) => {
         return fetch(url, { redirect: 'follow', headers: headers })
           .then(function (response) {
             return response.text();
           })
           .then(function (text) {
+            let parser = new DOMParser();
             mapml = parser.parseFromString(text, 'application/xml');
-            var base = new URL(
-              mapml.querySelector('map-base')
-                ? mapml.querySelector('map-base').getAttribute('href')
-                : url
-            ).href;
-            url = mapml.querySelector('map-link[rel=next]')
-              ? mapml.querySelector('map-link[rel=next]').getAttribute('href')
-              : null;
-            url = url ? new URL(url, base).href : null;
             let frag = document.createDocumentFragment();
             let elements = mapml.querySelectorAll('map-head > *, map-body > *');
             for (let i = 0; i < elements.length; i++) {
               frag.appendChild(elements[i]);
             }
             linkEl.shadowRoot.appendChild(frag);
-            //            let features = linkEl.shadowRoot.querySelectorAll('map-feature');
-            //            let featuresReady = [];
-            //            for (let i = 0; i < features.length; i++) {
-            //              featuresReady.push(features[i].whenReady());
-            //            }
-            //            Promise.allSettled(featuresReady).then(() => {
-            //              for (let i = 0; i < features.length; i++) {
-            //                features[i].addFeature(featureLayer);
-            //              }
-            //            });
-            if (url && --limit) {
-              return _pullFeatureFeed(url, limit);
-            }
           });
       };
-    getMapML(this._url, MAX_PAGES).catch(function (error) {
-      console.log(error);
-    });
+    const map = this._map;
+    getMapML(this._url)
+      .then(() => {
+        //Fires event for feature index overlay to check overlaps
+        map.fire('templatedfeatureslayeradd');
+        this.eachLayer(function (layer) {
+          if (layer._path) {
+            if (layer._path.getAttribute('d') !== 'M0 0') {
+              layer._path.setAttribute('tabindex', 0);
+            } else {
+              layer._path.removeAttribute('tabindex');
+            }
+            if (layer._path.childElementCount === 0) {
+              let title = document.createElement('title');
+              title.innerText = this._linkEl.getMapEl().locale.dfFeatureCaption;
+              layer._path.appendChild(title);
+            }
+          }
+        }, this);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   },
   _setUpTemplateVars: function (template) {
     // process the inputs and create an object named "param"
