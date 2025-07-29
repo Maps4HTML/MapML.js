@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>mixedLayer.html</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module" src="mapml.js"></script>
+  <style>
+    map-layer {
+        display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <mapml-viewer data-testid="viewer" width="500" height="500" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
+
+    <map-layer label="Static inline content" checked>
+      <map-meta name="zoom" content="min=0,max=10"></map-meta>
+      <map-meta name="projection" content="CBMTILE"></map-meta>
+      <map-link rel="license"
+        href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
+        title="Canada Base Map © Natural Resources Canada"></map-link>
+      
+      <!-- for features, zoom is advisory (min/max control rendering) -->
+      <!-- these features should be in one MapFeatureLayer -->
+      
+      <!-- test the z-index of these features -->
+      <map-feature zoom="2" min="2" max="2"> col="10" row="10" 
+        <map-geometry cs="tilematrix">
+          <map-polygon>
+            <map-coordinates>10 10 11 10 11 11 10 11 10 10</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+      <map-feature zoom="2" min="2" max="2"> col="10" row="11" 
+        <map-geometry cs="tilematrix">
+          <map-polygon>
+            <map-coordinates>10 11 10 12 11 12 11 11 10 11</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+      <map-feature zoom="2" min="2" max="2"> col="9" row="11" 
+        <map-geometry cs="tilematrix">
+          <map-polygon>
+            <map-coordinates>9 11 9 12 10 12 10 11 9 11</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+      <map-feature zoom="2" min="2" max="2"> col="9" row="10" 
+        <map-geometry cs="tilematrix">
+          <map-polygon>
+            <map-coordinates>9 10 9 11 10 11 10 10 9 10</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+      <map-feature zoom="2" min="2" max="2"> col="11" row="11" 
+        <map-geometry cs="tilematrix">
+          <map-polygon>
+            <map-coordinates>11 11 11 12 12 12 12 11 11 11</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+      <!-- for tiles, zoom controls rendering -->
+      <!-- these tiles should all be added to the same MapTileLayer -->
+      
+      <-- figure out test z-index for the MapTileLayer -->
+      <map-tile zoom="0" row="3" col="3" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="0" row="4" col="3" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="1" col="5" row="6" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="1" col="5" row="7" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="1" col="6" row="6" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="1" col="6" row="7" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="9" row="10" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="9" row="11" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="9" row="12" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="10" row="10" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="10" row="11" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="10" row="12" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="11" row="10" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="11" row="11" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="11" row="12" src="tiles/green-tile.png"></map-tile>
+      
+<!-- test the z-index compliance of these elements when checked/unchecked and moved -->
+      <map-extent units="CBMTILE" checked label="map-extent red tiles">
+        <map-input name="z" type="zoom" min="0" max="17"></map-input>
+        <map-input name="y" type="location" units="tilematrix" axis="row" ></map-input>
+        <map-input name="x" type="location" units="tilematrix" axis="column" ></map-input>
+        <map-link rel="tile" tref="tiles/red-tile.png?{z}/{y}/{x}"></map-link>
+      </map-extent>
+      <map-extent units="CBMTILE" label="map-extent blue image">
+        <map-input name="z" type="zoom" min="0" max="19"></map-input>
+        <map-input name="w" type="width"></map-input>
+        <map-input name="h" type="height"></map-input>
+        <map-input name="xmin" type="location" units="pcrs" position="top-left" axis="easting"></map-input>
+        <map-input name="ymin" type="location" units="pcrs" position="bottom-left" axis="northing"></map-input>
+        <map-input name="xmax" type="location" units="pcrs" position="top-right" axis="easting"></map-input>
+        <map-input name="ymax" type="location" units="pcrs" position="top-left" axis="northing"></map-input>
+        <map-link rel="image" tref="tiles/blue-tile.png?{xmin},{ymin},{xmax},{ymax}"></map-link>
+      </map-extent>
+      <!-- this feature should have its own MapFeatureLayer -->
+      <!-- test / validate the z-index of this feature-->
+      <map-feature zoom="3" max="7">
+        <map-featurecaption>Colorado</map-featurecaption>
+        <map-properties></map-properties>
+        <map-geometry>
+          <map-polygon>
+            <map-coordinates>-107.919731 41.003906 -105.728954 40.998429 -104.053011 41.003906 -102.053927 41.003906
+              -102.053927 40.001626 -102.042974 36.994786 -103.001438 37.000263 -104.337812 36.994786 -106.868158
+              36.994786 -107.421329 37.000263 -109.042503 37.000263 -109.042503 38.166851 -109.058934 38.27639
+              -109.053457 39.125316 -109.04798 40.998429 -107.919731 41.003906</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+    </map-layer>
+
+    <map-layer id="US" label="static remote features" src="data/us_pop_density.mapml" ></map-layer>
+  </mapml-viewer>
+
+</body>
+
+</html>

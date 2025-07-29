@@ -149,11 +149,11 @@ test.describe('Adding and Removing Multiple Extents', () => {
       (extents) => extents.length
     );
     cbmt = await page.$eval(
-      "div.mapml-extentlayer-container[style='opacity: 0.5; z-index: 0;'] > div",
+      "div.mapml-extentlayer-container[style='opacity: 0.5; z-index: 1;'] > div",
       (div) => div.className
     );
     const alabama = await page.$eval(
-      "div.mapml-extentlayer-container[style='opacity: 0.5; z-index: 1;'] > div",
+      "div.mapml-extentlayer-container[style='opacity: 0.5; z-index: 2;'] > div",
       (div) => div.className
     );
     const layerOpacity = await page.$eval(
@@ -203,11 +203,11 @@ test.describe('Adding and Removing Multiple Extents', () => {
     // turn the Multiple Extents layer on
     await page.click("text='Multiple Extents'");
     const cbmtClass = await page.$eval(
-      "div.mapml-extentlayer-container[style='opacity: 0.5; z-index: 0;'] > div",
+      "div.mapml-extentlayer-container[style='opacity: 0.5; z-index: 1;'] > div",
       (div) => div.className
     );
     const alabamaClass = await page.$eval(
-      "div.mapml-extentlayer-container[style='opacity: 0.5; z-index: 1;'] > div",
+      "div.mapml-extentlayer-container[style='opacity: 0.5; z-index: 2;'] > div",
       (div) => div.className
     );
     const layer = page.getByTestId('multiple-extents');

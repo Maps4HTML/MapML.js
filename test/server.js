@@ -24,6 +24,7 @@ app.use(express.static(path.join(__dirname, 'e2e/elements/map-a')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-input')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-link')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-style')));
+app.use(express.static(path.join(__dirname, 'e2e/elements/map-tile')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/map-layer')));
 app.use(express.static(path.join(__dirname, 'e2e/elements/layer-')));
 app.use(express.static(path.join(__dirname, 'e2e/api')));
@@ -170,6 +171,10 @@ app.use(
 app.use(
   '/data/cbmt/0',
   express.static(path.join(__dirname, 'e2e/data/tiles/cbmt/0'))
+);
+app.use(
+  '/data/cbmt/1',
+  express.static(path.join(__dirname, 'e2e/data/tiles/cbmt/1'))
 );
 app.use(
   '/data/cbmt/2',

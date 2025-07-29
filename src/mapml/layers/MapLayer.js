@@ -8,7 +8,7 @@ import {
   latLngBounds
 } from 'leaflet';
 import { Util } from '../utils/Util.js';
-import { featureLayer } from './FeatureLayer.js';
+import { MapFeatureLayer } from './MapFeatureLayer.js';
 import { MapTileLayer } from './MapTileLayer.js';
 import { featureRenderer } from '../features/featureRenderer.js';
 import { renderStyles } from '../elementSupport/layers/renderStyles.js';
@@ -131,7 +131,7 @@ export var MapLayer = LayerGroup.extend({
       }
       if (type === '_extentLayer' && mapExtents.length) {
         for (let i = 0; i < mapExtents.length; i++) {
-          if (mapExtents[i]._extentLayer.bounds) {
+          if (mapExtents[i]._extentLayer?.bounds) {
             let mapExtentLayer = mapExtents[i]._extentLayer;
             if (!bnds) {
               bnds = bounds(
@@ -165,34 +165,38 @@ export var MapLayer = LayerGroup.extend({
           }
         }
       } else if (type === '_mapmlvectors') {
-        if (this[type].layerBounds) {
-          if (!bnds) {
-            bnds = this[type].layerBounds;
-          } else {
-            bnds.extend(this[type].layerBounds);
+        // Iterate through individual MapFeatureLayer instances in the LayerGroup
+        this.eachLayer(function (layer) {
+          // Check if this is a MapFeatureLayer
+          if (layer instanceof MapFeatureLayer && layer.layerBounds) {
+            if (!bnds) {
+              bnds = layer.layerBounds;
+            } else {
+              bnds.extend(layer.layerBounds);
+            }
           }
-        }
-        if (this[type].zoomBounds) {
-          if (!zoomBounds) {
-            zoomBounds = this[type].zoomBounds;
-          } else {
-            // Extend layer zoombounds
-            zoomMax = Math.max(zoomMax, this[type].zoomBounds.maxZoom);
-            zoomMin = Math.min(zoomMin, this[type].zoomBounds.minZoom);
-            maxNativeZoom = Math.max(
-              maxNativeZoom,
-              this[type].zoomBounds.maxNativeZoom
-            );
-            minNativeZoom = Math.min(
-              minNativeZoom,
-              this[type].zoomBounds.minNativeZoom
-            );
-            zoomBounds.minZoom = zoomMin;
-            zoomBounds.maxZoom = zoomMax;
-            zoomBounds.minNativeZoom = minNativeZoom;
-            zoomBounds.maxNativeZoom = maxNativeZoom;
+          if (layer instanceof MapFeatureLayer && layer.zoomBounds) {
+            if (!zoomBounds) {
+              zoomBounds = layer.zoomBounds;
+            } else {
+              // Extend layer zoombounds
+              zoomMax = Math.max(zoomMax, layer.zoomBounds.maxZoom);
+              zoomMin = Math.min(zoomMin, layer.zoomBounds.minZoom);
+              maxNativeZoom = Math.max(
+                maxNativeZoom,
+                layer.zoomBounds.maxNativeZoom
+              );
+              minNativeZoom = Math.min(
+                minNativeZoom,
+                layer.zoomBounds.minNativeZoom
+              );
+              zoomBounds.minZoom = zoomMin;
+              zoomBounds.maxZoom = zoomMax;
+              zoomBounds.minNativeZoom = minNativeZoom;
+              zoomBounds.maxNativeZoom = maxNativeZoom;
+            }
           }
-        }
+        });
       } else {
         // inline tiles
         this.eachLayer((layer) => {
@@ -276,53 +280,12 @@ export var MapLayer = LayerGroup.extend({
       mapml = this._content;
     parseLicenseAndLegend();
     setLayerTitle();
-    processFeatures();
     // update controls if needed based on mapml-viewer controls/controlslist attribute
     if (layer._layerEl.parentElement) {
       // if layer does not have a parent Element, do not need to set Controls
       layer._layerEl.parentElement._toggleControls();
     }
     // local functions
-    // determine if, where there's no match of the current layer's projection
-    // and that of the map, if there is a linked alternate text/mapml
-    // resource that matches the map's projection
-    function processFeatures() {
-      let native = Util.getNativeVariables(layer._content);
-      layer._mapmlvectors = featureLayer(null, {
-        // pass the vector layer a renderer of its own, otherwise leaflet
-        // puts everything into the overlayPane
-        renderer: featureRenderer(),
-        // pass the vector layer the container for the parent into which
-        // it will append its own container for rendering into
-        pane: layer._container,
-        opacity: layer.options.opacity,
-        projection: layer.options.projection,
-        // by NOT passing options.extent, we are asking the FeatureLayer
-        // to dynamically update its .layerBounds property as features are
-        // added or removed from it
-        native: native,
-        // each owned child layer gets a reference to the root layer
-        _leafletLayer: layer,
-        mapEl: layer._layerEl.parentElement,
-        onEachFeature: function (properties, geometry) {
-          // need to parse as HTML to preserve semantics and styles
-          if (properties) {
-            const map = layer._map;
-            const popupOptions = {
-              autoClose: false,
-              autoPan: true,
-              maxHeight: map.getSize().y * 0.5 - 50,
-              maxWidth: map.getSize().x * 0.7,
-              minWidth: 165
-            };
-            var c = document.createElement('div');
-            c.classList.add('mapml-popup-content');
-            c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-            geometry.bindPopup(c, popupOptions);
-          }
-        }
-      }).addTo(layer);
-    }
     function setLayerTitle() {
       if (mapml.querySelector('map-title')) {
         layer._title = mapml.querySelector('map-title').textContent.trim();

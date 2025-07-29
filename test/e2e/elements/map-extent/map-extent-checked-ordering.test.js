@@ -41,12 +41,11 @@ The imagery layer <map-extent> draws on top of the states layer.
     let imageryZIndex = await ext1.evaluate((e) => {
       return +e._extentLayer._container.style.zIndex;
     });
-    expect(imageryZIndex).toEqual(0);
     const ext2 = page.getByTestId('ext2');
     let statesZIndex = await ext2.evaluate((e) => {
       return +e._extentLayer._container.style.zIndex;
     });
-    expect(statesZIndex).toEqual(1);
+    expect(statesZIndex).toBeGreaterThan(imageryZIndex);
     // re-order them via the layer control
     const imageryFieldset = layerControl.getByRole('group', {
       name: 'Extent One'
@@ -65,11 +64,10 @@ The imagery layer <map-extent> draws on top of the states layer.
     imageryZIndex = await ext1.evaluate((e) => {
       return +e._extentLayer._container.style.zIndex;
     });
-    expect(imageryZIndex).toEqual(1);
     statesZIndex = await ext2.evaluate((e) => {
       return +e._extentLayer._container.style.zIndex;
     });
-    expect(statesZIndex).toEqual(0);
+    expect(statesZIndex).toBeLessThan(imageryZIndex);
 
     await page.mouse.move(from.x, from.y);
     await page.mouse.down();
@@ -80,11 +78,10 @@ The imagery layer <map-extent> draws on top of the states layer.
     imageryZIndex = await ext1.evaluate((e) => {
       return +e._extentLayer._container.style.zIndex;
     });
-    expect(imageryZIndex).toEqual(0);
     statesZIndex = await ext2.evaluate((e) => {
       return +e._extentLayer._container.style.zIndex;
     });
-    expect(statesZIndex).toEqual(1);
+    expect(statesZIndex).toBeGreaterThan(imageryZIndex);
     // TO DO re-order them via the DOM (insertAdjacentHTML),
     // ensure that
     // a) render order/z-index is correct

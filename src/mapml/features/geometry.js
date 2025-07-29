@@ -1,4 +1,4 @@
-import { FeatureGroup, LayerGroup, DomUtil, DomEvent, bounds } from 'leaflet';
+import { FeatureGroup, DomUtil, DomEvent, bounds } from 'leaflet';
 
 import { Path, path } from './path.js';
 
@@ -15,7 +15,7 @@ export var Geometry = FeatureGroup.extend({
         options
       );
 
-    LayerGroup.prototype.initialize.call(this, layers, options);
+    FeatureGroup.prototype.initialize.call(this, layers, options);
     this._featureEl = this.options.mapmlFeature;
 
     this.layerBounds = options.layerBounds;
@@ -55,7 +55,7 @@ export var Geometry = FeatureGroup.extend({
   },
 
   onAdd: function (map) {
-    LayerGroup.prototype.onAdd.call(this, map);
+    FeatureGroup.prototype.onAdd.call(this, map);
     this.updateInteraction();
   },
 

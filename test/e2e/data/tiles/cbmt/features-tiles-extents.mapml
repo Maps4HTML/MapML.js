@@ -1,0 +1,69 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+    <map-head>
+        <map-title>map-feature, map-tile, map-extent</map-title>
+        <map-meta name="projection" content="CBMTILE"></map-meta>
+    </map-head>
+    <map-body>
+        <!-- this SHOULD appear in the shadow root of the <map-layer> AND shadow root of <map-link> -->
+        <map-feature data-testid="pcrsgeometry" >
+            <map-properties>
+                <h1>Test</h1>
+            </map-properties>
+            <map-geometry cs="pcrs">
+                <map-polygon>
+                    <map-coordinates>257421 -3567196 -271745 1221771 -3896544 242811 -3183549 -2613313</map-coordinates>
+                </map-polygon>
+            </map-geometry>
+        </map-feature>
+        <!-- this SHOULD appear in the shadow root of the <map-layer> AND shadow root of <map-link> -->
+        <map-feature data-testid="tcrsgeometry" >
+            <map-properties>
+                <h1>Test</h1>
+            </map-properties>
+            <map-geometry cs="tcrs">
+                <map-polygon>
+                    <map-coordinates>2771 3106 2946 3113 2954 3210 2815 3192</map-coordinates>
+                </map-polygon>
+            </map-geometry>
+        </map-feature>
+        <!-- this SHOULD appear in the shadow root of the <map-layer> AND shadow root of <map-link> -->
+        <map-feature data-testid="tilematrixgeometry" >
+            <map-properties>
+                <h1>Test Cube</h1>
+            </map-properties>
+            <map-geometry cs="tilematrix">
+                <map-polygon>
+                    <map-coordinates>11 11 12 11 12 12 11 12</map-coordinates>
+                </map-polygon>
+            </map-geometry>
+        </map-feature>
+        <!-- this SHOULD appear in the shadow root of the <map-layer> AND shadow root of <map-link> -->
+        <map-feature data-testid="defaultcsgeometry" >
+            <map-properties>
+                <h1>Alabama</h1>
+            </map-properties>
+            <map-geometry>
+                <map-polygon>
+                    <map-coordinates>-87.359296 35.00118 -85.606675 34.984749 -85.431413 34.124869 -85.184951 32.859696 -85.069935 32.580372 -84.960397 32.421541 -85.004212 32.322956 -84.889196 32.262709 -85.058981 32.13674 -85.053504 32.01077 -85.141136 31.840985 -85.042551 31.539753 -85.113751 31.27686 -85.004212 31.003013 -85.497137 30.997536 -87.600282 30.997536 -87.633143 30.86609 -87.408589 30.674397 -87.446927 30.510088 -87.37025 30.427934 -87.518128 30.280057 -87.655051 30.247195 -87.90699 30.411504 -87.934375 30.657966 -88.011052 30.685351 -88.10416 30.499135 -88.137022 30.318396 -88.394438 30.367688 -88.471115 31.895754 -88.241084 33.796253 -88.098683 34.891641 -88.202745 34.995703 -87.359296 35.00118</map-coordinates>
+                </map-polygon>
+            </map-geometry>
+        </map-feature>
+
+        <!-- this SHOULD appear in the shadow root of the <map-layer> AND shadow root of <map-link> -->
+        <map-tile data-testid="test-tile" zoom="0" row="3" col="3" src="data/cbmt/0/c3_r3.png"></map-tile>
+
+        <!-- this SHOULD appear in the shadow root of the <map-layer> AND SHOULD NOT appear in shadow root of <map-link> -->
+       <map-extent data-test-id="test-extent" units="CBMTILE" checked="checked" >
+          <map-input name="z" type="zoom" min="0" max="18" value="0" ></map-input>
+          <map-input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" min="-76" max="-74" ></map-input>
+          <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" min="45" max="46" ></map-input>
+          <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right" min="-76" max="-74" ></map-input>
+          <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left" min="45" max="46" ></map-input>
+          <!-- refers to itself, actually, so could cause "STACK OVERFLOW" if included -->
+          <!-- in any case, the shadow root of the map-link SHOULD NOT contain this map-extent, or this link -->
+          <map-link data-testid="test-link" rel="features" tref="./features-tiles-extents.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>
+        </map-extent>
+
+
+    </map-body>
+</mapml->

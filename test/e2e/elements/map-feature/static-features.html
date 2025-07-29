@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>static-features.html</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module" src="mapml.js"></script>
+  <style>
+    map-layer {
+        display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <mapml-viewer data-testid="viewer" width="500" height="500" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
+
+    <map-layer label="Static inline content" checked>
+      <map-meta name="zoom" content="min=0,max=10"></map-meta>
+      <map-meta name="projection" content="CBMTILE"></map-meta>
+      <!-- for features, zoom is advisory (min/max control rendering) -->
+      <!-- these features should be in one MapFeatureLayer -->
+
+      <!-- test the z-index of these features -->
+      <map-feature zoom="2" min="2" max="2"> col="10" row="10" 
+        <map-geometry cs="tilematrix">
+          <map-polygon>
+            <map-coordinates>10 10 11 10 11 11 10 11 10 10</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+      <map-feature zoom="2" min="2" max="2"> col="10" row="11" 
+        <map-geometry cs="tilematrix">
+          <map-polygon>
+            <map-coordinates>10 11 10 12 11 12 11 11 10 11</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+      <map-feature zoom="2" min="2" max="2"> col="9" row="11" 
+        <map-geometry cs="tilematrix">
+          <map-polygon>
+            <map-coordinates>9 11 9 12 10 12 10 11 9 11</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+      <map-feature zoom="2" min="2" max="2"> col="9" row="10" 
+        <map-geometry cs="tilematrix">
+          <map-polygon>
+            <map-coordinates>9 10 9 11 10 11 10 10 9 10</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+      <map-feature zoom="2" min="2" max="2"> col="11" row="11" 
+        <map-geometry cs="tilematrix">
+          <map-polygon>
+            <map-coordinates>11 11 11 12 12 12 12 11 11 11</map-coordinates>
+          </map-polygon>
+        </map-geometry>
+      </map-feature>
+    </map-layer>
+
+    <map-layer id="US" label="static remote features" src="data/us_pop_density.mapml" ></map-layer>
+  </mapml-viewer>
+
+</body>
+
+</html>

@@ -20,6 +20,7 @@ test.describe('map-link media attribute', () => {
   });
 
   test('map-link is disabled when media attribute does not match', async () => {
+    await page.waitForTimeout(500);
     // const map = page.locator('mapml-viewer');
     const layer = page.locator('map-layer');
     const mapLink = page.locator('map-link').first();

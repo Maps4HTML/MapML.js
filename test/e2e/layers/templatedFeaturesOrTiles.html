@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>templatedFeaturesOrTiles.html</title>
+    <meta charset="UTF-8">
+    <script type="module" src="mapml.js"></script>
+  </head>
+  <body>
+    <mapml-viewer data-testid="map" style="width: 500px;height: 500px;" projection="CBMTILE" zoom="0" lat="45.5052040" lon="-75.2202344" controls>
+      <!-- This layer "includes itself" (via a map-extent/map-link rel=features)
+           While the shadow root of the map-layer should contain the map-extent,
+           tests should confirm that the <map-link rel=features> shadow root does not
+           contain the map-extent again (It's bad enough that the author points
+           the layer to itself to recursively load (some of) the same content, but
+           that shouldn't be a "show stopper" / blow the stack / recurse forever). -->
+      <map-layer data-testid="test-layer" checked src="data/features-tiles-extents.mapml"></map-layer>
+    </mapml-viewer>
+  </body>
+</html>

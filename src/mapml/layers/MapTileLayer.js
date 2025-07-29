@@ -31,12 +31,25 @@ export var MapTileLayer = GridLayer.extend({
     this._pendingTiles = {};
     this._buildTileMap();
     this._container = DomUtil.create('div', 'leaflet-layer');
+    if (options.zIndex) {
+      this._container.style.zIndex = options.zIndex;
+    }
     DomUtil.addClass(this._container, 'mapml-static-tile-container');
     // Store bounds for visibility checks
     //    this.layerBounds = this._computeLayerBounds();
     //    this.zoomBounds = this._computeZoomBounds();
   },
 
+  getEvents: function () {
+    const events = GridLayer.prototype.getEvents
+      ? GridLayer.prototype.getEvents.call(this)
+      : {};
+
+    // Add our custom zoom change handler
+    events.zoomend = this._handleZoomChange;
+
+    return events;
+  },
   onAdd: function (map) {
     this.options.pane.appendChild(this._container);
     // Call the parent method
@@ -45,9 +58,41 @@ export var MapTileLayer = GridLayer.extend({
   onRemove: function (map) {
     // Clean up pending tiles
     this._pendingTiles = {};
+    // remove _container from the dom, but don't delete it
     DomUtil.remove(this._container);
   },
+  setZIndex: function (zIndex) {
+    this.options.zIndex = zIndex;
+    this._updateZIndex();
 
+    return this;
+  },
+  _updateZIndex: function () {
+    if (
+      this._container &&
+      this.options.zIndex !== undefined &&
+      this.options.zIndex !== null
+    ) {
+      this._container.style.zIndex = this.options.zIndex;
+    }
+  },
+
+  _handleZoomChange: function () {
+    // this is necessary for CBMTILE in particular, I think because
+    // Leaflet relies on Web Mercator powers of 2 inter-zoom tile relations
+    // to calculate what tiles to clean up/remove.  CBMTILE doesn't have that
+    // relationship between zoom levels /tiles.
+    //
+    // Force removal of all tiles that don't match current zoom
+    const currentZoom = this._map.getZoom();
+
+    for (const key in this._tiles) {
+      const coords = this._keyToTileCoords(key);
+      if (coords.z !== currentZoom) {
+        this._removeTile(key);
+      }
+    }
+  },
   /**
    * Adds a map-tile element to the layer
    * @param {HTMLTileElement} mapTile - The map-tile element to add
@@ -57,7 +102,9 @@ export var MapTileLayer = GridLayer.extend({
       this._mapTiles.push(mapTile);
       this._addToTileMap(mapTile);
       this._updateBounds();
-      //      this.redraw();
+      if (this._map) {
+        this.redraw();
+      }
     }
   },
 
@@ -71,7 +118,32 @@ export var MapTileLayer = GridLayer.extend({
       this._mapTiles.splice(index, 1);
       this._removeFromTileMap(mapTile);
       this._updateBounds();
-      //      this.redraw();
+      if (this._map) {
+        this.redraw();
+      }
+    }
+  },
+
+  /**
+   * Removes a map-tile element from the layer using specific coordinates
+   * Used when tile coordinates have changed and we need to remove based on old coordinates
+   * @param {HTMLTileElement} mapTile - The map-tile element to remove
+   * @param {Object} coords - The coordinates to use for removal {col, row, zoom}
+   */
+  removeMapTileAt: function (mapTile, coords) {
+    const index = this._mapTiles.indexOf(mapTile);
+    if (index !== -1) {
+      this._mapTiles.splice(index, 1);
+      this._removeFromTileMapAt(coords);
+      // Clean up bidirectional links using current tile reference
+      if (mapTile._tileDiv) {
+        mapTile._tileDiv._mapTile = null;
+        mapTile._tileDiv = null;
+      }
+      this._updateBounds();
+      if (this._map) {
+        this.redraw();
+      }
     }
   },
 
@@ -224,6 +296,27 @@ export var MapTileLayer = GridLayer.extend({
    */
   _removeFromTileMap: function (mapTile) {
     const tileKey = `${mapTile.col}:${mapTile.row}:${mapTile.zoom}`;
+    delete this._tileMap[tileKey];
+
+    // Clean up bidirectional links
+    if (mapTile._tileDiv) {
+      mapTile._tileDiv._mapTile = null;
+      mapTile._tileDiv = null;
+    }
+
+    // Also remove from pending tiles if it exists there
+    if (this._pendingTiles && this._pendingTiles[tileKey]) {
+      delete this._pendingTiles[tileKey];
+    }
+  },
+
+  /**
+   * Removes a tile from the tile map using specific coordinates
+   * @param {Object} coords - The coordinates {col, row, zoom}
+   * @private
+   */
+  _removeFromTileMapAt: function (coords) {
+    const tileKey = `${coords.col}:${coords.row}:${coords.zoom}`;
     delete this._tileMap[tileKey];
 
     // Also remove from pending tiles if it exists there

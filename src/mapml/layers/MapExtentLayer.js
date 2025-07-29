@@ -36,6 +36,7 @@ export var MapExtentLayer = LayerGroup.extend({
     this._container = DomUtil.create('div', 'leaflet-layer');
     this._extentEl = this.options.extentEl;
     this.changeOpacity(this.options.opacity);
+    this.setZIndex(options.zIndex);
     // Add class to the container
     DomUtil.addClass(this._container, 'mapml-extentlayer-container');
   },
@@ -60,11 +61,6 @@ export var MapExtentLayer = LayerGroup.extend({
       layer.redraw();
     });
   },
-  //addTo: function(map) {
-  //for(let i = 0; i < this._templates.length; i++){
-  //    this._templates[0].layer.addTo(map);
-  //}
-  //},
   setZIndex: function (zIndex) {
     this.options.zIndex = zIndex;
     this._updateZIndex();

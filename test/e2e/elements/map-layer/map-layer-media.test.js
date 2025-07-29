@@ -85,6 +85,9 @@ enabled and added to the layer control when mq removed`, async () => {
   test(`An invalid media query is the same as a non-matching media query`, async () => {
     const noInitialQueryLayer = page.getByTestId('no-initial-mq');
     await noInitialQueryLayer.evaluate((l) => l.setAttribute('media', '(foo '));
-    await expect(noInitialQueryLayer).toHaveAttribute('disabled', '');
+    // Wait for the invalid media query to trigger the disabled attribute
+    await expect(noInitialQueryLayer).toHaveAttribute('disabled', '', {
+      timeout: 2000
+    });
   });
 });

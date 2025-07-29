@@ -5,8 +5,10 @@ export default defineConfig({
   testDir: './test/e2e',
   webServer: {
       command: 'node test/server.js',
-      port: 30001,
-      timeout: 10000
+//      port: 30001,  // this causes a 2 min pause on my machine as of Sept 2025
+//      url: 'http://localhost:30001/', //also causes a 2 min pause
+      timeout: 10000,
+      reuseExistingServer: true
   },
   use: {
       headless: true,

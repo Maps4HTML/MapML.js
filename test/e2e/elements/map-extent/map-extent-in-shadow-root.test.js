@@ -11,6 +11,7 @@ test.describe('map-extent can be inside a shadow root or other custom element', 
     await page.goto('map-extent-in-shadow-root.html');
   });
   test('map-extent getMapEl() works in shadow root', async () => {
+    await page.waitForTimeout(500);
     const viewer = page.getByTestId('viewer');
     await expect(viewer).toBeTruthy();
     const layer = viewer.getByTestId('test-layer');
