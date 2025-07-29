@@ -7,7 +7,6 @@ import {
 } from 'leaflet';
 import { Util } from '../utils/Util.js';
 import { mapTileLayer } from './MapTileLayer.js';
-import { featureLayer } from './FeatureLayer.js';
 import { renderStyles } from '../elementSupport/layers/renderStyles.js';
 
 /**

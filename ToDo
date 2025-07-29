@@ -1,0 +1,96 @@
+Take a look at the introductory doc comments in MapExtentLayer.js, MapTileLayer.js and
+MapFeatureLayer.js which illustrate the expected custom elements model that will be 
+implemented by the target code state.
+
+Background
+
+In this branch, MapExtentLayer and MapTileLayer have been refactored to become member layers
+in the MapLayer LayerGroup, although MapExtentLayer has some differences because it
+implements the <map-extent> element which has the checked attribute controlling
+how it is added or removed from the map, hence the map-extent._handleChange event handling
+method which is tied to the checked attribute, and associated to the <input type="checkbox"> 
+representation of the <map-extent> in the layer control (as a "sub-layer").  
+The MapExtentLayer is added/removed to/from the map-layer._layer (instance of 
+MapLayer) LayerGroup by the map-extent._handleChange method.  This makes sense 
+because while the map-layer._layer may be on the map (added to the Leaflet map), 
+the map-extent._extentLayer may not be, due to the map-extent.checked (absent/false value) 
+attribute.  In other words, the _extentLayer itself will or will not be a member of
+the map-layer._layer._layers (LayerGroup) collection, according to the associated 
+<map-layer>.checked value.
+
+The MapTileLayer instance(s) associated to sequences of <map-tile> elements in the
+content of the MapLayer is / are always members of the <map-layer>._layer._layers
+(LayerGroup instance), because the <map-tile> element isn't controlled by a checked
+attribute, and individual <map-tile>s are rendered on demand according to their
+row,column and zoom, due to being rendered "on demand" by the MapTileLayer (GridLayer) 
+internal tile management.  The MapTileLayer in which a <map-tile> is a member is 
+always included in the <map-layer>._layer._layers (MapLayer LayerGroup instance),
+and therefore is on the map or not on the map according to the <map-layer>.checked value.
+
+The current objective is to refactor FeatureLayer as MapFeatureLayer, map-feature.js 
+and MapFeature.js to work in all the contexts that FeatureLayer currently works, 
+which are about four in number, discussed below (in preparation, FeatureLayer.js has been copied and name-only refactored to the MapFeatureLayer.js file, including the aforementioned 
+new header comment).
+
+The four contexts in which MapFeature currently works include:
+
+ 1. "static" inline <map-feature> child elements of the light DOM <map-layer> node,
+    which are potentially siblings of <map-tile> and <map-extent> elements, (among others
+    but those are the elements that are renderable as Leaflet layers or parts of 
+    Leaflet layers, OR "static" remote <map-feature> children fetched from the <map-layer src>
+    and re-parented to the shadow root of <map-layer>.
+ 2. <map-feature> elements returned by <map-link rel="query"> elements that are part
+    of <map-extent> contents. The popups created by these features are tricky and 
+    have popup navigation button controls in the popup content, created by code 
+    in this repository.
+ 3. <map-feature> elements that are found in fetched text/mapml documents that are
+    fetched, rendered and removed as part of the map processing handled by 
+    <map-extent> child <map-link rel="features"> and TemplatedFeaturesOrTilesLayer.
+    Typically such features have interactive behaviour (popups) and navigation buttons.
+ 4. <map-feature> elements that are fetched and rendered as part of the processing
+    of <map-extent> child <map-link rel="tile" type="text/mapml">. These features
+    are not interactive; they are rendered according to provided styles,
+    but they don't have popups, relying instead on query links per 2, above.
+
+In addition, FeatureLayer relies on src/features/featureRenderer.js, geometry.js and
+path.js. I would like to simplify or eliminate these classes, but I don't understand them.
+I will need to discuss any changes before doing them in order to understand the
+impact of such changes.
+
+I want to apply a similar architecture to <map-feature> / MapFeatureLayer.js as 
+I have done to <map-tile> / MapTileLayer. and <map-extent> / MapExtentLayer.js, 
+but this step is more complex and has greater ramifications on testing especially, 
+because the rendering of features is done via the custom featureRenderer.js, path.js
+and geometry.js (I believe), whereas tile rendering is well managed by the MapTileLayer
+GridLayer subclass.
+
+Background about the numbered contexts above:
+
+1. "static" inline features. The code in the _initialize processFeatures function will be the first
+code to be deleted.  That code creates a single MapLayer._mapmlvectors member variable
+but that is simplistic: each *set* of adjacent <map-feature> elements in the 
+inline or remote content should create a single MapFeatureLayer wherein the first
+such <map-feature> creates the MapFeatureLayer (a Leaflet FeatureGroup), and 
+subsequent *adjacent* <map-feature> elements are added to that MapFeatureLayer 
+FeatureGroup by the <map-feature> connectedCallback chain, much as is already done
+by the <map-tile> connectedCallback (in which case, the collection layer is a 
+MapTileLayer GridLayer).  On the other hand, <map-feature> elements which add themselves
+to the map-layer._layer LayerGroup aren't removed unless and until the <map-feature>
+element itself is removed - these <map-feature> elements are what is currently 
+handled by MapLayer._initialize.processFeatures, so this is the first bit related
+to MapFeatureLayer to get refactored.
+
+The <map-layer> implementation in layer.js also defines mutation observers which
+watch the light DOM children or shadow root children (depending on presence / absence
+of <map-layer src> attribute).  One of the tasks of mutation observer is to obtain
+invoke _addFeatureToMapMLVectors for <map-feature> additions.   While it may be a
+good architecture to have _addFeatureToMapMLVectors invoked, its behaviour should
+be limited to recalculating or ensuring that the <map-layer>.extent is recalculated
+the next time it is requested, at least.  I think that it's desirable that each
+<map-feature> detect any previous sibling <map-feature> elements (in a sequence
+of such features) and use / add itself that element's _layer MapFeatureLayer (FeatureGroup)
+instance, in a similar (not identical) manner to how <map-tile> adds itself to its previous
+sibling's MapTileLayer GridLayer.  This behaviour is implemented by <map-feature>
+when being added to the shadow root of a <map-link> element, with the 
+TemplatedFeaturesOrTilesLayer being the analog of MapLayer in this case.
+
