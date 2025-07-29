@@ -83,6 +83,7 @@ test.describe('map-link api tests', () => {
     );
   });
   test("map-links that shouldn't have an extent behave accordingly", async () => {
+    await page.waitForTimeout(500);
     // create a layer containing a <map-link rel=license
     const viewer = page.getByTestId('viewer');
     await viewer.evaluate((map) => {

@@ -3,6 +3,7 @@ import { setOptions, DomUtil, bounds, point } from 'leaflet';
 import { Util } from './mapml/utils/Util.js';
 import { MapLayer, mapLayer } from './mapml/layers/MapLayer.js';
 import { MapTileLayer } from './mapml/layers/MapTileLayer.js';
+import { MapFeatureLayer } from './mapml/layers/MapFeatureLayer.js';
 import { createLayerControlHTML } from './mapml/elementSupport/layers/createLayerControlForLayer.js';
 
 export class BaseLayerElement extends HTMLElement {
@@ -176,6 +177,8 @@ export class BaseLayerElement extends HTMLElement {
     // the initial value of this._opacity should be set as opacity attribute value, if exists, or the default value 1.0
     this._opacity = this.opacity || 1.0;
     this.attachShadow({ mode: 'open' });
+    // by keeping track of console.log, we can avoid overwhelming the console
+    this.loggedMessages = new Set();
   }
   disconnectedCallback() {
     // if the map-layer node is removed from the dom, the layer should be
@@ -458,29 +461,20 @@ export class BaseLayerElement extends HTMLElement {
           Array.from(mapml.querySelectorAll('map-extent[units]'))
         ) || projection;
     } else {
-      console.log(
-        `A projection was not assigned to the '${mapml.label}' Layer. Please specify a projection for that layer using a map-meta element. See more here - https://maps4html.org/web-map-doc/docs/elements/meta/`
-      );
+      const message = `A projection was not assigned to the '${mapml.label}' Layer. \nPlease specify a projection for that layer using a map-meta element. \nSee more here - https://maps4html.org/web-map-doc/docs/elements/meta/`;
+      if (!this.loggedMessages.has(message)) {
+        console.log(message);
+        this.loggedMessages.add(message);
+      }
     }
     return projection;
   }
   /*
-   * Runs the effects of the mutation observer, which is to add map-features' and
-   * map-extents' leaflet layer implementations to the appropriate container in
-   * the map-layer._layer: either as a sub-layer directly in the LayerGroup
-   * (MapLayer._layer) or as a sub-layer in the MapLayer._mapmlvectors
-   * FeatureGroup
+   * Runs the effects of the mutation observer for child elements of map-layer.
+   * This method primarily handles extent recalculation and other
+   * child element processing.
    */
   _runMutationObserver(elementsGroup) {
-    const _addFeatureToMapMLVectors = (feature) => {
-      this.whenReady().then(() => {
-        // the layer extent must change as features are added, this.extent
-        // property only recalculates the bounds and zoomBounds when .bounds
-        // doesn't exist, so delete it to ensure that the extent is reset
-        delete this._layer.bounds;
-        feature.addFeature(this._layer._mapmlvectors);
-      });
-    };
     const _addStylesheetLink = (mapLink) => {
       this.whenReady().then(() => {
         this._layer.renderStyles(mapLink);
@@ -493,8 +487,6 @@ export class BaseLayerElement extends HTMLElement {
     };
     const _addExtentElement = (mapExtent) => {
       this.whenReady().then(() => {
-        // see comment regarding features / extent. Same thing applies to
-        // map-extent
         delete this._layer.bounds;
         this._validateDisabled();
       });
@@ -512,9 +504,6 @@ export class BaseLayerElement extends HTMLElement {
     for (let i = 0; i < elementsGroup.length; ++i) {
       let element = elementsGroup[i];
       switch (element.nodeName) {
-        case 'MAP-FEATURE':
-          _addFeatureToMapMLVectors(element);
-          break;
         case 'MAP-LINK':
           if (element.link && !element.link.isConnected)
             _addStylesheetLink(element);
@@ -596,17 +585,15 @@ export class BaseLayerElement extends HTMLElement {
       mapprojection: proj,
       opacity: window.getComputedStyle(this).opacity
     });
-    // make sure the Leaflet layer has a reference to the map
-    this._layer._map = this.parentNode._map;
 
     if (this.checked) {
-      this._layer.addTo(this._layer._map);
+      this._layer.addTo(this.parentNode._map);
+      // toggle the this.disabled attribute depending on whether the layer
+      // is: same prj as map, within view/zoom of map
     }
+    this.parentNode._map.on('moveend layeradd', this._validateDisabled, this);
 
     this._layer.on('add remove', this._validateDisabled, this);
-    // toggle the this.disabled attribute depending on whether the layer
-    // is: same prj as map, within view/zoom of map
-    this._layer._map.on('moveend layeradd', this._validateDisabled, this);
 
     if (this.parentNode._layerControl)
       this._layerControl = this.parentNode._layerControl;
@@ -640,6 +627,19 @@ export class BaseLayerElement extends HTMLElement {
 
       this._layer.eachLayer((layer) => {
         if (layer instanceof MapTileLayer) {
+          totalCount++;
+          if (!layer.isVisible()) disabledCount++;
+        }
+      });
+
+      return { totalCount, disabledCount };
+    };
+    const countFeatureLayers = () => {
+      let totalCount = 0;
+      let disabledCount = 0;
+
+      this._layer.eachLayer((layer) => {
+        if (layer instanceof MapFeatureLayer) {
           totalCount++;
           if (!layer.isVisible()) disabledCount++;
         }
@@ -687,8 +687,9 @@ export class BaseLayerElement extends HTMLElement {
                   }
                 } else if (type === '_mapmlvectors') {
                   // inline / static features
-                  totalExtentCount++;
-                  if (!layer[type].isVisible()) disabledExtentCount++;
+                  const featureLayerCounts = countFeatureLayers();
+                  totalExtentCount += featureLayerCounts.totalCount;
+                  disabledExtentCount += featureLayerCounts.disabledCount;
                 } else {
                   // inline tiles
                   const tileLayerCounts = countTileLayers();

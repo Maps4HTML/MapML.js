@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>renderer.html</title>
+    <meta charset="UTF-8">
+    <script type="module" src="mapml.js"></script>
+  </head>
+  <body>
+    <mapml-viewer data-testid="map" style="width: 500px;height: 500px;" projection="CBMTILE" zoom="0" lat="45.5052040" lon="-75.2202344" controls>
+      <map-layer data-testid="test-layer" checked >
+       <map-extent data-test-id="test-extent" units="CBMTILE" checked="checked" >
+          <map-meta name="extent" content="top-left-easting=-6093972, top-left-northing=5350661, bottom-right-easting=5150842, bottom-right-northing=-5894153"></map-meta>
+          <map-input name="z" type="zoom" min="0" max="18" value="0" ></map-input>
+          <map-input name="xmin" type="location" units="gcrs" axis="longitude" position="top-left" ></map-input>
+          <map-input name="ymin" type="location" units="gcrs" axis="latitude" position="bottom-right" ></map-input>
+          <map-input name="xmax" type="location" units="gcrs" axis="longitude" position="bottom-right"  ></map-input>
+          <map-input name="ymax" type="location" units="gcrs" axis="latitude" position="top-left"  ></map-input>
+          <map-link data-testid="test-link" rel="features" tref="data/us_pop_density.mapml?{xmin}{ymin}{xmax}{ymax}{z}" ></map-link>
+        </map-extent>
+      </map-layer>
+    </mapml-viewer>
+  </body>
+</html>

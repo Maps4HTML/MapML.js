@@ -45,6 +45,21 @@ test.describe('Playwright featureLayer (Static Features) Layer Tests', () => {
 
     test('Loading in retrieved features', async () => {
       await page.waitForTimeout(350);
+      // Wait for the layer to be ready and SVG to be created
+      await page.waitForFunction(
+        () => {
+          const layer = document.querySelector('map-layer#US');
+          return (
+            layer &&
+            layer._layer &&
+            layer._layer._container &&
+            layer._layer._container.querySelector('svg') &&
+            layer._layer._container.querySelector('svg').firstChild
+          );
+        },
+        { timeout: 5000 }
+      );
+
       const features = await page.$eval(
         'map-layer#US',
         (layer) =>

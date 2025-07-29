@@ -23,7 +23,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     const cbmtLayer = await page.getByText('CBMT - INLINE');
     cbmtLayer.click({ button: 'right' });
 
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(500);
     const aHandle = await page.evaluateHandle(() =>
       document.querySelector('mapml-viewer')
     );

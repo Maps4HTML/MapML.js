@@ -6,7 +6,7 @@ import {
   Bounds,
   Util as LeafletUtil
 } from 'leaflet';
-import { featureLayer } from '../layers/FeatureLayer.js';
+import { MapFeatureLayer } from '../layers/MapFeatureLayer.js';
 import { featureRenderer } from '../features/featureRenderer.js';
 
 export var QueryHandler = Handler.extend({
@@ -324,7 +324,7 @@ export var QueryHandler = Handler.extend({
 
     function displayFeaturesPopup(features, loc) {
       if (features.length === 0) return;
-      let f = featureLayer(features, {
+      let f = new MapFeatureLayer(features, {
         // pass the vector layer a renderer of its own, otherwise leaflet
         // puts everything into the overlayPane
         renderer: featureRenderer(),

@@ -343,6 +343,7 @@ export class HTMLLinkElement extends HTMLElement {
         ) {
           this.parentExtent._extentLayer.removeLayer(this._templatedLayer);
           delete this._templatedLayer;
+          this.shadowRoot.innerHTML = '';
           this.getLayerEl()._validateDisabled();
         }
         break;
@@ -559,8 +560,7 @@ export class HTMLLinkElement extends HTMLElement {
         zIndex: this.zIndex,
         pane: this.parentExtent._extentLayer.getContainer(),
         linkEl: this,
-        projection: this.mapEl._map.options.projection,
-        renderer: this.mapEl._map.options.renderer
+        projection: this.mapEl._map.options.projection
       }).addTo(this.parentExtent._extentLayer);
     } else if (this.rel === 'query') {
       if (!this.shadowRoot) {

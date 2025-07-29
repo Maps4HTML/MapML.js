@@ -7,7 +7,6 @@ import {
 } from 'leaflet';
 import { Util } from '../utils/Util.js';
 import { mapTileLayer } from './MapTileLayer.js';
-import { featureLayer } from './FeatureLayer.js';
 import { renderStyles } from '../elementSupport/layers/renderStyles.js';
 
 /**
@@ -208,7 +207,17 @@ export var TemplatedFeaturesOrTilesLayer = LayerGroup.extend({
             let parser = new DOMParser();
             mapml = parser.parseFromString(text, 'application/xml');
             let frag = document.createDocumentFragment();
-            let elements = mapml.querySelectorAll('map-head > *, map-body > *');
+            const legalContentQuery = `
+                map-head > map-link,
+                map-body > map-link,
+                map-head > map-meta,
+                map-body > map-meta,
+                map-head > map-style,
+                map-body > map-style,
+                map-tile,
+                map-feature
+            `.trim(); // excludes map-extent
+            let elements = mapml.querySelectorAll(legalContentQuery);
             for (let i = 0; i < elements.length; i++) {
               frag.appendChild(elements[i]);
             }

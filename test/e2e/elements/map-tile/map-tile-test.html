@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>map-tile-test.html</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module" src="mapml.js"></script>
+  <style>
+    map-layer {
+        display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <mapml-viewer data-testid="viewer" width="500" height="500" projection="CBMTILE" zoom="2" lat="45.5052040" lon="-75.2202344" controls>
+
+    <map-layer label="Static Tile Test Layer" checked>
+      <map-meta name="zoom" content="min=0,max=10"></map-meta>
+      <map-meta name="projection" content="CBMTILE"></map-meta>
+      <map-link rel="license"
+        href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285"
+        title="Canada Base Map © Natural Resources Canada"></map-link>
+      
+      <!-- Static tiles for testing -->
+      <map-tile zoom="0" row="3" col="3" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="0" row="4" col="3" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="1" col="5" row="6" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="1" col="5" row="7" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="1" col="6" row="6" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="1" col="6" row="7" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="9" row="10" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="9" row="11" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="9" row="12" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="10" row="10" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="10" row="11" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="10" row="12" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="11" row="10" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="11" row="11" src="tiles/green-tile.png"></map-tile>
+      <map-tile zoom="2" col="11" row="12" src="tiles/green-tile.png"></map-tile>
+      
+    </map-layer>
+
+  </mapml-viewer>
+
+</body>
+
+</html>

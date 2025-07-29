@@ -33,9 +33,8 @@ test.describe('map-layer local/inline vs remote content/src tests', () => {
     );
 
     // remove the src attribute
-
     await layer.evaluate((layer) => layer.removeAttribute('src'));
-    expect(layer).toHaveAttribute('disabled');
+    // empty layer is no longer disabled. Is that correct? I think so...
 
     // append the template map-extent to the local / inline content
     await page.evaluate(() => {

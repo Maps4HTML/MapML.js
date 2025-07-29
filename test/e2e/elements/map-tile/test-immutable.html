@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Map Tile Immutable Attributes</title>
+    <script type="module" src="mapml.js"></script>
+</head>
+<body>
+    <mapml-viewer controls projection="OSMTILE" zoom="2" lat="0" lon="0" width="500" height="500">
+        <map-layer label="Test Layer" checked>
+          <map-meta name="projection" content="OSMTILE"></map-meta>
+            <map-tile id="test-tile" row="1" col="1" zoom="2" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="></map-tile>
+        </map-layer>
+    </mapml-viewer>
+
+</body>
+</html>

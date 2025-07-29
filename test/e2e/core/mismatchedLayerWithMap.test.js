@@ -29,9 +29,23 @@ test.describe('Playwright Mismatched Layers Test', () => {
             </head>
             <body>
                 <map is="web-map" style="width:500px;height:500px" projection="CBMTILE" zoom="2" lat="45" lon="-90" controls >
-                    <map-layer label='CBMT' src='cbmtile-cbmt.mapml' checked></map-layer>
-                    <map-layer id="checkMe" label="OpenStreetMap" src="osm.mapml" checked></map-layer>
-                </map>     
+                    <map-layer label='CBMT' checked>
+                      <map-extent units="CBMTILE" checked="checked" hidden="hidden">
+                        <map-input name="z" type="zoom" value="17" min="0" max="17" ></map-input>
+                        <map-input data-testid="test-input" name="y" type="location" units="tilematrix" axis="row" min="29750" max="34475" ></map-input>
+                        <map-input name="x" type="location" units="tilematrix" axis="column" min="26484" max="32463" ></map-input>
+                        <map-link data-testid="test-link" rel="tile" tref="tiles/cbmt/{z}/c{x}_r{y}.png" ></map-link>
+                      </map-extent>
+                    </map-layer>
+                    <map-layer id="checkMe" label="OpenStreetMap" checked>
+                      <map-extent units="OSMTILE"  checked="checked" hidden="hidden">
+                        <map-input name="z" type="zoom"  value="18" min="0" max="18"></map-input>
+                        <map-input name="x" type="location" units="tilematrix" axis="column" min="0"  max="262144" ></map-input>
+                        <map-input name="y" type="location" units="tilematrix" axis="row" min="0"  max="262144" ></map-input>
+                        <map-link rel="tile" tref="tiles/osmtile/{z}/{x}/{y}.png" ></map-link>
+                      </map-extent>
+                    </map-layer>
+                </map>
             </body>
             </html>
         `);
@@ -65,9 +79,23 @@ test.describe('Playwright Mismatched Layers Test', () => {
             </head>
             <body>
                 <mapml-viewer style="width:500px;height:500px" projection="OSMTILE" zoom="2" lat="45" lon="-90" controls >
-                    <map-layer id="checkMe" label='CBMT' src='cbmtile-cbmt.mapml' checked></map-layer>
-                    <map-layer label="OpenStreetMap" src="osm.mapml" checked></map-layer>
-                </mapml-viewer>     
+                    <map-layer id="checkMe" label='CBMT' checked>
+                      <map-extent units="CBMTILE" checked="checked" hidden="hidden">
+                        <map-input name="z" type="zoom" value="17" min="0" max="17" ></map-input>
+                        <map-input data-testid="test-input" name="y" type="location" units="tilematrix" axis="row" min="29750" max="34475" ></map-input>
+                        <map-input name="x" type="location" units="tilematrix" axis="column" min="26484" max="32463" ></map-input>
+                        <map-link data-testid="test-link" rel="tile" tref="tiles/cbmt/{z}/c{x}_r{y}.png" ></map-link>
+                      </map-extent>
+                    </map-layer>
+                    <map-layer id="checkMe" label="OpenStreetMap" checked>
+                      <map-extent units="OSMTILE"  checked="checked" hidden="hidden">
+                        <map-input name="z" type="zoom"  value="18" min="0" max="18"></map-input>
+                        <map-input name="x" type="location" units="tilematrix" axis="column" min="0"  max="262144" ></map-input>
+                        <map-input name="y" type="location" units="tilematrix" axis="row" min="0"  max="262144" ></map-input>
+                        <map-link rel="tile" tref="tiles/osmtile/{z}/{x}/{y}.png" ></map-link>
+                      </map-extent>
+                    </map-layer>
+                </mapml-viewer>
             </body>
             </html>
         `);

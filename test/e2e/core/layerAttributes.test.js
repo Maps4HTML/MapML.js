@@ -85,17 +85,12 @@ test.describe('Playwright Checked Attribute Tests', () => {
 
   test.describe('Disabled attributes test', () => {
     test('Setting disabled, attribute reset on update/move', async () => {
-      await page.$eval('body > mapml-viewer > map-layer', (layer) =>
-        layer.setAttribute('disabled', '')
-      );
-
-      await page.$eval('body > mapml-viewer', (map) => map.zoomTo(47, -92, 0));
-
-      let disabled = await page.$eval(
-        'body > mapml-viewer > map-layer',
-        (layer) => layer.hasAttribute('disabled', '')
-      );
-      expect(disabled).toEqual(false);
+      const layer = page.getByTestId('testlayer');
+      await layer.evaluate((l) => l.setAttribute('disabled', ''));
+      const viewer = page.getByTestId('testviewer');
+      await viewer.evaluate((map) => map.zoomTo(47, -92, 0));
+      await page.waitForTimeout(500);
+      await expect(layer).not.toHaveAttribute('disabled');
     });
   });
 

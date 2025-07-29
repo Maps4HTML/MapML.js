@@ -3,6 +3,7 @@ import { bounds as Lbounds, point as Lpoint } from 'leaflet';
 import { Util } from './mapml/utils/Util.js';
 import { mapExtentLayer } from './mapml/layers/MapExtentLayer.js';
 import { createLayerControlExtentHTML } from './mapml/elementSupport/extents/createLayerControlForExtent.js';
+import { calculatePosition } from './mapml/elementSupport/layers/calculatePosition.js';
 
 /* global M */
 export class HTMLExtentElement extends HTMLElement {
@@ -76,6 +77,9 @@ export class HTMLExtentElement extends HTMLElement {
     return this._extentLayer.bounds
       ? getExtent(this)
       : getCalculatedExtent(this);
+  }
+  get position() {
+    return calculatePosition(this);
   }
 
   getOuterHTML() {
@@ -266,11 +270,7 @@ export class HTMLExtentElement extends HTMLElement {
     this._extentLayer = mapExtentLayer({
       opacity: this.opacity,
       crs: M[this.units],
-      extentZIndex: Array.from(
-        this.parentLayer.src
-          ? this.parentLayer.shadowRoot.querySelectorAll(':host > map-extent')
-          : this.parentLayer.querySelectorAll(':scope > map-extent')
-      ).indexOf(this),
+      zIndex: this.position,
       extentEl: this
     });
     // this._layerControlHTML is the fieldset for the extent in the LayerControl
@@ -434,13 +434,7 @@ export class HTMLExtentElement extends HTMLElement {
     if (this.checked && !this.disabled && this.parentLayer._layer) {
       // can be added to MapLayer LayerGroup no matter map-layer is checked or not
       this._extentLayer.addTo(this.parentLayer._layer);
-      this._extentLayer.setZIndex(
-        Array.from(
-          this.parentLayer.src
-            ? this.parentLayer.shadowRoot.querySelectorAll(':host > map-extent')
-            : this.parentLayer.querySelectorAll(':scope > map-extent')
-        ).indexOf(this)
-      );
+      this._extentLayer.setZIndex(this.position);
     } else {
       this.parentLayer._layer?.removeLayer(this._extentLayer);
     }

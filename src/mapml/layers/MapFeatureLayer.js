@@ -35,70 +35,117 @@ export var MapFeatureLayer = FeatureGroup.extend({
     /*
         mapml:
         1. for query: an array of map-feature elements that it fetches
-        2. for static templated feature: null
-        3. for non-templated feature: map-layer (with no src) or mapml file (with src)
+        2. for static: null (features manage themselves via connectedCallback)
+        3. for templated: null (created by TemplatedFeaturesOrTilesLayer)
+        4. for tiled: null (vector tiles)
       */
     FeatureGroup.prototype.initialize.call(this, null, options);
-    // this.options.static is false ONLY for tiled vector features
-    // this._staticFeature is ONLY true when not used by TemplatedFeaturesLayer
-    // this.options.query true when created by QueryHandler.js
 
-    if (!this.options.tiles) {
-      // not a tiled vector layer
-      this._container = null;
-      if (this.options.query) {
-        this._container = DomUtil.create(
-          'div',
-          'leaflet-layer',
-          this.options.pane
-        );
-        DomUtil.addClass(
-          this._container,
-          'leaflet-pane mapml-vector-container'
-        );
-      } else if (this.options._leafletLayer) {
-        this._container = DomUtil.create(
-          'div',
-          'leaflet-layer',
-          this.options.pane
-        );
-        DomUtil.addClass(
-          this._container,
-          'leaflet-pane mapml-vector-container'
-        );
-      } else {
-        // if the current featureLayer is a sublayer of templatedFeatureLayer,
-        // append <svg> directly to the templated feature container (passed in as options.pane)
-        this._container = this.options.pane;
-        DomUtil.addClass(
-          this._container,
-          'leaflet-pane mapml-vector-container'
-        );
-      }
-      this.options.renderer.options.pane = this._container;
+    // Determine context once
+    this._context = this._determineContext(options);
+
+    // Set up based on context
+    this._setupContainer();
+    this._setupFeatures(mapml);
+  },
+
+  /**
+   * Determines the context for this MapFeatureLayer based on options
+   * @param {Object} options - Layer options
+   * @returns {string} - 'query', 'tiled', 'static', or 'templated'
+   */
+  _determineContext: function (options) {
+    if (options.query) return 'query';
+    if (options.tiles) return 'tiled';
+    if (options._leafletLayer) return 'static';
+    return 'templated';
+  },
+
+  /**
+   * Sets up the container based on the determined context
+   */
+  _setupContainer: function () {
+    if (this._context === 'tiled') {
+      // Tiled vector features don't need container setup
+      return;
     }
-    if (this.options.query) {
-      this._queryFeatures = mapml.features ? mapml.features : mapml;
-    } else if (!mapml) {
-      // use this.options._leafletLayer to distinguish the featureLayer constructed for initialization and for templated features / tiles
-      if (this.options._leafletLayer) {
-        // this._staticFeature should be set to true to make sure the _getEvents works properly
+
+    if (this._context === 'query' || this._context === 'static') {
+      // Query and static contexts create their own container
+      this._container = DomUtil.create(
+        'div',
+        'leaflet-layer',
+        this.options.pane
+      );
+      DomUtil.addClass(this._container, 'leaflet-pane mapml-vector-container');
+    } else {
+      // Templated context uses provided container directly
+      this._container = this.options.pane;
+      DomUtil.addClass(this._container, 'leaflet-pane mapml-vector-container');
+    }
+    if (this.options.zIndex) {
+      this._container.style.zIndex = this.options.zIndex;
+    }
+
+    this.options.renderer.options.pane = this._container;
+  },
+
+  /**
+   * Sets up feature management based on the determined context
+   * @param {*} mapml - The mapml data
+   */
+  _setupFeatures: function (mapml) {
+    switch (this._context) {
+      case 'query':
+        this._queryFeatures = mapml.features ? mapml.features : mapml;
+        break;
+      case 'static':
         this._features = {};
-        this._staticFeature = true;
-      }
+        break;
+      case 'templated':
+        // Features are added dynamically by TemplatedFeaturesOrTilesLayer
+        break;
+      case 'tiled':
+        // Tiled features are managed differently
+        break;
     }
   },
 
+  /**
+   * Public getter for external code that needs to check if this is a static feature layer
+   * @returns {boolean}
+   */
+  get _staticFeature() {
+    return this._context === 'static';
+  },
+  setZIndex: function (zIndex) {
+    this.options.zIndex = zIndex;
+    this._updateZIndex();
+
+    return this;
+  },
+  _updateZIndex: function () {
+    if (
+      this._container &&
+      this.options.zIndex !== undefined &&
+      this.options.zIndex !== null
+    ) {
+      this._container.style.zIndex = this.options.zIndex;
+    }
+  },
   isVisible: function () {
     let map = this.options.mapEl._map;
     // if query, isVisible is unconditionally true
     if (this.options.query) return true;
     // if the featureLayer is for static features, i.e. it is the mapmlvector layer,
     // if it is empty, isVisible = false
-    // this._staticFeature: flag to determine if the featureLayer is used by static features only
+    // For static context: check if the featureLayer is empty
     // this._features: check if the current static featureLayer is empty
     // (Object.keys(this._features).length === 0 => this._features is an empty object)
-    else if (this._staticFeature && Object.keys(this._features).length === 0) {
+    else if (
+      this._context === 'static' &&
+      Object.keys(this._features).length === 0
+    ) {
       return false;
     } else {
       let mapZoom = map.getZoom(),
@@ -125,7 +172,7 @@ export var MapFeatureLayer = FeatureGroup.extend({
   onAdd: function (map) {
     this._map = map;
     FeatureGroup.prototype.onAdd.call(this, map);
-    if (this._staticFeature) {
+    if (this._context === 'static') {
       this._validateRendering();
     }
     if (this._queryFeatures) {
@@ -152,7 +199,7 @@ export var MapFeatureLayer = FeatureGroup.extend({
         this.zoomBounds = layerToAdd.zoomBounds;
       }
     }
-    if (this._staticFeature) {
+    if (this._context === 'static') {
       // TODO: validate the use the feature.zoom which is new (was in createGeometry)
       let featureZoom = layerToAdd.options.mapmlFeature.zoom;
       if (featureZoom in this._features) {
@@ -172,6 +219,9 @@ export var MapFeatureLayer = FeatureGroup.extend({
     if (this._queryFeatures) {
       map.off('featurepagination', this.showPaginationFeature, this);
       delete this._queryFeatures;
+      DomUtil.remove(this._container);
+    }
+    if (this._context === 'static') {
       DomUtil.remove(this._container);
     }
     FeatureGroup.prototype.onRemove.call(this, map);
@@ -259,7 +309,7 @@ export var MapFeatureLayer = FeatureGroup.extend({
       }
   },
   getEvents: function () {
-    if (this._staticFeature) {
+    if (this._context === 'static') {
       return {
         moveend: this._handleMoveEnd,
         zoomend: this._handleZoomEnd
@@ -322,7 +372,9 @@ export var MapFeatureLayer = FeatureGroup.extend({
   _validateRendering: function () {
     // since features are removed and re-added by zoom level, need to clean the feature index before re-adding
     if (this._map) this._map.featureIndex.cleanIndex();
-    let map = this._map || this.options._leafletLayer._map;
+    let map = this._map || this.options._leafletLayer?._map;
+    // Guard against case where neither this._map nor _leafletLayer._map is available yet
+    if (!map) return;
     // it's important that we not try to validate rendering if the FeatureLayer
     // isn't actually  being rendered (i.e. on the map.  the _map property can't
     // be used because once it's assigned  (by onAdd, above) it's never unassigned.
@@ -430,7 +482,7 @@ export var MapFeatureLayer = FeatureGroup.extend({
       fallbackCS;
     // options.layerBounds and options.zoomBounds are set by TemplatedTileLayer._createFeatures
     // each geometry needs bounds so that it can be a good community member of this._layers
-    if (this._staticFeature || this.options.query) {
+    if (this._context === 'static' || this.options.query) {
       options.layerBounds = Util.extentToBounds(feature.extent, 'PCRS');
       options.zoomBounds = feature.extent.zoom;
     }

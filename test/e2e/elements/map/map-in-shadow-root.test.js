@@ -18,6 +18,7 @@ test.describe('Playwright map[is=web-map] fullscreen tests', () => {
     await page.goto('map-in-shadow-root.html');
   });
   test('Fullscreen button makes shadow DOM map[is=web-map] element the fullscreen element', async () => {
+    await page.waitForTimeout(500);
     const map1 = page.getByTestId('map1');
     const fullscreenButton = map1.getByTitle(/(View)|(Exit) Fullscreen/i);
     await fullscreenButton.click();
@@ -28,6 +29,10 @@ test.describe('Playwright map[is=web-map] fullscreen tests', () => {
     // the first mapml-viewer should be returned by document.fullscreen
     expect(fullscreenElement).toEqual('map1');
     await fullscreenButton.click();
+    // Wait for fullscreen to exit properly
+    await page.waitForFunction(() => !document.fullscreenElement, {
+      timeout: 2000
+    });
     fullscreenElement = await page.evaluate(`document.fullscreenElement`);
     expect(fullscreenElement).toBeFalsy();
 

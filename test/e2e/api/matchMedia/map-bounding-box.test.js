@@ -8,7 +8,6 @@ test.describe('matchMedia map-bounding-box tests', () => {
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
-    page = await context.newPage();
     await page.goto('map-bounding-box.html');
   });
 
@@ -29,13 +28,13 @@ test.describe('matchMedia map-bounding-box tests', () => {
 
     // the test query layer should be hidden as map-zoom is no longer less than 14
     await zoomOut.click();
-    await page.waitForTimeout(250);
+    await page.waitForTimeout(500);
     await zoomIn.click();
     await expect(layer).toHaveAttribute('hidden');
 
     // the layer should be shown as we zoom out again
     await zoomOut.click();
-    await page.waitForTimeout(250);
+    await page.waitForTimeout(500);
     await expect(layer).not.toHaveAttribute('hidden');
 
     // move the map so that the layer is out of the map's extent
@@ -43,6 +42,7 @@ test.describe('matchMedia map-bounding-box tests', () => {
       const map = document.querySelector('mapml-viewer');
       map.zoomTo(0, 0, 13);
     });
+    await page.waitForTimeout(500);
     await expect(layer).toHaveAttribute('hidden');
 
     // move the map back so that the layer is within of the map's extent
