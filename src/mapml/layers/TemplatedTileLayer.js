@@ -14,7 +14,7 @@ import {
 } from 'leaflet';
 
 import { Util } from '../utils/Util.js';
-import { featureLayer } from '../layers/FeatureLayer.js';
+import { MapFeatureLayer } from './MapFeatureLayer.js';
 import { FeatureRenderer } from '../features/featureRenderer.js';
 
 export var TemplatedTileLayer = TileLayer.extend({
@@ -264,7 +264,7 @@ export var TemplatedTileLayer = TileLayer.extend({
       xOffset = coords.x * tileSize,
       yOffset = coords.y * tileSize;
 
-    let tileFeatures = featureLayer(null, {
+    let tileFeatures = new MapFeatureLayer(null, {
       projection: this._map.options.projection,
       tiles: true,
       layerBounds: this.extentBounds,

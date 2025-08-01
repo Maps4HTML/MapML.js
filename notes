@@ -1,0 +1,83 @@
+map-tile.js has a function _createOrGetTileLayer which either constructs a new
+MapTileLayer or obtains a reference to it from a previous <map-tile>.
+
+- The map-tile.js has a property called _parentElement which refers to either 
+the map-link that is responsible for loading the tile, or the map-layer, taking 
+into account that the tile may be connected in a shadow root.  That code is probably
+duplicative of similar code in <map-feature> and should be de-duped if possible.
+
+Could a src/mapml/elementSupport/file.js be used to import common functions to
+map-tile, map-feature etc  i.e. getMapEl etc.?
+
+ANYWAY, if map-tile invokes the constructor of MapTileLayer during _createOrGetTileLayer,
+it sets the options.pane to parentElement._templatedLayer.getContainer(). If we
+want that to work for MapLayer equally, we would want to use MapLayer.getContainer(),
+I think (DONE which needs to be implemented). THEN it invokes the (LayerGroup) addLayer(layer)
+where layer is set to the constructed MapTileLayer.   If the constructor is not
+invoked (i.e. the map-tile is not the 1st in a sequence of map-tiles), the code
+obtains the reference to the MapTileLayer and invokes addMapTile(this).
+
+map-feature.js has a similar method called _createOrGetFeatureLayer that seems to be
+a new feature of map-feature probably introduced when TemplatedFeaturesOrTilesLayer
+was introduced, because again it depends on the templated layer and needs to be
+generalized to the other use cases, specifically for use with MapLayer.
+
+DONE Could "TemplatedFeaturesOrTilesLayerGroup" be renamed to reduce cognitive burden?
+- to consider: semantic overlap with TemplatedTileLayer  
+
+MapFeatureLayer and MapTileLayer are intended to work (together) as individual layers
+in a LayerGroup.  On the one hand, we have TemplatedFeaturesOrTilesLayerGroup as
+a parent layer, and on the other we have MapLayer which acts as a parent container
+but in an odd way - see StaticTileLayer and how the FeatureLayer is constructed and
+used.  
+
+There is a privileged relation between <map-feature> and (Map)FeatureLayer, as well, 
+which is determined by how the (Map)FeatureLayer is constructed, in contrast to how it
+is constructed by MapLayer, as well as how it's constructed during a query.
+
+An additional complication is that (Map)FeatureLayer uses a custom renderer, and the custom
+renderer has some behaviour that is a bit odd for a renderer, at least from an
+outside perspective.
+IN PROGRESS task -use MapLayer (a LayerGroup) in the same role as 
+TemplatedFeaturesOrTilesLayerGroup, EXCEPT that a MapLayer can have 
+<map-extent>, <map-feature> and/or <map-tile> in any order, whereas a 
+TemplatedFeaturesOrTilesLayerGroup can ONLY have <map-feature>  and/or <map-tile>
+
+- to accomplish above, <map-extent> would have to behave like <map-tile>, in that 
+it would have to add its own LayerGroup to the parent MapLayer's LayerGroup 
+(I think it must do this already - CHECK IT).
+
+Idea: should/could we rename Templated* layers to MapLink* so that they are visually
+associated to the <map-link> element?  Currently, there's no "MapLinkLayer", but
+these could all potentially be subclasses of MapLinkLayer, tbd, sharing some 
+common code, perhaps??  map-link.js itself might be that common code, but we should
+investigate if there's any behaviour implemented across those layers that could
+be consolidated.
+
+DONE rename MapMLLayer to MapLayer for consistency with the custom element name?
+
+Could we rename mapml- to map-document, and provide backwards-compatibility to the
+old name?
+
+DONE Rename ExtentLayer to MapExtentLayer 
+
+FeatureLayer is fundamental currently.  How to get rid of? We don't: we replace
+it with MapFeatureLayer.  MapFeatureLayer gets inserted into the MapLayer.layers 
+(LayerGroup) array (via LayerGroup.addLayer(l)) when the <map-feature> attaches 
+to the DOM.
+- the MapLayer currently has a ._mapmlvectors property, that should be removed,
+managed by the inherent LayerGroup-ness of MapLayer.
+- also, the MapLayer currently has ._mapmlTileContainer and ._staticTileLayer which
+should be removed and managed via the LayerGroup per features
+
+There is ImageLayer, but no MapImage element.  Is this a shortcoming? TBD
+
+
+NOTE: In order to get the staticTileLayer test working specifically the extent test
+within that, I changed the <map-layer>.extent getter so that it always runs the
+bounds calculation, not relying on pre-existing value of _layer.bounds, which was
+turning out incorrect, not sure why.  That was an optimization that was perhaps
+premature??
+
+Layer with only inline tiles never seems to be not disabled/enabled. what gives,
+add a test for that.

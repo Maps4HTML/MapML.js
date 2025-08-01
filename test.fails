@@ -1,0 +1,745 @@
+
+
+  1) api/events/map-change-event.test.js:72:7 › Map-change event are only fired when layers/extents are checked or unchecked in the layer menu  › Map-change event for sub-layers work
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Target page, context or browser has been closed
+    Call log:
+      - waiting for locator('.mapml-layer-extent').locator('.mapml-layer-item-toggle')
+      -   locator resolved to <label class="mapml-layer-item-toggle">…</label>
+      - attempting click action
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #1
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #2
+      -   waiting 20ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #3
+      -   waiting 100ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #4
+      -   waiting 100ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #5
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #6
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #7
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #8
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #9
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #10
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #11
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #12
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #13
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #14
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #15
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #16
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #17
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #18
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #19
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #20
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #21
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #22
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #23
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #24
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #25
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #26
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #27
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #28
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #29
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #30
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #31
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #32
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #33
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #34
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #35
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #36
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #37
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #38
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #39
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #40
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #41
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #42
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #43
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #44
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #45
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #46
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #47
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #48
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #49
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #50
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #51
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #52
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #53
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #54
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #55
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #56
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #57
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #58
+      -   waiting 500ms
+      -   waiting for element to be visible, enabled and stable
+      -   element is not visible
+      - retrying click action, attempt #59
+      -   waiting 500ms
+
+
+      107 |     const button = await extentControls.locator('.mapml-layer-item-toggle');
+      108 |     await button.click();
+    > 109 |     await button.click();
+          |                  ^
+      110 |
+      111 |     expect(extentClicked).toBe(2);
+      112 |
+
+        at /home/prushfor/github/MapML.js/test/e2e/api/events/map-change-event.test.js:109:18
+
+  2) api/matchMedia/map-bounding-box.test.js:22:7 › matchMedia map-bounding-box tests › matchMedia API detects changes in map-extents
+
+    Error: Timed out 5000ms waiting for expect(locator).toHaveAttribute()
+
+    Locator: locator('map-layer[label="test media query"]')
+    Expected: have attribute
+    Received: not have attribute
+    Call log:
+      - expect.toHaveAttribute with timeout 5000ms
+      - waiting for locator('map-layer[label="test media query"]')
+      -   locator resolved to <map-layer checked label="test media query">…</map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked label="test media query">…</map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked label="test media query">…</map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked label="test media query">…</map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked label="test media query">…</map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked label="test media query">…</map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked label="test media query">…</map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked label="test media query">…</map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked label="test media query">…</map-layer>
+      -   unexpected value "false"
+
+
+      35 |     await page.waitForTimeout(250);
+      36 |     await zoomIn.click();
+    > 37 |     await expect(layer).toHaveAttribute('hidden');
+         |                         ^
+      38 |
+      39 |     // the layer should be shown as we zoom out again
+      40 |     await zoomOut.click();
+
+        at /home/prushfor/github/MapML.js/test/e2e/api/matchMedia/map-bounding-box.test.js:37:25
+
+  3) core/featureIndexOverlayResults.test.js:18:7 › Feature Index Overlay results test › Feature index content is correct
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "1 Vermont"
+    Received string:    "1 New York
+    , "
+
+      32 |
+      33 |     expect(spanCount).toEqual(8);
+    > 34 |     expect(firstFeature).toContain('1 Vermont');
+         |                          ^
+      35 |     expect(moreResults).toContain('9 More results');
+      36 |   });
+      37 |
+
+        at /home/prushfor/github/MapML.js/test/e2e/core/featureIndexOverlayResults.test.js:34:26
+
+  4) core/featureIndexOverlayResults.test.js:38:7 › Feature Index Overlay results test › Feature index more results are correct
+
+    Error: page.$eval: Failed to find element matching selector "div > output.mapml-feature-index > span > span:nth-child(1)"
+
+      44 |       (span) => span.childElementCount
+      45 |     );
+    > 46 |     const firstFeature = await page.$eval(
+         |                                     ^
+      47 |       'div > output.mapml-feature-index > span > span:nth-child(1)',
+      48 |       (span) => span.innerText
+      49 |     );
+
+        at /home/prushfor/github/MapML.js/test/e2e/core/featureIndexOverlayResults.test.js:46:37
+
+  5) core/featureIndexOverlayResults.test.js:60:7 › Feature Index Overlay results test › Feature index previous results are correct
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    Expected: 8
+    Received: 0
+
+      65 |     );
+      66 |
+    > 67 |     expect(spanCount).toEqual(8);
+         |                       ^
+      68 |   });
+      69 |
+      70 |   test('Feature index content is correct on moveend', async () => {
+
+        at /home/prushfor/github/MapML.js/test/e2e/core/featureIndexOverlayResults.test.js:67:23
+
+  6) core/featureIndexOverlayResults.test.js:70:7 › Feature Index Overlay results test › Feature index content is correct on moveend
+
+    Error: page.$eval: Failed to find element matching selector "div > output.mapml-feature-index > span > span:nth-child(1)"
+
+      75 |       (span) => span.childElementCount
+      76 |     );
+    > 77 |     const firstFeature = await page.$eval(
+         |                                     ^
+      78 |       'div > output.mapml-feature-index > span > span:nth-child(1)',
+      79 |       (span) => span.innerText
+      80 |     );
+
+        at /home/prushfor/github/MapML.js/test/e2e/core/featureIndexOverlayResults.test.js:77:37
+
+  7) core/featureIndexOverlayResults.test.js:86:7 › Feature Index Overlay results test › Feature index message for "No features found", reticle still visible
+
+    Error: page.$eval: Failed to find element matching selector ".mapml-feature-index-content > span"
+
+       96 |       (div) => !div.hasAttribute('hidden')
+       97 |     );
+    >  98 |     const message = await page.$eval(
+          |                                ^
+       99 |       '.mapml-feature-index-content > span',
+      100 |       (message) => message.textContent
+      101 |     );
+
+        at /home/prushfor/github/MapML.js/test/e2e/core/featureIndexOverlayResults.test.js:98:32
+
+  8) core/featureNavigation.test.js:19:9 › Playwright Keyboard Navigation + Query Layer Tests › Arrow Key Navigable Tests › Tab focuses inline features
+
+    Error: page.evaluateHandle: TypeError: Cannot read properties of null (reading 'getAttribute')
+
+        at eval (eval at evaluate (:234:30), <anonymous>:1:14)
+        at UtilityScript.evaluate (<anonymous>:236:17)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (/home/prushfor/github/MapML.js/eval at evaluate (:234:30), <anonymous>:1:14)
+        at UtilityScript.evaluate (/home/prushfor/github/MapML.js/<anonymous>:236:17)
+        at UtilityScript.<anonymous> (/home/prushfor/github/MapML.js/<anonymous>:1:44)
+        at /home/prushfor/github/MapML.js/test/e2e/core/featureNavigation.test.js:37:20
+
+  9) core/popupTabNavigation.test.js:101:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Shift + Tab to current feature while popup open
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.evaluate: Target page, context or browser has been closed
+    Call log:
+      - waiting for getByTestId('viewer').getByTestId('big-square')
+
+
+      106 |       const viewer = page.getByTestId('viewer');
+      107 |       const bigSquare = viewer.getByTestId('big-square');
+    > 108 |       const bigSquarePathData = await bigSquare.evaluate((f) => {
+          |                                                 ^
+      109 |         return f._groupEl.firstElementChild.getAttribute('d');
+      110 |       });
+      111 |       const bigSquareGroupEl = viewer.locator(
+
+        at /home/prushfor/github/MapML.js/test/e2e/core/popupTabNavigation.test.js:108:49
+
+  10) core/popupTabNavigation.test.js:122:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Previous feature button focuses previous feature
+
+    Error: Timed out 5000ms waiting for expect(locator).toBeFocused()
+
+    Locator: getByTestId('viewer').locator('g:has( > path[d="M296 151L447 151L447 302L296 302z"])')
+    Expected: focused
+    Received: inactive
+    Call log:
+      - expect.toBeFocused with timeout 5000ms
+      - waiting for getByTestId('viewer').locator('g:has( > path[d="M296 151L447 151L447 302L296 302z"])')
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+
+
+      141 |         'g:has( > path[d="' + bigSquarePathData + '"])'
+      142 |       );
+    > 143 |       await expect(bigSquareGroupEl).toBeFocused();
+          |                                      ^
+      144 |       const toolTipPane = viewer.locator('.leaflet-tooltip-pane');
+      145 |       let tooltipCount = await toolTipPane.evaluate(
+      146 |         (div) => div.childElementCount
+
+        at /home/prushfor/github/MapML.js/test/e2e/core/popupTabNavigation.test.js:143:38
+
+  11) core/popupTabNavigation.test.js:151:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Tooltip appears after pressing esc key
+
+    Error: Timed out 5000ms waiting for expect(locator).toBeFocused()
+
+    Locator: getByTestId('viewer').locator('g:has( > path[d="M330 83L586 83L586 339L330 339z"])')
+    Expected: focused
+    Received: inactive
+    Call log:
+      - expect.toBeFocused with timeout 5000ms
+      - waiting for getByTestId('viewer').locator('g:has( > path[d="M330 83L586 83L586 339L330 339z"])')
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+
+
+      163 |         'g:has( > path[d="' + bigSquarePathData + '"])'
+      164 |       );
+    > 165 |       await expect(bigSquareGroupEl).toBeFocused();
+          |                                      ^
+      166 |       const toolTipPane = viewer.locator('.leaflet-tooltip-pane');
+      167 |       let tooltipCount = await toolTipPane.evaluate(
+      168 |         (div) => div.childElementCount
+
+        at /home/prushfor/github/MapML.js/test/e2e/core/popupTabNavigation.test.js:165:38
+
+  12) core/popupTabNavigation.test.js:173:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Tooltip appears after pressing enter on close button
+
+    Error: Timed out 5000ms waiting for expect(locator).toBeFocused()
+
+    Locator: getByTestId('viewer').locator('g:has( > path[d="M330 83L586 83L586 339L330 339z"])')
+    Expected: focused
+    Received: inactive
+    Call log:
+      - expect.toBeFocused with timeout 5000ms
+      - waiting for getByTestId('viewer').locator('g:has( > path[d="M330 83L586 83L586 339L330 339z"])')
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+
+
+      191 |         'g:has( > path[d="' + bigSquarePathData + '"])'
+      192 |       );
+    > 193 |       await expect(bigSquareGroupEl).toBeFocused();
+          |                                      ^
+      194 |       const toolTipPane = viewer.locator('.leaflet-tooltip-pane');
+      195 |       let tooltipCount = await toolTipPane.evaluate(
+      196 |         (div) => div.childElementCount
+
+        at /home/prushfor/github/MapML.js/test/e2e/core/popupTabNavigation.test.js:193:38
+
+  13) core/popupTabNavigation.test.js:201:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Next feature button focuses next feature
+
+    Error: Timed out 5000ms waiting for expect(locator).toBeFocused()
+
+    Locator: getByTestId('viewer').locator('g:has( > path[d="M285 373L460 380L468 477L329 459z"])')
+    Expected: focused
+    Received: inactive
+    Call log:
+      - expect.toBeFocused with timeout 5000ms
+      - waiting for getByTestId('viewer').locator('g:has( > path[d="M285 373L460 380L468 477L329 459z"])')
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+      -   locator resolved to <g role="button" tabindex="-1" aria-label="Feature" aria-expanded="false" class="leaflet-interactive">…</g>
+      -   unexpected value "not focused"
+
+
+      222 |         'g:has( > path[d="' + smallTrapezoidPathData + '"])'
+      223 |       );
+    > 224 |       await expect(smallTrapezoidGroupEl).toBeFocused();
+          |                                           ^
+      225 |       const toolTipPane = viewer.locator('.leaflet-tooltip-pane');
+      226 |       let tooltipCount = await toolTipPane.evaluate(
+      227 |         (div) => div.childElementCount
+
+        at /home/prushfor/github/MapML.js/test/e2e/core/popupTabNavigation.test.js:224:43
+
+  14) core/popupTabNavigation.test.js:232:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Focus Controls focuses the first <button> child in control div
+
+    Error: Timed out 5000ms waiting for expect(locator).toBeFocused()
+
+    Locator: getByText('Maps for HTML Community Group')
+    Expected: focused
+    Received: inactive
+    Call log:
+      - expect.toBeFocused with timeout 5000ms
+      - waiting for getByText('Maps for HTML Community Group')
+      -   locator resolved to <a href="https://www.w3.org/community/maps4html/">Maps for HTML Community Group</a>
+      -   unexpected value "not focused"
+      -   locator resolved to <a href="https://www.w3.org/community/maps4html/">Maps for HTML Community Group</a>
+      -   unexpected value "not focused"
+      -   locator resolved to <a href="https://www.w3.org/community/maps4html/">Maps for HTML Community Group</a>
+      -   unexpected value "not focused"
+      -   locator resolved to <a href="https://www.w3.org/community/maps4html/">Maps for HTML Community Group</a>
+      -   unexpected value "not focused"
+      -   locator resolved to <a href="https://www.w3.org/community/maps4html/">Maps for HTML Community Group</a>
+      -   unexpected value "not focused"
+      -   locator resolved to <a href="https://www.w3.org/community/maps4html/">Maps for HTML Community Group</a>
+      -   unexpected value "not focused"
+      -   locator resolved to <a href="https://www.w3.org/community/maps4html/">Maps for HTML Community Group</a>
+      -   unexpected value "not focused"
+      -   locator resolved to <a href="https://www.w3.org/community/maps4html/">Maps for HTML Community Group</a>
+      -   unexpected value "not focused"
+
+
+      253 |       await page.keyboard.press('Enter');
+      254 |       const focusedElement = page.getByText('Maps for HTML Community Group');
+    > 255 |       await expect(focusedElement).toBeFocused();
+          |                                    ^
+      256 |     });
+      257 |
+      258 |     test('Zoom link zooms to the zoom level = zoom attribute', async () => {
+
+        at /home/prushfor/github/MapML.js/test/e2e/core/popupTabNavigation.test.js:255:36
+
+  15) elements/layer-/layer-dash-extent.test.js:222:7 › layer- local/inline extent source tests › layer- .extent bounds change with added / removed child map-features
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      276 |       return layerBounds.contains(featureBounds);
+      277 |     });
+    > 278 |     expect(layerBoundsIncludesNewFeatureBounds).toBe(true);
+          |                                                 ^
+      279 |     // remove the feature,
+      280 |     const finalLayerBoundsContainsFeatureBounds = await inline.evaluate((l) => {
+      281 |       let f = l.querySelector('[data-testid=f1]');
+
+        at /home/prushfor/github/MapML.js/test/e2e/elements/layer-/layer-dash-extent.test.js:278:49
+
+  16) elements/map-extent/handleChange-bug.test.js:12:7 › map-extent tests › Ensure page doesn't throw errors
+
+    Error: Timed out 5000ms waiting for expect(locator).toHaveAttribute()
+
+    Locator: getByTestId('test-layer')
+    Expected: have attribute
+    Received: not have attribute
+    Call log:
+      - expect.toHaveAttribute with timeout 5000ms
+      - waiting for getByTestId('test-layer')
+      -   locator resolved to <layer- checked label="Remote content" data-testid="test-layer"></layer->
+      -   unexpected value "false"
+      -   locator resolved to <layer- checked label="Remote content" data-testid="test-layer">…</layer->
+      -   unexpected value "false"
+      -   locator resolved to <layer- checked label="Remote content" data-testid="test-layer">…</layer->
+      -   unexpected value "false"
+      -   locator resolved to <layer- checked label="Remote content" data-testid="test-layer">…</layer->
+      -   unexpected value "false"
+      -   locator resolved to <layer- checked label="Remote content" data-testid="test-layer">…</layer->
+      -   unexpected value "false"
+      -   locator resolved to <layer- checked data-testid="test-layer" src="dummy-cbmtile-cbmt.mapml" label="You can set the label of a local layer"></layer->
+      -   unexpected value "false"
+      -   locator resolved to <layer- checked data-testid="test-layer" src="dummy-cbmtile-cbmt.mapml" label="You can set the label of a local layer"></layer->
+      -   unexpected value "false"
+      -   locator resolved to <layer- checked data-testid="test-layer" src="dummy-cbmtile-cbmt.mapml" label="You can set the label of a local layer"></layer->
+      -   unexpected value "false"
+      -   locator resolved to <layer- checked data-testid="test-layer" src="dummy-cbmtile-cbmt.mapml" label="You can set the label of a local layer"></layer->
+      -   unexpected value "false"
+
+
+       at elements/layer-/layer-dash-src.test.js:38
+
+      36 |
+      37 |     await layer.evaluate((layer) => layer.removeAttribute('src'));
+    > 38 |     expect(layer).toHaveAttribute('disabled');
+         |                   ^
+      39 |
+      40 |     // append the template map-extent to the local / inline content
+      41 |     await page.evaluate(() => {
+
+        at /home/prushfor/github/MapML.js/test/e2e/elements/layer-/layer-dash-src.test.js:38:19
+
+  17) elements/map-link/map-link-in-shadow-root.test.js:14:7 › map-link can be inside a shadow root or other custom element › map-link getMapEl() works in shadow root
+
+    Error: Timed out 5000ms waiting for expect(locator).toHaveAttribute()
+
+    Locator: getByTestId('test-layer')
+    Expected: have attribute
+    Received: not have attribute
+    Call log:
+      - expect.toHaveAttribute with timeout 5000ms
+      - waiting for getByTestId('test-layer')
+      -   locator resolved to <map-layer checked label="Remote content" data-testid="test-layer"></map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked label="Remote content" data-testid="test-layer">…</map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked label="Remote content" data-testid="test-layer">…</map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked label="Remote content" data-testid="test-layer">…</map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked label="Remote content" data-testid="test-layer">…</map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked data-testid="test-layer" src="dummy-cbmtile-cbmt.mapml" label="You can set the label of a local layer"></map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked data-testid="test-layer" src="dummy-cbmtile-cbmt.mapml" label="You can set the label of a local layer"></map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked data-testid="test-layer" src="dummy-cbmtile-cbmt.mapml" label="You can set the label of a local layer"></map-layer>
+      -   unexpected value "false"
+      -   locator resolved to <map-layer checked data-testid="test-layer" src="dummy-cbmtile-cbmt.mapml" label="You can set the label of a local layer"></map-layer>
+      -   unexpected value "false"
+
+
+       at elements/map-layer/layer-src.test.js:38
+
+      36 |
+      37 |     await layer.evaluate((layer) => layer.removeAttribute('src'));
+    > 38 |     expect(layer).toHaveAttribute('disabled');
+         |                   ^
+      39 |
+      40 |     // append the template map-extent to the local / inline content
+      41 |     await page.evaluate(() => {
+
+        at /home/prushfor/github/MapML.js/test/e2e/elements/map-layer/layer-src.test.js:38:19
+
+  18) mapml-viewer/localization.test.js:284:7 › <mapml-viewer> localization tests › Map feature options matches the locale key
+
+    Error: locator.evaluate: TypeError: Cannot read properties of undefined (reading 'getBoundingClientRect')
+
+        at ml.click (http://localhost:30001/mapml.js:1:412749)
+        at eval (eval at evaluate (:234:30), <anonymous>:1:14)
+        at UtilityScript.evaluate (<anonymous>:236:17)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at ml.click (/home/prushfor/github/MapML.js/http:/localhost:30001/mapml.js:1:412749)
+        at eval (/home/prushfor/github/MapML.js/eval at evaluate (:234:30), <anonymous>:1:14)
+        at UtilityScript.evaluate (/home/prushfor/github/MapML.js/<anonymous>:236:17)
+        at UtilityScript.<anonymous> (/home/prushfor/github/MapML.js/<anonymous>:1:44)
+        at /home/prushfor/github/MapML.js/test/e2e/mapml-viewer/localization.test.js:297:29
+
+  Slow test file: api/events/map-change-event.test.js (34.8s)
+  Slow test file: core/announceMovement.test.js (29.6s)
+  Slow test file: core/ArrowKeyNavContextMenu.test.js (28.8s)
+  Slow test file: layers/multipleExtents.test.js (25.3s)
+  Slow test file: layers/templatedPMTilesMVTLayer.test.js (22.9s)
+  Consider splitting slow test files to speed up parallel execution
+  16 failed
+    core/featureIndexOverlayResults.test.js:18:7 › Feature Index Overlay results test › Feature index content is correct
+    core/featureIndexOverlayResults.test.js:38:7 › Feature Index Overlay results test › Feature index more results are correct
+    core/featureIndexOverlayResults.test.js:60:7 › Feature Index Overlay results test › Feature index previous results are correct
+    core/featureIndexOverlayResults.test.js:70:7 › Feature Index Overlay results test › Feature index content is correct on moveend
+    core/featureIndexOverlayResults.test.js:86:7 › Feature Index Overlay results test › Feature index message for "No features found", reticle still visible
+    core/featureNavigation.test.js:19:9 › Playwright Keyboard Navigation + Query Layer Tests › Arrow Key Navigable Tests › Tab focuses inline features
+    core/popupTabNavigation.test.js:101:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Shift + Tab to current feature while popup open
+    core/popupTabNavigation.test.js:122:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Previous feature button focuses previous feature
+    core/popupTabNavigation.test.js:151:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Tooltip appears after pressing esc key
+    core/popupTabNavigation.test.js:173:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Tooltip appears after pressing enter on close button
+    core/popupTabNavigation.test.js:201:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Next feature button focuses next feature
+    core/popupTabNavigation.test.js:232:9 › Playwright Keyboard Navigation + Query Layer Tests › Feature Popup Tab Navigation Tests › Focus Controls focuses the first <button> child in control div
+    elements/layer-/layer-dash-extent.test.js:222:7 › layer- local/inline extent source tests › layer- .extent bounds change with added / removed child map-features
+    elements/map-extent/handleChange-bug.test.js:12:7 › map-extent tests › Ensure page doesn't throw errors
+    elements/map-link/map-link-in-shadow-root.test.js:14:7 › map-link can be inside a shadow root or other custom element › map-link getMapEl() works in shadow root
+    mapml-viewer/localization.test.js:284:7 › <mapml-viewer> localization tests › Map feature options matches the locale key
+  6 skipped
+  1 did not run
+  593 passed (4.4m)
+prushfor@L-BSC-A146390:~/github/MapML.js (map-tile)
+$

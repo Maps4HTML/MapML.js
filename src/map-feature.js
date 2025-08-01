@@ -1,6 +1,6 @@
 import { bounds, point, extend } from 'leaflet';
 
-import { featureLayer } from './mapml/layers/FeatureLayer.js';
+import { MapFeatureLayer } from './mapml/layers/MapFeatureLayer.js';
 import { featureRenderer } from './mapml/features/featureRenderer.js';
 import { Util } from './mapml/utils/Util.js';
 import proj4 from 'proj4';
@@ -182,7 +182,10 @@ export class HTMLFeatureElement extends HTMLElement {
       this._parentEl.parentElement?.hasAttribute('data-moving')
     )
       return;
-    if (this._parentEl.nodeName === 'MAP-LINK') {
+    if (
+      this._parentEl.nodeName === 'MAP-LINK' ||
+      this._parentEl.nodeName === 'MAP-LAYER'
+    ) {
       this._createOrGetFeatureLayer();
     }
     // use observer to monitor the changes in mapFeature's subtree
@@ -292,65 +295,76 @@ export class HTMLFeatureElement extends HTMLElement {
     return this.previousElementSibling;
   }
   _createOrGetFeatureLayer() {
-    if (this.isFirst() && this._parentEl._templatedLayer) {
-      const parentElement = this._parentEl;
+    // Wait for parent layer to be ready before proceeding
+    this._parentEl
+      .whenReady()
+      .then(() => {
+        // Detect parent context and get the appropriate layer container
+        const isMapLink = this._parentEl.nodeName === 'MAP-LINK';
+        const parentLayer = isMapLink
+          ? this._parentEl._templatedLayer
+          : this._parentEl._layer;
 
-      let map = parentElement.getMapEl()._map;
+        if (this.isFirst() && parentLayer) {
+          const parentElement = this._parentEl;
 
-      // Create a new FeatureLayer
-      this._featureLayer = featureLayer(null, {
-        // pass the vector layer a renderer of its own, otherwise leaflet
-        // puts everything into the overlayPane
-        renderer: featureRenderer(),
-        // pass the vector layer the container for the parent into which
-        // it will append its own container for rendering into
-        pane: parentElement._templatedLayer.getContainer(),
-        // the bounds will be static, fixed, constant for the lifetime of the layer
-        layerBounds: parentElement.getBounds(),
-        zoomBounds: this._getZoomBounds(),
-        projection: map.options.projection,
-        mapEl: parentElement.getMapEl(),
-        onEachFeature: function (properties, geometry) {
-          if (properties) {
-            const popupOptions = {
-              autoClose: false,
-              autoPan: true,
-              maxHeight: map.getSize().y * 0.5 - 50,
-              maxWidth: map.getSize().x * 0.7,
-              minWidth: 165
-            };
-            var c = document.createElement('div');
-            c.classList.add('mapml-popup-content');
-            c.insertAdjacentHTML('afterbegin', properties.innerHTML);
-            geometry.bindPopup(c, popupOptions);
+          let map = parentElement.getMapEl()._map;
+
+          this._featureLayer = new MapFeatureLayer(null, {
+            // pass the vector layer a renderer of its own, otherwise leaflet
+            // puts everything into the overlayPane
+            renderer: featureRenderer(),
+            // pass the vector layer the container for the parent into which
+            // it will append its own container for rendering into
+            pane: parentLayer.getContainer(),
+            // the bounds will be static, fixed, constant for the lifetime of a (templated) layer
+            ...(isMapLink && parentElement.getBounds()
+              ? { layerBounds: parentElement.getBounds() }
+              : {}),
+            ...(isMapLink ? { zoomBounds: this._getZoomBounds() } : {}),
+            ...(isMapLink ? {} : { _leafletLayer: parentElement._layer }),
+            projection: map.options.projection,
+            mapEl: parentElement.getMapEl(),
+            onEachFeature: function (properties, geometry) {
+              if (properties) {
+                const popupOptions = {
+                  autoClose: false,
+                  autoPan: true,
+                  maxHeight: map.getSize().y * 0.5 - 50,
+                  maxWidth: map.getSize().x * 0.7,
+                  minWidth: 165
+                };
+                var c = document.createElement('div');
+                c.classList.add('mapml-popup-content');
+                c.insertAdjacentHTML('afterbegin', properties.innerHTML);
+                geometry.bindPopup(c, popupOptions);
+              }
+            }
+          });
+          // this is used by DebugOverlay testing "multipleExtents.test.js
+          // but do we really need or want each feature to have the bounds of the
+          // map link?  tbd
+          extend(this._featureLayer.options, {
+            _leafletLayer: Object.assign(this._featureLayer, {
+              _layerEl: this.getLayerEl()
+            })
+          });
+
+          this.addFeature(this._featureLayer);
+
+          // add MapFeatureLayer to appropriate parent layer
+          parentLayer.addLayer(this._featureLayer);
+        } else {
+          // get the previous feature's layer
+          this._featureLayer = this.getPrevious()?._featureLayer;
+          if (this._featureLayer) {
+            this.addFeature(this._featureLayer);
           }
         }
+      })
+      .catch((error) => {
+        console.log('Error waiting for parent layer to be ready:', error);
       });
-      // this is used by DebugOverlay testing "multipleExtents.test.js
-      // but do we really need or want each feature to have the bounds of the
-      // map link?  tbd
-      extend(this._featureLayer.options, {
-        _leafletLayer: Object.assign(this._featureLayer, {
-          _layerEl: this.getLayerEl()
-        })
-      });
-
-      this.addFeature(this._featureLayer);
-
-      // add featureLayer to TemplatedFeaturesOrTilesLayer of the parentElement
-      if (
-        parentElement._templatedLayer &&
-        parentElement._templatedLayer.addLayer
-      ) {
-        parentElement._templatedLayer.addLayer(this._featureLayer);
-      }
-    } else {
-      // get the previous feature's layer
-      this._featureLayer = this.getPrevious()?._featureLayer;
-      if (this._featureLayer) {
-        this.addFeature(this._featureLayer);
-      }
-    }
   }
   _setUpEvents() {
     ['click', 'focus', 'blur', 'keyup', 'keydown'].forEach((name) => {
