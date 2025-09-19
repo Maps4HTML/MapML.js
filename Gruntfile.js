@@ -77,6 +77,13 @@ module.exports = function(grunt) {
             filter: 'isFile',
             src: ['*.png'],
             dest: 'dist/images/'
+          },
+          {
+            expand: true,
+            flatten: true,
+            filter: 'isFile',
+            src: ['w3community.ico'],
+            dest: 'dist/images/'
           }
         ]
       },
@@ -86,8 +93,12 @@ module.exports = function(grunt) {
             expand: true,
             src: ['dist/*'],
             dest: '../experiments'
-          }
-        ]
+          },
+          {
+            expand: true,
+            src: ['dist/images/*'],
+            dest: '../experiments'
+          }        ]
       },
       extension: {
         files: [
