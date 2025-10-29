@@ -171,6 +171,10 @@ export var MapFeatureLayer = FeatureGroup.extend({
 
   onAdd: function (map) {
     this._map = map;
+    // Re-append container to pane if it was removed
+    if (this._container && !this._container.isConnected && this.options.pane) {
+      this.options.pane.appendChild(this._container);
+    }
     FeatureGroup.prototype.onAdd.call(this, map);
     if (this._context === 'static') {
       this._validateRendering();
