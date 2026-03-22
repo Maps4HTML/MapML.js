@@ -1,0 +1,16 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [1826324, -230839]
+            },
+            "properties": {
+                "name": "Test Point projected no CRS",
+                "value": 99
+            }
+        }
+    ]
+}

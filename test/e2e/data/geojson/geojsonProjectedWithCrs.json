@@ -1,0 +1,22 @@
+{
+    "type": "FeatureCollection",
+    "crs": {
+        "type": "name",
+        "properties": {
+            "name": "urn:ogc:def:crs:EPSG::3978"
+        }
+    },
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [1826324, -230839]
+            },
+            "properties": {
+                "name": "Test Point with CRS",
+                "value": 42
+            }
+        }
+    ]
+}

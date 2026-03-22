@@ -137,6 +137,28 @@ app.get('/data/query/geojsonPoint', (req, res, next) => {
     }
   );
 });
+app.get('/data/query/geojsonProjectedWithCrs', (req, res, next) => {
+  res.sendFile(
+    __dirname + '/e2e/data/geojson/geojsonProjectedWithCrs.json',
+    { headers: { 'Content-Type': 'application/json' } },
+    (err) => {
+      if (err) {
+        res.status(403).send('Error.');
+      }
+    }
+  );
+});
+app.get('/data/query/geojsonProjectedNoCrs', (req, res, next) => {
+  res.sendFile(
+    __dirname + '/e2e/data/geojson/geojsonProjectedNoCrs.json',
+    { headers: { 'Content-Type': 'application/json' } },
+    (err) => {
+      if (err) {
+        res.status(403).send('Error.');
+      }
+    }
+  );
+});
 app.get('/data/query/geojsonFeature.geojson', (req, res, next) => {
   res.sendFile(
     __dirname + '/e2e/data/geojson/geojsonFeature.geojson',
