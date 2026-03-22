@@ -67,3 +67,15 @@ jobs:
         user_name: 'prushforth'
         commit_msg: '[AUTO] Sync MapML Build'
         destination_branch: main
+    - name: Pushes to mapmlify repo
+      uses: ./.github/actions/sync-repo
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+      with:
+        source_folder: 'dist'
+        destination_repo: 'Maps4HTML/mapmlify'
+        destination_folder: 'dist'
+        user_email: 'peter.rushforth@gmail.com'
+        user_name: 'prushforth'
+        commit_msg: '[AUTO] Sync MapML Build'
+        destination_branch: main

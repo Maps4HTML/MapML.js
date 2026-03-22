@@ -127,6 +127,16 @@ module.exports = function(grunt) {
             dest: '../web-map-doc/static'
           }
         ]
+      },
+      mapmlify: {
+        files: [
+          {
+            expand: true,
+            cwd: 'dist',
+            src: ['**'],
+            dest: '../mapmlify/dist'
+          }
+        ]
       }
     },
     clean: {
@@ -147,6 +157,10 @@ module.exports = function(grunt) {
       docs: {
         options: {force: true},
         src: ['../web-map-doc/dist']
+      },
+      mapmlify: {
+        options: {force: true},
+        src: ['../mapmlify/dist']
       }
     },
     prettier: {
@@ -192,6 +206,7 @@ module.exports = function(grunt) {
   grunt.registerTask('geoserver', ['clean:geoserver', 'default', 'copy:geoserver']);
   grunt.registerTask('basemap', ['clean:basemap', 'default', 'copy:basemap']);
   grunt.registerTask('docs', ['clean:docs', 'default', 'copy:docs']);
+  grunt.registerTask('mapmlify', ['clean:mapmlify', 'default', 'copy:mapmlify']);
   grunt.registerTask('sync', ['default', 'experiments', 'extension', 'docs']);
 
 };
