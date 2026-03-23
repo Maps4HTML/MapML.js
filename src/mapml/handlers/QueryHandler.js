@@ -188,6 +188,23 @@ export var QueryHandler = Handler.extend({
           ) {
             try {
               let json = JSON.parse(response.text);
+              // Replace null geometries with a point at the click location
+              // so geojson2mapml can process the features without error
+              let clickPoint = {
+                type: 'Point',
+                coordinates: [e.latlng.lng, e.latlng.lat]
+              };
+              if (json.type === 'FeatureCollection' && json.features) {
+                for (let f of json.features) {
+                  if (f.geometry === null || f.geometry === undefined) {
+                    f.geometry = clickPoint;
+                  }
+                }
+              } else if (json.type === 'Feature') {
+                if (json.geometry === null || json.geometry === undefined) {
+                  json.geometry = clickPoint;
+                }
+              }
               let mapmlLayer = M.geojson2mapml(json, {
                 projection: layer.options.projection
               });

@@ -159,6 +159,17 @@ app.get('/data/query/geojsonProjectedNoCrs', (req, res, next) => {
     }
   );
 });
+app.get('/data/query/geojsonNullGeometry', (req, res, next) => {
+  res.sendFile(
+    __dirname + '/e2e/data/geojson/geojsonNullGeometry.json',
+    { headers: { 'Content-Type': 'application/geo+json' } },
+    (err) => {
+      if (err) {
+        res.status(403).send('Error.');
+      }
+    }
+  );
+});
 app.get('/data/query/geojsonFeature.geojson', (req, res, next) => {
   res.sendFile(
     __dirname + '/e2e/data/geojson/geojsonFeature.geojson',
