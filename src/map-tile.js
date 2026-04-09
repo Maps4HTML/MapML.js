@@ -233,9 +233,8 @@ export class HTMLTileElement extends HTMLElement {
   }
   async _createOrGetTileLayer() {
     await this._parentEl.whenReady();
+    const parentElement = this._parentEl;
     if (this.isFirst()) {
-      const parentElement = this._parentEl;
-
       // Create a new MapTileLayer
       this._tileLayer = mapTileLayer({
         projection: this.getMapEl().projection,
