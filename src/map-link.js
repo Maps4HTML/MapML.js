@@ -271,6 +271,10 @@ export class HTMLLinkElement extends HTMLElement {
       (this.parentExtent && this.parentExtent.hasAttribute('data-moving'))
     )
       return;
+    // Layer registry for child map-feature/map-tile layers — see layer.js
+    if (!this._layerRegistry) {
+      this._layerRegistry = new Map();
+    }
     switch (this.rel.toLowerCase()) {
       // for some cases, require a dependency check
       case 'tile':
@@ -321,6 +325,9 @@ export class HTMLLinkElement extends HTMLElement {
     // what else?
   }
   disconnectedCallback() {
+    if (this._layerRegistry) {
+      this._layerRegistry.clear();
+    }
     switch (this.rel.toLowerCase()) {
       case 'stylesheet':
         if (this._stylesheetHost) {
@@ -453,12 +460,17 @@ export class HTMLLinkElement extends HTMLElement {
       this.link.setAttribute('href', new URL(this.href, this.getBase()).href);
       copyAttributes(this, this.link);
 
-      if (this._stylesheetHost._layer) {
+      // IMPORTANT: Only render if the correct container exists for THIS element's parent.
+      // Don't fall back to _extentLayer if this is a layer child - wait for _layer instead.
+      const isLayerChild = this._stylesheetHost.tagName === 'MAP-LAYER';
+      const isExtentChild = this._stylesheetHost.tagName === 'MAP-EXTENT';
+
+      if (isLayerChild && this._stylesheetHost._layer) {
         this._stylesheetHost._layer.renderStyles(this);
+      } else if (isExtentChild && this._stylesheetHost._extentLayer) {
+        this._stylesheetHost._extentLayer.renderStyles(this);
       } else if (this._stylesheetHost._templatedLayer) {
         this._stylesheetHost._templatedLayer.renderStyles(this);
-      } else if (this._stylesheetHost._extentLayer) {
-        this._stylesheetHost._extentLayer.renderStyles(this);
       }
     }
 

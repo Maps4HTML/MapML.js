@@ -9,7 +9,7 @@ test.describe('Playwright Layer Context Menu Tests', () => {
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
-    await page.goto('layerContextMenu.html');
+    await page.goto('layerContextMenu.html', { waitUntil: 'networkidle' });
   });
 
   test.afterAll(async function () {

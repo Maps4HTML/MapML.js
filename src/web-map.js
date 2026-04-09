@@ -460,6 +460,16 @@ export class HTMLWebMapElement extends HTMLMapElement {
               layersReady.push(reAttach.whenReady());
             }
             return Promise.allSettled(layersReady).then(() => {
+              // For single-layer case (e.g. link traversal), synchronously set
+              // zoom constraints so that layer.zoomTo() uses correct bounds
+              const layers = this.querySelectorAll('map-layer,layer-');
+              if (layers.length === 1) {
+                const layer = layers[0];
+                if (layer.extent) {
+                  this._map.setMinZoom(layer.extent.zoom.minZoom);
+                  this._map.setMaxZoom(layer.extent.zoom.maxZoom);
+                }
+              }
               // use the saved map location to ensure it is correct after
               // changing the map CRS.  Specifically affects projection
               // upgrades, e.g. https://maps4html.org/experiments/custom-projections/BNG/
@@ -702,13 +712,19 @@ export class HTMLWebMapElement extends HTMLMapElement {
   _removeEvents() {
     if (this._map) {
       this._map.off();
-      this.removeEventListener('drop', this._dropHandler, false);
-      this.removeEventListener('dragover', this._dragoverHandler, false);
+      if (this._boundDropHandler) {
+        this.removeEventListener('drop', this._boundDropHandler, false);
+      }
+      if (this._boundDragoverHandler) {
+        this.removeEventListener('dragover', this._boundDragoverHandler, false);
+      }
     }
   }
   _setUpEvents() {
-    this.addEventListener('drop', this._dropHandler, false);
-    this.addEventListener('dragover', this._dragoverHandler, false);
+    this._boundDropHandler = this._dropHandler.bind(this);
+    this._boundDragoverHandler = this._dragoverHandler.bind(this);
+    this.addEventListener('drop', this._boundDropHandler, false);
+    this.addEventListener('dragover', this._boundDragoverHandler, false);
     this.addEventListener(
       'change',
       function (e) {

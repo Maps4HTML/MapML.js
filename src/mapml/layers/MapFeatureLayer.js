@@ -410,12 +410,18 @@ export var MapFeatureLayer = FeatureGroup.extend({
             !geometry._map
           ) {
             this.addRendering(geometry);
-            // update the layerbounds
-            let placeholder =
-              geometry.defaultOptions.group.parentNode.querySelector(
-                `span[id="${geometry._leaflet_id}"]`
-              );
-            placeholder.replaceWith(geometry.defaultOptions.group);
+            // Only try to find placeholder if the geometry group has a parentNode
+            // If parentNode is null, the geometry is being handled by reRender()
+            // which will attach it to the DOM after _validateRendering completes
+            if (geometry.defaultOptions.group.parentNode) {
+              let placeholder =
+                geometry.defaultOptions.group.parentNode.querySelector(
+                  `span[id="${geometry._leaflet_id}"]`
+                );
+              if (placeholder) {
+                placeholder.replaceWith(geometry.defaultOptions.group);
+              }
+            }
           }
         }
       }

@@ -598,7 +598,12 @@ export var TemplatedTileLayer = TileLayer.extend({
       );
       template.pcrs.easting = east;
       template.pcrs.northing = north;
-    } else if (col && row && !isNaN(template.zoom.initialValue)) {
+    } else if (
+      col &&
+      row &&
+      template.zoom &&
+      !isNaN(template.zoom.initialValue)
+    ) {
       // convert the tile bounds at this zoom to a pcrs bounds, then
       // go through the zoom min/max and create a tile-based bounds
       // at each zoom that applies to the col/row values that constrain what tiles

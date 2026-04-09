@@ -447,6 +447,11 @@ and: https://developer.mozilla.org/en-US/docs/Web/CSS/:fullscreen */
   text-shadow: 1px 1px 1px #000, 1px 1px 1px #000;
 }
 
+/* Ensure white background persists in fullscreen */
+:host(.mapml-fullscreen-on) {
+  background-color: white;
+}
+
 /*
  * User interaction.
  */

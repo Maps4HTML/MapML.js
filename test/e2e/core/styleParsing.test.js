@@ -78,7 +78,7 @@ as found, in expected shadow root location`, async () => {
     const mapExtent = page.getByTestId('map-ext1');
     const ids = await mapExtent.evaluate((e) => {
       const elementSequence = e.querySelectorAll(
-        'map-link[rel=stylesheet],map-style'
+        ':scope > map-link[rel=stylesheet],:scope > map-style'
       );
       let ids = '';
       for (let i = 0; i < elementSequence.length; i++)
