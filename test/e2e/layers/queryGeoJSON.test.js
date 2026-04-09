@@ -20,7 +20,7 @@ test.describe('GeoJSON Query Response', () => {
     const popupContainer = page.locator('.mapml-popup-content > iframe');
     await expect(popupContainer).toBeVisible();
     const popupFeatureCount = page.locator('.mapml-feature-count');
-    await expect(popupFeatureCount).toHaveText('1/4', { useInnerText: true });
+    await expect(popupFeatureCount).toHaveText('1/5', { useInnerText: true });
   });
   test('Standard CRS:84 GeoJSON feature has cs meta set to gcrs', async () => {
     // The first feature comes from the CRS:84 extent (geojsonFeature)
@@ -95,6 +95,27 @@ test.describe('GeoJSON Query Response', () => {
       let props = f.querySelector('map-properties');
       let hasTable = props.querySelector('table') !== null;
       // check that a point geometry was synthesized
+      let hasPoint = f.querySelector('map-geometry map-point') !== null;
+      return { found: true, hasTable: hasTable, hasPoint: hasPoint };
+    });
+    expect(result.found).toBe(true);
+    expect(result.hasTable).toBe(true);
+    expect(result.hasPoint).toBe(true);
+  });
+  test('GeoJSON served with erroneous application/geojson media type is handled as GeoJSON', async () => {
+    // The feature from geojsonErroneousMediaType is served with the
+    // non-standard "application/geojson" content type. It should still
+    // be processed through the GeoJSON branch of QueryHandler.
+    let result = await page.evaluate(() => {
+      let layer = document.querySelector('mapml-viewer').layers[0]._layer;
+      let features = layer._mapmlFeatures;
+      // geojsonPoint.json has a feature with property "CURRENT_FLAG"
+      let f = features.find((feat) => {
+        let props = feat.querySelector('map-properties');
+        return props && props.innerHTML.includes('CURRENT_FLAG');
+      });
+      if (!f) return { found: false };
+      let hasTable = f.querySelector('map-properties table') !== null;
       let hasPoint = f.querySelector('map-geometry map-point') !== null;
       return { found: true, hasTable: hasTable, hasPoint: hasPoint };
     });

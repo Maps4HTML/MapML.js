@@ -184,7 +184,8 @@ export var QueryHandler = Handler.extend({
               features.forEach((f) => (f.meta = queryMetas));
           } else if (
             response.contenttype.startsWith('application/json') ||
-            response.contenttype.startsWith('application/geo+json')
+            response.contenttype.startsWith('application/geo+json') ||
+            response.contenttype.startsWith('application/geojson')
           ) {
             try {
               let json = JSON.parse(response.text);
