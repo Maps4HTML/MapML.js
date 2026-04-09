@@ -39,6 +39,7 @@ test.describe('Missing Parameters Test', () => {
   });
 
   test("Static tiles with missing <map-meta name='zoom'></map-meta>", async () => {
+    await page.waitForTimeout(1000);
     const layerController = await page.$eval(
       'body > map:nth-child(1) > map-layer:nth-child(3)',
       (controller) => controller.extent
