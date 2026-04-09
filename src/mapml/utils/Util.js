@@ -427,17 +427,30 @@ export const Util = {
       // specifically required for use cases like changing projection after
       // link traversal, e.g. BC link here https://maps4html.org/experiments/linking/features/
       if (!link.inPlace && zoomTo) updateMapZoomTo(zoomTo);
-      // the layer is newly created, so have to wait until it's fully init'd
-      // before setting properties.
-      layer.whenReady().then(() => {
-        // if the map projection isnt' changed by link traversal, it's necessary
-        // to perform pan/zoom operations after the layer is ready
+
+      // Only _parent target can trigger projection change (replaces all layers)
+      // For other targets, just wait for layer.whenReady()
+      const promises = [layer.whenReady()];
+      if (link.target === '_parent') {
+        const projectionChangePromise = new Promise((resolve) => {
+          const timeout = setTimeout(resolve, 5000);
+          map.options.mapEl.addEventListener(
+            'map-projectionchange',
+            () => {
+              clearTimeout(timeout);
+              resolve();
+            },
+            { once: true }
+          );
+        });
+        promises.push(projectionChangePromise);
+      }
+
+      Promise.all(promises).then(() => {
         if (!link.inPlace && zoomTo)
           layer.parentElement.zoomTo(+zoomTo.lat, +zoomTo.lng, +zoomTo.z);
         else if (!link.inPlace) layer.zoomTo();
-        // not sure if this is necessary
         if (opacity) layer.opacity = opacity;
-        // this is necessary to display the FeatureIndexOverlay, I believe
         map.getContainer().focus();
       });
     }

@@ -70,12 +70,17 @@ export class HTMLStyleElement extends HTMLElement {
     this.styleElement.mapStyle = this;
     this.styleElement.textContent = this.textContent;
     copyAttributes(this, this.styleElement);
-    if (this._stylesheetHost._layer) {
+    // IMPORTANT: Only render if the correct container exists for THIS element's parent.
+    // Don't fall back to _extentLayer if this is a layer child - wait for _layer instead.
+    const isLayerChild = this._stylesheetHost.tagName === 'MAP-LAYER';
+    const isExtentChild = this._stylesheetHost.tagName === 'MAP-EXTENT';
+
+    if (isLayerChild && this._stylesheetHost._layer) {
       this._stylesheetHost._layer.renderStyles(this);
+    } else if (isExtentChild && this._stylesheetHost._extentLayer) {
+      this._stylesheetHost._extentLayer.renderStyles(this);
     } else if (this._stylesheetHost._templatedLayer) {
       this._stylesheetHost._templatedLayer.renderStyles(this);
-    } else if (this._stylesheetHost._extentLayer) {
-      this._stylesheetHost._extentLayer.renderStyles(this);
     }
 
     function copyAttributes(source, target) {

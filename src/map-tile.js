@@ -135,6 +135,14 @@ export class HTMLTileElement extends HTMLElement {
   }
 
   disconnectedCallback() {
+    // Decrement layer registry count
+    const entry = this._parentEl?._layerRegistry?.get(this.position);
+    if (entry) {
+      entry.count--;
+      if (entry.count === 0) {
+        this._parentEl._layerRegistry.delete(this.position);
+      }
+    }
     // If this is a map-tile connected to a tile layer, remove it from the layer
     if (this._tileLayer) {
       this._tileLayer.removeMapTile(this);
@@ -148,16 +156,7 @@ export class HTMLTileElement extends HTMLElement {
     }
   }
   isFirst() {
-    // Get the previous element sibling
-    const prevSibling = this.previousElementSibling;
-
-    // If there's no previous sibling, return true
-    if (!prevSibling) {
-      return true;
-    }
-
-    // Compare the node names (tag names) - return true if they're different
-    return this.nodeName !== prevSibling.nodeName;
+    return !this._parentEl._layerRegistry.has(this.position);
   }
   getPrevious() {
     // Check if this is the first element of a sequence
@@ -249,6 +248,12 @@ export class HTMLTileElement extends HTMLElement {
       });
       this._tileLayer.addMapTile(this);
 
+      // Register in parent's layer registry
+      parentElement._layerRegistry.set(this.position, {
+        layer: this._tileLayer,
+        count: 1
+      });
+
       // add MapTileLayer to TemplatedFeaturesOrTilesLayer of the MapLink
       if (parentElement._templatedLayer?.addLayer) {
         parentElement._templatedLayer.addLayer(this._tileLayer);
@@ -257,8 +262,12 @@ export class HTMLTileElement extends HTMLElement {
         parentElement._layer.addLayer(this._tileLayer);
       }
     } else {
-      // get the previous tile's layer
-      this._tileLayer = this.getPrevious()?._tileLayer;
+      // Look up the existing layer from the registry
+      const entry = parentElement._layerRegistry.get(this.position);
+      this._tileLayer = entry?.layer;
+      if (entry) {
+        entry.count++;
+      }
       if (this._tileLayer) {
         this._tileLayer.addMapTile(this);
       }

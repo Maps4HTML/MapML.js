@@ -215,6 +215,9 @@ export class BaseLayerElement extends HTMLElement {
       lc.removeLayer(l);
     }
     // remove properties of layer involved in whenReady() logic
+    if (this._layerRegistry) {
+      this._layerRegistry.clear();
+    }
     delete this._layer;
     delete this._layerControl;
     delete this._layerControlHTML;
@@ -228,6 +231,18 @@ export class BaseLayerElement extends HTMLElement {
     /* jshint ignore:start */
     this.#hasConnected = true;
     /* jshint ignore:end */
+    // _layerRegistry tracks child MapFeatureLayer and MapTileLayer instances
+    // by their calculated DOM position (z-index). Adjacent <map-feature> or
+    // <map-tile> elements share a single Leaflet layer; the first in a sequence
+    // creates it and registers here with count=1. Subsequent siblings look up
+    // the entry and increment count. On disconnect, count is decremented;
+    // when it reaches 0 the entry is deleted and the Leaflet layer is removed.
+    // This replaces fragile DOM sibling traversal (getPrevious()) with O(1)
+    // lookup and proper reference counting for cleanup.
+    // map-link.js uses the same pattern for its templated child layers.
+    if (!this._layerRegistry) {
+      this._layerRegistry = new Map();
+    }
     this._createLayerControlHTML = createLayerControlHTML.bind(this);
     const doConnected = this._onAdd.bind(this);
     const doRemove = this._onRemove.bind(this);

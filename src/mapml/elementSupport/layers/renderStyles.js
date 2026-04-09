@@ -10,15 +10,19 @@ export function renderStyles(mapStyleOrLink) {
 
     // If there are no rendered styles or links yet, insert before any content
     if (renderedSiblingStyles.length === 0) {
-      return this._container.lastChild &&
-        (this._container.lastChild.nodeName.toUpperCase() === 'SVG' ||
-          this._container.lastChild.classList.contains(
-            'mapml-vector-container'
-          ))
-        ? { position: 'beforebegin', node: this._container.lastChild }
-        : this._container.lastChild
-        ? { position: 'afterend', node: this._container.lastChild }
-        : { position: 'afterbegin', node: this._container };
+      const lastChild = this._container.lastChild;
+      if (!lastChild) {
+        return { position: 'afterbegin', node: this._container };
+      }
+
+      const isSVG = lastChild.nodeName === 'SVG';
+      const isContainer =
+        lastChild.classList?.contains('mapml-vector-container') ||
+        lastChild.classList?.contains('mapml-extentlayer-container');
+
+      return isSVG || isContainer
+        ? { position: 'beforebegin', node: lastChild }
+        : { position: 'afterend', node: lastChild };
     }
 
     // Peek into the light DOM context for comparison

@@ -221,6 +221,14 @@ export class HTMLFeatureElement extends HTMLElement {
     )
       return;
     this._observer.disconnect();
+    // Decrement layer registry count
+    const entry = this._parentEl?._layerRegistry?.get(this.position);
+    if (entry) {
+      entry.count--;
+      if (entry.count === 0) {
+        this._parentEl._layerRegistry.delete(this.position);
+      }
+    }
     if (this._featureLayer) {
       this.removeFeature(this._featureLayer);
       // If this was the last feature in the layer, clean up the layer
@@ -290,16 +298,7 @@ export class HTMLFeatureElement extends HTMLElement {
     this._setUpEvents();
   }
   isFirst() {
-    // Get the previous element sibling
-    const prevSibling = this.previousElementSibling;
-
-    // If there's no previous sibling, return true
-    if (!prevSibling) {
-      return true;
-    }
-
-    // Compare the node names (tag names) - return true if they're different
-    return this.nodeName !== prevSibling.nodeName;
+    return !this._parentEl._layerRegistry.has(this.position);
   }
   getPrevious() {
     // Check if this is the first element of a sequence
@@ -370,13 +369,23 @@ export class HTMLFeatureElement extends HTMLElement {
             })
           });
 
+          // Register in parent's layer registry
+          parentElement._layerRegistry.set(this.position, {
+            layer: this._featureLayer,
+            count: 1
+          });
+
           this.addFeature(this._featureLayer);
 
           // add MapFeatureLayer to appropriate parent layer
           parentLayer.addLayer(this._featureLayer);
         } else {
-          // get the previous feature's layer
-          this._featureLayer = this.getPrevious()?._featureLayer;
+          // Look up the existing layer from the registry
+          const entry = this._parentEl._layerRegistry.get(this.position);
+          this._featureLayer = entry?.layer;
+          if (entry) {
+            entry.count++;
+          }
           if (this._featureLayer) {
             this.addFeature(this._featureLayer);
           }

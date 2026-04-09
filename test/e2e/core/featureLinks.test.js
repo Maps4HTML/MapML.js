@@ -26,7 +26,7 @@ test.describe('Playwright Feature Links Tests', () => {
         await page.waitForTimeout(200);
       }
       await page.keyboard.press('Enter'); // Press enter on the point subpart of the 'Accessible Square' feature
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(3000);
       const layers = await page.$eval(
         'body > map',
         (map) => map.childElementCount
@@ -55,7 +55,7 @@ test.describe('Playwright Feature Links Tests', () => {
         'body > map',
         (map) => map.childElementCount
       );
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(3000);
       const layerName = await page.$eval(
         '//html/body/map/map-layer[2]',
         (layer) => layer.label
@@ -93,7 +93,7 @@ test.describe('Playwright Feature Links Tests', () => {
         'body > map',
         (map) => map.childElementCount
       );
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(5000);
       const layerName = await page.$eval(
         '//html/body/map/map-layer[2]',
         (layer) => layer.label

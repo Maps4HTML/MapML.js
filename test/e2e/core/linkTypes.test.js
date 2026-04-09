@@ -8,7 +8,7 @@ test.describe('Playwright Feature Links Tests', () => {
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
-    await page.goto('linkTypes.html');
+    await page.goto('linkTypes.html', { waitUntil: 'networkidle' });
   });
 
   test.afterAll(async function () {
@@ -53,7 +53,7 @@ test.describe('Playwright Feature Links Tests', () => {
         await page.waitForTimeout(200);
       }
       await page.keyboard.press('Enter'); // Press enter on the second feature in the top left
-      await page.waitForTimeout(1000);
+      await page.waitForLoadState('networkidle');
       const url = await page.url();
       expect(url).toEqual('https://geogratis.gc.ca/mapml/en/cbmtile/cbmtgeom/');
     });
@@ -64,6 +64,7 @@ test.describe('Playwright Feature Links Tests', () => {
       await page.keyboard.press('Tab');
       await page.waitForTimeout(200);
       await page.keyboard.press('Enter'); // Press enter on the second point in the top left
+      await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
       const extent = await page.$eval('body > map', (map) => map.extent);
       expect(extent.topLeft.gcrs).toEqual({

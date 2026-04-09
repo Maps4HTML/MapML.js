@@ -8,7 +8,7 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
-    await page.goto('popupTabNavigation.html');
+    await page.goto('popupTabNavigation.html', { waitUntil: 'networkidle' });
   });
 
   test.afterAll(async function () {
