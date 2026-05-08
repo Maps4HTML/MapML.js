@@ -29,6 +29,7 @@ import { reloadButton } from './mapml/control/ReloadButton.js';
 import { scaleBar } from './mapml/control/ScaleBar.js';
 import { fullscreenButton } from './mapml/control/FullscreenButton.js';
 import { geolocationButton } from './mapml/control/GeolocationButton.js';
+import { searchButton } from './mapml/control/SearchButton.js';
 import { debugOverlay } from './mapml/layers/DebugOverlay.js';
 import { crosshair } from './mapml/layers/Crosshair.js';
 import { featureIndexOverlay } from './mapml/layers/FeatureIndexOverlay.js';
@@ -193,7 +194,8 @@ export class HTMLMapmlViewerElement extends HTMLElement {
             'nozoom',
             'nolayer',
             'noscale',
-            'geolocation'
+            'geolocation',
+            'search'
           ]
         );
 
@@ -500,6 +502,10 @@ export class HTMLMapmlViewerElement extends HTMLElement {
         })
         .addTo(this._map);
     }
+    if (!this._searchButton && totalSize + 49 <= mapSize) {
+      totalSize += 49;
+      this._searchButton = searchButton({ mapEl: this }).addTo(this._map);
+    }
     if (!this._reloadButton && totalSize + 49 <= mapSize) {
       totalSize += 49;
       this._reloadButton = reloadButton().addTo(this._map);
@@ -526,6 +532,7 @@ export class HTMLMapmlViewerElement extends HTMLElement {
   }
 
   _hideControls() {
+    this._setControlsVisibility('search', true);
     this._setControlsVisibility('fullscreen', true);
     this._setControlsVisibility('layercontrol', true);
     this._setControlsVisibility('reload', true);
@@ -534,6 +541,7 @@ export class HTMLMapmlViewerElement extends HTMLElement {
     this._setControlsVisibility('scale', true);
   }
   _showControls() {
+    this._setControlsVisibility('search', true);
     this._setControlsVisibility('fullscreen', false);
     this._setControlsVisibility('layercontrol', false);
     this._setControlsVisibility('reload', false);
@@ -563,6 +571,9 @@ export class HTMLMapmlViewerElement extends HTMLElement {
           case 'geolocation':
             this._setControlsVisibility('geolocation', false);
             break;
+          case 'search':
+            this._setControlsVisibility('search', false);
+            break;
           case 'noscale':
             this._setControlsVisibility('scale', true);
             break;
@@ -576,6 +587,7 @@ export class HTMLMapmlViewerElement extends HTMLElement {
 
   // delete the map controls that are private properties of this custom element
   _deleteControls() {
+    delete this._searchButton;
     delete this._layerControl;
     delete this._zoomControl;
     delete this._reloadButton;
@@ -588,6 +600,11 @@ export class HTMLMapmlViewerElement extends HTMLElement {
   _setControlsVisibility(control, hide) {
     let container;
     switch (control) {
+      case 'search':
+        if (this._searchButton) {
+          container = this._searchButton._container;
+        }
+        break;
       case 'zoom':
         if (this._zoomControl) {
           container = this._zoomControl._container;
