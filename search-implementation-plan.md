@@ -54,6 +54,8 @@ Reference design: search.md. Example service response: geonames.json.
 - `disconnectedCallback()`: clear those refs.
 
 **Modify `src/mapml/control/SearchButton.js`:**
+- Disabled state: button has `aria-disabled="true"` and is visually grayed out when no visible layer has a `<map-link rel="search">` descendant. Panel does not open while disabled.
+- Enable/disable logic: listen for layer add/remove/checked/unchecked events; re-evaluate whether any visible layer has `_searchLink`. Update button state accordingly.
 - On debounced input (200ms, min 2 chars):
   - Collect visible layers with `_suggestionsLink`.
   - Resolve `tref` replacing `{searchTerms}` with URL-encoded value.

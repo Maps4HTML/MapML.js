@@ -12,6 +12,7 @@ Status: draft notes for agreed direction.
 - Panel close affordance: left-pointing close button/handle at mid-right edge.
 - Control is opt-in via `controlslist="search"` (like geolocation), not shown by default.
 - One control per map; multiple layers may participate in requests.
+- The search button is disabled (`aria-disabled="true"`, grayed out, panel will not open) when no visible `<map-layer>` has a descendant `<map-link rel="search">`. It becomes enabled when at least one visible layer provides a search link. This parallels the reload button being disabled when no movement has occurred.
 - Accessibility note: sliding over other controls may cause conflicts; mitigation remains TBD.
 
 ## Markup and API Notes

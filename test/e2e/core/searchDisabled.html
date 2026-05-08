@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Search Disabled State Test</title>
+  <meta charset="UTF-8">
+  <script type="module" src="mapml.js"></script>
+  <style>
+    html { height: 100% }
+    body { height: inherit; margin: 0; padding: 0; }
+  </style>
+</head>
+<body>
+  <mapml-viewer data-testid="viewer" style="height: 600px; width: 500px;"
+      projection="CBMTILE" zoom="0" lat="47" lon="-92" controls
+      controlslist="search">
+    <map-layer data-testid="local-layer" label="Local Layer" checked>
+      <map-extent units="CBMTILE" checked hidden>
+        <map-input name="z" type="zoom" value="3" min="0" max="3"></map-input>
+        <map-input name="y" type="location" units="tilematrix" axis="row" min="14" max="21"></map-input>
+        <map-input name="x" type="location" units="tilematrix" axis="column" min="14" max="19"></map-input>
+        <map-link rel="tile" tref="/data/cbmt/{z}/c{x}_r{y}.png"></map-link>
+      </map-extent>
+    </map-layer>
+    <map-layer data-testid="remote-layer" label="Remote Layer" src="no-search-layer.mapml" checked>
+    </map-layer>
+  </mapml-viewer>
+</body>
+</html>

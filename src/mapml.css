@@ -995,6 +995,12 @@ label.mapml-layer-item-toggle {
 .mapml-search-button:hover {
   background: #f4f4f4;
 }
+.mapml-search-button[aria-disabled="true"] {
+  cursor: default;
+}
+.mapml-search-button[aria-disabled="true"]:hover {
+  background: #fff;
+}
 .mapml-search-panel[hidden] {
   display: none !important;
 }

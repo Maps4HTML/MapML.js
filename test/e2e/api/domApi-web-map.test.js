@@ -782,6 +782,70 @@ test.describe('web-map DOM API Tests', () => {
       expect(geolocation).toEqual(true);
       expect(reloadHidden).toEqual(true);
     });
+    test('controlslist search test', async () => {
+      const mapHandle = await page.evaluateHandle(() =>
+        document.querySelector('map')
+      );
+
+      // search control should be hidden by default (opt-in)
+      let searchHidden = await page.$eval(
+        '.leaflet-top.leaflet-left > .mapml-search-control',
+        (div) => div.hidden
+      );
+      expect(searchHidden).toEqual(true);
+
+      // enable search via controlslist attribute
+      await page.evaluate(
+        (map) => map.setAttribute('controlslist', 'search'),
+        mapHandle
+      );
+      let hascontrolslist = await page.evaluate(
+        (map) => map.getAttribute('controlslist'),
+        mapHandle
+      );
+      expect(hascontrolslist).toEqual('search');
+
+      searchHidden = await page.$eval(
+        '.leaflet-top.leaflet-left > .mapml-search-control',
+        (div) => div.hidden
+      );
+      expect(searchHidden).toEqual(false);
+
+      // remove search via controlsList property
+      await page.evaluate((map) => (map.controlsList = 'noreload'), mapHandle);
+      hascontrolslist = await page.evaluate(
+        (map) => map.getAttribute('controlslist'),
+        mapHandle
+      );
+      expect(hascontrolslist).toEqual('noreload');
+
+      searchHidden = await page.$eval(
+        '.leaflet-top.leaflet-left > .mapml-search-control',
+        (div) => div.hidden
+      );
+      expect(searchHidden).toEqual(true);
+
+      // enable search via controlsList property
+      await page.evaluate((map) => (map.controlsList = 'search'), mapHandle);
+      searchHidden = await page.$eval(
+        '.leaflet-top.leaflet-left > .mapml-search-control',
+        (div) => div.hidden
+      );
+      expect(searchHidden).toEqual(false);
+
+      // controlsList.supports('search') should be true
+      let searchSupported = await page.evaluate(
+        (map) => map.controlsList.supports('search'),
+        mapHandle
+      );
+      expect(searchSupported).toBe(true);
+
+      // reset controlslist for next test
+      await page.evaluate(
+        (map) => map.removeAttribute('controlslist'),
+        mapHandle
+      );
+    });
     test('controlslist removeAttribute', async () => {
       const mapHandle = await page.evaluateHandle(() =>
         document.querySelector('map')

@@ -91,6 +91,40 @@ export var SearchButton = Control.extend({
     this._closeBtn = closeBtn;
     this._panel = panel;
 
+    this._mapEl = map.options.mapEl;
+
+    // Set up layer observation for disabled state
+    this._onLoadedMetadata = () => this._updateDisabled();
+    this._layerObserver = new MutationObserver((mutations) => {
+      this._updateDisabled();
+      // When new layers are added, listen for their loadedmetadata
+      for (let mutation of mutations) {
+        for (let node of mutation.addedNodes) {
+          if (
+            node.nodeName &&
+            (node.nodeName.toUpperCase() === 'MAP-LAYER' ||
+              node.nodeName.toUpperCase() === 'LAYER-')
+          ) {
+            node.addEventListener('loadedmetadata', this._onLoadedMetadata);
+          }
+        }
+      }
+    });
+    this._layerObserver.observe(this._mapEl, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['checked', 'rel']
+    });
+    // Attach loadedmetadata listener to existing layers
+    this._mapEl
+      .querySelectorAll('map-layer, layer-')
+      .forEach((layer) =>
+        layer.addEventListener('loadedmetadata', this._onLoadedMetadata)
+      );
+
+    this._updateDisabled();
+
     return container;
   },
 
@@ -98,11 +132,48 @@ export var SearchButton = Control.extend({
     if (this._panel && this._panel.parentNode) {
       this._panel.parentNode.removeChild(this._panel);
     }
+    if (this._layerObserver) {
+      this._layerObserver.disconnect();
+    }
+    if (this._mapEl) {
+      this._mapEl
+        .querySelectorAll('map-layer, layer-')
+        .forEach((layer) =>
+          layer.removeEventListener('loadedmetadata', this._onLoadedMetadata)
+        );
+    }
     DomEvent.off(this._button, 'click', this._openPanel, this);
     DomEvent.off(this._closeBtn, 'click', this._closePanel, this);
   },
 
+  _hasSearchLayers: function () {
+    let layers = this._mapEl.querySelectorAll(
+      'map-layer[checked], layer-[checked]'
+    );
+    for (let layer of layers) {
+      let root = layer.src ? layer.shadowRoot : layer;
+      if (root && root.querySelector('map-link[rel=search]')) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  _updateDisabled: function () {
+    let hasSearch = this._hasSearchLayers();
+    if (hasSearch) {
+      this._button.setAttribute('aria-disabled', 'false');
+    } else {
+      this._button.setAttribute('aria-disabled', 'true');
+      // If panel is open, close it
+      if (!this._panel.hasAttribute('hidden')) {
+        this._closePanel();
+      }
+    }
+  },
+
   _openPanel: function () {
+    if (this._button.getAttribute('aria-disabled') === 'true') return;
     this._panel.removeAttribute('hidden');
     this._input.value = '';
     this._results.innerHTML = '';

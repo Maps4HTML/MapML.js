@@ -145,4 +145,46 @@ test.describe('Playwright web-map Element Tests', () => {
     const currPos = await page.$eval('body > map', () => window.pageYOffset);
     expect(currPos).toEqual(0);
   });
+
+  test.describe('Controls List search Attribute Tests', () => {
+    test('controlslist=search shows search control', async () => {
+      await page.$eval('body > map', (map) =>
+        map.setAttribute('controlslist', 'search')
+      );
+      let searchControl = await page.locator('.mapml-search-control');
+      await expect(searchControl).toBeVisible();
+    });
+    test('search control hidden when controlslist does not contain search', async () => {
+      await page.$eval('body > map', (map) =>
+        map.setAttribute('controlslist', 'noreload')
+      );
+      let searchControl = await page.locator('.mapml-search-control');
+      await expect(searchControl).toBeHidden();
+    });
+    test('search control persists after toggling controls', async () => {
+      await page.$eval('body > map', (map) =>
+        map.setAttribute('controlslist', 'search')
+      );
+      // toggle controls off
+      await page.click('body > map', { button: 'right' });
+      await page.click('.mapml-contextmenu > button:nth-of-type(6)');
+      // toggle controls on
+      await page.click('body > map', { button: 'right' });
+      await page.click('.mapml-contextmenu > button:nth-of-type(6)');
+
+      let searchControl = await page.locator('.mapml-search-control');
+      await expect(searchControl).toBeVisible();
+    });
+    test('controlsList property reflects search token', async () => {
+      let contains = await page.$eval('body > map', (map) =>
+        map.controlsList.contains('search')
+      );
+      expect(contains).toEqual(true);
+
+      // clean up
+      await page.$eval('body > map', (map) =>
+        map.removeAttribute('controlslist')
+      );
+    });
+  });
 });
