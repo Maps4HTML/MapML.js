@@ -47,6 +47,13 @@ export var SearchButton = Control.extend({
     panel.setAttribute('hidden', '');
     map.getContainer().appendChild(panel);
     DomEvent.disableClickPropagation(panel);
+    DomEvent.on(panel, 'mouseenter', function () {
+      map.scrollWheelZoom.disable();
+    });
+    DomEvent.on(panel, 'mouseleave', function () {
+      map.scrollWheelZoom.enable();
+    });
+    DomEvent.on(panel, 'wheel', DomEvent.stopPropagation);
 
     let input = DomUtil.create('input', 'mapml-search-input', panel);
     input.setAttribute('type', 'search');
