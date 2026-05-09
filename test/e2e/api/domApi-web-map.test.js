@@ -787,12 +787,11 @@ test.describe('web-map DOM API Tests', () => {
         document.querySelector('map')
       );
 
-      // search control should be hidden by default (opt-in)
-      let searchHidden = await page.$eval(
-        '.leaflet-top.leaflet-left > .mapml-search-control',
-        (div) => div.hidden
+      // search control should not exist by default (opt-in, lazily created)
+      let searchEl = await page.$(
+        '.leaflet-top.leaflet-left > .mapml-search-control'
       );
-      expect(searchHidden).toEqual(true);
+      expect(searchEl).toBeNull();
 
       // enable search via controlslist attribute
       await page.evaluate(
@@ -805,7 +804,7 @@ test.describe('web-map DOM API Tests', () => {
       );
       expect(hascontrolslist).toEqual('search');
 
-      searchHidden = await page.$eval(
+      let searchHidden = await page.$eval(
         '.leaflet-top.leaflet-left > .mapml-search-control',
         (div) => div.hidden
       );

@@ -502,7 +502,12 @@ export class HTMLMapmlViewerElement extends HTMLElement {
         })
         .addTo(this._map);
     }
-    if (!this._searchButton && totalSize + 49 <= mapSize) {
+    if (
+      !this._searchButton &&
+      this._controlsList &&
+      this._controlsList.contains('search') &&
+      totalSize + 49 <= mapSize
+    ) {
       totalSize += 49;
       this._searchButton = searchButton({ mapEl: this }).addTo(this._map);
     }
@@ -572,6 +577,11 @@ export class HTMLMapmlViewerElement extends HTMLElement {
             this._setControlsVisibility('geolocation', false);
             break;
           case 'search':
+            if (!this._searchButton) {
+              this._searchButton = searchButton({ mapEl: this }).addTo(
+                this._map
+              );
+            }
             this._setControlsVisibility('search', false);
             break;
           case 'noscale':

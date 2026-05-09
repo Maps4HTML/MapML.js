@@ -8,7 +8,7 @@ test.describe('Search button disabled state tests', () => {
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
-    await page.goto('searchDisabled.html', {waitUntil: 'networkidle'});
+    await page.goto('searchDisabled.html', { waitUntil: 'networkidle' });
     await page.waitForTimeout(1000);
   });
 
