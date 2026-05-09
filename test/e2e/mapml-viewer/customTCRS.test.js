@@ -9,7 +9,7 @@ test.describe('Playwright Custom TCRS Tests', () => {
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     page = await context.newPage();
-    await page.goto('customTCRS.html', {waitUntil: 'networkidle'});
+    await page.goto('customTCRS.html', { waitUntil: 'networkidle' });
   });
 
   test.afterAll(async function () {

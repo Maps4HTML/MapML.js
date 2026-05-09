@@ -7,7 +7,7 @@ exports.test = (path, zoomIn, zoomOut) => {
     test.beforeAll(async () => {
       context = await chromium.launchPersistentContext('', { slowMo: 250 });
       page = await context.newPage();
-      await page.goto(path, {waitUntil: 'networkidle'});
+      await page.goto(path, { waitUntil: 'networkidle' });
     });
 
     test('isVisible property false when zoomed out of bounds (zooming in)', async () => {

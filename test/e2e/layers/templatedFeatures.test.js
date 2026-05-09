@@ -37,7 +37,7 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
-    await page.goto('templatedFeatures.html', {waitUntil: 'networkidle'});
+    await page.goto('templatedFeatures.html', { waitUntil: 'networkidle' });
   });
 
   test.afterAll(async function () {
@@ -152,7 +152,7 @@ test.describe('Playwright templatedFeatures Layer Tests', () => {
     });
 
     test('templated features disabled when panned out of bounds', async () => {
-      await page.reload({waitUntil: 'networkidle'});
+      await page.reload({ waitUntil: 'networkidle' });
       await page.getByTestId('map2').evaluate((map) => {
         map.zoomTo(45.428, -75.346, 14);
       });
