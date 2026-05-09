@@ -93,8 +93,8 @@ Reference design: search.md. Example service response: geonames.json.
 ## Implementation Notes
 
 - `{searchTerms}` substitution: simple string replace on `tref`.
-- Search icon: first control in top-left (created before zoom).
-- Panel inside shadow DOM → inherits mapml.css.
+- Search icon: second control in top-left (created after zoom).
+- Panel inside shadow DOM → inherits mapml.css, grabs focus from map for scroll behaviour
 
 ## Out of Scope
 
