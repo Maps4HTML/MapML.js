@@ -243,4 +243,53 @@ app.use(
 
 console.log('Running on localhost:' + port);
 
+// Mock search suggestions endpoint for search control tests
+app.get('/search/suggestions', (req, res) => {
+  res.json({
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: { display_name: 'Ottawa, Ontario, Canada', name: 'Ottawa' },
+        geometry: { type: 'Point', coordinates: [-75.6972, 45.4215] },
+        bbox: [-75.9, 45.2, -75.4, 45.6]
+      },
+      {
+        type: 'Feature',
+        properties: {
+          display_name: 'Ottawa River, Canada',
+          name: 'Ottawa River'
+        },
+        geometry: { type: 'Point', coordinates: [-75.5, 45.5] }
+      },
+      {
+        type: 'Feature',
+        properties: {
+          display_name: 'Gatineau, Quebec, Canada',
+          name: 'Gatineau'
+        },
+        geometry: { type: 'Point', coordinates: [-75.7, 45.48] }
+      }
+    ]
+  });
+});
+
+// Mock search results endpoint for search control tests
+app.get('/search/results', (req, res) => {
+  res.json({
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          display_name: 'Ottawa, Ontario, Canada',
+          name: 'Ottawa'
+        },
+        geometry: { type: 'Point', coordinates: [-75.6972, 45.4215] },
+        bbox: [-75.9, 45.2, -75.4, 45.6]
+      }
+    ]
+  });
+});
+
 app.listen(port);

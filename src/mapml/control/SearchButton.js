@@ -1,4 +1,4 @@
-import { Control, DomUtil, DomEvent } from 'leaflet';
+import { Control, DomUtil, DomEvent, latLngBounds } from 'leaflet';
 
 export var SearchButton = Control.extend({
   options: {
@@ -61,7 +61,34 @@ export var SearchButton = Control.extend({
         if (e.key === 'Escape') {
           DomEvent.stop(e);
           this._closePanel();
+        } else if (e.key === 'Enter') {
+          DomEvent.stop(e);
+          if (this._debounceTimer) {
+            clearTimeout(this._debounceTimer);
+            this._debounceTimer = null;
+          }
+          this._doSearch(this._input.value.trim());
         }
+      },
+      this
+    );
+
+    // Debounced input handler for suggestions
+    this._debounceTimer = null;
+    this._abortController = null;
+    DomEvent.on(
+      input,
+      'input',
+      function () {
+        if (this._debounceTimer) clearTimeout(this._debounceTimer);
+        let query = this._input.value.trim();
+        if (query.length < 2) {
+          this._results.innerHTML = '';
+          return;
+        }
+        this._debounceTimer = setTimeout(() => {
+          this._fetchSuggestions(query);
+        }, 300);
       },
       this
     );
@@ -185,6 +212,14 @@ export var SearchButton = Control.extend({
 
   _closePanel: function () {
     this._panel.classList.remove('mapml-search-panel-open');
+    if (this._abortController) {
+      this._abortController.abort();
+      this._abortController = null;
+    }
+    if (this._debounceTimer) {
+      clearTimeout(this._debounceTimer);
+      this._debounceTimer = null;
+    }
     let onEnd = () => {
       this._panel.setAttribute('hidden', '');
       this._button.focus();
@@ -192,6 +227,161 @@ export var SearchButton = Control.extend({
     };
     this._panel.addEventListener('transitionend', onEnd);
     setTimeout(onEnd, 300);
+  },
+
+  _getLinks: function (rel) {
+    let results = [];
+    let layers = this._mapEl.querySelectorAll(
+      'map-layer[checked], layer-[checked]'
+    );
+    for (let layer of layers) {
+      let root = layer.src ? layer.shadowRoot : layer;
+      if (root) {
+        let link = root.querySelector('map-link[rel=' + rel + ']');
+        if (link) {
+          results.push({ link: link, layer: layer });
+        }
+      }
+    }
+    return results;
+  },
+
+  _getSearchLinks: function () {
+    return this._getLinks('search');
+  },
+
+  _getSuggestionsLinks: function () {
+    return this._getLinks('suggestions');
+  },
+
+  _resolveUrl: function (link, query) {
+    let tref = link.getAttribute('tref') || '';
+    let url = tref.replace('{searchTerms}', encodeURIComponent(query));
+    if (link.getBase) {
+      try {
+        return new URL(url, link.getBase()).href;
+      } catch (e) {
+        return url;
+      }
+    }
+    return url;
+  },
+
+  _fetchSuggestions: function (query) {
+    if (this._button.getAttribute('aria-disabled') === 'true') return;
+    let suggestionsLinks = this._getSuggestionsLinks();
+    if (suggestionsLinks.length === 0) return;
+
+    if (this._abortController) this._abortController.abort();
+    this._abortController = new AbortController();
+    let signal = this._abortController.signal;
+
+    let fetches = suggestionsLinks.map(({ link, layer }) => {
+      let url = this._resolveUrl(link, query);
+      return fetch(url, { signal })
+        .then((r) => r.json())
+        .then((data) => ({ data, link, layer }));
+    });
+
+    Promise.allSettled(fetches).then((settled) => {
+      if (signal.aborted) return;
+      let responses = settled
+        .filter((s) => s.status === 'fulfilled')
+        .map((s) => s.value);
+
+      let event = new CustomEvent('mapsuggestions', {
+        bubbles: true,
+        cancelable: true,
+        detail: { query, responses }
+      });
+      let cancelled = !this._mapEl.dispatchEvent(event);
+      if (!cancelled) {
+        this._defaultSuggestionsHandler({ query, responses });
+      }
+    });
+  },
+
+  _doSearch: function (query) {
+    if (!query || this._button.getAttribute('aria-disabled') === 'true') return;
+    let searchLinks = this._getSearchLinks();
+    if (searchLinks.length === 0) return;
+
+    if (this._abortController) this._abortController.abort();
+    this._abortController = new AbortController();
+    let signal = this._abortController.signal;
+
+    let fetches = searchLinks.map(({ link, layer }) => {
+      let url = this._resolveUrl(link, query);
+      return fetch(url, { signal })
+        .then((r) => r.json())
+        .then((data) => ({ data, link, layer }));
+    });
+
+    Promise.allSettled(fetches).then((settled) => {
+      if (signal.aborted) return;
+      let responses = settled
+        .filter((s) => s.status === 'fulfilled')
+        .map((s) => s.value);
+
+      let event = new CustomEvent('mapsearch', {
+        bubbles: true,
+        cancelable: true,
+        detail: { query, responses }
+      });
+      let cancelled = !this._mapEl.dispatchEvent(event);
+      if (!cancelled) {
+        this._defaultSearchHandler({ query, responses });
+      }
+    });
+  },
+
+  _defaultSuggestionsHandler: function ({ query, responses }) {
+    this._renderResults(responses);
+  },
+
+  _defaultSearchHandler: function ({ query, responses }) {
+    this._renderResults(responses);
+  },
+
+  _renderResults: function (responses) {
+    this._results.innerHTML = '';
+    for (let { data, layer } of responses) {
+      if (!data || !data.features) continue;
+      for (let feature of data.features) {
+        let btn = document.createElement('button');
+        btn.className = 'mapml-search-result';
+        btn.setAttribute('type', 'button');
+        btn.textContent =
+          feature.properties.display_name ||
+          feature.properties.name ||
+          'Unnamed';
+        btn.addEventListener(
+          'click',
+          (
+            (f, l) => () =>
+              this._selectResult(f, l)
+          )(feature, layer)
+        );
+        this._results.appendChild(btn);
+      }
+    }
+  },
+
+  _selectResult: function (feature, layer) {
+    let map = this._map;
+    if (feature.bbox && feature.bbox.length === 4) {
+      let [west, south, east, north] = feature.bbox;
+      map.fitBounds(latLngBounds([south, west], [north, east]));
+    } else if (
+      feature.geometry &&
+      feature.geometry.coordinates &&
+      feature.geometry.coordinates.length >= 2
+    ) {
+      let [lon, lat] = feature.geometry.coordinates;
+      let zoom = (feature.properties && feature.properties.zoom) || 14;
+      map.setView([lat, lon], zoom);
+    }
+    this._closePanel();
   }
 });
 

@@ -64,7 +64,9 @@ export class HTMLLinkElement extends HTMLElement {
         'zoomout',
         'legend',
         'query',
-        'stylesheet'
+        'stylesheet',
+        'search',
+        'suggestions'
       ].includes(val)
     ) {
       this.setAttribute('type', val);
@@ -312,6 +314,10 @@ export class HTMLLinkElement extends HTMLElement {
         break;
       case 'license':
         // this._createLicenseLink();
+        break;
+      case 'search':
+      case 'suggestions':
+        // no-op: discoverable via DOM query from SearchButton
         break;
     }
     // the media attribute uses / overrides the disabled attribute to enable or
@@ -1113,6 +1119,8 @@ export class HTMLLinkElement extends HTMLElement {
         case 'zoomout':
         case 'legend':
         case 'license':
+        case 'search':
+        case 'suggestions':
           resolve();
           break;
         default:

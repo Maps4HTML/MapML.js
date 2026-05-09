@@ -119,6 +119,9 @@
     
     <mapml-viewer projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation search">
       <map-layer data-testid="osm-layer" label="OpenStreetMap" checked >
+        <!-- nominatim doesn't support CORS header, but you can 
+         build and run your own if you want 
+         tref="https://nominatim.openstreetmap.org/search?q={searchTerms}&format=geojson" -->
         <map-link rel="search"></map-link>
         <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
         <map-extent units="OSMTILE" checked="checked">

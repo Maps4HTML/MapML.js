@@ -1039,6 +1039,27 @@ label.mapml-layer-item-toggle {
   overflow-y: auto;
   padding: 0 8px 8px;
 }
+.mapml-search-result {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  text-align: left;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mapml-search-result:hover {
+  background: #f0f0f0;
+}
+.mapml-search-result:focus {
+  outline: 2px solid #4A90D9;
+  outline-offset: -2px;
+}
 .mapml-search-close {
   position: absolute;
   right: -24px;
