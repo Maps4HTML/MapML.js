@@ -79,7 +79,7 @@ test.describe('Locate API Test', () => {
   });
 
   test('Testing API when the button is used', async () => {
-    await page.reload();
+    await page.reload({waitUntil: 'networkidle'});
     await page.click('body > mapml-viewer');
     await page.getByTitle('Show my location - location tracking off').click();
 
@@ -88,6 +88,7 @@ test.describe('Locate API Test', () => {
     await page.mouse.move(1200, 450, { steps: 5 });
     await page.mouse.up();
     await page.$eval('body > mapml-viewer', (viewer) => viewer.locate());
+    await page.waitForTimeout(1000);
 
     let locateAPI_lat = await page.$eval(
       'body > mapml-viewer',

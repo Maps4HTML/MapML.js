@@ -117,33 +117,36 @@
   </head>
   <body>
     
-    <mapml-viewer projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation search">
-      <map-layer data-testid="osm-layer" label="OpenStreetMap" checked >
-        <!-- nominatim doesn't support CORS header, but you can 
-         build and run your own if you want 
-         tref="https://nominatim.openstreetmap.org/search?q={searchTerms}&format=geojson" -->
-        <map-link rel="search"></map-link>
-        <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
-        <map-extent units="OSMTILE" checked="checked">
-          <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
-          <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
-          <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="262144"></map-input>
-          <map-link rel="tile" tref="https://tile.openstreetmap.org/{z}/{x}/{y}.png"></map-link>
+    <mapml-viewer projection="CBMTILE" controls controlslist="search" zoom="16" lat="45.406314" lon="-75.6883335">
+      <map-layer label="Canada Base Map - Transportation" checked>
+        <map-link rel="suggestions" tref="https://geogratis.gc.ca/services/geoname/en/geonames.json?q={searchTerms}*&num=20"></map-link>
+        <map-link rel="search" tref="https://geogratis.gc.ca/services/geoname/en/geonames.json?q={searchTerms}&num=20"></map-link>
+        <map-extent checked units="CBMTILE">
+          <map-meta name="extent" content="top-left-easting=-5388605, top-left-northing=7005413, bottom-right-easting=3895643, bottom-right-northing=-4427255"></map-meta>
+          <map-link rel="license" href="https://open.canada.ca/en/open-government-licence-canada" title="Open Government Licence - Canada"></map-link>
+          <map-input name="z" type="zoom" min="0" max="17" value="17"></map-input>
+          <map-input name="y" type="location" units="tilematrix" axis="row"></map-input>
+          <map-input name="x" type="location" units="tilematrix" axis="column"></map-input>
+          <map-link rel="tile" tref="https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer/tile/{z}/{y}/{x}?m4h=t"></map-link>
         </map-extent>
       </map-layer>
-      <map-layer label="Restaurants" checked="">
-        <map-meta name="extent" content="top-left-easting=-8433179, top-left-northing=5689316, bottom-right-easting=-8420968, bottom-right-northing=5683139"></map-meta>
-        <map-extent units="OSMTILE" checked="">
-           <map-select id="restaurants" name="cusine">
-               <map-option value="restaurants" selected="selected">All cuisines</map-option>
-               <map-option value="african">African</map-option>
-               <map-option value="asian">Asian</map-option>
-               <map-option value="cajun">Cajun</map-option>
-               <map-option value="indian">Indian</map-option>
-               <map-option value="italian">Italian</map-option>
-               <map-option value="mexican">Mexican</map-option>
-           </map-select>
-           <map-link media="(11 < map-zoom <= 18)" tref="https://maps4html.org/experiments/shared/restaurants/{cusine}.mapml" rel="features"></map-link>
+      <map-layer label="Current Conditions" checked>
+        <map-link rel="license" href="https://csw.open.canada.ca/geonetwork/srv/csw?service=CSW&version=2.0.2&request=GetRecordById&outputschema=csw:IsoRecord&elementsetname=full&id=1f864766-7f7f-4be7-8292-295065c65c78" title="TC211 Metadata for Current Conditions"></map-link>
+        <map-link rel="legend" href="https://geo.weather.gc.ca/geomet?version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=CURRENT_CONDITIONS&format=image/png&STYLE=default" title="default" width="35" height="5"></map-link>
+        <map-extent units="CBMTILE" checked="">
+          <map-input name="xmin" type="location" position="top-left" axis="easting" units="pcrs"></map-input>
+          <map-input name="ymin" type="location" position="bottom-left" axis="northing" units="pcrs"></map-input>
+          <map-input name="xmax" type="location" position="bottom-right" axis="easting" units="pcrs"></map-input>
+          <map-input name="ymax" type="location" position="top-right" axis="northing" units="pcrs"></map-input>
+          <map-input name="w" type="width" min="1" max="10000"></map-input>
+          <map-input name="h" type="height" min="1" max="10000"></map-input>
+          <map-input name="i" type="location" axis="i" units="map"></map-input>
+          <map-input name="j" type="location" axis="j" units="map"></map-input>
+          <map-select id="style-selector" name="style">
+            <map-option value="default" selected="">default</map-option>
+          </map-select>
+          <map-link rel="image" tref="https://geo.weather.gc.ca/geomet/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CURRENT_CONDITIONS&WIDTH={w}&HEIGHT={h}&FORMAT=image%2Fpng&TRANSPARENT=TRUE&STYLES={style}&CRS=EPSG:3978&BBOX={xmin},{ymin},{xmax},{ymax}"></map-link>
+          <map-link rel="query" data-query-link="true" tref="https://geo.weather.gc.ca/geomet/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=CURRENT_CONDITIONS&QUERY_LAYERS=CURRENT_CONDITIONS&WIDTH={w}&HEIGHT={h}&FORMAT=image%2Fpng&TRANSPARENT=TRUE&INFO_FORMAT=application%2Fjson&STYLES={style}&CRS=EPSG:3978&BBOX={xmin},{ymin},{xmax},{ymax}&I={i}&J={j}"></map-link>
         </map-extent>
       </map-layer>
     </mapml-viewer>
@@ -173,5 +176,48 @@
         </map-extent>
       </map-layer>
     </map>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const viewer = document.querySelector('mapml-viewer');
+
+        function renderGeonameResults(container, items, map) {
+          container.innerHTML = '';
+          for (const item of items) {
+            const btn = document.createElement('button');
+            btn.className = 'mapml-search-result';
+            btn.setAttribute('type', 'button');
+            btn.textContent = item.name
+              + (item.concise ? ' (' + item.concise.code + ')' : '')
+              + (item.province ? ', ' + item.province.code : '');
+            btn.addEventListener('click', () => {
+              if (item.bbox && item.bbox.length === 4) {
+                const [west, south, east, north] = item.bbox;
+                map.fitBounds([[south, west], [north, east]]);
+              } else {
+                map.setView([item.latitude, item.longitude], 10);
+              }
+              map._container
+                .querySelector('.mapml-search-panel')
+                .classList.remove('mapml-search-panel-open');
+            });
+            container.appendChild(btn);
+          }
+        }
+
+        viewer.addEventListener('mapsuggestions', (e) => {
+          e.preventDefault();
+          const container = viewer._map._container.querySelector('.mapml-search-results');
+          const allItems = e.detail.responses.flatMap(r => (r.data && r.data.items) || []);
+          renderGeonameResults(container, allItems, viewer._map);
+        });
+
+        viewer.addEventListener('mapsearch', (e) => {
+          e.preventDefault();
+          const container = viewer._map._container.querySelector('.mapml-search-results');
+          const allItems = e.detail.responses.flatMap(r => (r.data && r.data.items) || []);
+          renderGeonameResults(container, allItems, viewer._map);
+        });
+      });
+    </script>
   </body>
 </html>

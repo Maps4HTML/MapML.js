@@ -292,4 +292,99 @@ app.get('/search/results', (req, res) => {
   });
 });
 
+// Mock geonames suggestions endpoint (returns geonames-format items array)
+app.get('/geonames/suggestions', (req, res) => {
+  res.json({
+    items: [
+      {
+        id: 'FEVNT',
+        name: 'Ottawa',
+        latitude: 45.33339,
+        longitude: -75.58429,
+        bbox: [-76.3631149, 44.9445516, -75.2324963, 45.544859],
+        concise: { code: 'CITY' },
+        province: { code: '35' }
+      },
+      {
+        id: 'NAABK',
+        name: 'Arctic Ocean',
+        latitude: 80,
+        longitude: -140,
+        bbox: [-140.02, 79.98, -139.98, 80.02],
+        concise: { code: 'SEA' },
+        province: { code: '73' }
+      },
+      {
+        id: 'NAABI',
+        name: 'Atlantic Ocean',
+        latitude: 43,
+        longitude: -63,
+        bbox: [-63.02, 42.98, -62.98, 43.02],
+        concise: { code: 'SEA' },
+        province: { code: '73' }
+      }
+    ]
+  });
+});
+
+// Mock geonames search endpoint (returns geonames-format items array)
+app.get('/geonames/search', (req, res) => {
+  res.json({
+    items: [
+      {
+        id: 'FEVNT',
+        name: 'Ottawa',
+        latitude: 45.33339,
+        longitude: -75.58429,
+        bbox: [-76.3631149, 44.9445516, -75.2324963, 45.544859],
+        concise: { code: 'CITY' },
+        province: { code: '35' }
+      }
+    ]
+  });
+});
+
+// Mock second-layer geonames suggestions endpoint (returns different items)
+app.get('/geonames2/suggestions', (req, res) => {
+  res.json({
+    items: [
+      {
+        id: 'TRNTO',
+        name: 'Toronto',
+        latitude: 43.65107,
+        longitude: -79.347015,
+        bbox: [-79.6393, 43.4034, -79.1153, 43.8554],
+        concise: { code: 'CITY' },
+        province: { code: '35' }
+      },
+      {
+        id: 'MNTRL',
+        name: 'Montreal',
+        latitude: 45.50884,
+        longitude: -73.58781,
+        bbox: [-73.9726, 45.4104, -73.4742, 45.7047],
+        concise: { code: 'CITY' },
+        province: { code: '24' }
+      }
+    ]
+  });
+});
+
+// Mock second-layer geonames search endpoint
+app.get('/geonames2/search', (req, res) => {
+  res.json({
+    items: [
+      {
+        id: 'TRNTO',
+        name: 'Toronto',
+        latitude: 43.65107,
+        longitude: -79.347015,
+        bbox: [-79.6393, 43.4034, -79.1153, 43.8554],
+        concise: { code: 'CITY' },
+        province: { code: '35' }
+      }
+    ]
+  });
+});
+
 app.listen(port);
