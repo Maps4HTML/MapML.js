@@ -79,7 +79,7 @@ test.describe('Locate API Test', () => {
   });
 
   test('Testing API when the button is used', async () => {
-    await page.reload({waitUntil: 'networkidle'});
+    await page.reload({ waitUntil: 'networkidle' });
     await page.click('body > mapml-viewer');
     await page.getByTitle('Show my location - location tracking off').click();
 

@@ -117,7 +117,7 @@
   </head>
   <body>
     
-    <mapml-viewer projection="CBMTILE" controls controlslist="search" zoom="16" lat="45.406314" lon="-75.6883335">
+    <mapml-viewer projection="CBMTILE" controls controlslist="geolocation search" zoom="16" lat="45.406314" lon="-75.6883335">
       <map-layer label="Canada Base Map - Transportation" checked>
         <map-link rel="suggestions" tref="https://geogratis.gc.ca/services/geoname/en/geonames.json?q={searchTerms}*&num=20"></map-link>
         <map-link rel="search" tref="https://geogratis.gc.ca/services/geoname/en/geonames.json?q={searchTerms}&num=20"></map-link>
@@ -150,9 +150,15 @@
         </map-extent>
       </map-layer>
     </mapml-viewer>
-    <map is="web-map" projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation">
+    <map is="web-map" projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation search">
       <map-layer data-testid="osm-layer" label="OpenStreetMap" checked >
+
         <map-link rel="license" title="© OpenStreetMap contributors CC BY-SA" href="https://www.openstreetmap.org/copyright"></map-link>
+        <!-- Register your own geonames.org account at https://www.geonames.org/login
+             and enable web services at https://www.geonames.org/manageaccount
+             then replace username=demo with your username -->
+        <map-link rel="search" tref="https://secure.geonames.org/searchJSON?q={searchTerms}&maxRows=25&inclBbox=true&username=demo"></map-link>
+        <map-link rel="suggestions" tref="https://secure.geonames.org/searchJSON?name_startsWith={searchTerms}&maxRows=25&inclBbox=true&orderby=relevance&username=demo"></map-link>
         <map-extent units="OSMTILE" checked="checked">
           <map-input name="z" type="zoom" value="18" min="0" max="18"></map-input>
           <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="262144"></map-input>
@@ -216,6 +222,49 @@
           const container = viewer._map._container.querySelector('.mapml-search-results');
           const allItems = e.detail.responses.flatMap(r => (r.data && r.data.items) || []);
           renderGeonameResults(container, allItems, viewer._map);
+        });
+
+        // --- geonames.org custom handler for the <map is="web-map"> element ---
+        const webMap = document.querySelector('map[is=web-map]');
+
+        function renderGeonamesOrgResults(container, geonames, map) {
+          container.innerHTML = '';
+          for (const item of geonames) {
+            const btn = document.createElement('button');
+            btn.className = 'mapml-search-result';
+            btn.setAttribute('type', 'button');
+            btn.textContent = item.name
+              + (item.adminName1 ? ', ' + item.adminName1 : '')
+              + (item.countryName ? ', ' + item.countryName : '');
+            btn.addEventListener('click', () => {
+              if (item.bbox) {
+                map.fitBounds([
+                  [item.bbox.south, item.bbox.west],
+                  [item.bbox.north, item.bbox.east]
+                ]);
+              } else {
+                map.setView([parseFloat(item.lat), parseFloat(item.lng)], 10);
+              }
+              map._container
+                .querySelector('.mapml-search-panel')
+                .classList.remove('mapml-search-panel-open');
+            });
+            container.appendChild(btn);
+          }
+        }
+
+        webMap.addEventListener('mapsuggestions', (e) => {
+          e.preventDefault();
+          const container = webMap._map._container.querySelector('.mapml-search-results');
+          const allGeonames = e.detail.responses.flatMap(r => (r.data && r.data.geonames) || []);
+          renderGeonamesOrgResults(container, allGeonames, webMap._map);
+        });
+
+        webMap.addEventListener('mapsearch', (e) => {
+          e.preventDefault();
+          const container = webMap._map._container.querySelector('.mapml-search-results');
+          const allGeonames = e.detail.responses.flatMap(r => (r.data && r.data.geonames) || []);
+          renderGeonamesOrgResults(container, allGeonames, webMap._map);
         });
       });
     </script>

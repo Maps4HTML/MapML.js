@@ -124,9 +124,7 @@ test.describe('Search multi-layer tests', () => {
   test('Unchecking a layer excludes it from results', async () => {
     // Uncheck layer 2
     await page.evaluate(() => {
-      document
-        .querySelector('[data-testid=layer2]')
-        .removeAttribute('checked');
+      document.querySelector('[data-testid=layer2]').removeAttribute('checked');
     });
     await page.waitForTimeout(500);
 
