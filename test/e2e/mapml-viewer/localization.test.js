@@ -17,7 +17,7 @@ test.describe('<mapml-viewer> localization tests', () => {
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     page = await context.newPage();
-    await page.goto('localization.html');
+    await page.goto('localization.html',  {waitUntil: 'networkidle'});
 
     // fetch locales and check that they are not undefined
     browserLocale = await page.getByTestId('map-options').evaluate((t) => {
