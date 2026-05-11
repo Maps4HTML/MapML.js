@@ -1,0 +1,14 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+  <map-head>
+    <map-title>Japanese search layer</map-title>
+    <map-link rel="suggestions" tref="/search/ja/suggestions?q={searchTerms}"></map-link>
+    <map-link rel="search" tref="/search/ja/results?q={searchTerms}"></map-link>
+  </map-head>
+  <map-body>
+    <map-extent units="OSMTILE" checked="checked">
+      <map-input name="z" type="zoom" value="17" min="0" max="17"></map-input>
+      <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="131071"></map-input>
+      <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="131071"></map-input>
+    </map-extent>
+  </map-body>
+</mapml->

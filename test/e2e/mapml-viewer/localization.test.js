@@ -221,6 +221,48 @@ test.describe('<mapml-viewer> localization tests', () => {
     }
   });
 
+  test('Search button and panel messages match the locale key', async () => {
+    for (const [language, locale] of locales) {
+      const map = await page.getByTestId(language);
+
+      // search button title
+      const searchBtn = await map.locator('.mapml-search-button');
+      const searchTitle = await searchBtn.getAttribute('title');
+      expect(searchTitle).toBeTruthy();
+      expect(searchTitle).toBe(locale.btnSearch);
+
+      // search button aria-label
+      const searchAriaLabel = await searchBtn.getAttribute('aria-label');
+      expect(searchAriaLabel).toBe(locale.btnSearch);
+
+      // open the search panel
+      await searchBtn.click();
+      await page.waitForTimeout(400);
+
+      // search input placeholder
+      const searchInput = await map.locator('.mapml-search-input');
+      const placeholder = await searchInput.getAttribute('placeholder');
+      expect(placeholder).toBeTruthy();
+      expect(placeholder).toBe(locale.searchPlaceholder);
+
+      // search input aria-label
+      const inputAriaLabel = await searchInput.getAttribute('aria-label');
+      expect(inputAriaLabel).toBe(locale.btnSearch);
+
+      // close button title and aria-label
+      const closeBtn = await map.locator('.mapml-search-close');
+      const closeTitle = await closeBtn.getAttribute('title');
+      expect(closeTitle).toBeTruthy();
+      expect(closeTitle).toBe(locale.btnSearchClose);
+      const closeAriaLabel = await closeBtn.getAttribute('aria-label');
+      expect(closeAriaLabel).toBe(locale.btnSearchClose);
+
+      // close the panel
+      await closeBtn.click();
+      await page.waitForTimeout(400);
+    }
+  });
+
   test('Hover messages for location tracking matches the locale key', async () => {
     for (const [language, locale] of locales) {
       // select the current map

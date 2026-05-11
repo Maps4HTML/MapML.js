@@ -387,4 +387,47 @@ app.get('/geonames2/search', (req, res) => {
   });
 });
 
+// Mock Japanese search suggestions endpoint (GeoJSON format)
+app.get('/search/ja/suggestions', (req, res) => {
+  res.json({
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: { display_name: '東京都, 日本', name: '東京' },
+        geometry: { type: 'Point', coordinates: [139.6917, 35.6895] },
+        bbox: [138.9428, 35.5187, 139.9219, 35.8984]
+      },
+      {
+        type: 'Feature',
+        properties: {
+          display_name: '東京タワー, 東京都, 日本',
+          name: '東京タワー'
+        },
+        geometry: { type: 'Point', coordinates: [139.7454, 35.6586] }
+      },
+      {
+        type: 'Feature',
+        properties: { display_name: '東京駅, 東京都, 日本', name: '東京駅' },
+        geometry: { type: 'Point', coordinates: [139.7671, 35.6812] }
+      }
+    ]
+  });
+});
+
+// Mock Japanese search results endpoint (GeoJSON format)
+app.get('/search/ja/results', (req, res) => {
+  res.json({
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: { display_name: '東京都, 日本', name: '東京' },
+        geometry: { type: 'Point', coordinates: [139.6917, 35.6895] },
+        bbox: [138.9428, 35.5187, 139.9219, 35.8984]
+      }
+    ]
+  });
+});
+
 app.listen(port);

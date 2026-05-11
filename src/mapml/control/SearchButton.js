@@ -11,6 +11,7 @@ export var SearchButton = Control.extend({
   },
   onAdd: function (map) {
     let locale = this._getLocale(map);
+    this._locale = locale;
     let container = DomUtil.create('div', 'mapml-search-control leaflet-bar');
 
     let button = DomUtil.create(
@@ -83,10 +84,39 @@ export var SearchButton = Control.extend({
     // Debounced input handler for suggestions
     this._debounceTimer = null;
     this._abortController = null;
+    // Track IME composition to avoid searching on intermediate input
+    this._isComposing = false;
+    DomEvent.on(
+      input,
+      'compositionstart',
+      function () {
+        this._isComposing = true;
+      },
+      this
+    );
+    DomEvent.on(
+      input,
+      'compositionend',
+      function () {
+        this._isComposing = false;
+        // Trigger search after composition ends
+        let query = this._input.value.trim();
+        if (query.length < 2) {
+          this._results.innerHTML = '';
+          return;
+        }
+        if (this._debounceTimer) clearTimeout(this._debounceTimer);
+        this._debounceTimer = setTimeout(() => {
+          this._fetchSuggestions(query);
+        }, 300);
+      },
+      this
+    );
     DomEvent.on(
       input,
       'input',
       function () {
+        if (this._isComposing) return;
         if (this._debounceTimer) clearTimeout(this._debounceTimer);
         let query = this._input.value.trim();
         if (query.length < 2) {
@@ -111,8 +141,11 @@ export var SearchButton = Control.extend({
       panel
     );
     closeBtn.setAttribute('type', 'button');
-    closeBtn.setAttribute('aria-label', locale.btnClose || 'Close');
-    closeBtn.title = locale.btnClose || 'Close';
+    closeBtn.setAttribute(
+      'aria-label',
+      locale.btnSearchClose || 'Close search'
+    );
+    closeBtn.title = locale.btnSearchClose || 'Close search';
     closeBtn.innerHTML =
       '<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 24 24" fill="currentColor">' +
       '<path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>' +
@@ -358,10 +391,7 @@ export var SearchButton = Control.extend({
         let btn = document.createElement('button');
         btn.className = 'mapml-search-result';
         btn.setAttribute('type', 'button');
-        btn.textContent =
-          feature.properties.display_name ||
-          feature.properties.name ||
-          'Unnamed';
+        btn.textContent = this._formatResultName(feature.properties);
         btn.addEventListener(
           'click',
           (
@@ -374,10 +404,36 @@ export var SearchButton = Control.extend({
     }
   },
 
+  _formatResultName: function (props) {
+    if (!props) return this._locale?.searchResultWithNoName || 'Unnamed';
+    if (props.display_name) return props.display_name;
+    let parts = [props.name];
+    // Build context from common geocoder properties (Photon, etc.)
+    for (let key of ['city', 'county', 'state', 'country']) {
+      if (props[key] && props[key] !== props.name) parts.push(props[key]);
+    }
+    return (
+      parts.filter(Boolean).join(', ') ||
+      this._locale?.searchResultWithNoName ||
+      'Unnamed'
+    );
+  },
+
   _selectResult: function (feature, layer) {
     let map = this._map;
-    if (feature.bbox && feature.bbox.length === 4) {
-      let [west, south, east, north] = feature.bbox;
+    // Standard GeoJSON bbox
+    let bbox = feature.bbox;
+    // Photon stores extent in properties.extent [west, south, east, north]
+    if (
+      (!bbox || bbox.length !== 4) &&
+      feature.properties &&
+      feature.properties.extent &&
+      feature.properties.extent.length === 4
+    ) {
+      bbox = feature.properties.extent;
+    }
+    if (bbox && bbox.length === 4) {
+      let [west, south, east, north] = bbox;
       map.fitBounds(latLngBounds([south, west], [north, east]));
     } else if (
       feature.geometry &&

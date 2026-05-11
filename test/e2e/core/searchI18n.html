@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search i18n Tests</title>
+    <script type="module" src="mapml.js"></script>
+  </head>
+  <body>
+    <mapml-viewer
+      data-testid="viewer"
+      projection="OSMTILE"
+      zoom="5"
+      lat="35.68"
+      lon="139.69"
+      style="width: 600px; height: 400px;"
+      controls
+      controlslist="search"
+    >
+      <map-layer
+        data-testid="search-layer"
+        label="Japanese Search Layer"
+        src="search-japanese.mapml"
+        checked
+      ></map-layer>
+    </mapml-viewer>
+  </body>
+</html>
