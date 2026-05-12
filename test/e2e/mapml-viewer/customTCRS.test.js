@@ -9,7 +9,7 @@ test.describe('Playwright Custom TCRS Tests', () => {
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
     page = await context.newPage();
-    await page.goto('customTCRS.html');
+    await page.goto('customTCRS.html', { waitUntil: 'networkidle' });
   });
 
   test.afterAll(async function () {
@@ -17,7 +17,7 @@ test.describe('Playwright Custom TCRS Tests', () => {
   });
 
   test('Simple Custom TCRS, tiles load, mismatched layer disabled', async () => {
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(2000);
     const misMatchedLayerDisabled = await page.$eval(
       'body > mapml-viewer:nth-child(1)',
       (map) => map.querySelectorAll('map-layer')[0].hasAttribute('disabled')

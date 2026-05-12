@@ -15,7 +15,9 @@ test.describe('Playwright templatedPMTilesLayer Tests', () => {
   });
 
   test('Test rendered data', async ({ page }) => {
-    await page.goto('templatedPMTilesMVTLayer.html');
+    await page.goto('templatedPMTilesMVTLayer.html', {
+      waitUntil: 'networkidle'
+    });
     await page.waitForTimeout(1000);
     const viewer = page.getByTestId('viewer');
     // seems like a lot of pixels to allow to be different, but missing fonts
@@ -25,6 +27,7 @@ test.describe('Playwright templatedPMTilesLayer Tests', () => {
       maxDiffPixels: 1500
     });
     await viewer.evaluate((v) => v.zoomTo(0, 0, 2));
+    await page.waitForTimeout(2000);
     await expect(viewer).toHaveScreenshot('mvt-light-z2.png', {
       maxDiffPixels: 1500
     });
@@ -35,10 +38,12 @@ test.describe('Playwright templatedPMTilesLayer Tests', () => {
     await page.waitForTimeout(3000);
     const darkLayer = page.getByTestId('dark');
     await darkLayer.evaluate((l) => l.setAttribute('checked', 'checked'));
+    await page.waitForTimeout(1000);
     await expect(viewer).toHaveScreenshot('pmtiles-dark.png', {
       maxDiffPixels: 1500
     });
     await darkLayer.evaluate((l) => l.zoomTo());
+    await page.waitForTimeout(1000);
     await expect(viewer).toHaveScreenshot('pmtiles-dark-z10.png', {
       maxDiffPixels: 1500
     });
@@ -48,7 +53,9 @@ test.describe('Playwright templatedPMTilesLayer Tests', () => {
     page.on('console', async (msg) => {
       for (const arg of msg.args()) messages.push(await arg.jsonValue());
     });
-    await page.goto('templatedPMTilesMVTLayerMissingStyles.html');
+    await page.goto('templatedPMTilesMVTLayerMissingStyles.html', {
+      waitUntil: 'networkidle'
+    });
     await page.waitForTimeout(1000);
     let errorLoadingModule = false;
     let errorFindingRules = false;
@@ -68,7 +75,9 @@ test.describe('Playwright templatedPMTilesLayer Tests', () => {
     // failed
     expect(errorFindingRules).toBe(false);
     messages.length = 0;
-    await page.goto('templatedPMTilesMVTLayerMissingRuleKey.html');
+    await page.goto('templatedPMTilesMVTLayerMissingRuleKey.html', {
+      waitUntil: 'networkidle'
+    });
     await page.waitForTimeout(1000);
     errorLoadingModule = false;
     errorFindingRules = false;
@@ -86,7 +95,9 @@ test.describe('Playwright templatedPMTilesLayer Tests', () => {
     expect(errorFindingRules).toBe(true);
   });
   test('A protomaps map-link in a non-OSMTILE map-extent is never enabled', async () => {
-    await page.goto('templatedPMTilesCBMTILETest.html');
+    await page.goto('templatedPMTilesCBMTILETest.html', {
+      waitUntil: 'networkidle'
+    });
     await page.waitForTimeout(500);
     const viewer = page.getByTestId('viewer');
     const flexProjectionLayer = page.getByTestId('flexible-projection-layer');
@@ -103,7 +114,9 @@ test.describe('Playwright templatedPMTilesLayer Tests', () => {
   test('A protomaps map-link, parent map-extent and ancestor map-layer are disabled when out of bounds', async ({
     page
   }) => {
-    await page.goto('templatedPMTilesMVTLayer.html');
+    await page.goto('templatedPMTilesMVTLayer.html', {
+      waitUntil: 'networkidle'
+    });
     await page.waitForTimeout(1000);
     const viewer = page.getByTestId('viewer');
     const lightLayer = page.getByTestId('light');
@@ -137,7 +150,9 @@ test.describe('Playwright templatedPMTilesLayer Tests', () => {
     page.on('console', async (msg) => {
       for (const arg of msg.args()) messages.push(await arg.jsonValue());
     });
-    await page.goto('templatedPMTilesMVTLayer.html');
+    await page.goto('templatedPMTilesMVTLayer.html', {
+      waitUntil: 'networkidle'
+    });
     const viewer = page.getByTestId('viewer');
     const lightLayer = page.getByTestId('light');
     await lightLayer.evaluate((l) => l.removeAttribute('checked'));
@@ -191,7 +206,9 @@ test.describe('Playwright templatedPMTilesLayer Tests', () => {
     expect(errorNoYInput).toBe(true);
   });
   test('Custom pmtilesRules can render mvt data', async ({ page }) => {
-    await page.goto('templatedPMTilesMVTLayerCustomStyles.html');
+    await page.goto('templatedPMTilesMVTLayerCustomStyles.html', {
+      waitUntil: 'networkidle'
+    });
     await page.waitForTimeout(1000);
     const viewer = page.getByTestId('viewer');
     // seems like a lot of pixels to allow to be different, but missing fonts

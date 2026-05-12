@@ -66,10 +66,10 @@
     "rollup": "^3.29.5",
     "serve-static": "^1.15.0"
   },
-    "files": [
-      "dist",
+  "files": [
+    "dist",
     "LICENSE.md",
     "README.md",
     "CONTRIBUTING.md"
-    ]
+  ]
 }

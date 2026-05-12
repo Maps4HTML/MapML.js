@@ -803,6 +803,75 @@ test.describe('mapml-viewer DOM API Tests', () => {
       expect(geolocation).toEqual(true);
       expect(reloadHidden).toEqual(true);
     });
+    test('controlslist search test', async () => {
+      const viewerHandle = await page.evaluateHandle(() =>
+        document.querySelector('mapml-viewer')
+      );
+
+      // search control should not exist by default (opt-in, lazily created)
+      let searchEl = await page.$(
+        '.leaflet-top.leaflet-left > .mapml-search-control'
+      );
+      expect(searchEl).toBeNull();
+
+      // enable search via controlslist attribute
+      await page.evaluate(
+        (viewer) => viewer.setAttribute('controlslist', 'search'),
+        viewerHandle
+      );
+      let hascontrolslist = await page.evaluate(
+        (viewer) => viewer.getAttribute('controlslist'),
+        viewerHandle
+      );
+      expect(hascontrolslist).toEqual('search');
+
+      let searchHidden = await page.$eval(
+        '.leaflet-top.leaflet-left > .mapml-search-control',
+        (div) => div.hidden
+      );
+      expect(searchHidden).toEqual(false);
+
+      // remove search via controlsList property
+      await page.evaluate(
+        (viewer) => (viewer.controlsList = 'noreload'),
+        viewerHandle
+      );
+      hascontrolslist = await page.evaluate(
+        (viewer) => viewer.getAttribute('controlslist'),
+        viewerHandle
+      );
+      expect(hascontrolslist).toEqual('noreload');
+
+      searchHidden = await page.$eval(
+        '.leaflet-top.leaflet-left > .mapml-search-control',
+        (div) => div.hidden
+      );
+      expect(searchHidden).toEqual(true);
+
+      // enable search via controlsList property
+      await page.evaluate(
+        (viewer) => (viewer.controlsList = 'search'),
+        viewerHandle
+      );
+      searchHidden = await page.$eval(
+        '.leaflet-top.leaflet-left > .mapml-search-control',
+        (div) => div.hidden
+      );
+      expect(searchHidden).toEqual(false);
+
+      // controlsList.supports('search') should be true
+      let searchSupported = await page.evaluate(
+        (viewer) => viewer.controlsList.supports('search'),
+        viewerHandle
+      );
+      expect(searchSupported).toBe(true);
+
+      // reset controlslist for next test
+      await page.evaluate(
+        (viewer) => viewer.removeAttribute('controlslist'),
+        viewerHandle
+      );
+    });
     test('controlslist removeAttribute', async () => {
       const viewerHandle = await page.evaluateHandle(() =>
         document.querySelector('mapml-viewer')

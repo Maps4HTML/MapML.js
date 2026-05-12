@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Multi-Layer Tests</title>
+    <script type="module" src="mapml.js"></script>
+  </head>
+  <body>
+    <mapml-viewer
+      data-testid="viewer"
+      projection="CBMTILE"
+      zoom="5"
+      lat="45.4"
+      lon="-75.7"
+      style="width: 600px; height: 400px;"
+      controls
+      controlslist="search"
+    >
+      <map-layer
+        data-testid="layer1"
+        label="Geonames Layer 1"
+        src="search-geonames.mapml"
+        checked
+      ></map-layer>
+      <map-layer
+        data-testid="layer2"
+        label="Geonames Layer 2"
+        src="search-geonames2.mapml"
+        checked
+      ></map-layer>
+    </mapml-viewer>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const viewer = document.querySelector('[data-testid=viewer]');
+
+        // Custom handler that merges geonames items from all layers
+        // and tags each result with its source layer label
+        viewer.addEventListener('mapsuggestions', (e) => {
+          e.preventDefault();
+          const container = viewer._map._container.querySelector(
+            '.mapml-search-results'
+          );
+          container.innerHTML = '';
+          for (const { data, layer } of e.detail.responses) {
+            if (!data || !data.items) continue;
+            for (const item of data.items) {
+              const btn = document.createElement('button');
+              btn.className = 'mapml-search-result';
+              btn.setAttribute('type', 'button');
+              btn.dataset.layer = layer.getAttribute('label');
+              btn.textContent = item.name;
+              btn.addEventListener('click', () => {
+                if (item.bbox && item.bbox.length === 4) {
+                  const [west, south, east, north] = item.bbox;
+                  viewer._map.fitBounds([
+                    [south, west],
+                    [north, east]
+                  ]);
+                } else {
+                  viewer._map.setView([item.latitude, item.longitude], 10);
+                }
+                viewer._map._container
+                  .querySelector('.mapml-search-panel')
+                  .classList.remove('mapml-search-panel-open');
+              });
+              container.appendChild(btn);
+            }
+          }
+        });
+
+        viewer.addEventListener('mapsearch', (e) => {
+          e.preventDefault();
+          const container = viewer._map._container.querySelector(
+            '.mapml-search-results'
+          );
+          container.innerHTML = '';
+          for (const { data, layer } of e.detail.responses) {
+            if (!data || !data.items) continue;
+            for (const item of data.items) {
+              const btn = document.createElement('button');
+              btn.className = 'mapml-search-result';
+              btn.setAttribute('type', 'button');
+              btn.dataset.layer = layer.getAttribute('label');
+              btn.textContent = item.name;
+              btn.addEventListener('click', () => {
+                if (item.bbox && item.bbox.length === 4) {
+                  const [west, south, east, north] = item.bbox;
+                  viewer._map.fitBounds([
+                    [south, west],
+                    [north, east]
+                  ]);
+                } else {
+                  viewer._map.setView([item.latitude, item.longitude], 10);
+                }
+                viewer._map._container
+                  .querySelector('.mapml-search-panel')
+                  .classList.remove('mapml-search-panel-open');
+              });
+              container.appendChild(btn);
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

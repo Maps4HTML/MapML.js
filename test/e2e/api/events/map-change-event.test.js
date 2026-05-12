@@ -11,7 +11,9 @@ test.describe('Map-change event are only fired when layers/extents are checked o
     page =
       context.pages().find((page) => page.url() === 'about:blank') ||
       (await context.newPage());
-    await page.goto('events/map-change-event.html');
+    await page.goto('events/map-change-event.html', {
+      waitUntil: 'networkidle'
+    });
   });
 
   test.afterAll(async function () {

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Default Handler Tests</title>
+    <script type="module" src="mapml.js"></script>
+  </head>
+  <body>
+    <mapml-viewer
+      data-testid="viewer"
+      projection="CBMTILE"
+      zoom="5"
+      lat="45.4"
+      lon="-75.7"
+      style="width: 600px; height: 400px;"
+      controls
+      controlslist="search"
+    >
+      <map-layer
+        data-testid="search-layer"
+        label="Search Layer"
+        src="search-with-tref.mapml"
+        checked
+      ></map-layer>
+    </mapml-viewer>
+  </body>
+</html>

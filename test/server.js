@@ -243,4 +243,191 @@ app.use(
 
 console.log('Running on localhost:' + port);
 
+// Mock search suggestions endpoint for search control tests
+app.get('/search/suggestions', (req, res) => {
+  res.json({
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: { display_name: 'Ottawa, Ontario, Canada', name: 'Ottawa' },
+        geometry: { type: 'Point', coordinates: [-75.6972, 45.4215] },
+        bbox: [-75.9, 45.2, -75.4, 45.6]
+      },
+      {
+        type: 'Feature',
+        properties: {
+          display_name: 'Ottawa River, Canada',
+          name: 'Ottawa River'
+        },
+        geometry: { type: 'Point', coordinates: [-75.5, 45.5] }
+      },
+      {
+        type: 'Feature',
+        properties: {
+          display_name: 'Gatineau, Quebec, Canada',
+          name: 'Gatineau'
+        },
+        geometry: { type: 'Point', coordinates: [-75.7, 45.48] }
+      }
+    ]
+  });
+});
+
+// Mock search results endpoint for search control tests
+app.get('/search/results', (req, res) => {
+  res.json({
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          display_name: 'Ottawa, Ontario, Canada',
+          name: 'Ottawa'
+        },
+        geometry: { type: 'Point', coordinates: [-75.6972, 45.4215] },
+        bbox: [-75.9, 45.2, -75.4, 45.6]
+      }
+    ]
+  });
+});
+
+// Mock geonames suggestions endpoint (returns geonames-format items array)
+app.get('/geonames/suggestions', (req, res) => {
+  res.json({
+    items: [
+      {
+        id: 'FEVNT',
+        name: 'Ottawa',
+        latitude: 45.33339,
+        longitude: -75.58429,
+        bbox: [-76.3631149, 44.9445516, -75.2324963, 45.544859],
+        concise: { code: 'CITY' },
+        province: { code: '35' }
+      },
+      {
+        id: 'NAABK',
+        name: 'Arctic Ocean',
+        latitude: 80,
+        longitude: -140,
+        bbox: [-140.02, 79.98, -139.98, 80.02],
+        concise: { code: 'SEA' },
+        province: { code: '73' }
+      },
+      {
+        id: 'NAABI',
+        name: 'Atlantic Ocean',
+        latitude: 43,
+        longitude: -63,
+        bbox: [-63.02, 42.98, -62.98, 43.02],
+        concise: { code: 'SEA' },
+        province: { code: '73' }
+      }
+    ]
+  });
+});
+
+// Mock geonames search endpoint (returns geonames-format items array)
+app.get('/geonames/search', (req, res) => {
+  res.json({
+    items: [
+      {
+        id: 'FEVNT',
+        name: 'Ottawa',
+        latitude: 45.33339,
+        longitude: -75.58429,
+        bbox: [-76.3631149, 44.9445516, -75.2324963, 45.544859],
+        concise: { code: 'CITY' },
+        province: { code: '35' }
+      }
+    ]
+  });
+});
+
+// Mock second-layer geonames suggestions endpoint (returns different items)
+app.get('/geonames2/suggestions', (req, res) => {
+  res.json({
+    items: [
+      {
+        id: 'TRNTO',
+        name: 'Toronto',
+        latitude: 43.65107,
+        longitude: -79.347015,
+        bbox: [-79.6393, 43.4034, -79.1153, 43.8554],
+        concise: { code: 'CITY' },
+        province: { code: '35' }
+      },
+      {
+        id: 'MNTRL',
+        name: 'Montreal',
+        latitude: 45.50884,
+        longitude: -73.58781,
+        bbox: [-73.9726, 45.4104, -73.4742, 45.7047],
+        concise: { code: 'CITY' },
+        province: { code: '24' }
+      }
+    ]
+  });
+});
+
+// Mock second-layer geonames search endpoint
+app.get('/geonames2/search', (req, res) => {
+  res.json({
+    items: [
+      {
+        id: 'TRNTO',
+        name: 'Toronto',
+        latitude: 43.65107,
+        longitude: -79.347015,
+        bbox: [-79.6393, 43.4034, -79.1153, 43.8554],
+        concise: { code: 'CITY' },
+        province: { code: '35' }
+      }
+    ]
+  });
+});
+
+// Mock Japanese search suggestions endpoint (GeoJSON format)
+app.get('/search/ja/suggestions', (req, res) => {
+  res.json({
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: { display_name: '東京都, 日本', name: '東京' },
+        geometry: { type: 'Point', coordinates: [139.6917, 35.6895] },
+        bbox: [138.9428, 35.5187, 139.9219, 35.8984]
+      },
+      {
+        type: 'Feature',
+        properties: {
+          display_name: '東京タワー, 東京都, 日本',
+          name: '東京タワー'
+        },
+        geometry: { type: 'Point', coordinates: [139.7454, 35.6586] }
+      },
+      {
+        type: 'Feature',
+        properties: { display_name: '東京駅, 東京都, 日本', name: '東京駅' },
+        geometry: { type: 'Point', coordinates: [139.7671, 35.6812] }
+      }
+    ]
+  });
+});
+
+// Mock Japanese search results endpoint (GeoJSON format)
+app.get('/search/ja/results', (req, res) => {
+  res.json({
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: { display_name: '東京都, 日本', name: '東京' },
+        geometry: { type: 'Point', coordinates: [139.6917, 35.6895] },
+        bbox: [138.9428, 35.5187, 139.9219, 35.8984]
+      }
+    ]
+  });
+});
+
 app.listen(port);

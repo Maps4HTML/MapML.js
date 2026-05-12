@@ -111,7 +111,7 @@ the browser)' */
   height: 44px !important;
   line-height: 44px !important;
   font-size: 34px !important;
-  font-weight: normal;
+  font-weight: bold;
   text-align: center;
 }
 
@@ -233,7 +233,7 @@ button.mapml-contextmenu-item:disabled {
  */
 
 .leaflet-control-fullscreen a {  
-  background-image: url("data:image/svg+xml,%0A%3Csvg width='26' height='52' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cg transform='translate(0 -1000.4)'%3E%3Cuse transform='translate(0 26)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3Cuse transform='translate(0 26)' width='100%25' height='100%25' xlink:href='%23b'/%3E%3Cuse transform='translate(0 26)' width='100%25' height='100%25' xlink:href='%23c'/%3E%3Cuse transform='translate(0 26)' width='100%25' height='100%25' xlink:href='%23d'/%3E%3Cpath id='a' transform='translate(0 1000.4)' d='M5 15v6h6v-2H7v-4z' color='%23000' fill='%23404040'/%3E%3Cpath id='b' transform='translate(0 1000.4)' d='M21 15v6h-6v-2h4v-4z' color='%23000' fill='%23404040'/%3E%3Cpath d='M10 1037.4v4l1 1h4l1-1v-4l-1-1h-4z' color='%23000' fill='%23404040'/%3E%3Cpath id='d' d='M5 1011.4v-6h6v2H7v4z' color='%23000' fill='%23404040'/%3E%3Cpath id='c' d='M21 1011.4v-6h-6v2h4v4z' color='%23000' fill='%23404040'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%0A%3Csvg width='26' height='52' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cg transform='translate(0 -1000.4)'%3E%3Cuse transform='translate(0 26)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3Cuse transform='translate(0 26)' width='100%25' height='100%25' xlink:href='%23b'/%3E%3Cuse transform='translate(0 26)' width='100%25' height='100%25' xlink:href='%23c'/%3E%3Cuse transform='translate(0 26)' width='100%25' height='100%25' xlink:href='%23d'/%3E%3Cpath id='a' transform='translate(0 1000.4)' d='M5 15v6h6v-2H7v-4z' color='%23000' fill='%23000'/%3E%3Cpath id='b' transform='translate(0 1000.4)' d='M21 15v6h-6v-2h4v-4z' color='%23000' fill='%23000'/%3E%3Cpath d='M10 1037.4v4l1 1h4l1-1v-4l-1-1h-4z' color='%23000' fill='%23000'/%3E%3Cpath id='d' d='M5 1011.4v-6h6v2H7v4z' color='%23000' fill='%23000'/%3E%3Cpath id='c' d='M21 1011.4v-6h-6v2h4v4z' color='%23000' fill='%23000'/%3E%3C/g%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-size: 38px 76px;
   background-position: 3px 3px;
@@ -973,4 +973,111 @@ label.mapml-layer-item-toggle {
 
 .mapml-tile-group > svg { 
     overflow: visible;
+}
+
+/* Search control */
+.mapml-search-control {
+  z-index: 1000;
+}
+.mapml-search-button {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0;
+}
+.mapml-search-button:hover {
+  background: #f4f4f4;
+}
+.mapml-search-button[aria-disabled="true"] {
+  cursor: default;
+}
+.mapml-search-button[aria-disabled="true"]:hover {
+  background: #fff;
+}
+.mapml-search-panel[hidden] {
+  display: none !important;
+}
+.mapml-search-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background: #fff;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.2s ease-in-out;
+  z-index: 10000;
+}
+.mapml-search-panel-open {
+  transform: translateX(0);
+}
+.mapml-search-input {
+  width: calc(100% - 16px);
+  margin: 8px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.mapml-search-input:focus {
+  outline: 2px solid #4A90D9;
+  border-color: #4A90D9;
+}
+.mapml-search-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 8px 8px;
+}
+.mapml-search-result {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  text-align: left;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mapml-search-result:hover {
+  background: #f0f0f0;
+}
+.mapml-search-result:focus {
+  outline: 2px solid #4A90D9;
+  outline-offset: -2px;
+}
+.mapml-search-close {
+  position: absolute;
+  right: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  box-shadow: 2px 0 3px rgba(0,0,0,0.1);
+  visibility: hidden;
+}
+.mapml-search-panel-open .mapml-search-close {
+  visibility: visible;
 }

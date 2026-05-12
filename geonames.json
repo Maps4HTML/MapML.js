@@ -1,0 +1,370 @@
+{
+  "links": {
+    "self": {
+      "href": "https://geogratis.gc.ca/services/geoname/en/geonames?q=o*&num=3"
+    },
+    "alternate": [
+      {
+        "mediatype": "application/json",
+        "href": "https://geogratis.gc.ca/services/geoname/en/geonames.json?q=o*&num=3"
+      },
+      {
+        "mediatype": "text/html",
+        "href": "https://geogratis.gc.ca/services/geoname/en/geonames.html?q=o*&num=3"
+      },
+      {
+        "mediatype": "text/csv",
+        "href": "https://geogratis.gc.ca/services/geoname/en/geonames.csv?q=o*&num=3"
+      },
+      {
+        "mediatype": "application/vnd.google-earth.kml+xml",
+        "href": "https://geogratis.gc.ca/services/geoname/en/geonames.kml?q=o*&num=3"
+      },
+      {
+        "mediatype": "application/gml+xml",
+        "href": "https://geogratis.gc.ca/services/geoname/en/geonames.gml?q=o*&num=3"
+      },
+      {
+        "mediatype": "application/vnd.geo+json",
+        "href": "https://geogratis.gc.ca/services/geoname/en/geonames.geojson?q=o*&num=3"
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "NAABK",
+      "links": {
+        "self": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/geonames/NAABK"
+        },
+        "feature": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/features/899f2cdaba3611d892e2080020a0f4c9"
+        },
+        "language": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/language/und"
+        },
+        "status": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/status/official"
+        },
+        "concise": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/concise/SEA"
+        },
+        "generic": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/generic/1212"
+        },
+        "province": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/province/73"
+        }
+      },
+      "name": "Arctic Ocean",
+      "language": {
+        "code": "und",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/language/und"
+          }
+        }
+      },
+      "feature": {
+        "id": "899f2cdaba3611d892e2080020a0f4c9",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/features/899f2cdaba3611d892e2080020a0f4c9"
+          }
+        }
+      },
+      "category": "P",
+      "status": {
+        "code": "official",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/status/official"
+          }
+        }
+      },
+      "concise": {
+        "code": "SEA",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/concise/SEA"
+          }
+        }
+      },
+      "generic": {
+        "code": "1212",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/generic/1212"
+          }
+        }
+      },
+      "location": null,
+      "province": {
+        "code": "73",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/province/73"
+          }
+        }
+      },
+      "latitude": 80,
+      "longitude": -140,
+      "map": [
+        "079F11",
+        "079F12",
+        "079F14",
+        "089C04",
+        "089C05",
+        "089C06",
+        "089C07",
+        "089C08",
+        "089C09",
+        "089C10",
+        "089D12",
+        "089D13",
+        "089D14",
+        "089E02",
+        "089E03",
+        "089E04",
+        "089E06",
+        "089E07",
+        "089E08",
+        "089E09",
+        "099A06",
+        "099A07",
+        "099A09",
+        "099A10",
+        "099A15",
+        "099A16",
+        "099D01",
+        "107D12",
+        "107D"
+      ],
+      "relevance": 30000000,
+      "bbox": [-140.02, 79.98, -139.98, 80.02],
+      "accuracy": 100,
+      "position": {
+        "type": "Point",
+        "coordinates": [-140, 80]
+      },
+      "decision": "1983-11-23"
+    },
+    {
+      "id": "NAABI",
+      "links": {
+        "self": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/geonames/NAABI"
+        },
+        "feature": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/features/898da0a9ba3611d892e2080020a0f4c9"
+        },
+        "language": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/language/und"
+        },
+        "status": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/status/official"
+        },
+        "concise": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/concise/SEA"
+        },
+        "generic": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/generic/1212"
+        },
+        "province": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/province/73"
+        }
+      },
+      "name": "Atlantic Ocean",
+      "language": {
+        "code": "und",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/language/und"
+          }
+        }
+      },
+      "feature": {
+        "id": "898da0a9ba3611d892e2080020a0f4c9",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/features/898da0a9ba3611d892e2080020a0f4c9"
+          }
+        }
+      },
+      "category": "P",
+      "status": {
+        "code": "official",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/status/official"
+          }
+        }
+      },
+      "concise": {
+        "code": "SEA",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/concise/SEA"
+          }
+        }
+      },
+      "generic": {
+        "code": "1212",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/generic/1212"
+          }
+        }
+      },
+      "location": null,
+      "province": {
+        "code": "73",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/province/73"
+          }
+        }
+      },
+      "latitude": 43,
+      "longitude": -63,
+      "map": [
+        "010M03",
+        "001K11",
+        "001K12",
+        "001K13",
+        "001K14",
+        "001K15",
+        "001L13",
+        "001L14",
+        "001M03",
+        "001M04",
+        "001M07",
+        "001M12",
+        "001N02",
+        "001N07",
+        "001N10",
+        "001N13",
+        "002C06",
+        "002C13",
+        "002E03",
+        "002E05",
+        "002E07",
+        "002E10",
+        "002E11",
+        "002F12",
+        "002L12",
+        "003D04",
+        "010N16",
+        "010O13",
+        "011B"
+      ],
+      "relevance": 30000000,
+      "bbox": [-63.02, 42.98, -62.98, 43.02],
+      "accuracy": 100,
+      "position": {
+        "type": "Point",
+        "coordinates": [-63, 43]
+      },
+      "decision": "1983-11-23"
+    },
+    {
+      "id": "FEVNT",
+      "links": {
+        "self": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/geonames/FEVNT"
+        },
+        "feature": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/features/f7365c02d05211d892e2080020a0f4c9"
+        },
+        "language": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/language/und"
+        },
+        "status": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/status/official"
+        },
+        "concise": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/concise/CITY"
+        },
+        "generic": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/generic/1"
+        },
+        "province": {
+          "href": "https://geogratis.gc.ca/services/geoname/en/codes/province/35"
+        }
+      },
+      "name": "Ottawa",
+      "language": {
+        "code": "und",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/language/und"
+          }
+        }
+      },
+      "feature": {
+        "id": "f7365c02d05211d892e2080020a0f4c9",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/features/f7365c02d05211d892e2080020a0f4c9"
+          }
+        }
+      },
+      "category": "O",
+      "status": {
+        "code": "official",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/status/official"
+          }
+        }
+      },
+      "concise": {
+        "code": "CITY",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/concise/CITY"
+          }
+        }
+      },
+      "generic": {
+        "code": "1",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/generic/1"
+          }
+        }
+      },
+      "location": "Carleton; Russell",
+      "province": {
+        "code": "35",
+        "links": {
+          "self": {
+            "href": "https://geogratis.gc.ca/services/geoname/en/codes/province/35"
+          }
+        }
+      },
+      "latitude": 45.33339,
+      "longitude": -75.58429,
+      "map": [
+        "031G05",
+        "031G12",
+        "031G06",
+        "031G11",
+        "031F08",
+        "031F09",
+        "031G03",
+        "031G04",
+        "031F01",
+        "031B13"
+      ],
+      "relevance": 30000000,
+      "bbox": [-76.3631149, 44.9445516, -75.2324963, 45.544859],
+      "accuracy": 100,
+      "position": {
+        "type": "Point",
+        "coordinates": [-75.58429, 45.33339]
+      },
+      "decision": "2001-01-01"
+    }
+  ]
+}

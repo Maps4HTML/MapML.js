@@ -7,7 +7,7 @@ exports.test = (path, zoomIn, zoomOut) => {
     test.beforeAll(async () => {
       context = await chromium.launchPersistentContext('', { slowMo: 250 });
       page = await context.newPage();
-      await page.goto(path);
+      await page.goto(path, { waitUntil: 'networkidle' });
       // removes the 2nd layer element in the 1st map
       await page.$eval('xpath=/html/body/map', (controller) =>
         controller.removeChild(controller.children[1])

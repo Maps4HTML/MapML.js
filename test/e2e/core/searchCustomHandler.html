@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Custom Handler Tests</title>
+    <script type="module" src="mapml.js"></script>
+  </head>
+  <body>
+    <mapml-viewer
+      data-testid="viewer"
+      projection="CBMTILE"
+      zoom="5"
+      lat="45.4"
+      lon="-75.7"
+      style="width: 600px; height: 400px;"
+      controls
+      controlslist="search"
+    >
+      <map-layer
+        data-testid="search-layer"
+        label="Geonames Layer"
+        src="search-geonames.mapml"
+        checked
+      ></map-layer>
+    </mapml-viewer>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const viewer = document.querySelector('[data-testid=viewer]');
+
+        // Custom suggestions handler — parse geonames items array
+        viewer.addEventListener('mapsuggestions', (e) => {
+          e.preventDefault();
+          const container = viewer._map._container.querySelector(
+            '.mapml-search-results'
+          );
+          container.innerHTML = '';
+          for (const { data } of e.detail.responses) {
+            if (!data || !data.items) continue;
+            for (const item of data.items) {
+              const btn = document.createElement('button');
+              btn.className = 'mapml-search-result';
+              btn.setAttribute('type', 'button');
+              btn.dataset.lat = item.latitude;
+              btn.dataset.lon = item.longitude;
+              if (item.bbox) {
+                btn.dataset.bbox = JSON.stringify(item.bbox);
+              }
+              btn.textContent = item.name;
+              btn.addEventListener('click', () => {
+                if (item.bbox && item.bbox.length === 4) {
+                  const [west, south, east, north] = item.bbox;
+                  viewer._map.fitBounds([
+                    [south, west],
+                    [north, east]
+                  ]);
+                } else {
+                  viewer._map.setView([item.latitude, item.longitude], 10);
+                }
+                // close the panel
+                viewer._map._container
+                  .querySelector('.mapml-search-panel')
+                  .classList.remove('mapml-search-panel-open');
+              });
+              container.appendChild(btn);
+            }
+          }
+        });
+
+        // Custom search handler — parse geonames items array
+        viewer.addEventListener('mapsearch', (e) => {
+          e.preventDefault();
+          const container = viewer._map._container.querySelector(
+            '.mapml-search-results'
+          );
+          container.innerHTML = '';
+          for (const { data } of e.detail.responses) {
+            if (!data || !data.items) continue;
+            for (const item of data.items) {
+              const btn = document.createElement('button');
+              btn.className = 'mapml-search-result';
+              btn.setAttribute('type', 'button');
+              btn.dataset.lat = item.latitude;
+              btn.dataset.lon = item.longitude;
+              if (item.bbox) {
+                btn.dataset.bbox = JSON.stringify(item.bbox);
+              }
+              btn.textContent = item.name;
+              btn.addEventListener('click', () => {
+                if (item.bbox && item.bbox.length === 4) {
+                  const [west, south, east, north] = item.bbox;
+                  viewer._map.fitBounds([
+                    [south, west],
+                    [north, east]
+                  ]);
+                } else {
+                  viewer._map.setView([item.latitude, item.longitude], 10);
+                }
+                viewer._map._container
+                  .querySelector('.mapml-search-panel')
+                  .classList.remove('mapml-search-panel-open');
+              });
+              container.appendChild(btn);
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
