@@ -149,6 +149,11 @@
           <map-link rel="query" data-query-link="true" tref="https://geo.weather.gc.ca/geomet/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=CURRENT_CONDITIONS&QUERY_LAYERS=CURRENT_CONDITIONS&WIDTH={w}&HEIGHT={h}&FORMAT=image%2Fpng&TRANSPARENT=TRUE&INFO_FORMAT=application%2Fjson&STYLES={style}&CRS=EPSG:3978&BBOX={xmin},{ymin},{xmax},{ymax}&I={i}&J={j}"></map-link>
         </map-extent>
       </map-layer>
+      <map-layer label="Photon Search" checked>
+        <map-meta name="projection" content="CBMTILE"></map-meta>
+        <map-link rel="suggestions" tref="https://photon.komoot.io/api?q={searchTerms}"></map-link>
+        <map-link rel="search" tref="https://photon.komoot.io/api?q={searchTerms}"></map-link>
+      </map-layer>
     </mapml-viewer>
     <map lang="fr" is="web-map" projection="OSMTILE" zoom="14" lat="45.406314" lon="-75.6883335" controls controlslist="geolocation search">
       <map-layer data-testid="osm-layer" label="OpenStreetMap" checked >
@@ -190,42 +195,76 @@
       document.addEventListener('DOMContentLoaded', () => {
         const viewer = document.querySelector('mapml-viewer');
 
-        function renderGeonameResults(container, items, map) {
+        function renderResults(container, responses, map) {
           container.innerHTML = '';
-          for (const item of items) {
-            const btn = document.createElement('button');
-            btn.className = 'mapml-search-result';
-            btn.setAttribute('type', 'button');
-            btn.textContent = item.name
-              + (item.concise ? ' (' + item.concise.code + ')' : '')
-              + (item.province ? ', ' + item.province.code : '');
-            btn.addEventListener('click', () => {
-              if (item.bbox && item.bbox.length === 4) {
-                const [west, south, east, north] = item.bbox;
-                map.fitBounds([[south, west], [north, east]]);
-              } else {
-                map.setView([item.latitude, item.longitude], 10);
+          for (const r of responses) {
+            const data = r.data;
+            if (!data) continue;
+            // geogratis format (items array)
+            if (data.items) {
+              for (const item of data.items) {
+                const btn = document.createElement('button');
+                btn.className = 'mapml-search-result';
+                btn.setAttribute('type', 'button');
+                btn.textContent = item.name
+                  + (item.concise ? ' (' + item.concise.code + ')' : '')
+                  + (item.province ? ', ' + item.province.code : '');
+                btn.addEventListener('click', () => {
+                  if (item.bbox && item.bbox.length === 4) {
+                    const [west, south, east, north] = item.bbox;
+                    map.fitBounds([[south, west], [north, east]]);
+                  } else {
+                    map.setView([item.latitude, item.longitude], 10);
+                  }
+                  map._container
+                    .querySelector('.mapml-search-panel')
+                    .classList.remove('mapml-search-panel-open');
+                });
+                container.appendChild(btn);
               }
-              map._container
-                .querySelector('.mapml-search-panel')
-                .classList.remove('mapml-search-panel-open');
-            });
-            container.appendChild(btn);
+            }
+            // GeoJSON format (Photon etc.)
+            if (data.features) {
+              for (const feature of data.features) {
+                const props = feature.properties || {};
+                const parts = [props.name];
+                for (const key of ['city', 'county', 'state', 'country']) {
+                  if (props[key] && props[key] !== props.name) parts.push(props[key]);
+                }
+                const btn = document.createElement('button');
+                btn.className = 'mapml-search-result';
+                btn.setAttribute('type', 'button');
+                btn.textContent = parts.filter(Boolean).join(', ') || 'Unnamed';
+                btn.addEventListener('click', () => {
+                  const bbox = feature.bbox
+                    || (props.extent && props.extent.length === 4 ? props.extent : null);
+                  if (bbox && bbox.length === 4) {
+                    const [west, south, east, north] = bbox;
+                    map.fitBounds([[south, west], [north, east]]);
+                  } else if (feature.geometry && feature.geometry.coordinates) {
+                    const [lon, lat] = feature.geometry.coordinates;
+                    map.setView([lat, lon], props.zoom || 14);
+                  }
+                  map._container
+                    .querySelector('.mapml-search-panel')
+                    .classList.remove('mapml-search-panel-open');
+                });
+                container.appendChild(btn);
+              }
+            }
           }
         }
 
         viewer.addEventListener('mapsuggestions', (e) => {
           e.preventDefault();
           const container = viewer._map._container.querySelector('.mapml-search-results');
-          const allItems = e.detail.responses.flatMap(r => (r.data && r.data.items) || []);
-          renderGeonameResults(container, allItems, viewer._map);
+          renderResults(container, e.detail.responses, viewer._map);
         });
 
         viewer.addEventListener('mapsearch', (e) => {
           e.preventDefault();
           const container = viewer._map._container.querySelector('.mapml-search-results');
-          const allItems = e.detail.responses.flatMap(r => (r.data && r.data.items) || []);
-          renderGeonameResults(container, allItems, viewer._map);
+          renderResults(container, e.detail.responses, viewer._map);
         });
 
         // --- geonames.org custom handler for the <map is="web-map"> element ---
