@@ -13,13 +13,21 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 22
+        cache: npm
     - run: sudo apt-get install xvfb
-    - run: npm install
-    - run: npx playwright install  --with-deps
+    - run: npm ci
+    - name: Cache Playwright browsers
+      id: playwright-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+    - run: npx playwright install --with-deps
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
+    - run: npx playwright install-deps
+      if: steps.playwright-cache.outputs.cache-hit == 'true'
     - run: npm install -g grunt-cli
     - run: grunt default
     - run: xvfb-run --auto-servernum -- npx playwright test --grep-invert="popupTabNavigation\.test\.js|layerContextMenuKeyboard\.test\.js"  --workers=1 --retries=3
-#    - run: xvfb-run --auto-servernum -- npx playwright test --grep="popupTabNavigation\.test\.js|layerContextMenuKeyboard\.test\.js" --workers=1 --retries=3
-#    - run: xvfb-run --auto-servernum -- npm run jest
       env:
         CI: true
