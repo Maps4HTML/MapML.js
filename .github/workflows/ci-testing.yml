@@ -14,8 +14,9 @@ jobs:
       with:
         node-version: 22
         cache: npm
-    - run: sudo apt-get install xvfb
     - run: npm ci
+      env:
+        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
     - name: Cache Playwright browsers
       id: playwright-cache
       uses: actions/cache@v4
@@ -26,8 +27,7 @@ jobs:
       if: steps.playwright-cache.outputs.cache-hit != 'true'
     - run: npx playwright install-deps
       if: steps.playwright-cache.outputs.cache-hit == 'true'
-    - run: npm install -g grunt-cli
-    - run: grunt default
+    - run: npx grunt default
     - run: xvfb-run --auto-servernum -- npx playwright test --grep-invert="popupTabNavigation\.test\.js|layerContextMenuKeyboard\.test\.js"  --workers=1 --retries=3
       env:
         CI: true
