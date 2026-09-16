@@ -1,5 +1,5 @@
 ---
-name: mapml-geometry-markup
+name: map-geometry-markup
 description: Tells you how to correctly create and edit the markup for a <map-geometry> element. Use it when generating MapML output markup in an HTML page.
 ---
 

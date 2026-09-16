@@ -1,5 +1,5 @@
 ---
-name: mapml-meta-markup
+name: map-meta-markup
 description: Tells you how to correctly create and edit the markup for a <map-meta> element. Use it when generating MapML output markup in an HTML page or XHTML MapML document.
 ---
 

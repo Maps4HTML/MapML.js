@@ -1,5 +1,5 @@
 ---
-name: mapml-link-markup
+name: map-link-markup
 description: Tells you how to correctly create and edit the markup for a <map-link> element. Use it when generating MapML output markup in an HTML page.
 ---
 
@@ -125,8 +125,8 @@ Projection values [defined by the polyfill](../mapml-viewer#projection) include:
 
 ```html
 <mapml-viewer  projection="OSMTILE" zoom="1" lat="0" lon="0" controls>
- <layer- label="OpenStreetMap" src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" checked hidden  ></layer->
- <layer- label="TMS COG Source" checked>
+ <map-layer label="OpenStreetMap" src="https://geogratis.gc.ca/mapml/en/osmtile/osm/" checked hidden  ></map-layer>
+ <map-layer label="TMS COG Source" checked>
    <map-extent units="OSMTILE">
        <map-input name="zoom" type="zoom"  min="1" max="12"></map-input>
        <map-input name="row" type="location" axis="row" units="tilematrix" ></map-input>
@@ -135,7 +135,7 @@ Projection values [defined by the polyfill](../mapml-viewer#projection) include:
        <map-link tms rel="tile" tref="https://s3-eu-west-1.amazonaws.com/vito-lcv/global/2019/cog-grass-colored-fraction_grass/{zoom}/{col}/{row}.png">
    </map-link>
    </map-extent>
-   </layer->
+   </map-layer>
 </mapml-viewer>
 ```
 

@@ -1,5 +1,5 @@
 ---
-name: mapml-caption-markup
+name: map-caption-markup
 description: Tells you how to correctly create and edit the markup for a <map-caption> element. Use it when generating MapML output markup in an HTML page, especially when generating a `<mapml-viewer>` element, to describe the map's purpose, if possible and known.
 ---
 
