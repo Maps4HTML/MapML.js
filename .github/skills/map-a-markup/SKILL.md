@@ -1,5 +1,5 @@
 ---
-name: mapml-a-markup
+name: map-a-markup
 description: Tells you how to correctly create and edit the markup for a <map-a> element. Use it when generating MapML output markup in an HTML page, especially to wrap `<map-geometry>` content, either in whole or in part, just like how you might use `<a>` to wrap all or part of a paragraph of text in HTML.
 ---
 
