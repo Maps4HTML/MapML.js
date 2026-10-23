@@ -358,6 +358,76 @@ test.describe('Map Tile Dynamic Updates Tests', () => {
     expect(finalState.tile2Src).toBe('tiles/green-tile.png');
   });
 
+  test('tile content replaced while a layer is unchecked is not restored when it is checked again', async () => {
+    // Regression test for a <map-layer> whose <map-tile> children are
+    // generated, as a script rendering tiles for the current view does.
+    // Replacing them while the layer is unchecked used to leave the discarded
+    // tiles attached to the map, so checking the layer again drew them again
+    // alongside the current ones - two generations of content at once, and a
+    // doubled copy of the current generation.
+    await page.reload();
+    await page.waitForTimeout(1000);
+
+    const viewer = page.getByTestId('viewer');
+    const renderedTileSources = () =>
+      viewer.evaluate((v) => {
+        const sources = {};
+        for (const img of v.shadowRoot.querySelectorAll('img')) {
+          // ignore the map's own control imagery, count only tile images
+          if (!img.currentSrc.endsWith('-tile.png')) continue;
+          const name = img.currentSrc.split('/').pop();
+          sources[name] = (sources[name] || 0) + 1;
+        }
+        return sources;
+      });
+
+    // the fixture starts out showing green tiles
+    expect((await renderedTileSources())['green-tile.png']).toBeGreaterThan(0);
+
+    await viewer.evaluate((v) =>
+      v.querySelector('map-layer').removeAttribute('checked')
+    );
+    await page.waitForTimeout(500);
+    expect(await renderedTileSources()).toEqual({});
+
+    // While the layer is hidden, replace every tile with a new set drawn from
+    // a different image, the way a generator regenerates content for a view
+    // that changed while the layer was switched off.
+    await viewer.evaluate((v) => {
+      const layer = v.querySelector('map-layer');
+      layer.querySelectorAll('map-tile').forEach((tile) => tile.remove());
+      for (const [col, row] of [
+        [9, 10],
+        [9, 11],
+        [10, 10],
+        [10, 11]
+      ]) {
+        const tile = document.createElement('map-tile');
+        tile.setAttribute('zoom', '2');
+        tile.setAttribute('col', String(col));
+        tile.setAttribute('row', String(row));
+        tile.setAttribute('src', 'tiles/red-tile.png');
+        layer.appendChild(tile);
+      }
+    });
+    await page.waitForTimeout(500);
+    // nothing is drawn while the layer is unchecked
+    expect(await renderedTileSources()).toEqual({});
+
+    await viewer.evaluate((v) =>
+      v.querySelector('map-layer').setAttribute('checked', '')
+    );
+    await page.waitForTimeout(1000);
+
+    // only the tiles that are still in the DOM may be drawn, each once
+    const afterToggle = await renderedTileSources();
+    expect(afterToggle['green-tile.png']).toBeUndefined();
+    expect(afterToggle['red-tile.png']).toBeGreaterThan(0);
+    expect(afterToggle['red-tile.png']).toBeLessThanOrEqual(
+      await viewer.evaluate((v) => v.querySelectorAll('map-tile').length)
+    );
+  });
+
   test.afterAll(async () => {
     await context.close();
   });

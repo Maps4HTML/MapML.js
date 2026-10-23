@@ -58,8 +58,18 @@ export var MapTileLayer = GridLayer.extend({
   onRemove: function (map) {
     // Clean up pending tiles
     this._pendingTiles = {};
-    // remove _container from the dom, but don't delete it
-    DomUtil.remove(this._container);
+    const container = this._container;
+    // GridLayer.onRemove discards the rendered tiles and releases the zoom
+    // limits this layer registered with the map. Skipping it leaves the
+    // previously rendered tiles inside the detached container, so when the
+    // layer is added back (e.g. its map-layer is checked again) onAdd
+    // re-appends them and GridLayer.onAdd renders a second copy alongside.
+    GridLayer.prototype.onRemove.call(this, map);
+    // GridLayer.onRemove nulls _container, but onAdd re-appends this one
+    // rather than creating another, so put it back, emptied of the levels
+    // GridLayer.onAdd would otherwise orphan inside it.
+    container.textContent = '';
+    this._container = container;
   },
   setZIndex: function (zIndex) {
     this.options.zIndex = zIndex;
