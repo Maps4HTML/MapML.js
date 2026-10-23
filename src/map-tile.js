@@ -149,7 +149,21 @@ export class HTMLTileElement extends HTMLElement {
 
       // If this was the last tile in the layer, clean up the layer
       if (this._tileLayer._mapTiles && this._tileLayer._mapTiles.length === 0) {
-        this._tileLayer.remove();
+        // _createOrGetTileLayer added this MapTileLayer to a LayerGroup, so it
+        // has to be removed from that group. Layer.remove() only detaches it
+        // from the map - and does nothing at all while the group itself is off
+        // the map (e.g. the layer is unchecked), because the layer has no
+        // _map. Either way the group keeps its reference, and LayerGroup.onAdd
+        // re-adds every layer it holds, so each dead MapTileLayer reappears -
+        // container, stale tiles and all - the next time the layer is checked.
+        const parentLayerGroup = this._parentEl._templatedLayer?.removeLayer
+          ? this._parentEl._templatedLayer
+          : this._parentEl._layer;
+        if (parentLayerGroup?.removeLayer) {
+          parentLayerGroup.removeLayer(this._tileLayer);
+        } else {
+          this._tileLayer.remove();
+        }
         this._tileLayer = null;
         delete this._tileLayer;
       }
