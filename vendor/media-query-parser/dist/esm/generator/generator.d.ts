@@ -1,0 +1,16 @@
+import { QueryListNode, QueryNode, ConditionNode, FeatureNode, BooleanFeatureNode, PlainFeatureNode, ValueNode, RatioNode, IdentNode, NumberNode, ConditionWithoutOrNode, InParensNode, DimensionNode, RangeFeatureNode, DoubleRangeFeatureNode, SingleRangeFeatureNode } from "../utils.js";
+export declare const generateQueryList: (queryList: QueryListNode) => string;
+export declare const generateQuery: (mediaQuery: QueryNode) => string;
+export declare const generateInParens: (inParens: InParensNode) => string;
+export declare const generateCondition: (condition: ConditionNode | ConditionWithoutOrNode) => string;
+export declare const generateFeature: (feature: FeatureNode) => string;
+export declare const generateFeatureBoolean: (feature: BooleanFeatureNode) => string;
+export declare const generateFeatureValue: (feature: PlainFeatureNode) => string;
+export declare const generateFeatureRange: (feature: RangeFeatureNode) => string;
+export declare const generateFeatureSingleRange: (feature: SingleRangeFeatureNode) => string;
+export declare const generateFeatureDoubleRange: (feature: DoubleRangeFeatureNode) => string;
+export declare const generateValue: (value: ValueNode) => string;
+export declare const generateRatio: (ratio: RatioNode) => string;
+export declare const generateNumber: (number: NumberNode) => string;
+export declare const generateDimension: (dimension: DimensionNode) => string;
+export declare const generateIdent: (ident: IdentNode) => string;
