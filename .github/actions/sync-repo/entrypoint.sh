@@ -23,7 +23,12 @@ CLONE_DIR=$(mktemp -d)
 echo "Cloning destination git repository"
 git config --global user.email "$INPUT_USER_EMAIL"
 git config --global user.name "$INPUT_USER_NAME"
-git clone --single-branch --branch $INPUT_DESTINATION_BRANCH "https://$API_TOKEN_GITHUB@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
+# Supply the token through a credential helper instead of embedding it in the
+# clone URL. With libcurl >= 8.23, git treats a URL with embedded credentials
+# as redirected to the bare URL and drops the credentials, so the push fails.
+# The single quotes keep the token out of the `set -x` trace.
+git config --global credential.helper '!f() { echo username=x-access-token; echo "password=$API_TOKEN_GITHUB"; }; f'
+git clone --single-branch --branch $INPUT_DESTINATION_BRANCH "https://github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
 
 echo "Removing old destination files"
 # Ensure the (possibly nested) destination folder exists so a first-time
