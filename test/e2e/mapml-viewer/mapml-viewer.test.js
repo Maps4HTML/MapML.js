@@ -72,7 +72,16 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
     expect(extent.projection).toEqual('CBMTILE');
     expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
     expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+    // gcrs values go through proj4's inverse projection, whose transcendental
+    // math varies in the last ulp or two between browser/V8 versions
+    expect(extent.topLeft.gcrs.horizontal).toBeCloseTo(
+      expectedGCRS[0].horizontal,
+      6
+    );
+    expect(extent.topLeft.gcrs.vertical).toBeCloseTo(
+      expectedGCRS[0].vertical,
+      6
+    );
     expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
     expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
   });
@@ -83,7 +92,14 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
     expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
+    expect(extent.topLeft.gcrs.horizontal).toBeCloseTo(
+      expectedGCRS[1].horizontal,
+      6
+    );
+    expect(extent.topLeft.gcrs.vertical).toBeCloseTo(
+      expectedGCRS[1].vertical,
+      6
+    );
     expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
     expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
   });
@@ -265,6 +281,17 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
       });
     });
   });
+  // Pasting is asynchronous (navigator.clipboard.readText() resolves a promise,
+  // and Util._pasteLayer is itself async), so the layer count has to be polled
+  // rather than read immediately after the Control+v keypress.
+  const expectLayerCount = async (expected) =>
+    await expect
+      .poll(
+        async () =>
+          await page.$eval('body > mapml-viewer', (map) => map.layers.length)
+      )
+      .toEqual(expected);
+
   test('Paste geojson Layer to map using ctrl+v', async () => {
     await page.click('body > textarea#copyGeoJSON');
     await page.keyboard.press('Control+a');
@@ -272,11 +299,7 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    const layerCount = await page.$eval(
-      'body > mapml-viewer',
-      (map) => map.layers.length
-    );
-    expect(layerCount).toEqual(2);
+    await expectLayerCount(2);
   });
 
   test('Paste Link to map using ctrl+v', async () => {
@@ -286,12 +309,7 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    await page.waitForTimeout(1000);
-    const layerCount = await page.$eval(
-      'body > mapml-viewer',
-      (map) => map.layers.length
-    );
-    expect(layerCount).toEqual(3);
+    await expectLayerCount(3);
   });
 
   test('Paste Invalid text to map using ctrl+v', async () => {
@@ -301,11 +319,9 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    const layerCount = await page.$eval(
-      'body > mapml-viewer',
-      (map) => map.layers.length
-    );
-    expect(layerCount).toEqual(3);
+    // nothing should be added; allow the paste to settle before asserting
+    await page.waitForTimeout(1000);
+    await expectLayerCount(3);
   });
 
   test('Paste Invalid link to map using ctrl+v', async () => {
@@ -315,13 +331,9 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
+    // nothing should be added; allow the paste to settle before asserting
     await page.waitForTimeout(1000);
-    const layerCount = await page.$eval(
-      'body > mapml-viewer',
-      (map) => map.layers.length
-    );
-    await page.waitForTimeout(1000);
-    expect(layerCount).toEqual(3);
+    await expectLayerCount(3);
   });
 
   test('Paste links with GeoJSON content-type to map using ctrl+v', async () => {
@@ -331,12 +343,7 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    await page.waitForTimeout(1000);
-    const layerCount = await page.$eval(
-      'body > mapml-viewer',
-      (map) => map.layers.length
-    );
-    expect(layerCount).toEqual(4);
+    await expectLayerCount(4);
   });
 
   test('Paste links with JSON content-type to map using ctrl+v', async () => {
@@ -346,12 +353,7 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    await page.waitForTimeout(1000);
-    const layerCount = await page.$eval(
-      'body > mapml-viewer',
-      (map) => map.layers.length
-    );
-    expect(layerCount).toEqual(5);
+    await expectLayerCount(5);
   });
 
   test('Paste links with GeoJSON extension to map using ctrl+v', async () => {
@@ -361,12 +363,7 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    await page.waitForTimeout(1000);
-    const layerCount = await page.$eval(
-      'body > mapml-viewer',
-      (map) => map.layers.length
-    );
-    expect(layerCount).toEqual(6);
+    await expectLayerCount(6);
   });
 
   test('Paste links with JSON extension to map using ctrl+v', async () => {
@@ -376,12 +373,7 @@ test.describe('Playwright mapml-viewer Element Tests', () => {
 
     await page.click('body > mapml-viewer');
     await page.keyboard.press('Control+v');
-    await page.waitForTimeout(1000);
-    const layerCount = await page.$eval(
-      'body > mapml-viewer',
-      (map) => map.layers.length
-    );
-    expect(layerCount).toEqual(7);
+    await expectLayerCount(7);
   });
 
   test('Press spacebar when focus is on map', async () => {

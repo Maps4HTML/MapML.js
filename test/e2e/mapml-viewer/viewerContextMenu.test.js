@@ -1,5 +1,13 @@
 import { test, expect, chromium } from '@playwright/test';
 
+// gcrs values go through proj4's inverse projection, whose transcendental math
+// varies in the last ulp or two between browser/V8 versions, so compare them
+// approximately rather than with exact deep equality
+const expectGcrsCloseTo = (received, expected) => {
+  expect(received.horizontal).toBeCloseTo(expected.horizontal, 6);
+  expect(received.vertical).toBeCloseTo(expected.vertical, 6);
+};
+
 //expected topLeft values in the different cs, at the different
 //positions the map goes in
 let expectedPCRS = [
@@ -155,7 +163,7 @@ test.describe('Playwright mapml-viewer Context Menu (and api) Tests', () => {
     expect(extent.projection).toEqual('CBMTILE');
     expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
     expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+    expectGcrsCloseTo(extent.topLeft.gcrs, expectedGCRS[0]);
     expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
     expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
   });
@@ -186,7 +194,7 @@ test.describe('Playwright mapml-viewer Context Menu (and api) Tests', () => {
 
     expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
     expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
+    expectGcrsCloseTo(extent.topLeft.gcrs, expectedGCRS[1]);
     expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
     expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
   });
@@ -498,11 +506,17 @@ test.describe('Playwright mapml-viewer Context Menu (and api) Tests', () => {
     await page.keyboard.press('Shift+F10');
     await page.keyboard.press('p');
 
-    const layerLabel = await page.$eval(
-      'body > mapml-viewer',
-      (map) => map.layers[1].label
-    );
-    expect(layerLabel).toEqual('Pasted Layer');
+    // pasting is asynchronous (navigator.clipboard.readText() resolves a
+    // promise, and Util._pasteLayer is itself async), so poll for the layer
+    await expect
+      .poll(
+        async () =>
+          await page.$eval(
+            'body > mapml-viewer',
+            (map) => map.layers[1]?.label ?? null
+          )
+      )
+      .toEqual('Pasted Layer');
     // clean up
     await page.$eval('body > mapml-viewer', (map) =>
       map.removeChild(map.querySelector('[label="Pasted Layer"]'))
@@ -620,11 +634,41 @@ test.describe('Playwright mapml-viewer Context Menu (and api) Tests', () => {
   });
 
   test('Layer Context menu, Pressing enter on contextmenu focuses on checkbox element', async () => {
+    // The layer control starts out empty, and therefore hidden, until the
+    // inline <map-layer> registers itself. It is the 5th tab stop, so tabbing
+    // before it appears lands on the scale bar instead of the layer checkbox.
+    await expect(
+      page.locator('body > mapml-viewer').locator('.leaflet-control-layers')
+    ).toBeVisible();
     await page.click('body > mapml-viewer');
+    // An earlier context-menu interaction can leave a deferred map
+    // container focus() pending (ContextMenu.js schedules one in a
+    // setTimeout); if it lands mid-sequence it shifts every tab stop.
+    // Wait for focus to come to rest before counting tab stops.
+    await expect
+      .poll(async () =>
+        page.evaluate((hostSelector) => {
+          const active =
+            document.querySelector(hostSelector).shadowRoot.activeElement;
+          return active ? active.className : null;
+        }, 'mapml-viewer')
+      )
+      .toContain('leaflet-container');
     for (let i = 0; i < 5; i++) {
       await page.keyboard.press('Tab');
     }
     await page.keyboard.press('Enter');
+    // expanding the layer control moves focus to the layer's checkbox
+    // asynchronously, so poll rather than reading activeElement once
+    await expect
+      .poll(async () =>
+        page.evaluate((hostSelector) => {
+          const active =
+            document.querySelector(hostSelector).shadowRoot.activeElement;
+          return active ? active.nodeName : null;
+        }, 'mapml-viewer')
+      )
+      .toEqual('INPUT');
     const aHandle = await page.evaluateHandle(() =>
       document.querySelector('mapml-viewer')
     );

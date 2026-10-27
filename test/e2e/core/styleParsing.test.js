@@ -48,29 +48,30 @@ found, in expected shadow root location`, async () => {
   test(`Local layer content (no src) map-link[rel=features] remote styles \
 rendered as style/link in same order as found, in expected shadow root location`, async () => {
     const featuresLink = page.getByTestId('alabama-features');
-    const ids = await featuresLink.evaluate((link) => {
-      const elementSequence = link.shadowRoot.querySelectorAll(
-        'map-link[rel=stylesheet],map-style'
-      );
-      let ids = '';
-      for (let i = 0; i < elementSequence.length; i++)
-        ids +=
-          elementSequence[i].getAttribute('id') +
-          (i < elementSequence.length - 1 ? ',' : '');
-      return ids;
-    });
-    const renderedIds = await featuresLink.evaluate((link) => {
-      const elementSequence = link._templatedLayer._container.querySelectorAll(
-        'link[rel=stylesheet],style'
-      );
-      let ids = '';
-      for (let i = 0; i < elementSequence.length; i++)
-        ids +=
-          elementSequence[i].getAttribute('id') +
-          (i < elementSequence.length - 1 ? ',' : '');
-      return ids;
-    });
-    expect(ids).toEqual(renderedIds);
+    const idSequences = (link) => {
+      const sequence = (root, selector) =>
+        Array.from(root.querySelectorAll(selector))
+          .map((el) => el.getAttribute('id'))
+          .join(',');
+      return {
+        source: sequence(link.shadowRoot, 'map-link[rel=stylesheet],map-style'),
+        rendered: sequence(
+          link._templatedLayer._container,
+          'link[rel=stylesheet],style'
+        )
+      };
+    };
+    // The remote styles are fetched and grafted into the link's shadow root and
+    // then rendered into the layer container; both steps are async, so poll
+    // until each has content rather than racing them with a single read.
+    await expect
+      .poll(async () => {
+        const { source, rendered } = await featuresLink.evaluate(idSequences);
+        return source !== '' && rendered !== '';
+      })
+      .toBe(true);
+    const { source, rendered } = await featuresLink.evaluate(idSequences);
+    expect(source).toEqual(rendered);
   });
 
   test(`Local style children of map-extent rendered as style/link in same order \

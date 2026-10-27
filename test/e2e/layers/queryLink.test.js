@@ -16,6 +16,40 @@ test.describe('Playwright Query Link Tests', () => {
     await context.close();
   });
 
+  const POPUP_IFRAME =
+    'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe';
+
+  // The popup's <iframe> is repopulated via srcdoc every time the queried
+  // feature changes, so reading its document immediately races that load.
+  // Polling the heading also acts as a barrier for the rest of the popup:
+  // MapFeatureLayer.showPaginationFeature swaps the feature and the shadow root
+  // contents in BEFORE it sets srcdoc, so once the heading is up to date the
+  // other reads are safe.
+  // Returns null (rather than throwing) while the popup, its iframe or the
+  // heading are still missing, so that polling retries instead of failing.
+  const expectPopupHeading = async (expected) =>
+    await expect
+      .poll(async () => {
+        const iframe = page.locator(POPUP_IFRAME).first();
+        if ((await iframe.count()) === 0) return null;
+        try {
+          return await iframe.evaluate(
+            (el) => {
+              const h1 =
+                el.contentWindow &&
+                el.contentWindow.document.querySelector('h1');
+              return h1 ? h1.innerText : null;
+            },
+            undefined,
+            { timeout: 5000 }
+          );
+        } catch {
+          // the popup was replaced between the count and the read
+          return null;
+        }
+      })
+      .toEqual(expected);
+
   test.describe('Query Popup Tests', () => {
     test('Query link shows when within bounds', async () => {
       await page.getByLabel('Interactive map').click();
@@ -99,13 +133,10 @@ test.describe('Playwright Query Link Tests', () => {
         'div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.mapml-reload-button.leaflet-bar.leaflet-control > button'
       );
       await page.getByLabel('Interactive map').click();
+      await expectPopupHeading('Alabama');
       const feature = await page.locator('map-feature');
       const featureSvg = await feature.evaluate((feature) =>
         feature._groupEl.querySelector('path').getAttribute('d')
-      );
-      const popup = await page.$eval(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe',
-        (iframe) => iframe.contentWindow.document.querySelector('h1').innerText
       );
       const href = await page.$eval(
         'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > a.mapml-zoom-link',
@@ -115,7 +146,6 @@ test.describe('Playwright Query Link Tests', () => {
       expect(featureSvg).toEqual(
         'M259 279L263 279L264 281L265 285L266 286L266 287L266 287L267 287L266 288L266 288L266 288L266 289L266 290L267 291L266 291L260 292L260 293L260 293L260 294L261 294L260 294L260 294L259 294L259 293L259 293L259 294L259 294L258 294L257 289L257 283L257 280L257 280L259 279z'
       );
-      expect(popup).toEqual('Alabama');
       expect(href).toEqual('#6,32.62418749999957,-86.6801555');
 
       const elementCount = await page.evaluate(
@@ -132,14 +162,11 @@ test.describe('Playwright Query Link Tests', () => {
     test('Next feature added + popup content updated ', async () => {
       // clicks the "Next" ( > ) button in popup:
       await page.getByTitle('Next Feature').click();
+      await expectPopupHeading('Arizona');
       const feature = await page
         .locator('map-feature')
         .evaluate((f) => f._groupEl.firstChild.getAttribute('d'));
 
-      const popup = await page.$eval(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe',
-        (iframe) => iframe.contentWindow.document.querySelector('h1').innerText
-      );
       const href = await page.$eval(
         'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > a.mapml-zoom-link',
         (link) => link.getAttribute('href')
@@ -148,7 +175,6 @@ test.describe('Playwright Query Link Tests', () => {
       expect(feature).toEqual(
         'M205 271L201 288L196 287L193 285L187 280L187 280L188 280L188 279L188 279L188 279L188 278L189 277L189 277L189 276L189 276L190 276L190 275L190 275L190 274L190 273L190 273L190 273L190 272L190 271L191 270L191 270L192 270L192 270L192 270L193 267L201 270L205 271z'
       );
-      expect(popup).toEqual('Arizona');
       expect(href).toEqual('#0,34.168684499999635,-111.9288505');
 
       const elementCount = await page.evaluate(
@@ -164,6 +190,7 @@ test.describe('Playwright Query Link Tests', () => {
 
     test('Previous feature added + popup content updated ', async () => {
       await page.getByTitle('Previous Feature').click();
+      await expectPopupHeading('Alabama');
 
       //      await page.click(
       //              'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(2)'
@@ -171,10 +198,6 @@ test.describe('Playwright Query Link Tests', () => {
       const feature = await page
         .locator('map-feature')
         .evaluate((f) => f._groupEl.firstChild.getAttribute('d'));
-      const popup = await page.$eval(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe',
-        (iframe) => iframe.contentWindow.document.querySelector('h1').innerText
-      );
       const href = await page.$eval(
         'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > a.mapml-zoom-link',
         (link) => link.getAttribute('href')
@@ -183,7 +206,6 @@ test.describe('Playwright Query Link Tests', () => {
       expect(feature).toEqual(
         'M259 279L263 279L264 281L265 285L266 286L266 287L266 287L267 287L266 288L266 288L266 288L266 289L266 290L267 291L266 291L260 292L260 293L260 293L260 294L261 294L260 294L260 294L259 294L259 293L259 293L259 294L259 294L258 294L257 289L257 283L257 280L257 280L259 279z'
       );
-      expect(popup).toEqual('Alabama');
       expect(href).toEqual('#6,32.62418749999957,-86.6801555');
 
       const elementCount = await page.evaluate(
@@ -202,57 +224,42 @@ test.describe('Playwright Query Link Tests', () => {
         await page.getByTitle('Next Feature').click();
         await page.waitForTimeout(200);
       }
+      await expectPopupHeading('PCRS Test');
       const feature = await page
         .locator('map-feature')
         .evaluate((f) => f._groupEl.firstChild.getAttribute('d'));
-      const popup = await page.$eval(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe',
-        (iframe) => iframe.contentWindow.document.querySelector('h1').innerText
-      );
 
       expect(feature).toEqual('M246 332L232 207L138 232L156 307z');
-      expect(popup).toEqual('PCRS Test');
     });
 
     test('TCRS feature added + popup content updated ', async () => {
       await page.getByTitle('Next Feature').click();
+      await expectPopupHeading('TCRS Test');
       //      await page.click(
       //              'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > nav > button:nth-child(4)'
       //              );
       const feature = await page
         .locator('map-feature')
         .evaluate((f) => f._groupEl.firstChild.getAttribute('d'));
-      const popup = await page.$eval(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe',
-        (iframe) => iframe.contentWindow.document.querySelector('h1').innerText
-      );
 
       expect(feature).toEqual('M292 285L352 287L355 321L307 315z');
-      expect(popup).toEqual('TCRS Test');
     });
 
     test('Tilematrix feature added + popup content updated ', async () => {
       await page.getByTitle('Next Feature').click();
+      await expectPopupHeading('TILEMATRIX Test');
       const feature = await page
         .locator('map-feature')
         .evaluate((f) => f._groupEl.firstChild.getAttribute('d'));
-      const popup = await page.$eval(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe',
-        (iframe) => iframe.contentWindow.document.querySelector('h1').innerText
-      );
 
       expect(feature).toEqual('M307 185L395 185L395 273L307 273z');
-      expect(popup).toEqual('TILEMATRIX Test');
     });
     test('Synthesized point, valid location ', async () => {
       await page.getByTitle('Next Feature').click();
+      await expectPopupHeading('No Geometry');
       const feature = await page
         .locator('map-feature')
         .evaluate((f) => f._groupEl.firstChild.getAttribute('d'));
-      const popup = await page.$eval(
-        'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper > div > div > iframe',
-        (iframe) => iframe.contentWindow.document.querySelector('h1').innerText
-      );
       const link = await page.$eval(
         'div > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-popup-pane > div > div.leaflet-popup-content-wrapper',
         (popup) => popup.querySelector('a.mapml-zoom-link')
@@ -261,7 +268,6 @@ test.describe('Playwright Query Link Tests', () => {
       expect(feature).toEqual(
         'M250 250 L237.5 220 C237.5 200, 262.5 200, 262.5 220 L250 250z'
       );
-      expect(popup).toEqual('No Geometry');
       expect(link).toBeTruthy();
     });
 

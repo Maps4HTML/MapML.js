@@ -152,6 +152,7 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
       await page.keyboard.press('Enter');
       await page.waitForTimeout(500);
       await page.keyboard.down('Escape'); // focus back on feature
+      await page.waitForTimeout(100); // hold the key, see note below
       await page.keyboard.up('Escape');
       await page.waitForTimeout(500);
       const viewer = page.getByTestId('viewer');
@@ -179,7 +180,13 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
       await page.keyboard.press('Tab');
       await page.keyboard.press('Tab');
       await page.keyboard.press('Tab'); // focus on x button
+      // The popup is closed and focus is restored to the feature from a
+      // setTimeout(0) scheduled on keydown; geometry.js only (re)opens the
+      // tooltip when the matching keyUP targets the feature's <g>. Hold the
+      // key for a beat, like a real key press, so the close/refocus task runs
+      // before the keyup is delivered.
       await page.keyboard.down('Enter'); // press x button
+      await page.waitForTimeout(100);
       await page.keyboard.up('Enter');
       await page.waitForTimeout(500);
       const viewer = page.getByTestId('viewer');

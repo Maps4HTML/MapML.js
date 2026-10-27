@@ -29,8 +29,24 @@ exports.test = (path, expectedPCRS, expectedGCRS) => {
       expect(extent.hasOwnProperty('projection')).toBeTruthy();
       expect(extent.topLeft.pcrs).toEqual(expectedPCRS.topLeft);
       expect(extent.bottomRight.pcrs).toEqual(expectedPCRS.bottomRight);
-      expect(extent.topLeft.gcrs).toEqual(expectedGCRS.topLeft);
-      expect(extent.bottomRight.gcrs).toEqual(expectedGCRS.bottomRight);
+      // gcrs values go through proj4's inverse projection, whose transcendental
+      // math varies in the last ulp or two between browser/V8 versions
+      expect(extent.topLeft.gcrs.horizontal).toBeCloseTo(
+        expectedGCRS.topLeft.horizontal,
+        6
+      );
+      expect(extent.topLeft.gcrs.vertical).toBeCloseTo(
+        expectedGCRS.topLeft.vertical,
+        6
+      );
+      expect(extent.bottomRight.gcrs.horizontal).toBeCloseTo(
+        expectedGCRS.bottomRight.horizontal,
+        6
+      );
+      expect(extent.bottomRight.gcrs.vertical).toBeCloseTo(
+        expectedGCRS.bottomRight.vertical,
+        6
+      );
     });
     test('2nd <map-layer>.extent test', async () => {
       const extent = await page.$eval(
