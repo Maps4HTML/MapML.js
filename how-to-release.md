@@ -1,5 +1,5 @@
 # Release Guide
-**Publishing packages to NPM**
+**Publishing packages to npmjs.com / NPM**
 
 In `package.json` verify the name and update the version.
 
@@ -64,8 +64,6 @@ replacing `<previous-tag>` with the actual prior release tag (e.g. `v0.18.0`):
 git log <previous-tag>..HEAD --pretty=format:'- %s (%h, %an)'
 ```
 
-Edit that file freely — it is disposable and never committed or shipped.
-
 **GitHub release procedure**
 
 Create the release from the canonical `Maps4HTML/MapML.js` repository so the tag
@@ -75,22 +73,6 @@ _Via the web UI:_ visit the [release page](https://github.com/Maps4HTML/MapML.js
 and click `Draft a new release`. In the `Choose a tag` dropdown, type the new
 `vX.Y.Z` tag (GitHub creates it on publish), set the target to the merged
 release commit on `main`, paste in your notes, and publish.
-
-_Via the GitHub CLI_ (lets you create an editable **draft** from your notes
-file, then review/publish):
-```bash
-gh release create vX.Y.Z --draft --title "vX.Y.Z" --notes-file RELEASE-NOTES-X.Y.Z.md
-```
-Open the draft, make any final edits, then publish it. Publishing the release is
-what creates and pushes the `vX.Y.Z` tag, so no separate `git push` of a tag is
-required (useful when branch protection prevents pushing tags directly).
-
-After the tag exists upstream, publish to npm from that tagged state:
-```bash
-git fetch upstream --tags
-git checkout vX.Y.Z
-npm ci && npm publish --access=public
-```
 
 **Publishing packages to GitHub**
 
