@@ -9,7 +9,7 @@ _Changes since [v0.18.0](https://github.com/Maps4HTML/MapML.js/releases/tag/v0.1
   clears its rendered tiles. Previously, re-checking the layer brought back
   stale tiles and could render a duplicate set alongside the current ones.
 - Layer control: on touch devices, expanding the collapsed layer control no
-  longer accidentally toggles the layer settings (gear) button. Tapping the map
+  longer accidentally toggles the layer settings (hamburger) button. Tapping the map
   now reliably collapses the control.
 - Attribution control: the attribution (info) button now has a localized
   tooltip and `aria-label`.
@@ -19,7 +19,8 @@ _Changes since [v0.18.0](https://github.com/Maps4HTML/MapML.js/releases/tag/v0.1
   `static` attribute, freezing or restoring map interaction. Opt in with
   `controlslist="static"` on `<mapml-viewer>` or `<map is="web-map">`. The
   button's pressed state follows the `static` attribute when it is changed
-  programmatically. Ported from MapML-MapLibre.
+  programmatically.  This can be used to avoid scroll traps when multiple
+  maps exist on a long page.
 
 ## Build / Tooling
 - Vendor `media-query-parser` 3.0.2 and `media-query-solver` 0.1.3 under
@@ -46,7 +47,7 @@ _Changes since [v0.18.0](https://github.com/Maps4HTML/MapML.js/releases/tag/v0.1
   the parent `<map-layer>` LayerGroup; call `GridLayer.prototype.onRemove` from
   `MapTileLayer.onRemove` (`45401483`)
 - Port static control from MapML-MapLibre (`7f515725`)
-- Prevent ghost click on settings gear during touch expand (`6581b5ae`)
+- Prevent ghost click on settings hamburger button during touch expand (`6581b5ae`)
 - Add localized tooltip and aria-label to attribution summary (`e76971bc`)
 - Vendor media-query-parser and media-query-solver because the latter was
   unpublished from npm on 2026-09-30 (`63164cfc`)
