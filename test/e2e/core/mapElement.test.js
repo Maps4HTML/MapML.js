@@ -46,9 +46,11 @@ test.describe('Playwright Map Element Tests', () => {
     expect(await map.evaluate((map) => map.extent.topLeft.pcrs)).toEqual(
       expectedPCRS[0]
     );
-    expect(await map.evaluate((map) => map.extent.topLeft.gcrs)).toEqual(
-      expectedGCRS[0]
-    );
+    // gcrs values go through proj4's inverse projection, whose transcendental
+    // math varies in the last ulp or two between browser/V8 versions
+    const topLeftGcrs = await map.evaluate((map) => map.extent.topLeft.gcrs);
+    expect(topLeftGcrs.horizontal).toBeCloseTo(expectedGCRS[0].horizontal, 6);
+    expect(topLeftGcrs.vertical).toBeCloseTo(expectedGCRS[0].vertical, 6);
     expect(
       await map.evaluate((map) => map.extent.topLeft.tilematrix[0])
     ).toEqual(expectedFirstTileMatrix[0]);
@@ -69,9 +71,9 @@ test.describe('Playwright Map Element Tests', () => {
     expect(await map.evaluate((map) => map.extent.topLeft.pcrs)).toEqual(
       expectedPCRS[1]
     );
-    expect(await map.evaluate((map) => map.extent.topLeft.gcrs)).toEqual(
-      expectedGCRS[1]
-    );
+    const pannedGcrs = await map.evaluate((map) => map.extent.topLeft.gcrs);
+    expect(pannedGcrs.horizontal).toBeCloseTo(expectedGCRS[1].horizontal, 6);
+    expect(pannedGcrs.vertical).toBeCloseTo(expectedGCRS[1].vertical, 6);
     expect(
       await map.evaluate((map) => map.extent.topLeft.tilematrix[0])
     ).toEqual(expectedFirstTileMatrix[1]);
@@ -93,7 +95,14 @@ test.describe('Playwright Map Element Tests', () => {
     await expect(extent.projection).toEqual('CBMTILE');
     await expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 3 });
     await expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
-    await expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+    expect(extent.topLeft.gcrs.horizontal).toBeCloseTo(
+      expectedGCRS[0].horizontal,
+      6
+    );
+    expect(extent.topLeft.gcrs.vertical).toBeCloseTo(
+      expectedGCRS[0].vertical,
+      6
+    );
     await expect(extent.topLeft.tilematrix[0]).toEqual(
       expectedFirstTileMatrix[0]
     );

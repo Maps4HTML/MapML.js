@@ -103,18 +103,28 @@ test.describe('Playwright featureLayer (Static Features) Layer Tests', () => {
         horizontal: -34655800,
         vertical: 39310000
       });
-      expect(layerExtent.topLeft.gcrs).toEqual({
-        horizontal: -169.78391348558873,
-        vertical: -60.79113663130127
-      });
+      // gcrs values go through proj4's inverse projection, whose transcendental
+      // math varies in the last ulp or two between browser/V8 versions
+      expect(layerExtent.topLeft.gcrs.horizontal).toBeCloseTo(
+        -169.78391348558873,
+        6
+      );
+      expect(layerExtent.topLeft.gcrs.vertical).toBeCloseTo(
+        -60.79113663130127,
+        6
+      );
       expect(layerExtent.bottomRight.pcrs).toEqual({
         horizontal: 14450964.88019643,
         vertical: -9796764.88019643
       });
-      expect(layerExtent.bottomRight.gcrs).toEqual({
-        horizontal: 79.6961805581841,
-        vertical: -60.79110984572508
-      });
+      expect(layerExtent.bottomRight.gcrs.horizontal).toBeCloseTo(
+        79.6961805581841,
+        6
+      );
+      expect(layerExtent.bottomRight.gcrs.vertical).toBeCloseTo(
+        -60.79110984572508,
+        6
+      );
       // corrected logic for MapLayer._calculateBounds min/maxNativeZoom
       // there are a bunch of features loaded at map zoom=2. Two have default
       // (no) zoom attribute, all the others have zoom=0. So, the minNativeZoom

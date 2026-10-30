@@ -1,5 +1,11 @@
 import { test, expect, chromium } from '@playwright/test';
 
+// These are whole-viewport golden images. Browser upgrades routinely shift
+// anti-aliased/colour-converted pixels by +/-1 in a single channel, which is
+// invisible but trips exact comparison. Allow a handful of such pixels: a real
+// tile appearing or disappearing differs by tens of thousands of pixels.
+const SNAPSHOT_OPTIONS = { maxDiffPixels: 100 };
+
 test.describe('Map Tile Dynamic Updates Tests', () => {
   let page;
   let context;
@@ -54,7 +60,10 @@ test.describe('Map Tile Dynamic Updates Tests', () => {
 
     // Take screenshot before removal
     const beforeScreenshot = await page.screenshot({ fullPage: false });
-    expect(beforeScreenshot).toMatchSnapshot('before-tile-removal.png');
+    expect(beforeScreenshot).toMatchSnapshot(
+      'before-tile-removal.png',
+      SNAPSHOT_OPTIONS
+    );
 
     // Remove specific tiles that are currently at the map zoom level
     const removedTiles = await page.evaluate(() => {
@@ -104,7 +113,10 @@ test.describe('Map Tile Dynamic Updates Tests', () => {
 
     // Take screenshot after removal to show visual difference
     const afterScreenshot = await page.screenshot({ fullPage: false });
-    expect(afterScreenshot).toMatchSnapshot('after-tile-removal.png');
+    expect(afterScreenshot).toMatchSnapshot(
+      'after-tile-removal.png',
+      SNAPSHOT_OPTIONS
+    );
 
     // The test should pass if we removed tiles successfully
     expect(removedTiles.removedCount).toBeGreaterThan(0);
@@ -143,7 +155,10 @@ test.describe('Map Tile Dynamic Updates Tests', () => {
 
     // Take baseline screenshot
     const baselineScreenshot = await page.screenshot({ fullPage: false });
-    expect(baselineScreenshot).toMatchSnapshot('baseline-before-adding.png');
+    expect(baselineScreenshot).toMatchSnapshot(
+      'baseline-before-adding.png',
+      SNAPSHOT_OPTIONS
+    );
 
     // Add a new map-tile element to DOM at a visible location
     await page.evaluate(() => {
@@ -177,7 +192,10 @@ test.describe('Map Tile Dynamic Updates Tests', () => {
 
     // Take screenshot after adding to show the tile was rendered
     const afterAddingScreenshot = await page.screenshot({ fullPage: false });
-    expect(afterAddingScreenshot).toMatchSnapshot('after-adding-tile.png');
+    expect(afterAddingScreenshot).toMatchSnapshot(
+      'after-adding-tile.png',
+      SNAPSHOT_OPTIONS
+    );
   });
 
   test('bidirectional links are properly cleaned up on removal', async () => {
@@ -252,7 +270,10 @@ test.describe('Map Tile Dynamic Updates Tests', () => {
 
     // Take screenshot before src change
     const beforeScreenshot = await page.screenshot({ fullPage: false });
-    expect(beforeScreenshot).toMatchSnapshot('before-src-change.png');
+    expect(beforeScreenshot).toMatchSnapshot(
+      'before-src-change.png',
+      SNAPSHOT_OPTIONS
+    );
 
     // Change the src attribute to a different color tile
     const newSrc = initialState.src.includes('green')
@@ -291,7 +312,10 @@ test.describe('Map Tile Dynamic Updates Tests', () => {
 
     // Take screenshot after src change
     const afterScreenshot = await page.screenshot({ fullPage: false });
-    expect(afterScreenshot).toMatchSnapshot('after-src-change.png');
+    expect(afterScreenshot).toMatchSnapshot(
+      'after-src-change.png',
+      SNAPSHOT_OPTIONS
+    );
   });
 
   test('coordinate collision - last tile wins', async () => {

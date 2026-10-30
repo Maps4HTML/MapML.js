@@ -1,5 +1,13 @@
 import { test, expect, chromium } from '@playwright/test';
 
+// gcrs values go through proj4's inverse projection, whose transcendental math
+// varies in the last ulp or two between browser/V8 versions, so compare them
+// approximately rather than with exact deep equality
+const expectGcrsCloseTo = (received, expected) => {
+  expect(received.horizontal).toBeCloseTo(expected.horizontal, 6);
+  expect(received.vertical).toBeCloseTo(expected.vertical, 6);
+};
+
 let expectedPCRSFirstLayer = {
     topLeft: {
       horizontal: -11940075.314370813,
@@ -69,8 +77,11 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
     expect(extent.hasOwnProperty('projection')).toBeTruthy();
     expect(extent.topLeft.pcrs).toEqual(expectedPCRSFirstLayer.topLeft);
     expect(extent.bottomRight.pcrs).toEqual(expectedPCRSFirstLayer.bottomRight);
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRSFirstLayer.topLeft);
-    expect(extent.bottomRight.gcrs).toEqual(expectedGCRSFirstLayer.bottomRight);
+    expectGcrsCloseTo(extent.topLeft.gcrs, expectedGCRSFirstLayer.topLeft);
+    expectGcrsCloseTo(
+      extent.bottomRight.gcrs,
+      expectedGCRSFirstLayer.bottomRight
+    );
   });
   test('Inline layer extent test', async () => {
     const extent = await page.$eval(
@@ -86,8 +97,9 @@ test.describe('Playwright Missing Min Max Attribute, Meta Default Tests', () => 
     expect(extent.bottomRight.pcrs).toEqual(
       expectedPCRSSecondLayer.bottomRight
     );
-    expect(extent.topLeft.gcrs).toEqual(expectedGCRSSecondLayer.topLeft);
-    expect(extent.bottomRight.gcrs).toEqual(
+    expectGcrsCloseTo(extent.topLeft.gcrs, expectedGCRSSecondLayer.topLeft);
+    expectGcrsCloseTo(
+      extent.bottomRight.gcrs,
       expectedGCRSSecondLayer.bottomRight
     );
   });

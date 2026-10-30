@@ -144,18 +144,23 @@ test.describe('Playwright Map Context Menu Tests', () => {
     );
     expect(await map.evaluate((map) => map.extent.zoom.minZoom)).toEqual(0);
     expect(await map.evaluate((map) => map.extent.zoom.maxZoom)).toEqual(3);
-    expect(await map.evaluate((map) => map.extent.topLeft.pcrs)).toEqual(
-      expectedPCRS[0]
-    );
-    expect(await map.evaluate((map) => map.extent.topLeft.gcrs)).toEqual(
-      expectedGCRS[0]
-    );
+    const topLeftPcrs = await map.evaluate((map) => map.extent.topLeft.pcrs);
+    expect(topLeftPcrs.horizontal).toBeCloseTo(expectedPCRS[0].horizontal, 6);
+    expect(topLeftPcrs.vertical).toBeCloseTo(expectedPCRS[0].vertical, 6);
+    const topLeftGcrs = await map.evaluate((map) => map.extent.topLeft.gcrs);
+    expect(topLeftGcrs.horizontal).toBeCloseTo(expectedGCRS[0].horizontal, 6);
+    expect(topLeftGcrs.vertical).toBeCloseTo(expectedGCRS[0].vertical, 6);
     expect(
       await map.evaluate((map) => map.extent.topLeft.tilematrix[0])
     ).toEqual(expectedFirstTileMatrix[0]);
-    expect(await map.evaluate((map) => map.extent.topLeft.tcrs[0])).toEqual(
-      expectedFirstTCRS[0]
+    const topLeftTcrs0 = await map.evaluate(
+      (map) => map.extent.topLeft.tcrs[0]
     );
+    expect(topLeftTcrs0.horizontal).toBeCloseTo(
+      expectedFirstTCRS[0].horizontal,
+      6
+    );
+    expect(topLeftTcrs0.vertical).toBeCloseTo(expectedFirstTCRS[0].vertical, 6);
   });
   test('Context menu, back and reload item at initial location disabled', async () => {
     await page.reload();
@@ -195,18 +200,23 @@ test.describe('Playwright Map Context Menu Tests', () => {
 
     expect(await map.evaluate((map) => map.extent.zoom.minZoom)).toEqual(0);
     expect(await map.evaluate((map) => map.extent.zoom.maxZoom)).toEqual(3);
-    expect(await map.evaluate((map) => map.extent.topLeft.pcrs)).toEqual(
-      expectedPCRS[1]
-    );
-    expect(await map.evaluate((map) => map.extent.topLeft.gcrs)).toEqual(
-      expectedGCRS[1]
-    );
+    const topLeftPcrs1 = await map.evaluate((map) => map.extent.topLeft.pcrs);
+    expect(topLeftPcrs1.horizontal).toBeCloseTo(expectedPCRS[1].horizontal, 6);
+    expect(topLeftPcrs1.vertical).toBeCloseTo(expectedPCRS[1].vertical, 6);
+    const topLeftGcrs1 = await map.evaluate((map) => map.extent.topLeft.gcrs);
+    expect(topLeftGcrs1.horizontal).toBeCloseTo(expectedGCRS[1].horizontal, 6);
+    expect(topLeftGcrs1.vertical).toBeCloseTo(expectedGCRS[1].vertical, 6);
     expect(
       await map.evaluate((map) => map.extent.topLeft.tilematrix[0])
     ).toEqual(expectedFirstTileMatrix[1]);
-    expect(await map.evaluate((map) => map.extent.topLeft.tcrs[0])).toEqual(
-      expectedFirstTCRS[1]
+    const topLeftTcrs1 = await map.evaluate(
+      (map) => map.extent.topLeft.tcrs[0]
     );
+    expect(topLeftTcrs1.horizontal).toBeCloseTo(
+      expectedFirstTCRS[1].horizontal,
+      6
+    );
+    expect(topLeftTcrs1.vertical).toBeCloseTo(expectedFirstTCRS[1].vertical, 6);
   });
   test('Context menu, forward item at most recent location disabled', async () => {
     const map = await page.getByTestId('firstmap');
@@ -516,11 +526,14 @@ test.describe('Playwright Map Context Menu Tests', () => {
     await page.keyboard.press('Shift+F10');
     await page.keyboard.press('p');
 
-    const layerLabel = await page.$eval(
-      'body > map',
-      (map) => map.layers[1].label
-    );
-    expect(layerLabel).toEqual('Pasted Layer');
+    // pasting is asynchronous (navigator.clipboard.readText() resolves a
+    // promise, and Util._pasteLayer is itself async), so poll for the layer
+    await expect
+      .poll(
+        async () =>
+          await page.$eval('body > map', (map) => map.layers[1]?.label ?? null)
+      )
+      .toEqual('Pasted Layer');
     // clean up
     await page.$eval('body > map', (map) =>
       map.removeChild(map.querySelector('[label="Pasted Layer"]'))
@@ -582,11 +595,12 @@ test.describe('Playwright Map Context Menu Tests', () => {
     await page.keyboard.press('Shift+F10');
     await page.keyboard.press('p');
 
-    const layerLabel = await page.$eval(
-      'body > map',
-      (map) => map.layers[1].label
-    );
-    expect(layerLabel).toEqual('Test Layer');
+    await expect
+      .poll(
+        async () =>
+          await page.$eval('body > map', (map) => map.layers[1]?.label ?? null)
+      )
+      .toEqual('Test Layer');
   });
 
   test('Paste invalid element to map', async () => {
@@ -597,6 +611,8 @@ test.describe('Playwright Map Context Menu Tests', () => {
     await page.click('body > map');
     await page.keyboard.press('Shift+F10');
     await page.keyboard.press('p');
+    // nothing should be added; allow the paste to settle before asserting
+    await page.waitForTimeout(500);
     const layerCount = await page.$eval(
       'body > map',
       (map) => map.children.length
@@ -612,16 +628,19 @@ test.describe('Playwright Map Context Menu Tests', () => {
     await page.click('body > map');
     await page.keyboard.press('Shift+F10');
     await page.keyboard.press('p');
-    await page.waitForTimeout(500);
-    const layerLabel = await page.$eval(
-      'body > map',
-      (map) => map.layers[2].outerHTML
-    );
     const expected = await page.$eval(
       'body > textarea#geojsonExpected',
       (textarea) => textarea.value
     );
-    expect(layerLabel).toEqual(expected);
+    await expect
+      .poll(
+        async () =>
+          await page.$eval(
+            'body > map',
+            (map) => map.layers[2]?.outerHTML ?? null
+          )
+      )
+      .toEqual(expected);
   });
 
   test('Paste invalid geojson to map', async () => {
@@ -632,6 +651,8 @@ test.describe('Playwright Map Context Menu Tests', () => {
     await page.click('body > map');
     await page.keyboard.press('Shift+F10');
     await page.keyboard.press('p');
+    // nothing should be added; allow the paste to settle before asserting
+    await page.waitForTimeout(500);
     const layerCount = await page.$eval(
       'body > map',
       (map) => map.children.length
@@ -704,13 +725,38 @@ test.describe('Playwright Map Context Menu Tests', () => {
 
   test('Layer Context menu, Pressing enter on contextmenu focuses on checkbox element', async () => {
     const map = await page.getByTestId('firstmap');
+    // The layer control starts out empty, and therefore hidden, until the
+    // inline <map-layer> registers itself. It is the 5th tab stop, so tabbing
+    // before it appears lands on the scale bar instead of the layer checkbox.
+    await expect(map.locator('.leaflet-control-layers')).toBeVisible();
     await map.click();
+    // An earlier context-menu interaction can leave a deferred map
+    // container focus() pending (ContextMenu.js schedules one in a
+    // setTimeout); if it lands mid-sequence it shifts every tab stop.
+    // Wait for focus to come to rest before counting tab stops.
+    await expect
+      .poll(async () =>
+        page.evaluate((sel) => {
+          const active = eval(sel).shadowRoot.activeElement;
+          return active ? active.className : null;
+        }, "document.querySelector('.mapml-web-map')")
+      )
+      .toContain('leaflet-container');
     for (let i = 0; i < 5; i++) {
       await page.keyboard.press('Tab');
-      await page.waitForTimeout(100);
     }
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(300);
+    // expanding the layer control moves focus to the layer's checkbox
+    // asynchronously, so poll rather than reading activeElement once
+    await expect
+      .poll(async () =>
+        page.evaluate((hostSelector) => {
+          const active =
+            document.querySelector(hostSelector).shadowRoot.activeElement;
+          return active ? active.nodeName : null;
+        }, '.mapml-web-map')
+      )
+      .toEqual('INPUT');
     const aHandle = await page.evaluateHandle(() =>
       document.querySelector('.mapml-web-map')
     );

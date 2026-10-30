@@ -333,6 +333,21 @@ test.describe('<mapml-viewer> localization tests', () => {
       await page.mouse.move(endX, endY, { steps: 20 });
       await page.mouse.up();
 
+      // Unlike the "following" tooltip, the "last known location" tooltip is
+      // bound without permanent: true, so it is only rendered while the
+      // location marker is hovered. The drag carries the marker along with the
+      // pointer and ends on top of it, so a stationary hover raises no
+      // mouseover: move off the marker and back on to open the tooltip.
+      const markerBox = await map
+        .locator('.leaflet-control-locate-location')
+        .boundingBox();
+      await page.mouse.move(markerBox.x - 60, markerBox.y - 60, { steps: 5 });
+      await page.mouse.move(
+        markerBox.x + markerBox.width / 2,
+        markerBox.y + markerBox.height / 2,
+        { steps: 10 }
+      );
+
       // my last location
       const lastLocation = await map.locator(
         '.leaflet-pane.leaflet-tooltip-pane'
